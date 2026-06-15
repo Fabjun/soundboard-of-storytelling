@@ -7,9 +7,14 @@ export type ChangelogEntry = {
   items: string[];
 };
 
-export const APP_VERSION = '3.0.24';
+export const APP_VERSION = '3.0.25';
 
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.25',
+    date: '2026-06-15',
+    items: ['ADR-0046: gate stops if artifact absent for scanning checks (close first-run gap)'],
+  },
   {
     version: '3.0.24',
     date: '2026-06-11',

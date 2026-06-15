@@ -55,6 +55,21 @@ Both paths flow through the same import gate.
    verify the token exists: `grep -n '\-\-token-name' v3/src/styles/tokens.css`.
    Unknown token = either use an existing token or add to tokens.css per ADR-0022 before merge.
 
+### Gate preconditions
+
+Checks 1 (Path-D inline-style scan) and 3 (literal-value scan) operate on the actual
+imported artifact (the design output file/files). They MUST be run by grepping that
+artifact directly.
+
+- If the artifact is not present in the working context, the gate **STOPS** and requests
+  it. It does NOT proceed on the basis of the design tool's self-report, description, or
+  TODO-CLASS register as a substitute for scanning the artifact.
+- A gate run in which checks 1 or 3 could not be executed against the real artifact is
+  **INCOMPLETE, not passed** — any findings are provisional until the artifact is scanned.
+  The self-report is a cross-check, never the source of truth for what the artifact contains.
+- Checks 2, 4, 5 grep the project's own registries/tokens and are unaffected — they run
+  regardless of artifact presence.
+
 ## Consequences
 
 **Positiv:**
