@@ -62,3 +62,12 @@ das Design-System-JSX nicht direkt verwendbar machen (ADR-0001). Nicht gewählt.
 - **Dateien:** `v3/src/styles/tokens.css`, `v3/src/components/*.tsx`
 - **ADRs:** ADR-0022 (Design Tokens), ADR-0024 (clip-path), ADR-0025 (is-deep)
 - **Quelldokumente:** `DESIGN_SYSTEM_CHEATSHEET.md`, `SoS_DESIGN_25052026/HANDOFF.md §4.1`
+
+## Amendments
+
+**2026-06-15:** `is-conflict` zur Vocabulary hinzugefügt (registriert in `DESIGN_SYSTEM.md §3`).
+Anlass: Scene-Rename-Import-Gate (`docs/design/imports/scene-rename-conflict.md`) hat die Klasse
+als fehlend im geschlossenen Set markiert; User hat Option (a) — globale State-Klasse — gewählt
+(vs. (c) Komponenten-lokaler Modifier). Semantik: Namenskonflikt / ungültige Eingabe bei
+Uniqueness-Checks. Wiederverwendbar bei Board-Rename, PadSet-Namen und allen künftigen
+Validierungs-Konflikt-Situationen.

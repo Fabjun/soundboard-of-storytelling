@@ -61,7 +61,7 @@ Need to style something.
 
 - **State vocabulary** (closed set — see §3 for full table):
   `is-active` · `is-on` · `is-hot` · `is-setup` · `is-game` · `is-danger`
-  · `is-raised` · `is-italic` · `is-loop` · `is-playlist` · `is-combo`
+  · `is-conflict` · `is-raised` · `is-italic` · `is-loop` · `is-playlist` · `is-combo`
   · `is-deep` · `is-compact`.
   New state? Add it to §3 first.
 

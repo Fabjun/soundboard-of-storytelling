@@ -71,6 +71,7 @@ Aktuell registrierte Zustands-Klassen (aus DESIGN_SYSTEM_CHEATSHEET.md §3):
 | `is-setup` | SETUP-Modus aktiv |
 | `is-game` | GAME-Modus aktiv |
 | `is-danger` | Destruktive Aktion (2-Tap-Confirm) |
+| `is-conflict` | Namenskonflikt / ungültige Eingabe |
 | `is-raised` | Erhöhte Fläche (Surface-Hierarchie) |
 | `is-italic` | Kursive Darstellung |
 | `is-loop` | Loop-Kontext |

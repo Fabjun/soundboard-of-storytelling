@@ -7,9 +7,16 @@ export type ChangelogEntry = {
   items: string[];
 };
 
-export const APP_VERSION = '3.0.26';
+export const APP_VERSION = '3.0.27';
 
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.27',
+    date: '2026-06-15',
+    items: [
+      'docs: register is-conflict in closed is-* vocabulary (§3 + ADR-0021) per scene-rename (a) decision',
+    ],
+  },
   {
     version: '3.0.26',
     date: '2026-06-15',

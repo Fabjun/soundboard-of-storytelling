@@ -197,7 +197,7 @@ No existing class. Propose: `sb-scene-conflict-hint`
 - Inline hits #10, #11, #12 fold in
 - 1-use (SceneRail)
 
-### `is-conflict` → **PENDING USER DECISION**
+### `is-conflict` → **RESOLVED 2026-06-15: Option (a)**
 
 Options:
 
@@ -232,10 +232,10 @@ at call sites.
 
 ## Pending items
 
-- **PENDING USER DECISION: is-conflict (a) or (c)**
+- ✅ **RESOLVED 2026-06-15: is-conflict** — Option (a); registered in DESIGN_SYSTEM.md §3 and ADR-0021 amended (this pass). CSS and SceneRail wiring deferred to code-pass.
 - **PENDING: code-pass implementation** — new classes (`sb-scene-ordinal`, `sb-scene-tab-conflict-glyph`,
   `sb-scene-conflict-hint`), `is-conflict` resolution, SceneRail wiring, live-validation +
-  blocking-commit behavior (I25). Requires §6 registration of new classes, §3 amendment if (a).
+  blocking-commit behavior (I25). Requires §6 registration of new classes, §3 amendment (done — this pass).
 
 ---
 

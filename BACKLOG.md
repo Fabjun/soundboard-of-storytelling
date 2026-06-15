@@ -1187,6 +1187,14 @@ runs it anyway; removing it from the pre-commit saves ~6 s locally with no CI co
 **When:** When the hook exceeds ~25 s in practice.
 **Source:** TESTING.md §CI-Integration; empirical measure.
 
+### Cheatsheet state-vocab quick-ref: consider generating from §3 (drift risk)
+`DESIGN_SYSTEM_CHEATSHEET.md` §state vocab is a hand-maintained 13-entry subset of the
+authoritative §3 table in `DESIGN_SYSTEM.md`. Every general-purpose `is-*` addition must
+be manually synced to the Cheatsheet (as done for `is-conflict`). Consider generating this
+quick-ref from §3 instead — eliminates the drift risk entirely.
+**When:** Before the first general-purpose `is-*` class is missed from the Cheatsheet.
+**Source:** FOUNDATION_ANALYSIS.md §6 coupling map; observed during `is-conflict` registration (2026-06-15).
+
 ### I18n infrastructure
 Structure code so a future i18n pass is feasible (texts in named constants, not hardcoded in
 JSX). Currently English-only; no timeline.
