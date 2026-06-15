@@ -7,9 +7,16 @@ export type ChangelogEntry = {
   items: string[];
 };
 
-export const APP_VERSION = '3.0.25';
+export const APP_VERSION = '3.0.26';
 
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.26',
+    date: '2026-06-15',
+    items: [
+      'docs: complete scene-rename import gate against artifact — self-audit verified, is-conflict pending',
+    ],
+  },
   {
     version: '3.0.25',
     date: '2026-06-15',
