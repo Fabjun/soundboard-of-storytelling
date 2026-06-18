@@ -7,9 +7,14 @@ export type ChangelogEntry = {
   items: string[];
 };
 
-export const APP_VERSION = '3.0.27';
+export const APP_VERSION = '3.0.28';
 
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.28',
+    date: '2026-06-18',
+    items: ['feat(scenes): scene-rename conflict display classes + markup (no behavior) — Part 2a'],
+  },
   {
     version: '3.0.27',
     date: '2026-06-15',

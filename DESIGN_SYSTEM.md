@@ -279,11 +279,13 @@ also in §6):
 | `sb-row-wrap` | Wrapping flex row; 4px gap (--space-1). For type-selector grids and wrapping button groups. | `v3/src/styles/tokens.css` |
 | `sb-scanlines` | CRT scanline overlay via ::after pseudo-element; currently applied to StartScreen only. | `v3/src/styles/tokens.css` |
 | `sb-scene-add-btn` | Full-width inset button at the bottom of the scene rail — 8px margins, calc(100% − 16px) width, 44px touch target, centered flex with 6px gap. Modifies sb-btn layout for the rail context. 1-use (SceneRail). | `v3/src/styles/tokens.css` |
+| `sb-scene-conflict-hint` | Hint line below a conflict scene tab — "Name already used by [owning scene]". font-ui fs-xs, blood text, space-3 left indent. 1-use (SceneRail). | `v3/src/styles/tokens.css` |
 | `sb-scene-num-badge` | Scene-number indicator badge in scene rail tabs — mono xs muted, 16px minimum width for numeral alignment, no flex-shrink. 1-use (SceneRail). | `v3/src/styles/tokens.css` |
 | `sb-scene-rail` | Left 220px scene navigation column on BoardScreen (fixed width, scrollable). | `v3/src/styles/tokens.css` |
 | `sb-scene-rename-input` | Inline rename input for scene tabs — font-ui fs-md 0.06em uppercase, matching sb-scene-tab's own font scale. Distinct from sb-row-rename-input (fs-lg/0.08em for board names). 1-use (SceneRail). | `v3/src/styles/tokens.css` |
 | `sb-scene-tab` | Clickable scene entry in the scene rail; is-active highlights the current scene. | `v3/src/styles/tokens.css` |
 | `sb-scene-tab-actions` | Action buttons (duplicate, delete) revealed on hover or on the active scene tab. | `v3/src/styles/tokens.css` |
+| `sb-scene-tab-conflict-glyph` | Trailing blood "!" alert mark inside a scene tab editing row in conflict state. font-mono fs-sm blood-bright, no shrink. 1-use (SceneRail). | `v3/src/styles/tokens.css` |
 | `sb-screen` | Full-height screen root container — flex column, 100dvh, surface background, positioned, overflow hidden; outline-offset for inset drag indicators. | `v3/src/styles/tokens.css` |
 | `sb-screen-empty` | Full-screen centered empty state — flex column, centered both axes, fills parent, mono xs text in text-mute. | `v3/src/styles/tokens.css` |
 | `sb-screen-layout` | 2-column content grid for LibraryScreen — 220px filter rail + 1fr content, fills parent, min-height:0 for scroll. | `v3/src/styles/tokens.css` |

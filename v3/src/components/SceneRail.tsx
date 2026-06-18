@@ -27,9 +27,15 @@ interface SceneRailProps {
   board: Board;
   activeSceneId: string | null;
   onSceneSelect: (sceneId: string) => void;
+  conflictIds?: ReadonlySet<string>; // 2b: populated by duplicate-name detector
 }
 
-export function SceneRail({ board, activeSceneId, onSceneSelect }: SceneRailProps): JSX.Element {
+export function SceneRail({
+  board,
+  activeSceneId,
+  onSceneSelect,
+  conflictIds,
+}: SceneRailProps): JSX.Element {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editValue, setEditValue] = useState('');
   const [deletedScene, setDeletedScene] = useState<{
@@ -175,98 +181,114 @@ export function SceneRail({ board, activeSceneId, onSceneSelect }: SceneRailProp
           Add one below.
         </div>
       ) : (
-        scenes.map((scene) => (
-          <div
-            key={scene.id}
-            class={
-              'sb-scene-tab' +
-              (activeSceneId === scene.id ? ' is-active' : '') +
-              (editingId === scene.id ? ' is-editing' : '') +
-              (pendingDeleteId === scene.id ? ' is-danger' : '')
-            }
-            data-testid={`scene-tab-${scene.id}`}
-            onClick={() => {
-              if (editingId !== scene.id) {
-                onSceneSelect(scene.id);
-                setPendingDeleteId(null);
-              }
-            }}
-            onDblClick={() => startRename(scene)}
-          >
-            {/* Scene number badge */}
-            <span class="sb-scene-num-badge">{scene.order + 1}</span>
-
-            {/* Name or inline edit input */}
-            {editingId === scene.id ? (
-              <input
-                ref={inputRef}
-                data-testid="scene-name-input"
-                value={editValue}
-                onInput={(e) => setEditValue((e.target as HTMLInputElement).value)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
-                    e.preventDefault();
-                    commitRename(scene.id);
-                  }
-                  if (e.key === 'Escape') {
-                    e.preventDefault();
-                    cancelRename();
+        scenes.map((scene) => {
+          const isConflict = conflictIds?.has(scene.id) ?? false; // 2b: computed from duplicate-name check
+          return (
+            <div key={scene.id} class="sb-col">
+              <div
+                class={
+                  'sb-scene-tab' +
+                  (activeSceneId === scene.id ? ' is-active' : '') +
+                  (editingId === scene.id ? ' is-editing' : '') +
+                  (pendingDeleteId === scene.id ? ' is-danger' : '') +
+                  (isConflict ? ' is-conflict' : '')
+                }
+                data-testid={`scene-tab-${scene.id}`}
+                onClick={() => {
+                  if (editingId !== scene.id) {
+                    onSceneSelect(scene.id);
+                    setPendingDeleteId(null);
                   }
                 }}
-                onBlur={() => commitRename(scene.id)}
-                onClick={(e) => e.stopPropagation()}
-                class="sb-scene-rename-input"
-                autoFocus
-              />
-            ) : (
-              <span class="sb-flex-trunc">{scene.name}</span>
-            )}
+                onDblClick={() => startRename(scene)}
+              >
+                {/* Scene number badge */}
+                <span class="sb-scene-num-badge">{scene.order + 1}</span>
 
-            {/* Pad count */}
-            {editingId !== scene.id && <span class="sb-count-text">{scene.pads.length}</span>}
+                {/* Name or inline edit input */}
+                {editingId === scene.id ? (
+                  <>
+                    <input
+                      ref={inputRef}
+                      data-testid="scene-name-input"
+                      value={editValue}
+                      onInput={(e) => setEditValue((e.target as HTMLInputElement).value)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          e.preventDefault();
+                          commitRename(scene.id);
+                        }
+                        if (e.key === 'Escape') {
+                          e.preventDefault();
+                          cancelRename();
+                        }
+                      }}
+                      onBlur={() => commitRename(scene.id)}
+                      onClick={(e) => e.stopPropagation()}
+                      class="sb-scene-rename-input"
+                      autoFocus
+                    />
+                    {isConflict && <span class="sb-scene-tab-conflict-glyph">!</span>}
+                  </>
+                ) : (
+                  <span class="sb-flex-trunc">{scene.name}</span>
+                )}
 
-            {/* Action chips (visible on hover / active) */}
-            {editingId !== scene.id && (
-              <div class="sb-scene-tab-actions">
-                <button
-                  class="sb-btn sb-btn-sm sb-btn-ghost sb-btn-icon"
-                  data-testid={`scene-rename-${scene.id}`}
-                  title="Rename scene"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    startRename(scene);
-                  }}
-                >
-                  <PixelIcon name="edit" size={11} />
-                </button>
-                <button
-                  class="sb-btn sb-btn-sm sb-btn-ghost sb-btn-icon"
-                  data-testid={`scene-copy-${scene.id}`}
-                  title="Duplicate scene"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    duplicateScene(scene);
-                  }}
-                >
-                  <PixelIcon name="save" size={11} />
-                </button>
-                <button
-                  class={`sb-btn sb-btn-sm sb-btn-icon ${pendingDeleteId === scene.id ? 'sb-btn-danger' : 'sb-btn-ghost'}`}
-                  data-testid={`scene-delete-${scene.id}`}
-                  title={
-                    pendingDeleteId === scene.id ? 'Click again to confirm delete' : 'Delete scene'
-                  }
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    requestDelete(scene);
-                  }}
-                >
-                  {pendingDeleteId === scene.id ? '!!' : '×'}
-                </button>
+                {/* Pad count */}
+                {editingId !== scene.id && <span class="sb-count-text">{scene.pads.length}</span>}
+
+                {/* Action chips (visible on hover / active) */}
+                {editingId !== scene.id && (
+                  <div class="sb-scene-tab-actions">
+                    <button
+                      class="sb-btn sb-btn-sm sb-btn-ghost sb-btn-icon"
+                      data-testid={`scene-rename-${scene.id}`}
+                      title="Rename scene"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        startRename(scene);
+                      }}
+                    >
+                      <PixelIcon name="edit" size={11} />
+                    </button>
+                    <button
+                      class="sb-btn sb-btn-sm sb-btn-ghost sb-btn-icon"
+                      data-testid={`scene-copy-${scene.id}`}
+                      title="Duplicate scene"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        duplicateScene(scene);
+                      }}
+                    >
+                      <PixelIcon name="save" size={11} />
+                    </button>
+                    <button
+                      class={`sb-btn sb-btn-sm sb-btn-icon ${pendingDeleteId === scene.id ? 'sb-btn-danger' : 'sb-btn-ghost'}`}
+                      data-testid={`scene-delete-${scene.id}`}
+                      title={
+                        pendingDeleteId === scene.id
+                          ? 'Click again to confirm delete'
+                          : 'Delete scene'
+                      }
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        requestDelete(scene);
+                      }}
+                    >
+                      {pendingDeleteId === scene.id ? '!!' : '×'}
+                    </button>
+                  </div>
+                )}
               </div>
-            )}
-          </div>
-        ))
+
+              {isConflict && (
+                <div class="sb-scene-conflict-hint">
+                  Name already used by <em>{/* 2b: owningSceneName */}</em>
+                </div>
+              )}
+            </div>
+          );
+        })
       )}
 
       {/* Add scene button */}

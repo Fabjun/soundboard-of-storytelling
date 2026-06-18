@@ -1469,6 +1469,10 @@
 .sb-scene-tab.is-editing {
   background: var(--raised);
 }
+.sb-scene-tab.is-conflict {
+  /* 3px: intentionally thicker than 2px is-active accent; stronger conflict signal */
+  border-left: 3px solid var(--blood-bright);
+}
 .sb-scene-tab-actions {
   /* @inventory: Action buttons (duplicate, delete) revealed on hover or on the active scene tab. */
   display: none;
@@ -1480,6 +1484,26 @@
 .sb-scene-tab:hover .sb-scene-tab-actions,
 .sb-scene-tab.is-active .sb-scene-tab-actions {
   display: flex;
+}
+
+.sb-scene-tab-conflict-glyph {
+  /* @inventory: Trailing blood "!" alert mark inside a scene tab editing row in conflict state. font-mono fs-sm blood-bright, no shrink. 1-use (SceneRail). */
+  font-family: var(--font-mono);
+  font-size: var(--fs-sm);
+  color: var(--blood-bright);
+  flex-shrink: 0;
+}
+.sb-scene-conflict-hint {
+  /* @inventory: Hint line below a conflict scene tab — "Name already used by [owning scene]". font-ui fs-xs, blood text, space-3 left indent. 1-use (SceneRail). */
+  font-family: var(--font-ui);
+  font-size: var(--fs-xs);
+  color: var(--blood);
+  padding: 2px var(--space-2) var(--space-1) var(--space-3);
+}
+.sb-scene-conflict-hint em {
+  /* .is-italic (L499) is .sb-mono-scoped — it does not apply here; local rule is correct */
+  color: var(--blood-bright);
+  font-style: italic;
 }
 
 /* ── Pad Grid ── center panel ─────────────────────────────────────── */
