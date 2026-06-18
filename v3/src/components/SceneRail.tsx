@@ -22,12 +22,13 @@ import { UndoToast } from './UndoToast';
 import { boardPut } from '../db/idb';
 import { upsertBoard } from '../state/store';
 import { nanoid } from '../lib/nanoid';
+import { findConflictingScene } from '../lib/sceneConflict';
 
 interface SceneRailProps {
   board: Board;
   activeSceneId: string | null;
   onSceneSelect: (sceneId: string) => void;
-  conflictIds?: ReadonlySet<string>; // 2b: populated by duplicate-name detector
+  conflictIds?: ReadonlySet<string>; // reserved for external conflict override; live detection is internal
 }
 
 export function SceneRail({
@@ -38,6 +39,8 @@ export function SceneRail({
 }: SceneRailProps): JSX.Element {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editValue, setEditValue] = useState('');
+  const [conflictOwner, setConflictOwner] = useState<Scene | null>(null);
+  const committingForRef = useRef<string | null>(null);
   const [deletedScene, setDeletedScene] = useState<{
     scene: Scene;
     boardSnapshot: Board;
@@ -52,31 +55,49 @@ export function SceneRail({
   function startRename(scene: Scene) {
     setEditingId(scene.id);
     setEditValue(scene.name);
+    setConflictOwner(null);
     // Focus input on next tick
     requestAnimationFrame(() => inputRef.current?.select());
   }
 
-  async function commitRename(sceneId: string) {
+  async function commitRename(sceneId: string, source: 'enter' | 'blur' = 'enter') {
+    // Conflict guard: Enter stays in edit mode; blur discards (revert + exit)
+    if (conflictOwner !== null) {
+      if (source === 'blur') cancelRename();
+      return;
+    }
+    // Re-entrancy guard: blocks double-Enter, Enter+blur overlap, iOS keyboard quirks
+    if (committingForRef.current !== null) return;
     const newName = editValue.trim();
     if (!newName) {
       setEditingId(null);
+      setConflictOwner(null);
       return;
     }
+    committingForRef.current = sceneId;
     const updatedBoard: Board = {
       ...board,
       scenes: board.scenes.map((s) => (s.id === sceneId ? { ...s, name: newName } : s)),
     };
     try {
       await boardPut(updatedBoard);
+      // boardPut has committed to IDB — upsertBoard must always follow to keep
+      // in-memory state consistent with the DB. Escape-during-await is "too late"
+      // to cancel an in-flight IDB transaction; the rename commits.
       upsertBoard(updatedBoard);
     } catch (e) {
       console.error('Scene rename failed:', e);
+    } finally {
+      committingForRef.current = null;
+      // Functional update: don't clobber a different scene's active edit
+      setEditingId((prev) => (prev === sceneId ? null : prev));
+      setConflictOwner(null);
     }
-    setEditingId(null);
   }
 
   function cancelRename() {
     setEditingId(null);
+    setConflictOwner(null);
   }
 
   // ── Duplicate ─────────────────────────────────────────────────────────────
@@ -182,7 +203,8 @@ export function SceneRail({
         </div>
       ) : (
         scenes.map((scene) => {
-          const isConflict = conflictIds?.has(scene.id) ?? false; // 2b: computed from duplicate-name check
+          const isConflict =
+            editingId === scene.id ? conflictOwner !== null : (conflictIds?.has(scene.id) ?? false);
           return (
             <div key={scene.id} class="sb-col">
               <div
@@ -212,7 +234,11 @@ export function SceneRail({
                       ref={inputRef}
                       data-testid="scene-name-input"
                       value={editValue}
-                      onInput={(e) => setEditValue((e.target as HTMLInputElement).value)}
+                      onInput={(e) => {
+                        const v = (e.target as HTMLInputElement).value;
+                        setEditValue(v);
+                        setConflictOwner(findConflictingScene(board.scenes, v, scene.id));
+                      }}
                       onKeyDown={(e) => {
                         if (e.key === 'Enter') {
                           e.preventDefault();
@@ -223,7 +249,7 @@ export function SceneRail({
                           cancelRename();
                         }
                       }}
-                      onBlur={() => commitRename(scene.id)}
+                      onBlur={() => commitRename(scene.id, 'blur')}
                       onClick={(e) => e.stopPropagation()}
                       class="sb-scene-rename-input"
                       autoFocus
@@ -283,7 +309,7 @@ export function SceneRail({
 
               {isConflict && (
                 <div class="sb-scene-conflict-hint">
-                  Name already used by <em>{/* 2b: owningSceneName */}</em>
+                  Name already used by <em>{conflictOwner?.name ?? ''}</em>
                 </div>
               )}
             </div>

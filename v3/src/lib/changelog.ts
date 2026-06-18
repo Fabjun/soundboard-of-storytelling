@@ -7,9 +7,14 @@ export type ChangelogEntry = {
   items: string[];
 };
 
-export const APP_VERSION = '3.0.28';
+export const APP_VERSION = '3.0.29';
 
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.29',
+    date: '2026-06-18',
+    items: ['feat(scenes): scene-rename live duplicate check + blocking behavior — Part 2b'],
+  },
   {
     version: '3.0.28',
     date: '2026-06-18',
