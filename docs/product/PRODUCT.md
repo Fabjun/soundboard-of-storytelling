@@ -103,7 +103,46 @@ _Pending — to be filled in dialogue._
 
 ## 6. Platforms & input
 
+### Platforms
+
 _Pending — to be filled in dialogue._
+
+### Input: keyboard & numpad
+
+_Filled 2026-09-28 in dialogue with the product owner._ A Bluetooth numpad turns the app into
+a mechanical soundboard: the game master triggers sounds with physical keys without looking
+at the screen. V1 proved this in real game sessions. None of it is built in V3 yet
+(inventory: [v1-v2-inventory.md §2](v1-v2-inventory.md#2-controls--numpad)).
+
+| # | Statement | Status |
+|---|---|---|
+| K1 | A key can be assigned to each pad in the PAD editor (focus the field, press the key). Numpad keys and main-keyboard keys are distinct (numpad "1" ≠ "1"). | **Decided** — _not yet built_ |
+| K2 | Key assignments apply **per scene**: the same key can trigger different pads in different scenes. Each scene is a "page" of the numpad. | **Decided** — _not yet built_ |
+| K3 | Keys trigger pads **in GAME only**. In SETUP they do nothing. | **Decided** — _not yet built_ |
+| K4 | A key press plays its pad. Pressing it again while the sound runs does **not** stop it (live safety, P6). | **Decided** — _not yet built_ |
+| K5 | **Enter** stops the most recently started sound; repeated presses stop the remaining sounds in reverse order. | **Decided** — _not yet built_ |
+| K6 | **Numpad decimal** stops all sounds. | **Decided** — _not yet built_ |
+| K7 | **Space** pauses all sounds (e.g. to talk at the table) and resumes them on the next press. | **Decided** — _not yet built_ |
+| K8 | While paused, any sound action (pad tap or key) resumes everything and plays the new sound. Stop actions end the paused sounds. A clearly visible **PAUSED** indicator is shown. | **Decided** — _not yet built_. Needs an audio-engine change (the engine auto-resumes on play and on returning to the app); requires separate approval when built. |
+| K9 | An on-screen **STOP ALL** button exists for use without a numpad. | **Decided** — _not yet built_ |
+| K10 | The assigned key is shown on the pad. | **Decided** — _not yet built_ |
+| K11 | **Screen Wake Lock** in GAME keeps the screen on so the numpad keeps working. On by default. | **Decided** — _not yet built_ |
+| K12 | Key assignments and control behavior (including the special keys above) become configurable in Settings. Until Settings exists, the defaults above apply. | **Decided** — _needs Settings_ |
+
+**Parked** (not to be built without explicit go-ahead):
+
+- Switching scenes by key (wanted in principle; built when the effort fits).
+- Key test screen and keymap overview.
+- Cue stack (queue pads, fire the next with a key).
+- Configurable long-press action in GAME.
+- Auto-stop after inactivity.
+- Command palette (Ctrl/Cmd+K).
+- Custom sound on mode switch.
+
+**Open:**
+
+- A fade-all button next to STOP ALL (`fadeOutAll` already exists in the engine).
+- Other input devices: MIDI controllers, gamepads (mentioned in design notes, never discussed).
 
 ## 7. Design principles
 

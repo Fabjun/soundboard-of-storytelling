@@ -57,21 +57,21 @@
 
 | Feature | V1 | V2 | V3 status | Evidence | Decision |
 |---|---|---|---|---|---|
-| Assign a key to each pad (captures `e.code`: numpad "1" ≠ main-row "1") | ✓ | ✓ | model only — `hotkey` shown read-only | `types.ts:59`; editor comment "Key-Capture = Slice 8" | Open |
-| Key press plays the pad; re-press never stops a running sound (deliberate, live safety) | ✓ | ✓ | missing | V1 `playFromKey`, `index.html:4820` | Open |
-| Space = pause all | ✓ | ? | missing | V1 `index.html:8591` | Open |
-| Enter = stop last started (SERIAL) or all (TOTAL), setting | ✓ | ✓ | missing | V1 `index.html:8592-8596` | Open |
-| Numpad decimal = stop all | ✓ | ? | missing | V1 `index.html` keydown handler | Open |
-| Key test screen (identify key codes) | ✓ | ? | missing | — | Open |
-| Keymap overlay (help key shows all assignments) | ✓ | ✓ | missing | — | Open |
-| Stop all / panic / fade-all button | ✓ | ✓ | engine only | `stopAll`, `fadeOutAll` only in `audio/index.ts` | Open |
-| Screen Wake Lock in GAME (keeps Bluetooth numpad working) | ✓ | ✓ | missing | no `wakeLock` in `src/` | Open |
-| Cue stack: long-press queues pads, TAB fires next | ✓ | ✓ | missing | — | Open |
-| Configurable long-press action in GAME (volume / rename / cue / off) | ✓ | ✓ | missing | — | Open |
-| Auto-stop after inactivity (setting) | ✓ | ✓ | missing | — | Open |
-| Command palette (Ctrl/Cmd+K) | ✓ | ✓ | missing | — | Open |
+| Assign a key to each pad (captures `e.code`: numpad "1" ≠ main-row "1") | ✓ | ✓ | model only — `hotkey` shown read-only | `types.ts:59`; editor comment "Key-Capture = Slice 8" | **Decided** (§6 K1, K2) |
+| Key press plays the pad; re-press never stops a running sound (deliberate, live safety) | ✓ | ✓ | missing | V1 `playFromKey`, `index.html:4820` | **Decided** (§6 K3, K4) |
+| Space = pause all | ✓ | ? | missing | V1 `index.html:8591` | **Decided** (§6 K7, K8) |
+| Enter = stop last started (SERIAL) or all (TOTAL), setting | ✓ | ✓ | missing | V1 `index.html:8592-8596` | **Decided** (§6 K5; mode setting via K12) |
+| Numpad decimal = stop all | ✓ | ? | missing | V1 `index.html` keydown handler | **Decided** (§6 K6) |
+| Key test screen (identify key codes) | ✓ | ? | missing | — | **Parked** (§6) |
+| Keymap overlay (help key shows all assignments) | ✓ | ✓ | missing | — | **Parked** (§6); key shown on pad: **Decided** (K10) |
+| Stop all / panic / fade-all button | ✓ | ✓ | engine only | `stopAll`, `fadeOutAll` only in `audio/index.ts` | STOP ALL **Decided** (§6 K9); fade-all **Open** |
+| Screen Wake Lock in GAME (keeps Bluetooth numpad working) | ✓ | ✓ | missing | no `wakeLock` in `src/` | **Decided** (§6 K11) |
+| Cue stack: long-press queues pads, TAB fires next | ✓ | ✓ | missing | — | **Parked** (§6) |
+| Configurable long-press action in GAME (volume / rename / cue / off) | ✓ | ✓ | missing | — | **Parked** (§6) |
+| Auto-stop after inactivity (setting) | ✓ | ✓ | missing | — | **Parked** (§6) |
+| Command palette (Ctrl/Cmd+K) | ✓ | ✓ | missing | — | **Parked** (§6) |
 | Mode toggle GAME / SETUP | ✓ | ✓ | built | `ModeToggle.tsx` | **Decided** (PRODUCT §3) |
-| Custom sound on mode switch | ✓ | ✓ | missing | — | Open |
+| Custom sound on mode switch | ✓ | ✓ | missing | — | **Parked** (§6) |
 | Lock against accidental mode switch | — | — | missing | — | **Decided** (PRODUCT §3) — not yet built |
 
 ## 3. Board, scenes & sets

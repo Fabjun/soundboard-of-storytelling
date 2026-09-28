@@ -244,6 +244,7 @@ on click. Escape cancels. Visual: reuse SETUP-mode hatch during the listening wi
 
 ### Inline conflict feedback
 Live ✓/⚠ hint under KEY field as a binding is chosen — don't wait for save.
+**Scope:** conflicts are checked **per scene**, not per board — keys apply per scene ([PRODUCT.md §6](docs/product/PRODUCT.md#input-keyboard--numpad) K2, 2026-09-28).
 **Source:** DESIGN_NOTES.md §PAD Editor — Inline conflict feedback.
 
 ### Snap-to-zero-crossing on waveform drag

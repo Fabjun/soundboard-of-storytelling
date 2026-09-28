@@ -13,7 +13,10 @@ export const CHANGELOG: ChangelogEntry[] = [
   {
     version: '3.0.33',
     date: '2026-09-28',
-    items: ['docs(product): V1/V2 feature inventory with V3 status per feature'],
+    items: [
+      'docs(product): V1/V2 feature inventory with V3 status per feature',
+      'docs(product): PRODUCT.md §6 Input — keyboard & numpad decisions (K1–K12)',
+    ],
   },
   {
     version: '3.0.32',
