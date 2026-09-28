@@ -52,7 +52,7 @@ code change needed. → [Design Session 2026-06-04](#design--feature-clarificati
 ### Set composition and layout
 ### Set reorder DnD
 ### Open UX question: Quick Access strip scope
-→ all five entries moved to [docs/product/PRODUCT.md §5 Board, scenes & quick access](docs/product/PRODUCT.md#board-scenes--quick-access) (2026-09-28). Revised there: **pad sets are dropped**; the quick-access bar is board-wide, freely assignable, with fixed board-wide keys. Remaining work: see §3 "Board pad pool (data model)".
+→ all five entries moved to [docs/product/PRODUCT.md §5 Board, decks & quick access](docs/product/PRODUCT.md#board-decks--quick-access) (2026-09-28). Revised there: **pad sets are dropped**; the quick-access bar is board-wide, freely assignable, with fixed board-wide keys. Remaining work: see §3 "Board pad pool (data model)".
 
 ---
 
@@ -1032,8 +1032,8 @@ Decided 2026-09-28 ([PRODUCT.md §5 Pads](docs/product/PRODUCT.md#pads)): three 
 **When:** before the combo editor / Slice 7 V1 import, whichever comes first.
 
 ### Board pad pool (data model)
-Decided 2026-09-28 ([PRODUCT.md §5](docs/product/PRODUCT.md#board-scenes--quick-access)): pads belong to the board; scenes and the quick-access bar reference pads with their own position and key; "All pads" view; `PadSet` dropped. Today `Scene.pads: Pad[]` owns pads and `position` / `hotkey` sit on the pad (`types.ts`).
-Requires an ADR (superseding the ownership parts of the current model) and a data migration. **Do together with the Playlist → Loop merge above** — both reshape `types.ts` and stored boards.
+Decided 2026-09-28 ([PRODUCT.md §5](docs/product/PRODUCT.md#board-decks--quick-access)): pads belong to the board; scenes and the quick-access bar reference pads with their own position and key; "All pads" view; `PadSet` dropped. Today `Scene.pads: Pad[]` owns pads and `position` / `hotkey` sit on the pad (`types.ts`).
+Requires an ADR (superseding the ownership parts of the current model) and a data migration. **Same change: rename Scene → Deck** in UI, code (`Scene`, `Board.scenes`, `SceneRail`, …) and stored data (PRODUCT.md Q1, 2026-09-28). **Do together with the Playlist → Loop merge above** — both reshape `types.ts` and stored boards.
 **When:** before Slice 5 scene work continues; the slice plan (CLAUDE.md, V3_CONCEPT_BRIEF §5.1 "Sets + Quick Access") needs re-ordering first.
 
 Open questions surfaced during implementation but not yet resolved. Each needs a deliberate

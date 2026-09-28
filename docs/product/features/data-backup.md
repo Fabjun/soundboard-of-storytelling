@@ -14,11 +14,11 @@ and restore is the only safety net.
 
 | # | Statement | Status |
 |---|---|---|
-| D1 | **Export everything** — boards, scenes, pads, library audio — into **one file**. On iPhone the file is handed to the share sheet (e.g. save to Files). | **Decided** |
+| D1 | **Export everything** — boards, decks, pads, library audio — into **one file**. On iPhone the file is handed to the share sheet (e.g. save to Files). | **Decided** |
 | D2 | **Import** restores from such a file. | **Decided** |
 | D3 | The app shows **when the last backup was made** ("last backup N days ago") and reminds the user when it is old. | **Decided** |
 | D4 | The app asks the browser for **persistent storage** so iOS is less likely to evict the data. Invisible to the user. | **Decided** |
-| D5 | **V1 backups can be imported.** A V1 board becomes a V3 board with one scene containing all its pads. | **Decided** |
+| D5 | **V1 backups can be imported.** A V1 board becomes a V3 board with one deck containing all its pads. | **Decided** |
 | D6 | Large files must import on the iPhone without crashing — the file is read piece by piece, never held in memory as a whole. (How: Slice 7 planning; see BACKLOG "Stream-based export/import".) | **Decided** |
 
 ### Import rules — **Decided**
@@ -38,7 +38,7 @@ and restore is the only safety net.
 ## Dropped
 
 - **Exporting in a format V1 can read** (previously `V3_CONCEPT_BRIEF.md §4.6`). V3 replaces
-  V1; the way back has no use and would constrain the V3 format (scenes, piecewise reading).
+  V1; the way back has no use and would constrain the V3 format (decks, piecewise reading).
   Importing *from* V1 stays (D5).
 
 ## Parked

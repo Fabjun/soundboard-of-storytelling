@@ -4,6 +4,9 @@
 > V2 could do and where V3 stands, so the product owner can decide per feature what V3
 > adopts. Per [PRODUCT.md §7](PRODUCT.md#7-design-principles) P7 this describes
 > **behavior, not code to copy** — anything adopted is re-implemented in V3 idiom.
+>
+> **Naming:** "Scene" is renamed to **Deck** (PRODUCT.md Q1). Feature names below keep the
+> historical V1/V2/current-code wording.
 
 ## Sources
 

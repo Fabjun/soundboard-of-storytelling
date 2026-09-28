@@ -20,6 +20,7 @@ export const CHANGELOG: ChangelogEntry[] = [
       'docs(product): PRODUCT.md §5 Pads — three pad types, combos as building blocks; P1 clarified',
       'docs(product): PRODUCT.md §5 Board concept — pad pool, scenes as views, quick-access bar',
       'docs: DOCUMENTATION_MAP product progress table',
+      'docs(product): Q1 decided — Scene renamed to Deck; first glossary',
     ],
   },
   {
