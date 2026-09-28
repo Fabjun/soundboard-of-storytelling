@@ -19,6 +19,7 @@ export const CHANGELOG: ChangelogEntry[] = [
       'docs(product): data & backup feature spec (export, import, V1 migration)',
       'docs(product): PRODUCT.md §5 Pads — three pad types, combos as building blocks; P1 clarified',
       'docs(product): PRODUCT.md §5 Board concept — pad pool, scenes as views, quick-access bar',
+      'docs: DOCUMENTATION_MAP product progress table',
     ],
   },
   {

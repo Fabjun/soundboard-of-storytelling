@@ -14,10 +14,30 @@ not yet filled and confirmed.
 
 | Area | Hub | Leaves | Template | State | Source(s) |
 |---|---|---|---|---|---|
-| Product | [`docs/product/PRODUCT.md`](product/PRODUCT.md) | `docs/product/features/` (when needed) | — | Skeleton | `V3_CONCEPT_BRIEF.md` (product parts) |
+| Product | [`docs/product/PRODUCT.md`](product/PRODUCT.md) | [`features/data-backup.md`](product/features/data-backup.md), [`v1-v2-inventory.md`](product/v1-v2-inventory.md) | — | In progress (see below) | `V3_CONCEPT_BRIEF.md` (product parts), `BACKLOG.md` (decisions) |
 | Design | `docs/design/DESIGN.md` | `docs/design/components/` | [`_template.md`](design/components/_template.md) | Template only | `DESIGN_SYSTEM.md`, `DESIGN_SYSTEM_CHEATSHEET.md`, `DESIGN_NOTES.md`, `v1-reference/HANDOFF.md` §4 |
 | Architecture | `docs/architecture/ARCHITECTURE.md` | ADRs in `docs/architecture/` | [`_template.md`](architecture/_template.md) | ADRs exist; hub pending | `V3_CONCEPT_BRIEF.md` (technical parts) |
 | Development | `docs/development/DEVELOPMENT.md` | — | — | Pending | `TESTING.md`, `CLAUDE.md` (workflow parts) |
+
+**Product progress (2026-09-28):**
+
+| PRODUCT.md section | State | Transferred from (source now holds a pointer) |
+|---|---|---|
+| §1 Purpose & audience | Pending — discussed, not yet written | — |
+| §2 A game session | Pending | — |
+| §3 App modes | Filled | BACKLOG B8, D2, Performance Lock; Stage Lock superseded |
+| §4 Screens & navigation | Pending | — |
+| §5 Core concepts — Board, scenes & quick access / Pads / Library | Filled (Library: one line) | V3_CONCEPT_BRIEF §4.1 key concepts; BACKLOG Slice 6 set entries |
+| §6 Platforms & input — Input | Filled (Platforms pending) | — |
+| §7 Design principles | Filled | BACKLOG tinkerer principle, overarching principle |
+| §8 Out of scope · §9 Glossary | Pending | — |
+| §10 Open questions | Q1 open, Q2 decided | — |
+| Leaf `features/data-backup.md` | Filled | V3_CONCEPT_BRIEF §4.6; BACKLOG V1-compatible template entry |
+| Leaf `v1-v2-inventory.md` | Decisions filled for §1 Pads, §2 Controls, §3 Board (partly), §5 Data; §4 Library, §6–§8 open | — |
+
+**Next after the product docs:** re-order the slice plan (data model ADR for pad pool +
+Playlist → Loop merge comes before further scene work), then `DESIGN.md` + component specs
+for the mobile Board layout.
 
 Full old-file → new-home mapping, including files that are only partially emptied
 (`BACKLOG.md`) or stay outside this table (`CLAUDE.md`, `v1-reference/HANDOFF.md`), and the
