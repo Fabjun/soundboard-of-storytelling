@@ -81,12 +81,12 @@
 | Boards: create / rename / delete | ✓ | ✓ | built | `BoardListScreen.tsx` | Open |
 | Board duplicate | ✓ | ✓ | missing | — | Open |
 | Board search / filter | — | ✓ | missing | — | Open |
-| Scenes: create / rename / duplicate / reorder / delete + undo | — | ✓ | built | `SceneRail.tsx` | Open |
+| Scenes: create / rename / duplicate / reorder / delete + undo | — | ✓ | built | `SceneRail.tsx` | **Decided** — scenes become hand-picked views of the pad pool (§5) |
 | Switching scenes | — | ✓ | built (desktop rail) | `SceneRail.tsx` | **Decided** (PRODUCT §3): classic controls, desktop + phone |
-| Pad sets + Quick Access strip (pads pinned across scenes/boards) | ✓ (strip) | ✓ | model only | `Board.sets`, `PadSet` in `types.ts` | Open |
+| Pad sets + Quick Access strip (pads pinned across scenes/boards) | ✓ (strip) | ✓ | model only | `Board.sets`, `PadSet` in `types.ts` | Sets **dropped**; quick-access bar **Decided** — board-wide, fixed keys (§5, K13) |
 | Pad drag: swap (centre) and insert (edge) | ✓ | ✓ | built (SETUP) | `padDnd.ts` | Open |
 | Quick rename (long-press in SETUP) | ✓ | ✓ | missing | — | Open |
-| Search + sort pads on the board | ✓ | ? | missing | — | Open |
+| Search + sort pads on the board | ✓ | ? | missing | — | **Decided** (§5: per view, combinable, temporary) |
 | Filter pads by type (ALL / S-PAD / C-PAD) | ✓ | ? | missing | — | Open |
 | Grid: columns AUTO / 2–6, pad size, gap, label size, square / circle | ✓ | ✓ | model only (`gridConfig`), no UI | `types.ts Scene.gridConfig` | Open |
 

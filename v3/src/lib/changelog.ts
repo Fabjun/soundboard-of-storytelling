@@ -18,6 +18,7 @@ export const CHANGELOG: ChangelogEntry[] = [
       'docs(product): PRODUCT.md §6 Input — keyboard & numpad decisions (K1–K12)',
       'docs(product): data & backup feature spec (export, import, V1 migration)',
       'docs(product): PRODUCT.md §5 Pads — three pad types, combos as building blocks; P1 clarified',
+      'docs(product): PRODUCT.md §5 Board concept — pad pool, scenes as views, quick-access bar',
     ],
   },
   {

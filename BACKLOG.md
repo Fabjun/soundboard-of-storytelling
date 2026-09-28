@@ -48,39 +48,11 @@ code change needed. → [Design Session 2026-06-04](#design--feature-clarificati
 ### Slice 6 — Sets + Quick Access
 
 ### PadSet model + Quick-Access strip
-Horizontal strip above the board for one-tap set switches at GAME time.
-**Why deferred:** Requires Slice 5 (scene switching) to be in place first; cross-scene set
-usage needs to be observable before the layout can be designed well.
-**When:** Slice 6.
-**Source:** V3_CONCEPT_BRIEF.md §5.1, ADR-0013.
-
 ### Set CRUD (create / rename / duplicate / delete)
-Full management UI for sets, mirroring Slice 3's Scene CRUD work.
-**Why deferred:** Same as above.
-**When:** Slice 6.
-**Source:** DESIGN_NOTES.md §Slice 6 — capacity questions.
-
 ### Set composition and layout
-Assign pads to sets; choose set layout (tabs / stack / floating panel).
-**Why deferred:** Same as above.
-**When:** Slice 6.
-**Source:** DESIGN_NOTES.md §Slice 6 — capacity questions.
-
 ### Set reorder DnD
-Reorder sets using Pointer Events (see `src/lib/padDnd.ts` and `src/lib/libDnd.ts` as
-canonical patterns; never use HTML5 DnD).
-**Why deferred:** No sets in Slice 5.
-**When:** Slice 6.
-**Source:** DESIGN_NOTES.md §Slice 3/Lessons — DnD pattern for future slices.
-
 ### Open UX question: Quick Access strip scope
-Does the strip suffice for Slice 6, or does it need dedicated Sets-management artboards
-mirroring the Scene CRUD work? Revisit after Slice 5 when cross-scene set usage is visible.
-**When:** Slice 6 planning (after real Slice 5 scene experience is available).
-**Source:** DESIGN_NOTES.md §Slice 6 — Sets management UI.
-**Session 2026-06-04:** Quick-Access content deferred until real scene experience exists —
-need and shape are unknown without practice. Four candidate shapes documented.
-→ [Design Session 2026-06-04](#design--feature-clarification-session--2026-06-04).
+→ all five entries moved to [docs/product/PRODUCT.md §5 Board, scenes & quick access](docs/product/PRODUCT.md#board-scenes--quick-access) (2026-09-28). Revised there: **pad sets are dropped**; the quick-access bar is board-wide, freely assignable, with fixed board-wide keys. Remaining work: see §3 "Board pad pool (data model)".
 
 ---
 
@@ -241,7 +213,7 @@ on click. Escape cancels. Visual: reuse SETUP-mode hatch during the listening wi
 
 ### Inline conflict feedback
 Live ✓/⚠ hint under KEY field as a binding is chosen — don't wait for save.
-**Scope:** conflicts are checked **per scene**, not per board — keys apply per scene ([PRODUCT.md §6](docs/product/PRODUCT.md#input-keyboard--numpad) K2, 2026-09-28).
+**Scope:** conflicts are checked **per scene**, not per board — keys apply per scene ([PRODUCT.md §6](docs/product/PRODUCT.md#input-keyboard--numpad) K2, 2026-09-28). Quick-access keys are board-wide (K13) and conflict with every scene.
 **Source:** DESIGN_NOTES.md §PAD Editor — Inline conflict feedback.
 
 ### Snap-to-zero-crossing on waveform drag
@@ -1058,6 +1030,11 @@ comments with "sub-token: deliberate" justification notes.
 ### Playlist → Loop merge (data model)
 Decided 2026-09-28 ([PRODUCT.md §5 Pads](docs/product/PRODUCT.md#pads)): three pad types — Single, Loop, Combo. Loop and Single accept several files (Loop: in order / shuffle; Single: random / in turn). Requires an ADR superseding the `PadType` part of ADR-0042, a migration of stored `playlist` pads, and engine/editor changes (engine change needs explicit approval).
 **When:** before the combo editor / Slice 7 V1 import, whichever comes first.
+
+### Board pad pool (data model)
+Decided 2026-09-28 ([PRODUCT.md §5](docs/product/PRODUCT.md#board-scenes--quick-access)): pads belong to the board; scenes and the quick-access bar reference pads with their own position and key; "All pads" view; `PadSet` dropped. Today `Scene.pads: Pad[]` owns pads and `position` / `hotkey` sit on the pad (`types.ts`).
+Requires an ADR (superseding the ownership parts of the current model) and a data migration. **Do together with the Playlist → Loop merge above** — both reshape `types.ts` and stored boards.
+**When:** before Slice 5 scene work continues; the slice plan (CLAUDE.md, V3_CONCEPT_BRIEF §5.1 "Sets + Quick Access") needs re-ordering first.
 
 Open questions surfaced during implementation but not yet resolved. Each needs a deliberate
 decision before the relevant slice ships.

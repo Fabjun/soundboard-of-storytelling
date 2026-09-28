@@ -100,9 +100,33 @@ _Pending — to be filled in dialogue._
 
 ## 5. Core concepts
 
-### Board, scene, library
+### Board, scenes & quick access
 
-_Pending — to be filled in dialogue._
+_Filled 2026-09-28 in dialogue with the product owner ("model B"). Nothing below is built
+yet except scene CRUD; it changes the data model (BACKLOG §3 "Board pad pool")._
+
+| Statement | Status |
+|---|---|
+| A **board** is the top-level grouping (e.g. one per game or campaign). | **Decided** |
+| **Pad pool:** all pads belong to the board, not to a scene. | **Decided** |
+| **All pads** is a view of the whole pool, not tied to any scene. Building-block pads (used only inside combos) live here without being in a scene. | **Decided** |
+| A **scene** is a hand-picked, fixed selection of pads from the pool with its own grid arrangement and its own keys (§6 K2). The same pad can appear in several scenes, at different positions. | **Decided** |
+| Editing a pad changes it everywhere it appears. | **Decided** |
+| Two different removals: **remove from this scene** and **delete the pad** (from the pool, everywhere). | **Decided** |
+| **Search and sort** are always available and apply to the current view only (All pads or the current scene). Sort by name or by last edited, ascending or descending; search and sort combine. | **Decided** |
+| Search or sort rearrange a scene only temporarily; with the search field empty and no sort active, the scene returns to its saved arrangement. | **Decided** |
+| Pads can be moved (SETUP) only while no search or sort is active. | **Decided** |
+| **Quick-access bar:** board-wide, identical in every scene, freely assignable with pads from the pool (e.g. DAY, NIGHT). Its pads have fixed board-wide keys (§6 K13). | **Decided** |
+| **STOP** and **Play/Pause** are fixed GAME controls, separate from the quick-access bar — they can never be removed or moved by accident. | **Decided** |
+| **Pad sets** (earlier concept) are dropped: scenes and the quick-access bar cover them. | **Decided** |
+| Rule-based scenes (e.g. "all pads tagged Night"). | **Parked** |
+| Where all of this sits on a phone screen. | **Open** — mobile layout |
+| Whether "Scene" is still the right name for a hand-picked view (Q1). | **Open** — revisit now that the concept is settled |
+
+### Library
+
+The **Library** is file management (audio import, rename, delete), separate from board
+organization and not a mode (§3). **Decided.** Further content: _pending_.
 
 ### Pads
 
@@ -174,7 +198,7 @@ at the screen. V1 proved this in real game sessions. None of it is built in V3 y
 | # | Statement | Status |
 |---|---|---|
 | K1 | A key can be assigned to each pad in the PAD editor (focus the field, press the key). Numpad keys and main-keyboard keys are distinct (numpad "1" ≠ "1"). | **Decided** — _not yet built_ |
-| K2 | Key assignments apply **per scene**: the same key can trigger different pads in different scenes. Each scene is a "page" of the numpad. | **Decided** — _not yet built_ |
+| K2 | Key assignments apply **per scene**: the same key can trigger different pads in different scenes. Each scene is a "page" of the numpad. Scene keys must not collide with quick-access keys (K13). | **Decided** — _not yet built_ |
 | K3 | Keys trigger pads **in GAME only**. In SETUP they do nothing. | **Decided** — _not yet built_ |
 | K4 | A key press plays its pad. Pressing it again while the sound runs does **not** stop it (live safety, P6). | **Decided** — _not yet built_ |
 | K5 | **Enter** stops the most recently started sound; repeated presses stop the remaining sounds in reverse order. | **Decided** — _not yet built_ |
@@ -185,6 +209,8 @@ at the screen. V1 proved this in real game sessions. None of it is built in V3 y
 | K10 | The assigned key is shown on the pad. | **Decided** — _not yet built_ |
 | K11 | **Screen Wake Lock** in GAME keeps the screen on so the numpad keeps working. On by default. | **Decided** — _not yet built_ |
 | K12 | Key assignments and control behavior (including the special keys above) become configurable in Settings. Until Settings exists, the defaults above apply. | **Decided** — _needs Settings_ |
+| K13 | Pads in the **quick-access bar** have fixed, board-wide keys that work in every scene. | **Decided** — _not yet built_ |
+| K14 | In **All pads** and while a search is active, the keys of the **last selected scene** stay active, so numpad control never drops out. | **Decided** — _not yet built_ |
 
 **Parked** (not to be built without explicit go-ahead):
 
