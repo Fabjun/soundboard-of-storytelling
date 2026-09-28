@@ -1,0 +1,116 @@
+# PAD
+
+> **Component spec** — one file per UI element.
+> Rules: [ADR-0047](../../architecture/0047-documentation-architecture.md) — English,
+> status on every statement, token **names** only (values live in `v3/src/styles/tokens.css`).
+
+**Status:** Draft
+**Code:** `v3/src/components/PadGridCell.tsx` (grid cell + pad), styles `.sb-pad` in `v3/src/styles/tokens.css`
+**Last reviewed:** 2026-09-28
+
+Status markers used below: **Decided** · **Open** · **Parked**
+(see [PRODUCT.md — Status legend](../../product/PRODUCT.md#status-legend)).
+"Not yet built" marks decided behavior the code does not implement yet.
+
+---
+
+## Purpose
+
+The PAD is the trigger in the grid of a deck, of All pads and of the quick-access bar. Tapping
+or pressing its key plays or stops its sound (GAME) or opens it for editing (SETUP). Pad types
+and behavior: [PRODUCT.md §5 Pads](../../product/PRODUCT.md#pads).
+
+| Statement | Status |
+|---|---|
+| The element is called **PAD** everywhere. Its shape resembles a playing card — fitting the deck metaphor — but it is not called "card". | **Decided** |
+
+## Anatomy
+
+| Part | Description | Status |
+|---|---|---|
+| Shape | **Card format:** a slightly portrait rectangle. | **Decided** — _not yet built_ |
+| Picture area (top) | Shows the pad's icon(s). A pad without its own icon shows a **placeholder icon**, so all pads look uniform. | **Decided** — _not yet built_ |
+| Info area (bottom) | **Name** (always visible) and the **assigned key** (§6 K10). | **Decided** — _not yet built_ |
+| Type spine | Coloured bar on the left edge showing the pad type (current code, ADR-0027). | **Open** — current code, review pending |
+
+## Variants
+
+| Variant | When | Status |
+|---|---|---|
+| Aspect ratio | Adjustable in Settings. The default is chosen by testing visually on the device. | **Decided** — value **Open** |
+
+## States
+
+Current code (closed `is-*` vocabulary, `DESIGN_SYSTEM.md §3`) — listed for reference, not yet
+reviewed as part of this spec.
+
+| State | Trigger | Appearance (current code) | Status |
+|---|---|---|---|
+| `is-hot` | Pad is playing | Spine widens to the perimeter; glow in pad type colour | **Open** — review pending |
+| `is-looping` | Loop pad is running | Class is set (`PadGridCell.tsx:104`) but has **no style** yet — looks like `is-hot` | **Open** — review pending |
+| `is-setup` | SETUP mode | Dashed border (drag-ready) | **Open** — review pending |
+
+## Behavior
+
+### In GAME mode
+
+Single tap starts / stops the pad; keys per deck (PRODUCT.md §3, §5, §6). No further
+PAD-specific behavior decided yet.
+
+### In SETUP mode
+
+Tap opens the PAD editor; pads can be dragged while no search or sort is active (PRODUCT.md
+§3, §5).
+
+## Adaptive behavior
+
+Per [ADR-0045](../../architecture/0045-two-axis-adaptive-model.md).
+
+### Zoom and detail levels
+
+| Statement | Status |
+|---|---|
+| The grid can be zoomed; pads shrink and show less detail as they get smaller: **large** — card with picture and info · **medium** — card with info only · **small** — square. | **Decided** (concept) — details worked out in practice, _not yet built_ |
+| Zoom applies **per deck**. Whether it applies per deck or app-wide becomes a Settings option. | **Decided** — _not yet built_ |
+| Zoom controls: small **+ / − buttons**, and **Ctrl/Cmd + mouse wheel** (plain wheel keeps scrolling the grid). | **Decided** — _not yet built_ |
+| Zoom by gesture (pinch / swipe). | **Parked** |
+| Zoom by key press. | **Parked** — keys to be chosen with the key settings (PRODUCT.md §6 K12) |
+
+### Axis 1 — Screen format (narrow / wide)
+
+_Pending — defined with the mobile Board layout._
+
+### Axis 2 — Input type (touch / pointer + keyboard)
+
+_Pending._
+
+## Tokens & classes
+
+Names only — no values.
+
+- Tokens: `--pad-single`, `--pad-loop`, `--pad-playlist`, `--pad-combo` (and `-soft` / `-glow`
+  variants) — current code; `--pad-playlist` is affected by the Playlist → Loop merge
+  (PRODUCT.md §5, BACKLOG §3).
+- Classes: `sb-pad`, `sb-pad-grid`, `sb-pad-grid-cell` — current code.
+
+## Accessibility
+
+Touch target min. 44 px at every zoom level (CLAUDE.md UI rules). Pad type must stay readable
+without colour (current: spine position; to be reviewed). _Further details pending._
+
+## Open questions
+
+| # | Question | Status |
+|---|---|---|
+| PQ1 | Default aspect ratio (tested visually on the device). | **Open** |
+| PQ2 | What the **small** (square) level shows: key, icon, or first letter. | **Open** |
+| PQ3 | Pad icons: V1 had ~2,300 pixel icons, up to 4 per pad ([v1-v2-inventory.md §4](../../product/v1-v2-inventory.md#4-library)). Which icon system does V3 use, and what is the placeholder? | **Open** |
+| PQ4 | Minimum zoom vs. the 44 px touch target on a phone. | **Open** |
+
+## Sources
+
+- Decisions: product owner dialogue 2026-09-28 (card format, placeholder icon, zoom per deck,
+  zoom controls, detail levels).
+- Product context: [PRODUCT.md §3, §5, §6](../../product/PRODUCT.md).
+- ADRs: ADR-0027 (pad type colours), ADR-0045 (two-axis adaptive model).
+- Earlier related idea: BACKLOG.md "2b — Library form" (tiles stack details by display size).

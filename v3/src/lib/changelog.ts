@@ -7,9 +7,14 @@ export type ChangelogEntry = {
   items: string[];
 };
 
-export const APP_VERSION = '3.0.33';
+export const APP_VERSION = '3.0.34';
 
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.34',
+    date: '2026-09-28',
+    items: ['docs(design): first component spec — PAD (card format, detail levels, zoom per deck)'],
+  },
   {
     version: '3.0.33',
     date: '2026-09-28',

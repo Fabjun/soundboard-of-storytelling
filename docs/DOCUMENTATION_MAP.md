@@ -15,7 +15,7 @@ not yet filled and confirmed.
 | Area | Hub | Leaves | Template | State | Source(s) |
 |---|---|---|---|---|---|
 | Product | [`docs/product/PRODUCT.md`](product/PRODUCT.md) | [`features/data-backup.md`](product/features/data-backup.md), [`v1-v2-inventory.md`](product/v1-v2-inventory.md) | — | In progress (see below) | `V3_CONCEPT_BRIEF.md` (product parts), `BACKLOG.md` (decisions) |
-| Design | `docs/design/DESIGN.md` | `docs/design/components/` | [`_template.md`](design/components/_template.md) | Template only | `DESIGN_SYSTEM.md`, `DESIGN_SYSTEM_CHEATSHEET.md`, `DESIGN_NOTES.md`, `v1-reference/HANDOFF.md` §4 |
+| Design | `docs/design/DESIGN.md` | [`components/pad.md`](design/components/pad.md) (Draft) | [`_template.md`](design/components/_template.md) | First spec; hub pending | `DESIGN_SYSTEM.md`, `DESIGN_SYSTEM_CHEATSHEET.md`, `DESIGN_NOTES.md`, `v1-reference/HANDOFF.md` §4 |
 | Architecture | `docs/architecture/ARCHITECTURE.md` | ADRs in `docs/architecture/` | [`_template.md`](architecture/_template.md) | ADRs exist; hub pending | `V3_CONCEPT_BRIEF.md` (technical parts) |
 | Development | `docs/development/DEVELOPMENT.md` | — | — | Pending | `TESTING.md`, `CLAUDE.md` (workflow parts) |
 
