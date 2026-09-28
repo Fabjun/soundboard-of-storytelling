@@ -35,9 +35,9 @@ not yet filled and confirmed.
 | Leaf `features/data-backup.md` | Filled | V3_CONCEPT_BRIEF §4.6; BACKLOG V1-compatible template entry |
 | Leaf `v1-v2-inventory.md` | Decisions filled for §1 Pads, §2 Controls, §3 Board (partly), §5 Data; §4 Library, §6–§8 open | — |
 
-**Next after the product docs:** re-order the slice plan (data model ADR for pad pool +
-Playlist → Loop merge and the Scene → Deck rename come before further deck work), then `DESIGN.md` + component specs
-for the mobile Board layout.
+**Slice plan:** re-planned 2026-09-28 — single source `CLAUDE.md §Slice progress` (Slices 9–14;
+5–8 superseded, numbers not reused). Design hub `DESIGN.md` + component specs follow with
+Slice 13 (adaptive layout).
 
 Full old-file → new-home mapping, including files that are only partially emptied
 (`BACKLOG.md`) or stay outside this table (`CLAUDE.md`, `v1-reference/HANDOFF.md`), and the

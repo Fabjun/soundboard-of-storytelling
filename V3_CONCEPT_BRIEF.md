@@ -244,17 +244,8 @@ Service Worker / PWA, CSS clamp()/prefers-reduced-motion, IntersectionObserver.
 Build in working slices, not horizontal layers. Each slice ends with
 a committable, testable, screenshot-verifiable result.
 
-Completion status as of Slice 4 (full details + deviations: `CLAUDE.md §Slice progress`):
-
-1. **Project setup + StartScreen** ✅ Complete (2026-05-27) — Vite + Preact scaffold,
-   design tokens, PWA, Signals store, StartScreen
-2. **Library + LibraryItem CRUD** ✅ Complete (2026-05-27)
-3. **Board + Scene + Pad CRUD** ✅ Complete (2026-05-27)
-4. **Audio playback** ✅ Complete (2026-05-28) — V1 engine wrapped, all 4 pad types
-5. **Scene switching** ⬜ Next — multiple scenes, swap between them
-6. **Sets + Quick Access** ⬜ Pending — PadSet model and quick-access strip
-7. **Template export/import** ⬜ Pending — V1 compatibility
-8. **Settings, themes, polish** ⬜ Pending
+Slice list and status → moved to `CLAUDE.md §Slice progress` (single source, 2026-09-28).
+Re-planned there: Slices 5–8 superseded (numbers not reused); new plan Slices 9–14.
 
 ### 5.2 · Using design-system JSX
 
@@ -321,7 +312,7 @@ Ask the user — don't assume — when:
 4. Slices 1–4 are already implemented — check `v3/src/screens/` to orient on what
    exists. For future slices, relevant design-system JSX files are in
    `SoS_DESIGN_25052026/` (versioned v2–v26 exploration files).
-5. Ask the user which slice from §5.1 to start with. Current next: **Slice 5**.
+5. Ask the user which slice to start with. Current next: see `CLAUDE.md §Slice progress`.
 6. Before writing code, summarize back:
    - Scope of the slice
    - Files to create

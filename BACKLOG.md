@@ -32,6 +32,10 @@ during the slice. This is the only defence against backlog drift.
 
 ## 1. Features (Slice-bound)
 
+> **Slice numbers in this section refer to the May plan** (Slices 5–8, superseded 2026-09-28).
+> Mapping to the new plan (Slices 9–14): `CLAUDE.md §Slice progress`. Items are re-triaged when
+> the respective new slice is planned.
+
 ### Slice 5 — Scene Switching
 
 ### Scene navigation

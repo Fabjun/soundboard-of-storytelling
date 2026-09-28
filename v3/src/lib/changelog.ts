@@ -7,9 +7,16 @@ export type ChangelogEntry = {
   items: string[];
 };
 
-export const APP_VERSION = '3.0.35';
+export const APP_VERSION = '3.0.36';
 
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.36',
+    date: '2026-09-28',
+    items: [
+      'docs: slice re-plan — Slices 9–14 (5–8 superseded, numbers not reused); platforms: all smartphones',
+    ],
+  },
   {
     version: '3.0.35',
     date: '2026-09-28',

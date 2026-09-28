@@ -186,7 +186,10 @@ required before implementation (BACKLOG §3).
 
 ### Platforms
 
-_Pending — to be filled in dialogue._
+| Statement | Status |
+|---|---|
+| The app must work well on **smartphones in general** (iOS and Android), on tablets and on desktop — not only on the iPhone. The iPhone is the owner's device and the strictest constraint (memory, iOS specifics). Minimum versions: `CLAUDE.md §Supported Platforms`. | **Decided** |
+| Until the adaptive layout exists (Slice 13), real game nights run on laptop or tablet. | **Decided** |
 
 ### Input: keyboard & numpad
 

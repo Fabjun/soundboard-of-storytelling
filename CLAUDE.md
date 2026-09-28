@@ -53,7 +53,7 @@
   Originally written for V1 migration context (refers to "porting JSX
   to vanilla", phase plan for V1 modernization). For V3, ignore the
   porting guidance and phase plan — V3 uses JSX directly via Preact
-  and follows the slice plan in V3_CONCEPT_BRIEF.md §5.1. Still
+  and follows the slice plan in the "Slice progress" table below. Still
   valuable for: JSX-file index, design intent (type-color spine,
   depth stack, multi-cue mode), token-system rationale.
 
@@ -340,8 +340,8 @@ any non-doc file flagged ⚠ for approval. Routine additionally: `v3/src/lib/cha
 3. **"Kannst du X?" is a question** — answer first, wait for go-ahead
    before implementing.
 4. **Vertical slices**: build complete vertical features (UI + state
-   + persistence), not horizontal layers. See §5.1 in the Concept
-   Brief.
+   + persistence), not horizontal layers. Slice plan: "Slice progress"
+   table in this file (single source).
 5. **After every feature or fix**: verify manually, then
    `git add . && git commit -m "..." && git push`
 6. After every push: paste the **literal output** of `git --no-pager show --stat HEAD`
@@ -578,10 +578,27 @@ boardDelete(id: string): Promise<void>
 | 2 | Library + LibraryItem CRUD | ✅ Complete | 2026-05-27 | idb + @noble/hashes; LibraryItemMeta/LibraryItem split; serial upload pipeline; AudioRow; Waveform; 2-tap delete; rename via <input>; 2-column layout; 4 tabs |
 | 3 | Board + Scene + Pad CRUD | ✅ Complete | 2026-05-27 | Board CRUD (BoardListScreen), Scene CRUD (SceneRail, inline rename, duplicate, reorder, delete+undo), Pad CRUD (3 paths: tap-slot popover, library drag, ADD PAD), Pad DnD (SWAP+INSERT), PadTypeConfirmDialog (v23 Option C), ModeToggle with sparks, SETUP/GAME modes, empty states |
 | 4 | Audio playback | ✅ Complete | 2026-05-28 | Discriminated union (ADR-0042), engine.ts/index.ts/types.ts (ADR-0044), iOS hacks + LRU 150 MB (ADR-0043), all 4 pad types, Signal bridge, TAP TO UNLOCK wired, is-hot/is-looping CSS classes |
-| 5 | Scene switching | ⬜ Pending | — | Multiple scenes, swap between them |
-| 6 | Sets + Quick Access | ⬜ Pending | — | PadSet model + quick-access strip |
-| 7 | Template export/import | ⬜ Pending | — | V1 compatibility |
-| 8 | Settings, themes, polish | ⬜ Pending | — | Theme switcher, icons, atmosphere |
+| 5 | Scene switching | ↷ Superseded | 2026-09-28 | May plan — replaced by 9 + 13 (see mapping below) |
+| 6 | Sets + Quick Access | ↷ Superseded | 2026-09-28 | May plan — sets dropped; quick-access bar → 9 + 13 |
+| 7 | Template export/import | ↷ Superseded | 2026-09-28 | May plan — replaced by 10 |
+| 8 | Settings, themes, polish | ↷ Superseded | 2026-09-28 | May plan — replaced by 14 (layout items → 13) |
+| 9 | Data model | ⬜ Pending (next) | — | Pad pool + decks, rename Scene → Deck (UI, code, stored data), Playlist → Loop, multi-file Single/Loop (PRODUCT.md §5). ADR required. V3 data may be wiped (only test data): delete **only** the `sos-v3` database — never origin-wide storage (V1's `botc` DB shares the origin `fabjun.github.io`). |
+| 10 | Data backup & import | ⬜ Pending | — | Single-file export/import, V1 import incl. all library audio, piecewise reading, persistent storage, last-backup indicator (`docs/product/features/data-backup.md`) |
+| 11 | Combo editor | ⬜ Pending | — | Minimal first version, then towards V1 scope and beyond (PRODUCT.md §5 Combos) |
+| 12 | Live control | ⬜ Pending | — | Numpad K1–K14, STOP ALL, pause, Wake Lock, mode switch stops sounds, Lock (PRODUCT.md §3, §6). Goal: first real game night with V3 (laptop / tablet) |
+| 13 | Adaptive layout | ⬜ Pending | — | Smartphones in general (not only iPhone): deck switcher, All pads, quick-access bar, search/sort bar, PAD card format + zoom (`docs/design/components/pad.md`) |
+| 14 | Settings & polish | ⬜ Pending | — | Settings screen, Settings options from PRODUCT.md P2, themes |
+
+**Re-plan 2026-09-28 (numbering rule):** Slices 5–8 of the May plan are superseded; their numbers
+are **never reused**. Every existing reference to "Slice 5–8" (BACKLOG, ADRs, DESIGN_NOTES, code
+comments) keeps meaning the May plan. Mapping old → new:
+
+| Old (May plan) | New |
+|---|---|
+| 5 Scene switching | 9 (model) + 13 (deck switcher UI) |
+| 6 Sets + Quick Access | sets dropped; quick-access bar → 9 (model) + 13 (UI) |
+| 7 Template export/import | 10 |
+| 8 Settings, themes, polish | 14; layout-related items → 13 |
 
 **Deviations from plan:**
 - State manager chosen: Preact Signals (confirmed by user, Slice 1).
