@@ -6,6 +6,9 @@
 > **Status:** Skeleton — sections are filled in dialogue with the product owner.
 > Until a section is filled, the previous sources remain authoritative
 > (`V3_CONCEPT_BRIEF.md`, `BACKLOG.md`, `DESIGN_NOTES.md`).
+>
+> **Leaves:** [v1-v2-inventory.md](v1-v2-inventory.md) — prototype features vs. V3 status,
+> decisions per feature.
 
 ## Status legend
 
