@@ -4,7 +4,7 @@
 // Source: SoS_DESIGN_25052026/v2-screens.jsx StartScreen
 //
 // Responsibilities:
-//  1. Render the app splash (flame, title, tagline)
+//  1. Render the app splash (animated flame, title, tagline)
 //  2. On button tap: unlock the Web Audio context + navigate to board-list
 //  3. Show version (clickable → changelog overlay) + audio state in footer
 // ─────────────────────────────────────────────────────────────────────────────
@@ -12,21 +12,12 @@
 import { useState } from 'preact/hooks';
 import type { JSX } from 'preact';
 import { PixelIcon } from '../components/PixelIcon';
+import { AnimatedFlame } from '../components/AnimatedFlame';
 import { audioContextState, currentScreen } from '../state/store';
 import { initAudio } from '../audio/index';
 import { APP_VERSION, CHANGELOG } from '../lib/changelog';
 
 declare const __BUILD_DATE__: string;
-
-// ── FlameLogo ────────────────────────────────────────────────────────────────
-
-function FlameLogo({ size = 80 }: { size?: number }): JSX.Element {
-  return (
-    <div class="sb-flame-icon">
-      <PixelIcon name="flame" size={size} />
-    </div>
-  );
-}
 
 // ── ChangelogOverlay ──────────────────────────────────────────────────────────
 
@@ -108,10 +99,9 @@ export function StartScreen(): JSX.Element {
     <div class="sb sb-scanlines sb-start-screen">
       {showChangelog && <ChangelogOverlay onClose={() => setShowChangelog(false)} />}
 
-      {/* ── Flame logo with ambient glow ── */}
+      {/* ── Animated flame (tap to freeze) — v13-animated-flame.jsx ── */}
       <div class="sb-flame-well">
-        <div class="sb-flame-aura" />
-        <FlameLogo size={120} />
+        <AnimatedFlame size={120} />
       </div>
 
       {/* ── App title ── */}

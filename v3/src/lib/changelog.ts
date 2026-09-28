@@ -7,9 +7,18 @@ export type ChangelogEntry = {
   items: string[];
 };
 
-export const APP_VERSION = '3.0.36';
+export const APP_VERSION = '3.0.37';
 
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.37',
+    date: '2026-09-29',
+    items: [
+      'feat(start): animated pixel flame from the Claude Design draft (v13) replaces the static placeholder — tap to spark and freeze, idle to thaw',
+      'fix(flame): sparks were drawn black (design colour bug); frost no longer shows a light box',
+      'feat(flame): inner glow and heart flicker; sparks cool into black smoke',
+    ],
+  },
   {
     version: '3.0.36',
     date: '2026-09-28',

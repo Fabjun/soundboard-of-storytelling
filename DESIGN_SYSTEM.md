@@ -152,6 +152,10 @@ also in §6):
 <!-- AUTO-GENERATED:sb-classes START — nicht manuell editieren -->
 | Klasse | Beschreibung | Definiert in |
 |--------|-------------|-------------|
+| `sb-animated-flame` | Root of AnimatedFlame (StartScreen) — anchors halo + frost overlays; no text selection, no iOS tap flash, no double-tap zoom on rapid taps. Size + cursor set inline (prop-driven). | `v3/src/styles/tokens.css` |
+| `sb-animated-flame-frost` | AnimatedFlame frost vignette overlay (visible when cold > 0.3) — gradient alpha computed inline. | `v3/src/styles/tokens.css` |
+| `sb-animated-flame-halo` | AnimatedFlame radial halo layer — inset, gradient colour and opacity are computed per frame (inline). | `v3/src/styles/tokens.css` |
+| `sb-animated-flame-svg` | AnimatedFlame pixel SVG — block, overflow visible so sparks and the tip extension can leave the viewBox. | `v3/src/styles/tokens.css` |
 | `sb-audio-col-duration` | Duration metadata column in AudioRow — mono xs, text-dim, centered. For the 70px duration column. | `v3/src/styles/tokens.css` |
 | `sb-audio-col-size` | File-size metadata column in AudioRow — mono xs, text-dim. For the 90px file-size column (not centered, unlike duration). | `v3/src/styles/tokens.css` |
 | `sb-audio-row` | Main container grid for AudioRow — 5-column table layout (name 160px | waveform 1fr | duration 70px | size 90px | delete 44px). Cursor + userSelect for row click; background and borderLeft set inline for selected state. NOTE: fixed columns (364px) + gaps (48px) = 412px min — overflows 390px mobile viewport; pre-existing design, deferred to Slice 8 responsive pass. | `v3/src/styles/tokens.css` |
@@ -210,9 +214,7 @@ also in §6):
 | `sb-field-label` | Mono 11px field label for inspector sections — block display, bottom margin, uppercase. Used for NAME/TYPE/AUDIO SOURCE/HOTKEY/FADE labels. | `v3/src/styles/tokens.css` |
 | `sb-field-section-label` | Uppercase mono label above a field-chip list — xs font, 0.08em tracking, space-1 bottom margin, uppercase. Color set inline (dynamic — varies per section: setup/gold/blood). | `v3/src/styles/tokens.css` |
 | `sb-filter-rail` | Left sidebar filter column — deep background, right border, flex column, iOS-touch scroll. | `v3/src/styles/tokens.css` |
-| `sb-flame-aura` | Absolute 220×220 circular glow ring behind the flame icon — animated with sb-flicker (defined in global.css). 1-use. | `v3/src/styles/tokens.css` |
-| `sb-flame-icon` | Flame-colored SVG icon wrapper — applies --flame color and --glow-flame filter for currentColor SVG icons. 1-use (FlameLogo). Rule-mandated: both are static token values. | `v3/src/styles/tokens.css` |
-| `sb-flame-well` | Fixed 200×200 centered icon well for the StartScreen flame logo — position:relative anchors sb-flame-aura. 1-use. | `v3/src/styles/tokens.css` |
+| `sb-flame-well` | Fixed 200×200 centered well for the StartScreen AnimatedFlame (room for its halo). 1-use. | `v3/src/styles/tokens.css` |
 | `sb-flex-1` | Flex fill — takes all remaining space in a flex container. Use as a spacer or to push siblings to opposite ends. | `v3/src/styles/tokens.css` |
 | `sb-flex-min` | Text-fill layout primitive — flex:1 + min-width:0. Use for flex containers that hold truncatable text. Distinct from sb-flex-1 (spacer): min-width:0 is the defining property. | `v3/src/styles/tokens.css` |
 | `sb-flex-trunc` | Truncating flex-fill primitive — flex:1 + min-width:0 + ellipsis. For text spans that fill available flex space and truncate at their boundary. Distinct from sb-flex-min (no truncation) and sb-flex-1 (no min-width or truncation). | `v3/src/styles/tokens.css` |
@@ -395,6 +397,18 @@ also in §6):
 | `--flame` | `#e8821e` | the logo flame |
 | `--flame-soft` | `rgba(232, 130, 30, 0.15)` | ambient bg wash (StartScreen radial) |
 | `--flame-aura` | `rgba(232, 130, 30, 0.32)` | mid-alpha glow ring |
+| `--flame-outer` | `#c46818` | animated flame — outer pixel layer (warm) |
+| `--flame-mid` | `#e8881e` | animated flame — mid pixel layer (warm) |
+| `--flame-core` | `#f5c242` | animated flame — core pixel layer (warm) |
+| `--flame-heart` | `#ffe8a0` | animated flame — pulsing heart (warm) |
+| `--flame-halo-turn` | `#9f88e8` | animated flame — lilac halo at half-frozen |
+| `--flame-highlight` | `#ffffff` | animated flame — sparks, glitter, ice highlights |
+| `--flame-smoke` | `#050404` | animated flame — sparks cool down into black smoke |
+| `--ice-outer` | `#3f88b8` | animated flame — outer pixel layer (frozen) |
+| `--ice-mid` | `#5bafd8` | animated flame — mid layer + cold halo (frozen) |
+| `--ice-core` | `#9fd8ee` | animated flame — core pixel layer (frozen) |
+| `--ice-heart` | `#e8f8ff` | animated flame — heart (frozen) |
+| `--ice-frost` | `#9bd2eb` | animated flame — frost vignette base (alpha computed) |
 | `--blood` | `#a02828` | +14% L* over #8b1a1a — readable on dark |
 | `--blood-bright` | `#ef7575` | — |
 | `--blood-soft` | `rgba(160, 40, 40, 0.18)` | — |

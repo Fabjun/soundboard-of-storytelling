@@ -68,6 +68,20 @@
   --flame-soft: rgba(232, 130, 30, 0.15); /* ambient bg wash (StartScreen radial) */
   --flame-aura: rgba(232, 130, 30, 0.32); /* mid-alpha glow ring                  */
 
+  /* Animated StartScreen flame (AnimatedFlame.tsx) — values 1:1 from v13-animated-flame.jsx */
+  --flame-outer: #c46818; /* animated flame — outer pixel layer (warm)   */
+  --flame-mid: #e8881e; /* animated flame — mid pixel layer (warm)       */
+  --flame-core: #f5c242; /* animated flame — core pixel layer (warm)     */
+  --flame-heart: #ffe8a0; /* animated flame — pulsing heart (warm)       */
+  --flame-halo-turn: #9f88e8; /* animated flame — lilac halo at half-frozen */
+  --flame-highlight: #ffffff; /* animated flame — sparks, glitter, ice highlights */
+  --flame-smoke: #050404; /* animated flame — sparks cool down into black smoke */
+  --ice-outer: #3f88b8; /* animated flame — outer pixel layer (frozen)   */
+  --ice-mid: #5bafd8; /* animated flame — mid layer + cold halo (frozen) */
+  --ice-core: #9fd8ee; /* animated flame — core pixel layer (frozen)     */
+  --ice-heart: #e8f8ff; /* animated flame — heart (frozen)               */
+  --ice-frost: #9bd2eb; /* animated flame — frost vignette base (alpha computed) */
+
   --blood: #a02828; /* +14% L* over #8b1a1a — readable on dark */
   --blood-bright: #ef7575; /* lifted from #D04545 for small-UI legibility —
                                  needed for danger button labels (DELETE,
@@ -1135,13 +1149,8 @@
     radial-gradient(60% 50% at 50% 65%, var(--flame-soft) 0%, transparent 70%),
     radial-gradient(120% 70% at 50% -10%, var(--glow-radial) 0%, transparent 65%), var(--night);
 }
-.sb-flame-icon {
-  /* @inventory: Flame-colored SVG icon wrapper — applies --flame color and --glow-flame filter for currentColor SVG icons. 1-use (FlameLogo). Rule-mandated: both are static token values. */
-  color: var(--flame);
-  filter: var(--glow-flame);
-}
 .sb-flame-well {
-  /* @inventory: Fixed 200×200 centered icon well for the StartScreen flame logo — position:relative anchors sb-flame-aura. 1-use. */
+  /* @inventory: Fixed 200×200 centered well for the StartScreen AnimatedFlame (room for its halo). 1-use. */
   width: 200px;
   height: 200px;
   display: flex;
@@ -1150,14 +1159,31 @@
   position: relative;
   margin-bottom: var(--space-8);
 }
-.sb-flame-aura {
-  /* @inventory: Absolute 220×220 circular glow ring behind the flame icon — animated with sb-flicker (defined in global.css). 1-use. */
+.sb-animated-flame {
+  /* @inventory: Root of AnimatedFlame (StartScreen) — anchors halo + frost overlays; no text selection, no iOS tap flash, no double-tap zoom on rapid taps. Size + cursor set inline (prop-driven). */
+  position: relative;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+.sb-animated-flame-halo {
+  /* @inventory: AnimatedFlame radial halo layer — inset, gradient colour and opacity are computed per frame (inline). */
   position: absolute;
-  width: 220px;
-  height: 220px;
-  border-radius: 50%;
-  background: radial-gradient(circle, var(--flame-aura) 0%, transparent 60%);
-  animation: sb-flicker 1.6s ease-in-out infinite;
+  pointer-events: none;
+  transition: opacity 0.15s;
+}
+.sb-animated-flame-svg {
+  /* @inventory: AnimatedFlame pixel SVG — block, overflow visible so sparks and the tip extension can leave the viewBox. */
+  position: relative;
+  display: block;
+  overflow: visible;
+}
+.sb-animated-flame-frost {
+  /* @inventory: AnimatedFlame frost vignette overlay (visible when cold > 0.3) — gradient alpha computed inline. */
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
 }
 .sb-start-title {
   /* @inventory: Layout additions for the sb-display hero title on StartScreen — xl font-size, centered, bottom margin. 1-use. */
