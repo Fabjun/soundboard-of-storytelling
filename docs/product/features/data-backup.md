@@ -1,7 +1,7 @@
 # Data & backup
 
 > **Leaf of [PRODUCT.md](../PRODUCT.md).** Filled 2026-09-28 in dialogue with the product
-> owner. Nothing in this document is built yet; implementation is planned for Slice 7.
+> owner. Nothing in this document is built yet; implementation is planned for Slice 10.
 > Inventory of the prototype features: [v1-v2-inventory.md §5](../v1-v2-inventory.md#5-data--backup).
 
 ## Why
@@ -19,7 +19,7 @@ and restore is the only safety net.
 | D3 | The app shows **when the last backup was made** ("last backup N days ago") and reminds the user when it is old. | **Decided** |
 | D4 | The app asks the browser for **persistent storage** so iOS is less likely to evict the data. Invisible to the user. | **Decided** |
 | D5 | **V1 backups can be imported.** A V1 board becomes a V3 board with one deck containing all its pads. | **Decided** |
-| D6 | Large files must import on the iPhone without crashing — the file is read piece by piece, never held in memory as a whole. (How: Slice 7 planning; see BACKLOG "Stream-based export/import".) | **Decided** |
+| D6 | Large files must import on the iPhone without crashing — the file is read piece by piece, never held in memory as a whole. (How: Slice 10 planning; see BACKLOG "Stream-based export/import".) | **Decided** |
 
 ### Import rules — **Decided**
 

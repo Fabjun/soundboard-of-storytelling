@@ -116,7 +116,7 @@
 | Import with conflict resolution (keep both / replace / skip) | ✓ | ✓ | missing | — | **Decided**, simplified (data-backup D2 + import rules) |
 | Auto-backup (3 rotating files, File System Access API, desktop Chromium) | ✓ | ✓ | missing | — | **Parked** (data-backup) |
 | Backup age indicator + reminder banner | ✓ | ✓ | missing | — | **Decided** (data-backup D3) |
-| Import of V1 backups into the newer format | — | ✓ | missing (planned Slice 7: "V1 compatibility") | CLAUDE.md slice table | **Decided** (data-backup D5) |
+| Import of V1 backups into the newer format | — | ✓ | missing (planned Slice 10: data backup & import) | CLAUDE.md slice table | **Decided** (data-backup D5) |
 | Reset all data | ✓ | ✓ | missing | — | **Parked** (data-backup) |
 
 **Risk note:** V3 keeps all boards and audio only in the browser's IndexedDB. Without export,

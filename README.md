@@ -53,7 +53,7 @@ npm run build
 ## Documentation
 
 - `CLAUDE.md` — workflow rules, coding standards, and conventions
-- `V3_CONCEPT_BRIEF.md` — architectural overview and slice plan (mandatory first-read)
+- `V3_CONCEPT_BRIEF.md` — technical architecture overview (mandatory first-read); slice plan: `CLAUDE.md §Slice progress`; product concept: `docs/product/PRODUCT.md`
 - `DESIGN_SYSTEM.md` — CSS rules, design tokens, component anatomy, full class inventory
 - `DESIGN_SYSTEM_CHEATSHEET.md` — one-page quick reference for daily use
 - `TESTING.md` — test strategy, commands, and `data-testid` patterns

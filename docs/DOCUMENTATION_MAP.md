@@ -54,7 +54,8 @@ old documents move to `docs/archive/` once transferred and confirmed — nothing
 
 ### `V3_CONCEPT_BRIEF.md`
 The **mandatory session-start document**. Binding architecture for V3.0: stack decisions,
-data model, state management, audio engine, slice plan, and session start protocol.
+state management, audio engine and session start protocol. (Product concepts incl. the data model's
+key concepts → `docs/product/PRODUCT.md`; slice plan → `CLAUDE.md §Slice progress`.)
 Read before any other document at the start of every Claude Code session.
 **Source of truth for:** Architectural decisions binding V3.0 development; starting point
 for every session. Kept up to date by Claude Code as slices complete and decisions harden.

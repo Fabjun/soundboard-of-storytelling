@@ -63,7 +63,7 @@ code change needed. → [Design Session 2026-06-04](#design--feature-clarificati
 ### Slice 7 — Template Export/Import
 
 ### V1-compatible template export/import
-→ moved to [docs/product/features/data-backup.md](docs/product/features/data-backup.md) (2026-09-28), D5 + import rules. Revised there: the V1-readable export is **dropped**. **When:** Slice 7.
+→ moved to [docs/product/features/data-backup.md](docs/product/features/data-backup.md) (2026-09-28), D5 + import rules. Revised there: the V1-readable export is **dropped**. **When:** Slice 10 (new plan).
 
 ### Stream-based export/import (V1 lessons warning)
 Must stream one library entry at a time — never JSON-load the entire library at once (iOS
@@ -1033,12 +1033,12 @@ comments with "sub-token: deliberate" justification notes.
 
 ### Playlist → Loop merge (data model)
 Decided 2026-09-28 ([PRODUCT.md §5 Pads](docs/product/PRODUCT.md#pads)): three pad types — Single, Loop, Combo. Loop and Single accept several files (Loop: in order / shuffle; Single: random / in turn). Requires an ADR superseding the `PadType` part of ADR-0042, a migration of stored `playlist` pads, and engine/editor changes (engine change needs explicit approval).
-**When:** before the combo editor / Slice 7 V1 import, whichever comes first.
+**When:** Slice 9 (data model), together with the board pad pool below.
 
 ### Board pad pool (data model)
 Decided 2026-09-28 ([PRODUCT.md §5](docs/product/PRODUCT.md#board-decks--quick-access)): pads belong to the board; decks (formerly "scenes") and the quick-access bar reference pads with their own position and key; "All pads" view; `PadSet` dropped. Today `Scene.pads: Pad[]` owns pads and `position` / `hotkey` sit on the pad (`types.ts`).
 Requires an ADR (superseding the ownership parts of the current model) and a data migration. **Same change: rename Scene → Deck** in UI, code (`Scene`, `Board.scenes`, `SceneRail`, …) and stored data (PRODUCT.md Q1, 2026-09-28). **Do together with the Playlist → Loop merge above** — both reshape `types.ts` and stored boards.
-**When:** before further deck work (Slice 5, "Scene switching" in the current slice plan); the slice plan (CLAUDE.md, V3_CONCEPT_BRIEF §5.1 "Sets + Quick Access") needs re-ordering first.
+**When:** Slice 9 (data model) — see `CLAUDE.md §Slice progress`.
 
 Open questions surfaced during implementation but not yet resolved. Each needs a deliberate
 decision before the relevant slice ships.

@@ -36,8 +36,9 @@
   dialogue with the user). Once a section is filled, it is authoritative for
   that topic and must be read at session start. Never fill a section with
   reconstructed content without user confirmation.
-- **`V3_CONCEPT_BRIEF.md`** — binding architecture decisions for V3,
-  data model, slice plan. Read first in every session.
+- **`V3_CONCEPT_BRIEF.md`** — binding technical architecture decisions for V3
+  (stack, state, audio engine, IDB, platforms). Product concepts → `docs/product/PRODUCT.md`;
+  slice plan → "Slice progress" table in this file. Read first in every session.
 - **`v1-reference/index.html`** — V1 source, reference for behavior,
   audio engine, IndexedDB schema, template export/import.
   V2 (`v1_5/` in the V1 GitHub repo, versions v1.5.x → v2.0.12; not copied
