@@ -16,6 +16,7 @@ export const CHANGELOG: ChangelogEntry[] = [
     items: [
       'docs(product): V1/V2 feature inventory with V3 status per feature',
       'docs(product): PRODUCT.md §6 Input — keyboard & numpad decisions (K1–K12)',
+      'docs(product): data & backup feature spec (export, import, V1 migration)',
     ],
   },
   {

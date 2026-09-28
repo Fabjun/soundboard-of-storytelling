@@ -8,7 +8,8 @@
 > (`V3_CONCEPT_BRIEF.md`, `BACKLOG.md`, `DESIGN_NOTES.md`).
 >
 > **Leaves:** [v1-v2-inventory.md](v1-v2-inventory.md) — prototype features vs. V3 status,
-> decisions per feature.
+> decisions per feature. · [features/data-backup.md](features/data-backup.md) — export,
+> import, V1 migration.
 
 ## Status legend
 
@@ -121,7 +122,7 @@ at the screen. V1 proved this in real game sessions. None of it is built in V3 y
 | K3 | Keys trigger pads **in GAME only**. In SETUP they do nothing. | **Decided** — _not yet built_ |
 | K4 | A key press plays its pad. Pressing it again while the sound runs does **not** stop it (live safety, P6). | **Decided** — _not yet built_ |
 | K5 | **Enter** stops the most recently started sound; repeated presses stop the remaining sounds in reverse order. | **Decided** — _not yet built_ |
-| K6 | **Numpad decimal** stops all sounds. | **Decided** — _not yet built_ |
+| K6 | **Numpad decimal** stops all sounds. | **Decided** — _not yet built_. Verify on the device which code the numpad's decimal key sends (`NumpadDecimal` vs `Period`); in the V1 backup a pad ("WIN") is bound to `Period`. |
 | K7 | **Space** pauses all sounds (e.g. to talk at the table) and resumes them on the next press. | **Decided** — _not yet built_ |
 | K8 | While paused, any sound action (pad tap or key) resumes everything and plays the new sound. Stop actions end the paused sounds. A clearly visible **PAUSED** indicator is shown. | **Decided** — _not yet built_. Needs an audio-engine change (the engine auto-resumes on play and on returning to the app); requires separate approval when built. |
 | K9 | An on-screen **STOP ALL** button exists for use without a numpad. | **Decided** — _not yet built_ |

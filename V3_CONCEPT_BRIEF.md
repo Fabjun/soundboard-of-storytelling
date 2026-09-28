@@ -142,9 +142,8 @@ transactions outside that layer are forbidden.
 
 ### 4.6 · Template export/import
 
-V1's single-file export/import format is **preserved**. V3.0 imports
-V1 templates and exports in a format V1 can read (V3.0-specific fields
-are additive; V1 ignores unknown fields).
+→ moved to [docs/product/features/data-backup.md](docs/product/features/data-backup.md)
+(2026-09-28). Revised there: V1 import stays; the V1-readable export is **dropped**.
 
 ### 4.7 · Tokens
 

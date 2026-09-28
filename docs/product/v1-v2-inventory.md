@@ -109,12 +109,12 @@
 
 | Feature | V1 | V2 | V3 status | Evidence | Decision |
 |---|---|---|---|---|---|
-| Export everything as `.json.gz` (streamed, iOS-safe); iPhone share sheet | ✓ | ✓ | missing | no export code in `src/` | Open |
-| Import with conflict resolution (keep both / replace / skip) | ✓ | ✓ | missing | — | Open |
-| Auto-backup (3 rotating files, File System Access API, desktop Chromium) | ✓ | ✓ | missing | — | Open |
-| Backup age indicator + reminder banner | ✓ | ✓ | missing | — | Open |
-| Import of V1 backups into the newer format | — | ✓ | missing (planned Slice 7: "V1 compatibility") | CLAUDE.md slice table | Open |
-| Reset all data | ✓ | ✓ | missing | — | Open |
+| Export everything as `.json.gz` (streamed, iOS-safe); iPhone share sheet | ✓ | ✓ | missing | no export code in `src/` | **Decided** (data-backup D1, D6) |
+| Import with conflict resolution (keep both / replace / skip) | ✓ | ✓ | missing | — | **Decided**, simplified (data-backup D2 + import rules) |
+| Auto-backup (3 rotating files, File System Access API, desktop Chromium) | ✓ | ✓ | missing | — | **Parked** (data-backup) |
+| Backup age indicator + reminder banner | ✓ | ✓ | missing | — | **Decided** (data-backup D3) |
+| Import of V1 backups into the newer format | — | ✓ | missing (planned Slice 7: "V1 compatibility") | CLAUDE.md slice table | **Decided** (data-backup D5) |
+| Reset all data | ✓ | ✓ | missing | — | **Parked** (data-backup) |
 
 **Risk note:** V3 keeps all boards and audio only in the browser's IndexedDB. Without export,
 data loss (e.g. iOS evicting site data) is unrecoverable.

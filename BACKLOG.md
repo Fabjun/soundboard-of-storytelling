@@ -87,11 +87,7 @@ need and shape are unknown without practice. Four candidate shapes documented.
 ### Slice 7 — Template Export/Import
 
 ### V1-compatible template export/import
-Import V1 template files; a V1 board becomes a V3 board with one default scene containing
-all pads. Export in a format V1 can read (V3-specific fields are additive; V1 ignores them).
-**Why deferred:** Requires a working board with audio (Slices 3+4) before export is meaningful.
-**When:** Slice 7.
-**Source:** V3_CONCEPT_BRIEF.md §4.6 + §5.1. (ADR-0015 covers only DB name; no ADR covers the V1-compatible template format — that design is deferred to Slice 7.)
+→ moved to [docs/product/features/data-backup.md](docs/product/features/data-backup.md) (2026-09-28), D5 + import rules. Revised there: the V1-readable export is **dropped**. **When:** Slice 7.
 
 ### Stream-based export/import (V1 lessons warning)
 Must stream one library entry at a time — never JSON-load the entire library at once (iOS
@@ -101,6 +97,7 @@ re-invent it. Read `v1-reference/index.html` export/import code before designing
 same discipline as reading the V1 audio engine before Slice 4.
 **Why deferred:** Same as above.
 **When:** Slice 7.
+**Correction (2026-09-28):** only V1's *export* streamed. V1's *import* reads the whole file and parses it at once (`v1-reference/index.html:5795` `decompressData(...)`, `:5799` `JSON.parse(jsonStr)`) — V3 needs a genuinely piecewise import (data-backup.md D6); there is no V1 pattern to port for it.
 **Source:** CLAUDE.md §iPhone/iOS memory rules, banned pattern #4; MANUAL_IPHONE_CHECKLIST.md §Section 2.
 
 ---
