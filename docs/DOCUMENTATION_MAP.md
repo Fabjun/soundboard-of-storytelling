@@ -12,12 +12,17 @@ The documentation is being consolidated into a hub / leaf / template structure
 the documents listed further below stay authoritative for any topic whose new home is
 not yet filled and confirmed.
 
-| Area | Hub | Leaves | Template | State |
-|---|---|---|---|---|
-| Product | [`docs/product/PRODUCT.md`](product/PRODUCT.md) | `docs/product/features/` (when needed) | — | Skeleton |
-| Design | `docs/design/DESIGN.md` | `docs/design/components/` | [`_template.md`](design/components/_template.md) | Template only |
-| Architecture | `docs/architecture/ARCHITECTURE.md` | ADRs in `docs/architecture/` | [`_template.md`](architecture/_template.md) | ADRs exist; hub pending |
-| Development | `docs/development/DEVELOPMENT.md` | — | — | Pending |
+| Area | Hub | Leaves | Template | State | Source(s) |
+|---|---|---|---|---|---|
+| Product | [`docs/product/PRODUCT.md`](product/PRODUCT.md) | `docs/product/features/` (when needed) | — | Skeleton | `V3_CONCEPT_BRIEF.md` (product parts) |
+| Design | `docs/design/DESIGN.md` | `docs/design/components/` | [`_template.md`](design/components/_template.md) | Template only | `DESIGN_SYSTEM.md`, `DESIGN_SYSTEM_CHEATSHEET.md`, `DESIGN_NOTES.md`, `v1-reference/HANDOFF.md` §4 |
+| Architecture | `docs/architecture/ARCHITECTURE.md` | ADRs in `docs/architecture/` | [`_template.md`](architecture/_template.md) | ADRs exist; hub pending | `V3_CONCEPT_BRIEF.md` (technical parts) |
+| Development | `docs/development/DEVELOPMENT.md` | — | — | Pending | `TESTING.md`, `CLAUDE.md` (workflow parts) |
+
+Full old-file → new-home mapping, including files that are only partially emptied
+(`BACKLOG.md`) or stay outside this table (`CLAUDE.md`, `v1-reference/HANDOFF.md`), and the
+open `CHANGELOG.md` (root) question: see
+[ADR-0047 Decision §6](architecture/0047-documentation-architecture.md#decision).
 
 **Rules for new documentation:** English · every decision or proposal carries a status
 (**Decided** / **Open** / **Parked**) · specs name tokens, never copy their values ·

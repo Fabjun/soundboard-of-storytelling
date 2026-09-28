@@ -15,6 +15,7 @@ export const CHANGELOG: ChangelogEntry[] = [
     date: '2026-09-28',
     items: [
       'docs: ADR-0047 documentation architecture (hub/leaf/template); PRODUCT.md skeleton; component spec template; Claude Design scoped to visual styling',
+      'docs: ADR-0047 source-to-target mapping, section-level transfer rule, archive convention',
     ],
   },
   {

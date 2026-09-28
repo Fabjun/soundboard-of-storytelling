@@ -62,6 +62,37 @@ Consequences observed:
    ARCHITECTURE.md / DEVELOPMENT.md → finally slim `CLAUDE.md`, re-point generators,
    archive old files, reduce `BACKLOG.md` to open work.
 
+6. **Source-to-target mapping.**
+
+   | Old file | Content → | Fate |
+   |---|---|---|
+   | `V3_CONCEPT_BRIEF.md` | product parts → PRODUCT.md; technical parts → ARCHITECTURE.md; workflow parts → DEVELOPMENT.md | fully archived |
+   | `DESIGN_SYSTEM.md` | rules → DESIGN.md; generated §6/§A → `design/reference/` | fully archived |
+   | `DESIGN_SYSTEM_CHEATSHEET.md` | absorbed into DESIGN.md | fully archived |
+   | `DESIGN_NOTES.md` | settled decisions → DESIGN.md / component specs; open items → BACKLOG.md | fully archived |
+   | `v1-reference/HANDOFF.md` §4 | design principles → DESIGN.md | stays (V1 reference) |
+   | `TESTING.md` | → DEVELOPMENT.md | fully archived |
+   | `CLAUDE.md` | details → DEVELOPMENT.md/ARCHITECTURE.md | stays, slimmed |
+   | `docs/DOCUMENTATION_MAP.md` | becomes the sole index (`docs/README.md`) | replaced |
+   | `docs/analysis/FOUNDATION_ANALYSIS.md`, import-gate protocols (`docs/design/imports/`) | — | fully archived |
+   | `BACKLOG.md` | decisions → PRODUCT.md/DESIGN.md | **partially emptied, stays** (open work only) |
+   | `CHANGELOG.md` (root) | — | **open question**: keep vs. drop in favor of `v3/src/lib/changelog.ts` |
+
+7. **Transfer unit is the section, not the file.** When content moves into a new
+   document, it is removed from the old source in the *same commit* and replaced there
+   with a one-line pointer (`→ moved to PRODUCT.md §3`). This happens per section, not
+   per file — a hub section is transferred and its source pointer left behind before the
+   next section is touched. Keeps commits small and reviewable (per the Evidence
+   Requirements' execution-time scope discipline) and guarantees no statement exists in
+   two places at once.
+
+8. **Archive convention.** A file only moves to `docs/archive/` once every section it
+   held has been transferred and confirmed (per rule 7) — i.e. once it is empty of
+   authoritative content. Moving (not deleting) preserves it; it gains a header line:
+   `*Archived YYYY-MM-DD — superseded by …. Not authoritative. Kept for history.*`
+   Links pointing at the old path are updated in the same commit; the existing
+   `link:check` pre-commit/CI gate catches any missed reference.
+
 ## Consequences
 
 **Positiv:**
