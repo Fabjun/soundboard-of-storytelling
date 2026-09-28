@@ -610,21 +610,7 @@ selektions-getrieben; → [Summonable overlay contract](#summonable-overlay-cont
 
 ### B8 — Szenenwechsel-Mechanismus: Tap-Switcher primär, Swipe optional und GAME-only
 
-**Beschluss:** Ein antippbarer Szenen-Switcher (in der Daumenzone) ist der **primäre,
-durchgängige** Szenenwechsel-Weg — konfliktfrei in beiden Modi. Swipe-to-page ist ein
-**optionaler Beschleuniger, ausschließlich im GAME-Modus** — nicht im SETUP.
-
-**Begründung (aus Code-Check, faktisch):**
-Im SETUP: Der Reorder-Drag fängt jede Geste auf einem belegten Pad sofort via
-`e.preventDefault()` + `setPointerCapture()` ab — omnidirektional, ohne Richtungsunterscheidung,
-ohne neutrale Wischfläche (nur 8px-CSS-Gaps). Harter, nicht auflösbarer Konflikt ohne
-Redesign des Reorder-Starts.
-Im GAME: Kein Reorder, aber Swipe muss explizit gegen Pad-Feuern disambiguiert werden (JS-
-Bewegungsschwelle nötig; `touch-action: none` auf `.sb-pad.is-deep` gilt auch in GAME → kein
-nativer Browser-Swipe). Implementierbar, aber nicht trivial.
-Diese Begründung ist festgehalten, damit spätere „warum nicht überall?"-Fragen die Entscheidung
-nicht aufweichen.
-**Berührt:** → [C10 — Variable grid, gap-preserving reflow](#c10--variable-grid-gap-preserving-reflow-gesture-based-scroll-protection-settings-architecture) (resolved).
+→ moved to [docs/product/PRODUCT.md §3](docs/product/PRODUCT.md#3-app-modes-game-and-setup) (2026-09-28). Revised there: scene swipe is now **Parked**; scenes switch via classic controls only.
 
 ### B9 — Gap-Einordnung: drei Bestätigungen, zwei neue Kandidaten
 
@@ -814,9 +800,7 @@ Each is a **separate element** — Pad Editor ≠ Combo Editor. Pad Editor on Bo
 
 ### Stage Lock
 
-Freeze layout + lock edit gestures during live play to prevent accidental SETUP-mode drag.
-**Problem:** Live misoperation — more relevant as new touch gestures are added to the app.
-**Status:** Parked; no implementation started.
+→ superseded by the Lock in [docs/product/PRODUCT.md §3](docs/product/PRODUCT.md#3-app-modes-game-and-setup) (2026-09-28): GAME has no edit gestures, so locking the mode switch covers this.
 
 ### Long-Press-Peek
 
@@ -935,14 +919,7 @@ In **SETUP mode**, empty slots are visible, tappable cells: tapping an empty slo
 
 ### D2 — Swipe and mode-switch are two different interactions _(settled decision — consolidates B8)_
 
-Two DIFFERENT interactions that must not be conflated:
-
-**Scene switching:** The tappable scene tab/switcher is the primary path in **BOTH modes**. A horizontal swipe is an optional accelerator **ONLY in GAME mode** — NOT in SETUP (in SETUP the reorder-drag owns the gesture from `pointerdown` via `setPointerCapture()`; a scene-swipe would collide with pad-moving — code-confirmed, hard conflict without redesign). The stray-swipe risk mid-performance (Claude Design critique #4) applies to the GAME scene-swipe; mitigations adopted: firmer horizontal threshold, scene-edge peek before commit, snap-back if ambiguous.
-
-**Mode switching (GAME↔SETUP):** ONLY via the switch control, which doubles as the "SETUP/GAME" heading. **NEVER via swipe.**
-
-This is a clarification and consolidation of B8, not a reversal.
-**→ Consolidates:** [B8 — Szenenwechsel-Mechanismus](#b8--szenenwechsel-mechanismus-tap-switcher-primär-swipe-optional-und-game-only).
+→ moved to [docs/product/PRODUCT.md §3](docs/product/PRODUCT.md#3-app-modes-game-and-setup) (2026-09-28). Revised there: scene swipe is now **Parked**.
 
 ---
 
@@ -952,9 +929,7 @@ These are ideas, each with a stated relation to already-decided things and a con
 
 ### Performance Lock _(parked candidate — strong candidate, phone-specific)_
 
-A thumb-zone lock that disables SETUP entry (and the optional GAME scene-swipe) during live play. Addresses the remaining risk of an accidental mode-switch mid-performance — a stray tap on the SETUP/GAME heading turning fires into moves.
-**Build when:** this accidental-switch need shows up in real use.
-**Relation to existing:** extends [Stage Lock](#stage-lock) (that candidate covers layout + edit-gesture freeze; this adds SETUP entry specifically) · [Parked candidates](#parked-candidates-_not-committed-each-has-a-stated-problem-it-would-solve_).
+→ moved to [docs/product/PRODUCT.md §3](docs/product/PRODUCT.md#3-app-modes-game-and-setup) (2026-09-28), now **Decided** in simplified form (lock toggle in GAME, locks the mode switch only).
 
 ### Haptic gesture feedback _(parked candidate — verify iOS availability first)_
 

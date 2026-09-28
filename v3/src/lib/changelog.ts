@@ -16,6 +16,7 @@ export const CHANGELOG: ChangelogEntry[] = [
     items: [
       'docs: ADR-0047 documentation architecture (hub/leaf/template); PRODUCT.md skeleton; component spec template; Claude Design scoped to visual styling',
       'docs: ADR-0047 source-to-target mapping, section-level transfer rule, archive convention',
+      'docs(product): PRODUCT.md §3 App modes GAME/SETUP — mode behavior, mode switch, Lock',
     ],
   },
   {
