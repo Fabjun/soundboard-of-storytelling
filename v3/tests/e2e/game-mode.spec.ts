@@ -14,7 +14,7 @@ import {
 } from './helpers';
 
 test('22 — GAME mode: CRUD controls hidden, ModeToggle shows is-game', async ({ page }) => {
-  await page.goto('/botc-soundboard-v3/');
+  await page.goto('/soundboard-of-storytelling/');
   await goToBoardList(page);
   await createBoardAndNavigate(page);
   await createScene(page);

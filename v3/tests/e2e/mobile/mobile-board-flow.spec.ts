@@ -16,7 +16,7 @@ import { test, expect } from '@playwright/test';
 import { goToBoardList } from '../helpers';
 
 test('A+B — NEW BOARD tap creates board; row title tap opens BoardScreen', async ({ page }) => {
-  await page.goto('/botc-soundboard-v3/');
+  await page.goto('/soundboard-of-storytelling/');
   await goToBoardList(page);
 
   // Create board via tap
@@ -34,7 +34,7 @@ test('A+B — NEW BOARD tap creates board; row title tap opens BoardScreen', asy
 });
 
 test('C — Back button tap from BoardScreen returns to BoardListScreen', async ({ page }) => {
-  await page.goto('/botc-soundboard-v3/');
+  await page.goto('/soundboard-of-storytelling/');
   await goToBoardList(page);
 
   // Setup: create and enter a board

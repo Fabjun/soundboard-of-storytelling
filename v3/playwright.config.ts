@@ -2,7 +2,7 @@
 // Playwright configuration — E2E tests
 //
 // baseURL is http://localhost:5173 (without the Vite base path).
-// Tests navigate explicitly to /botc-soundboard-v3/ so the URL is readable.
+// Tests navigate explicitly to /soundboard-of-storytelling/ so the URL is readable.
 //
 // Projects:
 //   smoke           — 5 smoke specs × Chromium (fast, ~10s)
@@ -133,7 +133,7 @@ export default defineConfig({
   ],
   webServer: {
     command: 'npm run dev',
-    url: 'http://localhost:5173/botc-soundboard-v3/',
+    url: 'http://localhost:5173/soundboard-of-storytelling/',
     reuseExistingServer: !process.env.CI,
     timeout: 30_000,
   },

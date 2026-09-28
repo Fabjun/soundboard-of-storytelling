@@ -8,7 +8,7 @@
 import { test, expect } from '@playwright/test';
 
 test('ModeToggle switches from GAME to SETUP and back', async ({ page }) => {
-  await page.goto('/botc-soundboard-v3/');
+  await page.goto('/soundboard-of-storytelling/');
 
   // Navigate to a board (create one first)
   await page.getByRole('button', { name: 'BOARD' }).click();

@@ -15,6 +15,7 @@ export const CHANGELOG: ChangelogEntry[] = [
     date: '2026-09-28',
     items: [
       'docs: design folder convention (dated, proposals not binding); PAD spec design sources',
+      'chore: rename app path botc-soundboard-v3 → soundboard-of-storytelling (Vite base, PWA scope, tests)',
     ],
   },
   {

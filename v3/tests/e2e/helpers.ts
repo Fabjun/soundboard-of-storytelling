@@ -2,7 +2,7 @@
 // E2E test helpers — shared setup flows for the full Slice-3 suite
 //
 // All helpers are self-contained (no cross-helper state). Callers are
-// responsible for starting from a fresh page.goto('/botc-soundboard-v3/')
+// responsible for starting from a fresh page.goto('/soundboard-of-storytelling/')
 // if they need clean IndexedDB state.
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -104,13 +104,13 @@ export async function enterGameMode(page: Page): Promise<void> {
 
 /**
  * Full setup: library audio → board → scene.
- * Starts from a fresh page (page.goto('/botc-soundboard-v3/') already called).
+ * Starts from a fresh page (page.goto('/soundboard-of-storytelling/') already called).
  * After this call, the page is on a BoardScreen in SETUP mode with one scene.
  */
 export async function setupBoardAndScene(page: Page): Promise<void> {
   await goToLibrary(page);
   await uploadTestAudio(page);
-  await page.goto('/botc-soundboard-v3/');
+  await page.goto('/soundboard-of-storytelling/');
   await goToBoardList(page);
   await createBoardAndNavigate(page);
   await createScene(page);

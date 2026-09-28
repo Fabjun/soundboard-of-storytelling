@@ -31,13 +31,13 @@ import {
 import { mobileUploadTestAudio } from './mobile-helpers';
 
 test('A+B — empty cell tap opens popover; source + ADD PAD tap creates pad', async ({ page }) => {
-  await page.goto('/botc-soundboard-v3/');
+  await page.goto('/soundboard-of-storytelling/');
 
   // Upload audio via IMPORT button filechooser (consistent with WebKit-safe pattern)
   await goToLibrary(page);
   await mobileUploadTestAudio(page);
 
-  await page.goto('/botc-soundboard-v3/');
+  await page.goto('/soundboard-of-storytelling/');
   await goToBoardList(page);
   await createBoardAndNavigate(page);
   await createScene(page);

@@ -21,12 +21,12 @@ besonders wertvoll.
 Playwright mit sechs Projekten: `smoke` (Chromium), `smoke-webkit` (WebKit), `full` (Chromium), `mobile` (iPhone 13 Pro, WebKit), `mobile-chromium` (iPhone 13 Pro, Chromium), `visual` (Chromium, macOS-only). Konfiguration in `v3/playwright.config.ts`.
 
 `webServer`-Konfiguration: Playwright startet den Vite-Dev-Server automatisch
-vor dem Test-Run. Tests laufen gegen `http://localhost:5173/botc-soundboard-v3/`.
+vor dem Test-Run. Tests laufen gegen `http://localhost:5173/soundboard-of-storytelling/`.
 
 **Selector-Priorität** (aus TESTING.md):
 `getByTestId` > `getByRole` > `.filter({ hasText })` > CSS-Klasse
 
-**Basis-URL:** Tests beginnen mit `page.goto('/botc-soundboard-v3/')` und
+**Basis-URL:** Tests beginnen mit `page.goto('/soundboard-of-storytelling/')` und
 sind self-contained (jeder Test startet mit leerer IDB via frischem Browser-Context).
 
 ## Consequences

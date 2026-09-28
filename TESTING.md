@@ -330,7 +330,7 @@ import { test, expect } from '@playwright/test';
 import { goToBoardList, createBoardAndNavigate, enterSetupMode } from './helpers';
 
 test('beschreibt den Nutzer-Flow in einem Satz', async ({ page }) => {
-  await page.goto('/botc-soundboard-v3/');
+  await page.goto('/soundboard-of-storytelling/');
   await goToBoardList(page);
   await createBoardAndNavigate(page);
   // Verifizieren via data-testid
@@ -340,7 +340,7 @@ test('beschreibt den Nutzer-Flow in einem Satz', async ({ page }) => {
 
 **Richtlinien:**
 - Jeder Test ist self-contained (eigener Zustand, keine Abhängigkeit von anderen Tests)
-- `page.goto('/botc-soundboard-v3/')` am Anfang jedes Tests (IndexedDB ist per Browser-Context isoliert)
+- `page.goto('/soundboard-of-storytelling/')` am Anfang jedes Tests (IndexedDB ist per Browser-Context isoliert)
 - **Selector-Priorität**: `getByTestId` > `getByRole` > `.filter({ hasText })` > CSS-Klasse
 - Tests in der `full`-Suite müssen in Chromium bestehen; Smoke auch in WebKit
 - `test.skip` mit Begründung für bekannt flaky Tests (z.B. Pointer-Events-Drag in Playwright)

@@ -41,12 +41,12 @@ test.describe.fixme(FIXME_REASON, () => {
   // ── StartScreen ─────────────────────────────────────────────────────────────
 
   test('StartScreen: TAP TO UNLOCK button is >= 44×44px', async ({ page }) => {
-    await page.goto('/botc-soundboard-v3/');
+    await page.goto('/soundboard-of-storytelling/');
     await assertTarget(page.getByRole('button', { name: 'TAP TO UNLOCK' }), 'TAP TO UNLOCK');
   });
 
   test('StartScreen: BOARD and LIBRARY navigation buttons are >= 44×44px', async ({ page }) => {
-    await page.goto('/botc-soundboard-v3/');
+    await page.goto('/soundboard-of-storytelling/');
     await assertTarget(page.getByRole('button', { name: 'BOARD' }), 'BOARD button');
     await assertTarget(page.getByRole('button', { name: 'LIBRARY' }), 'LIBRARY button');
   });
@@ -54,7 +54,7 @@ test.describe.fixme(FIXME_REASON, () => {
   // ── BoardListScreen ──────────────────────────────────────────────────────────
 
   test('BoardListScreen: NEW BOARD button is >= 44×44px', async ({ page }) => {
-    await page.goto('/botc-soundboard-v3/');
+    await page.goto('/soundboard-of-storytelling/');
     await goToBoardList(page);
     await assertTarget(page.getByTestId('new-board-button'), 'NEW BOARD button');
   });
@@ -62,7 +62,7 @@ test.describe.fixme(FIXME_REASON, () => {
   // ── BoardScreen ──────────────────────────────────────────────────────────────
 
   test('BoardScreen: back button and mode-toggle halves are >= 44px tall', async ({ page }) => {
-    await page.goto('/botc-soundboard-v3/');
+    await page.goto('/soundboard-of-storytelling/');
     await goToBoardList(page);
     await createBoardAndNavigate(page);
     await createScene(page);
@@ -90,7 +90,7 @@ test.describe.fixme(FIXME_REASON, () => {
   });
 
   test('BoardScreen: empty pad cells in 4-col grid are >= 44×44px', async ({ page }) => {
-    await page.goto('/botc-soundboard-v3/');
+    await page.goto('/soundboard-of-storytelling/');
     await goToBoardList(page);
     await createBoardAndNavigate(page);
     await createScene(page);

@@ -13,7 +13,7 @@ import { test, expect } from '@playwright/test';
 import { goToBoardList, createBoardAndNavigate, enterSetupMode } from './helpers';
 
 test.beforeEach(async ({ page }) => {
-  await page.goto('/botc-soundboard-v3/');
+  await page.goto('/soundboard-of-storytelling/');
   await goToBoardList(page);
   await createBoardAndNavigate(page);
   await enterSetupMode(page);

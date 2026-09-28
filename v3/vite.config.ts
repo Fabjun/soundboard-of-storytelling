@@ -11,7 +11,7 @@ export default defineConfig(({ command }) => ({
       command === 'build' ? new Date().toISOString().slice(0, 16).replace('T', ' ') : 'dev',
     ),
   },
-  base: '/botc-soundboard-v3/',
+  base: '/soundboard-of-storytelling/',
   plugins: [
     preact(),
     VitePWA({
@@ -25,8 +25,8 @@ export default defineConfig(({ command }) => ({
         name: 'Soundboard of Storytelling',
         short_name: 'SoS',
         description: 'A soundboard for tabletop storytelling',
-        start_url: '/botc-soundboard-v3/',
-        scope: '/botc-soundboard-v3/',
+        start_url: '/soundboard-of-storytelling/',
+        scope: '/soundboard-of-storytelling/',
         display: 'standalone',
         orientation: 'any',
         background_color: '#0a0a14',

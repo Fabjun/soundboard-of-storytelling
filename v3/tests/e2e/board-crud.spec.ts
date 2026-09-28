@@ -12,7 +12,7 @@ import { test, expect } from '@playwright/test';
 import { goToBoardList } from './helpers';
 
 test.beforeEach(async ({ page }) => {
-  await page.goto('/botc-soundboard-v3/');
+  await page.goto('/soundboard-of-storytelling/');
 });
 
 // ── Test 1: Create board ──────────────────────────────────────────────────────

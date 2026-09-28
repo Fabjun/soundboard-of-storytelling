@@ -3,7 +3,7 @@ import { stableScreenshot } from './visual-setup';
 import { goToBoardList, createBoardAndNavigate, createScene, enterGameMode } from '../helpers';
 
 test('BoardScreen — GAME mode with one scene', async ({ page }) => {
-  await page.goto('/botc-soundboard-v3/');
+  await page.goto('/soundboard-of-storytelling/');
   await goToBoardList(page);
   await createBoardAndNavigate(page);
   await createScene(page);

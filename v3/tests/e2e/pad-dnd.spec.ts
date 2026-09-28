@@ -27,10 +27,10 @@ import {
 
 // Shared setup: 2 pads in known positions (0,0 and 1,0)
 async function setupTwoPads(page: Page): Promise<void> {
-  await page.goto('/botc-soundboard-v3/');
+  await page.goto('/soundboard-of-storytelling/');
   await goToLibrary(page);
   await uploadTestAudio(page);
-  await page.goto('/botc-soundboard-v3/');
+  await page.goto('/soundboard-of-storytelling/');
   await goToBoardList(page);
   await createBoardAndNavigate(page);
   await createScene(page);

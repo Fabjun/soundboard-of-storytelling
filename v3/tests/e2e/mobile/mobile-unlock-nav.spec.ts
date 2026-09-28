@@ -17,7 +17,7 @@
 import { test, expect } from '@playwright/test';
 
 test('A — TAP TO UNLOCK button tap navigates to board-list', async ({ page }) => {
-  await page.goto('/botc-soundboard-v3/');
+  await page.goto('/soundboard-of-storytelling/');
   await expect(page.getByRole('button', { name: 'TAP TO UNLOCK' })).toBeVisible();
 
   await page.getByRole('button', { name: 'TAP TO UNLOCK' }).tap();
@@ -26,7 +26,7 @@ test('A — TAP TO UNLOCK button tap navigates to board-list', async ({ page }) 
 });
 
 test('B — LIBRARY button tap opens LibraryScreen', async ({ page }) => {
-  await page.goto('/botc-soundboard-v3/');
+  await page.goto('/soundboard-of-storytelling/');
 
   await page.getByRole('button', { name: 'LIBRARY' }).tap();
 
@@ -35,7 +35,7 @@ test('B — LIBRARY button tap opens LibraryScreen', async ({ page }) => {
 });
 
 test('C — BOARD button tap opens BoardListScreen', async ({ page }) => {
-  await page.goto('/botc-soundboard-v3/');
+  await page.goto('/soundboard-of-storytelling/');
 
   await page.getByRole('button', { name: 'BOARD' }).tap();
 

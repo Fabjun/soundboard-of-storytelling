@@ -3,7 +3,7 @@ import { stableScreenshot } from './visual-setup';
 import { goToBoardList, createBoardAndNavigate, createScene, enterSetupMode } from '../helpers';
 
 test('SceneRail — two scenes, first active', async ({ page }) => {
-  await page.goto('/botc-soundboard-v3/');
+  await page.goto('/soundboard-of-storytelling/');
   await goToBoardList(page);
   await createBoardAndNavigate(page);
   await createScene(page);

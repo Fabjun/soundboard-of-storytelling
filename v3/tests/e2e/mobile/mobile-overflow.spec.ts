@@ -42,7 +42,7 @@ test.describe.fixme(FIXME_REASON, () => {
   }
 
   test('BoardScreen structural elements do not overflow 390px viewport', async ({ page }) => {
-    await page.goto('/botc-soundboard-v3/');
+    await page.goto('/soundboard-of-storytelling/');
     await goToBoardList(page);
     await createBoardAndNavigate(page);
     await createScene(page);
@@ -70,7 +70,7 @@ test.describe.fixme(FIXME_REASON, () => {
   });
 
   test('StartScreen does not overflow 390px viewport', async ({ page }) => {
-    await page.goto('/botc-soundboard-v3/');
+    await page.goto('/soundboard-of-storytelling/');
     const vp = page.viewportSize()!;
 
     // Body scroll width must not exceed viewport width (document-level overflow check)

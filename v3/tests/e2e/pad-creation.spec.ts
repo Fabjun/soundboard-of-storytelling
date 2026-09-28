@@ -18,12 +18,12 @@ import {
 } from './helpers';
 
 test.beforeEach(async ({ page }) => {
-  await page.goto('/botc-soundboard-v3/');
+  await page.goto('/soundboard-of-storytelling/');
   // Upload audio first (required for pad creation)
   await goToLibrary(page);
   await uploadTestAudio(page);
   // Navigate to board
-  await page.goto('/botc-soundboard-v3/');
+  await page.goto('/soundboard-of-storytelling/');
   await goToBoardList(page);
   await createBoardAndNavigate(page);
   await createScene(page);

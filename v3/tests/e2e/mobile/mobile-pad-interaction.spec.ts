@@ -36,14 +36,14 @@ import {
 import { mobileUploadTestAudio } from './mobile-helpers';
 
 test.beforeEach(async ({ page }) => {
-  await page.goto('/botc-soundboard-v3/');
+  await page.goto('/soundboard-of-storytelling/');
 
   // Upload audio via IMPORT button filechooser (consistent with WebKit-safe pattern)
   await goToLibrary(page);
   await mobileUploadTestAudio(page);
 
   // Return to start and tap TAP TO UNLOCK (initialises AudioContext)
-  await page.goto('/botc-soundboard-v3/');
+  await page.goto('/soundboard-of-storytelling/');
   await page.getByRole('button', { name: 'TAP TO UNLOCK' }).tap();
   await page.getByTestId('new-board-button').waitFor();
 
