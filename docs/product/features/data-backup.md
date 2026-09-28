@@ -48,6 +48,14 @@ and restore is the only safety net.
 - **Auto-backup** into a folder (File System Access API — desktop Chromium only, not iPhone).
 - **Reset all data.**
 
+## Open
+
+- **Decide the hosting address before importing real data.** The app stores its data per web
+  address (origin). Changing the address later (e.g. making the repository private and moving
+  from GitHub Pages to another host) starts V3 with empty storage; real data would then need
+  export → import. Options discussed 2026-09-28: keep public (GitHub Pages), private + GitHub
+  Pro (Pages unchanged), private + other host (new address). Current: public, GitHub Pages.
+
 ## Context
 
 - The product owner's existing data is a **V1 backup** (V1 `version: 179`): 1 board, 31 pads
