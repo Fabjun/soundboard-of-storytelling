@@ -1096,12 +1096,14 @@ behavior. Blocking was considered and rejected. Implemented unconditionally in
 `SceneRail.tsx` `requestDelete()`: no guard on `scenes.length`; empty-board UI is live.
 **Source:** DESIGN_NOTES.md §A3 Scene CRUD; SceneRail.tsx.
 
-### Scene rename: duplicate names ⬜ DECIDED — code task pending (2026-06-06)
+### Scene rename: duplicate names ✅ Done (f69cba6, 1dda987)
 **Decision:** Duplicate scene names should be prevented. The name-is-display-only argument was
 considered; uniqueness was chosen to avoid user confusion.
-**Code state:** `commitRename()` in `SceneRail.tsx` currently validates only non-empty trim —
-no duplicate check exists. Duplicates are still allowed in code. Validation to be added as a
-separate code task (not this documentation pass).
+**Code state:** Implemented. `findConflictingScene()` (`src/lib/sceneConflict.ts`; trimmed,
+case-insensitive, self-excluding; 9 unit tests) drives a live conflict check on input in
+`SceneRail.tsx`. `commitRename()` blocks on conflict: Enter keeps the editor open, blur
+discards the edit. Conflict display via `is-conflict` + "Name already used by …" hint.
+*(Entry updated 2026-09-28: previously listed as code task pending.)*
 **Source:** DESIGN_NOTES.md §A3 Scene CRUD; user decision 2026-06-06.
 
 ### Scene mobile reorder: stepwise vs. handle-based
