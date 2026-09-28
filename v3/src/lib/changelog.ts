@@ -7,9 +7,16 @@ export type ChangelogEntry = {
   items: string[];
 };
 
-export const APP_VERSION = '3.0.31';
+export const APP_VERSION = '3.0.32';
 
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.32',
+    date: '2026-09-28',
+    items: [
+      'docs(product): PRODUCT.md §7 Design principles (P1–P7); Q2 pad-type naming; V1/V2 reference rule in CLAUDE.md',
+    ],
+  },
   {
     version: '3.0.31',
     date: '2026-09-28',

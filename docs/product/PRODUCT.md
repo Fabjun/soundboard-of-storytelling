@@ -104,7 +104,30 @@ _Pending — to be filled in dialogue._
 
 ## 7. Design principles
 
-_Pending — to be filled in dialogue._
+_Filled 2026-09-28 in dialogue with the product owner._
+
+### Philosophy — **Decided**
+
+Like a tabletop RPG such as D&D: clear, even complex mechanical rules, and through their
+interaction something unique emerges — there a story, here a soundscape. The audience
+enjoys technical and complex things and wants to create something beautiful from the
+interplay of many elements. The app gives them well-defined building blocks, not a
+finished experience.
+
+### Principles
+
+| # | Principle | Status |
+|---|---|---|
+| P1 | **Minimal and functional first.** Classic, uncomplicated controls (tabs, menus, taps) that work on desktop and smartphone. Gestures and elaborate interactions come later. | **Decided** |
+| P2 | **Sensible defaults, alternatives in Settings.** The app is usable immediately without configuration. Alternative behaviors become user options in Settings wherever they are not technically demanding. | **Decided** |
+| P3 | **Well designed for its purpose, depth for those who want it.** The basics work without explanation; the mechanics underneath are predictable and can be combined and configured. Comfort and automation features are opt-in and can be disabled. | **Decided** |
+| P4 | **The pad grid is the instrument.** In GAME the pad grid has priority; anything competing for its space must justify itself. | **Decided** |
+| P5 | **Emergence over features.** Few, well-defined building blocks (pad types, scenes, the two modes) that combine into rich results. The GAME / SETUP split is itself an example: simple, yet it makes complexity manageable. For a new feature, ask first: does it emerge from existing blocks? Does it need a new *general* block? Only then consider a special case. | **Decided** |
+| P6 | **Safe in live use.** During a running session nothing may surprise the game master or break irreversibly (e.g. the Lock, §3; two-tap delete). Depth belongs in SETUP, not in the heat of play. | **Decided** |
+| P7 | **Learn from the prototypes, don't copy them.** V1 and V2 are sources for behavior, features and lessons. V3 re-implements in its own idiom (class system, tokens, components). Exception: the audio engine, ported unchanged by design. | **Decided** |
+
+Engineering approach ("Think big, but don't rush") is not a product principle — it stays
+in `BACKLOG.md` until `ARCHITECTURE.md` exists.
 
 ## 8. Out of scope
 
@@ -119,3 +142,4 @@ _Pending — to be filled in dialogue._
 | # | Question | Status | Notes |
 |---|---|---|---|
 | Q1 | Is "Scene" the right user-facing term for the board-level pad arrangement? | **Open** | Raised 2026-09-28: the term feels misleading. "Category" collides with the Library's existing CATEGORY filter. Candidates: Tab, Page, Section, Group. A UI-only rename (code keeps `Scene`) would be cheap; a full code + data rename requires an IDB migration. Decision for now: keep "Scene". |
+| Q2 | Rename the "Playlist" pad type to "List"? Are three pad types (Single, Loop, Combo) enough, or does List stay as a fourth? | **Open** | Raised 2026-09-28. Playlist is built (Slice 4). V2 already labelled it "LIST ☰". To be revisited once the product owner has re-familiarised with the project. |

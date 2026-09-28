@@ -362,13 +362,13 @@ folder via a `+ NEW` row at the bottom.
 
 #### Guiding principle — technically-minded tinkerers
 
-Predictable mechanics and full user control take precedence over convenient automation. The app does not "hold the user's hand" through visual comfort features; it lets them configure everything themselves. Comfort/automation variants are offered as opt-in options in the settings menu, not as defaults.
-**Caveat:** Sensible default values nonetheless, so the app is immediately usable without tweaking — control is additionally available, not forced. This principle guides future design decisions: it explains, among others, the configurable grid parameters, the hard-wrapping column behavior, and the classification of scrollbar / collapsing-gaps as opt-in exceptions.
-**Cross-reference:** → [C10](#c10--variable-grid-gap-preserving-reflow-gesture-based-scroll-protection-settings-architecture) (the resolved grid conflict; the solution is built on this principle).
+→ moved to [docs/product/PRODUCT.md §7](docs/product/PRODUCT.md#7-design-principles) (P2, P3; 2026-09-28). Revised there: "does not hold the user's hand" replaced by "well designed for its purpose, depth for those who want it". Applications of the principle: [C10](#c10--variable-grid-gap-preserving-reflow-gesture-based-scroll-protection-settings-architecture).
 
 ---
 
 #### Architecture motto — "Think big, but don't rush"
+
+_Engineering approach, not a product principle — moves to `ARCHITECTURE.md` once it exists (ADR-0047). Open: tension between the anticipated settings hierarchy / sidebar shell and PRODUCT.md §7 P1 "minimal and functional first"._
 
 The app is built on a deliberately chosen modular foundation — multi-level settings hierarchy, reusable building blocks such as the sidebar shell — a forward-looking anticipation of future extensibility, chosen consciously against a pure continuous-refactoring stance, with the trade-off explicitly named. This foundation is NOT set in stone: it emerges organically while practically building and testing the app, and even the underlying concept may be revised if real experience demands it. Concretely: only what the really existing cases need is implemented (the sidebar will simply be extended to the Pad Editor when that time comes); the full system is thought through in the design but NOT built on spec.
 
@@ -835,8 +835,7 @@ A brief visual spark animation when a one-shot fires, distinguishing it from a r
 Auto-duck on stinger (audio engine, non-trivial); Haptics (PWA/iOS Brave feasibility unclear);
 Orientation-as-posture (may double layout work); Cue Tray / Recently-used Rail; Command
 Palette (power-user escape hatch).
-**Overarching principle:** Optional comfort features must be disableable. On Touch, the pad
-grid is the instrument — features competing for its space deserve extra scrutiny.
+**Overarching principle:** → moved to [docs/product/PRODUCT.md §7](docs/product/PRODUCT.md#7-design-principles) (P3, P4; 2026-09-28).
 
 ---
 

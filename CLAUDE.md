@@ -40,6 +40,10 @@
   data model, slice plan. Read first in every session.
 - **`v1-reference/index.html`** — V1 source, reference for behavior,
   audio engine, IndexedDB schema, template export/import.
+  V2 (`v1_5/` in the V1 GitHub repo, versions v1.5.x → v2.0.12; not copied
+  locally) is a short interim rewrite. **V1 and V2 are prototypes: explore
+  them for behavior and ideas, never copy UI/CSS/markup 1:1** — re-implement
+  in V3 idiom (`PRODUCT.md §7` P7). Only exception: the audio engine.
 - **`SoS_DESIGN_25052026/`** — design system: tokens, JSX components.
 - **`v1-reference/HANDOFF.md`** — design system handoff document.
   Originally written for V1 migration context (refers to "porting JSX
