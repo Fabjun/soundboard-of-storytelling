@@ -21,6 +21,7 @@ export const CHANGELOG: ChangelogEntry[] = [
       'docs(product): PRODUCT.md §5 Board concept — pad pool, scenes as views, quick-access bar',
       'docs: DOCUMENTATION_MAP product progress table',
       'docs(product): Q1 decided — Scene renamed to Deck; first glossary',
+      'docs: terminology sweep — deck, STOP ALL, Q1 status in all texts written 2026-09-28',
     ],
   },
   {

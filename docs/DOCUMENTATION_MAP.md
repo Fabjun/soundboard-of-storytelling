@@ -27,16 +27,16 @@ not yet filled and confirmed.
 | §2 A game session | Pending | — |
 | §3 App modes | Filled | BACKLOG B8, D2, Performance Lock; Stage Lock superseded |
 | §4 Screens & navigation | Pending | — |
-| §5 Core concepts — Board, scenes & quick access / Pads / Library | Filled (Library: one line) | V3_CONCEPT_BRIEF §4.1 key concepts; BACKLOG Slice 6 set entries |
+| §5 Core concepts — Board, decks & quick access / Pads / Library | Filled (Library: one line) | V3_CONCEPT_BRIEF §4.1 key concepts; BACKLOG Slice 6 set entries |
 | §6 Platforms & input — Input | Filled (Platforms pending) | — |
 | §7 Design principles | Filled | BACKLOG tinkerer principle, overarching principle |
 | §8 Out of scope · §9 Glossary | Pending | — |
-| §10 Open questions | Q1 open, Q2 decided | — |
+| §10 Open questions | Q1 and Q2 decided | — |
 | Leaf `features/data-backup.md` | Filled | V3_CONCEPT_BRIEF §4.6; BACKLOG V1-compatible template entry |
 | Leaf `v1-v2-inventory.md` | Decisions filled for §1 Pads, §2 Controls, §3 Board (partly), §5 Data; §4 Library, §6–§8 open | — |
 
 **Next after the product docs:** re-order the slice plan (data model ADR for pad pool +
-Playlist → Loop merge comes before further scene work), then `DESIGN.md` + component specs
+Playlist → Loop merge and the Scene → Deck rename come before further deck work), then `DESIGN.md` + component specs
 for the mobile Board layout.
 
 Full old-file → new-home mapping, including files that are only partially emptied

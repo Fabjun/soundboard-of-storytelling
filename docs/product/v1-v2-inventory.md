@@ -77,14 +77,14 @@
 | Custom sound on mode switch | ✓ | ✓ | missing | — | **Parked** (§6) |
 | Lock against accidental mode switch | — | — | missing | — | **Decided** (PRODUCT §3) — not yet built |
 
-## 3. Board, scenes & sets
+## 3. Board, decks & quick access
 
 | Feature | V1 | V2 | V3 status | Evidence | Decision |
 |---|---|---|---|---|---|
 | Boards: create / rename / delete | ✓ | ✓ | built | `BoardListScreen.tsx` | Open |
 | Board duplicate | ✓ | ✓ | missing | — | Open |
 | Board search / filter | — | ✓ | missing | — | Open |
-| Scenes: create / rename / duplicate / reorder / delete + undo | — | ✓ | built | `SceneRail.tsx` | **Decided** — scenes become hand-picked views of the pad pool (§5) |
+| Scenes: create / rename / duplicate / reorder / delete + undo | — | ✓ | built | `SceneRail.tsx` | **Decided** — become decks: hand-picked views of the pad pool (§5, Q1) |
 | Switching scenes | — | ✓ | built (desktop rail) | `SceneRail.tsx` | **Decided** (PRODUCT §3): classic controls, desktop + phone |
 | Pad sets + Quick Access strip (pads pinned across scenes/boards) | ✓ (strip) | ✓ | model only | `Board.sets`, `PadSet` in `types.ts` | Sets **dropped**; quick-access bar **Decided** — board-wide, fixed keys (§5, K13) |
 | Pad drag: swap (centre) and insert (edge) | ✓ | ✓ | built (SETUP) | `padDnd.ts` | Open |

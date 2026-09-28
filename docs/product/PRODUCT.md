@@ -117,7 +117,7 @@ yet except deck CRUD (built under the name "scene"); it changes the data model (
 | Search or sort rearrange a deck only temporarily; with the search field empty and no sort active, the deck returns to its saved arrangement. | **Decided** |
 | Pads can be moved (SETUP) only while no search or sort is active. | **Decided** |
 | **Quick-access bar:** board-wide, identical in every deck, freely assignable with pads from the pool (e.g. DAY, NIGHT). Its pads have fixed board-wide keys (§6 K13). | **Decided** |
-| **STOP** and **Play/Pause** are fixed GAME controls, separate from the quick-access bar — they can never be removed or moved by accident. | **Decided** |
+| **STOP ALL** (§6 K9) and **Play/Pause** are fixed GAME controls, separate from the quick-access bar — they can never be removed or moved by accident. | **Decided** |
 | **Pad sets** (earlier concept) are dropped: decks and the quick-access bar cover them. | **Decided** |
 | Rule-based decks (e.g. "all pads tagged Night"). | **Parked** |
 | Where all of this sits on a phone screen. | **Open** — mobile layout |

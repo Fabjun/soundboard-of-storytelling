@@ -213,7 +213,7 @@ on click. Escape cancels. Visual: reuse SETUP-mode hatch during the listening wi
 
 ### Inline conflict feedback
 Live ✓/⚠ hint under KEY field as a binding is chosen — don't wait for save.
-**Scope:** conflicts are checked **per scene**, not per board — keys apply per scene ([PRODUCT.md §6](docs/product/PRODUCT.md#input-keyboard--numpad) K2, 2026-09-28). Quick-access keys are board-wide (K13) and conflict with every scene.
+**Scope:** conflicts are checked **per deck** (formerly "scene"), not per board — keys apply per deck ([PRODUCT.md §6](docs/product/PRODUCT.md#input-keyboard--numpad) K2, 2026-09-28). Quick-access keys are board-wide (K13) and conflict with every deck.
 **Source:** DESIGN_NOTES.md §PAD Editor — Inline conflict feedback.
 
 ### Snap-to-zero-crossing on waveform drag
@@ -580,7 +580,7 @@ selektions-getrieben; → [Summonable overlay contract](#summonable-overlay-cont
 
 ### B8 — Szenenwechsel-Mechanismus: Tap-Switcher primär, Swipe optional und GAME-only
 
-→ moved to [docs/product/PRODUCT.md §3](docs/product/PRODUCT.md#3-app-modes-game-and-setup) (2026-09-28). Revised there: scene swipe is now **Parked**; scenes switch via classic controls only.
+→ moved to [docs/product/PRODUCT.md §3](docs/product/PRODUCT.md#3-app-modes-game-and-setup) (2026-09-28). Revised there: swiping between decks (formerly "scenes") is now **Parked**; decks switch via classic controls only.
 
 ### B9 — Gap-Einordnung: drei Bestätigungen, zwei neue Kandidaten
 
@@ -888,7 +888,7 @@ In **SETUP mode**, empty slots are visible, tappable cells: tapping an empty slo
 
 ### D2 — Swipe and mode-switch are two different interactions _(settled decision — consolidates B8)_
 
-→ moved to [docs/product/PRODUCT.md §3](docs/product/PRODUCT.md#3-app-modes-game-and-setup) (2026-09-28). Revised there: scene swipe is now **Parked**.
+→ moved to [docs/product/PRODUCT.md §3](docs/product/PRODUCT.md#3-app-modes-game-and-setup) (2026-09-28). Revised there: swiping between decks (formerly "scenes") is now **Parked**.
 
 ---
 
@@ -1032,9 +1032,9 @@ Decided 2026-09-28 ([PRODUCT.md §5 Pads](docs/product/PRODUCT.md#pads)): three 
 **When:** before the combo editor / Slice 7 V1 import, whichever comes first.
 
 ### Board pad pool (data model)
-Decided 2026-09-28 ([PRODUCT.md §5](docs/product/PRODUCT.md#board-decks--quick-access)): pads belong to the board; scenes and the quick-access bar reference pads with their own position and key; "All pads" view; `PadSet` dropped. Today `Scene.pads: Pad[]` owns pads and `position` / `hotkey` sit on the pad (`types.ts`).
+Decided 2026-09-28 ([PRODUCT.md §5](docs/product/PRODUCT.md#board-decks--quick-access)): pads belong to the board; decks (formerly "scenes") and the quick-access bar reference pads with their own position and key; "All pads" view; `PadSet` dropped. Today `Scene.pads: Pad[]` owns pads and `position` / `hotkey` sit on the pad (`types.ts`).
 Requires an ADR (superseding the ownership parts of the current model) and a data migration. **Same change: rename Scene → Deck** in UI, code (`Scene`, `Board.scenes`, `SceneRail`, …) and stored data (PRODUCT.md Q1, 2026-09-28). **Do together with the Playlist → Loop merge above** — both reshape `types.ts` and stored boards.
-**When:** before Slice 5 scene work continues; the slice plan (CLAUDE.md, V3_CONCEPT_BRIEF §5.1 "Sets + Quick Access") needs re-ordering first.
+**When:** before further deck work (Slice 5, "Scene switching" in the current slice plan); the slice plan (CLAUDE.md, V3_CONCEPT_BRIEF §5.1 "Sets + Quick Access") needs re-ordering first.
 
 Open questions surfaced during implementation but not yet resolved. Each needs a deliberate
 decision before the relevant slice ships.

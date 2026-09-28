@@ -68,7 +68,7 @@ V1 keeps running. V3.0 is built in parallel until ready.
 > to eliminate a second copy that could drift.
 
 **Key concepts:** → moved to [docs/product/PRODUCT.md §5](docs/product/PRODUCT.md#5-core-concepts)
-(2026-09-28). Revised there: pads belong to a board-wide pool; scenes are hand-picked views;
+(2026-09-28). Revised there: pads belong to a board-wide pool; decks (formerly "scenes") are hand-picked views;
 pad sets are dropped in favor of a board-wide quick-access bar.
 
 ### 4.2 · Component architecture
