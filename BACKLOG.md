@@ -1055,6 +1055,10 @@ comments with "sub-token: deliberate" justification notes.
 
 ## 3. Deferred Design Decisions
 
+### Playlist → Loop merge (data model)
+Decided 2026-09-28 ([PRODUCT.md §5 Pads](docs/product/PRODUCT.md#pads)): three pad types — Single, Loop, Combo. Loop and Single accept several files (Loop: in order / shuffle; Single: random / in turn). Requires an ADR superseding the `PadType` part of ADR-0042, a migration of stored `playlist` pads, and engine/editor changes (engine change needs explicit approval).
+**When:** before the combo editor / Slice 7 V1 import, whichever comes first.
+
 Open questions surfaced during implementation but not yet resolved. Each needs a deliberate
 decision before the relevant slice ships.
 

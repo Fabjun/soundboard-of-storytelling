@@ -34,24 +34,24 @@
 
 | Feature | V1 | V2 | V3 status | Evidence | Decision |
 |---|---|---|---|---|---|
-| Single pad (one-shot) | ✓ | ✓ | built | `PadGridCell.tsx` tap → `play()` | Open |
-| Loop pad | ✓ | ✓ | built (infinite only) | CLAUDE.md Slice 4 deviations | Open |
-| Playlist pad (V2 label "LIST ☰"); V1 variants playlist / chain / random | ✓ | ✓ | engine only — engine plays sequential or shuffle; editor picks **one** file | `engine.ts:243ff`; `PadEditorPanel.tsx:124` | Open (see PRODUCT Q2) |
-| Combo pad: steps, foreground/background, "stop all" / "fade out all" as steps | ✓ | ✓ | engine only — no step editor | `types.ts ComboStep`; `PadEditorPanel.tsx:128` passes steps through | Open |
-| Nested combos with cycle detection | ✓ | ? | missing | — | Open |
-| Combo editor: drag chips between steps, reorder steps | ✓ | ✓ | missing | — | Open |
-| Combo per-chip volume and fade-in | — | ✓ | missing | — | Open |
-| Per-pad volume | ✓ | ✓ | built | editor volume slider | Open |
-| Per-pad fade in / fade out | ✓ | ✓ | built (fade-out on stop effectively 0) | CLAUDE.md Slice 4 deviations | Open |
-| Trim start / end with visual scrubber | ✓ | ✓ | engine only | `trimStart` in `types.ts`, `engine.ts`; no UI | Open |
+| Single pad (one-shot) | ✓ | ✓ | built | `PadGridCell.tsx` tap → `play()` | **Decided** (§5 Pads; multi-file = V1 "random") |
+| Loop pad | ✓ | ✓ | built (infinite only) | CLAUDE.md Slice 4 deviations | **Decided** (§5 Pads; multi-file in order / shuffle) |
+| Playlist pad (V2 label "LIST ☰"); V1 variants playlist / chain / random | ✓ | ✓ | engine only — engine plays sequential or shuffle; editor picks **one** file | `engine.ts:243ff`; `PadEditorPanel.tsx:124` | **Decided**: merged into Loop (§5 Pads, Q2) |
+| Combo pad: steps, foreground/background, "stop all" / "fade out all" as steps | ✓ | ✓ | engine only — no step editor | `types.ts ComboStep`; `PadEditorPanel.tsx:128` passes steps through | **Decided** (§5 Combos) |
+| Nested combos with cycle detection | ✓ | ? | missing | — | **Decided** (§5 Combos) |
+| Combo editor: drag chips between steps, reorder steps | ✓ | ✓ | missing | — | **Decided** — target scope (§5 Combos) |
+| Combo per-chip volume and fade-in | — | ✓ | missing | — | **Decided** — target scope (§5 Combos) |
+| Per-pad volume | ✓ | ✓ | built | editor volume slider | **Decided** (§5) |
+| Per-pad fade in / fade out | ✓ | ✓ | built (fade-out on stop effectively 0) | CLAUDE.md Slice 4 deviations | **Decided** (§5) |
+| Trim start / end with visual scrubber | ✓ | ✓ | engine only | `trimStart` in `types.ts`, `engine.ts`; no UI | **Decided** — low priority (§5) |
 | Preview inside the PAD editor | ✓ | ✓ | missing | no audio import in `PadEditorPanel.tsx` | **Decided** (PRODUCT §3) — not yet built |
-| Quick volume slider (long-press on playing pad in GAME) | ✓ | ✓ | missing | — | Open |
-| Double-tap to stop in GAME (single tap on playing pad = no-op) | ✓ | ? | missing — V3 tap toggles | `PadGridCell.tsx:84-88` | Open |
-| Audio ducking (loops dip while a foreground sound plays) | — | ✓ | missing | — | Open |
-| Master volume | ✓ | ✓ | engine only | `masterGain` in `engine.ts` | Open |
-| Crossfade between pads | ? | — | engine stub (`stop` + `play`) | `audio/index.ts:96` | Open |
-| Pad level meter (live amplitude on playing pads) | ✓ | ✓ | missing | — | Open |
-| Now-playing bar / "N playing" summary | ✓ | ? | missing | — | Open |
+| Quick volume slider (long-press on playing pad in GAME) | ✓ | ✓ | missing | — | **Parked** (§5) |
+| Double-tap to stop in GAME (single tap on playing pad = no-op) | ✓ | ? | missing — V3 tap toggles | `PadGridCell.tsx:84-88` | **Parked** — Settings option (§5) |
+| Audio ducking (loops dip while a foreground sound plays) | — | ✓ | missing | — | **Parked** (§5) |
+| Master volume | ✓ | ✓ | engine only | `masterGain` in `engine.ts` | **Parked** (§5) |
+| Crossfade between pads | ? | — | engine stub (`stop` + `play`) | `audio/index.ts:96` | **Parked** (§5) |
+| Pad level meter (live amplitude on playing pads) | ✓ | ✓ | missing | — | **Parked** (§5) |
+| Now-playing bar / "N playing" summary | ✓ | ? | missing | — | **Open** — layout (§5) |
 
 ## 2. Controls & numpad
 

@@ -100,7 +100,63 @@ _Pending — to be filled in dialogue._
 
 ## 5. Core concepts
 
+### Board, scene, library
+
 _Pending — to be filled in dialogue._
+
+### Pads
+
+_Filled 2026-09-28 in dialogue with the product owner, informed by the V1 backup (1 board,
+31 pads; 6 combos drive the game flow: DAY, NIGHT, Kill, Clocktower, Anklage, WIN)._
+
+#### Pad types — **Decided**
+
+| Type | Behavior | Status |
+|---|---|---|
+| **Single** | Plays once. With several files, each trigger plays one of them — random or in turn (variation, e.g. three different sword hits). | **Decided** — multi-file _not yet built_ |
+| **Loop** | Runs until stopped. One file repeats seamlessly; several files play one after another, **in order or shuffled** (both options are essential — e.g. background music). | **Decided** — multi-file _not yet built_ |
+| **Combo** | Triggers other pads in steps (see below). | **Decided** |
+
+The former **Playlist** type merges into Loop (resolves Q2). This changes the data model
+(`PadType`, ADR-0042): a superseding ADR and a migration of existing playlist pads are
+required before implementation (BACKLOG §3).
+
+#### Playing pads
+
+| Statement | Status |
+|---|---|
+| A single tap starts a pad; a single tap on a playing pad stops it. | **Decided** (built) |
+| Double-tap to stop (single tap on a playing pad does nothing) as a Settings option. | **Parked** |
+
+#### Combos — **Decided**
+
+- Combos are **building blocks**: a combo can use pads and other combos from **any scene of
+  the board**, and combos can be nested inside longer combos. Nesting needs protection
+  against cycles.
+- The **combo editor** is a central control. It may become complex and extensive (§7 P1).
+  - First version (minimal): a list of steps; per step the pads that start together, the
+    wait until the next step, and "stop everything first".
+  - Target: at least everything V1 could, and more — drag & drop of pads between steps and
+    step reordering, foreground / background, "fade out all" as a step, volume and fade per
+    pad within a combo.
+
+#### Pad options
+
+| Statement | Status |
+|---|---|
+| Per-pad volume, fade in, fade out. | **Decided** (built) |
+| PREVIEW in the PAD editor. | **Decided** (§3) — _not yet built_ |
+| Trim start / end in the PAD editor (engine support exists). | **Decided** — low priority, _not yet built_ |
+| Audio ducking, master volume, crossfade between pads, level meter, quick volume via long-press. | **Parked** |
+
+#### Open
+
+- **Building-block pads:** pads that exist only as combo ingredients (in V1, 15 of 31 pads
+  have no key; several are used only inside combos). Do they stay pads in the grid, or can combos use Library audio directly?
+- **Alternative raised by the product owner:** scenes as closed rooms, with pads shown or
+  hidden via filters or markers — building-block pads would then not appear in GAME or in
+  specific scenes. To be discussed together with the question above.
+- **Which sounds are currently playing** — needs a visible place; decided with the layout.
 
 ## 6. Platforms & input
 
@@ -161,7 +217,7 @@ finished experience.
 
 | # | Principle | Status |
 |---|---|---|
-| P1 | **Minimal and functional first.** Classic, uncomplicated controls (tabs, menus, taps) that work on desktop and smartphone. Gestures and elaborate interactions come later. | **Decided** |
+| P1 | **Minimal and functional first.** Classic, uncomplicated controls (tabs, menus, taps) that work on desktop and smartphone. Gestures and elaborate interactions come later. Minimalism anchors the core concepts first; the system then grows from there. It is a starting point, not a ceiling — central controls such as the combo editor may become complex and extensive. | **Decided** |
 | P2 | **Sensible defaults, alternatives in Settings.** The app is usable immediately without configuration. Alternative behaviors become user options in Settings wherever they are not technically demanding. | **Decided** |
 | P3 | **Well designed for its purpose, depth for those who want it.** The basics work without explanation; the mechanics underneath are predictable and can be combined and configured. Comfort and automation features are opt-in and can be disabled. | **Decided** |
 | P4 | **The pad grid is the instrument.** In GAME the pad grid has priority; anything competing for its space must justify itself. | **Decided** |
@@ -185,4 +241,4 @@ _Pending — to be filled in dialogue._
 | # | Question | Status | Notes |
 |---|---|---|---|
 | Q1 | Is "Scene" the right user-facing term for the board-level pad arrangement? | **Open** | Raised 2026-09-28: the term feels misleading. "Category" collides with the Library's existing CATEGORY filter. Candidates: Tab, Page, Section, Group. A UI-only rename (code keeps `Scene`) would be cheap; a full code + data rename requires an IDB migration. Decision for now: keep "Scene". |
-| Q2 | Rename the "Playlist" pad type to "List"? Are three pad types (Single, Loop, Combo) enough, or does List stay as a fourth? | **Open** | Raised 2026-09-28. Playlist is built (Slice 4). V2 already labelled it "LIST ☰". To be revisited once the product owner has re-familiarised with the project. |
+| Q2 | Rename the "Playlist" pad type to "List"? Are three pad types (Single, Loop, Combo) enough, or does List stay as a fourth? | **Decided** | Raised 2026-09-28. Playlist is built (Slice 4). V2 already labelled it "LIST ☰". To be revisited once the product owner has re-familiarised with the project. **Resolved 2026-09-28:** three types — Single, Loop, Combo; Playlist merges into Loop (§5 Pads). |
