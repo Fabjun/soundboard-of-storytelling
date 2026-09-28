@@ -45,6 +45,10 @@
   them for behavior and ideas, never copy UI/CSS/markup 1:1** — re-implement
   in V3 idiom (`PRODUCT.md §7` P7). Only exception: the audio engine.
 - **`SoS_DESIGN_25052026/`** — design system: tokens, JSX components.
+  **Design folders (`SoS_DESIGN_<DDMMYYYY>/`, repo root):** every Claude Design download
+  goes into its own new dated folder; existing folders are never overwritten. Design
+  folders are **proposals, not binding** — a design element counts as Decided only once
+  confirmed by the user and recorded in a component spec (`docs/design/components/`).
 - **`v1-reference/HANDOFF.md`** — design system handoff document.
   Originally written for V1 migration context (refers to "porting JSX
   to vanilla", phase plan for V1 modernization). For V3, ignore the

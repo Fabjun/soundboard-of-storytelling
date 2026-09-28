@@ -7,9 +7,16 @@ export type ChangelogEntry = {
   items: string[];
 };
 
-export const APP_VERSION = '3.0.34';
+export const APP_VERSION = '3.0.35';
 
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.35',
+    date: '2026-09-28',
+    items: [
+      'docs: design folder convention (dated, proposals not binding); PAD spec design sources',
+    ],
+  },
   {
     version: '3.0.34',
     date: '2026-09-28',
