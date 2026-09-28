@@ -26,6 +26,16 @@
 
 ## Reference documents
 
+- **Documentation structure (ADR-0047)** — docs are being consolidated into
+  hub / leaf / template per area (`docs/product/`, `docs/design/`,
+  `docs/architecture/`, `docs/development/`). New docs: English, status on
+  every decision (**Decided / Open / Parked**), token names only — never
+  copied values. Migration is incremental; see `docs/DOCUMENTATION_MAP.md`
+  §Target structure for what is already authoritative.
+- **`docs/product/PRODUCT.md`** — product concept hub (in progress; filled in
+  dialogue with the user). Once a section is filled, it is authoritative for
+  that topic and must be read at session start. Never fill a section with
+  reconstructed content without user confirmation.
 - **`V3_CONCEPT_BRIEF.md`** — binding architecture decisions for V3,
   data model, slice plan. Read first in every session.
 - **`v1-reference/index.html`** — V1 source, reference for behavior,
@@ -339,6 +349,10 @@ any non-doc file flagged ⚠ for approval. Routine additionally: `v3/src/lib/cha
    the import gate (5-point check: Path-D styles, class-name registries, hex/px literals,
    TODO-CLASS markers, token existence) — see ADR-0046. Session spec for production-near
    design sessions: `docs/design/CLAUDE_DESIGN_SPEC.md`.
+   **Scope of Claude Design (user decision 2026-09-28):** Claude Design is used only for
+   visual styling — buttons, colors, typography and similar element-level appearance.
+   Layout, screen structure and adaptive behavior are designed and built together
+   directly in code, not via Claude Design prototypes.
 10. **Visual Regression**: Before UI-relevant commits (components, CSS,
     design-system tokens — especially Slice 8 / Polish), run:
     `cd v3 && npm run test:e2e:visual`

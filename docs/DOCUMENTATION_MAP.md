@@ -5,6 +5,26 @@ When you are unsure where something belongs or where to look something up, start
 
 ---
 
+## Target structure (migration in progress — ADR-0047)
+
+The documentation is being consolidated into a hub / leaf / template structure
+([ADR-0047](architecture/0047-documentation-architecture.md)). Migration is incremental:
+the documents listed further below stay authoritative for any topic whose new home is
+not yet filled and confirmed.
+
+| Area | Hub | Leaves | Template | State |
+|---|---|---|---|---|
+| Product | [`docs/product/PRODUCT.md`](product/PRODUCT.md) | `docs/product/features/` (when needed) | — | Skeleton |
+| Design | `docs/design/DESIGN.md` | `docs/design/components/` | [`_template.md`](design/components/_template.md) | Template only |
+| Architecture | `docs/architecture/ARCHITECTURE.md` | ADRs in `docs/architecture/` | [`_template.md`](architecture/_template.md) | ADRs exist; hub pending |
+| Development | `docs/development/DEVELOPMENT.md` | — | — | Pending |
+
+**Rules for new documentation:** English · every decision or proposal carries a status
+(**Decided** / **Open** / **Parked**) · specs name tokens, never copy their values ·
+old documents move to `docs/archive/` once transferred and confirmed — nothing is deleted.
+
+---
+
 ## Orientation (read first)
 
 ### `V3_CONCEPT_BRIEF.md`

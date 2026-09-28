@@ -7,9 +7,16 @@ export type ChangelogEntry = {
   items: string[];
 };
 
-export const APP_VERSION = '3.0.30';
+export const APP_VERSION = '3.0.31';
 
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.31',
+    date: '2026-09-28',
+    items: [
+      'docs: ADR-0047 documentation architecture (hub/leaf/template); PRODUCT.md skeleton; component spec template; Claude Design scoped to visual styling',
+    ],
+  },
   {
     version: '3.0.30',
     date: '2026-09-28',

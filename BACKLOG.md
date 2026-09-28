@@ -998,6 +998,19 @@ Claude Design will show THREE treatments side-by-side: **A** (protrude+color), *
 
 ## 2. Documentation Debt
 
+### Documentation consolidation (ADR-0047) ⬜ In progress (started 2026-09-28)
+Consolidate the scattered documentation into hub / leaf / template per area —
+see [ADR-0047](docs/architecture/0047-documentation-architecture.md). Incremental; old
+documents stay authoritative until their content is transferred and confirmed.
+**Phases:**
+1. ⬜ `docs/product/PRODUCT.md` — skeleton ✅ (2026-09-28); fill sections in dialogue with the user.
+2. ⬜ `docs/design/DESIGN.md` hub + component specs for the elements the mobile Board layout needs.
+3. ⬜ Build the mobile Board layout (product work — not documentation).
+4. ⬜ Further component specs as elements are touched; `ARCHITECTURE.md` + `DEVELOPMENT.md` hubs.
+5. ⬜ Slim `CLAUDE.md`, re-point `sync:classes` / `sync:tokens` generators (scripts, hook, CI),
+   move superseded documents to `docs/archive/`, reduce `BACKLOG.md` to open work.
+**Source:** Session 2026-09-28.
+
 ### DESIGN_SYSTEM.md §1–§5 write out
 Sections §1–§5 currently exist but are stubs or placeholder content. Need to be filled with
 actual system documentation.
