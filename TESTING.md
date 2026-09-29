@@ -204,7 +204,7 @@ GitHub Actions unter [`.github/workflows/tests.yml`](.github/workflows/tests.yml
 
 ### Workflows
 
-**`tests.yml`** — Läuft auf Push zu `main` und Pull Requests:
+**`tests.yml`** — Läuft auf Push zu `main`, Pull Requests und wird von `weekly.yml` aufgerufen:
 
 ```
 unit-build-lint
@@ -239,6 +239,19 @@ Ablauf dann: siehe [Wackelige Tests (Quarantäne)](#wackelige-tests-quarantäne)
 **`deploy-pages.yml`** — Läuft nur wenn `tests.yml` auf `main` erfolgreich abgeschlossen hat:
 - Trigger: `workflow_run` (Tests, completed, success) + `workflow_dispatch`
 - Visual Tests werden **nicht** in CI ausgeführt (macOS-only Baselines)
+
+**`weekly.yml`** — Wöchentlicher Kontroll-Lauf, Montag 06:00 UTC (+ manuell per `workflow_dispatch`),
+auch ohne Push. Fängt ab, was sich ohne Code-Änderung verschlechtert: neue Sicherheitshinweise zu
+unveränderten Paketen, geänderte Runner/Browser, liegengebliebene Dependabot-PRs.
+- Job `tests`: ruft `tests.yml` auf (wiederverwendet, nicht kopiert — kann nicht abweichen)
+- Job `maintenance`: `npm audit` (alle Stufen) und `npm outdated` als Bericht in der
+  Lauf-Zusammenfassung; **Dependabot-PRs, die länger als 14 Tage offen sind, machen den Lauf rot**
+- **Rot = Benachrichtigung:** GitHub schickt bei fehlgeschlagenen geplanten Läufen eine Mail
+  (Benachrichtigungseinstellungen: BACKLOG T9). Bei Rot: Zusammenfassung des Laufs lesen, PRs
+  mergen/reparieren/schließen bzw. Testfehler wie jeden anderen behandeln.
+- GitHub deaktiviert geplante Läufe in öffentlichen Repos nach **60 Tagen ohne Aktivität** —
+  nach längerer Pause unter *Actions → Weekly check* wieder aktivieren.
+- Manuell starten: `gh workflow run weekly.yml`
 
 ### Pre-Commit-Hook
 

@@ -7,9 +7,16 @@ export type ChangelogEntry = {
   items: string[];
 };
 
-export const APP_VERSION = '3.0.48';
+export const APP_VERSION = '3.0.49';
 
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.49',
+    date: '2026-09-29',
+    items: [
+      'ci: weekly check (Monday) — full test suite, audit/outdated report, stale Dependabot PRs turn it red (T8c)',
+    ],
+  },
   {
     version: '3.0.48',
     date: '2026-09-29',

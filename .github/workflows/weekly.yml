@@ -1,0 +1,77 @@
+name: Weekly check
+
+# Runs the full test suite once a week even when nobody pushes (T8c, 2026-09-29):
+# new advisories against unchanged packages, runner/browser changes and forgotten
+# Dependabot PRs surface without a push. (A failing Dependabot PR stayed unnoticed
+# for two months before this existed.)
+#
+# A red run is the notification: GitHub mails failed scheduled runs. Warnings alone
+# would go unseen, so stale Dependabot PRs fail the maintenance job on purpose.
+# Note: GitHub disables schedules in public repos after 60 days without activity.
+on:
+  schedule:
+    - cron: '0 6 * * 1' # Monday 06:00 UTC — after Dependabot's Monday run
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  # The exact suite of tests.yml (reused, not copied — cannot drift).
+  tests:
+    uses: ./.github/workflows/tests.yml
+
+  maintenance:
+    runs-on: ubuntu-latest
+    env:
+      STALE_DAYS: 14
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+          cache-dependency-path: v3/package-lock.json
+
+      - name: Install dependencies
+        working-directory: v3
+        run: npm ci
+
+      - name: npm audit — all levels (report; high/critical already block in tests)
+        working-directory: v3
+        run: |
+          {
+            echo '## npm audit (all levels)'
+            echo '```'
+            npm audit || true
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: npm outdated (report)
+        working-directory: v3
+        run: |
+          {
+            echo '## npm outdated'
+            echo '```'
+            npm outdated || true
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Dependabot PRs open longer than ${{ env.STALE_DAYS }} days (fails)
+        run: |
+          STALE=$(gh pr list --repo "$GITHUB_REPOSITORY" --author app/dependabot --state open \
+            --limit 100 --json number,title,createdAt \
+            --jq "[.[] | select((now - (.createdAt | fromdateiso8601)) > ($STALE_DAYS * 86400))]
+                  | .[] | \"#\(.number) (open since \(.createdAt[:10])): \(.title)\"")
+          {
+            echo "## Dependabot PRs open > $STALE_DAYS days"
+            if [ -n "$STALE" ]; then echo "$STALE" | sed 's/^/- /'; else echo 'None.'; fi
+          } >> "$GITHUB_STEP_SUMMARY"
+          if [ -n "$STALE" ]; then
+            echo "::error::Dependabot PRs open longer than $STALE_DAYS days — merge, fix or close them:"
+            echo "$STALE"
+            exit 1
+          fi
