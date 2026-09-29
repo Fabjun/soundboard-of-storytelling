@@ -1193,6 +1193,22 @@ Decided 2026-09-29 after a test-setup analysis. Order is binding; Slice 9c/9d wa
 | — | Documentation file naming (ADR-0050): docs moved into `docs/` in lowercase-kebab, hubs = `README.md`, design downloads in `design-sources/<YYYY-MM-DD>/`, `CHANGELOG.md` generated from `changelog.ts`, README update rule in the slice checklist; enforced by `docsGuards.test.ts` (all six rules counter-checked). Still open: renaming the local project folder (outside the repo) | ✅ Done (see git log: "(1/3)"–"(3/3)", 2026-09-29) |
 | T9 | GitHub security settings (ADR-0051), set via `gh api` and read back: Dependabot alerts + security updates, secret scanning + push protection, private vulnerability reporting (`.github/SECURITY.md`), ruleset `protect-main` (no force-push, no deletion, no bypass — counter-checked on a temporary probe ruleset/branch: both rejected with GH013, probe removed), GitHub-owned actions only, fork PR workflows need approval. Owner items (account level) done 2026-09-29, confirmed by the owner: two-factor authentication; e-mail for failed workflow runs | ✅ Done (see git log: "…(T9)") |
 
+### Structure clean-up — before Slice 9c (CLAUDE.md §Guiding priorities)
+Decided 2026-09-29 after a structure audit (priority 2: structure and clarity). One plan and
+approval per stage; guard tests keep each scheme from drifting back.
+
+| Stage | Content | Status |
+|---|---|---|
+| S1 | Remove unused Vite scaffold files (`src/app.css`, `src/index.css`, `src/assets/*`, `public/icons.svg`); one version number — package renamed `soundboard-of-storytelling`, `version` field removed (`APP_VERSION` is the only version) | ✅ Done (see git log: "…(S1)") |
+| S2 | Code names: drop `V2`/`V3` suffixes (`TopBar`, `StatusBar`, `BoardTopBar`), dissolve `src/chrome/`, `App.tsx`, CSS classes into the `sb-*`/`is-*` scheme (`.touch-target`, `.pixel-icon`; `.theme-*` defined as allowed), generator files named after their npm scripts; guard tests | open |
+| S3 | Tests: one test-ID scheme (update ADR-0038) applied everywhere; consistent spec/helper file names incl. moving visual baselines; guard tests | open |
+| S4 | English only: active docs, hook/CI messages, ADR template + categories + labels; then translate ADR-0001–0045; uniform ADR headers + guard test | open |
+| S5 | Commit message convention in CLAUDE.md + `commit-msg` hook | open |
+
+**Deferred to Slice 13:** merge the two top-bar components (`TopBarV2` on Library/Board list,
+`BoardTopBarV3` on Board) into **one** component with variants — they are rebuilt for the mobile
+layout there anyway; merging now would mean building twice.
+
 ### Re-enable mobile layout tests
 `mobile-touch-targets.spec.ts` and `mobile-overflow.spec.ts` have FIXME markers because the
 desktop-first layout fails them at 390 px (layout geometry is broken by design until Slice 8).

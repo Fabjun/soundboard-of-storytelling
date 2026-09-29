@@ -7,9 +7,16 @@ export type ChangelogEntry = {
   items: string[];
 };
 
-export const APP_VERSION = '3.0.53';
+export const APP_VERSION = '3.0.54';
 
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.54',
+    date: '2026-09-29',
+    items: [
+      'chore: remove unused Vite scaffold files; package renamed soundboard-of-storytelling, APP_VERSION is the only version (S1)',
+    ],
+  },
   {
     version: '3.0.53',
     date: '2026-09-29',
