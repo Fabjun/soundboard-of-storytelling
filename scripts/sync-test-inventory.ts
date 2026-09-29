@@ -1,0 +1,113 @@
+#!/usr/bin/env tsx
+/**
+ * sync-test-inventory.ts
+ *
+ * Writes the test inventory into TESTING.md between AUTO-GENERATED markers:
+ * which spec runs in which Playwright project (from v3/tests/e2e/projects.ts),
+ * the visual specs, and all unit test files — each with its number of tests.
+ * Replaces the hand-maintained file lists that drifted (T7, 2026-09-29).
+ *
+ * Run: npm run sync:tests  (from v3/) — part of npm run sync:docs.
+ */
+
+import { readFileSync, readdirSync, statSync, writeFileSync } from 'fs';
+import { basename, dirname, join, relative, resolve } from 'path';
+import { fileURLToPath } from 'url';
+import {
+  FULL_TESTS,
+  FULL_WEBKIT_TESTS,
+  MOBILE_CHROMIUM_TESTS,
+  MOBILE_WEBKIT_TESTS,
+  PWA_TESTS,
+  SMOKE_TESTS,
+  VISUAL_DIR,
+} from '../v3/tests/e2e/projects';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const ROOT = resolve(__dirname, '..');
+const V3 = join(ROOT, 'v3');
+const E2E = join(V3, 'tests', 'e2e');
+const UNIT = join(V3, 'tests', 'unit');
+const TESTING = join(ROOT, 'TESTING.md');
+
+const MARKER_START = '<!-- AUTO-GENERATED:test-inventory START — nicht manuell editieren -->';
+const MARKER_END = '<!-- AUTO-GENERATED:test-inventory END -->';
+
+/** Number of test cases in a file: lines starting with test(…) / it(…) incl. modifiers. */
+function countTests(file: string): number {
+  const src = readFileSync(file, 'utf8');
+  return (src.match(/^\s*(?:test|it)(?:\.(?:skip|fixme|only|fails|todo))?\s*\(/gm) ?? []).length;
+}
+
+function walk(dir: string, match: (f: string) => boolean): string[] {
+  const out: string[] = [];
+  for (const entry of readdirSync(dir)) {
+    const full = join(dir, entry);
+    if (statSync(full).isDirectory()) {
+      if (entry.endsWith('-snapshots')) continue;
+      out.push(...walk(full, match));
+    } else if (match(entry)) {
+      out.push(full);
+    }
+  }
+  return out.sort();
+}
+
+function specList(dir: string, names: string[]): string {
+  return names.map((n) => `\`${n}\` (${countTests(join(dir, `${n}.spec.ts`))})`).join(', ');
+}
+
+const visualSpecs = walk(join(E2E, VISUAL_DIR), (f) => f.endsWith('.spec.ts')).map((f) =>
+  basename(f, '.spec.ts'),
+);
+const unitFiles = walk(UNIT, (f) => f.endsWith('.test.ts'));
+const unitTotal = unitFiles.reduce((sum, f) => sum + countTests(f), 0);
+
+const rows: [string, string, string, string][] = [
+  ['smoke', 'Chromium (Desktop)', 'Dev + Build', specList(E2E, SMOKE_TESTS)],
+  ['smoke-webkit', 'WebKit (Desktop)', 'Dev', specList(E2E, SMOKE_TESTS)],
+  ['full', 'Chromium (Desktop)', 'Dev + Build', specList(E2E, FULL_TESTS)],
+  ['full-webkit', 'WebKit (Desktop)', 'Dev', specList(E2E, FULL_WEBKIT_TESTS)],
+  ['mobile', 'WebKit (iPhone 13 Pro)', 'Dev', specList(join(E2E, 'mobile'), MOBILE_WEBKIT_TESTS)],
+  [
+    'mobile-chromium',
+    'Chromium (iPhone 13 Pro)',
+    'Dev',
+    specList(join(E2E, 'mobile'), MOBILE_CHROMIUM_TESTS),
+  ],
+  ['pwa', 'Chromium (Desktop)', 'nur Build', specList(E2E, PWA_TESTS)],
+  ['visual', 'Chromium (Desktop), nur macOS', 'Dev', specList(join(E2E, VISUAL_DIR), visualSpecs)],
+];
+
+const block = [
+  MARKER_START,
+  '',
+  '_Erzeugt von `npm run sync:tests` aus `v3/tests/e2e/projects.ts` und den Testdateien —',
+  'Zahl in Klammern = Testfälle in der Datei (inkl. Quarantäne)._',
+  '',
+  '| Projekt | Browser / Gerät | Gegen | Specs (Tests) |',
+  '|---|---|---|---|',
+  ...rows.map((r) => `| \`${r[0]}\` | ${r[1]} | ${r[2]} | ${r[3]} |`),
+  '',
+  `**Unit-Tests (Vitest):** ${unitFiles.length} Dateien, ${unitTotal} Testfälle —`,
+  unitFiles
+    .map((f) => `\`${relative(UNIT, f).split('\\').join('/')}\` (${countTests(f)})`)
+    .join(', '),
+  '',
+  MARKER_END,
+].join('\n');
+
+const doc = readFileSync(TESTING, 'utf8');
+const a = doc.indexOf(MARKER_START);
+const b = doc.indexOf(MARKER_END);
+if (a < 0 || b < 0 || b < a) {
+  console.error('❌ sync-test-inventory: markers missing in TESTING.md');
+  process.exit(1);
+}
+const next = doc.slice(0, a) + block + doc.slice(b + MARKER_END.length);
+if (next !== doc) {
+  writeFileSync(TESTING, next);
+  console.log('✅ TESTING.md test inventory updated.');
+} else {
+  console.log('✅ TESTING.md test inventory already up to date.');
+}

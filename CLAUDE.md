@@ -381,11 +381,12 @@ any non-doc file flagged ⚠ for approval. Routine additionally: `v3/src/lib/cha
     Architektur-Entscheidungen.
     **Neues ADR-Header-Feld:** `**Category:**` (nach `**Slice:**`) — eines der
     8 kanonischen Werte; Generator-Fehler wenn fehlend → "Unkategorisiert".
-13. **Auto-generierte Inventuren**: Drei Sections werden per Generator befüllt —
+13. **Auto-generierte Inventuren**: Vier Sections werden per Generator befüllt —
     nie manuell editieren:
     - `docs/architecture/README.md §Index` — via `npm run sync:adr`
     - `DESIGN_SYSTEM.md §6` (sb-*-Klassen) — via `npm run sync:classes`
     - `DESIGN_SYSTEM.md §A` (Tokens) — via `npm run sync:tokens`
+    - `TESTING.md §Test-Inventar` (Specs je Projekt, Unit-Tests) — via `npm run sync:tests`
     Der Pre-Commit-Hook führt `sync:docs` automatisch aus und staged die
     Ergebnisse. Zum manuellen Aktualisieren: `cd v3 && npm run sync:docs`.
     Neue sb-*-Klassen dokumentieren mit `/* @inventory: Beschreibung */`
@@ -480,9 +481,14 @@ Before committing a slice, also:
 
 1. Manually verify the slice's user-facing flows (see section above)
 2. **Unit tests must be green**: `npm run test` exit 0
-3. **New logic modules need unit-test coverage**: any new function in
-   `src/lib/` or `src/state/` must have corresponding tests in
-   `tests/unit/`. No coverage required for UI components or event handlers.
+3. **New logic modules need unit-test coverage**: every module in `src/lib`,
+   `src/state`, `src/db`, `src/audio` needs `tests/unit/**/<name>.test.ts` or a
+   justified entry in the EXEMPT list of `tests/unit/testGuards.test.ts` (enforced).
+   No coverage required for UI components or event handlers.
+3a. **Test review** (rule 15): new user flows are covered by E2E tests (Chromium,
+   and `full-webkit` where no playback is needed); every new test was counter-checked
+   (break the code → red); guards are green; no quarantine without a BACKLOG entry;
+   raise the coverage floor in `vitest.config.ts` to the new measured values (rounded down).
 4. Update CLAUDE.md "Slice progress" table with completion date
 5. **Update BACKLOG.md**: mark completed items `✅ Done (commit SHA)`, add any
    new deferred items surfaced during the slice.

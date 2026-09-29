@@ -418,7 +418,7 @@ describe('combo', () => {
   // next step never runs. V1 excluded the running combo (V1 changelog v163: "stopAll to skip
   // srcs[exceptComboId]"); the port lost it. Real impact: the V1 "DAY" combo (stop all →
   // rooster) would never play the rooster. test.fails documents the bug; when the engine is
-  // fixed (under product-owner control, BACKLOG "Combo stopAll step stops itself") this
+  // fixed (under product-owner control, BACKLOG "step stops the combo itself") this
   // test starts passing → test.fails turns red → switch it to test().
   test.fails('"stop all" step stops everything first, then continues after 200 ms', async () => {
     vi.useFakeTimers();

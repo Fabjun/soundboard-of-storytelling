@@ -7,9 +7,16 @@ export type ChangelogEntry = {
   items: string[];
 };
 
-export const APP_VERSION = '3.0.45';
+export const APP_VERSION = '3.0.46';
 
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.46',
+    date: '2026-09-29',
+    items: [
+      'test: guards — every logic module tested, every quarantine references BACKLOG; generated test inventory in TESTING.md (T7)',
+    ],
+  },
   {
     version: '3.0.45',
     date: '2026-09-29',

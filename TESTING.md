@@ -32,60 +32,42 @@ Vier Schichten, eingeführt in Phase 1 & 2 (Phase 2 — Testing Infrastructure):
 ```
 v3/
   tests/
-    fixtures/
-      test-audio-1s.wav       ← Minimal-WAV (8-bit mono 8kHz, 1s silence)
-    unit/
-      setup.ts                ← Vitest-Globales: fake-indexeddb/auto
-      padUtils.test.ts        ← pure functions (nextFreeSlot, typeInference, migration)
-      padDnd.test.ts          ← applySwap, applyInsert (pure, kein DOM)
-      store.test.ts           ← Preact Signals mutations + computed reactivity
-      idb.test.ts             ← IDB-Layer round-trips (boardPut/Get/Delete, libGetAllMeta, DB-Upgrade)
-      deckConflict.test.ts    ← Deck-Umbenennung: Namenskonflikt-Erkennung
-      flameMath.test.ts       ← StartScreen-Flamme: Formdaten, Phasen, Partikel
-      e2eProjects.test.ts     ← Wächter: jede E2E-Spec in genau einem Playwright-Projekt
-      audio/
-        lru.test.ts           ← LRU Buffer-Cache (Größenlimit, Eviction-Logik)
+    fixtures/test-audio-1s.wav  ← Minimal-WAV (8-bit mono 8kHz, 1s silence)
+    unit/                       ← Vitest (setup.ts: fake-indexeddb/auto)
     e2e/
-      projects.ts             ← Projekt-Zuordnung (SMOKE/FULL/MOBILE-Listen) — einzige Quelle
-      helpers.ts              ← Shared helpers: goToBoardList, createBoardAndNavigate, ...
-      app-loads.spec.ts       ← Smoke: StartScreen mit TAP TO UNLOCK
-      library-empty.spec.ts   ← Smoke: LIBRARY-Button → LibraryScreen
-      board-list-empty.spec.ts← Smoke: BOARD-Button → BoardListScreen
-      board-create.spec.ts    ← Smoke: Board anlegen → BoardScreen
-      mode-toggle.spec.ts     ← Smoke: GAME ↔ SETUP umschalten
-      board-crud.spec.ts      ← Full: Tests 1–5 (Board CRUD + Reload)
-      deck-crud.spec.ts       ← Full: Tests 6–11 (Deck CRUD + Undo)
-      pad-creation.spec.ts    ← Full: Tests 12–15 (Pad erzeugen: Popover, Drag)
-      pad-editing.spec.ts     ← Full: Tests 16–19 (PadEditorPanel, TypChange)
-      pad-dnd.spec.ts         ← Full: Tests 20–21 (SWAP/INSERT DnD) [test.skip]
-      game-mode.spec.ts       ← Full: Test 22 (GAME-Modus: kein CRUD)
-      audio.spec.ts           ← Full: Tests A–C (Audio-Engine: Unlock, Single, Loop)
-      mobile/
-        mobile-unlock-nav.spec.ts    ← Mobile: TAP TO UNLOCK + nav buttons via tap()
-        mobile-board-flow.spec.ts    ← Mobile: NEW BOARD + back button via tap()
-        mobile-mode-toggle.spec.ts   ← Mobile: SETUP ↔ GAME toggle via tap()
-        mobile-pad-interaction.spec.ts ← Mobile: pad tap → is-hot/is-looping (core)
-        mobile-pad-creation.spec.ts  ← Mobile: empty cell tap → popover → pad
-        mobile-touch-targets.spec.ts ← Mobile: boundingBox() >= 44×44px
-        mobile-overflow.spec.ts      ← Mobile: no elements beyond 390px viewport
-      visual/
-        visual-setup.ts               ← stableScreenshot() Hilfsfunktion
-        visual-startscreen.spec.ts
-        visual-boardlist-empty.spec.ts
-        visual-boardlist-with-board.spec.ts
-        visual-boardscreen-setup.spec.ts
-        visual-boardscreen-game.spec.ts
-        visual-modetoggle-states.spec.ts
-        visual-deck-rail.spec.ts
-        visual-library-empty.spec.ts
-  vitest.config.ts
-  playwright.config.ts
-  eslint.config.js
-  .prettierrc.json
-  .size-limit.json
-  tsconfig.test.json          ← Relaxte TypeScript-Config für Unit-Test-Dateien
-  tsconfig.e2e.json           ← TypeScript-Config für E2E-Test-Dateien
+      projects.ts               ← Projekt-Zuordnung aller Specs — einzige Quelle
+      helpers.ts                ← Shared helpers (Navigation, Upload/Seed, pointerDrag …)
+      *.spec.ts                 ← Smoke / Full / PWA
+      mobile/                   ← iPhone-13-Pro-Profil
+      visual/                   ← Screenshot-Vergleiche (macOS)
+  vitest.config.ts · playwright.config.ts · eslint.config.js
+  tsconfig.test.json · tsconfig.e2e.json
 ```
+
+Welche Datei in welchem Projekt läuft: **Test-Inventar** (unten, automatisch erzeugt).
+
+## Test-Inventar
+
+<!-- AUTO-GENERATED:test-inventory START — nicht manuell editieren -->
+
+_Erzeugt von `npm run sync:tests` aus `v3/tests/e2e/projects.ts` und den Testdateien —
+Zahl in Klammern = Testfälle in der Datei (inkl. Quarantäne)._
+
+| Projekt | Browser / Gerät | Gegen | Specs (Tests) |
+|---|---|---|---|
+| `smoke` | Chromium (Desktop) | Dev + Build | `app-loads` (1), `library-empty` (1), `board-list-empty` (1), `board-create` (1), `mode-toggle` (1) |
+| `smoke-webkit` | WebKit (Desktop) | Dev | `app-loads` (1), `library-empty` (1), `board-list-empty` (1), `board-create` (1), `mode-toggle` (1) |
+| `full` | Chromium (Desktop) | Dev + Build | `board-crud` (5), `deck-crud` (6), `pad-creation` (4), `pad-editing` (4), `pad-dnd` (2), `game-mode` (1), `audio` (3) |
+| `full-webkit` | WebKit (Desktop) | Dev | `board-crud` (5), `deck-crud` (6), `pad-creation` (4), `pad-editing` (4), `pad-dnd` (2) |
+| `mobile` | WebKit (iPhone 13 Pro) | Dev | `mobile-unlock-nav` (3), `mobile-board-flow` (2), `mobile-mode-toggle` (2), `mobile-touch-targets` (5), `mobile-overflow` (2) |
+| `mobile-chromium` | Chromium (iPhone 13 Pro) | Dev | `mobile-pad-interaction` (2), `mobile-pad-creation` (1) |
+| `pwa` | Chromium (Desktop) | nur Build | `pwa` (4) |
+| `visual` | Chromium (Desktop), nur macOS | Dev | `visual-boardlist-empty` (1), `visual-boardlist-with-board` (1), `visual-boardscreen-game` (1), `visual-boardscreen-setup` (1), `visual-deck-rail` (1), `visual-library-empty` (1), `visual-modetoggle-states` (2), `visual-startscreen` (1) |
+
+**Unit-Tests (Vitest):** 12 Dateien, 185 Testfälle —
+`audio/engine.test.ts` (24), `audio/lru.test.ts` (11), `deckConflict.test.ts` (9), `e2eProjects.test.ts` (6), `flameMath.test.ts` (22), `idb.test.ts` (15), `nanoid.test.ts` (2), `padDnd.test.ts` (11), `padUtils.test.ts` (43), `store.test.ts` (23), `testGuards.test.ts` (6), `upload.test.ts` (13)
+
+<!-- AUTO-GENERATED:test-inventory END -->
 
 ---
 
