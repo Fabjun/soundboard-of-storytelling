@@ -1,6 +1,6 @@
 #!/usr/bin/env tsx
 /**
- * sync-adr-index.ts
+ * sync-adr.ts
  *
  * Reads all docs/architecture/00*.md ADR files, extracts metadata from
  * headers, and writes a categorized index table between AUTO-GENERATED
@@ -129,7 +129,7 @@ function run(): void {
   readme = `${before}\n${table}\n${after}`;
   writeFileSync(README, readme, 'utf8');
 
-  console.log(`sync-adr-index: wrote ${adrs.length} ADRs across ${
+  console.log(`sync-adr: wrote ${adrs.length} ADRs across ${
     [...new Set(adrs.map((a) => a.category))].length
   } categories → ${README}`);
 }

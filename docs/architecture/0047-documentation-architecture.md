@@ -110,7 +110,7 @@ Consequences observed:
   staying current (candidate for a generator, like the ADR index).
 - During migration, old and new documents coexist. Old documents carry a
   "being superseded by …" note once a section has moved.
-- The generators (`scripts/sync-sb-classes-inventory.ts`, `scripts/sync-tokens-inventory.ts`)
+- The generators (`scripts/sync-classes.ts`, `scripts/sync-tokens.ts`)
   currently write into `docs/design/design-system.md`; moving their output requires a separate,
   planned change to scripts, pre-commit hook and CI.
 

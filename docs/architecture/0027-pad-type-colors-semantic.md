@@ -43,7 +43,7 @@ Für andere Semantiken: `--success` (teal alias), `--danger`, `--blood-bright`,
 - User lernen die Farbe → Typ-Mapping einmal; danach parst die UI bei einem
   Blick. Das ist ein nachgewiesenes Design-Prinzip aus V1.
 - Theme-Anpassungen (Slice 8) können Pad-Typ-Farben pro Theme überschreiben,
-  ohne die Semantik zu brechen (z.B. `.theme-crimson { --pad-single: ... }`).
+  ohne die Semantik zu brechen (z.B. `.sb-theme-crimson { --pad-single: ... }`).
 
 **Negativ / Trade-offs:**
 - `--pad-combo` (Rose Magenta) ist nach einem Farbwechsel (Kupfer → Rose Magenta)

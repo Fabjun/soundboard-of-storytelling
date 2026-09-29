@@ -18,7 +18,7 @@ export default defineConfig({
       provider: 'v8',
       reporter: ['text', 'html', 'json-summary'],
       include: ['src/lib/**', 'src/state/**', 'src/db/**', 'src/audio/**'],
-      exclude: ['tests/**', '**/*.config.ts', 'src/main.tsx', 'src/app.tsx'],
+      exclude: ['tests/**', '**/*.config.ts', 'src/main.tsx', 'src/App.tsx'],
       // Coverage FLOOR (T6, 2026-09-29): just below the measured values
       // (lines 69.45 · statements 67.8 · functions 71.75 · branches 61.61).
       // Enforced in CI via `npm run test:coverage`. Only ever RAISE these —

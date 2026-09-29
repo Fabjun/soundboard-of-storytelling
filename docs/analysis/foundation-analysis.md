@@ -50,11 +50,11 @@ Severity: **CRITICAL** | **IMPORTANT** | **COSMETIC**
 
 ### F2 — Zero adaptive CSS in the living app: no `@media` breakpoints, no responsive layout pivots  `FH + AR` `CRITICAL`
 
-**What:** The app's CSS layers (`global.css` + `tokens.css`) contain exactly **one** `@media` query: `(prefers-reduced-motion: reduce)` for the spark animation. No layout breakpoints, no viewport-width pivots, no axis-1 responsive wiring. The `is-compact` modifier for ModeToggle exists as a CSS class, but it is applied via a `compact` prop passed by the parent (`BoardTopBarV3`) — whether that parent calculates the viewport width is unverified.
+**What:** The app's CSS layers (`global.css` + `tokens.css`) contain exactly **one** `@media` query: `(prefers-reduced-motion: reduce)` for the spark animation. No layout breakpoints, no viewport-width pivots, no axis-1 responsive wiring. The `is-compact` modifier for ModeToggle exists as a CSS class, but it is applied via a `compact` prop passed by the parent (`BoardTopBar`) — whether that parent calculates the viewport width is unverified.
 
 **Why it matters:** ADR-0045 says Axis 1 (screen-format layout) is the responsive axis driven by CSS breakpoints. The breakpoints are explicitly "to be determined empirically." Fine — but right now there is *no* breakpoint infrastructure at all. When the adaptive work begins, every layout pivot will be a new addition, with no foundation to extend. The gap is larger than it looks: the first breakpoint also needs to define the layout semantics (bottom-bar vs. side-rail, collapsible SceneRail, overlay panels), not just a single value to tune.
 
-**Location:** All of `v3/src/styles/`. Also: `v3/src/components/ModeToggle.tsx` (accepts `compact` prop) + `v3/src/components/BoardTopBarV3.tsx` (unread — how `compact` is determined needs verification).
+**Location:** All of `v3/src/styles/`. Also: `v3/src/components/ModeToggle.tsx` (accepts `compact` prop) + `v3/src/components/BoardTopBar.tsx` (unread — how `compact` is determined needs verification).
 
 ---
 
@@ -88,11 +88,11 @@ Severity: **CRITICAL** | **IMPORTANT** | **COSMETIC**
 
 ### F6 — ModeToggle `compact` prop wiring is unverified: `is-compact` may be dead code at narrow viewports  `AR` `IMPORTANT`
 
-**What:** ModeToggle accepts `compact?: boolean` and applies `.is-compact` (smaller font + height). The `compact` prop is passed from `BoardTopBarV3` (not yet read in depth). If `BoardTopBarV3` does not calculate viewport width and does not pass `compact=true` at ≤ 480 px, the compact variant documented in tokens.css as "mobile (< 480px)" is never applied.
+**What:** ModeToggle accepts `compact?: boolean` and applies `.is-compact` (smaller font + height). The `compact` prop is passed from `BoardTopBar` (not yet read in depth). If `BoardTopBar` does not calculate viewport width and does not pass `compact=true` at ≤ 480 px, the compact variant documented in tokens.css as "mobile (< 480px)" is never applied.
 
 **Why it matters:** This is a concrete example of a CSS class that may be orphaned — designed for narrow viewports but potentially not triggered by any runtime condition. At 390 px, the default (non-compact) ModeToggle at 36 px height still fits, but the visual density is suboptimal.
 
-**Action for deep-dive:** Read `BoardTopBarV3.tsx` and confirm how `compact` is determined (viewport check, container query, fixed boolean, or something else).
+**Action for deep-dive:** Read `BoardTopBar.tsx` and confirm how `compact` is determined (viewport check, container query, fixed boolean, or something else).
 
 ---
 
@@ -124,14 +124,14 @@ All source lives under `v3/src/`. Sizes are coarse (S = < 200 lines, M = 200–5
 
 | Area | Files | Size | Purpose |
 |------|-------|------|---------|
-| **Entry** | `main.tsx`, `app.tsx` | S | Boot, IDB bootstrap, signal wiring, screen routing |
+| **Entry** | `main.tsx`, `App.tsx` | S | Boot, IDB bootstrap, signal wiring, screen routing |
 | **Types** | `types.ts` | S | Shared TypeScript types; discriminated union Pad model |
 | **State** | `state/store.ts` | S | Central Preact Signals store: navigation, mode, library, boards, playback |
 | **DB** | `db/idb.ts` | M | IndexedDB abstraction: library (with blob), boards (JSON doc). Includes Slice 3→4 pad migration |
 | **Audio** | `audio/engine.ts`, `audio/index.ts`, `audio/types.ts` | L / S / S | V1 audio engine port (LRU, combo sequencer); public facade; signal bridge |
 | **Screens** | `screens/` (4 files) | M–M each | StartScreen, LibraryScreen, BoardListScreen, BoardScreen |
-| **Components** | `components/` (13 files) | S–M each | AudioRow, BoardTopBarV3, LibraryPanel, ModeToggle, PadCreationPopover, PadEditorPanel, PadGrid, PadGridCell, PadTypeConfirmDialog, PixelIcon, SceneRail, UndoToast, Waveform |
-| **Chrome** | `chrome/` (2 files) | S | StatusBarV2, TopBarV2 (used on non-board screens) |
+| **Components** | `components/` (13 files) | S–M each | AudioRow, BoardTopBar, LibraryPanel, ModeToggle, PadCreationPopover, PadEditorPanel, PadGrid, PadGridCell, PadTypeConfirmDialog, PixelIcon, SceneRail, UndoToast, Waveform |
+| **Chrome** | `chrome/` (2 files; merged into `components/` 2026-09-29, ADR-0052) | S | StatusBar, TopBar (used on non-board screens) |
 | **Lib** | `lib/` (6 files) | S each | changelog, libDnd, nanoid, padDnd, padUtils, upload |
 | **Styling** | `styles/tokens.css` + `styles/global.css` | L / S | Design tokens + theme variants (2593 lines) + reset + iOS safety rules |
 | **Dead files** | `app.css`, `index.css` | S | Vestigial Vite scaffold; not imported — dead code |
@@ -146,18 +146,18 @@ All source lives under `v3/src/`. Sizes are coarse (S = < 200 lines, M = 200–5
 
 ```
 main.tsx
-  ├── app.tsx (screen router)
+  ├── App.tsx (screen router)
   │    ├── screens/StartScreen
   │    ├── screens/LibraryScreen
   │    ├── screens/BoardListScreen
   │    └── screens/BoardScreen          ← most complex screen
-  │         ├── components/BoardTopBarV3
+  │         ├── components/BoardTopBar
   │         ├── components/SceneRail
   │         ├── components/PadGrid
   │         │    └── components/PadGridCell  (reads audio state directly)
   │         ├── components/LibraryPanel
   │         ├── components/PadEditorPanel
-  │         └── chrome/StatusBarV2
+  │         └── components/StatusBar
   │
   ├── state/store.ts                ← read by almost every component
   ├── db/idb.ts                     ← called from screens + upload.ts
@@ -256,8 +256,8 @@ main.tsx
 **Files:** `screens/StartScreen.tsx`, `screens/LibraryScreen.tsx`, `screens/BoardListScreen.tsx`, `screens/BoardScreen.tsx`
 
 **What's healthy:**
-- Screen routing in `app.tsx` is trivially simple (signal-based if/return chain). Zero routing library overhead.
-- `app.tsx` bootstrap (IDB load) correctly uses the metadata-only cursor for library items — no blobs in the bootstrap path.
+- Screen routing in `App.tsx` is trivially simple (signal-based if/return chain). Zero routing library overhead.
+- `App.tsx` bootstrap (IDB load) correctly uses the metadata-only cursor for library items — no blobs in the bootstrap path.
 - Error handling on IDB calls uses `console.error` + graceful fall-through everywhere; no unhandled promise rejections.
 
 **Findings for BoardScreen (most critical screen):**
@@ -275,7 +275,7 @@ main.tsx
 
 ### 3.5 Components
 
-**Files:** 13 component files in `components/`, 2 in `chrome/`
+**Files:** 13 component files in `components/`, 2 in `chrome/` (merged into `components/` 2026-09-29)
 
 **What's healthy:**
 - ADR-0028 (single component per UI element type, variants via props) is generally followed. ModeToggle, PixelIcon, Waveform, PadGridCell are clean single-responsibility components.
@@ -287,7 +287,7 @@ main.tsx
 
 | Finding | Severity | Category |
 |---------|----------|----------|
-| `ModeToggle`'s `compact` prop: how the parent `BoardTopBarV3` determines when to pass `compact=true` is unverified (file not read in this pass). The `is-compact` CSS class comment says "< 480px" — if `BoardTopBarV3` does NOT check viewport width, this class is never applied and the compact variant is functionally dead. | important | AR |
+| `ModeToggle`'s `compact` prop: how the parent `BoardTopBar` determines when to pass `compact=true` is unverified (file not read in this pass). The `is-compact` CSS class comment says "< 480px" — if `BoardTopBar` does NOT check viewport width, this class is never applied and the compact variant is functionally dead. | important | AR |
 | `PadGridCell` inline style `{ '--pad-color': color, '--pad-glow': ..., '--pix-bg': 'var(--raised)' }`: these are CSS custom properties set at runtime — legitimate Path C per CLAUDE.md. However, `--pix-bg: 'var(--raised)'` is a static token value, not computed. This is a borderline violation: a static token reference being set inline when it could be in a class. Post-Session-3 micro-residue. | cosmetic | CSS-discipline |
 | `PadGrid.tsx` calls `setPadsRef(scene.pads)` inside a `useEffect` with no dependency array (line 76-78) — fires on every render. `setPadsRef` is an imperative update to a module-level ref in `padDnd.ts`. Intentional (keeps the DnD ref current), but naked-useEffect is easy to miss in review. | cosmetic | architecture |
 | `SceneRail` and `LibraryPanel` both have 220 px and 280 px widths hardcoded in CSS — no adaptive override. Already flagged in F1. | CRITICAL | AR |
@@ -301,7 +301,7 @@ main.tsx
 
 **What's healthy:**
 - Token system is comprehensive: surface hierarchy, border tints, type system, spacing scale, pad-type colors with soft + glow variants, 4 theme variations (Hearth/Verdant/Neon/Crimson).
-- `--sb-*` legacy alias block with per-theme scoping is correct — aliases re-declared on each `.theme-*` so `var()` substitutions resolve at theme level, not root level.
+- `--sb-*` legacy alias block with per-theme scoping is correct — aliases re-declared on each `.sb-theme-*` so `var()` substitutions resolve at theme level, not root level.
 - `global.css`: minimal and focused. iOS overscroll suppression, touch target defaults (`button, [role='button']: min-height: 44px`), flicker animation.
 - `@inventory` comment system: 127 comments audited and verified accurate per BACKLOG §2 (End-of-Session-3 consolidation). `[unused-css]` tags identify pre-written classes awaiting future screens.
 - The pixel-frame system (`clip-path` + gradient border) is applied consistently across all frame-family members (`.sb-pix`, `.sb-card`, `.sb-btn`, `.sb-pad`, `.sb-pill`, `.sb-menu-row`).
@@ -440,7 +440,7 @@ In suggested priority order:
 
 ### Pass 2 — BoardScreen adaptive layout: anatomy + options
 
-**Scope:** Read `BoardTopBarV3.tsx` (how `compact` prop is determined), `SceneRail.tsx`, `LibraryPanel.tsx`, `PadEditorPanel.tsx` in full. Measure the actual pixel behavior at 390 px, 480 px, 768 px with and without panels open. Identify the minimum layout pivots needed to make the board usable at 390 px (at minimum: collapsible SceneRail, overlay-style panels). Document the *specific* code changes needed.
+**Scope:** Read `BoardTopBar.tsx` (how `compact` prop is determined), `SceneRail.tsx`, `LibraryPanel.tsx`, `PadEditorPanel.tsx` in full. Measure the actual pixel behavior at 390 px, 480 px, 768 px with and without panels open. Identify the minimum layout pivots needed to make the board usable at 390 px (at minimum: collapsible SceneRail, overlay-style panels). Document the *specific* code changes needed.
 
 **Why first:** This is the CRITICAL blocking issue for ADR-0045. Without a plan for the 3-column layout, the mobile prototype cannot integrate with the main app.
 
@@ -515,7 +515,7 @@ consistency-checking automation; not exhaustive — covers concepts that have al
 | **is-* state class registry** — `docs/design/design-system.md §3` (manually maintained; add new `is-*` classes here before using them in code) | `ADR-0021 §Decision` (must point to §3 as living source — not re-list classes inline); `docs/design/design-system-cheatsheet.md §state vocab` (quick-ref subset — must be a subset of §3, not its own list) | Any new `is-*` class added. Register in §3 first; confirm ADR-0021 still just points and does not duplicate; update Cheatsheet quick-ref if the class is general-purpose. |
 | **Testing gate/project counts** — `.husky/pre-commit`, `.husky/pre-push`, `v3/playwright.config.ts` | `docs/development/testing.md`; `docs/architecture/0033-three-layer-testing.md`, `0035-playwright.md`, `0037-husky-precommit.md` | Any gate added/removed from a hook, or Playwright project added/removed — all four docs must be updated in the same commit. Recurring drift surface (counts go stale between slices). |
 | **ADR template header fields** — `docs/architecture/_template.md` (defines required/optional header fields; **Refines:** added as optional field in Pass 6) | All `docs/architecture/NNNN-*.md` ADR files (headers must conform to template format — field order, colon placement, required vs. optional); `docs/architecture/README.md §Index` (auto-generated from `**Category:**` + `**Slice:**` fields via `sync:adr` — missing or wrong values show as "—" or land in the wrong group) | Any new header field added to or removed from the template; any change to which fields are required vs. optional. ADRs already using a new field should be format-aligned in the same pass. Currently using **Refines:**: ADR-0043, ADR-0044. |
-| **ADR categories** — `docs/architecture/NNNN-*.md` `**Category:**` field | `scripts/sync-adr-index.ts` `CATEGORY_ORDER` array | Any new ADR category: must be added to `CATEGORY_ORDER` before first use in an ADR `**Category:**` field; otherwise the ADR silently lands in `'Unkategorisiert'` and is grouped incorrectly in the README index. The canonical category list lives in `CATEGORY_ORDER`. |
+| **ADR categories** — `docs/architecture/NNNN-*.md` `**Category:**` field | `scripts/sync-adr.ts` `CATEGORY_ORDER` array | Any new ADR category: must be added to `CATEGORY_ORDER` before first use in an ADR `**Category:**` field; otherwise the ADR silently lands in `'Unkategorisiert'` and is grouped incorrectly in the README index. The canonical category list lives in `CATEGORY_ORDER`. |
 | **Claude Design session spec** — `docs/design/claude-design-spec.md` | `docs/design/design-system.md §5a` (layout primitives table); `docs/design/design-system.md §3` (is-* vocabulary table); core token subset from `v3/src/styles/tokens.css` | Any change to §5a (new/renamed primitive), §3 (new is-* class), or a token in the core subset — update spec in the same commit. |
 <!-- PLACEHOLDER: Pass 7 — C10 implementation planning (to be added) -->
 
@@ -582,7 +582,7 @@ Findings are tagged `[SEV][CAT]` where:
 | I2 | IMP | B | docs/architecture/concept-brief.md §4.4 | Audio facade file described as `audio.ts`; actual: `src/audio/index.ts`. `play()` signature wrong (needs `pad: Pad`); `crossfade()` `to` arg is `Pad` not `string` | 123–128 |
 | I3 | IMP | B | docs/architecture/concept-brief.md §4.5 | "Suggested: **idb** or raw IndexedDB, either works": `idb` chosen and in use | 143–145 |
 | I4 | IMP | C | docs/architecture/concept-brief.md §3 vs §7 | §3 says HANDOFF.md is in `v1-reference/`; §7 step 2 says read `design-sources/2026-05-25/HANDOFF.md` — contradictory instructions | 53, 320 |
-| I5 | IMP | A | docs/architecture/concept-brief.md §4.8 | Project structure tree has wrong filenames: `App.tsx` (actual: `app.tsx`); non-existent `public/manifest.json`, `styles/components.css`; stale screen names | 168–187 |
+| I5 | IMP | A | docs/architecture/concept-brief.md §4.8 | Project structure tree has wrong filenames: `App.tsx` (actual: `App.tsx`); non-existent `public/manifest.json`, `styles/components.css`; stale screen names | 168–187 |
 | I6 | IMP | B | docs/architecture/concept-brief.md §5.1 | Slice list shows no completion status; all 8 slices appear equally pending; Slice 1 called "Home screen" not "StartScreen" | 249–259 |
 | I7 | IMP | B | CLAUDE.md §Architecture | "IndexedDB extended for Scenes and **Sets**" — PadSets (Slice 6) not yet built | 55 |
 | I8 | IMP | A | CLAUDE.md §Build commands | `test:e2e` described as "E2E smoke tests — run before push"; actually runs smoke+full suites; pre-push runs `test:e2e:all` | ~427 |

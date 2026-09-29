@@ -13,8 +13,8 @@
 
 import { useState, useRef } from 'preact/hooks';
 import type { JSX } from 'preact';
-import { TopBarV2 } from '../chrome/TopBarV2';
-import { StatusBarV2 } from '../chrome/StatusBarV2';
+import { TopBar } from '../components/TopBar';
+import { StatusBar } from '../components/StatusBar';
 import { PixelIcon } from '../components/PixelIcon';
 import { AudioRow } from '../components/AudioRow';
 import {
@@ -182,7 +182,7 @@ export function LibraryScreen(): JSX.Element {
       />
 
       {/* Top bar */}
-      <TopBarV2
+      <TopBar
         title="Library"
         breadcrumb={breadcrumb}
         right={
@@ -325,7 +325,7 @@ export function LibraryScreen(): JSX.Element {
       )}
 
       {/* Status bar */}
-      <StatusBarV2
+      <StatusBar
         mode="edit"
         boardName="Library"
         infoText={

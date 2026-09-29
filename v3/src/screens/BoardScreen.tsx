@@ -1,7 +1,7 @@
 // ─────────────────────────────────────────────────────────────────────────────
 // BoardScreen — main board canvas (Slice 3)
 //
-// Layout: BoardTopBarV3 | 3-column main area | StatusBarV2
+// Layout: BoardTopBar | 3-column main area | StatusBar
 //
 // 3-column main area:
 //   Left  220px  DeckRail  (deck list + CRUD)
@@ -25,12 +25,12 @@ import {
   libraryItems,
 } from '../state/store';
 import { boardPut } from '../db/idb';
-import { BoardTopBarV3 } from '../components/BoardTopBarV3';
+import { BoardTopBar } from '../components/BoardTopBar';
 import { DeckRail } from '../components/DeckRail';
 import { PadGrid } from '../components/PadGrid';
 import { PadEditorPanel } from '../components/PadEditorPanel';
 import { LibraryPanel } from '../components/LibraryPanel';
-import { StatusBarV2 } from '../chrome/StatusBarV2';
+import { StatusBar } from '../components/StatusBar';
 import { PixelIcon } from '../components/PixelIcon';
 import type { AppMode, Board, Pad, PadPosition, Deck } from '../types';
 import { nanoid } from '../lib/nanoid';
@@ -268,7 +268,7 @@ export function BoardScreen(): JSX.Element {
 
   return (
     <div class="sb-screen">
-      <BoardTopBarV3
+      <BoardTopBar
         boardName={board.name}
         deckName={deck?.name}
         mode={mode}
@@ -389,7 +389,7 @@ export function BoardScreen(): JSX.Element {
         )}
       </div>
 
-      <StatusBarV2
+      <StatusBar
         mode={mode}
         boardName={board.name}
         infoText={

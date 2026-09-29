@@ -7,9 +7,16 @@ export type ChangelogEntry = {
   items: string[];
 };
 
-export const APP_VERSION = '3.0.54';
+export const APP_VERSION = '3.0.55';
 
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.55',
+    date: '2026-09-29',
+    items: [
+      'refactor: code naming scheme (ADR-0052) — TopBar/StatusBar/BoardTopBar without version suffixes, App.tsx, sb-theme-*, unused CSS removed, scripts named after npm scripts; guarded by tests (S2)',
+    ],
+  },
   {
     version: '3.0.54',
     date: '2026-09-29',

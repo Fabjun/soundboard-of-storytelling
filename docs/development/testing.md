@@ -64,8 +64,8 @@ Zahl in Klammern = Testfälle in der Datei (inkl. Quarantäne)._
 | `pwa` | Chromium (Desktop) | nur Build | `pwa` (4) |
 | `visual` | Chromium (Desktop), nur macOS | Dev | `visual-boardlist-empty` (1), `visual-boardlist-with-board` (1), `visual-boardscreen-game` (1), `visual-boardscreen-setup` (1), `visual-deck-rail` (1), `visual-library-empty` (1), `visual-modetoggle-states` (2), `visual-startscreen` (1) |
 
-**Unit-Tests (Vitest):** 13 Dateien, 192 Testfälle —
-`audio/engine.test.ts` (24), `audio/lru.test.ts` (11), `deckConflict.test.ts` (9), `docsGuards.test.ts` (7), `e2eProjects.test.ts` (6), `flameMath.test.ts` (22), `idb.test.ts` (15), `nanoid.test.ts` (2), `padDnd.test.ts` (11), `padUtils.test.ts` (43), `store.test.ts` (23), `testGuards.test.ts` (6), `upload.test.ts` (13)
+**Unit-Tests (Vitest):** 14 Dateien, 199 Testfälle —
+`audio/engine.test.ts` (24), `audio/lru.test.ts` (11), `codeGuards.test.ts` (7), `deckConflict.test.ts` (9), `docsGuards.test.ts` (7), `e2eProjects.test.ts` (6), `flameMath.test.ts` (22), `idb.test.ts` (15), `nanoid.test.ts` (2), `padDnd.test.ts` (11), `padUtils.test.ts` (43), `store.test.ts` (23), `testGuards.test.ts` (6), `upload.test.ts` (13)
 
 <!-- AUTO-GENERATED:test-inventory END -->
 

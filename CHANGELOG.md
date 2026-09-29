@@ -4,6 +4,10 @@
 
 All notable changes to Soundboard of Storytelling, newest first.
 
+## 3.0.55 — 2026-09-29
+
+- refactor: code naming scheme (ADR-0052) — TopBar/StatusBar/BoardTopBar without version suffixes, App.tsx, sb-theme-*, unused CSS removed, scripts named after npm scripts; guarded by tests (S2)
+
 ## 3.0.54 — 2026-09-29
 
 - chore: remove unused Vite scaffold files; package renamed soundboard-of-storytelling, APP_VERSION is the only version (S1)

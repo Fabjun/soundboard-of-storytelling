@@ -1,6 +1,6 @@
 #!/usr/bin/env tsx
 /**
- * sync-test-inventory.ts
+ * sync-tests.ts
  *
  * Writes the test inventory into docs/development/testing.md between AUTO-GENERATED markers:
  * which spec runs in which Playwright project (from v3/tests/e2e/projects.ts),
@@ -101,7 +101,7 @@ const doc = readFileSync(TESTING, 'utf8');
 const a = doc.indexOf(MARKER_START);
 const b = doc.indexOf(MARKER_END);
 if (a < 0 || b < 0 || b < a) {
-  console.error('❌ sync-test-inventory: markers missing in docs/development/testing.md');
+  console.error('❌ sync-tests: markers missing in docs/development/testing.md');
   process.exit(1);
 }
 const next = doc.slice(0, a) + block + doc.slice(b + MARKER_END.length);

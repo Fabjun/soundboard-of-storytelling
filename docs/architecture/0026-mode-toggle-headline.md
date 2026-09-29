@@ -1,4 +1,4 @@
-# ADR-0026: Mode-Toggle als interaktive Screen-Headline (BoardTopBarV3)
+# ADR-0026: Mode-Toggle als interaktive Screen-Headline (BoardTopBar)
 
 **Status:** Accepted
 **Date:** 2026-05-27
@@ -19,7 +19,7 @@ dokumentiert die Entscheidung.
 
 ## Decision
 
-Der Mode-Toggle ist ein `sb-mode-toggle` Chrome-Block in `BoardTopBarV3`:
+Der Mode-Toggle ist ein `sb-mode-toggle` Chrome-Block in `BoardTopBar`:
 - 3-Spalten-Grid: linke Spalte (Flamme + Board-Name/Breadcrumb), Mitte (Toggle),
   rechte Spalte (Help/Fullscreen)
 - `sb-mode-badge` bleibt für kompakte/sekundäre Flächen
@@ -46,8 +46,8 @@ erforderlich.
   Pad-Typ-Tokens (base / -soft / -glow).
 
 **Negativ / Trade-offs:**
-- BoardTopBarV3 ist board-spezifisch: ein separater Komponente neben dem
-  globalen `TopBarV2`. Das ist bewusst — Board-Screen hat andere Anforderungen
+- BoardTopBar ist board-spezifisch: ein separater Komponente neben dem
+  globalen `TopBar`. Das ist bewusst — Board-Screen hat andere Anforderungen
   (Mode-Toggle, Board-Name) als andere Screens.
 - Mehr visual complexity in der TopBar.
 
@@ -61,7 +61,7 @@ echtes Usability-Problem ist.
 
 ## Related
 
-- **Dateien:** `v3/src/components/ModeToggle.tsx`, `v3/src/components/BoardTopBarV3.tsx`, `v3/src/styles/tokens.css` (--mode-setup-glow, --mode-game-glow)
+- **Dateien:** `v3/src/components/ModeToggle.tsx`, `v3/src/components/BoardTopBar.tsx`, `v3/src/styles/tokens.css` (--mode-setup-glow, --mode-game-glow)
 - **ADRs:** ADR-0021 (CSS-Naming / is-setup, is-game), ADR-0022 (Design Tokens)
 - **Quelldokumente:** `docs/design/design-notes.md §Mode toggle as interactive screen header (v24) — RESOLVED`, `design-sources/2026-05-25/v24-mode-toggle.jsx`
 - **Commits:** `9eeceeb` — feat(slice-3): Board + Scene + Pad CRUD

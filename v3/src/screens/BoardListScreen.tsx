@@ -1,14 +1,14 @@
 // ─────────────────────────────────────────────────────────────────────────────
 // BoardListScreen — list all boards, create / rename / delete
 //
-// Pattern mirrors LibraryScreen: TopBarV2 + list rows + StatusBarV2.
+// Pattern mirrors LibraryScreen: TopBar + list rows + StatusBar.
 // Each board row follows the AudioRow pattern (inline rename, 2-tap delete).
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { useState } from 'preact/hooks';
 import type { JSX } from 'preact';
-import { TopBarV2 } from '../chrome/TopBarV2';
-import { StatusBarV2 } from '../chrome/StatusBarV2';
+import { TopBar } from '../components/TopBar';
+import { StatusBar } from '../components/StatusBar';
 import { PixelIcon } from '../components/PixelIcon';
 import {
   currentScreen,
@@ -52,7 +52,7 @@ export function BoardListScreen(): JSX.Element {
 
   return (
     <div class="sb-screen">
-      <TopBarV2
+      <TopBar
         title="Boards"
         breadcrumb={`${allBoards.length} board${allBoards.length !== 1 ? 's' : ''}`}
         right={
@@ -89,7 +89,7 @@ export function BoardListScreen(): JSX.Element {
         )}
       </div>
 
-      <StatusBarV2
+      <StatusBar
         mode="edit"
         boardName="Board List"
         infoText={`${allBoards.length} board${allBoards.length !== 1 ? 's' : ''}`}

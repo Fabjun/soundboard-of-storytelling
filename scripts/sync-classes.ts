@@ -1,6 +1,6 @@
 #!/usr/bin/env tsx
 /**
- * sync-sb-classes-inventory.ts
+ * sync-classes.ts
  *
  * Extracts all sb-* CSS class names used in v3/src and writes a table
  * between AUTO-GENERATED markers in docs/design/design-system.md §6.

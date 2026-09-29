@@ -1,14 +1,14 @@
 // ─────────────────────────────────────────────────────────────────────────────
-// TopBarV2 — persistent 48px header used on all screens
+// TopBar — persistent 48px header used on all screens
 //
 // Source: design-sources/2026-05-25/v2-screens.jsx TopBarV2
 // ─────────────────────────────────────────────────────────────────────────────
 
 import type { ComponentChildren, JSX } from 'preact';
-import { PixelIcon } from '../components/PixelIcon';
+import { PixelIcon } from './PixelIcon';
 import type { AppMode } from '../types';
 
-interface TopBarV2Props {
+interface TopBarProps {
   title: string;
   breadcrumb?: string;
   /** Present only on Board screen; omit on screens without a mode toggle. */
@@ -18,13 +18,7 @@ interface TopBarV2Props {
   right?: ComponentChildren;
 }
 
-export function TopBarV2({
-  title,
-  breadcrumb,
-  mode,
-  onModeSwap,
-  right,
-}: TopBarV2Props): JSX.Element {
+export function TopBar({ title, breadcrumb, mode, onModeSwap, right }: TopBarProps): JSX.Element {
   return (
     <div class="sb-topbar">
       {/* Flame logo */}

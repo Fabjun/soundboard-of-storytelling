@@ -316,14 +316,17 @@ also in §6):
 | `sb-tabs` | Tab bar container — flex row with bottom border separating tabs from content. | `v3/src/styles/tokens.css` |
 | `sb-tag-list` | Flex-wrap container for tag pills — padded with horizontal gutters. | `v3/src/styles/tokens.css` |
 | `sb-text-input` | Pixel-style text input — sunk background, bordered, VT323 uppercase. For pad name and form fields. | `v3/src/styles/tokens.css` |
+| `sb-theme-crimson` | Theme override (unused until Slice 14 settings) — crimson horror palette; re-declares colour tokens. | `v3/src/styles/tokens.css` |
+| `sb-theme-neon` | Theme override (unused until Slice 14 settings) — neon sci-fi palette; re-declares colour tokens. | `v3/src/styles/tokens.css` |
+| `sb-theme-verdant` | Theme override (unused until Slice 14 settings) — green fantasy palette; re-declares colour tokens. | `v3/src/styles/tokens.css` |
 | `sb-toggle` | Binary on/off toggle switch (40×20px); is-on moves thumb right and adds gold glow. Currently no TSX usage. [unused-css] | `v3/src/styles/tokens.css` |
-| `sb-topbar` | Root container for TopBarV2 — flex row, 48px height, deep bg, bottom border. Uses flex (vs sb-board-topbar's grid). Sub-token padding: 10px/16px (no exact token match). | `v3/src/styles/tokens.css` |
-| `sb-topbar-bc-col` | Breadcrumb column flex wrapper in BoardTopBarV3 — stacks board name above deck name, min-width:0 for truncation. | `v3/src/styles/tokens.css` |
+| `sb-topbar` | Root container for TopBar — flex row, 48px height, deep bg, bottom border. Uses flex (vs sb-board-topbar's grid). Sub-token padding: 10px/16px (no exact token match). | `v3/src/styles/tokens.css` |
+| `sb-topbar-bc-col` | Breadcrumb column flex wrapper in BoardTopBar — stacks board name above deck name, min-width:0 for truncation. | `v3/src/styles/tokens.css` |
 | `sb-topbar-icon-btn` | Icon button size override in the board top bar — 44px min-width (iOS touch target), 0/space-2 padding, space-1 gap for icon+label. 2-use: back button + library toggle. | `v3/src/styles/tokens.css` |
-| `sb-topbar-logo` | Flame icon wrapper in TopBarV2 — flame colour, no-shrink. | `v3/src/styles/tokens.css` |
+| `sb-topbar-logo` | Flame icon wrapper in TopBar — flame colour, no-shrink. | `v3/src/styles/tokens.css` |
 | `sb-topbar-secondary` | Secondary muted mono text in topbar context — font-mono 12px (normalized from 11px on V3, sub-token), text-mute, truncating. Cross-topbar: used on V2 breadcrumb and V3 deck name. | `v3/src/styles/tokens.css` |
-| `sb-topbar-title` | Truncating title span base — used by TopBarV2 (is-app) and BoardTopBarV3 (is-board). Base provides truncation; scale set via is-app / is-board modifier. | `v3/src/styles/tokens.css` |
-| `sb-topbar-title-group` | Title + breadcrumb flex group in TopBarV2 — baseline-aligned row, fills remaining space, min-width:0 for truncation. | `v3/src/styles/tokens.css` |
+| `sb-topbar-title` | Truncating title span base — used by TopBar (is-app) and BoardTopBar (is-board). Base provides truncation; scale set via is-app / is-board modifier. | `v3/src/styles/tokens.css` |
+| `sb-topbar-title-group` | Title + breadcrumb flex group in TopBar — baseline-aligned row, fills remaining space, min-width:0 for truncation. | `v3/src/styles/tokens.css` |
 | `sb-type-btn` | Type-selector button (pad type pill) — fills row evenly, mono xs font, uppercase, tight padding, 28px min-height; color/border/background set inline for active pad-type state. | `v3/src/styles/tokens.css` |
 | `sb-type-change-arrow` | Arrow separator (→) in the type-change confirmation row — muted colour. | `v3/src/styles/tokens.css` |
 | `sb-type-change-from` | FROM-type label in the type-change confirmation row — dim colour to de-emphasise the source type. | `v3/src/styles/tokens.css` |

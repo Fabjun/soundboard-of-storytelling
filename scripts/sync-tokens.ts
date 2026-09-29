@@ -1,14 +1,14 @@
 #!/usr/bin/env tsx
 /**
- * sync-tokens-inventory.ts
+ * sync-tokens.ts
  *
  * Reads v3/src/styles/tokens.css (canonical — what the app loads), extracts all
  * CSS custom properties from exclusive :root { } blocks, grouped by section, and
  * writes a table between AUTO-GENERATED markers in docs/design/design-system.md §A.
  *
  * Only tokens inside an exclusive `:root { }` selector are included.
- * Multi-selector blocks (`:root, .theme-verdant, ...`) and theme-override blocks
- * (`.theme-verdant { }`) are skipped — they are not canonical token definitions.
+ * Multi-selector blocks (`:root, .sb-theme-verdant, ...`) and theme-override blocks
+ * (`.sb-theme-verdant { }`) are skipped — they are not canonical token definitions.
  * Legacy --sb-* aliases are excluded for the same reason.
  *
  * Run: npm run sync:tokens  (from v3/)
@@ -38,7 +38,7 @@ function parseTokens(css: string): TokenEntry[] {
   let currentGroup = 'Allgemein';
   let inLegacyBlock = false;
 
-  // Primary exclusion for legacy aliases: the comma-check on ':root, .theme-*' selectors.
+  // Primary exclusion for legacy aliases: the comma-check on ':root, .sb-theme-*' selectors.
   // inLegacyBlock is belt-and-suspenders in case aliases end up inside a canonical :root block.
   const legacyMarker = 'LEGACY ALIASES';
 
@@ -72,7 +72,7 @@ function parseTokens(css: string): TokenEntry[] {
         // No comma on this line → could be exclusive :root { or :root (brace next line)
         pendingRoot = true;
       }
-      // Has comma → ':root, .theme-*' multi-selector; pendingRoot stays false
+      // Has comma → ':root, .sb-theme-*' multi-selector; pendingRoot stays false
     }
 
     // ── Count braces ──

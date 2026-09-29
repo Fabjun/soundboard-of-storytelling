@@ -371,7 +371,7 @@ single source of truth).
 ### Crimson theme COMBO override
 Default `--pad-combo` is rose-magenta. In the Crimson theme that sits next
 to dominant `--blood` red — not a hard conflict, but a missed opportunity.
-A theme-specific override (`.theme-crimson { --pad-combo: <something
+A theme-specific override (`.sb-theme-crimson { --pad-combo: <something
 cooler>; }`) would let COMBO act as the kontrapunkt to blood. Candidate:
 desaturated cyan (#5A9FB0) for an icy "spell" feel; or violet (closer to
 playlist, risky). Decide when Crimson reaches sign-off.
@@ -467,7 +467,7 @@ as the canonical examples of the allowed inset variant.
 ### Mode toggle as interactive screen header (v24) — RESOLVED
 
 Landed via `sb-mode-toggle` — a new chrome block, board-only, in the
-title-slot of a 3-column `BoardTopBarV3` (left flame+breadcrumb, center
+title-slot of a 3-column `BoardTopBar` (left flame+breadcrumb, center
 toggle, right help/fullscreen). Replaces the small `sb-mode-badge` in
 that one position; `sb-mode-badge` stays for compact/secondary surfaces.
 State flip triggers a directional pixel-spark animation
@@ -529,17 +529,17 @@ vollständig beseitigt. Betroffene Dateien:
   `--danger` →`var(--blood-bright)`, `--pad-combo` Kupfer→Rose Magenta
   (#C9529D, user-confirmed — hue ~325° klar getrennt von Gold/Teal/Blood)
 - Legacy-Alias-Scope-Bug gefixt: `--sb-*` Aliase jetzt auf
-  `:root, .theme-verdant, .theme-neon, .theme-crimson` (vorher nur `:root` —
+  `:root, .sb-theme-verdant, .sb-theme-neon, .sb-theme-crimson` (vorher nur `:root` —
   hätte Theme-Switching in Slice 8 gebrochen)
 - `--sb-danger` →`var(--blood-bright)` (konsistent mit --danger-Korrektur)
-- Theme-Overrides vervollständigt: `.theme-verdant` (pad-single, pad-playlist),
-  `.theme-crimson` (pad-single, pad-combo)
+- Theme-Overrides vervollständigt: `.sb-theme-verdant` (pad-single, pad-playlist),
+  `.sb-theme-crimson` (pad-single, pad-combo)
 
 **`v3/src/screens/StartScreen.tsx`**
 - FlameLogo filter →`var(--glow-flame)` (war hardcoded rgba)
 - Hintergrund-Gradient →`var(--flame-soft)`, Glow-Ring →`var(--flame-aura)`
 
-**`v3/src/chrome/TopBarV2.tsx`**
+**`v3/src/components/TopBar.tsx`**
 - Titel-Span: Inline-Styling →`class="sb-display-vt"` + fontSize 22px
   (war 16px + var(--text); Design-Referenz: VT323 22px gold-bright mit Glow)
 

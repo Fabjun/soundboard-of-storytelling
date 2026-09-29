@@ -217,16 +217,16 @@
    --sb-* token below resolves to a v2 canonical token.
 
    IMPORTANT — these aliases live on EVERY theme root (:root and
-   each .theme-*) so that var() substitutions resolve against the
+   each .sb-theme-*) so that var() substitutions resolve against the
    canonical tokens AT THAT THEME'S LEVEL. If the aliases were only
    on :root, they'd lock to root's resolved colors and never pick
    up theme overrides (since custom properties inherit as computed
    values, not as var() expressions).
    ════════════════════════════════════════════════════════════════════ */
 :root,
-.theme-verdant,
-.theme-neon,
-.theme-crimson {
+.sb-theme-verdant,
+.sb-theme-neon,
+.sb-theme-crimson {
   --sb-bg-deep: var(--night);
   --sb-bg-base: var(--deep);
   --sb-bg-panel: var(--surface);
@@ -303,8 +303,9 @@
    is overridden; structure tokens (spacing / radius / type) never move.
    ════════════════════════════════════════════════════════════════════ */
 
-/* Verdant — D&D / forest / leather-bound book */
-.theme-verdant {
+/* Verdant — fantasy / forest / leather-bound book */
+.sb-theme-verdant {
+  /* @inventory: Theme override (unused until Slice 14 settings) — green fantasy palette; re-declares colour tokens. */
   --night: #07120d;
   --deep: #0b1e16;
   --surface: #102a20;
@@ -345,7 +346,8 @@
 }
 
 /* Neon — sci-fi / cyberpunk */
-.theme-neon {
+.sb-theme-neon {
+  /* @inventory: Theme override (unused until Slice 14 settings) — neon sci-fi palette; re-declares colour tokens. */
   --night: #050816;
   --deep: #0a1228;
   --surface: #111e40;
@@ -379,7 +381,8 @@
 }
 
 /* Crimson — horror / gothic */
-.theme-crimson {
+.sb-theme-crimson {
+  /* @inventory: Theme override (unused until Slice 14 settings) — crimson horror palette; re-declares colour tokens. */
   --night: #0a0606;
   --deep: #16090a;
   --surface: #20121a;
@@ -1252,7 +1255,7 @@
     drop-shadow(0 0 14px var(--pad-glow));
 }
 
-/* ── Board TopBar V3 ── 3-column header replacing TopBarV2 on BoardScreen */
+/* ── BoardTopBar ── 3-column header replacing TopBar on BoardScreen */
 .sb-board-topbar {
   /* @inventory: 3-column grid header bar for BoardScreen (back + breadcrumb | mode-toggle | actions). */
   display: grid;
@@ -1278,9 +1281,9 @@
   justify-content: flex-end;
 }
 
-/* ── TopBarV2 — Session 3h ────────────────────────────────────────── */
+/* ── TopBar — Session 3h ────────────────────────────────────────── */
 .sb-topbar {
-  /* @inventory: Root container for TopBarV2 — flex row, 48px height, deep bg, bottom border. Uses flex (vs sb-board-topbar's grid). Sub-token padding: 10px/16px (no exact token match). */
+  /* @inventory: Root container for TopBar — flex row, 48px height, deep bg, bottom border. Uses flex (vs sb-board-topbar's grid). Sub-token padding: 10px/16px (no exact token match). */
   display: flex;
   align-items: center;
   gap: var(--space-3);
@@ -1291,12 +1294,12 @@
   flex-shrink: 0;
 }
 .sb-topbar-logo {
-  /* @inventory: Flame icon wrapper in TopBarV2 — flame colour, no-shrink. */
+  /* @inventory: Flame icon wrapper in TopBar — flame colour, no-shrink. */
   color: var(--flame);
   flex-shrink: 0;
 }
 .sb-topbar-title-group {
-  /* @inventory: Title + breadcrumb flex group in TopBarV2 — baseline-aligned row, fills remaining space, min-width:0 for truncation. */
+  /* @inventory: Title + breadcrumb flex group in TopBar — baseline-aligned row, fills remaining space, min-width:0 for truncation. */
   display: flex;
   align-items: baseline;
   gap: var(--space-2);
@@ -1304,18 +1307,18 @@
   flex: 1;
 }
 .sb-topbar-title {
-  /* @inventory: Truncating title span base — used by TopBarV2 (is-app) and BoardTopBarV3 (is-board). Base provides truncation; scale set via is-app / is-board modifier. */
+  /* @inventory: Truncating title span base — used by TopBar (is-app) and BoardTopBar (is-board). Base provides truncation; scale set via is-app / is-board modifier. */
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 .sb-topbar-title.is-app {
-  /* @inventory: App-level title scale modifier — 22px (sub-token, intentional display scale), 0.08em tracking. TopBarV2 screen title. */
+  /* @inventory: App-level title scale modifier — 22px (sub-token, intentional display scale), 0.08em tracking. TopBar screen title. */
   font-size: 22px; /* sub-token: topbar title size, intentional display scale */
   letter-spacing: 0.08em;
 }
 .sb-topbar-title.is-board {
-  /* @inventory: Board-level title scale modifier — 16px (sub-token, compact), 0.06em tracking. BoardTopBarV3 breadcrumb board name. maxWidth set inline (dynamic: compact ? 80 : 140). */
+  /* @inventory: Board-level title scale modifier — 16px (sub-token, compact), 0.06em tracking. BoardTopBar breadcrumb board name. maxWidth set inline (dynamic: compact ? 80 : 140). */
   font-size: 16px; /* sub-token: compact topbar title — intentionally smaller than is-app 22px */
   letter-spacing: 0.06em;
 }
@@ -1328,7 +1331,7 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-/* ── Board TopBar V3 additions — Session 3h ─────────────────────── */
+/* ── BoardTopBar additions — Session 3h ─────────────────────── */
 .sb-topbar-icon-btn {
   /* @inventory: Icon button size override in the board top bar — 44px min-width (iOS touch target), 0/space-2 padding, space-1 gap for icon+label. 2-use: back button + library toggle. */
   min-width: 44px;
@@ -1336,7 +1339,7 @@
   gap: var(--space-1);
 }
 .sb-topbar-bc-col {
-  /* @inventory: Breadcrumb column flex wrapper in BoardTopBarV3 — stacks board name above deck name, min-width:0 for truncation. */
+  /* @inventory: Breadcrumb column flex wrapper in BoardTopBar — stacks board name above deck name, min-width:0 for truncation. */
   display: flex;
   flex-direction: column;
   min-width: 0;

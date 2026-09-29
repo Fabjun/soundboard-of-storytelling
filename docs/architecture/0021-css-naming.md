@@ -3,6 +3,7 @@
 **Status:** Accepted
 **Date:** 2026-05-27
 **Slice:** cross-cutting
+**Refined by:** ADR-0052 (`has-*` states allowed; themes `sb-theme-*`; no other namespaces)
 
 **Category:** UI-Architektur
 

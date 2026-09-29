@@ -52,29 +52,3 @@ button,
   min-width: 44px;
   cursor: pointer;
 }
-
-/* Explicit utility class for non-button touch targets */
-.touch-target {
-  min-height: 44px;
-  min-width: 44px;
-}
-
-/* ─── sb-flicker (flame animation for StartScreen) ───────────── */
-/* Sourced from design-sources/2026-05-25/v2-screens.jsx — not in tokens.css */
-@keyframes sb-flicker {
-  0%,
-  100% {
-    transform: scale(1);
-    opacity: 0.85;
-  }
-  50% {
-    transform: scale(1.05);
-    opacity: 1;
-  }
-}
-
-/* ─── Pixel rendering for icons ──────────────────────────────── */
-.pixel-icon {
-  image-rendering: pixelated;
-  image-rendering: crisp-edges;
-}

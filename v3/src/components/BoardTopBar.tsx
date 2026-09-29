@@ -1,5 +1,5 @@
 // ─────────────────────────────────────────────────────────────────────────────
-// BoardTopBarV3 — 3-column header for Board screen
+// BoardTopBar — 3-column header for Board screen
 //
 // Source: design-sources/2026-05-25/v24-mode-toggle.jsx BoardTopBarV3
 //
@@ -11,7 +11,7 @@ import { PixelIcon } from './PixelIcon';
 import { ModeToggle } from './ModeToggle';
 import type { AppMode } from '../types';
 
-interface BoardTopBarV3Props {
+interface BoardTopBarProps {
   boardName: string;
   deckName?: string;
   mode: AppMode;
@@ -22,7 +22,7 @@ interface BoardTopBarV3Props {
   onBack: () => void;
 }
 
-export function BoardTopBarV3({
+export function BoardTopBar({
   boardName,
   deckName,
   mode,
@@ -30,7 +30,7 @@ export function BoardTopBarV3({
   libraryOpen,
   onLibraryToggle,
   onBack,
-}: BoardTopBarV3Props): JSX.Element {
+}: BoardTopBarProps): JSX.Element {
   // Detect compact (mobile) viewport
   const compact = typeof window !== 'undefined' && window.innerWidth < 480;
 

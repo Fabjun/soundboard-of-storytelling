@@ -1013,7 +1013,7 @@ Group B (19 1-use from 3h): 17 confirmed-justified + 2 consolidation actions:
   only. `.is-app` = 22px/0.08em. `.is-board` = 16px/0.06em.)
 - **sb-topbar-badge-wrap absorbed into sb-mode-badge** (single-property utility anti-pattern:
   `flex-shrink:0` only, same as eliminated sb-text-mute. flex-shrink:0 moved to sb-mode-badge.
-  Wrapper div removed from TopBarV2.tsx.)
+  Wrapper div removed from TopBar.tsx.)
 Principles applied: (a) button variants use sb-btn-{variant} pattern (sb-btn-muted stays);
 (b) size modifiers use -sm suffix (sb-tab-sm stays); (c) §6 scanned for partners on all
 consolidation candidates — no additional partners found.
@@ -1200,14 +1200,14 @@ approval per stage; guard tests keep each scheme from drifting back.
 | Stage | Content | Status |
 |---|---|---|
 | S1 | Remove unused Vite scaffold files (`src/app.css`, `src/index.css`, `src/assets/*`, `public/icons.svg`); one version number — package renamed `soundboard-of-storytelling`, `version` field removed (`APP_VERSION` is the only version) | ✅ Done (see git log: "…(S1)") |
-| S2 | Code names: drop `V2`/`V3` suffixes (`TopBar`, `StatusBar`, `BoardTopBar`), dissolve `src/chrome/`, `App.tsx`, CSS classes into the `sb-*`/`is-*` scheme (`.touch-target`, `.pixel-icon`; `.theme-*` defined as allowed), generator files named after their npm scripts; guard tests | open |
+| S2 | Code names (ADR-0052, sources cited): `TopBarV2`/`StatusBarV2`/`BoardTopBarV3` → `TopBar`/`StatusBar`/`BoardTopBar`, `src/chrome/` dissolved into `components/`, `app.tsx` → `App.tsx`; unused CSS removed (`.touch-target`, `.pixel-icon`, `@keyframes sb-flicker`), `.theme-*` → `.sb-theme-*`, `has-*` allowed; generator scripts named after their npm scripts; guard `codeGuards.test.ts` | ✅ Done (see git log: "…(S2)") |
 | S3 | Tests: one test-ID scheme (update ADR-0038) applied everywhere; consistent spec/helper file names incl. moving visual baselines; guard tests | open |
 | S4 | English only: active docs, hook/CI messages, ADR template + categories + labels; then translate ADR-0001–0045; uniform ADR headers + guard test | open |
 | S5 | Commit message convention in CLAUDE.md + `commit-msg` hook | open |
 
-**Deferred to Slice 13:** merge the two top-bar components (`TopBarV2` on Library/Board list,
-`BoardTopBarV3` on Board) into **one** component with variants — they are rebuilt for the mobile
-layout there anyway; merging now would mean building twice.
+**Deferred to Slice 13:** re-evaluate the ADR-0028 exception for the two top bars (`TopBar` on
+Library/Board list, `BoardTopBar` on Board — deliberately separate per ADR-0026) and merge them
+into one component with variants if the mobile layout allows; both are rebuilt there anyway.
 
 ### Re-enable mobile layout tests
 `mobile-touch-targets.spec.ts` and `mobile-overflow.spec.ts` have FIXME markers because the
@@ -1436,7 +1436,7 @@ new classes.
    removed. This is exactly the class of documentation drift Session 0 was designed to
    surface — one layer deeper into tooling.
 
-   **Concrete fix:** Change `scripts/sync-tokens-inventory.ts` to read from
+   **Concrete fix:** Change `scripts/sync-tokens.ts` to read from
    `v3/src/styles/tokens.css` instead of `design-sources/2026-05-25/tokens.css`. Regenerate §A —
    should show 9 new tokens and correctly exclude `--pix-bg-layer`.
 
@@ -1513,7 +1513,7 @@ DoD for each file session: `audit:inline-styles` → 0 violations for that file.
 | **3e** ✅ Done (96ae78d) | `StartScreen.tsx` | 19 | 0 | 0 | 0 violations, 0 d-w-s. 18 new classes (sb-overlay family, sb-changelog family, sb-flame-icon, sb-start-* family, sb-btn-unlock, sb-version-link). §6: 112→130. Resolution: 1 Path A / 1 A+B / 1 0+B / 1 Primitiv+B / 15 new-class = 19. Reuse rate 10.5% — StartScreen is a centered splash with no tab bar and no empty state; all 3c bets (sb-screen, sb-screen-empty, sb-tab-bar) FAILED (inapplicable — not promoted, not cleaned up — each is still in active use on its own screen). Token normalization: 10 off-token values aligned (all ≤4px drift). New Sorte-2 bets for 3e (Verfallsbedingung: Slice 8): sb-overlay, sb-overlay-header, sb-overlay-body flagged for promotion if settings/future overlays appear. Changelog-family classes (sb-changelog-*) to demote if changelog component is removed. Opportunistic 3b-bet test: sb-panel-title evaluated against ChangelogOverlay's "CHANGELOG" heading — rejected (sb-panel-title is font-mono/fs-xs/flex:1; overlay title needs font-ui/fs-lg). Does not change sb-panel-title's bet status: its declared target is 3g (LibraryPanel), not 3e; this was a side test only — status remains PENDING. |
 | **3f** ✅ Done (b46fb44) | `BoardScreen.tsx` + `BoardListScreen.tsx` | 31 (BS: 17, BLS: 14) | 1 (BLS:161 d-w-s → sb-board-row) | 0 | 0 violations, 0 d-w-s. §6: 130→145 (+15 new sb-* classes). Audit total: 88→57. Resolution breakdown: DELETE 1 / Path A §6 7 / intra-session 1 / cross-file intra-session 3 / CSS extension 1 / new modifier 3 / new class 15 = 31. Reuse rate 35% (11/31). 3a residual (BLS:238 flexShrink:0) resolved via flat sb-row-actions class applied at element level — flat model maintained throughout. sb-screen: **WON** (3 uses: BS×2 + BLS×1). sb-tab-bar: still PARTIALLY-FAILED (3g pending). sb-section-header-row: not found in 3f files, moves to 3g. New 3f bets: sb-row-rename-input, sb-row-actions, sb-btn-icon-sm (all pending 3g — AudioRow scope). Token normalizations: 13px→--fs-xs (1px drift), fontSize:22px=--fs-xl exact, 11px sb-hint-text→10px (1px drift), padding 10px/14px→8px/12px (2px drift each). Off-token literals: 6px×3 (sb-place-banner, sb-setup-toolbar, sb-btn-icon-sm), 56px×1 (sb-board-row minHeight), 60px×1 (is-loose padding) — see §5 BACKLOG note below. Architecture: flat model invariant formally stated; sb-menu-row pre-flat legacy noted and left for dedicated consolidation pass. |
 | **3g** ✅ Done (12fbbc0) | `SceneRail.tsx` + `LibraryPanel.tsx` + `AudioRow.tsx` | 9 + 11 + 8 = 28 | 0+0+2 = 2 | 0 | 0 violations, 0 d-w-s. §6: 145→159 (+14 new classes). Audit total: 57→29. Resolution: 1 DELETE / 14 Path-A §6 / 2 intra-session / 13 new class = 30 resolutions for 28 violations (+2 from d-w-s dual split). Reuse rate 57% overall (73% LibraryPanel — thesis confirmed for screen→panel siblings; 50% AudioRow). 0 new literal 11px values — SR-2 and AR-9 normalized to var(--fs-xs). 4 existing class updates: sb-row (min-width:0), sb-scroll-fill (overscroll-behavior:contain), sb-count-text (flex-shrink:0), sb-hint-text (truncation triplet). Bet outcomes: #3 WON (sb-panel-title on Library span), #5 WON (sb-search-field LP-3), #6 WON (sb-btn-clear LP-5), #12 WON (sb-scroll-fill LP-7); #4 PARTIAL (sb-search-bar → sb-lib-panel-search-bar sibling); #7 FAILED (sb-item-list wrong structure), #10 FINAL-FAILED→screen-local (sb-tab-bar, LibraryPanel has no tab bar), #11 FAILED (sb-filter-rail), #21 FAILED (sb-row-rename-input: wrong font scale for filenames), #22 FAILED (sb-row-actions: AudioRow uses grid, not flex+actions), #23 FAILED (sb-btn-icon-sm: 36px fits neither 28px SceneRail nor 44px AudioRow). |
-| **3h** ✅ Done (994d2eb) | `PadTypeConfirmDialog.tsx` + `TopBarV2.tsx` + `BoardTopBarV3.tsx` + `PadGridCell.tsx` + `UndoToast.tsx` + `StatusBarV2.tsx` + `Waveform.tsx` + `PixelIcon.tsx` | 13+5+4+4+2+1+0+0 = 29 | 1+1+1+0+0+0+2+0 = 5 | 1(PTD ternary)+1(Pix spread) = 2 | 0 violations, 0 d-w-s. §6: 159→186 (+27 new sb-* classes). Audit total: 29→0 (project-wide Total=0 confirmed — Session 3 migration COMPLETE). Resolution breakdown: 1 DELETE / 4 pre-flat-family extensions (.sb-pad family: is-deep height+touch-action, pad-title fs unify, new pad-type-label + pad-drag-handle descendants) / 5 d-w-s splits (TopBarV2:85 cursor, BoardTopBarV3:59 maxWidth, PadTypeConfirmDialog:117 verdict-pill bg, Waveform:23 height+opacity, Waveform:37 height+background) / 19 Path B new classes. Near-miss merge: sb-topbar-breadcrumb(V2) + sb-topbar-scene-name(V3) → sb-topbar-secondary (cross-topbar 2-use, same function, 1px size normalization, color intrinsic). Anti-utility ruling: sb-text-dim/sb-text-mute rejected as standalone utilities; colors absorbed into semantic element classes (sb-type-change-from/-arrow, sb-undo-message, sb-topbar-secondary). PixelIcon: sb-pixel-icon hardcoded as base class in component; DOM-verified all 4 SVGs hasBase=true. Visual: TopBarV2 + BoardTopBarV3 (sb-topbar-secondary font-mono/12px/text-mute confirmed), StatusBarV2, PixelIcon verified headlessly. PadGridCell/PadTypeConfirmDialog/UndoToast/Waveform: CSS audit (0 Path-D) + build confirm migration; NOT laufzeit-verifiziert headlessly (ADD PAD disabled without audio fixture — pre-existing constraint). Beim nächsten Einsatz mit geladenen Audio-Dateien bestätigen: PadTypeConfirmDialog (FROM/ARROW/TO-Farben, Verdict-Pill-Hintergrund, Field-Label-Farbe), Waveform-Balken, PadGridCell (Type-Badge/Drag-Handle), UndoToast (message dim + UNDO + Progressbar). Bet settlement: all 8 open bets closed (see §5 Sorte-2 Bet Index below); final scorecard: WON 7 / LOST-justified 8 / FINALLY-LOST-consolidation 7 / SPECULATIVE-Slice8 3. |
+| **3h** ✅ Done (994d2eb) | `PadTypeConfirmDialog.tsx` + `TopBar.tsx` + `BoardTopBar.tsx` + `PadGridCell.tsx` + `UndoToast.tsx` + `StatusBar.tsx` + `Waveform.tsx` + `PixelIcon.tsx` | 13+5+4+4+2+1+0+0 = 29 | 1+1+1+0+0+0+2+0 = 5 | 1(PTD ternary)+1(Pix spread) = 2 | 0 violations, 0 d-w-s. §6: 159→186 (+27 new sb-* classes). Audit total: 29→0 (project-wide Total=0 confirmed — Session 3 migration COMPLETE). Resolution breakdown: 1 DELETE / 4 pre-flat-family extensions (.sb-pad family: is-deep height+touch-action, pad-title fs unify, new pad-type-label + pad-drag-handle descendants) / 5 d-w-s splits (TopBar:85 cursor, BoardTopBar:59 maxWidth, PadTypeConfirmDialog:117 verdict-pill bg, Waveform:23 height+opacity, Waveform:37 height+background) / 19 Path B new classes. Near-miss merge: sb-topbar-breadcrumb(V2) + sb-topbar-scene-name(V3) → sb-topbar-secondary (cross-topbar 2-use, same function, 1px size normalization, color intrinsic). Anti-utility ruling: sb-text-dim/sb-text-mute rejected as standalone utilities; colors absorbed into semantic element classes (sb-type-change-from/-arrow, sb-undo-message, sb-topbar-secondary). PixelIcon: sb-pixel-icon hardcoded as base class in component; DOM-verified all 4 SVGs hasBase=true. Visual: TopBar + BoardTopBar (sb-topbar-secondary font-mono/12px/text-mute confirmed), StatusBar, PixelIcon verified headlessly. PadGridCell/PadTypeConfirmDialog/UndoToast/Waveform: CSS audit (0 Path-D) + build confirm migration; NOT laufzeit-verifiziert headlessly (ADD PAD disabled without audio fixture — pre-existing constraint). Beim nächsten Einsatz mit geladenen Audio-Dateien bestätigen: PadTypeConfirmDialog (FROM/ARROW/TO-Farben, Verdict-Pill-Hintergrund, Field-Label-Farbe), Waveform-Balken, PadGridCell (Type-Badge/Drag-Handle), UndoToast (message dim + UNDO + Progressbar). Bet settlement: all 8 open bets closed (see §5 Sorte-2 Bet Index below); final scorecard: WON 7 / LOST-justified 8 / FINALLY-LOST-consolidation 7 / SPECULATIVE-Slice8 3. |
 
 **Arithmetic verification:** 12+23+20+15+19+31+28+29 = 177 ✓ | d-w-s: 4+3+6+0+0+2+5 = 20 ✓ | unclassified: 2 ✓
 _(3a resolves 12 fully + 1 residual deferred to 3f; 3f scope is 31 = 17+14. Total closes to 177.)_
@@ -1583,7 +1583,7 @@ Moderate-confidence:
 | 21 | `sb-row-rename-input` | 3f | — | **LOST — but class justified** | AudioRow rename uses font-ui fs-sm/14px, no uppercase — fundamentally different typography from board names (fs-lg/18px, 0.08em, uppercase). Created sb-audio-row-rename. sb-row-rename-input stays in use on BLS BoardRow. |
 | 22 | `sb-row-actions` | 3f | — | **LOST — but class justified** | AudioRow uses 5-column CSS Grid (not flex with trailing action group). No trailing action group wrapper. sb-row-actions stays in BLS BoardRow. |
 | 23 | `sb-btn-icon-sm` | 3f | — | **LOST — but class justified** | SceneRail action buttons = 28px (uses sb-btn-icon). AudioRow delete = 44px (iOS touch target). 36px fits neither. sb-btn-icon-sm stays in BLS BoardRow (2-use). |
-| 24 | `sb-flex-trunc` | 3g | 3h | **FINALLY LOST → screen-local** | BoardTopBarV3 board name is in a column flex context (not row fill) with a dynamic maxWidth constraint — flex:1/min-width:0 don't apply. Stays on SceneRail (1-use). Consolidation-pass candidate (1-use class). |
+| 24 | `sb-flex-trunc` | 3g | 3h | **FINALLY LOST → screen-local** | BoardTopBar board name is in a column flex context (not row fill) with a dynamic maxWidth constraint — flex:1/min-width:0 don't apply. Stays on SceneRail (1-use). Consolidation-pass candidate (1-use class). |
 | 25 | `sb-panel-empty` | 3g | 3h | **WON (3g, 2-use)** | 2-use intra-session (SceneRail + LibraryPanel). No 3h file has panel empty states; WON confirmed in 3g. |
 
 **Count check (final — all 25 closed):** WON: 7 (#1,3,5,6,8,12,25) · LOST-justified: 8 (#4,7,9,10,11,21,22,23) · FINALLY-LOST→consolidation: 7 (#2,13,14,15,16,17,24) · SPECULATIVE-Slice8: 3 (#18,19,20) = 7+8+7+3 = 25 ✓. No OPEN or PARTIALLY-FAILED bets remain. Index closed (2026-05-31, 994d2eb).
@@ -1614,7 +1614,7 @@ Moderate-confidence:
 
 #### Bets 3h settled ✅ Done (994d2eb)
 
-3h covered `PadTypeConfirmDialog.tsx` + `TopBarV2.tsx` + `BoardTopBarV3.tsx` + `PadGridCell.tsx` + `UndoToast.tsx` + `StatusBarV2.tsx` + `Waveform.tsx` + `PixelIcon.tsx`. All 8 open bets closed:
+3h covered `PadTypeConfirmDialog.tsx` + `TopBar.tsx` + `BoardTopBar.tsx` + `PadGridCell.tsx` + `UndoToast.tsx` + `StatusBar.tsx` + `Waveform.tsx` + `PixelIcon.tsx`. All 8 open bets closed:
 
 | Bet | Class | Result | Key finding |
 |-----|-------|--------|-------------|
@@ -1624,7 +1624,7 @@ Moderate-confidence:
 | #15 | sb-btn-muted | **FINALLY LOST → screen-local** | No de-emphasized recessive button in any 3h file. |
 | #16 | sb-tab-sm | **FINALLY LOST → screen-local** | No tabs in any 3h file. |
 | #17 | sb-source-tabs | **FINALLY LOST → screen-local** | No source tab row in any 3h file. |
-| #24 | sb-flex-trunc | **FINALLY LOST → screen-local** | BoardTopBarV3 board name is in a column flex (not row fill) with dynamic maxWidth — flex:1/min-width:0 don't apply. Column context makes the class inapplicable. |
+| #24 | sb-flex-trunc | **FINALLY LOST → screen-local** | BoardTopBar board name is in a column flex (not row fill) with dynamic maxWidth — flex:1/min-width:0 don't apply. Column context makes the class inapplicable. |
 | #25 | sb-panel-empty | **WON (3g, confirmed)** | Already WON at 2-use intra-session in 3g; no 3h file has panel empty states. Status closes as WON. |
 
 **Near-miss finding (3h):** sb-topbar-breadcrumb (V2, mono/12px/text-mute/nowrap) and sb-topbar-scene-name (V3, mono/11px/text-mute/truncating) share the same function ("secondary muted mono text in topbar context"). Merged into sb-topbar-secondary (cross-topbar 2-use). 1px size normalization (11→12px, both off-ladder), truncation added to V2 breadcrumb (improvement — parent has min-width:0, was overflowing without it). Color is intrinsic to the class (anti-utility ruling: separate sb-text-mute class rejected).
@@ -1785,7 +1785,7 @@ retained as named literals (same rationale as 3f/3d precedents). Session 8 conso
 - `sb-pad-type-label`: `9px` — deliberately tiny type badge inside a pad cell
 - `sb-pad-drag-handle`: `10px` — small drag indicator (also: `bottom: 4px; right: 6px` pixel literals for corner positioning)
 - `sb-undo-message`: `13px` — between --fs-xs (12) and --fs-sm (14); toast message context
-- `sb-topbar-secondary`: `12px` — normalized from 11px (BoardTopBarV3 scene name) and 12px (TopBarV2 breadcrumb); now consistently 12px = --fs-xs but kept as literal since it's also the token value
+- `sb-topbar-secondary`: `12px` — normalized from 11px (BoardTopBar scene name) and 12px (TopBar breadcrumb); now consistently 12px = --fs-xs but kept as literal since it's also the token value
 
 **Sub-token padding:**
 - `sb-verdict-pill`: `padding: 2px 10px` — tight pill sizing (2px top/bottom, 10px sides)
@@ -1795,8 +1795,8 @@ retained as named literals (same rationale as 3f/3d precedents). Session 8 conso
 **Pixel literals (absolute positioning):**
 - `sb-pad-drag-handle`: `bottom: 4px; right: 6px` — no token for these corner values; same tight-corner pattern as `sb-pad-key` (top: 6px, right: 6px established in Session 3a/legacy)
 
-**TopBarV2 fixed dimensions (no tokens):**
-- `sb-topbar`: `padding: 10px 16px; height: 48px` — 10px is between space-2 (8px) and space-3 (12px); 48px topbar height matches BoardTopBarV3 but no --topbar-height token exists
+**TopBar fixed dimensions (no tokens):**
+- `sb-topbar`: `padding: 10px 16px; height: 48px` — 10px is between space-2 (8px) and space-3 (12px); 48px topbar height matches BoardTopBar but no --topbar-height token exists
 
 **Font sizes above --fs-xs used as literals:**
 - `sb-topbar-title`: `22px` — display title, no fs-* token at this size

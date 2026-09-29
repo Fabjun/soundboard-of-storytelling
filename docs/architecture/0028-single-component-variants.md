@@ -3,6 +3,7 @@
 **Status:** Accepted
 **Date:** 2026-05-27
 **Slice:** cross-cutting
+**Refined by:** ADR-0052 (`BoardTopBar` exception kept, re-evaluated in Slice 13)
 
 **Category:** UI-Architektur
 
@@ -33,8 +34,8 @@ function PixelIcon({ name, size, color }: PixelIconProps) { ... }
 Wenn eine neue Variante auftaucht: `variant` prop oder neue Props zum
 bestehenden Komponenten, nicht ein neuer Parallel-Komponenten.
 
-**Ausnahmen:** `BoardTopBarV3` ist ein explizit board-spezifischer Wrapper
-des `TopBarV2`-Patterns — hier war die Separierung bewusst (ADR-0026),
+**Ausnahmen:** `BoardTopBar` ist ein explizit board-spezifischer Wrapper
+des `TopBar`-Patterns — hier war die Separierung bewusst (ADR-0026),
 weil Board-Screen fundamental andere Anforderungen hat.
 
 ## Consequences

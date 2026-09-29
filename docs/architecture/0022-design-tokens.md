@@ -39,8 +39,8 @@ variables, grid layout variables, new ambient glow tokens — `--flame-soft`,
 and `--pix-bg-layer` was removed. The design handoff origin
 (`design-sources/2026-05-25/tokens.css`) is kept as a reference only and is not loaded by
 the app. See `docs/README.md` for the full documentation structure.
-Theme-Overrides (`.theme-verdant`, `.theme-neon`,
-`.theme-crimson`) sind in `tokens.css` enthalten.
+Theme-Overrides (`.sb-theme-verdant`, `.sb-theme-neon`,
+`.sb-theme-crimson`) sind in `tokens.css` enthalten.
 
 **Verboten in neuem V3-Code (aus docs/design/design-system-cheatsheet.md):**
 - Neue Farbliterale
