@@ -7,9 +7,16 @@ export type ChangelogEntry = {
   items: string[];
 };
 
-export const APP_VERSION = '3.0.41';
+export const APP_VERSION = '3.0.42';
 
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.42',
+    date: '2026-09-29',
+    items: [
+      'test: audio engine characterization tests (T4); src/audio in coverage; found bug: combo stop-all step stops itself',
+    ],
+  },
   {
     version: '3.0.41',
     date: '2026-09-29',

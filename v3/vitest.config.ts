@@ -17,7 +17,7 @@ export default defineConfig({
     coverage: {
       provider: 'v8',
       reporter: ['text', 'html', 'json-summary'],
-      include: ['src/lib/**', 'src/state/**', 'src/db/**'],
+      include: ['src/lib/**', 'src/state/**', 'src/db/**', 'src/audio/**'],
       exclude: ['tests/**', '**/*.config.ts', 'src/main.tsx', 'src/app.tsx'],
       // Thresholds intentionally 0 — this tracks trends, not gates CI.
       // Raise these when meaningful coverage targets are established.
