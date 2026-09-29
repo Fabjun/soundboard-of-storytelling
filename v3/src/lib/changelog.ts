@@ -7,9 +7,14 @@ export type ChangelogEntry = {
   items: string[];
 };
 
-export const APP_VERSION = '3.0.38';
+export const APP_VERSION = '3.0.39';
 
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.39',
+    date: '2026-09-29',
+    items: ['test(e2e): list reporter — failing tests are named in the terminal (pre-push, CI)'],
+  },
   {
     version: '3.0.38',
     date: '2026-09-29',
