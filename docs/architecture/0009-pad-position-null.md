@@ -1,6 +1,6 @@
 # ADR-0009: Pad-Position kann `null` sein (UNPLACED-State)
 
-**Status:** Accepted
+**Status:** Superseded by ADR-0048
 **Date:** 2026-05-27
 **Slice:** Slice 3
 

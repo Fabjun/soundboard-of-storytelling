@@ -7,9 +7,14 @@ export type ChangelogEntry = {
   items: string[];
 };
 
-export const APP_VERSION = '3.0.39';
+export const APP_VERSION = '3.0.40';
 
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.40',
+    date: '2026-09-29',
+    items: ['docs(adr): ADR-0048 pad pool, decks and three pad types (Slice 9 plan)'],
+  },
   {
     version: '3.0.39',
     date: '2026-09-29',

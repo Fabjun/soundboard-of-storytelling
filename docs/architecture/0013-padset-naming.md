@@ -1,6 +1,6 @@
 # ADR-0013: Type `PadSet` statt `Set`
 
-**Status:** Accepted
+**Status:** Superseded by ADR-0048
 **Date:** 2026-05-27
 **Slice:** Slice 3
 

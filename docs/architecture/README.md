@@ -36,12 +36,13 @@ Jede Entscheidung bekommt eine eigene Datei. Format: `docs/architecture/_templat
 | # | Titel | Status | Slice | Datum |
 |---|-------|--------|-------|-------|
 | [ADR-0008](0008-pad-position-struct.md) | Pad-Position als `{col, row}` Struct | Accepted | Slice 3 | 2026-05-27 |
-| [ADR-0009](0009-pad-position-null.md) | Pad-Position kann `null` sein (UNPLACED-State) | Accepted | Slice 3 | 2026-05-27 |
+| [ADR-0009](0009-pad-position-null.md) | Pad-Position kann `null` sein (UNPLACED-State) | Superseded by ADR-0048 | Slice 3 | 2026-05-27 |
 | [ADR-0010](0010-board-json-document.md) | Board als monolithisches JSON-Dokument in IDB | Accepted | Slice 3 | 2026-05-27 |
 | [ADR-0011](0011-library-item-split.md) | LibraryItem aufgeteilt in Meta (Signals) + Blob (IDB-only) | Accepted | Slice 2 | 2026-05-27 |
 | [ADR-0012](0012-sha256-noble-hashes.md) | SHA-256 via `@noble/hashes` statt Web Crypto API | Accepted | Slice 2 | 2026-05-27 |
-| [ADR-0013](0013-padset-naming.md) | Type `PadSet` statt `Set` | Accepted | Slice 3 | 2026-05-27 |
-| [ADR-0042](0042-pad-discriminated-union.md) | Pad als Discriminated Union | Accepted | Slice 4 | 2026-05-28 |
+| [ADR-0013](0013-padset-naming.md) | Type `PadSet` statt `Set` | Superseded by ADR-0048 | Slice 3 | 2026-05-27 |
+| [ADR-0042](0042-pad-discriminated-union.md) | Pad als Discriminated Union | Superseded by ADR-0048 | Slice 4 | 2026-05-28 |
+| [ADR-0048](0048-pad-pool-decks.md) | Pad pool, decks and three pad types | Accepted | Slice 9 | 2026-09-29 |
 
 ### Persistenz
 

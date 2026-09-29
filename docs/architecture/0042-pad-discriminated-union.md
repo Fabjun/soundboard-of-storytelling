@@ -1,6 +1,6 @@
 # ADR-0042: Pad als Discriminated Union
 
-**Status:** Accepted
+**Status:** Superseded by ADR-0048
 **Date:** 2026-05-28
 **Slice:** Slice 4
 
