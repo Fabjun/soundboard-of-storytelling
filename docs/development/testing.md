@@ -16,14 +16,14 @@ Vier Schichten, eingeführt in Phase 1 & 2 (Phase 2 — Testing Infrastructure):
 
 ## Werkzeuge
 
-- **Vitest** — Unit-Tests. Schnell (ms), kein Browser, keine Netzwerk-Abhängigkeit. Konfiguration: [v3/vitest.config.ts](v3/vitest.config.ts)
-- **Playwright** — E2E-Tests in Chromium (+ WebKit für Smoke/Mobile). Startet einen **eigenen** Vite-Dev-Server auf dem **Test-Port 5199** (`--strictPort`, nie einen vorhandenen Server wiederverwenden — belegter Port = lauter Fehler). Der normale Dev-Server bleibt auf 5173. Konfiguration: [v3/playwright.config.ts](v3/playwright.config.ts), Projekt-Zuordnung: [v3/tests/e2e/projects.ts](v3/tests/e2e/projects.ts)
-- **Node-Version** — festgelegt in [`.nvmrc`](.nvmrc) (24); CI liest sie von dort (`node-version-file`).
-- **fake-indexeddb** — In-Memory-IndexedDB für Unit-Tests. Ersetzt jsdom's fehlende IDB-Implementierung. Setup: [v3/tests/unit/setup.ts](v3/tests/unit/setup.ts)
+- **Vitest** — Unit-Tests. Schnell (ms), kein Browser, keine Netzwerk-Abhängigkeit. Konfiguration: [v3/vitest.config.ts](../../v3/vitest.config.ts)
+- **Playwright** — E2E-Tests in Chromium (+ WebKit für Smoke/Mobile). Startet einen **eigenen** Vite-Dev-Server auf dem **Test-Port 5199** (`--strictPort`, nie einen vorhandenen Server wiederverwenden — belegter Port = lauter Fehler). Der normale Dev-Server bleibt auf 5173. Konfiguration: [v3/playwright.config.ts](../../v3/playwright.config.ts), Projekt-Zuordnung: [v3/tests/e2e/projects.ts](../../v3/tests/e2e/projects.ts)
+- **Node-Version** — festgelegt in [`.nvmrc`](../../.nvmrc) (24); CI liest sie von dort (`node-version-file`).
+- **fake-indexeddb** — In-Memory-IndexedDB für Unit-Tests. Ersetzt jsdom's fehlende IDB-Implementierung. Setup: [v3/tests/unit/setup.ts](../../v3/tests/unit/setup.ts)
 - **@vitest/coverage-v8** — Coverage-Report via V8 (`npm run test:coverage`)
-- **ESLint** — Statische Analyse. Flat-Config in [v3/eslint.config.js](v3/eslint.config.js). TypeScript + react-hooks Regeln.
-- **Prettier** — Code-Formatierung. Konfiguration: [v3/.prettierrc.json](v3/.prettierrc.json)
-- **size-limit** — Bundle-Größen-Monitoring. Limits: JS 200 KB, CSS 50 KB (gzip). Konfiguration: [v3/.size-limit.json](v3/.size-limit.json)
+- **ESLint** — Statische Analyse. Flat-Config in [v3/eslint.config.js](../../v3/eslint.config.js). TypeScript + react-hooks Regeln.
+- **Prettier** — Code-Formatierung. Konfiguration: [v3/.prettierrc.json](../../v3/.prettierrc.json)
+- **size-limit** — Bundle-Größen-Monitoring. Limits: JS 200 KB, CSS 50 KB (gzip). Konfiguration: [v3/.size-limit.json](../../v3/.size-limit.json)
 
 ---
 
@@ -144,7 +144,7 @@ The following cannot be tested honestly in Playwright:
 | Backup import/export | iOS Files app integration is outside the browser sandbox |
 
 These items are covered by the manual checklist at
-[docs/MANUAL_IPHONE_CHECKLIST.md](docs/MANUAL_IPHONE_CHECKLIST.md).
+[manual-iphone-checklist.md](manual-iphone-checklist.md).
 
 ### Running mobile tests
 
@@ -200,7 +200,7 @@ Alle Visual-Tests rufen `stableScreenshot(page)` auf, das:
 
 ## CI-Integration
 
-GitHub Actions unter [`.github/workflows/tests.yml`](.github/workflows/tests.yml).
+GitHub Actions unter [`.github/workflows/tests.yml`](../../.github/workflows/tests.yml).
 
 ### Workflows
 

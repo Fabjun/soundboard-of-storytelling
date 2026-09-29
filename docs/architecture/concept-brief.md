@@ -67,7 +67,7 @@ V1 keeps running. V3.0 is built in parallel until ready.
 > are in CLAUDE.md §Deviations. The TypeScript sketch that was here has been removed
 > to eliminate a second copy that could drift.
 
-**Key concepts:** → moved to [docs/product/PRODUCT.md §5](docs/product/PRODUCT.md#5-core-concepts)
+**Key concepts:** → moved to [../product/README.md §5](../product/README.md#5-core-concepts)
 (2026-09-28). Revised there: pads belong to a board-wide pool; decks (formerly "scenes") are hand-picked views;
 pad sets are dropped in favor of a board-wide quick-access bar.
 
@@ -136,7 +136,7 @@ transactions outside that layer are forbidden.
 
 ### 4.6 · Template export/import
 
-→ moved to [docs/product/features/data-backup.md](docs/product/features/data-backup.md)
+→ moved to [docs/product/features/data-backup.md](../product/features/data-backup.md)
 (2026-09-28). Revised there: V1 import stays; the V1-readable export is **dropped**.
 
 ### 4.7 · Tokens

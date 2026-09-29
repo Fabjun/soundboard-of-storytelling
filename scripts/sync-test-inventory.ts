@@ -2,7 +2,7 @@
 /**
  * sync-test-inventory.ts
  *
- * Writes the test inventory into TESTING.md between AUTO-GENERATED markers:
+ * Writes the test inventory into docs/development/testing.md between AUTO-GENERATED markers:
  * which spec runs in which Playwright project (from v3/tests/e2e/projects.ts),
  * the visual specs, and all unit test files — each with its number of tests.
  * Replaces the hand-maintained file lists that drifted (T7, 2026-09-29).
@@ -28,7 +28,7 @@ const ROOT = resolve(__dirname, '..');
 const V3 = join(ROOT, 'v3');
 const E2E = join(V3, 'tests', 'e2e');
 const UNIT = join(V3, 'tests', 'unit');
-const TESTING = join(ROOT, 'TESTING.md');
+const TESTING = join(ROOT, 'docs/development/testing.md');
 
 const MARKER_START = '<!-- AUTO-GENERATED:test-inventory START — nicht manuell editieren -->';
 const MARKER_END = '<!-- AUTO-GENERATED:test-inventory END -->';
@@ -101,13 +101,13 @@ const doc = readFileSync(TESTING, 'utf8');
 const a = doc.indexOf(MARKER_START);
 const b = doc.indexOf(MARKER_END);
 if (a < 0 || b < 0 || b < a) {
-  console.error('❌ sync-test-inventory: markers missing in TESTING.md');
+  console.error('❌ sync-test-inventory: markers missing in docs/development/testing.md');
   process.exit(1);
 }
 const next = doc.slice(0, a) + block + doc.slice(b + MARKER_END.length);
 if (next !== doc) {
   writeFileSync(TESTING, next);
-  console.log('✅ TESTING.md test inventory updated.');
+  console.log('✅ docs/development/testing.md test inventory updated.');
 } else {
-  console.log('✅ TESTING.md test inventory already up to date.');
+  console.log('✅ docs/development/testing.md test inventory already up to date.');
 }

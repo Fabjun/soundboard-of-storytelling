@@ -8,7 +8,7 @@
 //   B. LIBRARY button tap → LibraryScreen; back to start
 //   C. BOARD button tap → BoardListScreen; new-board-button visible
 //
-// OUT OF SCOPE (see docs/MANUAL_IPHONE_CHECKLIST.md):
+// OUT OF SCOPE (see docs/development/manual-iphone-checklist.md):
 //   File upload via iOS native picker, audio output, Ringer Switch, backgrounding.
 //   Playwright's setInputFiles() bypasses the native picker — an automated upload
 //   test would be green while the real device could fail.

@@ -50,7 +50,7 @@ Switch between multiple scenes on a board during play. The primary GAME-time int
 after Slice 4 audio playback is live.
 **Why deferred:** Slice 5 in the plan; scene data model and CRUD are complete (Slice 3).
 **When:** Slice 5.
-**Source:** V3_CONCEPT_BRIEF.md §5.1, CLAUDE.md Slice Progress table.
+**Source:** docs/architecture/concept-brief.md §5.1, CLAUDE.md Slice Progress table.
 **Session 2026-06-04:** Audio-during-switch explicitly confirmed as the correct behavior — no
 code change needed. → [Design Session 2026-06-04](#design--feature-clarification-session--2026-06-04).
 
@@ -63,14 +63,14 @@ code change needed. → [Design Session 2026-06-04](#design--feature-clarificati
 ### Set composition and layout
 ### Set reorder DnD
 ### Open UX question: Quick Access strip scope
-→ all five entries moved to [docs/product/PRODUCT.md §5 Board, decks & quick access](docs/product/PRODUCT.md#board-decks--quick-access) (2026-09-28). Revised there: **pad sets are dropped**; the quick-access bar is board-wide, freely assignable, with fixed board-wide keys. Remaining work: see §3 "Board pad pool (data model)".
+→ all five entries moved to [product/README.md §5 Board, decks & quick access](product/README.md#board-decks--quick-access) (2026-09-28). Revised there: **pad sets are dropped**; the quick-access bar is board-wide, freely assignable, with fixed board-wide keys. Remaining work: see §3 "Board pad pool (data model)".
 
 ---
 
 ### Slice 7 — Template Export/Import
 
 ### V1-compatible template export/import
-→ moved to [docs/product/features/data-backup.md](docs/product/features/data-backup.md) (2026-09-28), D5 + import rules. Revised there: the V1-readable export is **dropped**. **When:** Slice 10 (new plan).
+→ moved to [docs/product/features/data-backup.md](product/features/data-backup.md) (2026-09-28), D5 + import rules. Revised there: the V1-readable export is **dropped**. **When:** Slice 10 (new plan).
 
 ### Stream-based export/import (V1 lessons warning)
 Must stream one library entry at a time — never JSON-load the entire library at once (iOS
@@ -81,7 +81,7 @@ same discipline as reading the V1 audio engine before Slice 4.
 **Why deferred:** Same as above.
 **When:** Slice 7.
 **Correction (2026-09-28):** only V1's *export* streamed. V1's *import* reads the whole file and parses it at once (`v1-reference/index.html:5795` `decompressData(...)`, `:5799` `JSON.parse(jsonStr)`) — V3 needs a genuinely piecewise import (data-backup.md D6); there is no V1 pattern to port for it.
-**Source:** CLAUDE.md §iPhone/iOS memory rules, banned pattern #4; MANUAL_IPHONE_CHECKLIST.md §Section 2.
+**Source:** CLAUDE.md §iPhone/iOS memory rules, banned pattern #4; docs/development/manual-iphone-checklist.md §Section 2.
 
 ---
 
@@ -98,24 +98,24 @@ CSS-class on root element (trivial per ADR-0022); legacy-alias scope bug already
 Slice 1+2 audit.
 **Why deferred:** Polish; base functionality comes first.
 **When:** Slice 8.
-**Source:** V3_CONCEPT_BRIEF.md §5.1, ADR-0022, ADR-0023.
+**Source:** docs/architecture/concept-brief.md §5.1, ADR-0022, ADR-0023.
 
 ### Per-theme pad color overrides
 Crimson gets a COMBO color override (rose-magenta sits next to `--blood` red — not a hard
 conflict, but a missed opportunity). Verdant COMBO holds — the fairy-tale tone fits.
 **When:** Slice 8 (after themes land).
-**Source:** DESIGN_NOTES.md §Theme integration.
+**Source:** docs/design/design-notes.md §Theme integration.
 
 ### Theme-conditional clock variants
 Verdant Mushroom Clock is designed; Crimson candle-clock + Neon CRT-burn display are design
 explorations (~30 min each). Worth shipping if themes get a real release pass.
 **When:** Slice 8 (after themes land).
-**Source:** DESIGN_NOTES.md §Theme integration.
+**Source:** docs/design/design-notes.md §Theme integration.
 
 ### `is-deep` as user-configurable setting
 Settings → Display → "High quality pad visuals" toggle. Currently always-on for the DepthPad.
 **When:** Slice 8.
-**Source:** ADR-0025, DESIGN_NOTES.md §DepthPad/pad rendering.
+**Source:** ADR-0025, docs/design/design-notes.md §DepthPad/pad rendering.
 
 ### Mode-awareness cues
 One of four alternatives to reinforce SETUP/GAME distinction beyond the current toggle and
@@ -126,24 +126,24 @@ active mode colour. (4) Spine saturation — pad type-spines dim to 45% opacity 
 (lowest priority; risks conflating mode and type semantics).
 Ship one, optionally two if they hit different screen regions and don't compete.
 **When:** Slice 8.
-**Source:** DESIGN_NOTES.md §Slice 8 — Mode-awareness cues.
+**Source:** docs/design/design-notes.md §Slice 8 — Mode-awareness cues.
 
 ### Pad Appearance settings persistence
 "APPLY TO ALL PADS" writes to project state system-wide, not per-pad. Per-pad override is
 a separate future feature.
 **When:** Slice 8.
-**Source:** DESIGN_NOTES.md §Settings & system polish.
+**Source:** docs/design/design-notes.md §Settings & system polish.
 
 ### Settings search across submenus
 Typing filters all rows across all submenus, jumps to first match, highlights the term.
 **When:** Slice 8.
-**Source:** DESIGN_NOTES.md §Settings & system polish.
+**Source:** docs/design/design-notes.md §Settings & system polish.
 
 ### Mode-toggle SFX preview
 Settings → Controls "Mode toggle SFX" file slot: preview the chosen sound at current MASTER
 volume. Reuse the pad PREVIEW button code path — no separate "test sound" feature.
 **When:** Slice 8.
-**Source:** DESIGN_NOTES.md §Settings & system polish.
+**Source:** docs/design/design-notes.md §Settings & system polish.
 
 ### View Transitions API (optional polish)
 iOS 18+ only; never a hard dependency. Progressively enhance scene/screen transitions if
@@ -173,25 +173,25 @@ Expose cols × rows in a popover. Mobile hard cap: 5×4 (no 6×4 or 6×6 in the 
 — avoids "tooltip warning the user not to do the thing the UI offers").
 **Why deferred:** Grid is currently hardcoded 4×4. Slice 3 decision to defer.
 **When:** Slice 8.
-**Source:** ADR-0032, DESIGN_NOTES.md §Slice 8 — A4 Mobile preset ceiling.
+**Source:** ADR-0032, docs/design/design-notes.md §Slice 8 — A4 Mobile preset ceiling.
 
 ### Cell-size setting
 Global preference in Settings → Display (compact / normal / spacious). Per-scene cell-size
 multiplies the variation space without much real benefit.
 **When:** Slice 8.
-**Source:** DESIGN_NOTES.md §Slice 8 — A4 Cell-size.
+**Source:** docs/design/design-notes.md §Slice 8 — A4 Cell-size.
 
 ### Default new-scene grid as user preference
 Currently hardcoded 4×4 for every new scene. Expose an override in Settings → Display.
 Then 4×4 becomes "default until you change it once."
 **When:** Slice 8.
-**Source:** DESIGN_NOTES.md §Slice 8 — A4 Default new-scene grid.
+**Source:** docs/design/design-notes.md §Slice 8 — A4 Default new-scene grid.
 
 ### Unplaced pads remember desired position
 When shrinking a grid pushes pads off, they retain their wanted (col, row). Enlarging the
 grid re-places them automatically if the slot is still free.
 **When:** Slice 8.
-**Source:** ADR-0009, DESIGN_NOTES.md §Slice 8 — A4 Unplaced pads.
+**Source:** ADR-0009, docs/design/design-notes.md §Slice 8 — A4 Unplaced pads.
 
 ### Mobile layout adaptation
 Make SceneRail collapsible or overlay at narrow viewports (≤ 390 px). Make inspector panels
@@ -200,7 +200,7 @@ tab-based layout. Minimum viable target: pad grid center area ≥ 44 px in all t
 states at 390 px.
 **Why deferred:** Adaptive layout implementation per ADR-0045 (two-axis model: narrow↔wide × touch↔pointer). Slice 8 brings layout fully into the model; Axis-1 breakpoints need empirical calibration on real devices first.
 **When:** Slice 8.
-**Source:** DESIGN_NOTES.md §Known limitation: SETUP layout.
+**Source:** docs/design/design-notes.md §Known limitation: SETUP layout.
 
 ### Empty-SETUP affordance / placeholder
 The empty-SETUP inspector placeholder ("Select a pad to edit or open the Library") was
@@ -208,7 +208,7 @@ removed in commit 402b4c2 as a side-effect of a test fix. What the empty SETUP s
 should show — guidance text, a wider bare grid, or something else — is an open UX question.
 Decide after real-use data is available, likely with Claude Design.
 **When:** Slice 8, after real sessions.
-**Source:** DESIGN_NOTES.md §Known limitation: SETUP layout.
+**Source:** docs/design/design-notes.md §Known limitation: SETUP layout.
 
 ---
 
@@ -220,51 +220,51 @@ or a dedicated editor polish pass.
 ### Key Capture flow
 KEY / MIDI / GAMEPAD fields enter a "listening" state (pulsing teal border, "press any key…")
 on click. Escape cancels. Visual: reuse SETUP-mode hatch during the listening window.
-**Source:** DESIGN_NOTES.md §PAD Editor — Key Capture flow.
+**Source:** docs/design/design-notes.md §PAD Editor — Key Capture flow.
 
 ### Inline conflict feedback
 Live ✓/⚠ hint under KEY field as a binding is chosen — don't wait for save.
-**Scope:** conflicts are checked **per deck** (formerly "scene"), not per board — keys apply per deck ([PRODUCT.md §6](docs/product/PRODUCT.md#input-keyboard--numpad) K2, 2026-09-28). Quick-access keys are board-wide (K13) and conflict with every deck.
-**Source:** DESIGN_NOTES.md §PAD Editor — Inline conflict feedback.
+**Scope:** conflicts are checked **per deck** (formerly "scene"), not per board — keys apply per deck ([docs/product/README.md §6](product/README.md#input-keyboard--numpad) K2, 2026-09-28). Quick-access keys are board-wide (K13) and conflict with every deck.
+**Source:** docs/design/design-notes.md §PAD Editor — Inline conflict feedback.
 
 ### Snap-to-zero-crossing on waveform drag
 Trim and loop markers snap to the nearest audio zero-crossing while dragging. Without it,
 hard cuts produce audible clicks.
-**Source:** DESIGN_NOTES.md §PAD Editor — Snap-to-zero-crossing.
+**Source:** docs/design/design-notes.md §PAD Editor — Snap-to-zero-crossing.
 
 ### Numeric scrubbing on M:SS labels
 TRIM START / TRIM END / LOOP POINT readouts: Premiere-style click-drag to nudge ±0.1 s
 per pixel; hold ⇧ for ±0.01 s.
-**Source:** DESIGN_NOTES.md §PAD Editor — Numeric scrubbing.
+**Source:** docs/design/design-notes.md §PAD Editor — Numeric scrubbing.
 
 ### Live preview that respects fades + trim
 PREVIEW starts at trimStart with fades + loop applied. Playhead restarts at loopPoint for
 LOOP-type pads so the user can hear the loop seam.
-**Source:** DESIGN_NOTES.md §PAD Editor — Live preview.
+**Source:** docs/design/design-notes.md §PAD Editor — Live preview.
 
 ### Crossfade duration as inline control
 Mini-slider (60–600 ms) or numeric scrubber. Gate visibility on loop mode = CROSSFADE.
-**Source:** DESIGN_NOTES.md §PAD Editor — Crossfade duration.
+**Source:** docs/design/design-notes.md §PAD Editor — Crossfade duration.
 
 ### Waveform zoom for long files
 Zoom level (scroll wheel or ±/0 keys) + minimap strip; only relevant if files ≥ 60 s are
 common in real use.
-**Source:** DESIGN_NOTES.md §PAD Editor — Waveform zoom.
+**Source:** docs/design/design-notes.md §PAD Editor — Waveform zoom.
 
 ### Pad-type change confirmation
 Switching LOOP→SINGLE invalidates loop-point and crossfade. Show inline confirm before
 discarding; don't silently wipe settings.
-**Source:** DESIGN_NOTES.md §PAD Editor — Pad-type change confirmation.
+**Source:** docs/design/design-notes.md §PAD Editor — Pad-type change confirmation.
 
 ### Output bus inheritance hint
 Faded one-line hint below OUTPUT BUS pills showing where the level baseline comes from.
-**Source:** DESIGN_NOTES.md §PAD Editor — Output bus inheritance hint.
+**Source:** docs/design/design-notes.md §PAD Editor — Output bus inheritance hint.
 
 ### Hotkey conflict on duplicate
 ⌘D conflicts with the browser "Bookmark this page" in non-standalone PWA mode. Options:
 use ⌘⇧D, or accept that duplicate is right-click / long-press only when running outside
 standalone mode.
-**Source:** DESIGN_NOTES.md §A3 Scene CRUD open questions.
+**Source:** docs/design/design-notes.md §A3 Scene CRUD open questions.
 
 ---
 
@@ -287,13 +287,13 @@ A third visual state for pads that will fire on the next downbeat (combo schedul
 release). Softer outline in pad-type colour, no inset fill — distinct from idle and `is-hot`.
 Hold until combo timing is real in the UI.
 **When:** After combo scheduling lands (Slice 8+).
-**Source:** DESIGN_NOTES.md §Slice 4 — C1.
+**Source:** docs/design/design-notes.md §Slice 4 — C1.
 
 ### `--pad-soft-outline` token family
 Colour values for the `is-scheduled` visual. Hold until `is-scheduled` is approved — adding
 tokens before the state has a use makes the §A cheat-sheet noisier without solving anything.
 **When:** Same as `is-scheduled`.
-**Source:** DESIGN_NOTES.md §Slice 4 — C2.
+**Source:** docs/design/design-notes.md §Slice 4 — C2.
 
 ### Per-pad level metering
 The audio engine has analyser node infrastructure, but per-pad metering UI is deferred.
@@ -309,26 +309,26 @@ Adds CSS animation complexity and is a polish concern, not functional.
 FileRow supports multiple files for playlist pads: drag to reorder, click to select primary,
 ⌘-click for bulk remove. The currently-selected file's waveform shows in the big canvas.
 **When:** When playlist pads are in real use (Slice 4+).
-**Source:** DESIGN_NOTES.md §Audio file management.
+**Source:** docs/design/design-notes.md §Audio file management.
 
 ### Per-file fade and trim for playlist pads
 Each playlist entry gets its own fade-in / trim. Either per-file state or per-file JSON in
 the project file. Decision deferred until playlist UX is built.
 **When:** Same as multi-file playlist UX.
-**Source:** DESIGN_NOTES.md §Audio file management.
+**Source:** docs/design/design-notes.md §Audio file management.
 
 ### Tag autocomplete with keyboard
 Typing in the tag field surfaces matching tags from the project pool (case-insensitive, fuzzy
 on substring). ↵ commits, ⌫ on empty input removes last chip. Chips render in pad-type colour
 family if a semantic mapping exists.
 **When:** Slice 8 or library polish pass.
-**Source:** DESIGN_NOTES.md §Tags & folders.
+**Source:** docs/design/design-notes.md §Tags & folders.
 
 ### Folder picker as a tree
 The FOLDER field opens a narrow tree column inside the inspector, not a separate dialog. New
 folder via a `+ NEW` row at the bottom.
 **When:** Slice 8 or library polish pass.
-**Source:** DESIGN_NOTES.md §Tags & folders.
+**Source:** docs/design/design-notes.md §Tags & folders.
 
 ---
 
@@ -343,13 +343,13 @@ folder via a `+ NEW` row at the bottom.
 
 #### Guiding principle — technically-minded tinkerers
 
-→ moved to [docs/product/PRODUCT.md §7](docs/product/PRODUCT.md#7-design-principles) (P2, P3; 2026-09-28). Revised there: "does not hold the user's hand" replaced by "well designed for its purpose, depth for those who want it". Applications of the principle: [C10](#c10--variable-grid-gap-preserving-reflow-gesture-based-scroll-protection-settings-architecture).
+→ moved to [product/README.md §7](product/README.md#7-design-principles) (P2, P3; 2026-09-28). Revised there: "does not hold the user's hand" replaced by "well designed for its purpose, depth for those who want it". Applications of the principle: [C10](#c10--variable-grid-gap-preserving-reflow-gesture-based-scroll-protection-settings-architecture).
 
 ---
 
 #### Architecture motto — "Think big, but don't rush"
 
-_Engineering approach, not a product principle — moves to `ARCHITECTURE.md` once it exists (ADR-0047). Open: tension between the anticipated settings hierarchy / sidebar shell and PRODUCT.md §7 P1 "minimal and functional first"._
+_Engineering approach, not a product principle — moves to `ARCHITECTURE.md` once it exists (ADR-0047). Open: tension between the anticipated settings hierarchy / sidebar shell and docs/product/README.md §7 P1 "minimal and functional first"._
 
 The app is built on a deliberately chosen modular foundation — multi-level settings hierarchy, reusable building blocks such as the sidebar shell — a forward-looking anticipation of future extensibility, chosen consciously against a pure continuous-refactoring stance, with the trade-off explicitly named. This foundation is NOT set in stone: it emerges organically while practically building and testing the app, and even the underlying concept may be revised if real experience demands it. Concretely: only what the really existing cases need is implemented (the sidebar will simply be extended to the Pad Editor when that time comes); the full system is thought through in the design but NOT built on spec.
 
@@ -419,9 +419,9 @@ unchanged. UA-based detection is unreliable and unnecessary under the adaptive m
 
 **4-column grid is binding across all screen formats**
 (→ [Grid configurability](#grid-configurability-gridconfig-popover)).
-**→ ADR:** [ADR-0045](docs/architecture/0045-two-axis-adaptive-model.md) · **→ Boundary:**
+**→ ADR:** [ADR-0045](architecture/0045-two-axis-adaptive-model.md) · **→ Boundary:**
 Axis-1 frame-layout adaptation ≠ pad-grid column reflow
-(→ [ADR-0032](docs/architecture/0032-grid-4col-constant.md)).
+(→ [ADR-0032](architecture/0032-grid-4col-constant.md)).
 
 ---
 
@@ -591,7 +591,7 @@ selektions-getrieben; → [Summonable overlay contract](#summonable-overlay-cont
 
 ### B8 — Szenenwechsel-Mechanismus: Tap-Switcher primär, Swipe optional und GAME-only
 
-→ moved to [docs/product/PRODUCT.md §3](docs/product/PRODUCT.md#3-app-modes-game-and-setup) (2026-09-28). Revised there: swiping between decks (formerly "scenes") is now **Parked**; decks switch via classic controls only.
+→ moved to [product/README.md §3](product/README.md#3-app-modes-game-and-setup) (2026-09-28). Revised there: swiping between decks (formerly "scenes") is now **Parked**; decks switch via classic controls only.
 
 ### B9 — Gap-Einordnung: drei Bestätigungen, zwei neue Kandidaten
 
@@ -739,7 +739,7 @@ _Settled — deliberate forward-looking exception per the [architecture motto](#
 
 **Beschluss:** The sidebar is a reusable building block: a generic **shell + behavior** (a container docked to a window edge, openable/closable with a grip) that receives its **content** from the window it serves. The shell does not know its content — each window supplies its own context-specific options.
 
-The sidebar IS a summonable panel from the overlay contract: bottom-sheet on narrow/portrait-format screens, side-rail on wide/landscape-format screens (Axis-1, screen-format-driven — not device-type or input-type driven; → [ADR-0045](docs/architecture/0045-two-axis-adaptive-model.md)). Every sidebar instance has Layer 2 (Summon + Resize). **→ Cross-reference:** [Summonable overlay contract](#summonable-overlay-contract-_pending-not-yet-finalized--refined-after-panel-fit-check_) — the sidebar and the overlay contract describe the same mechanism from two angles: behavior (contract: layers, gestures, grip types) vs. structural reusability (this entry: generic shell, content injection per window).
+The sidebar IS a summonable panel from the overlay contract: bottom-sheet on narrow/portrait-format screens, side-rail on wide/landscape-format screens (Axis-1, screen-format-driven — not device-type or input-type driven; → [ADR-0045](architecture/0045-two-axis-adaptive-model.md)). Every sidebar instance has Layer 2 (Summon + Resize). **→ Cross-reference:** [Summonable overlay contract](#summonable-overlay-contract-_pending-not-yet-finalized--refined-after-panel-fit-check_) — the sidebar and the overlay contract describe the same mechanism from two angles: behavior (contract: layers, gestures, grip types) vs. structural reusability (this entry: generic shell, content injection per window).
 
 **Deliberately chosen as a forward-looking exception to the continuous-refactoring principle** (per the [architecture motto](#architecture-motto--think-big-but-dont-rush)): multiple sidebar instances are known to be likely (Board SETUP sidebar, Library sidebar, potentially more). Building the generic shell up front is consciously justified — not spec-building, but preventing the obvious duplication that would otherwise be certain.
 
@@ -781,7 +781,7 @@ Each is a **separate element** — Pad Editor ≠ Combo Editor. Pad Editor on Bo
 
 ### Stage Lock
 
-→ superseded by the Lock in [docs/product/PRODUCT.md §3](docs/product/PRODUCT.md#3-app-modes-game-and-setup) (2026-09-28): GAME has no edit gestures, so locking the mode switch covers this.
+→ superseded by the Lock in [product/README.md §3](product/README.md#3-app-modes-game-and-setup) (2026-09-28): GAME has no edit gestures, so locking the mode switch covers this.
 
 ### Long-Press-Peek
 
@@ -816,7 +816,7 @@ A brief visual spark animation when a one-shot fires, distinguishing it from a r
 Auto-duck on stinger (audio engine, non-trivial); Haptics (PWA/iOS Brave feasibility unclear);
 Orientation-as-posture (may double layout work); Cue Tray / Recently-used Rail; Command
 Palette (power-user escape hatch).
-**Overarching principle:** → moved to [docs/product/PRODUCT.md §7](docs/product/PRODUCT.md#7-design-principles) (P3, P4; 2026-09-28).
+**Overarching principle:** → moved to [product/README.md §7](product/README.md#7-design-principles) (P3, P4; 2026-09-28).
 
 ---
 
@@ -899,7 +899,7 @@ In **SETUP mode**, empty slots are visible, tappable cells: tapping an empty slo
 
 ### D2 — Swipe and mode-switch are two different interactions _(settled decision — consolidates B8)_
 
-→ moved to [docs/product/PRODUCT.md §3](docs/product/PRODUCT.md#3-app-modes-game-and-setup) (2026-09-28). Revised there: swiping between decks (formerly "scenes") is now **Parked**.
+→ moved to [product/README.md §3](product/README.md#3-app-modes-game-and-setup) (2026-09-28). Revised there: swiping between decks (formerly "scenes") is now **Parked**.
 
 ---
 
@@ -909,7 +909,7 @@ These are ideas, each with a stated relation to already-decided things and a con
 
 ### Performance Lock _(parked candidate — strong candidate, phone-specific)_
 
-→ moved to [docs/product/PRODUCT.md §3](docs/product/PRODUCT.md#3-app-modes-game-and-setup) (2026-09-28), now **Decided** in simplified form (lock toggle in GAME, locks the mode switch only).
+→ moved to [product/README.md §3](product/README.md#3-app-modes-game-and-setup) (2026-09-28), now **Decided** in simplified form (lock toggle in GAME, locks the mode switch only).
 
 ### Haptic gesture feedback _(parked candidate — verify iOS availability first)_
 
@@ -955,35 +955,35 @@ Claude Design will show THREE treatments side-by-side: **A** (protrude+color), *
 
 ### Documentation consolidation (ADR-0047) ⬜ In progress (started 2026-09-28)
 Consolidate the scattered documentation into hub / leaf / template per area —
-see [ADR-0047](docs/architecture/0047-documentation-architecture.md). Incremental; old
+see [ADR-0047](architecture/0047-documentation-architecture.md). Incremental; old
 documents stay authoritative until their content is transferred and confirmed.
 **Phases:**
-1. ⬜ `docs/product/PRODUCT.md` — skeleton ✅ (2026-09-28); fill sections in dialogue with the user.
+1. ⬜ `product/README.md` — skeleton ✅ (2026-09-28); fill sections in dialogue with the user.
 2. ⬜ `docs/design/DESIGN.md` hub + component specs for the elements the mobile Board layout needs.
 3. ⬜ Build the mobile Board layout (product work — not documentation).
 4. ⬜ Further component specs as elements are touched; `ARCHITECTURE.md` + `DEVELOPMENT.md` hubs.
 5. ⬜ Slim `CLAUDE.md`, re-point `sync:classes` / `sync:tokens` generators (scripts, hook, CI),
-   move superseded documents to `docs/archive/`, reduce `BACKLOG.md` to open work.
+   move superseded documents to `docs/archive/`, reduce `docs/backlog.md` to open work.
 **Source:** Session 2026-09-28.
 
-### DESIGN_SYSTEM.md §1–§5 write out
+### docs/design/design-system.md §1–§5 write out
 Sections §1–§5 currently exist but are stubs or placeholder content. Need to be filled with
 actual system documentation.
 **When:** As design documentation catch-up, likely before Slice 8.
 **Source:** Referenced in multiple sessions as "not yet written."
 
-### DESIGN_SYSTEM.md §5 — inset box-shadow exception undocumented
+### docs/design/design-system.md §5 — inset box-shadow exception undocumented
 `§5 Verbotene Muster` says `box-shadow auf clip-path-Elementen (stattdessen filter: drop-shadow())`.
 This covers outer box-shadow only. Inset `box-shadow` renders inside the padding box, within the
 clip region, and therefore remains visible on clip-path elements — it is explicitly allowed. See
 v15 treatments D/F and the hot-pad inner glow as canonical examples. The nuance was recorded in
-DESIGN_NOTES.md (Drop-shadow vs Inset shadow RESOLVED entry), but the §8.8 where it was supposed
+docs/design/design-notes.md (Drop-shadow vs Inset shadow RESOLVED entry), but the §8.8 where it was supposed
 to land was never written. Current §5 reads as "no box-shadow at all on clip-path elements",
 which is incorrect.
 Fix: add one sentence to §5: "Inset `box-shadow` is explicitly allowed — it renders inside the
 padding box, within the clip region, and therefore remains visible on clip-path elements."
-**When:** Next DESIGN_SYSTEM.md write-out pass (Documentation Debt §1).
-**Source:** DESIGN_NOTES.md Drop-shadow vs Inset shadow RESOLVED; FOUNDATION_ANALYSIS.md C8.
+**When:** Next docs/design/design-system.md write-out pass (Documentation Debt §1).
+**Source:** docs/design/design-notes.md Drop-shadow vs Inset shadow RESOLVED; docs/analysis/foundation-analysis.md C8.
 
 ### ✅ End-of-Session-3 consolidation pass — COMPLETE (2026-05-31)
 
@@ -1039,7 +1039,7 @@ comments with "sub-token: deliberate" justification notes.
 ## 3. Deferred Design Decisions
 
 ### Playlist → Loop merge (data model)
-Decided 2026-09-28 ([PRODUCT.md §5 Pads](docs/product/PRODUCT.md#pads)): three pad types — Single, Loop, Combo. Loop and Single accept several files (Loop: in order / shuffle; Single: random / in turn). Requires an ADR superseding the `PadType` part of ADR-0042, a migration of stored `playlist` pads, and engine/editor changes (engine change needs explicit approval).
+Decided 2026-09-28 ([docs/product/README.md §5 Pads](product/README.md#pads)): three pad types — Single, Loop, Combo. Loop and Single accept several files (Loop: in order / shuffle; Single: random / in turn). Requires an ADR superseding the `PadType` part of ADR-0042, a migration of stored `playlist` pads, and engine/editor changes (engine change needs explicit approval).
 **When:** Slice 9 (data model), together with the board pad pool below.
 
 ### Theme flames: Verdant, Neon, Crimson
@@ -1051,8 +1051,8 @@ Parked 2026-09-29. The StartScreen flame animates continuously on purpose — us
 **When:** Slice 14 (settings & polish).
 
 ### Board pad pool (data model)
-Decided 2026-09-28 ([PRODUCT.md §5](docs/product/PRODUCT.md#board-decks--quick-access)): pads belong to the board; decks (formerly "scenes") and the quick-access bar reference pads with their own position and key; "All pads" view; `PadSet` dropped. Today `Scene.pads: Pad[]` owns pads and `position` / `hotkey` sit on the pad (`types.ts`).
-Requires an ADR (superseding the ownership parts of the current model) and a data migration. **Same change: rename Scene → Deck** in UI, code (`Scene`, `Board.scenes`, `SceneRail`, …) and stored data (PRODUCT.md Q1, 2026-09-28). **Do together with the Playlist → Loop merge above** — both reshape `types.ts` and stored boards.
+Decided 2026-09-28 ([docs/product/README.md §5](product/README.md#board-decks--quick-access)): pads belong to the board; decks (formerly "scenes") and the quick-access bar reference pads with their own position and key; "All pads" view; `PadSet` dropped. Today `Scene.pads: Pad[]` owns pads and `position` / `hotkey` sit on the pad (`types.ts`).
+Requires an ADR (superseding the ownership parts of the current model) and a data migration. **Same change: rename Scene → Deck** in UI, code (`Scene`, `Board.scenes`, `SceneRail`, …) and stored data (docs/product/README.md Q1, 2026-09-28). **Do together with the Playlist → Loop merge above** — both reshape `types.ts` and stored boards.
 **When:** Slice 9 (data model) — see `CLAUDE.md §Slice progress`.
 
 Open questions surfaced during implementation but not yet resolved. Each needs a deliberate
@@ -1079,7 +1079,7 @@ not just a feature.
 Deleting the last scene leaves the board in zero-scenes (empty-board) state — the intended
 behavior. Blocking was considered and rejected. Implemented unconditionally in
 `SceneRail.tsx` `requestDelete()`: no guard on `scenes.length`; empty-board UI is live.
-**Source:** DESIGN_NOTES.md §A3 Scene CRUD; SceneRail.tsx.
+**Source:** docs/design/design-notes.md §A3 Scene CRUD; SceneRail.tsx.
 
 ### Scene rename: duplicate names ✅ Done (f69cba6, 1dda987)
 **Decision:** Duplicate scene names should be prevented. The name-is-display-only argument was
@@ -1089,7 +1089,7 @@ case-insensitive, self-excluding; 9 unit tests) drives a live conflict check on 
 `SceneRail.tsx`. `commitRename()` blocks on conflict: Enter keeps the editor open, blur
 discards the edit. Conflict display via `is-conflict` + "Name already used by …" hint.
 *(Entry updated 2026-09-28: previously listed as code task pending.)*
-**Source:** DESIGN_NOTES.md §A3 Scene CRUD; user decision 2026-06-06.
+**Source:** docs/design/design-notes.md §A3 Scene CRUD; user decision 2026-06-06.
 
 ### Scene mobile reorder: stepwise vs. handle-based
 No scene reorder mechanism exists in the code — `SceneRail.tsx` has no stepwise Move up/Down
@@ -1097,24 +1097,24 @@ and no drag handle, and no reorder setter exists in `state/store.ts`. The file-h
 "Reorder (drag handle, pointer-events based)" is a planned-feature note, not shipped code.
 Implement stepwise Move up/Down first (recommended); evaluate a handle-based reorder mode for
 power users (≥6 scenes) later, based on real use once it exists.
-**Source:** DESIGN_NOTES.md §A3 Scene CRUD.
+**Source:** docs/design/design-notes.md §A3 Scene CRUD.
 *(Entry corrected 2026-06-10: previously claimed stepwise reorder shipped in Slice 3.)*
 
 ### Long-press threshold (350 ms)
 Fixed-with-accessibility-override is the cleanest. Or expose in Settings → Controls. Decide
 in Slice 8 based on real-use feedback.
-**Source:** DESIGN_NOTES.md §A3 Scene CRUD.
+**Source:** docs/design/design-notes.md §A3 Scene CRUD.
 
 ### `--success` green: keep teal alias or migrate to real green?
 `--success: #6DB5B8` is aliased to loop teal. `--fade: #6FA85F` introduced a real green for
 the first time. If the palette warms up to greens, reconsider `--success`. Hold until one or
 two design sessions with `--fade` in context.
-**Source:** DESIGN_NOTES.md §Open token/palette questions.
+**Source:** docs/design/design-notes.md §Open token/palette questions.
 
 ### A2 Path B: 5–10 s audio zone
 Pad-type inference defaults to SINGLE in the ambiguous 5–10 s band. Re-evaluate if real audio
 sets show many sub-loops in this zone.
-**Source:** DESIGN_NOTES.md §Slice 3 — A2 Path B.
+**Source:** docs/design/design-notes.md §Slice 3 — A2 Path B.
 
 ### ModeToggle sparks — design-implementation divergence
 The CSS class `sb-mode-toggle-sparks` was designed as a contained overflow element to hold
@@ -1129,7 +1129,7 @@ all overlays) or an oversight?
 
 **When:** Slice 8 (Polish), or earlier if mode-toggle animation needs revisiting for
 z-index/overlay issues.
-**Source:** Truth-check commit `e207a0b`; class marked `[unused-css]` in DESIGN_SYSTEM.md §6.
+**Source:** Truth-check commit `e207a0b`; class marked `[unused-css]` in docs/design/design-system.md §6.
 
 ### Long-Press-Peek — GAME mode only, or SETUP coexistence?
 
@@ -1170,21 +1170,21 @@ Private Browsing on iPhone, uploads fail with "could not save to library" (caugh
 Trade-off before changing anything: a Blob is a lazy handle; an ArrayBuffer is fully
 deserialized whenever the record is read — `libGetAllMeta` reads every record with a cursor,
 which touches the iOS memory rules. **Open** — verify on a real iPhone (normal + private tab)
-first (docs/MANUAL_IPHONE_CHECKLIST.md), then decide with the product owner.
+first (development/manual-iphone-checklist.md), then decide with the product owner.
 
 ### Test infrastructure — before Slice 9c (CLAUDE.md rule 15)
 Decided 2026-09-29 after a test-setup analysis. Order is binding; Slice 9c/9d wait for it.
 
 | Step | Content | Status |
 |---|---|---|
-| T1 | Guard test for E2E project membership, test port 5199, Node 24 (`.nvmrc`), visual tests in pre-push, flaky tests fail CI, TESTING.md updated | ✅ Done (60a0f0c) |
+| T1 | Guard test for E2E project membership, test port 5199, Node 24 (`.nvmrc`), visual tests in pre-push, flaky tests fail CI, docs/development/testing.md updated | ✅ Done (60a0f0c) |
 | T2 | Unit tests for the serial upload pipeline (`upload.ts`, iOS memory rule) | ✅ Done (see git log: "test: upload pipeline unit tests (T2)") |
 | T3 | Skipped drag-and-drop E2E tests: found to be never-written TODO stubs, not flaky. Pad swap/insert + library drag written, counter-checked, 20× stable; deck reorder quarantined — feature not built | ✅ Done (see git log: "test: drag-and-drop E2E tests written…(T3)") |
 | T4 | Characterization tests for the audio engine (dispatch, single/loop/playlist, stop/fade, combo, decode dedupe, bridge); `src/audio` in coverage (engine 75 %). Found a real engine bug (below) | ✅ Done (see git log: "test: audio engine characterization tests (T4)") |
 | T10 | Lint rules against test traps (expect-expect, no-focused, no-skipped incl. fixme, valid-expect) for Vitest + Playwright; Playwright `forbidOnly`; counter-checked (10 lint errors + forbidOnly abort on planted traps) | ✅ Done (see git log: "test: lock test traps…(T10)") |
 | T5 | E2E against the production build (vite preview): smoke + full + new PWA tests (service worker, manifest, offline start, offline data) — in CI (job e2e-prod) and in pre-push; counter-checked (no SW registration → 3 PWA tests red) | ✅ Done (see git log: "test: E2E against the production build…(T5)") |
 | T6 | full-webkit project (board/deck/pad CRUD + drag & drop in the Safari engine; library seeded, playback stays Chromium); coverage floor in CI (69/71/61/67) — both counter-checked | ✅ Done (see git log: "test: full E2E subset in WebKit + coverage floor (T6)") |
-| T7 | Guards in `testGuards.test.ts`: every logic module has a test file (4 justified exemptions; nanoid got a real test); every skip/fixme/todo/fails marker references an existing BACKLOG heading (found and fixed 3 missing/wrong references). TESTING.md test inventory generated (`sync:tests`, part of `sync:docs`, pre-commit + CI). Slice-completion checklist: test review. All counter-checked | ✅ Done (see git log: "test: guards for module tests…(T7)") |
+| T7 | Guards in `testGuards.test.ts`: every logic module has a test file (4 justified exemptions; nanoid got a real test); every skip/fixme/todo/fails marker references an existing BACKLOG heading (found and fixed 3 missing/wrong references). docs/development/testing.md test inventory generated (`sync:tests`, part of `sync:docs`, pre-commit + CI). Slice-completion checklist: test review. All counter-checked | ✅ Done (see git log: "test: guards for module tests…(T7)") |
 | T8a | Security: `npm audit` 15 findings (9 high, 5 moderate, 1 low — all dev tooling incl. vite/rolldown, which build the shipped bundle) → 0 via `npm audit fix` + vitest trio 4.1.7 → 4.1.11 (GHSA-82fw-gwwq-j7x9); no major jumps, no runtime deps changed; full pipeline green, no visual change. Dependabot: minor/patch grouped, majors as separate PRs | ✅ Done (a349d79) |
 | T8b | `npm audit --audit-level=high` blocking in CI (unit-build-lint) and pre-push; `scripts/*.ts` type-checked (`scripts/tsconfig.json`, `npm run typecheck:scripts`) in pre-commit and CI. Both counter-checked: planted `lodash@4.17.20` → audit exit 1; planted type error in a generator → exit 2. Linting `scripts/` is not included (the ESLint config covers `v3/` only) — later, together with T11 | ✅ Done (see git log: "…(T8b)") |
 | T8c | Weekly scheduled CI run (`weekly.yml`, Monday 06:00 UTC + manual): reuses `tests.yml` via `workflow_call` (full suite, cannot drift); `npm audit` (all levels) + `npm outdated` as run summary; Dependabot PRs open > 14 days fail the run (red = mail). Counter-checked: stale check finds #2/#3/#6 at 14 days, nothing at 100000 days | ✅ Done (see git log: "…(T8c)") |
@@ -1197,13 +1197,13 @@ Decided 2026-09-29 after a test-setup analysis. Order is binding; Slice 9c/9d wa
 desktop-first layout fails them at 390 px (layout geometry is broken by design until Slice 8).
 Re-enable once the Slice 8 mobile adaptation is in place.
 **When:** Slice 8 completion.
-**Source:** CLAUDE.md commit notes a37dd26, DESIGN_NOTES.md §Known limitation.
+**Source:** CLAUDE.md commit notes a37dd26, docs/design/design-notes.md §Known limitation.
 
 ### Re-enable DnD E2E tests
 Tests 9, 14, 20, 21 in `pad-dnd.spec.ts` are `test.skip` (Scene reorder, Library drag Path B,
 Pad SWAP, Pad INSERT). Need a stable Pointer Events drag sequence in Playwright.
 **When:** When a reliable `dragByPointer()` helper is established in Playwright (Phase 3).
-**Source:** TESTING.md §Bekannte Fallstricke #5.
+**Source:** docs/development/testing.md §Bekannte Fallstricke #5.
 
 ### Board persistence optimisation
 `boardPut()` rewrites the full ~50 KB Board document on every pad/scene edit. Acceptable at
@@ -1218,21 +1218,21 @@ Pre-commit hook currently runs in ~16 s (sync:docs + build + lint-staged + 102 u
 smoke E2E is the first candidate to move to CI-only (it's the most expensive gate, and CI
 runs it anyway; removing it from the pre-commit saves ~6 s locally with no CI coverage gap).
 **When:** When the hook exceeds ~25 s in practice.
-**Source:** TESTING.md §CI-Integration; empirical measure.
+**Source:** docs/development/testing.md §CI-Integration; empirical measure.
 
 ### Cheatsheet state-vocab quick-ref: consider generating from §3 (drift risk)
-`DESIGN_SYSTEM_CHEATSHEET.md` §state vocab is a hand-maintained 13-entry subset of the
-authoritative §3 table in `DESIGN_SYSTEM.md`. Every general-purpose `is-*` addition must
+`docs/design/design-system-cheatsheet.md` §state vocab is a hand-maintained 13-entry subset of the
+authoritative §3 table in `docs/design/design-system.md`. Every general-purpose `is-*` addition must
 be manually synced to the Cheatsheet (as done for `is-conflict`). Consider generating this
 quick-ref from §3 instead — eliminates the drift risk entirely.
 **When:** Before the first general-purpose `is-*` class is missed from the Cheatsheet.
-**Source:** FOUNDATION_ANALYSIS.md §6 coupling map; observed during `is-conflict` registration (2026-06-15).
+**Source:** docs/analysis/foundation-analysis.md §6 coupling map; observed during `is-conflict` registration (2026-06-15).
 
 ### I18n infrastructure
 Structure code so a future i18n pass is feasible (texts in named constants, not hardcoded in
 JSX). Currently English-only; no timeline.
 **When:** Only if a localisation need is confirmed.
-**Source:** V3_CONCEPT_BRIEF.md §4.11, ADR-0041.
+**Source:** docs/architecture/concept-brief.md §4.11, ADR-0041.
 
 ### Reduced-motion fallback for ModeToggle — resolved, cleanup pending
 The `sb-mode-toggle-flash` class is CSS-defined as a brightness-flash fallback for users
@@ -1243,7 +1243,7 @@ reduced-motion), but the CSS rule for `.sb-mode-toggle-flash` is confirmed dead 
 **Action:** Remove `.sb-mode-toggle-flash` from `v3/src/styles/tokens.css` when next
 touching that file (e.g., during Slice 8 polish).
 **When:** Slice 8, or opportunistically when tokens.css is edited.
-**Source:** Truth-check commit `e207a0b`; class marked `[unused-css]` in DESIGN_SYSTEM.md §6.
+**Source:** Truth-check commit `e207a0b`; class marked `[unused-css]` in docs/design/design-system.md §6.
 
 ### ✅ Dead CSS: `sb-creation-popover-section` — Resolved (4210405)
 ~~The class was designed as a padded, bordered section divider inside the creation popover.
@@ -1321,7 +1321,7 @@ exit 1 with a summary if violations found. Integrate as `npm run import:gate`.
 Optional extension: auto-generate a one-session spec snapshot from live §5a + §3 +
 tokens.css as a diff-checkable artifact.
 
-**2. @layout-primitive CSS tagging** (referenced in `DESIGN_SYSTEM.md §5a` process note):
+**2. @layout-primitive CSS tagging** (referenced in `docs/design/design-system.md §5a` process note):
 add `/* @layout-primitive: <purpose> */` annotation to each layout-primitive class in
 `v3/src/styles/tokens.css`; extend sync tooling to detect unregistered primitives and flag
 removals. Until implemented, §5a process note + manual update are the guard.
@@ -1346,9 +1346,9 @@ any new convention rules are written. Without this, new rules risk landing in th
 and going unread.
 
 **Deliverables:**
-- Define the role of every design doc locus: `DESIGN_SYSTEM.md`, `DESIGN_SYSTEM_CHEATSHEET.md`,
+- Define the role of every design doc locus: `docs/design/design-system.md`, `docs/design/design-system-cheatsheet.md`,
   `SoS_DESIGN_25052026/` (jsx files + tokens.css), `Responsive_Strategy_V3.html`,
-  `DESIGN_NOTES.md`. Each must have a one-sentence "this is for X, source of truth for Y"
+  `docs/design/design-notes.md`. Each must have a one-sentence "this is for X, source of truth for Y"
   definition.
 - Resolve the `tokens.css` duplication: `SoS_DESIGN_25052026/tokens.css` vs.
   `v3/src/styles/tokens.css`. Pick one of three options deliberately: (a) both stay with
@@ -1356,13 +1356,13 @@ and going unread.
   (c) design snapshot is removed entirely.
 - Define explicitly where workflow rules for code conventions live (so Session 1 knows where
   to write the new class-vs-inline rule).
-- Expand the planned scope of `DESIGN_SYSTEM.md §1` from "Nomenclature (CSS)" to
+- Expand the planned scope of `docs/design/design-system.md §1` from "Nomenclature (CSS)" to
   "Naming Conventions (project-wide)" — covering CSS classes, tokens, components/files,
   signals, ADRs, `data-testid`, etc. Include a TODO checklist of these sub-topics inside
   the §1 placeholder.
-- Add a header note to `DESIGN_SYSTEM.md` at the top defining its hierarchy ("source of
+- Add a header note to `docs/design/design-system.md` at the top defining its hierarchy ("source of
   truth; cheatsheet is the short form; conflicts → this file wins").
-- Add a header note to `DESIGN_SYSTEM_CHEATSHEET.md` referencing back to `DESIGN_SYSTEM.md`
+- Add a header note to `docs/design/design-system-cheatsheet.md` referencing back to `docs/design/design-system.md`
   as the long form.
 
 **When:** Next session, before any other CSS-discipline work.
@@ -1379,7 +1379,7 @@ new classes.
 **Deliverables:**
 
 1. **Workflow rule** (location decided in Session 0) covering three paths:
-   - **Path A:** Use an existing `sb-*` class from `DESIGN_SYSTEM.md §6` whenever one fits.
+   - **Path A:** Use an existing `sb-*` class from `docs/design/design-system.md §6` whenever one fits.
      Consulting §6 before adding a new class is mandatory.
    - **Path B:** Create a new `sb-*` class if no existing one fits and the value is structural
      and reusable. New class must follow naming conventions (per §1) and use design tokens.
@@ -1404,7 +1404,7 @@ new classes.
    The warning is for new classes that haven't been described yet.
 
 4. **BACKLOG drift reminder** (non-blocking): a pre-commit or CI hint that surfaces when
-   BACKLOG.md hasn't been touched in a while despite ongoing commits — e.g. "Last BACKLOG
+   docs/backlog.md hasn't been touched in a while despite ongoing commits — e.g. "Last BACKLOG
    edit was N commits ago; consider updating." This is a reminder to reflect, NOT automatic
    item-closing (semantic completion can't be reliably automated). Same mechanism family as
    the sync:classes warning. Tune the threshold (commit count or days) during implementation.
@@ -1412,7 +1412,7 @@ new classes.
 
 5. **Fix `sync:tokens` source — read from canonical file, verify all generators consistent:**
    `sync:tokens` currently reads from `SoS_DESIGN_25052026/tokens.css` (the design handoff
-   origin, now explicitly marked non-canonical). As a result, `DESIGN_SYSTEM.md §A` — which
+   origin, now explicitly marked non-canonical). As a result, `docs/design/design-system.md §A` — which
    should be the source of truth — is generated from the wrong file: it is missing 9 tokens
    added during V3 development (`--flame-soft`, `--flame-aura`, `--grid-cols/gap/rows`,
    `--spark-duration/dx/dy`, `--undo-duration`) and still lists `--pix-bg-layer` which was
@@ -1432,7 +1432,7 @@ new classes.
    **Source:** Session 0 diff analysis, 2026-05-29.
 
 **Alignment note (pre-work for Session 1):** Before writing the new class-vs-inline rule in
-CLAUDE.md, verify that `DESIGN_SYSTEM_CHEATSHEET.md`'s decision tree (specifically the
+CLAUDE.md, verify that `docs/design/design-system-cheatsheet.md`'s decision tree (specifically the
 inline-style and class-creation branches) aligns with the Path A/B/C/D logic. If the existing
 tree says something different, Session 1 must resolve the conflict — not just add a
 cross-reference sentence, but ensure both documents say the same thing.
@@ -1972,25 +1972,25 @@ When the iOS physical Ringer Switch is set to silent, the app produces no sound 
 behaviour as V1. This is an iOS platform limit: the AVAudioSession silent-WAV trick cannot
 override the hardware switch. The silent-WAV still serves its purpose (consistent
 `AudioContext.resume()` after interruptions and tab-switches). Deliberate; not a bug.
-**Source:** DESIGN_NOTES.md §iOS Plattform-Grenzen.
+**Source:** docs/design/design-notes.md §iOS Plattform-Grenzen.
 
 ### Populated-SETUP layout at 390 px viewport
 SceneRail (220 px fixed) + open inspector panel (280 px fixed) = 500 px combined minimum,
 which exceeds a 390 px viewport. The center pad grid is pushed to 0 px. Expected for the
 current desktop-first layout. Fix deferred to Slice 8 mobile adaptation.
-**Source:** DESIGN_NOTES.md §Known limitation: SETUP layout.
+**Source:** docs/design/design-notes.md §Known limitation: SETUP layout.
 
 ### HTML5 DnD silently broken on iOS
 `draggable` / `ondragstart` / `ondrop` are not supported on iOS Safari/Brave. All DnD must
 use Pointer Events. Canonical patterns: `src/lib/padDnd.ts` (pad-to-pad) and
 `src/lib/libDnd.ts` (library-to-grid). Any future DnD interaction must follow these patterns.
-**Source:** CLAUDE.md §Supported Platforms, DESIGN_NOTES.md §Slice 3/Lessons.
+**Source:** CLAUDE.md §Supported Platforms, docs/design/design-notes.md §Slice 3/Lessons.
 
 ### WebKit headless: no audio codec support
 Playwright's headless WebKit build cannot decode audio (`decodeAudioData()` fails). As a
 workaround, audio-dependent mobile tests run on Chromium with the iPhone 13 Pro device
 profile. Audio-free mobile specs continue on WebKit.
-**Source:** TESTING.md §Bekannte Fallstricke #7.
+**Source:** docs/development/testing.md §Bekannte Fallstricke #7.
 
 ### `boardPut()` full-document rewrite
 Any pad or scene edit rewrites the entire ~50 KB Board document. Acceptable at current board
@@ -2001,7 +2001,7 @@ sizes. See the infrastructure item above for the optimisation path.
 
 ## 7. Manual Verification Reference
 
-`docs/MANUAL_IPHONE_CHECKLIST.md` must be run before every release and after any commit
+`development/manual-iphone-checklist.md` must be run before every release and after any commit
 that touches audio code (`src/audio/`), the IDB layer (`src/db/`), or file-handling
 (import/export). It covers items that cannot be automated in Playwright:
 - File upload via iOS native picker (bypassed by `setInputFiles()`)
@@ -2010,4 +2010,4 @@ that touches audio code (`src/audio/`), the IDB layer (`src/db/`), or file-handl
 - Tab-switch / backgrounding lifecycle
 - Backup import/export via iOS Files app
 
-See `TESTING.md §Mobile Testing` for the full rationale.
+See `docs/development/testing.md §Mobile Testing` for the full rationale.

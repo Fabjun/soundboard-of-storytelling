@@ -30,21 +30,21 @@
   hub / leaf / template per area (`docs/product/`, `docs/design/`,
   `docs/architecture/`, `docs/development/`). New docs: English, status on
   every decision (**Decided / Open / Parked**), token names only — never
-  copied values. Migration is incremental; see `docs/DOCUMENTATION_MAP.md`
+  copied values. Migration is incremental; see `docs/README.md`
   §Target structure for what is already authoritative.
-- **`docs/product/PRODUCT.md`** — product concept hub (in progress; filled in
+- **`docs/product/README.md`** — product concept hub (in progress; filled in
   dialogue with the user). Once a section is filled, it is authoritative for
   that topic and must be read at session start. Never fill a section with
   reconstructed content without user confirmation.
-- **`V3_CONCEPT_BRIEF.md`** — binding technical architecture decisions for V3
-  (stack, state, audio engine, IDB, platforms). Product concepts → `docs/product/PRODUCT.md`;
+- **`docs/architecture/concept-brief.md`** — binding technical architecture decisions for V3
+  (stack, state, audio engine, IDB, platforms). Product concepts → `docs/product/README.md`;
   slice plan → "Slice progress" table in this file. Read first in every session.
 - **`v1-reference/index.html`** — V1 source, reference for behavior,
   audio engine, IndexedDB schema, template export/import.
   V2 (`v1_5/` in the V1 GitHub repo, versions v1.5.x → v2.0.12; not copied
   locally) is a short interim rewrite. **V1 and V2 are prototypes: explore
   them for behavior and ideas, never copy UI/CSS/markup 1:1** — re-implement
-  in V3 idiom (`PRODUCT.md §7` P7). Only exception: the audio engine.
+  in V3 idiom (`docs/product/README.md §7` P7). Only exception: the audio engine.
 - **`SoS_DESIGN_25052026/`** — design system: tokens, JSX components.
   **Design folders (`SoS_DESIGN_<DDMMYYYY>/`, repo root):** every Claude Design download
   goes into its own new dated folder; existing folders are never overwritten. Design
@@ -235,9 +235,9 @@ and has diverged). Never hardcode colors, fonts, or spacing.
   legacy entries.
 - **Library entries**: always `{name, hash, size, peaks?}` shape in
   working memory. Never raw audio in working state.
-- **CSS class vs. inline style — four paths** (see also `DESIGN_SYSTEM_CHEATSHEET.md §Decision tree`):
+- **CSS class vs. inline style — four paths** (see also `docs/design/design-system-cheatsheet.md §Decision tree`):
   Before adding `style={}` or a new `class=`, pick the right path:
-  - **Path A — use existing class:** Consult `DESIGN_SYSTEM.md §6` first. If an `sb-*` or
+  - **Path A — use existing class:** Consult `docs/design/design-system.md §6` first. If an `sb-*` or
     `is-*` class fits, use it. Checking §6 before creating any new class is mandatory — not
     optional.
   - **Path B — create new class:** No existing class fits **and** the value is structural or
@@ -246,7 +246,7 @@ and has diverged). Never hardcode colors, fonts, or spacing.
     §6 first for a class with similar function — extend (e.g., `is-*` variant) rather than
     duplicate. If duplication risk is unclear, raise the question. Layout-only structures
     (flex/gap/align-only wrappers) belong in named layout primitives — see
-    `DESIGN_SYSTEM.md §5a` for the canonical list (`sb-row`, `sb-col`, `sb-flex-1`,
+    `docs/design/design-system.md §5a` for the canonical list (`sb-row`, `sb-col`, `sb-flex-1`,
     and variants) — not inline exceptions.
   - **Path C — inline = dynamic only:** `style={}` is legitimate only for values computed at
     runtime: animation coordinates, drag positions, data-driven dimensions, state-dependent
@@ -334,7 +334,7 @@ any non-doc file flagged ⚠ for approval. Routine additionally: `v3/src/lib/cha
 
 ## Workflow rules
 
-1. **Read `V3_CONCEPT_BRIEF.md` at session start.** It is the binding
+1. **Read `docs/architecture/concept-brief.md` at session start.** It is the binding
    architecture document.
 2. **Before implementing any change**: explain the plan and design
    context, wait for confirmation.
@@ -349,7 +349,7 @@ any non-doc file flagged ⚠ for approval. Routine additionally: `v3/src/lib/cha
    verbatim in the summary — not a prose description of the file list. Also include what
    changed and what was verified.
 7. **Update this CLAUDE.md** when permanent standards change.
-8. **Testing**: see `TESTING.md` for full test architecture, commands, and
+8. **Testing**: see `docs/development/testing.md` for full test architecture, commands, and
    conventions. Phase 2 testing infrastructure is complete:
    - Pre-commit: sync:docs (auto-stage) + build + lint + unit tests + smoke E2E + link:check
    - CI: GitHub Actions `tests.yml` runs unit + lint + size + docs sync check + link check + full E2E
@@ -360,7 +360,7 @@ any non-doc file flagged ⚠ for approval. Routine additionally: `v3/src/lib/cha
 9. **Design→code imports**: all Claude Design output entering production code must pass
    the import gate (5-point check: Path-D styles, class-name registries, hex/px literals,
    TODO-CLASS markers, token existence) — see ADR-0046. Session spec for production-near
-   design sessions: `docs/design/CLAUDE_DESIGN_SPEC.md`.
+   design sessions: `docs/design/claude-design-spec.md`.
    **Scope of Claude Design (user decision 2026-09-28):** Claude Design is used only for
    visual styling — buttons, colors, typography and similar element-level appearance.
    Layout, screen structure and adaptive behavior are designed and built together
@@ -379,7 +379,7 @@ any non-doc file flagged ⚠ for approval. Routine additionally: `v3/src/lib/cha
     Annahmen, neue Infrastruktur) ein ADR in `docs/architecture/` anlegen.
     Format laut `docs/architecture/_template.md`. Index in
     `docs/architecture/README.md` ergänzen. Verstreute Architektur-Notizen in
-    `DESIGN_NOTES.md` sind keine ADRs — `DESIGN_NOTES.md` dokumentiert
+    `docs/design/design-notes.md` sind keine ADRs — `docs/design/design-notes.md` dokumentiert
     Design-Detail-Entscheidungen; `docs/architecture/` dokumentiert
     Architektur-Entscheidungen.
     **Neues ADR-Header-Feld:** `**Category:**` (nach `**Slice:**`) — eines der
@@ -387,23 +387,23 @@ any non-doc file flagged ⚠ for approval. Routine additionally: `v3/src/lib/cha
 13. **Auto-generierte Inventuren**: Vier Sections werden per Generator befüllt —
     nie manuell editieren:
     - `docs/architecture/README.md §Index` — via `npm run sync:adr`
-    - `DESIGN_SYSTEM.md §6` (sb-*-Klassen) — via `npm run sync:classes`
-    - `DESIGN_SYSTEM.md §A` (Tokens) — via `npm run sync:tokens`
-    - `TESTING.md §Test-Inventar` (Specs je Projekt, Unit-Tests) — via `npm run sync:tests`
+    - `docs/design/design-system.md §6` (sb-*-Klassen) — via `npm run sync:classes`
+    - `docs/design/design-system.md §A` (Tokens) — via `npm run sync:tokens`
+    - `docs/development/testing.md §Test-Inventar` (Specs je Projekt, Unit-Tests) — via `npm run sync:tests`
     Der Pre-Commit-Hook führt `sync:docs` automatisch aus und staged die
     Ergebnisse. Zum manuellen Aktualisieren: `cd v3 && npm run sync:docs`.
     Neue sb-*-Klassen dokumentieren mit `/* @inventory: Beschreibung */`
     am CSS-Selektor. Neue Tokens bekommen ihre Beschreibung aus dem
     Inline-Kommentar nach dem Semikolon in `tokens.css`.
 14. **Open work items**: All deferred items and known limitations are tracked in
-    `BACKLOG.md` (repo root). Slice plans should consult and update it. At each
+    `docs/backlog.md` (repo root). Slice plans should consult and update it. At each
     slice completion, before the final commit: mark completed items `✅ Done (commit SHA)`
     and add any new deferred items surfaced during the slice.
 15. **Test infrastructure first (user decision 2026-09-29):** a safe, trustworthy test
     environment has the highest priority. Gaps found in the test setup (unassigned or
     skipped specs, untested critical modules, env drift) are closed **before** feature work
     continues. New E2E specs must be listed in `v3/tests/e2e/projects.ts` (guard test).
-    Flaky tests follow the quarantine procedure in `TESTING.md` — never silently skipped.
+    Flaky tests follow the quarantine procedure in `docs/development/testing.md` — never silently skipped.
 
 ### Pre-commit checklist (mandatory before ANY commit)
 
@@ -496,10 +496,10 @@ Before committing a slice, also:
    (break the code → red); guards are green; no quarantine without a BACKLOG entry;
    raise the coverage floor in `vitest.config.ts` to the new measured values (rounded down).
 4. Update CLAUDE.md "Slice progress" table with completion date
-5. **Update BACKLOG.md**: mark completed items `✅ Done (commit SHA)`, add any
+5. **Update docs/backlog.md**: mark completed items `✅ Done (commit SHA)`, add any
    new deferred items surfaced during the slice.
 6. **For slices touching audio (`src/audio/`), IDB (`src/db/`), or file-handling
-   (import/export):** run through `docs/MANUAL_IPHONE_CHECKLIST.md` before the final
+   (import/export):** run through `docs/development/manual-iphone-checklist.md` before the final
    commit. These checks cannot be automated in Playwright and have caught iOS-only bugs
    (audio playback, file picker, tab-switch lifecycle) that passed all automated tests.
 7. **Remind the user to push.** After the final commit of a slice or sub-session, output
@@ -526,7 +526,7 @@ cd v3 && npm run test:watch    # unit tests in watch mode (while developing)
 cd v3 && npm run test:e2e      # smoke + smoke-webkit + full E2E (Playwright); pre-push runs test:e2e:all (adds mobile)
 ```
 
-See `TESTING.md` for the full test architecture and conventions.
+See `docs/development/testing.md` for the full test architecture and conventions.
 
 ---
 
@@ -582,7 +582,7 @@ boardGet(id: string): Promise<Board | null>
 boardPut(board: Board): Promise<void>
   // Upsert entire board document (Board + embedded Scenes + Pads).
   // TRADE-OFF: any pad/scene edit rewrites the full ~50KB document.
-  // Acceptable at 5×16 pads; see DESIGN_NOTES.md "Slice 8 / Performance"
+  // Acceptable at 5×16 pads; see docs/design/design-notes.md "Slice 8 / Performance"
   // for optimisation path if measured to be a bottleneck.
 
 boardDelete(id: string): Promise<void>
@@ -603,12 +603,12 @@ boardDelete(id: string): Promise<void>
 | 6 | Sets + Quick Access | ↷ Superseded | 2026-09-28 | May plan — sets dropped; quick-access bar → 9 + 13 |
 | 7 | Template export/import | ↷ Superseded | 2026-09-28 | May plan — replaced by 10 |
 | 8 | Settings, themes, polish | ↷ Superseded | 2026-09-28 | May plan — replaced by 14 (layout items → 13) |
-| 9 | Data model | ⬜ Pending (next) | — | Pad pool + decks, rename Scene → Deck (UI, code, stored data), Playlist → Loop, multi-file Single/Loop (PRODUCT.md §5). ADR required. V3 data may be wiped (only test data): delete **only** the `sos-v3` database — never origin-wide storage (V1's `botc` DB shares the origin `fabjun.github.io`). |
+| 9 | Data model | ⬜ Pending (next) | — | Pad pool + decks, rename Scene → Deck (UI, code, stored data), Playlist → Loop, multi-file Single/Loop (docs/product/README.md §5). ADR required. V3 data may be wiped (only test data): delete **only** the `sos-v3` database — never origin-wide storage (V1's `botc` DB shares the origin `fabjun.github.io`). |
 | 10 | Data backup & import | ⬜ Pending | — | Single-file export/import, V1 import incl. all library audio, piecewise reading, persistent storage, last-backup indicator (`docs/product/features/data-backup.md`) |
-| 11 | Combo editor | ⬜ Pending | — | Minimal first version, then towards V1 scope and beyond (PRODUCT.md §5 Combos) |
-| 12 | Live control | ⬜ Pending | — | Numpad K1–K14, STOP ALL, pause, Wake Lock, mode switch stops sounds, Lock (PRODUCT.md §3, §6). Goal: first real game night with V3 (laptop / tablet) |
+| 11 | Combo editor | ⬜ Pending | — | Minimal first version, then towards V1 scope and beyond (docs/product/README.md §5 Combos) |
+| 12 | Live control | ⬜ Pending | — | Numpad K1–K14, STOP ALL, pause, Wake Lock, mode switch stops sounds, Lock (docs/product/README.md §3, §6). Goal: first real game night with V3 (laptop / tablet) |
 | 13 | Adaptive layout | ⬜ Pending | — | Smartphones in general (not only iPhone): deck switcher, All pads, quick-access bar, search/sort bar, PAD card format + zoom (`docs/design/components/pad.md`) |
-| 14 | Settings & polish | ⬜ Pending | — | Settings screen, Settings options from PRODUCT.md P2, themes |
+| 14 | Settings & polish | ⬜ Pending | — | Settings screen, Settings options from docs/product/README.md P2, themes |
 
 **Re-plan 2026-09-28 (numbering rule):** Slices 5–8 of the May plan are superseded; their numbers
 are **never reused**. Every existing reference to "Slice 5–8" (BACKLOG, ADRs, DESIGN_NOTES, code
@@ -627,7 +627,7 @@ comments) keeps meaning the May plan. Mapping old → new:
 - `LibraryItem.blob` never stored in Signals: type split into `LibraryItemMeta` (in state) + `LibraryItem` (IDB only).
 - SHA-256 uses `@noble/hashes/sha2.js` (not Web Crypto API) — required for iPhone LAN dev server (no Secure Context at http://IP).
 - Library screen is 2-column in Slice 2; inspector panel deferred to Slice 8+.
-- Slice 3: Board persistence as full JSON document (Board + Scenes + Pads); trade-off documented in idb.ts and DESIGN_NOTES.md.
+- Slice 3: Board persistence as full JSON document (Board + Scenes + Pads); trade-off documented in idb.ts and docs/design/design-notes.md.
 - Slice 4: `stopPad(padId, immediate, fadeOut?)` takes explicit fadeOut parameter — engine doesn't hold a Pad reference after playback starts; callers pass `pad.fadeOut`. Pad-on-stop fadeOut is effectively 0 in Slice 4 (Slice 8 refinement).
 - Slice 4: Infinite loops only (no loopCount > 0 support); crossfade is a stub (`stop(from)` + `play(to)`).
 - Slice 4: `audio.spec.ts` added to FULL_TESTS in playwright.config.ts.

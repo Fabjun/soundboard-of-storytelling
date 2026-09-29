@@ -5,7 +5,7 @@
 >
 > **Status:** Skeleton — sections are filled in dialogue with the product owner.
 > Until a section is filled, the previous sources remain authoritative
-> (`V3_CONCEPT_BRIEF.md`, `BACKLOG.md`, `DESIGN_NOTES.md`).
+> (`docs/architecture/concept-brief.md`, `docs/backlog.md`, `docs/design/design-notes.md`).
 >
 > **Leaves:** [v1-v2-inventory.md](v1-v2-inventory.md) — prototype features vs. V3 status,
 > decisions per feature. · [features/data-backup.md](features/data-backup.md) — export,
@@ -48,7 +48,7 @@ are `AppMode = 'play' | 'edit'`; in the UI and in all docs they are **GAME** and
 | | GAME | SETUP | Status |
 |---|---|---|---|
 | Tap on a pad | Plays / stops the sound | Opens the PAD editor; plays nothing | **Decided** |
-| Listening to a sound | By playing the pad | PREVIEW inside the PAD editor — _not yet built_ ([BACKLOG: Live preview](../../BACKLOG.md#live-preview-that-respects-fades--trim)) | **Decided** |
+| Listening to a sound | By playing the pad | PREVIEW inside the PAD editor — _not yet built_ ([BACKLOG: Live preview](../backlog.md#live-preview-that-respects-fades--trim)) | **Decided** |
 | Switching decks | Classic controls (tabs, dropdown or similar); usable on desktop and smartphone | same | **Decided** |
 | Concrete form of the deck switcher | — | — | **Open** — settled with the mobile Board layout |
 
@@ -88,7 +88,7 @@ exist yet).
 ### Open
 
 - Previewing a sound must not be audible in the room (separate audio routing). See
-  [BACKLOG B9](../../BACKLOG.md#b9--gap-einordnung-drei-bestätigungen-zwei-neue-kandidaten)
+  [BACKLOG B9](../backlog.md#b9--gap-einordnung-drei-bestätigungen-zwei-neue-kandidaten)
   ("Audition vs. live output").
 
 **Not covered here:** visual mode cues (colors, pad borders, backgrounds) → DESIGN.md;
@@ -255,7 +255,7 @@ finished experience.
 | P7 | **Learn from the prototypes, don't copy them.** V1 and V2 are sources for behavior, features and lessons. V3 re-implements in its own idiom (class system, tokens, components). Exception: the audio engine, ported unchanged by design. | **Decided** |
 
 Engineering approach ("Think big, but don't rush") is not a product principle — it stays
-in `BACKLOG.md` until `ARCHITECTURE.md` exists.
+in `docs/backlog.md` until `ARCHITECTURE.md` exists.
 
 ## 8. Out of scope
 

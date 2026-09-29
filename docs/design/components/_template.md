@@ -10,7 +10,7 @@
 **Last reviewed:** YYYY-MM-DD
 
 Status markers used below: **Decided** · **Open** · **Parked**
-(see [PRODUCT.md — Status legend](../../product/PRODUCT.md#status-legend)).
+(see [docs/product/README.md — Status legend](../../product/README.md#status-legend)).
 
 ---
 
@@ -36,7 +36,7 @@ Configurations selected via props.
 
 ## States
 
-State classes from the closed `is-*` vocabulary (`DESIGN_SYSTEM.md §3`).
+State classes from the closed `is-*` vocabulary (`docs/design/design-system.md §3`).
 
 | State | Trigger | Appearance | Status |
 |---|---|---|---|

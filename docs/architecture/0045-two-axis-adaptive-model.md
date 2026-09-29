@@ -7,7 +7,7 @@
 
 ## Context
 
-Das Projekt hielt ursprünglich (BACKLOG.md, Stable Directions) die Richtungsentscheidung
+Das Projekt hielt ursprünglich (docs/backlog.md, Stable Directions) die Richtungsentscheidung
 "Desktop after mobile; two separate interaction systems": Mobile und Desktop als zwei
 getrennte Systeme, getrennt nach **Eingabetyp** (Touch vs. Mouse/Keyboard), Desktop als
 nachgelagerter separater Block. Parallel entstand eine Frage: Wie soll die App zwischen
@@ -109,4 +109,4 @@ UA-String, nicht Viewport und `pointer`-Query — falsch positiv auf dem häufig
   konstant — grenzabgrenzung zu Axis 1, siehe oben)
 - **BACKLOG:** §Stable Directions → "Two-axis adaptive model" (ersetzt "Desktop after mobile;
   two separate interaction systems")
-- **Dokumente:** `BACKLOG.md §Stable Directions`
+- **Dokumente:** `docs/backlog.md §Stable Directions`

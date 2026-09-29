@@ -19,7 +19,7 @@ disziplinierte Pflege:
 2. **VERSION-Bump:** Bei jeder Änderung musste die Version hochgezählt werden.
    Vergessen → Browser nutzt veralteten Cache, Update wird nicht ausgerollt.
 
-Das `V3_CONCEPT_BRIEF.md §4.9` legt `vite-plugin-pwa` explizit fest mit der
+Das `docs/architecture/concept-brief.md §4.9` legt `vite-plugin-pwa` explizit fest mit der
 Begründung: "V1's manual sw.js worked but required discipline. The plugin
 removes that failure mode."
 
@@ -63,5 +63,5 @@ erfordern ohne Mehrwert.
 
 - **Dateien:** `v3/vite.config.ts` (Plugin-Konfiguration inkl. Web-App-Manifest — kein separates manifest.json)
 - **ADRs:** ADR-0003 (Vite), ADR-0006 (iOS-Targets beeinflussen PWA-Anforderungen)
-- **Quelldokumente:** `V3_CONCEPT_BRIEF.md §4.9`
+- **Quelldokumente:** `docs/architecture/concept-brief.md §4.9`
 - **Commits:** `8be64d4` — Slice 1 scaffold (Plugin eingerichtet)

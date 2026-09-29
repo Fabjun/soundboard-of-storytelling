@@ -8,7 +8,7 @@
 
 ---
 
-## Layout primitives (closed set — `DESIGN_SYSTEM.md §5a`)
+## Layout primitives (closed set — `docs/design/design-system.md §5a`)
 
 | Class | Behaviour | Use for |
 |-------|-----------|---------|
@@ -24,7 +24,7 @@
 
 ---
 
-## State classes (closed vocabulary — `DESIGN_SYSTEM.md §3`)
+## State classes (closed vocabulary — `docs/design/design-system.md §3`)
 
 | Class | Meaning |
 |-------|---------|
@@ -51,7 +51,7 @@
 
 ## Core tokens
 
-Full list: `DESIGN_SYSTEM.md §A`. Core subset:
+Full list: `docs/design/design-system.md §A`. Core subset:
 
 **Surfaces**
 `--night` `--deep` `--surface` `--raised` `--top` `--sunk`
@@ -93,6 +93,6 @@ resolved (translated or registered) at import time before production merge.
 
 ## Maintenance
 
-This file mirrors `DESIGN_SYSTEM.md §5a` (layout primitives), `§3` (is-* vocabulary),
+This file mirrors `docs/design/design-system.md §5a` (layout primitives), `§3` (is-* vocabulary),
 and the core subset of `v3/src/styles/tokens.css`. Update in the same commit when any of
-those change. Coupling tracked in `docs/analysis/FOUNDATION_ANALYSIS.md §6`.
+those change. Coupling tracked in `docs/analysis/foundation-analysis.md §6`.

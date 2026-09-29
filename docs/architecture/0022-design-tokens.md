@@ -10,7 +10,7 @@
 
 Das Design-System liefert `SoS_DESIGN_25052026/tokens.css` als komplettes
 Token-System: Farben, Typography, Spacing, Pixel-Frame-Styles, Theme-Overrides,
-Animation-Keyframes. `V3_CONCEPT_BRIEF.md §4.7` legt fest: "Token language
+Animation-Keyframes. `docs/architecture/concept-brief.md §4.7` legt fest: "Token language
 follows the design system canonically."
 
 Die Alternative wäre, Farben/Fonts/Spacing direkt im JSX oder CSS zu kodieren.
@@ -38,11 +38,11 @@ variables, grid layout variables, new ambient glow tokens — `--flame-soft`,
 `--flame-aura`, `--grid-cols/gap/rows`, `--spark-duration/dx/dy`, `--undo-duration`),
 and `--pix-bg-layer` was removed. The design handoff origin
 (`SoS_DESIGN_25052026/tokens.css`) is kept as a reference only and is not loaded by
-the app. See `docs/DOCUMENTATION_MAP.md` for the full documentation structure.
+the app. See `docs/README.md` for the full documentation structure.
 Theme-Overrides (`.theme-verdant`, `.theme-neon`,
 `.theme-crimson`) sind in `tokens.css` enthalten.
 
-**Verboten in neuem V3-Code (aus DESIGN_SYSTEM_CHEATSHEET.md):**
+**Verboten in neuem V3-Code (aus docs/design/design-system-cheatsheet.md):**
 - Neue Farbliterale
 - `--sb-*` Legacy-Aliase (nur für rückwärtskompatible Verweise)
 - `border-radius` auf `sb-pix`-family (clip-path, ADR-0024)
@@ -75,4 +75,4 @@ Design-System ersetzen. Nicht gewählt.
 
 - **Dateien:** `v3/src/styles/tokens.css`, `SoS_DESIGN_25052026/tokens.css`
 - **ADRs:** ADR-0021 (CSS-Naming), ADR-0023 (Surface Hierarchy), ADR-0027 (Pad-Typ-Farben)
-- **Quelldokumente:** `V3_CONCEPT_BRIEF.md §4.7`, `CLAUDE.md §Design language`, `SoS_DESIGN_25052026/HANDOFF.md §4`
+- **Quelldokumente:** `docs/architecture/concept-brief.md §4.7`, `CLAUDE.md §Design language`, `SoS_DESIGN_25052026/HANDOFF.md §4`

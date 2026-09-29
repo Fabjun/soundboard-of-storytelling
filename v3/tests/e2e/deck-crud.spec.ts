@@ -68,7 +68,7 @@ test('8 — duplicate deck → new tab appears with suffix', async ({ page }) =>
 
 // ── Test 9: Reorder via drag ──────────────────────────────────────────────────
 
-// QUARANTINE (TESTING.md §Wackelige Tests): the FEATURE is not built — DeckRail has no
+// QUARANTINE (docs/development/testing.md §Wackelige Tests): the FEATURE is not built — DeckRail has no
 // reorder at all (found 2026-09-29; earlier docs wrongly claimed it). Decided: drag & drop,
 // mouse + touch. BACKLOG §1 "Deck reorder (drag & drop)". Activate when the feature lands.
 // eslint-disable-next-line playwright/no-skipped-test -- quarantine: feature not built (BACKLOG "Deck reorder")

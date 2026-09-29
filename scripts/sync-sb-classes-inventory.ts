@@ -3,7 +3,7 @@
  * sync-sb-classes-inventory.ts
  *
  * Extracts all sb-* CSS class names used in v3/src and writes a table
- * between AUTO-GENERATED markers in DESIGN_SYSTEM.md §6.
+ * between AUTO-GENERATED markers in docs/design/design-system.md §6.
  *
  * Class names are extracted from:
  *   - TSX: className="..." attribute values (static strings)
@@ -25,7 +25,7 @@ import { fileURLToPath } from 'url';
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(__dirname, '..');
 const SRC_DIR = join(ROOT, 'v3', 'src');
-const DESIGN_SYSTEM = join(ROOT, 'DESIGN_SYSTEM.md');
+const DESIGN_SYSTEM = join(ROOT, 'docs/design/design-system.md');
 
 const MARKER_START =
   '<!-- AUTO-GENERATED:sb-classes START — nicht manuell editieren -->';

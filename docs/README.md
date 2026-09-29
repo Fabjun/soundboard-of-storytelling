@@ -14,14 +14,14 @@ not yet filled and confirmed.
 
 | Area | Hub | Leaves | Template | State | Source(s) |
 |---|---|---|---|---|---|
-| Product | [`docs/product/PRODUCT.md`](product/PRODUCT.md) | [`features/data-backup.md`](product/features/data-backup.md), [`v1-v2-inventory.md`](product/v1-v2-inventory.md) | — | In progress (see below) | `V3_CONCEPT_BRIEF.md` (product parts), `BACKLOG.md` (decisions) |
-| Design | `docs/design/DESIGN.md` | [`components/pad.md`](design/components/pad.md) (Draft) | [`_template.md`](design/components/_template.md) | First spec; hub pending | `DESIGN_SYSTEM.md`, `DESIGN_SYSTEM_CHEATSHEET.md`, `DESIGN_NOTES.md`, `v1-reference/HANDOFF.md` §4 |
-| Architecture | `docs/architecture/ARCHITECTURE.md` | ADRs in `docs/architecture/` | [`_template.md`](architecture/_template.md) | ADRs exist; hub pending | `V3_CONCEPT_BRIEF.md` (technical parts) |
-| Development | `docs/development/DEVELOPMENT.md` | — | — | Pending | `TESTING.md`, `CLAUDE.md` (workflow parts) |
+| Product | [`docs/product/README.md`](product/README.md) | [`features/data-backup.md`](product/features/data-backup.md), [`v1-v2-inventory.md`](product/v1-v2-inventory.md) | — | In progress (see below) | `docs/architecture/concept-brief.md` (product parts), `docs/backlog.md` (decisions) |
+| Design | `docs/design/DESIGN.md` | [`components/pad.md`](design/components/pad.md) (Draft) | [`_template.md`](design/components/_template.md) | First spec; hub pending | `docs/design/design-system.md`, `docs/design/design-system-cheatsheet.md`, `docs/design/design-notes.md`, `v1-reference/HANDOFF.md` §4 |
+| Architecture | `docs/architecture/ARCHITECTURE.md` | ADRs in `docs/architecture/` | [`_template.md`](architecture/_template.md) | ADRs exist; hub pending | `docs/architecture/concept-brief.md` (technical parts) |
+| Development | `docs/development/DEVELOPMENT.md` | — | — | Pending | `docs/development/testing.md`, `CLAUDE.md` (workflow parts) |
 
 **Product progress (2026-09-28):**
 
-| PRODUCT.md section | State | Transferred from (source now holds a pointer) |
+| docs/product/README.md section | State | Transferred from (source now holds a pointer) |
 |---|---|---|
 | §1 Purpose & audience | Pending — discussed, not yet written | — |
 | §2 A game session | Pending | — |
@@ -40,7 +40,7 @@ not yet filled and confirmed.
 Slice 13 (adaptive layout).
 
 Full old-file → new-home mapping, including files that are only partially emptied
-(`BACKLOG.md`) or stay outside this table (`CLAUDE.md`, `v1-reference/HANDOFF.md`), and the
+(`docs/backlog.md`) or stay outside this table (`CLAUDE.md`, `v1-reference/HANDOFF.md`), and the
 open `CHANGELOG.md` (root) question: see
 [ADR-0047 Decision §6](architecture/0047-documentation-architecture.md#decision).
 
@@ -52,10 +52,10 @@ old documents move to `docs/archive/` once transferred and confirmed — nothing
 
 ## Orientation (read first)
 
-### `V3_CONCEPT_BRIEF.md`
+### `docs/architecture/concept-brief.md`
 The **mandatory session-start document**. Binding architecture for V3.0: stack decisions,
 state management, audio engine and session start protocol. (Product concepts incl. the data model's
-key concepts → `docs/product/PRODUCT.md`; slice plan → `CLAUDE.md §Slice progress`.)
+key concepts → `docs/product/README.md`; slice plan → `CLAUDE.md §Slice progress`.)
 Read before any other document at the start of every Claude Code session.
 **Source of truth for:** Architectural decisions binding V3.0 development; starting point
 for every session. Kept up to date by Claude Code as slices complete and decisions harden.
@@ -64,17 +64,17 @@ for every session. Kept up to date by Claude Code as slices complete and decisio
 
 ## Design system
 
-### `DESIGN_SYSTEM.md`
+### `docs/design/design-system.md`
 Full design system specification. This is the **source of truth** for all design rules.
 Auto-generated sections §6 (CSS class inventory) and §A (token inventory) are maintained
 by `npm run sync:docs` — do not edit them manually.
 **Source of truth for:** CSS class rules, state vocabulary (`is-*`), token usage rules,
 component anatomy, pixel-frame patterns, and all project-wide naming conventions (§1).
 
-### `DESIGN_SYSTEM_CHEATSHEET.md`
-Single-page quick reference for daily use. Short form of `DESIGN_SYSTEM.md`.
+### `docs/design/design-system-cheatsheet.md`
+Single-page quick reference for daily use. Short form of `docs/design/design-system.md`.
 When the cheatsheet and the main document conflict, the main document wins.
-**Source of truth for:** Nothing exclusively — it summarises `DESIGN_SYSTEM.md`.
+**Source of truth for:** Nothing exclusively — it summarises `docs/design/design-system.md`.
 
 ---
 
@@ -118,13 +118,13 @@ Must be kept up to date after every session that establishes new permanent stand
 **Source of truth for:** Conventions Claude must follow; rules for commits, testing,
 build, slice completion, and all code-level standards enforced during sessions.
 
-### `TESTING.md`
+### `docs/development/testing.md`
 Test architecture, commands, and conventions. Includes the `data-testid` naming
 convention, E2E patterns, known caveats (Playwright/WebKit limitations), and the
 pre-commit/CI gate specification.
 **Source of truth for:** Test structure, test commands, `data-testid` naming.
 
-### `docs/MANUAL_IPHONE_CHECKLIST.md`
+### `docs/development/manual-iphone-checklist.md`
 Checklist for manual verification on iPhone + Brave that cannot be automated in Playwright
 (audio playback, file-picker, tab-switch lifecycle, Add to Home Screen). Run through this
 before the final commit of any slice touching `src/audio/`, `src/db/`, or file handling.
@@ -134,15 +134,15 @@ before the final commit of any slice touching `src/audio/`, `src/db/`, or file h
 
 ## Working notes
 
-### `DESIGN_NOTES.md`
+### `docs/design/design-notes.md`
 Design-detail decisions, RESOLVED entries, and slice-specific open questions.
 Not a feature backlog and not an architecture record. When a design-detail decision
-hardens into a permanent convention, it migrates to `DESIGN_SYSTEM.md`. When a deferred
-item becomes a feature or known limitation, it moves to `BACKLOG.md`.
+hardens into a permanent convention, it migrates to `docs/design/design-system.md`. When a deferred
+item becomes a feature or known limitation, it moves to `docs/backlog.md`.
 **Source of truth for:** Design-detail rationale and open "how exactly" questions at
 the slice level.
 
-### `BACKLOG.md`
+### `docs/backlog.md`
 Living backlog: all deferred items, known limitations, and open UX decisions.
 Updated at each slice completion (per CLAUDE.md Workflow Rule 14).
 **Source of truth for:** What work is explicitly deferred, and why.
@@ -151,7 +151,7 @@ Updated at each slice completion (per CLAUDE.md Workflow Rule 14).
 
 ## Analysis
 
-### `docs/analysis/FOUNDATION_ANALYSIS.md`
+### `docs/analysis/foundation-analysis.md`
 Foundation audit of the documentation set (2026-06-05). Inventories all project documents,
 records drift findings (critical / important / cosmetic), and maintains the **Document
 Coupling Map** (§6) — the authoritative record of which concepts must stay in sync across
@@ -175,6 +175,6 @@ When two documents make conflicting statements about the same topic, the precede
 
 1. `CLAUDE.md` — binding operating rule (highest)
 2. `docs/architecture/` ADR — architectural decision
-3. `DESIGN_SYSTEM.md` — design system specification
-4. `DESIGN_SYSTEM_CHEATSHEET.md` — summary of the above
-5. `DESIGN_NOTES.md` / `BACKLOG.md` — working notes (lower; may be outdated)
+3. `docs/design/design-system.md` — design system specification
+4. `docs/design/design-system-cheatsheet.md` — summary of the above
+5. `docs/design/design-notes.md` / `docs/backlog.md` — working notes (lower; may be outdated)

@@ -57,5 +57,5 @@ verlangsamt den Development-Rhythmus.
 
 - **Dateien:** `v3/.husky/pre-commit`, `v3/package.json` (prepare script)
 - **ADRs:** ADR-0033 (Test-Strategie), ADR-0040 (CI-Deploy gated auf Tests)
-- **Quelldokumente:** `CLAUDE.md §Pre-commit checklist`, `TESTING.md §Pre-Commit-Hook`
+- **Quelldokumente:** `CLAUDE.md §Pre-commit checklist`, `docs/development/testing.md §Pre-Commit-Hook`
 - **Commits:** `4296648` — chore: add husky pre-commit hook; `9839fdb` — chore: extend pre-commit hook with smoke e2e tests

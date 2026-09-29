@@ -1,6 +1,6 @@
 # Soundboard of Storytelling — Design System Cheatsheet
 
-> **Reminder, not replacement.** `DESIGN_SYSTEM.md` is the source of truth.
+> **Reminder, not replacement.** `docs/design/design-system.md` is the source of truth.
 > This page is the print-out you keep next to the keyboard. When this sheet
 > and the main document disagree, the main document wins.
 
@@ -13,7 +13,7 @@
 3. Pixel-frame variants are made by overriding `--pix-bg` / `--pix-border` /
    `--pix-step` — **not** by writing new clip-path / border CSS.
 4. Spacing tokens (`var(--space-*)`) are mandatory for layout gaps ≥ 12 px.
-5. New `sb-*` classes are registered in §6 of `DESIGN_SYSTEM.md` **in the
+5. New `sb-*` classes are registered in §6 of `docs/design/design-system.md` **in the
    same commit** that introduces them. No exceptions.
 
 ---
@@ -41,7 +41,7 @@ Need to style something.
 │     NO  → continue
 │
 ├── Is it pure layout (flex/gap/align) on a wrapper with no semantic name?
-│     YES → Path B: layout primitive class → see DESIGN_SYSTEM.md §5a for canonical list
+│     YES → Path B: layout primitive class → see docs/design/design-system.md §5a for canonical list
 │           Never inline for static layout. See Path D in CLAUDE.md.
 │     NO  → continue
 │
@@ -79,4 +79,4 @@ Need to style something.
 
 ---
 
-*One page. If you needed more, you needed `DESIGN_SYSTEM.md`.*
+*One page. If you needed more, you needed `docs/design/design-system.md`.*

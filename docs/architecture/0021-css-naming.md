@@ -9,7 +9,7 @@
 ## Context
 
 Das Design-System aus `SoS_DESIGN_25052026/` definiert eine CSS-Namenskonvention,
-die in V3 direkt übernommen wird. Die Konvention ist im `DESIGN_SYSTEM_CHEATSHEET.md`
+die in V3 direkt übernommen wird. Die Konvention ist im `docs/design/design-system-cheatsheet.md`
 ("The 60-second contract") beschrieben.
 
 Die Frage beim Portieren: Soll BEM (Block__Element--Modifier) verwendet werden,
@@ -23,17 +23,17 @@ uns beantwortet: BEM-ähnlich, aber ohne `__` und `--`.
 - Part: `sb-<block>-<part>` (z.B. `sb-pad-spine`, `sb-btn-label`)
 - State: `is-<state>` (z.B. `is-hot`, `is-setup`, `is-danger`, `is-deep`)
 
-**Regeln (aus DESIGN_SYSTEM_CHEATSHEET.md §60-second contract):**
+**Regeln (aus docs/design/design-system-cheatsheet.md §60-second contract):**
 - Kein BEM `__` (kein `sb-pad__spine`) — nur einfaches `-`
 - Kein BEM `--` für Modifier (kein `sb-btn--primary`) — States sind `is-*`
 - States sind nie block-namespaced (`is-hot`, nicht `pad--hot`)
-- Neue `sb-*` Klassen: im selben Commit in `DESIGN_SYSTEM.md §6` registrieren
+- Neue `sb-*` Klassen: im selben Commit in `docs/design/design-system.md §6` registrieren
 
 **Pixel-Frame-Customization:**
 - Nie neues clip-path / border CSS für Varianten
 - Customization via CSS Custom Properties: `--pix-bg`, `--pix-border`, `--pix-step`
 
-**State-Vocabulary (verwaltetes Inventar — vollständig in DESIGN_SYSTEM.md §3;
+**State-Vocabulary (verwaltetes Inventar — vollständig in docs/design/design-system.md §3;
 neue Klassen dort eintragen, nicht hier):**
 
 ## Consequences
@@ -47,7 +47,7 @@ neue Klassen dort eintragen, nicht hier):**
 - Nicht klassisches BEM: Entwickler mit BEM-Hintergrund müssen den Unterschied
   lernen. Dokumentiert im Cheatsheet.
 - Geschlossene State-Vocabulary: neue States brauchen explizite Registrierung
-  in `DESIGN_SYSTEM.md §3` vor Verwendung.
+  in `docs/design/design-system.md §3` vor Verwendung.
 
 ## Alternatives Considered
 
@@ -61,11 +61,11 @@ das Design-System-JSX nicht direkt verwendbar machen (ADR-0001). Nicht gewählt.
 
 - **Dateien:** `v3/src/styles/tokens.css`, `v3/src/components/*.tsx`
 - **ADRs:** ADR-0022 (Design Tokens), ADR-0024 (clip-path), ADR-0025 (is-deep)
-- **Quelldokumente:** `DESIGN_SYSTEM_CHEATSHEET.md`, `SoS_DESIGN_25052026/HANDOFF.md §4.1`
+- **Quelldokumente:** `docs/design/design-system-cheatsheet.md`, `SoS_DESIGN_25052026/HANDOFF.md §4.1`
 
 ## Amendments
 
-**2026-06-15:** `is-conflict` zur Vocabulary hinzugefügt (registriert in `DESIGN_SYSTEM.md §3`).
+**2026-06-15:** `is-conflict` zur Vocabulary hinzugefügt (registriert in `docs/design/design-system.md §3`).
 Anlass: Scene-Rename-Import-Gate (`docs/design/imports/scene-rename-conflict.md`) hat die Klasse
 als fehlend im geschlossenen Set markiert; User hat Option (a) — globale State-Klasse — gewählt
 (vs. (c) Komponenten-lokaler Modifier). Semantik: Namenskonflikt / ungültige Eingabe bei

@@ -76,5 +76,5 @@ sind nicht für jeden Button vorhanden.
 
 - **Dateien:** `v3/src/components/*.tsx` (data-testid Attribute), `v3/tests/e2e/helpers.ts`, `v3/tests/e2e/*.spec.ts`
 - **ADRs:** ADR-0033 (Test-Strategie), ADR-0035 (Playwright)
-- **Quelldokumente:** `TESTING.md §Test-Selector-Konvention`
+- **Quelldokumente:** `docs/development/testing.md §Test-Selector-Konvention`
 - **Commits:** `cb633ab` — refactor: add data-testid attributes for test stability

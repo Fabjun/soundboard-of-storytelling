@@ -1,21 +1,21 @@
 # Soundboard of Storytelling — Design System
 
-> **Source of truth.** `DESIGN_SYSTEM_CHEATSHEET.md` is the single-page quick reference
+> **Source of truth.** `docs/design/design-system-cheatsheet.md` is the single-page quick reference
 > for daily use. When the cheatsheet and this document conflict, this document wins.
-> Documentation roles and relationships across all project docs: see `docs/DOCUMENTATION_MAP.md`.
+> Documentation roles and relationships across all project docs: see `../README.md`.
 
 ---
 
 ## §1 Naming Conventions (project-wide)
 
-<!-- TODO: Write out each sub-topic below. Short form in DESIGN_SYSTEM_CHEATSHEET.md. -->
+<!-- TODO: Write out each sub-topic below. Short form in docs/design/design-system-cheatsheet.md. -->
 
 ### CSS class naming
 <!-- TODO: Write up fully. Conventions already followed:
      Block: sb-<block> (e.g. sb-pad, sb-btn)
      Part:  sb-<block>-<part> (e.g. sb-pad-title, sb-btn-sm)
      State: is-<state> (e.g. is-hot, is-setup) — never block-scoped
-     Per ADR-0021. Short form in DESIGN_SYSTEM_CHEATSHEET.md §60-second contract. -->
+     Per ADR-0021. Short form in docs/design/design-system-cheatsheet.md §60-second contract. -->
 
 ### Token naming
 <!-- TODO: Write up fully. --<name> conventions; grouping by section; when to use
@@ -42,7 +42,7 @@
      Already followed — needs writing up. -->
 
 ### data-testid naming
-<!-- TODO: Convention documented in TESTING.md — cross-reference, do not duplicate here. -->
+<!-- TODO: Convention documented in docs/development/testing.md — cross-reference, do not duplicate here. -->
 
 ### Branch/commit conventions
 <!-- TODO: No formal convention established yet. Gap to document. -->
@@ -51,7 +51,7 @@
 
 ## §2 Pixel-Frame-System
 
-<!-- TODO: Ausschreiben — Kurzfassung in DESIGN_SYSTEM_CHEATSHEET.md Decision Tree -->
+<!-- TODO: Ausschreiben — Kurzfassung in docs/design/design-system-cheatsheet.md Decision Tree -->
 
 Basis-Klassen der Pixel-Frame-Familie: `sb-pix`, `sb-card`, `sb-pad`, `sb-btn`,
 `sb-pill`, `sb-menu-row`. Anpassung via CSS Custom Properties `--pix-bg`,
@@ -61,7 +61,7 @@ Basis-Klassen der Pixel-Frame-Familie: `sb-pix`, `sb-card`, `sb-pad`, `sb-btn`,
 
 ## §3 State Vocabulary (geschlossene Menge)
 
-Aktuell registrierte Zustands-Klassen (aus DESIGN_SYSTEM_CHEATSHEET.md §3):
+Aktuell registrierte Zustands-Klassen (aus docs/design/design-system-cheatsheet.md §3):
 
 | Klasse | Bedeutung |
 |--------|-----------|

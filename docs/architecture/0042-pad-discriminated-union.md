@@ -8,7 +8,7 @@
 
 ## Context
 
-V3_CONCEPT_BRIEF.md §4.1 definierte `Pad` als flachen Typ mit `type: PadType`
+docs/architecture/concept-brief.md §4.1 definierte `Pad` als flachen Typ mit `type: PadType`
 und optionalen typ-spezifischen Feldern (`libraryItemRef?: string`). Slice 3
 implementierte Board/Scene/Pad-CRUD auf Basis dieses flachen Typs.
 
@@ -81,4 +81,4 @@ Abgelehnt: Zu viel redundanter Code; verschleiert welche Felder relevant sind.
   `v3/src/components/PadCreationPopover.tsx`, `v3/src/components/PadEditorPanel.tsx`,
   `v3/src/screens/BoardScreen.tsx`
 - **ADRs:** ADR-0008 (Pad-Position-Struct), ADR-0010 (Board JSON Document)
-- **Quelldokumente:** `V3_CONCEPT_BRIEF.md §4.1`, Slice-4-Planentscheidung 2026-05-28
+- **Quelldokumente:** `docs/architecture/concept-brief.md §4.1`, Slice-4-Planentscheidung 2026-05-28

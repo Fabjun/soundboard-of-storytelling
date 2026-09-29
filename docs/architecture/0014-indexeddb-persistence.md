@@ -15,7 +15,7 @@ persistiert werden. Zur Verfügung stehen:
 - **localStorage:** Synchron, String-only, ~5 MB Limit
 
 Das Datenmodell (Boards mit Scenes und Pads, Library mit Audio-Blobs) ist
-klar IDB-Territory. `V3_CONCEPT_BRIEF.md §1` legt IndexedDB explizit fest.
+klar IDB-Territory. `docs/architecture/concept-brief.md §1` legt IndexedDB explizit fest.
 
 > *Die Trennung (IDB für Content, localStorage für UI-Prefs) war nicht explizit
 > als eigene Regel dokumentiert; sie wurde als konsistentes Muster aus dem
@@ -56,4 +56,4 @@ Nicht kompatibel mit ADR-0006 (iOS 15+ Minimum).
 
 - **Dateien:** `v3/src/db/idb.ts`
 - **ADRs:** ADR-0015 (DB-Name), ADR-0016 (idb Library), ADR-0017 (Schema Versioning), ADR-0019 (iOS Memory Safety)
-- **Quelldokumente:** `V3_CONCEPT_BRIEF.md §1`, `CLAUDE.md §Permanent coding standards`
+- **Quelldokumente:** `docs/architecture/concept-brief.md §1`, `CLAUDE.md §Permanent coding standards`

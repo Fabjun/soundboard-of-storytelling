@@ -7,17 +7,17 @@
 
 ## Context
 
-The product concept decided on 2026-09-28 (`docs/product/PRODUCT.md §5`) no longer fits the
+The product concept decided on 2026-09-28 (`docs/product/README.md §5`) no longer fits the
 data model built in Slices 1–4 (`v3/src/types.ts`):
 
 - **Ownership:** today `Board → scenes[] → pads[]` — every pad lives in exactly one scene and
   carries its own `position` and `hotkey`. The product needs a **pad pool** per board: the same
-  pad appears in several **decks** (the new name for scenes, PRODUCT.md Q1), each with its own
+  pad appears in several **decks** (the new name for scenes, docs/product/README.md Q1), each with its own
   arrangement and keys; building-block pads live in no deck and are used by combos.
 - **Pad sets:** `Board.sets: PadSet[]` (ADR-0013) are dropped — decks and a board-wide
   **quick-access bar** cover them.
 - **Pad types:** four types (ADR-0042) become three — **Single, Loop, Combo**. The former
-  Playlist merges into Loop; Single and Loop accept several files (PRODUCT.md §5 Pads).
+  Playlist merges into Loop; Single and Loop accept several files (docs/product/README.md §5 Pads).
 
 V3 holds only test data (confirmed by the product owner); the owner's real data is a V1 backup
 imported in Slice 10.
@@ -61,7 +61,7 @@ type FileOrder = 'sequential' | 'shuffle';
   Loop plays its files one after another, in order or shuffled; Single plays one file per
   trigger — the next one in turn (`sequential`) or a random one (`shuffle`).
 - **Combo steps** keep referencing pads by id; the pool makes cross-deck and nested combos
-  natural (PRODUCT.md §5 Combos).
+  natural (docs/product/README.md §5 Combos).
 - `PadSet`, `Board.sets`, `Board.settings.quickAccessLayout / quickAccessSetCount` and the
   `activeSetIds` signal are removed.
 
@@ -111,7 +111,7 @@ to the play dispatch in `v3/src/audio/`. Rule agreed with the product owner:
 ## Consequences
 
 **Positiv:**
-- The model matches the product concept (PRODUCT.md §5) — no provisional behavior to unlearn.
+- The model matches the product concept (docs/product/README.md §5) — no provisional behavior to unlearn.
 - One pad, many decks: no copies to keep in sync; combos reference one pool.
 - Fewer concepts: sets dropped, three pad types, one `order` field.
 - Deck = arrangement + key layer, which is exactly what the numpad control needs (§6 K2, K14).
@@ -123,7 +123,7 @@ to the play dispatch in `v3/src/audio/`. Rule agreed with the product owner:
 - `--pad-playlist*` tokens and the `is-playlist` state lose their pad type; tokens stay for now
   (design reference), the state is removed with 9d.
 - Trim with several files: `trimStart/trimEnd` apply per pad; behaviour with several files is
-  decided when trim gets its UI (low priority, PRODUCT.md §5).
+  decided when trim gets its UI (low priority, docs/product/README.md §5).
 
 ## Alternatives Considered
 
@@ -140,6 +140,6 @@ to the play dispatch in `v3/src/audio/`. Rule agreed with the product owner:
 - **Dateien:** `v3/src/types.ts`, `v3/src/db/idb.ts`, `v3/src/state/store.ts`, `v3/src/audio/`
 - **ADRs:** supersedes ADR-0042 (four-type union), ADR-0009 (position on the pad),
   ADR-0013 (`PadSet`); keeps ADR-0010 (board as one JSON document)
-- **Quelldokumente:** `docs/product/PRODUCT.md §5` (board concept, pads, combos), §6 (keys),
-  Q1 (Deck), Q2 (three types); `BACKLOG.md §3` "Board pad pool", "Playlist → Loop merge"
+- **Quelldokumente:** `docs/product/README.md §5` (board concept, pads, combos), §6 (keys),
+  Q1 (Deck), Q2 (three types); `docs/backlog.md §3` "Board pad pool", "Playlist → Loop merge"
 - **Commits:** —

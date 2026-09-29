@@ -9,7 +9,7 @@
 **Last reviewed:** 2026-09-28
 
 Status markers used below: **Decided** · **Open** · **Parked**
-(see [PRODUCT.md — Status legend](../../product/PRODUCT.md#status-legend)).
+(see [docs/product/README.md — Status legend](../../product/README.md#status-legend)).
 "Not yet built" marks decided behavior the code does not implement yet.
 
 ---
@@ -18,7 +18,7 @@ Status markers used below: **Decided** · **Open** · **Parked**
 
 The PAD is the trigger in the grid of a deck, of All pads and of the quick-access bar. Tapping
 or pressing its key plays or stops its sound (GAME) or opens it for editing (SETUP). Pad types
-and behavior: [PRODUCT.md §5 Pads](../../product/PRODUCT.md#pads).
+and behavior: [docs/product/README.md §5 Pads](../../product/README.md#pads).
 
 | Statement | Status |
 |---|---|
@@ -41,7 +41,7 @@ and behavior: [PRODUCT.md §5 Pads](../../product/PRODUCT.md#pads).
 
 ## States
 
-Current code (closed `is-*` vocabulary, `DESIGN_SYSTEM.md §3`) — listed for reference, not yet
+Current code (closed `is-*` vocabulary, `docs/design/design-system.md §3`) — listed for reference, not yet
 reviewed as part of this spec.
 
 | State | Trigger | Appearance (current code) | Status |
@@ -54,12 +54,12 @@ reviewed as part of this spec.
 
 ### In GAME mode
 
-Single tap starts / stops the pad; keys per deck (PRODUCT.md §3, §5, §6). No further
+Single tap starts / stops the pad; keys per deck (docs/product/README.md §3, §5, §6). No further
 PAD-specific behavior decided yet.
 
 ### In SETUP mode
 
-Tap opens the PAD editor; pads can be dragged while no search or sort is active (PRODUCT.md
+Tap opens the PAD editor; pads can be dragged while no search or sort is active (docs/product/README.md
 §3, §5).
 
 ## Adaptive behavior
@@ -74,7 +74,7 @@ Per [ADR-0045](../../architecture/0045-two-axis-adaptive-model.md).
 | Zoom applies **per deck**. Whether it applies per deck or app-wide becomes a Settings option. | **Decided** — _not yet built_ |
 | Zoom controls: small **+ / − buttons**, and **Ctrl/Cmd + mouse wheel** (plain wheel keeps scrolling the grid). | **Decided** — _not yet built_ |
 | Zoom by gesture (pinch / swipe). | **Parked** |
-| Zoom by key press. | **Parked** — keys to be chosen with the key settings (PRODUCT.md §6 K12) |
+| Zoom by key press. | **Parked** — keys to be chosen with the key settings (docs/product/README.md §6 K12) |
 
 ### Axis 1 — Screen format (narrow / wide)
 
@@ -90,7 +90,7 @@ Names only — no values.
 
 - Tokens: `--pad-single`, `--pad-loop`, `--pad-playlist`, `--pad-combo` (and `-soft` / `-glow`
   variants) — current code; `--pad-playlist` is affected by the Playlist → Loop merge
-  (PRODUCT.md §5, BACKLOG §3).
+  (docs/product/README.md §5, BACKLOG §3).
 - Classes: `sb-pad`, `sb-pad-grid`, `sb-pad-grid-cell` — current code.
 
 ## Accessibility
@@ -111,9 +111,9 @@ without colour (current: spine position; to be reviewed). _Further details pendi
 
 - Decisions: product owner dialogue 2026-09-28 (card format, placeholder icon, zoom per deck,
   zoom controls, detail levels).
-- Product context: [PRODUCT.md §3, §5, §6](../../product/PRODUCT.md).
+- Product context: [docs/product/README.md §3, §5, §6](../../product/README.md).
 - ADRs: ADR-0027 (pad type colours), ADR-0045 (two-axis adaptive model).
-- Earlier related idea: BACKLOG.md "2b — Library form" (tiles stack details by display size).
+- Earlier related idea: docs/backlog.md "2b — Library form" (tiles stack details by display size).
 - Design explorations (proposals, not binding): `SoS_DESIGN_25052026/v15-pad-depth.jsx` (depth
   treatments → current DepthPad), `v17-pad-appearance.jsx` (Settings → pad appearance with live
   preview), `v18-pad-depth-migration.jsx`, `v26-pad-shape.jsx` (square vs. grid-stretched).

@@ -66,5 +66,5 @@ Broken-Build-Deployments.
 
 - **Dateien:** `.github/workflows/tests.yml`, `.github/workflows/deploy-pages.yml`
 - **ADRs:** ADR-0033 (Test-Strategie), ADR-0037 (Husky Pre-Commit)
-- **Quelldokumente:** `TESTING.md §CI-Integration`, `CLAUDE.md §Deviations from plan`
+- **Quelldokumente:** `docs/development/testing.md §CI-Integration`, `CLAUDE.md §Deviations from plan`
 - **Commits:** `0fcb4e9` — ci: add github actions test workflow; `9de5c19` — chore: add github pages deployment workflow

@@ -1,6 +1,6 @@
 # Data & backup
 
-> **Leaf of [PRODUCT.md](../PRODUCT.md).** Filled 2026-09-28 in dialogue with the product
+> **Leaf of [docs/product/README.md](../README.md).** Filled 2026-09-28 in dialogue with the product
 > owner. Nothing in this document is built yet; implementation is planned for Slice 10.
 > Inventory of the prototype features: [v1-v2-inventory.md §5](../v1-v2-inventory.md#5-data--backup).
 
@@ -37,7 +37,7 @@ and restore is the only safety net.
 
 ## Dropped
 
-- **Exporting in a format V1 can read** (previously `V3_CONCEPT_BRIEF.md §4.6`). V3 replaces
+- **Exporting in a format V1 can read** (previously `docs/architecture/concept-brief.md §4.6`). V3 replaces
   V1; the way back has no use and would constrain the V3 format (decks, piecewise reading).
   Importing *from* V1 stays (D5).
 

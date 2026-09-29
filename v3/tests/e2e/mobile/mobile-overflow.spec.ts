@@ -8,7 +8,7 @@
 //
 //   Checks: pad-grid container, deck-rail, topbar, individual pad cells
 //
-// OUT OF SCOPE (see docs/MANUAL_IPHONE_CHECKLIST.md):
+// OUT OF SCOPE (see docs/development/manual-iphone-checklist.md):
 //   Landscape orientation, audio output, file upload, Ringer Switch.
 // ─────────────────────────────────────────────────────────────────────────────
 

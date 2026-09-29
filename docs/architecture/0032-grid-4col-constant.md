@@ -12,7 +12,7 @@ Das Standard-Grid ist 4×4. Auf einem 360 px Portrait-Viewport wären die Cells
 ~78 px breit — über dem 44 px Touch-Minimum. Die Frage: Soll das Grid bei
 Portrait-Mobile auf 3 Spalten umbrechen?
 
-`DESIGN_NOTES.md §A4 · grid stays 4-col on every viewport` dokumentiert die
+`docs/design/design-notes.md §A4 · grid stays 4-col on every viewport` dokumentiert die
 Entscheidung mit drei Begründungen:
 
 1. `position.col` muss viewport-stabil sein (Datenmodell-Integrität, ADR-0008)
@@ -30,7 +30,7 @@ Kein automatisches Reflow auf 3 Spalten bei Portrait-Viewport.
 Das Grid kann in Zukunft konfigurierbar sein (Slice 8 `gridConfig`-Popover),
 aber der Default ist 4×4 und der Reflow ist kein automatischer Mechanismus.
 
-> DESIGN_NOTES.md empfiehlt für Mobile einen Hard-Cap bei 5 cols max
+> docs/design/design-notes.md empfiehlt für Mobile einen Hard-Cap bei 5 cols max
 > (Slice 8: 5×4 ist das Mobile-Maximum).
 
 ## Consequences
@@ -65,4 +65,4 @@ das ist der Slice-8-Weg. Default bleibt 4×4.
   verbietet automatisches Reflow der **Pad-Grid-Spaltenanzahl** (die Pads selbst bleiben
   immer in der konfigurierten Spaltenanzahl). Axis 1 betrifft das **umgebende Frame-Layout**
   (Sidebar-Position, Band-Anordnung). Beide Konzepte sind unabhängig; kein Widerspruch.
-- **Quelldokumente:** `DESIGN_NOTES.md §A4 · grid stays 4-col on every viewport`
+- **Quelldokumente:** `docs/design/design-notes.md §A4 · grid stays 4-col on every viewport`

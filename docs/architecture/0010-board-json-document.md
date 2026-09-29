@@ -31,11 +31,11 @@ Einschätzung der Größe: Bei 5 Scenes × 16 Pads sind es ~50 KB JSON.
 IDB-Writes dieser Größe sind auf modernen Geräten typischerweise <5 ms.
 
 Der Trade-off ist bewusst und ist in `v3/src/db/idb.ts` (Kommentarblock am
-Anfang) sowie in `DESIGN_NOTES.md` dokumentiert:
+Anfang) sowie in `docs/design/design-notes.md` dokumentiert:
 
 > *BOARD PERSISTENCE TRADE-OFF: Boards are stored as complete JSON documents.
 > Any pad edit rewrites the full ~50KB document. Acceptable at 5×16 pads;
-> see DESIGN_NOTES.md "Slice 8 / Performance" for optimisation path if
+> see docs/design/design-notes.md "Slice 8 / Performance" for optimisation path if
 > measured to be a bottleneck.*
 
 ## Consequences
@@ -72,5 +72,5 @@ Full-Document ohne klaren Vorteil bei der erwarteten Datenmenge.
 
 - **Dateien:** `v3/src/db/idb.ts` (boardPut/Get/GetAll/Delete), `v3/src/state/store.ts` (upsertBoard)
 - **ADRs:** ADR-0014 (IndexedDB sole persistence), ADR-0030 (Auto-Save debounce)
-- **Quelldokumente:** `CLAUDE.md §V3 audio/IDB API`, `DESIGN_NOTES.md §Slice 8 / Performance`
+- **Quelldokumente:** `CLAUDE.md §V3 audio/IDB API`, `docs/design/design-notes.md §Slice 8 / Performance`
 - **Commits:** `9eeceeb` — feat(slice-3): Board + Scene + Pad CRUD

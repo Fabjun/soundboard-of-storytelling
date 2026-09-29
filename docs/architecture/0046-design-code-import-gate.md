@@ -29,7 +29,7 @@ design→code import runs through the import gate below.
 **Decision 2 (practice, not strategy):** Supplying the class spec to a design session is
 a per-session dial — deliberately not a fixed model choice:
 - *Exploration sessions* run free (more translation at import time).
-- *Production-near sessions* receive `docs/design/CLAUDE_DESIGN_SPEC.md` + TODO-CLASS
+- *Production-near sessions* receive `docs/design/claude-design-spec.md` + TODO-CLASS
   obligation (less translation at import time).
 Both paths flow through the same import gate.
 
@@ -40,8 +40,8 @@ Both paths flow through the same import gate.
    Static token references like `style={{ color: 'var(--gold)' }}` are Path D violations;
    they must become classes.
 2. **Class-name registry check:** extract every `class="..."` value; grep each name against
-   the three registries: `DESIGN_SYSTEM.md §5a` (layout primitives), `DESIGN_SYSTEM.md §3`
-   (is-* vocabulary), generated `DESIGN_SYSTEM.md §6` (component inventory).
+   the three registries: `docs/design/design-system.md §5a` (layout primitives), `docs/design/design-system.md §3`
+   (is-* vocabulary), generated `docs/design/design-system.md §6` (component inventory).
    Unknown name = translate to a registered name, or consciously register a new class
    (following ADR-0021 process) before merge.
 3. **Literal-value scan:** `grep -rn '#[0-9a-fA-F]\{3,8\}\|[0-9]\+px' <imported-files>`
@@ -83,9 +83,9 @@ artifact directly.
 **Negativ / Trade-offs:**
 - Import gate adds friction to the design→production flow.
 - Gate requires manual execution until a script formalizes the greps (candidate code task
-  tracked in BACKLOG.md §4).
-- Spec currency: `docs/design/CLAUDE_DESIGN_SPEC.md` must be kept in sync with §5a, §3,
-  and tokens.css (coupling row added to FOUNDATION_ANALYSIS.md §6).
+  tracked in docs/backlog.md §4).
+- Spec currency: `docs/design/claude-design-spec.md` must be kept in sync with §5a, §3,
+  and tokens.css (coupling row added to docs/analysis/foundation-analysis.md §6).
 
 ## Alternatives Considered
 
@@ -98,7 +98,7 @@ violation behavior makes unchecked import an accumulating technical debt source.
 
 ## Related
 
-- **Files:** `docs/design/CLAUDE_DESIGN_SPEC.md` (session spec artifact)
+- **Files:** `docs/design/claude-design-spec.md` (session spec artifact)
 - **ADRs:** ADR-0021 (closed is-* vocabulary), ADR-0022 (design tokens)
-- **Quelldokumente:** `CLAUDE.md §Evidence Requirements`, `DESIGN_SYSTEM.md §5a`, `§3`, `§6`
+- **Quelldokumente:** `CLAUDE.md §Evidence Requirements`, `docs/design/design-system.md §5a`, `§3`, `§6`
 - **Commits:** 2026-06-11 (introduction)

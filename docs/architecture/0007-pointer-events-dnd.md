@@ -71,5 +71,5 @@ ausreichend schlank und vollständig kontrollierbar.
 
 - **Dateien:** `v3/src/lib/padDnd.ts`, `v3/src/lib/libDnd.ts`
 - **ADRs:** ADR-0006 (Platform Targets), ADR-0029 (SWAP + INSERT Semantik)
-- **Quelldokumente:** `CLAUDE.md §Supported Platforms`, `DESIGN_NOTES.md §Slice 3 / Lessons — DnD pattern`
+- **Quelldokumente:** `CLAUDE.md §Supported Platforms`, `docs/design/design-notes.md §Slice 3 / Lessons — DnD pattern`
 - **Commits:** `86502b2` — fix(slice-3): replace HTML5 DnD with pointer events in path B

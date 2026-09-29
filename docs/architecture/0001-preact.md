@@ -17,7 +17,7 @@ Das Design-System (`SoS_DESIGN_25052026/`) lieferte JSX-Komponenten als
 Ausgangsmaterial. Eine JSX-basierte Lösung war daher gesetzt; die Frage war nur,
 welche Laufzeit verwendet wird.
 
-Quelldokument: `V3_CONCEPT_BRIEF.md §1` — "Preact (not React) — smaller bundle,
+Quelldokument: `docs/architecture/concept-brief.md §1` — "Preact (not React) — smaller bundle,
 same JSX".
 
 ## Decision
@@ -57,5 +57,5 @@ JSX-Kompatibilitäts-Vorteil gegenüber dem Design-System; Ökosystem noch klein
 
 - **Dateien:** `v3/package.json` (preact, @preact/signals Dependency), `v3/vite.config.ts` (JSX-Transform)
 - **ADRs:** ADR-0002 (Preact Signals), ADR-0003 (Vite)
-- **Quelldokumente:** `V3_CONCEPT_BRIEF.md §1`
+- **Quelldokumente:** `docs/architecture/concept-brief.md §1`
 - **Commits:** `8be64d4` — Slice 1: Vite + Preact scaffold

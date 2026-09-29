@@ -45,7 +45,7 @@ Die Pad-Depth-Behandlung (ADR-0025) kombiniert:
 **Negativ / Trade-offs:**
 - `filter: drop-shadow` lässt sich nicht mit anderen `filter`-Werten (z.B.
   `filter: blur`) kombinieren ohne Konflikte. Lösung: `--pad-filter-base`
-  Custom Property als Composition-Punkt (dokumentiert in DESIGN_NOTES.md).
+  Custom Property als Composition-Punkt (dokumentiert in docs/design/design-notes.md).
 - Browser-Rendering: `filter: drop-shadow` kann bei komplexen clip-path-Polygonen
   auf schwachen Geräten teurer sein als `box-shadow`. Bei 16–64 Pads auf einem
   4×4-Grid bisher kein gemessener Performance-Unterschied.
@@ -62,4 +62,4 @@ schlechtere Performance als CSS clip-path.
 
 - **Dateien:** `v3/src/styles/tokens.css` (Pixel-Frame base styles, drop-shadow tokens), `v3/src/components/PadGridCell.tsx`
 - **ADRs:** ADR-0021 (CSS-Naming), ADR-0025 (is-deep Pad-Depth), ADR-0022 (Design Tokens)
-- **Quelldokumente:** `SoS_DESIGN_25052026/HANDOFF.md §4.1`, `DESIGN_NOTES.md §Drop-shadow vs Inset shadow — RESOLVED`
+- **Quelldokumente:** `SoS_DESIGN_25052026/HANDOFF.md §4.1`, `docs/design/design-notes.md §Drop-shadow vs Inset shadow — RESOLVED`

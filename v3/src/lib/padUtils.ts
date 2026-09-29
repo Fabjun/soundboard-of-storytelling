@@ -11,7 +11,7 @@ import { isSinglePad, isLoopPad, isPlaylistPad, isComboPad } from '../types';
  * Find the first free {col, row} slot in row-major order (top-left).
  * Returns null if the grid is completely full.
  *
- * Pre-disposition (DESIGN_NOTES.md A2): row-major top-left scan.
+ * Pre-disposition (docs/design/design-notes.md A2): row-major top-left scan.
  * Rationale: predictable beats smart; one-in-twenty workflows break
  * with near-focused heuristics.
  */
@@ -48,7 +48,7 @@ export function indexToPos(index: number, cols: number): PadPosition {
 /**
  * Infer pad type from audio duration and file count.
  *
- * Thresholds (DESIGN_NOTES.md A2 Pre-disposition):
+ * Thresholds (docs/design/design-notes.md A2 Pre-disposition):
  *   < 5 s     → SINGLE (short clip, fire-and-forget)
  *   5–9.99 s  → SINGLE (ambiguous zone; default SINGLE, flip allowed on pad)
  *   ≥ 10 s    → LOOP   (sustained ambient)

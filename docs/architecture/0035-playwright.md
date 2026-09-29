@@ -25,7 +25,7 @@ Test-Port 5199 (`--strictPort`, `reuseExistingServer: false`, seit 2026-09-29). 
 gegen `http://localhost:5199/soundboard-of-storytelling/`. Projekt-Zuordnung der Specs:
 `v3/tests/e2e/projects.ts` (Wächter-Test `tests/unit/e2eProjects.test.ts`).
 
-**Selector-Priorität** (aus TESTING.md):
+**Selector-Priorität** (aus docs/development/testing.md):
 `getByTestId` > `getByRole` > `.filter({ hasText })` > CSS-Klasse
 
 **Basis-URL:** Tests beginnen mit `page.goto('/soundboard-of-storytelling/')` und
@@ -56,5 +56,5 @@ kein IDB, kein CSS-Layout. Nicht ausreichend für Integration-Tests.
 
 - **Dateien:** `v3/playwright.config.ts`, `v3/tests/e2e/`, `v3/tests/e2e/helpers.ts`
 - **ADRs:** ADR-0033 (Test-Strategie), ADR-0036 (Visual Regression macOS), ADR-0038 (data-testid Konvention)
-- **Quelldokumente:** `TESTING.md §Werkzeuge`, `TESTING.md §Neue E2E-Tests schreiben`
+- **Quelldokumente:** `docs/development/testing.md §Werkzeuge`, `docs/development/testing.md §Neue E2E-Tests schreiben`
 - **Commits:** `4e1152f` — chore: add playwright e2e setup with smoke tests

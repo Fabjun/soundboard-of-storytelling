@@ -58,12 +58,12 @@ npm run build      # production build
 
 | Document | Content |
 |---|---|
-| [docs/product/PRODUCT.md](docs/product/PRODUCT.md) | Product concept |
-| [V3_CONCEPT_BRIEF.md](V3_CONCEPT_BRIEF.md) | Technical architecture |
+| [docs/product/README.md](docs/product/README.md) | Product concept |
+| [docs/architecture/concept-brief.md](docs/architecture/concept-brief.md) | Technical architecture |
 | [docs/architecture/](docs/architecture/README.md) | Architecture decision records |
-| [DESIGN_SYSTEM.md](DESIGN_SYSTEM.md) | Design tokens, CSS rules, component anatomy |
-| [TESTING.md](TESTING.md) | Test strategy, commands and conventions |
-| [BACKLOG.md](BACKLOG.md) | Open work items and known limitations |
+| [docs/design/design-system.md](docs/design/design-system.md) | Design tokens, CSS rules, component anatomy |
+| [docs/development/testing.md](docs/development/testing.md) | Test strategy, commands and conventions |
+| [docs/backlog.md](docs/backlog.md) | Open work items and known limitations |
 | [CLAUDE.md](CLAUDE.md) | Development workflow and coding standards |
 
 ## License

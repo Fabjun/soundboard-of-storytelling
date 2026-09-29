@@ -11,7 +11,7 @@
 Pads leben in einem 2D-Grid (default 4×4). Eine Position kann als Array-Index
 (0–15 für ein 4×4-Grid) oder als explizites `{col, row}` Struct codiert werden.
 
-Das `V3_CONCEPT_BRIEF.md §4.1` spezifiziert `{col, row}` direkt im Typ. Die
+Das `docs/architecture/concept-brief.md §4.1` spezifiziert `{col, row}` direkt im Typ. Die
 Wahl hat Konsequenzen für Datenmodell-Stabilität und API-Klarheit.
 
 ## Decision
@@ -53,4 +53,4 @@ Index 13 in einem 4×4-Grid ist ein anderes Pad als Index 13 in einem 5×3-Grid.
 
 - **Dateien:** `v3/src/types.ts` (PadPosition type), `v3/src/lib/padUtils.ts` (nextFreeSlot), `v3/src/lib/padDnd.ts`
 - **ADRs:** ADR-0009 (Pad-Position kann null sein), ADR-0032 (4-Spalten-Invariante)
-- **Quelldokumente:** `V3_CONCEPT_BRIEF.md §4.1`, `DESIGN_NOTES.md §A4 · grid stays 4-col`
+- **Quelldokumente:** `docs/architecture/concept-brief.md §4.1`, `docs/design/design-notes.md §A4 · grid stays 4-col`

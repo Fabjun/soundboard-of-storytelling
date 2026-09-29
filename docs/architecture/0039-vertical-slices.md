@@ -12,7 +12,7 @@ V3 ist ein Rewrite mit klar definiertem Feature-Set. Die Frage: Wie wird die
 Arbeit organisiert? Horizontal (Layer: UI-Basis zuerst, dann State, dann
 Persistenz) oder vertikal (Features: jeder Slice ist ein vollständiges Feature)?
 
-`V3_CONCEPT_BRIEF.md §5.1` legt vertikale Slices explizit fest: "Build in
+`docs/architecture/concept-brief.md §5.1` legt vertikale Slices explizit fest: "Build in
 working slices, not horizontal layers. Each slice ends with a committable,
 testable, screenshot-verifiable result."
 
@@ -62,7 +62,7 @@ Rewrite-Projekt mit festem Feature-Set. Slice-Plan hält den Scope kontrolliert.
 
 ## Related
 
-- **Dateien:** `CLAUDE.md §Slice progress`, `V3_CONCEPT_BRIEF.md §5.1`
+- **Dateien:** `CLAUDE.md §Slice progress`, `docs/architecture/concept-brief.md §5.1`
 - **ADRs:** ADR-0039 ist der Meta-ADR für alle Slice-spezifischen ADRs
-- **Quelldokumente:** `V3_CONCEPT_BRIEF.md §5.1`, `CLAUDE.md §Workflow rules §4`
+- **Quelldokumente:** `docs/architecture/concept-brief.md §5.1`, `CLAUDE.md §Workflow rules §4`
 - **Commits:** `8be64d4` (Slice 1), `c81992e` (Slice 2), `9eeceeb` (Slice 3)

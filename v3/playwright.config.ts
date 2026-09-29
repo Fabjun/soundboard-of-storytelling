@@ -73,7 +73,7 @@ export default defineConfig({
   // html: full report in playwright-report/ (overwritten by the next run).
   reporter: [['list'], ['html', { open: 'never' }]],
   // CI: a test that only passes on retry fails the run (and blocks deploy).
-  // Quarantine procedure: TESTING.md §Flaky tests.
+  // Quarantine procedure: docs/development/testing.md §Flaky tests.
   failOnFlakyTests: !!process.env.CI,
   // A committed test.only would silently drop every other test — always forbidden.
   forbidOnly: true,
@@ -116,7 +116,7 @@ export default defineConfig({
       // iPhone 13 Pro: viewport 390×844, hasTouch: true, isMobile: true,
       // deviceScaleFactor: 3, defaultBrowserType: webkit.
       // Covers audio-free touch-wiring (tap() events), touch target sizes, overflow.
-      // File-picker, audio output, Ringer Switch: see docs/MANUAL_IPHONE_CHECKLIST.md.
+      // File-picker, audio output, Ringer Switch: see docs/development/manual-iphone-checklist.md.
       name: 'mobile',
       testMatch: mobileWebKitMatch,
       use: { ...devices['iPhone 13 Pro'] },

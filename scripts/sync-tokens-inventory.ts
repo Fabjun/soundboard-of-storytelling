@@ -4,7 +4,7 @@
  *
  * Reads v3/src/styles/tokens.css (canonical — what the app loads), extracts all
  * CSS custom properties from exclusive :root { } blocks, grouped by section, and
- * writes a table between AUTO-GENERATED markers in DESIGN_SYSTEM.md §A.
+ * writes a table between AUTO-GENERATED markers in docs/design/design-system.md §A.
  *
  * Only tokens inside an exclusive `:root { }` selector are included.
  * Multi-selector blocks (`:root, .theme-verdant, ...`) and theme-override blocks
@@ -21,7 +21,7 @@ import { fileURLToPath } from 'url';
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(__dirname, '..');
 const TOKENS_CSS = join(ROOT, 'v3', 'src', 'styles', 'tokens.css');
-const DESIGN_SYSTEM = join(ROOT, 'DESIGN_SYSTEM.md');
+const DESIGN_SYSTEM = join(ROOT, 'docs/design/design-system.md');
 
 const MARKER_START = '<!-- AUTO-GENERATED:tokens START — nicht manuell editieren -->';
 const MARKER_END = '<!-- AUTO-GENERATED:tokens END -->';

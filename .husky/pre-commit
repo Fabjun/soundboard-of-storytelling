@@ -8,7 +8,7 @@ npm run sync:docs || {
   printf '   Generator-Fehler oben beheben und erneut git commit.\n\n'
   exit 1
 }
-git -C "$ROOT" add docs/architecture/README.md DESIGN_SYSTEM.md TESTING.md
+git -C "$ROOT" add docs/architecture/README.md docs/design/design-system.md docs/development/testing.md
 echo "✅ Docs synced and staged."
 
 echo "🔨 Pre-commit: running build check in v3/..."
@@ -61,13 +61,13 @@ npm run link:check || {
 echo "✅ Link check passed — Commit wird fortgesetzt."
 
 # ── Non-blocking BACKLOG drift reminder ──────────────────────────────────────
-BACKLOG_STAGED=$(git -C "$ROOT" diff --cached --name-only 2>/dev/null | grep "^BACKLOG.md$" || true)
-LAST_BACKLOG=$(git -C "$ROOT" log -1 --format="%H" -- BACKLOG.md 2>/dev/null || true)
+BACKLOG_STAGED=$(git -C "$ROOT" diff --cached --name-only 2>/dev/null | grep "^docs/backlog.md$" || true)
+LAST_BACKLOG=$(git -C "$ROOT" log -1 --format="%H" -- docs/backlog.md 2>/dev/null || true)
 if [ -z "$BACKLOG_STAGED" ] && [ -n "$LAST_BACKLOG" ]; then
   COMMITS_SINCE=$(git -C "$ROOT" rev-list --count "$LAST_BACKLOG"..HEAD 2>/dev/null || echo "0")
   BACKLOG_THRESHOLD=10
   if [ "$COMMITS_SINCE" -ge "$BACKLOG_THRESHOLD" ]; then
-    printf '\n💡 BACKLOG reminder: BACKLOG.md was last updated %s commits ago.\n' "$COMMITS_SINCE"
+    printf '\n💡 BACKLOG reminder: docs/backlog.md was last updated %s commits ago.\n' "$COMMITS_SINCE"
     printf '   Consider whether recent work added deferred items or closed existing ones.\n'
     printf '   (Reminder only — commit proceeds.)\n\n'
   fi

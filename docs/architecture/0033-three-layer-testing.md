@@ -12,7 +12,7 @@ Testing-Infrastruktur wurde in Phase 1 (Slice 3.5) nach Abschluss von Slice 3
 eingeführt. Zu diesem Zeitpunkt existierten 3 Feature-Slices mit substantiellem
 Code. Die Frage: Welche Test-Typen, welche Tools, welche Abdeckungsziele?
 
-`V3_CONCEPT_BRIEF.md §6` hatte Tests ursprünglich als "deferred" markiert. Nach
+`docs/architecture/concept-brief.md §6` hatte Tests ursprünglich als "deferred" markiert. Nach
 Slice 3 wurde klar, dass ohne automatisierte Tests das weitere Slice-Development
 riskant würde (Regressionen nicht erkennbar).
 
@@ -59,7 +59,7 @@ die schnellste Feedback-Schleife.
 
 ## Related
 
-- **Dateien:** `v3/vitest.config.ts`, `v3/playwright.config.ts`, `v3/.size-limit.json`, `TESTING.md`
+- **Dateien:** `v3/vitest.config.ts`, `v3/playwright.config.ts`, `v3/.size-limit.json`, `docs/development/testing.md`
 - **ADRs:** ADR-0034 (Vitest), ADR-0035 (Playwright), ADR-0036 (Visual Regression macOS), ADR-0037 (Husky Pre-Commit)
-- **Quelldokumente:** `TESTING.md §Überblick`
+- **Quelldokumente:** `docs/development/testing.md §Überblick`
 - **Commits:** `47ff8b0` — chore: add vitest setup; `4e1152f` — chore: add playwright e2e setup

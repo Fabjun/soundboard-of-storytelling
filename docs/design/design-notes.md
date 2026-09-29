@@ -1,9 +1,9 @@
 # Soundboard of Storytelling — Design Notes
 
-> **Open backlog items live in `BACKLOG.md`** (repo root). This file documents
+> **Open backlog items live in `docs/backlog.md`** (repo root). This file documents
 > design-detail decisions, RESOLVED entries, and slice-specific notes — not the
 > living backlog of deferred work. When an item graduates from "design decision"
-> to "deferred feature or known limitation", move it to BACKLOG.md.
+> to "deferred feature or known limitation", move it to docs/backlog.md.
 
 > **Architektur-Entscheidungen** (Datenmodell, Persistenz, Cross-Cutting-Pattern,
 > Plattform-Annahmen) leben in `docs/architecture/` als ADRs. Diese Datei
@@ -16,7 +16,7 @@
 >
 > Not a system / not a spec — these are decisions still pending review.
 > Each entry: one-line summary, one short paragraph of detail. If something
-> hardens into a convention, it migrates to `DESIGN_SYSTEM.md`. If it grows
+> hardens into a convention, it migrates to `docs/design/design-system.md`. If it grows
 > into a real feature, it gets its own design artboard.
 
 ---
@@ -245,13 +245,13 @@ Surface during A3; final calls happen at implementation:
   vs. block. Recommendation argues from the data-model angle: zero scenes
   is a legal Board state, and Empty Board UX is already good.
   *(SETTLED — recommendation implemented: `SceneRail.tsx` `requestDelete()` has no guard on
-  `scenes.length`. See BACKLOG.md: Delete-last-scene behaviour ✅ SETTLED (Slice 3).)*
+  `scenes.length`. See docs/backlog.md: Delete-last-scene behaviour ✅ SETTLED (Slice 3).)*
 - **Rename name conflicts** — allow duplicates (scenes are ID-referenced,
   name is display-only) vs. enforce unique. Strict-unique adds friction
   without benefit.
   *(BACKLOG user decision 2026-06-06 supersedes this recommendation: duplicate names are to
   be prevented. `SceneRail.tsx` `commitRename()` currently allows duplicates — code task
-  pending. See BACKLOG.md: Scene rename: duplicate names ⬜ DECIDED.)*
+  pending. See docs/backlog.md: Scene rename: duplicate names ⬜ DECIDED.)*
 - **Hotkey conflicts on duplicate** — duplicated pads carry their hotkeys,
   creating intra-board collisions. Resolve via the planned inline-
   conflict-feedback UI (already in DESIGN_NOTES, "PAD Editor"). Open:
@@ -265,7 +265,7 @@ Surface during A3; final calls happen at implementation:
   reliable touch-friendly default; reorder-mode is for power users with
   ≥6 scenes.
   *(No reorder mechanism in code — `SceneRail.tsx` has no Move up/Down and no drag handle;
-  `state/store.ts` has no reorder setter. Deferred; see BACKLOG.md §3 Scene mobile reorder.)*
+  `state/store.ts` has no reorder setter. Deferred; see docs/backlog.md §3 Scene mobile reorder.)*
 - **Long-press threshold** — 350 ms default. Settings-configurable, or
   fixed? Fixed-with-accessibility-override is the cleanest.
   *(Deferred per BACKLOG (Slice 8). 350 ms is established as the project long-press constant in
@@ -404,7 +404,7 @@ four small system changes, all on the same commit as the state:
   instead of clobbering it
 - new tokens `--pad-edge-light`, `--pad-edge-dark` (inset relief +
   bevel gradient stops), `--shadow-pad-lift` (chunky pixel drop-shadow)
-- DESIGN_SYSTEM.md §3 (new `is-deep` state), ~~§8.8~~ *(§8.8 was never written;
+- docs/design/design-system.md §3 (new `is-deep` state), ~~§8.8~~ *(§8.8 was never written;
   escape-hatch content is moot — `--pix-bg-layer` removed; box-shadow rule lives in §5)*,
   §A (Pad surface row + Elevation token added)
 
@@ -454,9 +454,9 @@ Hold for one or two design sessions before deciding; the experiment with
 `--fade` will tell us how green sits next to the rest.
 
 ### Drop-shadow vs Inset shadow on `sb-pix`-family — RESOLVED
-*(§8.8 was never written. The outer box-shadow rule lives in DESIGN_SYSTEM.md §5.
-The inset-is-allowed nuance is a documented gap — see BACKLOG.md §2 Documentation Debt.)*  
-`DESIGN_SYSTEM.md` ~~§8.8~~ has been refined: the rule is now about **outer**
+*(§8.8 was never written. The outer box-shadow rule lives in docs/design/design-system.md §5.
+The inset-is-allowed nuance is a documented gap — see docs/backlog.md §2 Documentation Debt.)*  
+`docs/design/design-system.md` ~~§8.8~~ has been refined: the rule is now about **outer**
 `box-shadow` only — that's what `clip-path` fails to follow (the shadow
 hugs the bounding box, not the stepped silhouette), so the workaround is
 `filter: drop-shadow(...)`. Inset `box-shadow` renders inside the padding
@@ -497,10 +497,10 @@ Same-commit updates:
 
 - `tokens.css` §MODE — both new tokens with a comment block explaining
   the three-tier (base / -soft / -glow) pattern
-- `DESIGN_SYSTEM.md` §A — Mode row now lists both `-soft` and `-glow`
-- `DESIGN_SYSTEM.md` §6 — new `sb-mode-toggle` row under Chrome,
+- `docs/design/design-system.md` §A — Mode row now lists both `-soft` and `-glow`
+- `docs/design/design-system.md` §6 — new `sb-mode-toggle` row under Chrome,
   pointing at `v24-mode-toggle.jsx`
-- `DESIGN_SYSTEM.md` §3 — `is-setup` / `is-game` rows now list
+- `docs/design/design-system.md` §3 — `is-setup` / `is-game` rows now list
   `sb-mode-toggle` alongside `sb-mode-badge`
 
 `v24-mode-toggle.jsx` ships the component, the `BoardTopBarV3` wrapper,

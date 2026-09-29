@@ -31,7 +31,7 @@ Composition-Punkt, neue Tokens `--pad-edge-light`, `--pad-edge-dark`,
 Ohne `is-deep`: Standard-Pad ohne Depth-Rendering-Overhead.
 
 > *Diese Entscheidung wurde beim Slice 1+2 Audit-Pass (2026-05-27) umgesetzt,
-> als das Design-System alignment-geprüft wurde. Dokumentiert in DESIGN_NOTES.md
+> als das Design-System alignment-geprüft wurde. Dokumentiert in docs/design/design-notes.md
 > §RESOLVED — Slice 1+2 Audit-Pass.*
 
 ## Consequences
@@ -59,5 +59,5 @@ auf dem iPhone performant zu machen, nicht es wegzulassen.
 
 - **Dateien:** `v3/src/styles/tokens.css` (--pad-edge-light, --pad-edge-dark, --shadow-pad-lift), `v3/src/components/PadGridCell.tsx`
 - **ADRs:** ADR-0021 (CSS-Naming / is-* States), ADR-0024 (clip-path + filter:drop-shadow)
-- **Quelldokumente:** `DESIGN_NOTES.md §RESOLVED — DepthPad migration`, `SoS_DESIGN_25052026/v15-pad-depth.jsx`
+- **Quelldokumente:** `docs/design/design-notes.md §RESOLVED — DepthPad migration`, `SoS_DESIGN_25052026/v15-pad-depth.jsx`
 - **Commits:** `eac8690` — refactor: align slice 1+2 with current design system

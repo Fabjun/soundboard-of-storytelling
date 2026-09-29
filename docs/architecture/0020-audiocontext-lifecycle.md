@@ -66,4 +66,4 @@ Auf iOS wird der Tab ohnehin eingefroren — undefined behavior.
 
 - **Dateien:** `v3/src/state/store.ts` (audioContextState signal), `v3/src/screens/StartScreen.tsx` (TAP TO UNLOCK UI), `v3/src/audio/` (Slice 4 — noch nicht erstellt)
 - **ADRs:** ADR-0018 (V1 Audio Engine), ADR-0019 (iOS Memory Safety)
-- **Quelldokumente:** `V3_CONCEPT_BRIEF.md §4.4`, `v1-reference/index.html` (TAP TO UNLOCK Implementierung)
+- **Quelldokumente:** `docs/architecture/concept-brief.md §4.4`, `v1-reference/index.html` (TAP TO UNLOCK Implementierung)

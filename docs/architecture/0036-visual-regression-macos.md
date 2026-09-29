@@ -63,5 +63,5 @@ Dependency, Kosten. Für ein privates Projekt nicht gerechtfertigt.
 
 - **Dateien:** `v3/tests/e2e/visual/`, `v3/playwright.config.ts` (visual project config)
 - **ADRs:** ADR-0033 (Test-Strategie), ADR-0035 (Playwright)
-- **Quelldokumente:** `TESTING.md §Visual Regression (lokal-only)`, `CLAUDE.md §Deviations from plan`
+- **Quelldokumente:** `docs/development/testing.md §Visual Regression (lokal-only)`, `CLAUDE.md §Deviations from plan`
 - **Commits:** `37bfada` — test: add visual regression tests with screenshot baseline

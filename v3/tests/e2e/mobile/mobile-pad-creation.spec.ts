@@ -13,7 +13,7 @@
 // The iPhone 13 Pro device settings (viewport, hasTouch, isMobile, UA) are
 // preserved via the mobile-chromium project in playwright.config.ts.
 //
-// OUT OF SCOPE (see docs/MANUAL_IPHONE_CHECKLIST.md):
+// OUT OF SCOPE (see docs/development/manual-iphone-checklist.md):
 //   File upload via iOS native picker — the filechooser approach (IMPORT button
 //   → chooser.setFiles) bypasses the native picker completely. The upload step
 //   is setup infrastructure: it proves the pad-creation touch flow, not the

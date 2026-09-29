@@ -15,7 +15,7 @@ Varianten desselben Elements einen separaten Komponenten zu erstellen:
 Das führt zu Divergenz: die zwei Varianten entwickeln sich auseinander, sharing
 von Fixes wird vergessen, die Codebase wächst horizontal.
 
-`V3_CONCEPT_BRIEF.md §4.2` ist explizit: "Every UI element has ONE component.
+`docs/architecture/concept-brief.md §4.2` ist explizit: "Every UI element has ONE component.
 Variants via props. When a new variant is needed: extend the existing component.
 Never create a parallel component. If tempted, ask the user."
 
@@ -62,4 +62,4 @@ V1-Erfahrung: mehrere Pad-Varianten, die sich auseinanderentwickelt haben.
 
 - **Dateien:** `v3/src/components/*.tsx` (alle aktuell: PixelIcon, AudioRow, Waveform, PadGridCell, PadGrid, etc.)
 - **ADRs:** ADR-0021 (CSS-Naming — Varianten via is-* oder sb-block-variant)
-- **Quelldokumente:** `V3_CONCEPT_BRIEF.md §4.2`, `CLAUDE.md §Permanent coding standards`
+- **Quelldokumente:** `docs/architecture/concept-brief.md §4.2`, `CLAUDE.md §Permanent coding standards`

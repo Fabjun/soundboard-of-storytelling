@@ -59,5 +59,5 @@ mehrere aufeinanderfolgende SWAPs.
 
 - **Dateien:** `v3/src/lib/padDnd.ts` (SWAP + INSERT Implementierung), `v3/tests/unit/padDnd.test.ts` (applySwap, applyInsert pure function tests)
 - **ADRs:** ADR-0007 (Pointer Events für DnD), ADR-0008 (Pad-Position als {col,row})
-- **Quelldokumente:** `DESIGN_NOTES.md §Slice 3 / Lessons — DnD pattern`, `TESTING.md §Bekannte Fallstricke §5`
+- **Quelldokumente:** `docs/design/design-notes.md §Slice 3 / Lessons — DnD pattern`, `docs/development/testing.md §Bekannte Fallstricke §5`
 - **Commits:** `9eeceeb` — feat(slice-3)

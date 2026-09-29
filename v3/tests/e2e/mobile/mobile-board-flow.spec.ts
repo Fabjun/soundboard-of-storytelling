@@ -8,7 +8,7 @@
 //   B. Board row title tap → BoardScreen loads (mode-toggle visible)
 //   C. Back button tap → returns to BoardListScreen
 //
-// OUT OF SCOPE (see docs/MANUAL_IPHONE_CHECKLIST.md):
+// OUT OF SCOPE (see docs/development/manual-iphone-checklist.md):
 //   File upload, audio output, Ringer Switch, backgrounding.
 // ─────────────────────────────────────────────────────────────────────────────
 

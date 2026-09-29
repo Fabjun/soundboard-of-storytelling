@@ -6,7 +6,7 @@
 //    (CLAUDE.md required this only as text; upload.ts, libDnd.ts and nanoid.ts had
 //    no tests until 2026-09-29 and nobody noticed.)
 // 2. Every quarantine marker (skip / fixme / todo / fails) in tests/ is preceded
-//    by a reference  BACKLOG "<part of a heading>"  that exists in BACKLOG.md.
+//    by a reference  BACKLOG "<part of a heading>"  that exists in docs/backlog.md.
 //    (Four 'flaky' skips hid never-written tests and a missing feature.)
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -14,7 +14,7 @@ import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { basename, join, relative } from 'node:path';
 
 const V3 = join(__dirname, '..', '..');
-const BACKLOG = join(V3, '..', 'BACKLOG.md');
+const BACKLOG = join(V3, '..', 'docs/backlog.md');
 const LOGIC_DIRS = ['src/lib', 'src/state', 'src/db', 'src/audio'];
 
 /** Modules that intentionally have no unit test file of their own — reason required. */
@@ -100,7 +100,7 @@ describe('guard: every quarantine marker references an existing BACKLOG entry', 
     expect(unreferenced, `add // … BACKLOG "<heading part>" above the marker`).toEqual([]);
   });
 
-  it('references headings that exist in BACKLOG.md', () => {
+  it('references headings that exist in docs/backlog.md', () => {
     const dangling = markers
       .filter((m) => m.ref !== null && !headings.some((h) => h.includes(m.ref!)))
       .map((m) => `${m.at} → BACKLOG "${m.ref}"`);

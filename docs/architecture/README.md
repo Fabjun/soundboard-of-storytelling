@@ -4,9 +4,9 @@ Dieses Verzeichnis dokumentiert alle substantiellen Architektur-Entscheidungen f
 Jede Entscheidung bekommt eine eigene Datei. Format: `docs/architecture/_template.md`.
 
 **Abgrenzung zu anderen Dokumenten:**
-- `V3_CONCEPT_BRIEF.md` — bindende Architektur-Festlegungen (präskriptiv)
-- `DESIGN_NOTES.md` — Design-Detail-Entscheidungen, offene Fragen, RESOLVED-Einträge
-- `TESTING.md` — Test-Architektur-Dokumentation (deskriptiv)
+- `docs/architecture/concept-brief.md` — bindende Architektur-Festlegungen (präskriptiv)
+- `docs/design/design-notes.md` — Design-Detail-Entscheidungen, offene Fragen, RESOLVED-Einträge
+- `docs/development/testing.md` — Test-Architektur-Dokumentation (deskriptiv)
 - `docs/architecture/` — **warum** Entscheidungen so getroffen wurden (historisch + Konsequenzen)
 
 ---

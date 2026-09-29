@@ -45,5 +45,5 @@ Welche Alternativen wurden geprüft? Warum verworfen?
 
 - **Dateien:** `v3/src/...`
 - **ADRs:** ADR-XXXX, ADR-YYYY
-- **Quelldokumente:** `V3_CONCEPT_BRIEF.md §X.Y`, `CLAUDE.md §Y`
+- **Quelldokumente:** `docs/architecture/concept-brief.md §X.Y`, `CLAUDE.md §Y`
 - **Commits:** `abc1234` — short description

@@ -1,11 +1,11 @@
 # V1 / V2 feature inventory
 
-> **Leaf of [PRODUCT.md](PRODUCT.md).** Created 2026-09-28. Lists what the prototypes V1 and
+> **Leaf of [docs/product/README.md](README.md).** Created 2026-09-28. Lists what the prototypes V1 and
 > V2 could do and where V3 stands, so the product owner can decide per feature what V3
-> adopts. Per [PRODUCT.md §7](PRODUCT.md#7-design-principles) P7 this describes
+> adopts. Per [docs/product/README.md §7](README.md#7-design-principles) P7 this describes
 > **behavior, not code to copy** — anything adopted is re-implemented in V3 idiom.
 >
-> **Naming:** "Scene" is renamed to **Deck** (PRODUCT.md Q1). Feature names below keep the
+> **Naming:** "Scene" is renamed to **Deck** (docs/product/README.md Q1). Feature names below keep the
 > historical V1/V2/current-code wording.
 
 ## Sources
@@ -28,7 +28,7 @@
 | **model only** | field exists in `src/types.ts`, nothing reads or edits it |
 | **missing** | not present |
 
-**Decision** — **Open** until the product owner decides: *adopt* (→ PRODUCT.md / BACKLOG),
+**Decision** — **Open** until the product owner decides: *adopt* (→ docs/product/README.md / BACKLOG),
 *Parked*, or *drop*. Reviewed area by area in dialogue.
 
 ---

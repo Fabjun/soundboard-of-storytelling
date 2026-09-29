@@ -13,7 +13,7 @@ TTRPG-Sessions. Die Spieler sprechen ggf. Deutsch, aber das Soundboard ist
 ein "backstage"-Tool (GM-only). Der User kommuniziert mit Claude Code auf
 Deutsch oder Englisch; die App-UI ist auf Englisch.
 
-`V3_CONCEPT_BRIEF.md §4.11` legt fest: "English only. No i18n infrastructure
+`docs/architecture/concept-brief.md §4.11` legt fest: "English only. No i18n infrastructure
 yet, but structure code so a future i18n pass is feasible."
 
 > *Diese Entscheidung war explizit im Concept Brief dokumentiert und wird hier
@@ -53,4 +53,4 @@ Code und Tool-UI; das Design-System ist auf Englisch. Englisch ist konsistenter.
 
 - **Dateien:** `v3/src/screens/*.tsx`, `v3/src/components/*.tsx` (UI-Texte)
 - **ADRs:** ADR-0006 (Plattform-Targets), ADR-0039 (Slice-Plan: i18n nicht im Scope)
-- **Quelldokumente:** `V3_CONCEPT_BRIEF.md §4.11`, `CLAUDE.md §Project identity §App UI language`
+- **Quelldokumente:** `docs/architecture/concept-brief.md §4.11`, `CLAUDE.md §Project identity §App UI language`

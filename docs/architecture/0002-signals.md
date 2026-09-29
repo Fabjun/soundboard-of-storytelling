@@ -9,7 +9,7 @@
 ## Context
 
 V3 braucht einen zentralen Store für UI-State (current board, current scene,
-current mode, library items, playback state). Das `V3_CONCEPT_BRIEF.md §4.3`
+current mode, library items, playback state). Das `docs/architecture/concept-brief.md §4.3`
 nannte zwei Optionen als gleichwertig: **Zustand** (~1 KB, beliebt im
 React/Preact-Ecosystem) und **Preact Signals** (~1 KB, natives Preact-Paket).
 Die Wahl war an Claude Code delegiert mit Begründungspflicht.
@@ -39,7 +39,7 @@ Der User bestätigte die Wahl in Slice 1.
 **Negativ / Trade-offs:**
 - Signals sind Modul-Singletons: Tests können nicht einfach einen "fresh store"
   provisionieren. Workaround: expliziter `beforeEach`-Reset (dokumentiert in
-  `TESTING.md §Bekannte Fallstricke`).
+  `docs/development/testing.md §Bekannte Fallstricke`).
 - Kein Time-Travel-Debugging (Redux DevTools etc.). Für dieses Projekt kein
   Verlust.
 
@@ -59,5 +59,5 @@ Vorteil gegenüber Signals.
 
 - **Dateien:** `v3/src/state/store.ts`, `v3/src/types.ts` (AppState interface)
 - **ADRs:** ADR-0001 (Preact), ADR-0011 (LibraryItem nie als Blob im Signal)
-- **Quelldokumente:** `V3_CONCEPT_BRIEF.md §4.3`, `CLAUDE.md §Architecture → State`
+- **Quelldokumente:** `docs/architecture/concept-brief.md §4.3`, `CLAUDE.md §Architecture → State`
 - **Commits:** `8be64d4` — Slice 1 scaffold (Signals eingeführt)

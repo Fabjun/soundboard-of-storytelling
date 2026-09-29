@@ -28,7 +28,7 @@ import 'fake-indexeddb/auto';
 ```
 
 Dieses Setup gilt für alle Unit-Tests. Jeder Test der IDB nutzt, muss `_resetDB()`
-und `new IDBFactory()` in `beforeEach` aufrufen (dokumentiert in `TESTING.md
+und `new IDBFactory()` in `beforeEach` aufrufen (dokumentiert in `docs/development/testing.md
 §Bekannte Fallstricke §2`).
 
 **Signals-Reset-Pflicht:** Preact Signals sind Modul-Singletons. Unit-Tests die
@@ -59,5 +59,5 @@ Vite/TypeScript/ES Modules. Kein Vorteil gegenüber Vitest in einem Vite-Projekt
 
 - **Dateien:** `v3/vitest.config.ts`, `v3/tests/unit/setup.ts`, `v3/tests/unit/*.test.ts`
 - **ADRs:** ADR-0033 (Test-Strategie) — fake-indexeddb-Isolation ist in §Decision dieses ADRs dokumentiert; kein separates ADR
-- **Quelldokumente:** `TESTING.md §Werkzeuge`, `TESTING.md §Neue Unit-Tests schreiben`
+- **Quelldokumente:** `docs/development/testing.md §Werkzeuge`, `docs/development/testing.md §Neue Unit-Tests schreiben`
 - **Commits:** `47ff8b0` — chore: add vitest setup and first unit tests

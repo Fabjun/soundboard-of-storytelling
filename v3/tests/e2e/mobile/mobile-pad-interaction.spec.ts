@@ -18,7 +18,7 @@
 //   B. SINGLE pad: tap → is-hot; tap again → is-hot gone
 //   C. LOOP pad:   tap → is-looping; tap again → is-looping gone
 //
-// OUT OF SCOPE (see docs/MANUAL_IPHONE_CHECKLIST.md):
+// OUT OF SCOPE (see docs/development/manual-iphone-checklist.md):
 //   Audio output (headless Chromium — no sound), Ringer Switch, backgrounding.
 //   File upload uses the filechooser approach (IMPORT button → chooser.setFiles)
 //   which bypasses the iOS native picker — upload is setup infrastructure only.

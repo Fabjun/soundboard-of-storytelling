@@ -54,4 +54,4 @@ beibehält die veraltete "botc"-Bezeichnung nach App-Umbenennung.
 
 - **Dateien:** `v3/src/db/idb.ts` (DB_NAME Konstante)
 - **ADRs:** ADR-0014 (IndexedDB als Persistenz), ADR-0017 (Schema-Versioning)
-- **Quelldokumente:** `V3_CONCEPT_BRIEF.md §4.5`
+- **Quelldokumente:** `docs/architecture/concept-brief.md §4.5`

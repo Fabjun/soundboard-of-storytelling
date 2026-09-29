@@ -14,7 +14,7 @@ Platzierungen. `v24-mode-toggle.jsx` definiert den endgültigen Ansatz: der
 Mode-Toggle ist die interaktive Headline der Board-Screen, nicht ein kleines
 Badge in einer Ecke.
 
-Das `DESIGN_NOTES.md §Mode toggle as interactive screen header (v24) — RESOLVED`
+Das `docs/design/design-notes.md §Mode toggle as interactive screen header (v24) — RESOLVED`
 dokumentiert die Entscheidung.
 
 ## Decision
@@ -63,5 +63,5 @@ echtes Usability-Problem ist.
 
 - **Dateien:** `v3/src/components/ModeToggle.tsx`, `v3/src/components/BoardTopBarV3.tsx`, `v3/src/styles/tokens.css` (--mode-setup-glow, --mode-game-glow)
 - **ADRs:** ADR-0021 (CSS-Naming / is-setup, is-game), ADR-0022 (Design Tokens)
-- **Quelldokumente:** `DESIGN_NOTES.md §Mode toggle as interactive screen header (v24) — RESOLVED`, `SoS_DESIGN_25052026/v24-mode-toggle.jsx`
+- **Quelldokumente:** `docs/design/design-notes.md §Mode toggle as interactive screen header (v24) — RESOLVED`, `SoS_DESIGN_25052026/v24-mode-toggle.jsx`
 - **Commits:** `9eeceeb` — feat(slice-3): Board + Scene + Pad CRUD

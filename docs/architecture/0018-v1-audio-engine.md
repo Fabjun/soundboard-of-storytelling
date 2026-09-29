@@ -16,7 +16,7 @@ kampferprobt über reale TTRPG-Sessions.
 Die Frage ist: Wird die V1-Engine portiert (neu in TypeScript geschrieben)
 oder 1:1 kopiert und in eine Facade eingebettet?
 
-`V3_CONCEPT_BRIEF.md §4.4` ist explizit: **"V1's audio engine is copied
+`docs/architecture/concept-brief.md §4.4` ist explizit: **"V1's audio engine is copied
 unchanged into V3.0. Do not redesign. Do not improve. Copy, wrap, move on."**
 
 ## Decision
@@ -69,4 +69,4 @@ sind schwer in generische Bibliotheken zu integrieren.
 
 - **Dateien:** `v3/src/audio/` (noch nicht erstellt — Slice 4), `v1-reference/index.html` (Source)
 - **ADRs:** ADR-0019 (iOS Memory Safety), ADR-0020 (AudioContext Lifecycle)
-- **Quelldokumente:** `V3_CONCEPT_BRIEF.md §4.4`, `CLAUDE.md §Audio engine`
+- **Quelldokumente:** `docs/architecture/concept-brief.md §4.4`, `CLAUDE.md §Audio engine`

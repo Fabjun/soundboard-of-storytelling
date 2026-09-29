@@ -14,7 +14,7 @@ Mobilgeräten nutzbar sein. Die Frage: Welche Browser-APIs können als guarantee
 vorausgesetzt werden, welche brauchen Graceful Degradation, welche sind explizit
 ausgeschlossen?
 
-Diese Entscheidung wurde als formaler Eintrag in `V3_CONCEPT_BRIEF.md §4.13` und
+Diese Entscheidung wurde als formaler Eintrag in `docs/architecture/concept-brief.md §4.13` und
 `CLAUDE.md §Supported Platforms` dokumentiert, nachdem in Slice 3 ein
 iOS-Inkompatibilitäts-Bug durch fehlendes Platform-Bewusstsein entstanden war
 (HTML5 Drag-and-Drop — siehe ADR-0007).
@@ -70,5 +70,5 @@ Einsatz am Spieltisch baut.
 
 - **Dateien:** `v3/src/lib/padDnd.ts`, `v3/src/lib/libDnd.ts` (kanonische Pointer-Events-Implementierungen)
 - **ADRs:** ADR-0007 (Pointer Events DnD), ADR-0024 (clip-path Konsequenz)
-- **Quelldokumente:** `V3_CONCEPT_BRIEF.md §4.13`, `CLAUDE.md §Supported Platforms`
+- **Quelldokumente:** `docs/architecture/concept-brief.md §4.13`, `CLAUDE.md §Supported Platforms`
 - **Commits:** `8b2aef1` — docs: define platform support matrix

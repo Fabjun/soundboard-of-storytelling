@@ -8,7 +8,7 @@
 
 ## Context
 
-Das Datenmodell aus `V3_CONCEPT_BRIEF.md §4.1` nennt das Konzept "Set" —
+Das Datenmodell aus `docs/architecture/concept-brief.md §4.1` nennt das Konzept "Set" —
 eine benannte Sammlung von Pads für den Quick-Access-Strip (Slice 6):
 
 ```typescript
@@ -49,7 +49,7 @@ nicht-kollisionierendem Kontext verwendet werden.
   nicht ein generischer Set.
 
 **Negativ / Trade-offs:**
-- Weicht vom Concept Brief ab. `V3_CONCEPT_BRIEF.md §4.1` nennt den Typ `Set`.
+- Weicht vom Concept Brief ab. `docs/architecture/concept-brief.md §4.1` nennt den Typ `Set`.
   Wer den Brief liest und den Code sucht, muss wissen: `Set` im Brief = `PadSet`
   im Code.
 
@@ -65,4 +65,4 @@ built-in weiterhin shadowed. Keine Verbesserung.
 
 - **Dateien:** `v3/src/types.ts` (PadSet type), `v3/src/state/store.ts` (globalThis.Set für playingPads)
 - **ADRs:** ADR-0008 (Pad-Datenmodell), ADR-0004 (TypeScript strict)
-- **Quelldokumente:** `V3_CONCEPT_BRIEF.md §4.1`, `CLAUDE.md §Deviations from plan`
+- **Quelldokumente:** `docs/architecture/concept-brief.md §4.1`, `CLAUDE.md §Deviations from plan`

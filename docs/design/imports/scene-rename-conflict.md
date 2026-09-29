@@ -25,7 +25,7 @@ Three regions excluded from checks 1 and 3 (confirmed from artifact):
 1. **PREVIEW-ONLY token block** — `<style>` element, delimited by
    `/* PREVIEW-ONLY — NOT FOR IMPORT … */` CSS comment. Contains `:root { --surface:#1a1613; … }`.
 2. **PREVIEW-ONLY prim() block** — `const PRIM = { … }` / `function prim(…)`, delimited by
-   `/* PREVIEW-ONLY — NOT FOR IMPORT … Production resolves these from DESIGN_SYSTEM.md §5a
+   `/* PREVIEW-ONLY — NOT FOR IMPORT … Production resolves these from docs/design/design-system.md §5a
    / §3 and drops everything below. */`
 3. **Harness (DELIVERABLE END → end of script)** — `StateCard`, `VariantBlock`, `App`
    components and `ReactDOM.createRoot(…)` call.
@@ -150,7 +150,7 @@ Specific verdicts:
 
 Evidence (re-confirmed at gate run):
 ```
-DESIGN_SYSTEM.md:284: sb-scene-tab
+docs/design/design-system.md:284: sb-scene-tab
 tokens.css:1441: .sb-scene-tab
 tokens.css:1464: .sb-scene-tab.is-active
 tokens.css:1469: .sb-scene-tab.is-editing
@@ -165,7 +165,7 @@ tokens.css:1469: .sb-scene-tab.is-editing
 
 Evidence (re-confirmed at gate run):
 ```
-DESIGN_SYSTEM.md:283: sb-scene-rename-input
+docs/design/design-system.md:283: sb-scene-rename-input
 tokens.css:2460: .sb-scene-rename-input
 SceneRail.tsx:218: class="sb-scene-rename-input"
 ```
@@ -232,7 +232,7 @@ at call sites.
 
 ## Pending items
 
-- ✅ **RESOLVED 2026-06-15: is-conflict** — Option (a); registered in DESIGN_SYSTEM.md §3 and ADR-0021 amended (this pass). CSS and SceneRail wiring deferred to code-pass.
+- ✅ **RESOLVED 2026-06-15: is-conflict** — Option (a); registered in docs/design/design-system.md §3 and ADR-0021 amended (this pass). CSS and SceneRail wiring deferred to code-pass.
 - **PENDING: code-pass implementation** — new classes (`sb-scene-ordinal`, `sb-scene-tab-conflict-glyph`,
   `sb-scene-conflict-hint`), `is-conflict` resolution, SceneRail wiring, live-validation +
   blocking-commit behavior (I25). Requires §6 registration of new classes, §3 amendment (done — this pass).

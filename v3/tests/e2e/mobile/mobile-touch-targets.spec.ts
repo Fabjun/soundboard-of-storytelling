@@ -10,7 +10,7 @@
 // [role='button'] elements. This test catches regressions and layout contexts
 // where that rule is overridden (e.g., overflow: hidden clipping, flex shrink).
 //
-// OUT OF SCOPE (see docs/MANUAL_IPHONE_CHECKLIST.md):
+// OUT OF SCOPE (see docs/development/manual-iphone-checklist.md):
 //   File upload, audio output, Ringer Switch, backgrounding.
 // ─────────────────────────────────────────────────────────────────────────────
 

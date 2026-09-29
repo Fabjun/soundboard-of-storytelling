@@ -7,7 +7,7 @@
 //   A. GAME half tap → .sb-mode-toggle.is-game applied
 //   B. SETUP half tap → .sb-mode-toggle.is-setup applied
 //
-// OUT OF SCOPE (see docs/MANUAL_IPHONE_CHECKLIST.md):
+// OUT OF SCOPE (see docs/development/manual-iphone-checklist.md):
 //   Audio output, Ringer Switch, backgrounding.
 // ─────────────────────────────────────────────────────────────────────────────
 

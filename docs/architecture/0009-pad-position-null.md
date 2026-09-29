@@ -18,7 +18,7 @@ Optionen:
 3. `position: null` setzen (UNPLACED-State) — Pad bleibt erhalten, aber
    ohne sichtbaren Slot
 
-Das `V3_CONCEPT_BRIEF.md §4.1` dokumentiert `position: PadPosition | null`
+Das `docs/architecture/concept-brief.md §4.1` dokumentiert `position: PadPosition | null`
 explizit: `null = unplaced (reserved for Slice 8)`.
 
 ## Decision
@@ -42,7 +42,7 @@ Das Typ-System erzwingt, dass alle Call-Sites mit `null` umgehen müssen
 
 **Positiv:**
 - Kein Datenverlust beim Grid-Schrumpfen (Slice 8).
-- Pads erinnern sich an ihre gewünschte Position (DESIGN_NOTES.md §A4 ·
+- Pads erinnern sich an ihre gewünschte Position (docs/design/design-notes.md §A4 ·
   "Unplaced pads remember their desired position"): bei Grid-Vergrößerung
   werden sie automatisch re-platziert.
 - Typ-System erzwingt Null-Handling überall.
@@ -62,4 +62,4 @@ was Querverweise erfordern würde. Komplexer ohne Mehrwert.
 
 - **Dateien:** `v3/src/types.ts` (Pad.position), `v3/src/lib/padUtils.ts`
 - **ADRs:** ADR-0008 (Pad-Position als {col, row}), ADR-0004 (TypeScript strict erzwingt null-Handling)
-- **Quelldokumente:** `V3_CONCEPT_BRIEF.md §4.1`, `DESIGN_NOTES.md §A4 · Unplaced pads remember their desired position`
+- **Quelldokumente:** `docs/architecture/concept-brief.md §4.1`, `docs/design/design-notes.md §A4 · Unplaced pads remember their desired position`

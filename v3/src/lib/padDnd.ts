@@ -8,7 +8,7 @@
 // V3 algorithm:         Row-major index for position arithmetic, then
 //                       convert back to {col, row} coordinates.
 //
-// DROP MODES (per DESIGN_NOTES.md user decision):
+// DROP MODES (per docs/design/design-notes.md user decision):
 //   SWAP   — cursor in center (~50%) of target cell → swap positions
 //   INSERT — cursor in edge zone (~25% each side) → shift row-major range
 //
