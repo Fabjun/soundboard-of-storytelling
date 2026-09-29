@@ -1,72 +1,75 @@
-# Soundboard of Storytelling (V3)
+# Soundboard of Storytelling
 
-A Progressive Web App for tabletop role-playing game soundboards.
-Designed for Game Masters who want quick, reliable access to ambient
-audio during sessions.
+A soundboard for live storytelling at the table. It lets whoever runs a game — storyteller,
+narrator or game master — play music, ambience and sound effects at the right moment
+without drawing attention away from the players.
 
-**Status:** In active development. Slice 3 (Board/Scene/Pad CRUD)
-complete. Slice 4 (Audio Playback) in progress.
+The app runs in the browser and can be installed like a native app on phones, tablets and
+computers. Audio files and boards are stored locally on the device: no account, no server,
+and it keeps working offline.
 
-## Features
+**Live version:** https://fabjun.github.io/soundboard-of-storytelling/
 
-- **Local-first:** All audio and configuration stored in IndexedDB. No server, no account.
-- **PWA-ready:** Install on iPhone/iPad via "Add to Home Screen".
-- **Cross-platform:** Works on desktop and mobile. Primary target: iPhone 13 Pro + Brave.
-- **Modes:** SETUP for configuration, GAME for play. Clear visual separation.
+## Status
 
-## Tech Stack
+In active development and not yet feature-complete. Version 3 is a complete rewrite of
+an earlier prototype.
 
-- Preact ^10.29.1 + Signals (ultra-light alternative to React)
-- Vite ^8.0.12 (build tool)
-- TypeScript ~6.0.2 (strict)
-- IndexedDB via `idb` ^8.0.3 (persistence)
-- @noble/hashes ^2.2.0 (SHA-256, no Secure Context required)
-- vite-plugin-pwa (service worker, manifest)
-- Vitest ^4.1.7 + Playwright ^1.60.0 (testing)
+Available now:
+
+- Audio library with import, renaming, deletion and waveform preview
+- Boards organised into decks of pads
+- Pads for one-shot sounds, loops, playlists and combinations of other pads
+- Separate modes for preparing a board (SETUP) and for playing during a session (GAME)
+- Installable, offline-capable web app
+
+Planned next:
+
+- A shared pad pool per board, with decks as hand-picked views of it
+- Backup and restore in a single file, including migration from the prototype
+- Combo editor for building sequences from existing pads
+- Live control via numeric keypad, stop all and pause
+- Layout for smartphones of all sizes
+- Settings and themes
+
+## Technology
+
+Preact and TypeScript, built with Vite. Data is stored in IndexedDB, audio runs on the
+Web Audio API, and a service worker provides offline support.
+
+Every change passes an automated test suite before it is deployed: unit tests (Vitest) and
+end-to-end tests (Playwright) in Chromium and WebKit, including tests against the
+production build.
 
 ## Development
 
-### Prerequisites
-- Node.js 20+
-- npm
+Requires Node.js 24 (see `.nvmrc`).
 
-### Setup
 ```bash
 cd v3
 npm install
-npm run dev
-```
-
-### Testing
-```bash
-npm run test               # Unit tests
-npm run test:e2e:smoke     # Quick E2E smoke
-npm run test:e2e           # Full E2E suite
-npm run test:e2e:visual    # Visual regression (local only)
-```
-
-### Build
-```bash
-npm run build
+npm run dev        # development server
+npm run test       # unit tests
+npm run test:e2e   # end-to-end tests
+npm run build      # production build
 ```
 
 ## Documentation
 
-- `CLAUDE.md` — workflow rules, coding standards, and conventions
-- `V3_CONCEPT_BRIEF.md` — technical architecture overview (mandatory first-read); slice plan: `CLAUDE.md §Slice progress`; product concept: `docs/product/PRODUCT.md`
-- `DESIGN_SYSTEM.md` — CSS rules, design tokens, component anatomy, full class inventory
-- `DESIGN_SYSTEM_CHEATSHEET.md` — one-page quick reference for daily use
-- `TESTING.md` — test strategy, commands, and `data-testid` patterns
-- `BACKLOG.md` — deferred items, known limitations, and open UX decisions
-- `DESIGN_NOTES.md` — design-detail decisions and open "how exactly" questions
-- `CHANGELOG.md` — release notes per version
-- `docs/DOCUMENTATION_MAP.md` — map of every document's role and source-of-truth scope
-- `docs/MANUAL_IPHONE_CHECKLIST.md` — manual iPhone verification checklist
-- `docs/analysis/FOUNDATION_ANALYSIS.md` — documentation audit and cross-doc coupling map
-- `docs/architecture/` — Architecture Decision Records (ADRs)
+| Document | Content |
+|---|---|
+| [docs/product/PRODUCT.md](docs/product/PRODUCT.md) | Product concept |
+| [V3_CONCEPT_BRIEF.md](V3_CONCEPT_BRIEF.md) | Technical architecture |
+| [docs/architecture/](docs/architecture/README.md) | Architecture decision records |
+| [DESIGN_SYSTEM.md](DESIGN_SYSTEM.md) | Design tokens, CSS rules, component anatomy |
+| [TESTING.md](TESTING.md) | Test strategy, commands and conventions |
+| [BACKLOG.md](BACKLOG.md) | Open work items and known limitations |
+| [CLAUDE.md](CLAUDE.md) | Development workflow and coding standards |
 
 ## License
 
-All Rights Reserved. See [LICENSE](LICENSE) for details.
+Proprietary. Copyright © 2026 Fabian Jung. All rights reserved.
 
-For licensing inquiries, contact [soundboard_of_storytelling@pm.me](mailto:soundboard_of_storytelling@pm.me).
+The source code is publicly visible but may not be used, copied, modified or distributed
+without prior written permission. See [LICENSE](LICENSE).
+Enquiries: soundboard_of_storytelling@pm.me

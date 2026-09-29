@@ -7,9 +7,14 @@ export type ChangelogEntry = {
   items: string[];
 };
 
-export const APP_VERSION = '3.0.49';
+export const APP_VERSION = '3.0.50';
 
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.50',
+    date: '2026-09-29',
+    items: ['docs: README rewritten for clients and colleagues (purpose, status, license)'],
+  },
   {
     version: '3.0.49',
     date: '2026-09-29',
