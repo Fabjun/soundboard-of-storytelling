@@ -15,9 +15,9 @@ not yet filled and confirmed.
 | Area | Hub | Leaves | Template | State | Source(s) |
 |---|---|---|---|---|---|
 | Product | [`docs/product/README.md`](product/README.md) | [`features/data-backup.md`](product/features/data-backup.md), [`v1-v2-inventory.md`](product/v1-v2-inventory.md) | — | In progress (see below) | `docs/architecture/concept-brief.md` (product parts), `docs/backlog.md` (decisions) |
-| Design | `docs/design/DESIGN.md` | [`components/pad.md`](design/components/pad.md) (Draft) | [`_template.md`](design/components/_template.md) | First spec; hub pending | `docs/design/design-system.md`, `docs/design/design-system-cheatsheet.md`, `docs/design/design-notes.md`, `v1-reference/HANDOFF.md` §4 |
-| Architecture | `docs/architecture/ARCHITECTURE.md` | ADRs in `docs/architecture/` | [`_template.md`](architecture/_template.md) | ADRs exist; hub pending | `docs/architecture/concept-brief.md` (technical parts) |
-| Development | `docs/development/DEVELOPMENT.md` | — | — | Pending | `docs/development/testing.md`, `CLAUDE.md` (workflow parts) |
+| Design | `docs/design/README.md` | [`components/pad.md`](design/components/pad.md) (Draft) | [`_template.md`](design/components/_template.md) | First spec; hub pending | `docs/design/design-system.md`, `docs/design/design-system-cheatsheet.md`, `docs/design/design-notes.md`, `v1-reference/HANDOFF.md` §4 |
+| Architecture | `docs/architecture/README.md` | ADRs in `docs/architecture/` | [`_template.md`](architecture/_template.md) | ADRs exist; hub pending | `docs/architecture/concept-brief.md` (technical parts) |
+| Development | `docs/development/README.md` | — | — | Pending | `docs/development/testing.md`, `CLAUDE.md` (workflow parts) |
 
 **Product progress (2026-09-28):**
 
@@ -36,7 +36,7 @@ not yet filled and confirmed.
 | Leaf `v1-v2-inventory.md` | Decisions filled for §1 Pads, §2 Controls, §3 Board (partly), §5 Data; §4 Library, §6–§8 open | — |
 
 **Slice plan:** re-planned 2026-09-28 — single source `CLAUDE.md §Slice progress` (Slices 9–14;
-5–8 superseded, numbers not reused). Design hub `DESIGN.md` + component specs follow with
+5–8 superseded, numbers not reused). Design hub `docs/design/README.md` + component specs follow with
 Slice 13 (adaptive layout).
 
 Full old-file → new-home mapping, including files that are only partially emptied

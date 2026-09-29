@@ -349,7 +349,7 @@ folder via a `+ NEW` row at the bottom.
 
 #### Architecture motto — "Think big, but don't rush"
 
-_Engineering approach, not a product principle — moves to `ARCHITECTURE.md` once it exists (ADR-0047). Open: tension between the anticipated settings hierarchy / sidebar shell and docs/product/README.md §7 P1 "minimal and functional first"._
+_Engineering approach, not a product principle — moves to `docs/architecture/README.md` once it exists (ADR-0047). Open: tension between the anticipated settings hierarchy / sidebar shell and docs/product/README.md §7 P1 "minimal and functional first"._
 
 The app is built on a deliberately chosen modular foundation — multi-level settings hierarchy, reusable building blocks such as the sidebar shell — a forward-looking anticipation of future extensibility, chosen consciously against a pure continuous-refactoring stance, with the trade-off explicitly named. This foundation is NOT set in stone: it emerges organically while practically building and testing the app, and even the underlying concept may be revised if real experience demands it. Concretely: only what the really existing cases need is implemented (the sidebar will simply be extended to the Pad Editor when that time comes); the full system is thought through in the design but NOT built on spec.
 
@@ -959,9 +959,9 @@ see [ADR-0047](architecture/0047-documentation-architecture.md). Incremental; ol
 documents stay authoritative until their content is transferred and confirmed.
 **Phases:**
 1. ⬜ `product/README.md` — skeleton ✅ (2026-09-28); fill sections in dialogue with the user.
-2. ⬜ `docs/design/DESIGN.md` hub + component specs for the elements the mobile Board layout needs.
+2. ⬜ `docs/design/README.md` hub + component specs for the elements the mobile Board layout needs.
 3. ⬜ Build the mobile Board layout (product work — not documentation).
-4. ⬜ Further component specs as elements are touched; `ARCHITECTURE.md` + `DEVELOPMENT.md` hubs.
+4. ⬜ Further component specs as elements are touched; `docs/architecture/README.md` + `docs/development/README.md` hubs.
 5. ⬜ Slim `CLAUDE.md`, re-point `sync:classes` / `sync:tokens` generators (scripts, hook, CI),
    move superseded documents to `docs/archive/`, reduce `docs/backlog.md` to open work.
 **Source:** Session 2026-09-28.
@@ -1190,6 +1190,7 @@ Decided 2026-09-29 after a test-setup analysis. Order is binding; Slice 9c/9d wa
 | T8c | Weekly scheduled CI run (`weekly.yml`, Monday 06:00 UTC + manual): reuses `tests.yml` via `workflow_call` (full suite, cannot drift); `npm audit` (all levels) + `npm outdated` as run summary; Dependabot PRs open > 14 days fail the run (red = mail). Counter-checked: stale check finds #2/#3/#6 at 14 days, nothing at 100000 days | ✅ Done (see git log: "…(T8c)") |
 | T8d | Deploy the **tested** build: `e2e-prod` keeps its tested `v3/dist` as artifact `pages-dist`; `deploy-pages.yml` downloads and publishes it, no rebuild (ADR-0049). Found and closed a gap: the deploy also fired after `pull_request` runs whose branch is named `main` (e.g. from a fork) and would have published that code — now push-only + same-repo guard; ADR-0040's contrary claim corrected (never exploited: 0 PR runs on a `main` branch). GitHub Actions to current majors (checkout/setup-node/upload-artifact v7, download-artifact v8, upload-pages-artifact v5, deploy-pages v5, configure-pages v6); superseded Dependabot PRs #2, #3, #6, #17, #18 closed | ✅ Done (see git log: "…(T8d)") |
 | T8e | Close the stale Dependabot PRs #15 (failing since 2026-08-03) and #16 — owner's go-ahead given; Dependabot recreated them with the new grouping (#19 dev-minor-patch, #20 prod-minor-patch ✅ green, #21–#28 majors). **Follow-up:** #19 is red only in `format:check` — Prettier 3.9.9 reformats `src/lib/libDnd.ts`; merge #19 together with that one-file reformat | ✅ Done (closed 2026-09-29) |
+| — | Documentation file naming (ADR-0050): docs moved into `docs/` in lowercase-kebab, hubs = `README.md`, design downloads in `design-sources/<YYYY-MM-DD>/`, `CHANGELOG.md` generated from `changelog.ts`, README update rule in the slice checklist; enforced by `docsGuards.test.ts` (all six rules counter-checked). Still open: renaming the local project folder (outside the repo) | ✅ Done (see git log: "(1/3)"–"(3/3)", 2026-09-29) |
 | T9 | GitHub settings by the owner: secret scanning + push protection, Dependabot alerts, notification settings so failed scheduled runs (`weekly.yml`) reach the owner by mail (instructions from Claude) | open |
 
 ### Re-enable mobile layout tests

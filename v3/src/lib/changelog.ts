@@ -7,9 +7,16 @@ export type ChangelogEntry = {
   items: string[];
 };
 
-export const APP_VERSION = '3.0.51';
+export const APP_VERSION = '3.0.52';
 
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.52',
+    date: '2026-09-29',
+    items: [
+      'docs: one naming scheme (ADR-0050) — docs in docs/ (lowercase-kebab, hubs README.md), design-sources/<ISO date>, generated CHANGELOG.md, guarded by tests',
+    ],
+  },
   {
     version: '3.0.51',
     date: '2026-09-29',

@@ -91,7 +91,7 @@ exist yet).
   [BACKLOG B9](../backlog.md#b9--gap-einordnung-drei-bestätigungen-zwei-neue-kandidaten)
   ("Audition vs. live output").
 
-**Not covered here:** visual mode cues (colors, pad borders, backgrounds) → DESIGN.md;
+**Not covered here:** visual mode cues (colors, pad borders, backgrounds) → docs/design/README.md;
 empty-slot behavior in SETUP (BACKLOG D1) → Pad-grid component spec.
 
 ## 4. Screens & navigation
@@ -255,7 +255,7 @@ finished experience.
 | P7 | **Learn from the prototypes, don't copy them.** V1 and V2 are sources for behavior, features and lessons. V3 re-implements in its own idiom (class system, tokens, components). Exception: the audio engine, ported unchanged by design. | **Decided** |
 
 Engineering approach ("Think big, but don't rush") is not a product principle — it stays
-in `docs/backlog.md` until `ARCHITECTURE.md` exists.
+in `docs/backlog.md` until `docs/architecture/README.md` exists.
 
 ## 8. Out of scope
 

@@ -12,8 +12,10 @@
 ## Project identity
 
 - **App name**: "Soundboard of Storytelling"
-- **Origin repo (V1)**: https://github.com/Fabjun/botc-soundboard
-- **V1 live URL**: https://fabjun.github.io/botc-soundboard/
+- **Origin repo (V1)**: `Fabjun/botc-soundboard` — **private since 2026-09-29**, V1 live site
+  offline. Complete local archive outside this repo: `~/dev/archive/botc-soundboard.git`
+  (mirror, full history) + checkout `~/dev/archive/botc-soundboard/` (incl. V2 in `v1_5/`).
+  Never copy it into this public repo.
 - **V3 stack**: Preact + TypeScript + Vite, PWA
 - **Primary target device**: iPhone + Brave browser + Bluetooth Numpad
   (Logilink ID0212v2)
@@ -26,6 +28,9 @@
 
 ## Reference documents
 
+- **File naming (ADR-0050, enforced by `docsGuards.test.ts`)** — root holds only
+  `README.md`, `LICENSE`, `CHANGELOG.md`, `CLAUDE.md`; everything else in `docs/` in
+  lowercase-kebab; hubs are the folder's `README.md`; dates ISO (`YYYY-MM-DD`).
 - **Documentation structure (ADR-0047)** — docs are being consolidated into
   hub / leaf / template per area (`docs/product/`, `docs/design/`,
   `docs/architecture/`, `docs/development/`). New docs: English, status on
@@ -41,8 +46,8 @@
   slice plan → "Slice progress" table in this file. Read first in every session.
 - **`v1-reference/index.html`** — V1 source, reference for behavior,
   audio engine, IndexedDB schema, template export/import.
-  V2 (`v1_5/` in the V1 GitHub repo, versions v1.5.x → v2.0.12; not copied
-  locally) is a short interim rewrite. **V1 and V2 are prototypes: explore
+  V2 (`v1_5/` in the V1 repo, versions v1.5.x → v2.0.12; available in the local
+  archive, see "Origin repo") is a short interim rewrite. **V1 and V2 are prototypes: explore
   them for behavior and ideas, never copy UI/CSS/markup 1:1** — re-implement
   in V3 idiom (`docs/product/README.md §7` P7). Only exception: the audio engine.
 - **`design-sources/2026-05-25/`** — design system: tokens, JSX components.
@@ -385,12 +390,13 @@ any non-doc file flagged ⚠ for approval. Routine additionally: `v3/src/lib/cha
     Architektur-Entscheidungen.
     **Neues ADR-Header-Feld:** `**Category:**` (nach `**Slice:**`) — eines der
     8 kanonischen Werte; Generator-Fehler wenn fehlend → "Unkategorisiert".
-13. **Auto-generierte Inventuren**: Vier Sections werden per Generator befüllt —
+13. **Auto-generierte Inventuren**: Fünf Stellen werden per Generator befüllt —
     nie manuell editieren:
     - `docs/architecture/README.md §Index` — via `npm run sync:adr`
     - `docs/design/design-system.md §6` (sb-*-Klassen) — via `npm run sync:classes`
     - `docs/design/design-system.md §A` (Tokens) — via `npm run sync:tokens`
     - `docs/development/testing.md §Test-Inventar` (Specs je Projekt, Unit-Tests) — via `npm run sync:tests`
+    - `CHANGELOG.md` (ganze Datei, aus `v3/src/lib/changelog.ts`) — via `npm run sync:changelog`
     Der Pre-Commit-Hook führt `sync:docs` automatisch aus und staged die
     Ergebnisse. Zum manuellen Aktualisieren: `cd v3 && npm run sync:docs`.
     Neue sb-*-Klassen dokumentieren mit `/* @inventory: Beschreibung */`
@@ -497,6 +503,10 @@ Before committing a slice, also:
    (break the code → red); guards are green; no quarantine without a BACKLOG entry;
    raise the coverage floor in `vitest.config.ts` to the new measured values (rounded down).
 4. Update CLAUDE.md "Slice progress" table with completion date
+4a. **Update `README.md`** (public, read by clients and colleagues): move finished features
+   from "Planned next" to "Available now", adjust "Planned next". English, professional,
+   no concrete game names, only built features under "Available now". Node version and
+   live URL are guarded by `tests/unit/docsGuards.test.ts`.
 5. **Update docs/backlog.md**: mark completed items `✅ Done (commit SHA)`, add any
    new deferred items surfaced during the slice.
 6. **For slices touching audio (`src/audio/`), IDB (`src/db/`), or file-handling

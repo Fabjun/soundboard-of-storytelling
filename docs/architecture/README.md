@@ -107,4 +107,5 @@ Jede Entscheidung bekommt eine eigene Datei. Format: `docs/architecture/_templat
 | [ADR-0041](0041-english-only.md) | Englisch als App-Sprache — keine i18n-Infrastruktur | Accepted | cross-cutting | 2026-05-27 |
 | [ADR-0046](0046-design-code-import-gate.md) | Design→Code Integration via Checked Import Gate | Accepted | cross-cutting | 2026-06-11 |
 | [ADR-0047](0047-documentation-architecture.md) | Documentation architecture — hub / leaf / template | Accepted | cross-cutting | 2026-09-28 |
+| [ADR-0050](0050-repository-file-naming.md) | Repository file naming | Accepted | cross-cutting | 2026-09-29 |
 <!-- AUTO-GENERATED:adr-index END -->

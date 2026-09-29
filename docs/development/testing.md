@@ -64,8 +64,8 @@ Zahl in Klammern = Testfälle in der Datei (inkl. Quarantäne)._
 | `pwa` | Chromium (Desktop) | nur Build | `pwa` (4) |
 | `visual` | Chromium (Desktop), nur macOS | Dev | `visual-boardlist-empty` (1), `visual-boardlist-with-board` (1), `visual-boardscreen-game` (1), `visual-boardscreen-setup` (1), `visual-deck-rail` (1), `visual-library-empty` (1), `visual-modetoggle-states` (2), `visual-startscreen` (1) |
 
-**Unit-Tests (Vitest):** 12 Dateien, 185 Testfälle —
-`audio/engine.test.ts` (24), `audio/lru.test.ts` (11), `deckConflict.test.ts` (9), `e2eProjects.test.ts` (6), `flameMath.test.ts` (22), `idb.test.ts` (15), `nanoid.test.ts` (2), `padDnd.test.ts` (11), `padUtils.test.ts` (43), `store.test.ts` (23), `testGuards.test.ts` (6), `upload.test.ts` (13)
+**Unit-Tests (Vitest):** 13 Dateien, 192 Testfälle —
+`audio/engine.test.ts` (24), `audio/lru.test.ts` (11), `deckConflict.test.ts` (9), `docsGuards.test.ts` (7), `e2eProjects.test.ts` (6), `flameMath.test.ts` (22), `idb.test.ts` (15), `nanoid.test.ts` (2), `padDnd.test.ts` (11), `padUtils.test.ts` (43), `store.test.ts` (23), `testGuards.test.ts` (6), `upload.test.ts` (13)
 
 <!-- AUTO-GENERATED:test-inventory END -->
 
@@ -261,11 +261,11 @@ unveränderten Paketen, geänderte Runner/Browser, liegengebliebene Dependabot-P
 ### Pre-Commit-Hook
 
 Husky-Hook führt vor jedem lokalen Commit aus (in dieser Reihenfolge):
-1. `npm run sync:docs` + `git add` (~1s) — Auto-generierte Docs aktualisieren und stagen
+1. `npm run sync:docs` + `git add` (~1s) — Auto-generierte Docs aktualisieren und stagen (ADR-Index, Klassen, Tokens, Test-Inventar, `CHANGELOG.md`)
 2. `npm run build` (~4s)
 2a. `npm run typecheck:scripts` (~1s) — Typprüfung der Generatoren/Audits in `scripts/` (`scripts/tsconfig.json`; liegen außerhalb von `v3/`, `npm run build` erfasst sie nicht)
 3. lint-staged: Prettier + ESLint auf gestageten Dateien
-4. `npm run test` (~2s) — inkl. Wächter-Test `e2eProjects.test.ts`
+4. `npm run test` (~2s) — inkl. Wächter-Tests `e2eProjects.test.ts`, `testGuards.test.ts` und `docsGuards.test.ts` (Dateinamen nach ADR-0050, Links mit exakter Groß-/Kleinschreibung — der Mac ignoriert sie, CI nicht —, README-Fakten)
 5. `npm run test:e2e:smoke` (~6s, eigener Server auf Port 5199)
 6. `npm run link:check` (~1s) — Tote interne Markdown-Links erkennen
 

@@ -4,6 +4,7 @@
 **Date:** 2026-09-28
 **Slice:** cross-cutting
 **Refines:** —
+**Refined by:** ADR-0050 (file naming — hubs are `README.md`, lowercase-kebab leaves)
 **Category:** Prozess- & Produktentscheidungen
 
 ## Context
@@ -35,11 +36,11 @@ Consequences observed:
 
    ```
    docs/
-     product/        docs/product/README.md (hub) · features/ (leaves, when needed)
-     design/         DESIGN.md (hub) · components/_template.md + one file per element
+     product/        README.md (hub) · features/ (leaves, when needed)
+     design/         README.md (hub) · components/_template.md + one file per element
                      · reference/ (generated class + token inventories)
-     architecture/   ARCHITECTURE.md (hub) · ADRs (leaves) · _template.md
-     development/    DEVELOPMENT.md (workflow, testing, gates)
+     architecture/   README.md (hub + ADR index) · ADRs (leaves) · _template.md
+     development/    README.md (hub: workflow, testing, gates)
    ```
 
 2. **English** for all new documentation. Terms in the docs match the app UI verbatim.
@@ -57,25 +58,25 @@ Consequences observed:
 5. **Incremental migration, just in time.** Documents are built when needed, not in one
    pass. Old documents stay in place until their content has been transferred and
    confirmed; they then move to `docs/archive/`. Nothing is deleted.
-   Order: docs/product/README.md → DESIGN.md hub + specs for the elements the mobile Board layout
+   Order: docs/product/README.md → docs/design/README.md hub + specs for the elements the mobile Board layout
    needs → build that layout → further specs as elements are touched, plus
-   ARCHITECTURE.md / DEVELOPMENT.md → finally slim `CLAUDE.md`, re-point generators,
+   docs/architecture/README.md / docs/development/README.md → finally slim `CLAUDE.md`, re-point generators,
    archive old files, reduce `docs/backlog.md` to open work.
 
 6. **Source-to-target mapping.**
 
    | Old file | Content → | Fate |
    |---|---|---|
-   | `docs/architecture/concept-brief.md` | product parts → docs/product/README.md; technical parts → ARCHITECTURE.md; workflow parts → DEVELOPMENT.md | fully archived |
-   | `docs/design/design-system.md` | rules → DESIGN.md; generated §6/§A → `design/reference/` | fully archived |
-   | `docs/design/design-system-cheatsheet.md` | absorbed into DESIGN.md | fully archived |
-   | `docs/design/design-notes.md` | settled decisions → DESIGN.md / component specs; open items → docs/backlog.md | fully archived |
-   | `v1-reference/HANDOFF.md` §4 | design principles → DESIGN.md | stays (V1 reference) |
-   | `docs/development/testing.md` | → DEVELOPMENT.md | fully archived |
-   | `CLAUDE.md` | details → DEVELOPMENT.md/ARCHITECTURE.md | stays, slimmed |
+   | `docs/architecture/concept-brief.md` | product parts → docs/product/README.md; technical parts → docs/architecture/README.md; workflow parts → docs/development/README.md | fully archived |
+   | `docs/design/design-system.md` | rules → docs/design/README.md; generated §6/§A → `design/reference/` | fully archived |
+   | `docs/design/design-system-cheatsheet.md` | absorbed into docs/design/README.md | fully archived |
+   | `docs/design/design-notes.md` | settled decisions → docs/design/README.md / component specs; open items → docs/backlog.md | fully archived |
+   | `v1-reference/HANDOFF.md` §4 | design principles → docs/design/README.md | stays (V1 reference) |
+   | `docs/development/testing.md` | → docs/development/README.md | fully archived |
+   | `CLAUDE.md` | details → docs/development/README.md + docs/architecture/README.md | stays, slimmed |
    | `docs/README.md` | becomes the sole index (`docs/README.md`) | replaced |
    | `docs/analysis/foundation-analysis.md`, import-gate protocols (`docs/design/imports/`) | — | fully archived |
-   | `docs/backlog.md` | decisions → docs/product/README.md/DESIGN.md | **partially emptied, stays** (open work only) |
+   | `docs/backlog.md` | decisions → docs/product/README.md + docs/design/README.md | **partially emptied, stays** (open work only) |
    | `CHANGELOG.md` (root) | — | **open question**: keep vs. drop in favor of `v3/src/lib/changelog.ts` |
 
 7. **Transfer unit is the section, not the file.** When content moves into a new
@@ -115,7 +116,7 @@ Consequences observed:
 
 ## Alternatives Considered
 
-- **One large `DESIGN.md`** holding all element specs — rejected: 15–20 elements × full
+- **One large `docs/design/README.md`** holding all element specs — rejected: 15–20 elements × full
   spec schema exceeds ~1,500 lines, recreating the BACKLOG problem.
 - **German documentation** — rejected: UI, code and ~90 % of existing docs are English;
   mixing languages invites term mismatches (e.g. "Szene" vs "Scene").

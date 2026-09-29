@@ -12,8 +12,9 @@
 
 - **V1** — `v1-reference/index.html` (APP_VERSION 179, 2026-05-26). Changelog v37–v179
   (earlier entries not recorded), keyboard handler `index.html:8586ff`.
-- **V2** — folder `v1_5/` in GitHub repo `Fabjun/botc-soundboard` (v1.5.x → renamed
-  v2.0.0–v2.0.12, 2026-05-25/26; 52 commits). Not copied locally. V2 rebuilt most V1 features
+- **V2** — folder `v1_5/` of the V1 repo `Fabjun/botc-soundboard` (v1.5.x → renamed
+  v2.0.0–v2.0.12, 2026-05-25/26; 52 commits). Repo private since 2026-09-29; complete local
+  archive in `~/dev/archive/botc-soundboard/` (outside this repo). V2 rebuilt most V1 features
   in a new structure; genuinely new in V2: the **scene model**, **pad sets + Quick Access
   strip**, **audio ducking**. V3's data model (Board → Scene → Pad, PadSet) derives from V2.
 
