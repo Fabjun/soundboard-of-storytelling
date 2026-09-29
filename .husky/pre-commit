@@ -8,7 +8,7 @@ npm run sync:docs || {
   printf '   Generator-Fehler oben beheben und erneut git commit.\n\n'
   exit 1
 }
-git -C "$ROOT" add docs/architecture/README.md docs/design/design-system.md docs/development/testing.md CHANGELOG.md
+git -C "$ROOT" add docs/architecture/README.md docs/design/design-system.md docs/development/testing.md docs/development/exceptions.md CHANGELOG.md
 echo "✅ Docs synced and staged."
 
 echo "🔨 Pre-commit: running build check in v3/..."

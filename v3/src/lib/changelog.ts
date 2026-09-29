@@ -7,9 +7,16 @@ export type ChangelogEntry = {
   items: string[];
 };
 
-export const APP_VERSION = '3.0.55';
+export const APP_VERSION = '3.0.56';
 
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.56',
+    date: '2026-09-29',
+    items: [
+      'chore: one exception scheme (ADR-0053) — every suppression with reason, temporary ones with BACKLOG reference, generated exception register; config files now linted (S3)',
+    ],
+  },
   {
     version: '3.0.55',
     date: '2026-09-29',

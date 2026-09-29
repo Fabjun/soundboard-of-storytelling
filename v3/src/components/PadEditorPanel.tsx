@@ -76,7 +76,7 @@ export function PadEditorPanel({
     setVolume(pad.volume);
     setFadeIn(pad.fadeIn);
     setFadeOut(pad.fadeOut);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- reset only when a different pad is opened (pad.id), not on every auto-save
   }, [pad.id]);
 
   // ── Auto-save with 500ms debounce ────────────────────────────────────────

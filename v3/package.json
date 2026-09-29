@@ -31,8 +31,9 @@
     "sync:tokens": "tsx ../scripts/sync-tokens.ts",
     "sync:tests": "tsx ../scripts/sync-tests.ts",
     "sync:changelog": "tsx ../scripts/sync-changelog.ts",
+    "sync:exceptions": "tsx ../scripts/sync-exceptions.ts",
     "typecheck:scripts": "tsc -p ../scripts/tsconfig.json",
-    "sync:docs": "npm run sync:adr && npm run sync:classes && npm run sync:tokens && npm run sync:tests && npm run sync:changelog",
+    "sync:docs": "npm run sync:adr && npm run sync:classes && npm run sync:tokens && npm run sync:tests && npm run sync:changelog && npm run sync:exceptions",
     "link:check": "find .. -name '*.md' -not -path '*/node_modules/*' | xargs markdown-link-check --config .markdown-link-check.json --quiet",
     "audit:inline-styles": "NODE_PATH=./node_modules tsx ../scripts/audit-inline-styles.ts"
   },
@@ -52,6 +53,7 @@
     ]
   },
   "devDependencies": {
+    "@eslint-community/eslint-plugin-eslint-comments": "^4.8.1",
     "@playwright/test": "^1.60.0",
     "@preact/preset-vite": "^2.10.5",
     "@size-limit/file": "^12.1.0",

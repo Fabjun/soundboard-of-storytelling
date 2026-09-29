@@ -8,6 +8,9 @@
 // 2. Every quarantine marker (skip / fixme / todo / fails) in tests/ is preceded
 //    by a reference  BACKLOG "<part of a heading>"  that exists in docs/backlog.md.
 //    (Four 'flaky' skips hid never-written tests and a missing feature.)
+// 3. Exception scheme (ADR-0053) for markers ESLint cannot check:
+//    to-do markers (TODO, FIXME, XXX) carry a BACKLOG reference; every `// prettier-ignore`
+//    is preceded by a comment line giving the reason.
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
@@ -105,5 +108,47 @@ describe('guard: every quarantine marker references an existing BACKLOG entry', 
       .filter((m) => m.ref !== null && !headings.some((h) => h.includes(m.ref!)))
       .map((m) => `${m.at} → BACKLOG "${m.ref}"`);
     expect(dangling, 'no BACKLOG heading contains this text').toEqual([]);
+  });
+});
+
+describe('guard: exception markers follow the scheme (ADR-0053)', () => {
+  const ROOT = join(V3, '..');
+  const files = [
+    ...walk(join(V3, 'src'), (f) => /\.(ts|tsx|css)$/.test(f)),
+    ...walk(join(V3, 'tests'), (f) => /\.ts$/.test(f)),
+    ...walk(join(ROOT, 'scripts'), (f) => /\.ts$/.test(f)),
+  ];
+  const TODO = /(?:\/\/|\/\*|^\s*\*)\s*(?:TODO|FIXME|XXX)\b/;
+  const REF = /BACKLOG "([^"]+)"/;
+
+  it('scans source, test and script files (sanity)', () => {
+    expect(files.length).toBeGreaterThan(40);
+  });
+
+  it('gives every TODO / FIXME / XXX comment a BACKLOG reference', () => {
+    const bad: string[] = [];
+    for (const file of files) {
+      readFileSync(file, 'utf8')
+        .split('\n')
+        .forEach((line, i) => {
+          if (TODO.test(line) && !REF.test(line)) bad.push(`${rel(file)}:${i + 1}`);
+        });
+    }
+    expect(bad, 'add a BACKLOG "<heading part>" reference to the to-do marker').toEqual([]);
+  });
+
+  it('precedes every prettier-ignore with a reason comment', () => {
+    const bad: string[] = [];
+    for (const file of files) {
+      const lines = readFileSync(file, 'utf8').split('\n');
+      lines.forEach((line, i) => {
+        if (!/^\s*(?:\/\/|\/\*)\s*prettier-ignore\b/.test(line)) return;
+        const above = (lines[i - 1] ?? '').trim();
+        if (!/^(?:\/\/|\/\*|\*)\s*\S/.test(above) || /prettier-ignore/.test(above)) {
+          bad.push(`${rel(file)}:${i + 1}`);
+        }
+      });
+    }
+    expect(bad, 'add a comment line with the reason directly above').toEqual([]);
   });
 });

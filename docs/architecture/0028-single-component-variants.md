@@ -34,9 +34,11 @@ function PixelIcon({ name, size, color }: PixelIconProps) { ... }
 Wenn eine neue Variante auftaucht: `variant` prop oder neue Props zum
 bestehenden Komponenten, nicht ein neuer Parallel-Komponenten.
 
-**Ausnahmen:** `BoardTopBar` ist ein explizit board-spezifischer Wrapper
-des `TopBar`-Patterns — hier war die Separierung bewusst (ADR-0026),
-weil Board-Screen fundamental andere Anforderungen hat.
+## Exceptions
+
+| Exception | Reason | Reference | Review |
+|---|---|---|---|
+| `BoardTopBar` is a separate component next to `TopBar` | The Board screen has fundamentally different header needs (mode toggle as headline) | ADR-0026 | Slice 13 (mobile layout rebuilds both) |
 
 ## Consequences
 

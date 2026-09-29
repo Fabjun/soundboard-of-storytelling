@@ -57,7 +57,7 @@ export function BoardScreen(): JSX.Element {
       const first = [...board.decks].sort((a, b) => a.order - b.order)[0];
       currentDeckId.value = first.id;
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- auto-select only on board identity change, never override the user's deck choice
   }, [board?.id]);
 
   // Close editor panel when mode switches to GAME
@@ -114,7 +114,7 @@ export function BoardScreen(): JSX.Element {
     // handleAddPad intentionally omitted: it's a new function ref every render but
     // captures mode/deck/board via closure — adding it would re-register the
     // listener on every render. The real deps (mode, deck, board) are listed.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- handleAddPad is a new ref each render; its real deps (mode, deck, board) are listed
   }, [mode, deck, board]);
 
   if (!board) {

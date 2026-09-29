@@ -1201,9 +1201,10 @@ approval per stage; guard tests keep each scheme from drifting back.
 |---|---|---|
 | S1 | Remove unused Vite scaffold files (`src/app.css`, `src/index.css`, `src/assets/*`, `public/icons.svg`); one version number — package renamed `soundboard-of-storytelling`, `version` field removed (`APP_VERSION` is the only version) | ✅ Done (see git log: "…(S1)") |
 | S2 | Code names (ADR-0052, sources cited): `TopBarV2`/`StatusBarV2`/`BoardTopBarV3` → `TopBar`/`StatusBar`/`BoardTopBar`, `src/chrome/` dissolved into `components/`, `app.tsx` → `App.tsx`; unused CSS removed (`.touch-target`, `.pixel-icon`, `@keyframes sb-flicker`), `.theme-*` → `.sb-theme-*`, `has-*` allowed; generator scripts named after their npm scripts; guard `codeGuards.test.ts` | ✅ Done (see git log: "…(S2)") |
-| S3 | Tests: one test-ID scheme (update ADR-0038) applied everywhere; consistent spec/helper file names incl. moving visual baselines; guard tests | open |
-| S4 | English only: active docs, hook/CI messages, ADR template + categories + labels; then translate ADR-0001–0045; uniform ADR headers + guard test | open |
-| S5 | Commit message convention in CLAUDE.md + `commit-msg` hook | open |
+| S3 | Exception scheme (ADR-0053, sources cited): permanent = rule + reason, temporary = + `BACKLOG "…"`; ESLint `require-description` / `no-unlimited-disable` / unused directives = error; prettier-ignore and to-do markers guarded in `testGuards`; config files linted, unnecessary `*.config` Prettier exclusion removed; ADR `## Exceptions` tables; generated register `docs/development/exceptions.md` (35 entries) | ✅ Done (see git log: "…(S3)") |
+| S4 | Tests: one test-ID scheme (update ADR-0038) applied everywhere; consistent spec/helper file names incl. moving visual baselines; guard tests | open |
+| S5 | English only: active docs, hook/CI messages, ADR template + categories + labels; then translate ADR-0001–0045; uniform ADR headers + guard test | open |
+| S6 | Commit message convention in CLAUDE.md + `commit-msg` hook | open |
 
 **Deferred to Slice 13:** re-evaluate the ADR-0028 exception for the two top bars (`TopBar` on
 Library/Board list, `BoardTopBar` on Board — deliberately separate per ADR-0026) and merge them

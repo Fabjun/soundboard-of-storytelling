@@ -18,16 +18,16 @@ import { goToBoardList, createBoardAndNavigate, createDeck } from '../helpers';
 // These tests assert against a layout that is intentionally not yet mobile-adapted.
 // The current desktop-oriented three-panel layout (DeckRail 220px + inspector 280px)
 // collapses the center grid to 0px at 390px when any panel is open.
-// See DESIGN_NOTES "Known limitation: SETUP layout on narrow viewports".
-// Re-enable once the dedicated mobile adaptation (Slice 8) is in place.
+// See docs/design/design-notes.md "Known limitation: SETUP layout on narrow viewports".
+// Re-enable once the dedicated mobile adaptation (Slice 13) is in place.
 const FIXME_REASON =
   'Mobile layout is a deliberate later phase. These overflow assertions apply once ' +
   'the dedicated mobile adaptation exists; the current desktop-oriented layout is ' +
   'expected to fail these at 390px. ' +
-  "See DESIGN_NOTES 'Known limitation: SETUP layout on narrow viewports'.";
+  "See docs/design/design-notes.md 'Known limitation: SETUP layout on narrow viewports'.";
 
 // Quarantine: mobile layout not built yet (Slice 13) — BACKLOG "Re-enable mobile layout tests"
-// eslint-disable-next-line playwright/no-skipped-test -- quarantine, see comment above
+// eslint-disable-next-line playwright/no-skipped-test -- quarantine: mobile layout not built until Slice 13 (BACKLOG "Re-enable mobile layout tests")
 test.describe.fixme(FIXME_REASON, () => {
   async function assertNoOverflow(page: Page, locator: Locator, label: string): Promise<void> {
     const vp = page.viewportSize()!;

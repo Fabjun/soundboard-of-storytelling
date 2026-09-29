@@ -39,7 +39,9 @@
    - no scheme yet → propose one (ADR) before adding more of that kind — based on
      researched current industry standards (name the sources; deviate only with a reason);
    - inconsistency found → report it and plan the clean-up, never extend it;
-   - guard schemes with tests where feasible (`testGuards`, `docsGuards`, lint rules).
+   - guard schemes with tests where feasible (`testGuards`, `docsGuards`, `codeGuards`, lint rules);
+   - exceptions follow one scheme (ADR-0053): rule + reason, temporary ones also
+     `BACKLOG "…"`; all are listed in the generated `docs/development/exceptions.md`.
 3. **Features** — only on top of 1 and 2.
 
 **Working principles (user decisions 2026-09-29):**
@@ -415,13 +417,14 @@ any non-doc file flagged ⚠ for approval. Routine additionally: `v3/src/lib/cha
     Architektur-Entscheidungen.
     **Neues ADR-Header-Feld:** `**Category:**` (nach `**Slice:**`) — eines der
     8 kanonischen Werte; Generator-Fehler wenn fehlend → "Unkategorisiert".
-13. **Auto-generierte Inventuren**: Fünf Stellen werden per Generator befüllt —
+13. **Auto-generierte Inventuren**: Sechs Stellen werden per Generator befüllt —
     nie manuell editieren:
     - `docs/architecture/README.md §Index` — via `npm run sync:adr`
     - `docs/design/design-system.md §6` (sb-*-Klassen) — via `npm run sync:classes`
     - `docs/design/design-system.md §A` (Tokens) — via `npm run sync:tokens`
     - `docs/development/testing.md §Test-Inventar` (Specs je Projekt, Unit-Tests) — via `npm run sync:tests`
     - `CHANGELOG.md` (ganze Datei, aus `v3/src/lib/changelog.ts`) — via `npm run sync:changelog`
+    - `docs/development/exceptions.md` (Ausnahme-Register, ganze Datei) — via `npm run sync:exceptions`
     Der Pre-Commit-Hook führt `sync:docs` automatisch aus und staged die
     Ergebnisse. Zum manuellen Aktualisieren: `cd v3 && npm run sync:docs`.
     Neue sb-*-Klassen dokumentieren mit `/* @inventory: Beschreibung */`
@@ -469,7 +472,7 @@ without exception:
 >
 > Schlägt ein Schritt fehl: **erst Fehlerausgabe/Report lesen, dann neu starten** (ein neuer Lauf überschreibt den Report).
 >
-> Bypass (bewusst): `git push --no-verify` — für Notfälle oder wenn der Hook bereits lokal grün verifiziert wurde.
+> Bypass (bewusst): `git push --no-verify` — only for probe pushes without app code, or when the hook already ran green for exactly this state; state the reason in chat / commit message (ADR-0053).
 > Der pre-push-Hook schließt die Lücke zwischen lokalem pre-commit (nur smoke) und CI (smoke + full + mobile).
 > Nach `git clone`: `cd v3 && npm install` aktiviert den Hook automatisch.
 

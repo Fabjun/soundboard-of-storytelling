@@ -64,8 +64,8 @@ Zahl in Klammern = Testfälle in der Datei (inkl. Quarantäne)._
 | `pwa` | Chromium (Desktop) | nur Build | `pwa` (4) |
 | `visual` | Chromium (Desktop), nur macOS | Dev | `visual-boardlist-empty` (1), `visual-boardlist-with-board` (1), `visual-boardscreen-game` (1), `visual-boardscreen-setup` (1), `visual-deck-rail` (1), `visual-library-empty` (1), `visual-modetoggle-states` (2), `visual-startscreen` (1) |
 
-**Unit-Tests (Vitest):** 14 Dateien, 199 Testfälle —
-`audio/engine.test.ts` (24), `audio/lru.test.ts` (11), `codeGuards.test.ts` (7), `deckConflict.test.ts` (9), `docsGuards.test.ts` (7), `e2eProjects.test.ts` (6), `flameMath.test.ts` (22), `idb.test.ts` (15), `nanoid.test.ts` (2), `padDnd.test.ts` (11), `padUtils.test.ts` (43), `store.test.ts` (23), `testGuards.test.ts` (6), `upload.test.ts` (13)
+**Unit-Tests (Vitest):** 14 Dateien, 202 Testfälle —
+`audio/engine.test.ts` (24), `audio/lru.test.ts` (11), `codeGuards.test.ts` (7), `deckConflict.test.ts` (9), `docsGuards.test.ts` (7), `e2eProjects.test.ts` (6), `flameMath.test.ts` (22), `idb.test.ts` (15), `nanoid.test.ts` (2), `padDnd.test.ts` (11), `padUtils.test.ts` (43), `store.test.ts` (23), `testGuards.test.ts` (9), `upload.test.ts` (13)
 
 <!-- AUTO-GENERATED:test-inventory END -->
 
@@ -426,6 +426,13 @@ test.fixme('…', async () => {});
 ```
 Bekannte Fehler im App-Code werden mit Vitest `test.fails` + einem präzisen Test des
 Ist-Verhaltens + BACKLOG-Eintrag festgehalten (Beispiel: `tests/unit/audio/engine.test.ts`).
+
+**Exception scheme (ADR-0053):** every exception — lint suppressions, `prettier-ignore`,
+to-do markers, quarantine, untested modules, tool ignore lists, ADR exceptions — names the
+rule and the reason; temporary ones also `BACKLOG "…"`. Undescribed or unused ESLint
+directives fail lint; to-do markers and `prettier-ignore` are checked by `testGuards.test.ts`.
+All exceptions are listed in the generated register
+[`exceptions.md`](exceptions.md) (`npm run sync:exceptions`).
 
 **Gegenprobe (Pflicht für jeden neuen Test):** den geprüften Code gezielt kaputt machen →
 der Test muss rot werden; danach den Code per Kopie wiederherstellen und mit `git diff`

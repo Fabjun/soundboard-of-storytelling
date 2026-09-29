@@ -1,5 +1,5 @@
 // ─────────────────────────────────────────────────────────────────────────────
-// ESLint flat config — BotC Soundboard V3
+// ESLint flat config — Soundboard of Storytelling
 //
 // Stack: TypeScript + Preact (React-compat) + react-hooks plugin
 // ─────────────────────────────────────────────────────────────────────────────
@@ -9,8 +9,22 @@ import tsParser from '@typescript-eslint/parser';
 import hooksPlugin from 'eslint-plugin-react-hooks';
 import vitestPlugin from '@vitest/eslint-plugin';
 import playwrightPlugin from 'eslint-plugin-playwright';
+import eslintComments from '@eslint-community/eslint-plugin-eslint-comments/configs';
 
 export default [
+  // ── Exception scheme (ADR-0053) — applies to every linted file ─────────────
+  // Every disable directive names its rule(s) and carries a reason after " -- ";
+  // unused directives are errors, so stale exceptions cannot linger.
+  {
+    linterOptions: { reportUnusedDisableDirectives: 'error' },
+  },
+  eslintComments.recommended,
+  {
+    rules: {
+      '@eslint-community/eslint-comments/require-description': 'error',
+    },
+  },
+
   // ── Production source ────────────────────────────────────────────────────
   {
     files: ['src/**/*.{ts,tsx}'],
@@ -100,15 +114,26 @@ export default [
     },
   },
 
-  // ── Global ignores ────────────────────────────────────────────────────────
+  // ── Tool config files (vite, vitest, playwright, eslint) ────────────────────
+  // Linted without type information: they are not part of any tsconfig project.
+  {
+    files: ['*.config.{js,ts}'],
+    languageOptions: { parser: tsParser },
+    plugins: { '@typescript-eslint': tsPlugin },
+    rules: {
+      ...tsPlugin.configs.recommended.rules,
+      '@typescript-eslint/consistent-type-imports': 'error',
+    },
+  },
+
+  // ── Global ignores — generated output only (ADR-0053: every entry has a reason) ──
   {
     ignores: [
-      'dist/**',
-      'node_modules/**',
-      'coverage/**',
-      'playwright-report/**',
-      'test-results/**',
-      '*.config.{js,ts}',
+      'dist/**', // build output (vite build)
+      'node_modules/**', // installed dependencies
+      'coverage/**', // generated coverage report
+      'playwright-report/**', // generated E2E report
+      'test-results/**', // generated E2E artefacts
     ],
   },
 ];

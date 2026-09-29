@@ -49,12 +49,8 @@ const TEST_ORIGIN = `http://localhost:${TEST_PORT}`;
 // `npm run test:e2e:prod` does both.
 const PROD = process.env.E2E_TARGET === 'prod';
 
-const smokeMatch = new RegExp(
-  `tests/e2e/(${SMOKE_TESTS.join('|')})\\.spec\\.ts$`,
-);
-const fullMatch = new RegExp(
-  `tests/e2e/(${FULL_TESTS.join('|')})\\.spec\\.ts$`,
-);
+const smokeMatch = new RegExp(`tests/e2e/(${SMOKE_TESTS.join('|')})\\.spec\\.ts$`);
+const fullMatch = new RegExp(`tests/e2e/(${FULL_TESTS.join('|')})\\.spec\\.ts$`);
 const fullWebkitMatch = new RegExp(`tests/e2e/(${FULL_WEBKIT_TESTS.join('|')})\\.spec\\.ts$`);
 const pwaMatch = new RegExp(`tests/e2e/(${PWA_TESTS.join('|')})\\.spec\\.ts$`);
 const mobileWebKitMatch = new RegExp(

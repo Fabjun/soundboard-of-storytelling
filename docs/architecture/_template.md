@@ -26,6 +26,15 @@ Code-Stand abgeleitet wurde, hier kennzeichnen:
 
 Was wurde entschieden? Konkret und unmissverständlich.
 
+## Exceptions
+
+Optional — only if the decision already has deliberate exceptions (ADR-0053). One row each;
+the section is collected into `docs/development/exceptions.md` by `npm run sync:exceptions`.
+
+| Exception | Reason | Reference | Review |
+|---|---|---|---|
+| … | … | ADR / BACKLOG "…" | permanent / Slice N / YYYY-MM-DD |
+
 ## Consequences
 
 Was sind die Konsequenzen — gute UND schlechte?

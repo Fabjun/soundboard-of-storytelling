@@ -27,6 +27,7 @@ export const FLAME_TIP: FlamePixel[] = [
 ];
 
 /** Stable body — everything below y = 2. */
+// Formatting: keep the pixel table aligned row by row (Prettier would reflow it).
 // prettier-ignore
 export const FLAME_BODY: FlamePixel[] = [
   [6, 2, 0], [7, 2, 2], [8, 2, 2], [9, 2, 0],
@@ -49,24 +50,28 @@ export const FLAME_BODY: FlamePixel[] = [
 export const FLAME_PIX: FlamePixel[] = FLAME_TIP.concat(FLAME_BODY);
 
 /** The 2×2 heart as four pixels (top-left, top-right, bottom-left, bottom-right). V3 addition. */
+// Formatting: keep the pixel table aligned row by row (Prettier would reflow it).
 // prettier-ignore
 export const HEART_PIXELS: GridPos[] = [
   [7, 9], [8, 9], [7, 10], [8, 10],
 ];
 
 /** Neighbours of the 2×2 heart that can briefly light up. V3 addition. */
+// Formatting: keep the pixel table aligned row by row (Prettier would reflow it).
 // prettier-ignore
 export const HEART_NEIGHBOURS: GridPos[] = [
   [7, 8], [8, 8], [6, 9], [9, 10], [7, 11], [8, 11],
 ];
 
 /** Stable facets of the ice crystal (Hearth). */
+// Formatting: keep the pixel table aligned row by row (Prettier would reflow it).
 // prettier-ignore
 export const HEARTH_FACETS: GridPos[] = [
   [5, 5], [10, 5], [7, 3], [4, 9], [11, 9], [6, 8], [9, 8], [7, 11], [5, 13], [10, 13], [8, 6],
 ];
 
 /** Edge pixels ice shards break off from when tapping the frozen flame (Hearth). */
+// Formatting: keep the pixel table aligned row by row (Prettier would reflow it).
 // prettier-ignore
 export const SHARD_EDGES: GridPos[] = [
   [3, 8], [4, 6], [4, 9], [5, 5], [11, 6], [12, 8], [12, 10], [11, 9], [10, 5], [5, 13], [10, 13], [7, 2],

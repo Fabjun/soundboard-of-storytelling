@@ -15,7 +15,14 @@ import { dirname, join, normalize, relative, sep } from 'node:path';
 const ROOT = join(__dirname, '..', '..', '..');
 const ROOT_MD = ['CHANGELOG.md', 'CLAUDE.md', 'README.md'];
 const DOC_NAME = /^(?:README|_template|[a-z0-9]+(?:-[a-z0-9]+)*)\.md$/;
-const SKIP = new Set(['node_modules', '.git', 'dist', 'design-sources', 'v1-reference']);
+// Exceptions to the naming/link rules (ADR-0053: each with a reason).
+const SKIP = new Set([
+  'node_modules', // installed dependencies
+  '.git', // repository internals
+  'dist', // build output
+  'design-sources', // Claude Design downloads, kept exactly as delivered (ADR-0050)
+  'v1-reference', // frozen V1 reference copy, not maintained
+]);
 
 function walkMd(dir: string): string[] {
   const out: string[] = [];
