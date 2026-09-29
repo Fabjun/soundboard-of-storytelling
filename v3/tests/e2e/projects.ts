@@ -42,5 +42,11 @@ export const MOBILE_WEBKIT_TESTS = [
  */
 export const MOBILE_CHROMIUM_TESTS = ['mobile-pad-interaction', 'mobile-pad-creation'];
 
+/**
+ * tests/e2e/<name>.spec.ts — only against the PRODUCTION BUILD (E2E_TARGET=prod):
+ * service worker, manifest, offline. The dev server has no service worker.
+ */
+export const PWA_TESTS = ['pwa'];
+
 /** Folder whose specs all belong to the local-only `visual` project. */
 export const VISUAL_DIR = 'visual';

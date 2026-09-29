@@ -33,6 +33,7 @@ import {
   FULL_TESTS,
   MOBILE_CHROMIUM_TESTS,
   MOBILE_WEBKIT_TESTS,
+  PWA_TESTS,
   SMOKE_TESTS,
   VISUAL_DIR,
 } from './tests/e2e/projects';
@@ -42,12 +43,18 @@ import {
 const TEST_PORT = 5199;
 const TEST_ORIGIN = `http://localhost:${TEST_PORT}`;
 
+// Test target: dev server (default) or the PRODUCTION BUILD (E2E_TARGET=prod →
+// `vite preview` of dist/, incl. service worker + manifest). Build first:
+// `npm run test:e2e:prod` does both.
+const PROD = process.env.E2E_TARGET === 'prod';
+
 const smokeMatch = new RegExp(
   `tests/e2e/(${SMOKE_TESTS.join('|')})\\.spec\\.ts$`,
 );
 const fullMatch = new RegExp(
   `tests/e2e/(${FULL_TESTS.join('|')})\\.spec\\.ts$`,
 );
+const pwaMatch = new RegExp(`tests/e2e/(${PWA_TESTS.join('|')})\\.spec\\.ts$`);
 const mobileWebKitMatch = new RegExp(
   `tests/e2e/mobile/(${MOBILE_WEBKIT_TESTS.join('|')})\\.spec\\.ts$`,
 );
@@ -116,6 +123,16 @@ export default defineConfig({
       testMatch: mobileChromiumMatch,
       use: { ...devices['iPhone 13 Pro'], defaultBrowserType: 'chromium' as const },
     },
+    // PWA checks exist only in the production build (no service worker in dev).
+    ...(PROD
+      ? [
+          {
+            name: 'pwa',
+            testMatch: pwaMatch,
+            use: { ...devices['Desktop Chrome'] },
+          },
+        ]
+      : []),
     {
       name: 'visual',
       testMatch: new RegExp(`tests/e2e/${VISUAL_DIR}/.*\\.spec\\.ts$`),
@@ -123,7 +140,9 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: `npm run dev -- --port ${TEST_PORT} --strictPort`,
+    command: PROD
+      ? `npm run preview -- --port ${TEST_PORT} --strictPort`
+      : `npm run dev -- --port ${TEST_PORT} --strictPort`,
     url: `${TEST_ORIGIN}/soundboard-of-storytelling/`,
     // Always start a fresh server for tests (locally and in CI).
     reuseExistingServer: false,

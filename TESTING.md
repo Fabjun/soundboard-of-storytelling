@@ -240,6 +240,9 @@ e2e-smoke (needs: unit-build-lint)
 e2e-mobile (needs: unit-build-lint)
   └── npm run test:e2e:mobile  (7 Spec-Dateien: 5 WebKit + 2 Chromium — iPhone 13 Pro profile; 2 WebKit-Specs fixme'd/deferred bis Slice 8)
 
+e2e-prod (needs: unit-build-lint)
+  └── npm run test:e2e:prod    (Build → Smoke + Full + PWA gegen vite preview; Service Worker, Manifest, Offline)
+
 e2e-full (needs: unit-build-lint)
   └── npm run test:e2e:full    (Slices-3+4-Tests in Chromium: CRUD, Audio-Engine)
 ```
@@ -269,8 +272,9 @@ Gesamt ~20s. Schlägt einer der Schritte fehl → Commit wird abgebrochen.
 
 1. Versions-Bump-Check (`APP_VERSION` gegenüber `origin/main`)
 2. `npm run size` — Bundle-Größe
-3. `npm run test:e2e:all` — Smoke, Full, Mobile (wie die drei CI-E2E-Jobs)
-4. **Nur macOS:** `npm run test:e2e:visual` — visuelle Regression
+3. `npm run test:e2e:all` — Smoke, Full, Mobile gegen den Dev-Server
+4. `npm run test:e2e:prod` — Build, dann Smoke, Full und **PWA** gegen den **fertigen Build** (`vite preview`, mit Service Worker)
+5. **Nur macOS:** `npm run test:e2e:visual` — visuelle Regression
 
 Schlägt ein Schritt fehl: **zuerst die Fehlerausgabe bzw. den Report lesen**, erst dann
 neu starten (ein neuer Lauf überschreibt `playwright-report/`).
@@ -374,6 +378,7 @@ test('beschreibt den Nutzer-Flow in einem Satz', async ({ page }) => {
 | Touch-wiring (audio-free), Touch-Targets, Overflow | `tests/e2e/mobile/*` (audio-free specs) | `mobile` (WebKit) |
 | Touch-wiring (pad tap → is-hot/is-looping, pad creation) | `tests/e2e/mobile/*` (audio-dependent specs) | `mobile-chromium` (Chromium) |
 | Pixel-Vergleich | `tests/e2e/visual/*.spec.ts` | `visual` |
+| Service Worker, Manifest, Offline (nur fertiger Build) | `tests/e2e/pwa.spec.ts` (`PWA_TESTS`) | `pwa` — nur mit `E2E_TARGET=prod` |
 
 ---
 

@@ -36,6 +36,15 @@ npm run test:e2e:all || {
 
 printf '✅ Full E2E suite PASSED.\n\n'
 
+printf '🏗  Pre-push: E2E against the production build (smoke + full + PWA)...\n'
+npm run test:e2e:prod || {
+  printf '\n❌ Production-build E2E FAILED — Push abgebrochen.\n'
+  printf '   Erst Fehlerausgabe/Report lesen (v3/playwright-report/), dann neu starten.\n'
+  printf '   Bewusst überspringen: git push --no-verify\n\n'
+  exit 1
+}
+printf '✅ Production-build E2E PASSED.\n\n'
+
 # Visual regression — macOS only (baselines are macOS font rendering; CI/Ubuntu excluded)
 if [ "$(uname)" = "Darwin" ]; then
   printf '🖼  Pre-push: visual regression (macOS)...\n'

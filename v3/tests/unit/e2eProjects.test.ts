@@ -14,6 +14,7 @@ import {
   FULL_TESTS,
   MOBILE_CHROMIUM_TESTS,
   MOBILE_WEBKIT_TESTS,
+  PWA_TESTS,
   SMOKE_TESTS,
   VISUAL_DIR,
 } from '../e2e/projects';
@@ -40,6 +41,7 @@ function listedSpecs(): { path: string; list: string }[] {
   return [
     ...SMOKE_TESTS.map((n) => ({ path: `${n}.spec.ts`, list: 'SMOKE_TESTS' })),
     ...FULL_TESTS.map((n) => ({ path: `${n}.spec.ts`, list: 'FULL_TESTS' })),
+    ...PWA_TESTS.map((n) => ({ path: `${n}.spec.ts`, list: 'PWA_TESTS' })),
     ...MOBILE_WEBKIT_TESTS.map((n) => ({
       path: `mobile/${n}.spec.ts`,
       list: 'MOBILE_WEBKIT_TESTS',
