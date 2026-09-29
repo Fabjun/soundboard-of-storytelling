@@ -1,9 +1,11 @@
 name: Deploy to GitHub Pages
 
-# Deploy only after the Tests workflow completes successfully on main.
-# workflow_run is the correct cross-workflow dependency mechanism in
-# GitHub Actions (needs: only works within the same workflow file).
-# workflow_dispatch allows manual re-deploys.
+# Publishes the build that the Tests workflow tested — it never rebuilds (T8d, ADR-0049).
+# tests.yml (job e2e-prod) builds v3/dist, runs smoke + full + PWA tests against it and
+# keeps exactly that folder as artifact "pages-dist"; this workflow downloads it.
+#
+# workflow_run: deploy after Tests completes on main (cross-workflow sequencing, ADR-0040).
+# workflow_dispatch: manual re-deploy of the latest successful Tests push run on main.
 on:
   workflow_run:
     workflows: ['Tests']
@@ -13,6 +15,7 @@ on:
 
 permissions:
   contents: read
+  actions: read # download the artifact from the Tests run
   pages: write
   id-token: write
 
@@ -21,47 +24,54 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build:
-    # Skip if triggered by a failed Tests run (not workflow_dispatch).
+  prepare:
+    # Only a successful Tests run triggered by a push to THIS repository. The branch
+    # filter alone is not enough: workflow_run also fires after pull_request runs, and a
+    # fork's branch can be named "main" too (ADR-0049).
     if: >
       github.event_name == 'workflow_dispatch' ||
-      github.event.workflow_run.conclusion == 'success'
+      (github.event.workflow_run.conclusion == 'success' &&
+       github.event.workflow_run.event == 'push' &&
+       github.event.workflow_run.head_repository.full_name == github.repository)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-        with:
-          # workflow_run: check out the same SHA the Tests workflow used.
-          # workflow_dispatch: github.sha is already the right ref.
-          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
-
-      - uses: actions/configure-pages@v5
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version-file: .nvmrc
-          cache: npm
-          cache-dependency-path: v3/package-lock.json
-
-      - name: Install dependencies
-        working-directory: v3
-        run: npm ci
-
-      - name: Build
-        working-directory: v3
+      - name: Find the tested build
+        id: source
         env:
-          CI: true
-        run: npm run build
+          GH_TOKEN: ${{ github.token }}
+          RUN_ID: ${{ github.event.workflow_run.id }}
+        run: |
+          if [ -z "$RUN_ID" ]; then
+            RUN_ID=$(gh run list --repo "$GITHUB_REPOSITORY" --workflow tests.yml --branch main \
+              --event push --status success --limit 1 --json databaseId --jq '.[0].databaseId')
+          fi
+          if [ -z "$RUN_ID" ]; then
+            echo "::error::No successful Tests push run on main found."
+            exit 1
+          fi
+          echo "run-id=$RUN_ID" >> "$GITHUB_OUTPUT"
+          echo "Deploying the build tested in Tests run $RUN_ID" >> "$GITHUB_STEP_SUMMARY"
 
-      - uses: actions/upload-pages-artifact@v3
+      # Fails if the artifact has expired (30 days): re-run Tests for that commit, then deploy.
+      - uses: actions/download-artifact@v8
         with:
-          path: v3/dist
+          name: pages-dist
+          path: dist
+          run-id: ${{ steps.source.outputs.run-id }}
+          github-token: ${{ github.token }}
+
+      - uses: actions/configure-pages@v6
+
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: dist
 
   deploy:
-    needs: build
+    needs: prepare
     runs-on: ubuntu-latest
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5

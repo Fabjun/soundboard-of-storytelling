@@ -10,9 +10,9 @@ jobs:
   unit-build-lint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version-file: .nvmrc
           cache: npm
@@ -70,9 +70,9 @@ jobs:
     runs-on: ubuntu-latest
     needs: unit-build-lint
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version-file: .nvmrc
           cache: npm
@@ -90,7 +90,7 @@ jobs:
         working-directory: v3
         run: npm run test:e2e:smoke
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: playwright-smoke-report
@@ -101,9 +101,9 @@ jobs:
     runs-on: ubuntu-latest
     needs: unit-build-lint
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version-file: .nvmrc
           cache: npm
@@ -121,7 +121,7 @@ jobs:
         working-directory: v3
         run: npm run test:e2e:mobile
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: playwright-mobile-report
@@ -132,9 +132,9 @@ jobs:
     runs-on: ubuntu-latest
     needs: unit-build-lint
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version-file: .nvmrc
           cache: npm
@@ -152,7 +152,7 @@ jobs:
         working-directory: v3
         run: npm run test:e2e:full
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: playwright-full-report
@@ -163,9 +163,9 @@ jobs:
     runs-on: ubuntu-latest
     needs: unit-build-lint
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version-file: .nvmrc
           cache: npm
@@ -183,7 +183,18 @@ jobs:
         working-directory: v3
         run: npm run test:e2e:prod
 
-      - uses: actions/upload-artifact@v4
+      # The exact build these tests just passed is what deploy-pages.yml publishes
+      # (T8d / ADR-0049) — the deploy never rebuilds.
+      - name: Keep the tested build for deployment
+        if: success() && github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: actions/upload-artifact@v7
+        with:
+          name: pages-dist
+          path: v3/dist/
+          if-no-files-found: error
+          retention-days: 30
+
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: playwright-prod-report

@@ -1,6 +1,6 @@
 # ADR-0040: GitHub Pages Deployment gated auf CI (`workflow_run`)
 
-**Status:** Accepted
+**Status:** Accepted — refined by ADR-0049 (deploy the tested artifact, push-only guard)
 **Date:** 2026-05-27
 **Slice:** infrastructure
 
@@ -45,9 +45,11 @@ ohne Code-Änderung).
 - Klare Trennung: `tests.yml` für CI-Quality-Gates, `deploy-pages.yml` für Deployment.
 
 **Negativ / Trade-offs:**
-- `workflow_run` hat eine Besonderheit: es triggert nicht auf Pull Requests
+- ~~`workflow_run` hat eine Besonderheit: es triggert nicht auf Pull Requests
   von Forks (Security-Einschränkung von GitHub). Für ein Single-Developer-
-  Projekt kein Problem.
+  Projekt kein Problem.~~ **Korrektur 2026-09-29: falsch.** `workflow_run` feuert auch
+  nach `pull_request`-Läufen, und ein Fork kann seinen Branch `main` nennen. Seit
+  ADR-0049 prüft der Deploy Ereignis (`push`) und Herkunfts-Repo.
 - Deployment-Latenz: `workflow_run` startet nach Abschluss von `tests.yml`
   (nicht parallel). Gesamtlatenz: Tests (~3 min) + Deploy (~1 min).
 

@@ -353,7 +353,8 @@ any non-doc file flagged ⚠ for approval. Routine additionally: `v3/src/lib/cha
    conventions. Phase 2 testing infrastructure is complete:
    - Pre-commit: sync:docs (auto-stage) + build + lint + unit tests + smoke E2E + link:check
    - CI: GitHub Actions `tests.yml` runs unit + lint + size + docs sync check + link check + full E2E
-   - Deploy is gated on green `tests.yml` run (via `workflow_run`)
+   - Deploy is gated on green `tests.yml` push run (via `workflow_run`) and publishes the
+     exact build tested in `e2e-prod` — never rebuilds (ADR-0049)
    - Weekly: `weekly.yml` (Monday) reruns `tests.yml` + audit/outdated report; Dependabot
      PRs open > 14 days turn it red (T8c)
 9. **Design→code imports**: all Claude Design output entering production code must pass

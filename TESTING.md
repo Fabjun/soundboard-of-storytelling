@@ -236,8 +236,13 @@ Node-Version aus `.nvmrc`. In CI gilt `failOnFlakyTests`: ein Test, der erst im
 Wiederholungsversuch besteht, lässt den Lauf **fehlschlagen** (→ kein Deployment).
 Ablauf dann: siehe [Wackelige Tests (Quarantäne)](#wackelige-tests-quarantäne).
 
-**`deploy-pages.yml`** — Läuft nur wenn `tests.yml` auf `main` erfolgreich abgeschlossen hat:
-- Trigger: `workflow_run` (Tests, completed, success) + `workflow_dispatch`
+**`deploy-pages.yml`** — Veröffentlicht **genau den getesteten Build**, baut nie neu (ADR-0049):
+- `e2e-prod` baut `v3/dist`, testet ihn (smoke + full + PWA) und bewahrt ihn bei Push auf `main`
+  als Artefakt `pages-dist` auf (30 Tage); der Deploy lädt dieses Artefakt herunter
+- Trigger: `workflow_run` (Tests, completed) — nur wenn erfolgreich, durch **Push** ausgelöst
+  und aus **diesem Repo** (kein PR-/Fork-Code) — sowie `workflow_dispatch` (nimmt das Artefakt
+  des letzten erfolgreichen Push-Laufs auf `main`; abgelaufen → Tests für den Commit neu starten)
+- Scheitert der Deploy, bleibt die bisherige Version live
 - Visual Tests werden **nicht** in CI ausgeführt (macOS-only Baselines)
 
 **`weekly.yml`** — Wöchentlicher Kontroll-Lauf, Montag 06:00 UTC (+ manuell per `workflow_dispatch`),

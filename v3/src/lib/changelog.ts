@@ -7,9 +7,16 @@ export type ChangelogEntry = {
   items: string[];
 };
 
-export const APP_VERSION = '3.0.50';
+export const APP_VERSION = '3.0.51';
 
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.51',
+    date: '2026-09-29',
+    items: [
+      'ci: deploy publishes the exact tested build (no rebuild), push-only guard against PR/fork code; GitHub Actions on current versions (T8d)',
+    ],
+  },
   {
     version: '3.0.50',
     date: '2026-09-29',

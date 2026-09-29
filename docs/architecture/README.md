@@ -96,7 +96,8 @@ Jede Entscheidung bekommt eine eigene Datei. Format: `docs/architecture/_templat
 | [ADR-0036](0036-visual-regression-macos.md) | Visual Regression Tests lokal-only (macOS-Baselines) | Accepted | infrastructure | 2026-05-27 |
 | [ADR-0037](0037-husky-precommit.md) | Husky Pre-Commit-Hook: Build + Unit + Smoke E2E | Accepted | infrastructure | 2026-05-27 |
 | [ADR-0038](0038-data-testid-convention.md) | `data-testid`-Konvention für E2E-Selektoren | Accepted | infrastructure | 2026-05-27 |
-| [ADR-0040](0040-github-pages-deployment.md) | GitHub Pages Deployment gated auf CI (`workflow_run`) | Accepted | infrastructure | 2026-05-27 |
+| [ADR-0040](0040-github-pages-deployment.md) | GitHub Pages Deployment gated auf CI (`workflow_run`) | Accepted — refined by ADR-0049 (deploy the tested artifact, push-only guard) | infrastructure | 2026-05-27 |
+| [ADR-0049](0049-deploy-tested-artifact.md) | Deploy the tested build artifact | Accepted | infrastructure | 2026-09-29 |
 
 ### Prozess- & Produktentscheidungen
 
