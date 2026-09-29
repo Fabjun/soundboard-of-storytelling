@@ -3,7 +3,7 @@
 //
 // 12. Tap empty cell → PadCreationPopover opens
 // 13. Select audio from RECENT → ADD PAD → pad appears in cell
-// 14. Library drag to empty cell → pad created     [test.skip — pointer drag]
+// 14. Library drag to empty cell → pad created there (real pointer drag)
 // 15. BROWSE tab in popover → source select + ADD PAD
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -15,6 +15,8 @@ import {
   createBoardAndNavigate,
   createDeck,
   enterSetupMode,
+  pointerDrag,
+  TEST_AUDIO_NAME,
 } from './helpers';
 
 test.beforeEach(async ({ page }) => {
@@ -72,14 +74,20 @@ test('13 — Path A: select from RECENT tab → ADD PAD → pad appears in cell'
 
 // ── Test 14: Path B — library drag → pad created ─────────────────────────────
 
-test.skip('14 — Path B: library drag to empty cell → pad created [SKIP: pointer-events drag flaky in Playwright]', async ({
-  page,
-}) => {
-  // TODO (Phase 3): implement pointer-event drag from LibraryPanel to PadGrid.
-  // Path B uses libDnd.ts (Pointer Events API, not HTML5 DnD).
-  // Use page.mouse.move/down/up sequence with precise coordinates.
-  // Mark stable once verified locally.
-  void page;
+test('14 — Path B: library drag to empty cell → pad created there', async ({ page }) => {
+  // Open the library panel (right slot) — its rows start a Pointer-Events drag (libDnd.ts)
+  await page.getByTitle('Open library panel').click();
+  const row = page.locator('.sb-lib-panel-row').filter({ hasText: TEST_AUDIO_NAME }).first();
+  await row.waitFor();
+
+  await pointerDrag(page, row, page.getByTestId('pad-cell-empty-2-1'));
+
+  const created = page.locator(
+    '[data-pos="2,1"][data-testid^="pad-cell-"]:not([data-testid^="pad-cell-empty-"])',
+  );
+  await expect(created).toBeVisible();
+  await expect(created).toContainText(TEST_AUDIO_NAME);
+  await expect(page.getByTestId('pad-cell-empty-2-1')).toHaveCount(0);
 });
 
 // ── Test 15: Path A via BROWSE tab ────────────────────────────────────────────

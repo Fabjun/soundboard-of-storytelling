@@ -10,7 +10,7 @@
 //   - Hover action chips (RENAME · COPY · ×) — desktop
 //   - Delete with confirmation + UndoToast
 //   - Duplicate (copy pads + gridConfig)
-//   - Reorder (drag handle, pointer-events based)
+//   - Reorder: NOT built yet (decided: drag & drop, mouse + touch — BACKLOG "Deck reorder")
 //   - + NEW DECK button at bottom
 // ─────────────────────────────────────────────────────────────────────────────
 

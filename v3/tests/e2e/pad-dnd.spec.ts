@@ -1,20 +1,21 @@
 // ─────────────────────────────────────────────────────────────────────────────
-// Full E2E — Pad Drag & Drop (Slice-3 verification points 20–21)
+// Full E2E — Pad Drag & Drop (verification points 20–21)
 //
-// 20. SWAP: drag pad to another pad's center → positions swap
-// 21. INSERT: drag pad to cell edge → intermediate pads shift
+// 20. SWAP:   drag a pad onto another pad's centre → the two exchange positions
+// 21. INSERT: drag a pad onto a cell's left edge → it is inserted there, the pads
+//             in between shift by one slot
 //
-// Both tests are currently marked test.skip because pointer-events drag
-// in Playwright requires precise coordinate control and is prone to timing
-// issues. Activate in Phase 3 once the drag approach is validated locally.
+// padDnd.ts uses Pointer Events + setPointerCapture (never HTML5 DnD — iOS), so
+// the drag is a real pointer sequence (helpers.pointerDrag). Three pads are used:
+// with two, an INSERT and a SWAP produce the same layout and could not be told apart.
+// Positions are read from the cells' data-pos ("col,row"); persistence is checked
+// after a reload.
 //
-// Implementation approach (Phase 3):
-//   padDnd.ts uses pointermove/pointerdown/pointerup events.
-//   Use page.mouse.move(x, y) + page.mouse.down() + move to target + page.mouse.up().
-//   Coordinates derived from getBoundingClientRect() of source/target cells.
+// History: until 2026-09-29 both tests were test.skip("flaky") — their bodies were
+// never written (TODO stubs). Stability is checked with --repeat-each=20.
 // ─────────────────────────────────────────────────────────────────────────────
 
-import { test, type Page } from '@playwright/test';
+import { test, expect, type Page } from '@playwright/test';
 import {
   goToLibrary,
   uploadTestAudio,
@@ -23,10 +24,33 @@ import {
   createDeck,
   enterSetupMode,
   createPadAtCell00,
+  padPosition,
+  pointerDrag,
+  reopenFirstBoard,
 } from './helpers';
 
-// Shared setup: 2 pads in known positions (0,0 and 1,0)
-async function setupTwoPads(page: Page): Promise<void> {
+/** Create a pad in the empty cell (col, row) via the creation popover; returns its id. */
+async function createPadAt(page: Page, col: number, row: number): Promise<string> {
+  await page.getByTestId(`pad-cell-empty-${col}-${row}`).click();
+  const popover = page.getByTestId('pad-creation-popover');
+  await popover.waitFor();
+  const sourceItem = page.locator('[data-testid^="creation-source-item-"]').first();
+  await sourceItem.waitFor({ timeout: 5_000 });
+  await sourceItem.click();
+  await page.getByTestId('creation-add-pad').click();
+  await popover.waitFor({ state: 'hidden' });
+  // Wait for the OCCUPIED cell at this position — right after the click the empty
+  // cell (pad-cell-empty-c-r, same data-pos) can still be in the DOM.
+  const cell = page.locator(
+    `[data-pos="${col},${row}"][data-testid^="pad-cell-"]:not([data-testid^="pad-cell-empty-"])`,
+  );
+  await cell.waitFor();
+  const testid = await cell.getAttribute('data-testid');
+  return testid!.replace('pad-cell-', '');
+}
+
+/** Board with one deck and three pads: A at 0,0 · B at 1,0 · C at 2,0 (SETUP mode). */
+async function setupThreePads(page: Page): Promise<{ a: string; b: string; c: string }> {
   await page.goto('/soundboard-of-storytelling/');
   await goToLibrary(page);
   await uploadTestAudio(page);
@@ -35,36 +59,57 @@ async function setupTwoPads(page: Page): Promise<void> {
   await createBoardAndNavigate(page);
   await createDeck(page);
   await enterSetupMode(page);
-  await createPadAtCell00(page);
-  // Create second pad at 1,0
-  await page.getByTestId('pad-cell-empty-1-0').click();
-  const popover = page.getByTestId('pad-creation-popover');
-  await popover.waitFor();
-  const sourceItem = page.locator('[data-testid^="creation-source-item-"]').first();
-  await sourceItem.waitFor({ timeout: 5_000 });
-  await sourceItem.click();
-  await page.getByTestId('creation-add-pad').click();
-  await popover.waitFor({ state: 'hidden' });
+  const a = await createPadAtCell00(page);
+  const b = await createPadAt(page, 1, 0);
+  const c = await createPadAt(page, 2, 0);
+  expect(await padPosition(page, a)).toBe('0,0');
+  expect(await padPosition(page, b)).toBe('1,0');
+  expect(await padPosition(page, c)).toBe('2,0');
+  return { a, b, c };
+}
+
+/** The draggable element of a pad (onPointerDown lives on .sb-pad inside the cell). */
+function padHandle(page: Page, padId: string) {
+  return page.getByTestId(`pad-cell-${padId}`).locator('.sb-pad');
 }
 
 // ── Test 20: SWAP ─────────────────────────────────────────────────────────────
 
-test.skip('20 — SWAP: drag pad to another pad center → positions swap [SKIP: pointer-events drag flaky]', async ({
+test('20 — SWAP: drag pad onto another pad centre → the two exchange positions', async ({
   page,
 }) => {
-  await setupTwoPads(page);
-  // TODO (Phase 3): implement pointer-events drag for SWAP.
-  // Expected: pad from cell 0,0 moves to 1,0 and vice versa.
-  void page;
+  const { a, b, c } = await setupThreePads(page);
+
+  await pointerDrag(page, padHandle(page, a), page.getByTestId(`pad-cell-${c}`), 'center');
+
+  await expect(page.getByTestId(`pad-cell-${a}`)).toHaveAttribute('data-pos', '2,0');
+  await expect(page.getByTestId(`pad-cell-${c}`)).toHaveAttribute('data-pos', '0,0');
+  await expect(page.getByTestId(`pad-cell-${b}`)).toHaveAttribute('data-pos', '1,0');
+
+  // Persisted
+  await reopenFirstBoard(page);
+  await expect(page.getByTestId(`pad-cell-${a}`)).toHaveAttribute('data-pos', '2,0');
+  await expect(page.getByTestId(`pad-cell-${c}`)).toHaveAttribute('data-pos', '0,0');
+  await expect(page.getByTestId(`pad-cell-${b}`)).toHaveAttribute('data-pos', '1,0');
 });
 
 // ── Test 21: INSERT ───────────────────────────────────────────────────────────
 
-test.skip('21 — INSERT: drag pad to cell edge → intermediate pads shift [SKIP: pointer-events drag flaky]', async ({
+test('21 — INSERT: drag pad onto a cell left edge → inserted there, others shift', async ({
   page,
 }) => {
-  await setupTwoPads(page);
-  // TODO (Phase 3): implement pointer-events drag for INSERT.
-  // Expected: pads shift to accommodate insert at target edge.
-  void page;
+  const { a, b, c } = await setupThreePads(page);
+
+  // C onto A's left edge → insert at index 0: C → 0,0 · A → 1,0 · B → 2,0
+  await pointerDrag(page, padHandle(page, c), page.getByTestId(`pad-cell-${a}`), 'left-edge');
+
+  await expect(page.getByTestId(`pad-cell-${c}`)).toHaveAttribute('data-pos', '0,0');
+  await expect(page.getByTestId(`pad-cell-${a}`)).toHaveAttribute('data-pos', '1,0');
+  await expect(page.getByTestId(`pad-cell-${b}`)).toHaveAttribute('data-pos', '2,0');
+
+  // Persisted
+  await reopenFirstBoard(page);
+  await expect(page.getByTestId(`pad-cell-${c}`)).toHaveAttribute('data-pos', '0,0');
+  await expect(page.getByTestId(`pad-cell-${a}`)).toHaveAttribute('data-pos', '1,0');
+  await expect(page.getByTestId(`pad-cell-${b}`)).toHaveAttribute('data-pos', '2,0');
 });

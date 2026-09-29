@@ -4,7 +4,7 @@
 // 6.  Create deck → tab appears in DeckRail
 // 7.  Rename via double-click → tab label updates
 // 8.  Duplicate → new tab with "(copy)" suffix
-// 9.  Reorder via drag → order changes                [test.skip — flaky drag]
+// 9.  Reorder via drag → order changes                [test.fixme — feature not built]
 // 10. Delete → tab removed
 // 11. Undo delete → tab restored
 // ─────────────────────────────────────────────────────────────────────────────
@@ -68,7 +68,10 @@ test('8 — duplicate deck → new tab appears with suffix', async ({ page }) =>
 
 // ── Test 9: Reorder via drag ──────────────────────────────────────────────────
 
-test.skip('9 — deck reorder via drag → order changes [SKIP: drag flaky in Playwright]', async ({
+// QUARANTINE (TESTING.md §Wackelige Tests): the FEATURE is not built — DeckRail has no
+// reorder at all (found 2026-09-29; earlier docs wrongly claimed it). Decided: drag & drop,
+// mouse + touch. BACKLOG §1 "Deck reorder (drag & drop)". Activate when the feature lands.
+test.fixme('9 — deck reorder via drag → order changes [FEATURE NOT BUILT — BACKLOG: Deck reorder]', async ({
   page,
 }) => {
   // Create two decks
@@ -76,10 +79,8 @@ test.skip('9 — deck reorder via drag → order changes [SKIP: drag flaky in Pl
   await page.getByTestId('new-deck-button').click();
   await expect(page.locator('[data-testid^="deck-tab-"]')).toHaveCount(2);
 
-  // TODO (Phase 3): implement pointer-event drag for deck reorder.
-  // The DeckRail uses pointer events (not HTML5 DnD). Playwright's
-  // dragAndDrop() won't work here; use page.mouse.move + down + up.
-  // Mark stable once drag flow is verified.
+  // To write together with the feature: pointerDrag(deck tab 2 → above deck tab 1),
+  // then assert the tab order and its persistence after reopenFirstBoard().
 });
 
 // ── Test 10: Delete deck ─────────────────────────────────────────────────────

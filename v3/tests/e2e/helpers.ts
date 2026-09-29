@@ -6,7 +6,7 @@
 // if they need clean IndexedDB state.
 // ─────────────────────────────────────────────────────────────────────────────
 
-import type { Page } from '@playwright/test';
+import type { Locator, Page } from '@playwright/test';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
@@ -143,4 +143,54 @@ export async function createPadAtCell00(page: Page): Promise<string> {
     .first();
   const testid = await padCell.getAttribute('data-testid');
   return testid!.replace('pad-cell-', '');
+}
+
+// ── Pointer drag (Pointer Events DnD — padDnd.ts / libDnd.ts) ─────────────────
+
+/** Where inside the target the pointer is released. */
+export type DropPoint = 'center' | 'left-edge' | 'right-edge';
+
+/**
+ * Real pointer drag: press on `source`, move in small steps (well past the 8px
+ * drag threshold) to `target`, release. The app uses Pointer Events with
+ * setPointerCapture — Playwright's dragTo() (HTML5 DnD) would not trigger it.
+ * Edge points are 4px inside the target's left/right border (INSERT zones are
+ * min(25% width, 22px)).
+ */
+export async function pointerDrag(
+  page: Page,
+  source: Locator,
+  target: Locator,
+  drop: DropPoint = 'center',
+): Promise<void> {
+  const from = await source.boundingBox();
+  const to = await target.boundingBox();
+  if (!from || !to) throw new Error('pointerDrag: source or target not visible');
+  const sx = from.x + from.width / 2;
+  const sy = from.y + from.height / 2;
+  const tx =
+    drop === 'left-edge'
+      ? to.x + 4
+      : drop === 'right-edge'
+        ? to.x + to.width - 4
+        : to.x + to.width / 2;
+  const ty = to.y + to.height / 2;
+  await page.mouse.move(sx, sy);
+  await page.mouse.down();
+  await page.mouse.move(sx + 12, sy + 12, { steps: 4 }); // cross the drag threshold
+  await page.mouse.move(tx, ty, { steps: 15 });
+  await page.mouse.up();
+}
+
+/** Grid position ("col,row") of a pad, read from its cell's data-pos attribute. */
+export async function padPosition(page: Page, padId: string): Promise<string | null> {
+  return page.getByTestId(`pad-cell-${padId}`).getAttribute('data-pos');
+}
+
+/** After a reload: StartScreen → board list → open the first board. */
+export async function reopenFirstBoard(page: Page): Promise<void> {
+  await page.goto('/soundboard-of-storytelling/');
+  await goToBoardList(page);
+  await page.locator('[data-testid^="board-row-title-"]').first().click();
+  await page.getByTestId('mode-toggle').waitFor();
 }

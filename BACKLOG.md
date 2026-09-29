@@ -32,6 +32,13 @@ during the slice. This is the only defence against backlog drift.
 
 ## 1. Features (Slice-bound)
 
+### Deck reorder (drag & drop) — feature not built
+Found 2026-09-29 (T3): DeckRail has no reorder at all, although Slice 3 docs and the V1/V2
+inventory claimed it. **Decided** by the product owner: decks are reordered by **drag & drop,
+with mouse and touch** (Pointer Events, never HTML5 DnD); alternatives remain open. E2E test 9 in
+`deck-crud.spec.ts` is quarantined (`test.fixme`) until the feature lands.
+**When:** with the deck work in Slice 9e or the adaptive layout in Slice 13.
+
 > **Slice numbers in this section refer to the May plan** (Slices 5–8, superseded 2026-09-28).
 > Mapping to the new plan (Slices 9–14): `CLAUDE.md §Slice progress`. Items are re-triaged when
 > the respective new slice is planned.
@@ -1145,8 +1152,8 @@ Decided 2026-09-29 after a test-setup analysis. Order is binding; Slice 9c/9d wa
 | Step | Content | Status |
 |---|---|---|
 | T1 | Guard test for E2E project membership, test port 5199, Node 24 (`.nvmrc`), visual tests in pre-push, flaky tests fail CI, TESTING.md updated | ✅ Done (60a0f0c) |
-| T2 | Unit tests for the serial upload pipeline (`upload.ts`, iOS memory rule) | this commit |
-| T3 | Make the 4 skipped drag-and-drop E2E tests reliable (pad swap/insert, library drag, deck reorder) — before 9c rewrites DnD | open |
+| T2 | Unit tests for the serial upload pipeline (`upload.ts`, iOS memory rule) | ✅ Done (see git log: "test: upload pipeline unit tests (T2)") |
+| T3 | Skipped drag-and-drop E2E tests: found to be never-written TODO stubs, not flaky. Pad swap/insert + library drag written, counter-checked, 20× stable; deck reorder quarantined — feature not built | this commit |
 | T4 | Characterization tests for the audio engine play dispatch — before 9d changes it | open |
 | T5 | E2E in CI against the production build (vite preview: PWA, base path, minified code) | open |
 | T6 | Full E2E suite also on WebKit (audio-free parts); coverage floor that can only rise | open |

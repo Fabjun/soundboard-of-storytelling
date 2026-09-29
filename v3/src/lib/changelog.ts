@@ -15,6 +15,7 @@ export const CHANGELOG: ChangelogEntry[] = [
     date: '2026-09-29',
     items: [
       'test: upload pipeline — serial decode, context close order, metadata-only state, duplicates, errors (T2)',
+      'test: drag-and-drop E2E — pad swap, pad insert, library drag (were empty TODO stubs); deck reorder found not built (T3)',
     ],
   },
   {
