@@ -7,9 +7,16 @@ export type ChangelogEntry = {
   items: string[];
 };
 
-export const APP_VERSION = '3.0.40';
+export const APP_VERSION = '3.0.41';
 
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.41',
+    date: '2026-09-29',
+    items: [
+      'test: upload pipeline — serial decode, context close order, metadata-only state, duplicates, errors (T2)',
+    ],
+  },
   {
     version: '3.0.40',
     date: '2026-09-29',
