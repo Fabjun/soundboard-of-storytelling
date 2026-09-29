@@ -62,4 +62,4 @@ schlechtere Performance als CSS clip-path.
 
 - **Dateien:** `v3/src/styles/tokens.css` (Pixel-Frame base styles, drop-shadow tokens), `v3/src/components/PadGridCell.tsx`
 - **ADRs:** ADR-0021 (CSS-Naming), ADR-0025 (is-deep Pad-Depth), ADR-0022 (Design Tokens)
-- **Quelldokumente:** `SoS_DESIGN_25052026/HANDOFF.md §4.1`, `docs/design/design-notes.md §Drop-shadow vs Inset shadow — RESOLVED`
+- **Quelldokumente:** `design-sources/2026-05-25/HANDOFF.md §4.1`, `docs/design/design-notes.md §Drop-shadow vs Inset shadow — RESOLVED`

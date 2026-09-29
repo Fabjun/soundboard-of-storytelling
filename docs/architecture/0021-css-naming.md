@@ -8,7 +8,7 @@
 
 ## Context
 
-Das Design-System aus `SoS_DESIGN_25052026/` definiert eine CSS-Namenskonvention,
+Das Design-System aus `design-sources/2026-05-25/` definiert eine CSS-Namenskonvention,
 die in V3 direkt übernommen wird. Die Konvention ist im `docs/design/design-system-cheatsheet.md`
 ("The 60-second contract") beschrieben.
 
@@ -61,7 +61,7 @@ das Design-System-JSX nicht direkt verwendbar machen (ADR-0001). Nicht gewählt.
 
 - **Dateien:** `v3/src/styles/tokens.css`, `v3/src/components/*.tsx`
 - **ADRs:** ADR-0022 (Design Tokens), ADR-0024 (clip-path), ADR-0025 (is-deep)
-- **Quelldokumente:** `docs/design/design-system-cheatsheet.md`, `SoS_DESIGN_25052026/HANDOFF.md §4.1`
+- **Quelldokumente:** `docs/design/design-system-cheatsheet.md`, `design-sources/2026-05-25/HANDOFF.md §4.1`
 
 ## Amendments
 

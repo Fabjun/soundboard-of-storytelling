@@ -80,14 +80,14 @@ When the cheatsheet and the main document conflict, the main document wins.
 
 ## Design origin
 
-### `SoS_DESIGN_25052026/`
+### `design-sources/2026-05-25/`
 Frozen design handoff package from the original external design phase (2026-05-25).
 Contains: 30+ JSX reference files (`app.jsx`, `foundations.jsx`, `v1`–`v26` exploration
 files), `tokens.css` (design handoff origin — see note below), `HANDOFF.md`,
 `Design System.html`, `Responsive Strategy V3.html`.
 **Source of truth for:** Visual and interaction design intent; source material for V3
 component implementations; original component shapes and token values.
-**Note on `SoS_DESIGN_25052026/tokens.css`:** This is the original token file from the
+**Note on `design-sources/2026-05-25/tokens.css`:** This is the original token file from the
 design phase. It is kept as a reference only — the running app loads
 `v3/src/styles/tokens.css`, which has evolved since handoff (see that file's header).
 

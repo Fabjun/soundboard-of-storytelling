@@ -1,10 +1,10 @@
 // ─────────────────────────────────────────────────────────────────────────────
 // AnimatedFlame — interactive pixel fire (StartScreen), hybrid of two designs
 //
-// Idle:   SoS_DESIGN_25052026/v13-animated-flame.jsx (tip flicker 12fps, sway,
+// Idle:   design-sources/2026-05-25/v13-animated-flame.jsx (tip flicker 12fps, sway,
 //         breath, tongue lick, embers, heart pulse) + V3 additions (core-ring glow,
 //         heart flicker with a dimmer corner).
-// Freeze: SoS_DESIGN_28092026/…/flame-engine.jsx + flame-themes.jsx "Hearth":
+// Freeze: design-sources/2026-09-28/…/flame-engine.jsx + flame-themes.jsx "Hearth":
 //         idle → transform → hold (4 s) → revert; frost creeps in from the edge,
 //         falling frost, cracks, glinting facets, ice shards, steam, drips, re-ignite.
 //         Idle crackle and rare embers from Hearth as well.

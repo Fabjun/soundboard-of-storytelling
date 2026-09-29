@@ -2,7 +2,7 @@
 
 **Date:** 2026-06-05
 **Status:** Living document — Pass 1 complete. Deep-dive passes TBD.
-**Scope:** Living v3 code under `v3/` and repo-wide tooling/docs machinery. `v1-reference/` and `SoS_DESIGN_25052026/` are out of scope for health assessment (read-only reference/archive).
+**Scope:** Living v3 code under `v3/` and repo-wide tooling/docs machinery. `v1-reference/` and `design-sources/2026-05-25/` are out of scope for health assessment (read-only reference/archive).
 **Context:** Analysis triggered immediately after Session 3 (CSS class discipline migration, 177 Path-D violations → 0) and after ADR-0045 (two-axis adaptive model). Slices 1–4 complete; Slices 5–8 pending.
 
 ---
@@ -511,7 +511,7 @@ consistency-checking automation; not exhaustive — covers concepts that have al
 | **ADR index** — `docs/architecture/README.md §Index` (auto-generated via `sync:adr`) | Any doc that cross-links ADRs by number | New ADR accepted; ADR status changed |
 | **Audio/IDB API surface** — `v3/src/db/idb.ts`, `v3/src/audio/` | `CLAUDE.md §V3 audio/IDB API`; `docs/architecture/concept-brief.md §4.4`; `docs/architecture/ADR-0018` | Any public function added, renamed, removed, or signature changed. **Specific pending trigger:** `crossfade(from, to, _duration)` is currently a stub (stop+play, no overlap); when Slice 8 implements real crossfade, all three documents must be updated in lockstep (signatures, stub note in brief §4.4, ADR-0018 facade description) |
 | **Layout primitives** — `v3/src/styles/tokens.css` (`sb-row`, `sb-row-sm`, `sb-row-wrap`, `sb-row-fill`, `sb-col`, `sb-flex-1`) | `docs/design/design-system.md §5a` (curated list — canonical source); `CLAUDE.md §Permanent coding standards` (Path B text); `docs/design/design-system-cheatsheet.md` (Path B decision tree) | Any layout-primitive class added, renamed, or removed from `tokens.css`. No automated guard yet (deferred code task: introduce `/* @layout-primitive: … */` CSS tag + sync-tooling check to detect drift mechanically; until then, §5a process note is the guard). Update §5a and fix all three doc references in the same commit. |
-| **Token canonical source** — `v3/src/styles/tokens.css` (the file `sync:tokens` reads and the app imports; `SoS_DESIGN_25052026/tokens.css` is design-handoff reference only and has diverged) | `docs/design/design-system.md §A header` (must cite `v3/src/styles/tokens.css`); `CLAUDE.md §Tokens` (must name `v3/src/styles/tokens.css` as canonical) | Any token added, renamed, or removed — both documents name the same source file. Never update one without the other. |
+| **Token canonical source** — `v3/src/styles/tokens.css` (the file `sync:tokens` reads and the app imports; `design-sources/2026-05-25/tokens.css` is design-handoff reference only and has diverged) | `docs/design/design-system.md §A header` (must cite `v3/src/styles/tokens.css`); `CLAUDE.md §Tokens` (must name `v3/src/styles/tokens.css` as canonical) | Any token added, renamed, or removed — both documents name the same source file. Never update one without the other. |
 | **is-* state class registry** — `docs/design/design-system.md §3` (manually maintained; add new `is-*` classes here before using them in code) | `ADR-0021 §Decision` (must point to §3 as living source — not re-list classes inline); `docs/design/design-system-cheatsheet.md §state vocab` (quick-ref subset — must be a subset of §3, not its own list) | Any new `is-*` class added. Register in §3 first; confirm ADR-0021 still just points and does not duplicate; update Cheatsheet quick-ref if the class is general-purpose. |
 | **Testing gate/project counts** — `.husky/pre-commit`, `.husky/pre-push`, `v3/playwright.config.ts` | `docs/development/testing.md`; `docs/architecture/0033-three-layer-testing.md`, `0035-playwright.md`, `0037-husky-precommit.md` | Any gate added/removed from a hook, or Playwright project added/removed — all four docs must be updated in the same commit. Recurring drift surface (counts go stale between slices). |
 | **ADR template header fields** — `docs/architecture/_template.md` (defines required/optional header fields; **Refines:** added as optional field in Pass 6) | All `docs/architecture/NNNN-*.md` ADR files (headers must conform to template format — field order, colon placement, required vs. optional); `docs/architecture/README.md §Index` (auto-generated from `**Category:**` + `**Slice:**` fields via `sync:adr` — missing or wrong values show as "—" or land in the wrong group) | Any new header field added to or removed from the template; any change to which fields are required vs. optional. ADRs already using a new field should be format-aligned in the same pass. Currently using **Refines:**: ADR-0043, ADR-0044. |
@@ -525,7 +525,7 @@ consistency-checking automation; not exhaustive — covers concepts that have al
 
 **Prior corrections (D1–D8):** Handled in commit `36e0178` — do not re-flag. See §6 coupling map for the lock-step relationships. This pass finds the remaining drift across the full document set.
 
-**Audit scope:** All project documents except the out-of-scope archives (`v1-reference/` and `SoS_DESIGN_25052026/`), whose existence is noted in the inventory.
+**Audit scope:** All project documents except the out-of-scope archives (`v1-reference/` and `design-sources/2026-05-25/`), whose existence is noted in the inventory.
 
 ---
 
@@ -549,7 +549,7 @@ consistency-checking automation; not exhaustive — covers concepts that have al
 | `docs/architecture/0001–0045.md` | 45 ADRs (no numbering gaps) | ~50–112 each | All Accepted |
 | **Out-of-scope archives** | | | |
 | `v1-reference/HANDOFF.md` | V1 design handoff (reference only) | 353 | Archive |
-| `SoS_DESIGN_25052026/HANDOFF.md` | V2 design-system handoff (reference only) | 353 | Archive |
+| `design-sources/2026-05-25/HANDOFF.md` | V2 design-system handoff (reference only) | 353 | Archive |
 
 **CHANGELOG.md** exists at the project root (maintained per CLAUDE.md §Workflow rules step 0) but has no entry in any navigation document — noted in findings below.
 
@@ -581,7 +581,7 @@ Findings are tagged `[SEV][CAT]` where:
 | I1 | IMP | B | docs/architecture/concept-brief.md §4.3 | `AppState` sketch has stale types: `playingPads: Set<string>` (actual: `ReadonlySet`), `currentMode: 'play'|'edit'` inconsistency; sketch known-stale | 105–115 |
 | I2 | IMP | B | docs/architecture/concept-brief.md §4.4 | Audio facade file described as `audio.ts`; actual: `src/audio/index.ts`. `play()` signature wrong (needs `pad: Pad`); `crossfade()` `to` arg is `Pad` not `string` | 123–128 |
 | I3 | IMP | B | docs/architecture/concept-brief.md §4.5 | "Suggested: **idb** or raw IndexedDB, either works": `idb` chosen and in use | 143–145 |
-| I4 | IMP | C | docs/architecture/concept-brief.md §3 vs §7 | §3 says HANDOFF.md is in `v1-reference/`; §7 step 2 says read `SoS_DESIGN_25052026/HANDOFF.md` — contradictory instructions | 53, 320 |
+| I4 | IMP | C | docs/architecture/concept-brief.md §3 vs §7 | §3 says HANDOFF.md is in `v1-reference/`; §7 step 2 says read `design-sources/2026-05-25/HANDOFF.md` — contradictory instructions | 53, 320 |
 | I5 | IMP | A | docs/architecture/concept-brief.md §4.8 | Project structure tree has wrong filenames: `App.tsx` (actual: `app.tsx`); non-existent `public/manifest.json`, `styles/components.css`; stale screen names | 168–187 |
 | I6 | IMP | B | docs/architecture/concept-brief.md §5.1 | Slice list shows no completion status; all 8 slices appear equally pending; Slice 1 called "Home screen" not "StartScreen" | 249–259 |
 | I7 | IMP | B | CLAUDE.md §Architecture | "IndexedDB extended for Scenes and **Sets**" — PadSets (Slice 6) not yet built | 55 |
@@ -594,7 +594,7 @@ Findings are tagged `[SEV][CAT]` where:
 | I14 | IMP | A | docs/development/testing.md §CI | Vitest count stated as 91 — actual: 102 | ~221 |
 | I15 | IMP | C | docs/development/testing.md §Commands vs §CI | "5 tests / 2 tests" means spec files in one place, test cases in another; inconsistent terminology for "tests" | 162, 232 |
 | I16 | IMP | C | docs/README.md | Missing entries: `CHANGELOG.md`, `docs/development/manual-iphone-checklist.md`, `docs/analysis/foundation-analysis.md` | — |
-| I17 | IMP | A | docs/design/design-system.md §A header | Claims token source is `SoS_DESIGN_25052026/tokens.css`; actual: `sync:tokens` reads `v3/src/styles/tokens.css` | ~311 |
+| I17 | IMP | A | docs/design/design-system.md §A header | Claims token source is `design-sources/2026-05-25/tokens.css`; actual: `sync:tokens` reads `v3/src/styles/tokens.css` | ~311 |
 | I18 | IMP | A | docs/design/design-notes.md | `--pix-bg-layer` named in RESOLVED entry as an active escape hatch — token removed from `tokens.css` (file header, line 4) | 384 |
 | I19 | IMP | B | docs/design/design-notes.md | "Slice 4 — to decide at implementation time" header: Slice 4 complete; C1/C2 items not implemented but section header still reads as pre-implementation open | ~189 |
 | I20 | IMP | B | docs/design/design-notes.md §Slice 3 | Multiple "to decide at implementation time" items from Slice 3 (type inference, slot-scan order, source-picker shape) not marked RESOLVED despite being implemented | ~24–72 |
@@ -627,7 +627,7 @@ Findings are tagged `[SEV][CAT]` where:
 | K2 | COS | C | docs/architecture/concept-brief.md §3 | Dangling reference to `prototype/*.html` V1.5 files — directory does not exist | 58 |
 | K3 | COS | C | docs/architecture/concept-brief.md §3 | "v1–v26 exploration files" — no `v1-*.jsx` file exists; first file is `v2-screens.jsx` | 53 |
 | K4 | COS | A | CLAUDE.md §Reference docs | `v1-reference/CLAUDE.md` listed as reference document — file does not exist in that directory | ~31–32 |
-| K5 | COS | C | CLAUDE.md §Design language §Tokens | "imported from SoS_DESIGN_25052026/tokens.css" implies live sync; `v3/src/styles/tokens.css` is the canonical live source and has diverged | ~163–164 |
+| K5 | COS | C | CLAUDE.md §Design language §Tokens | "imported from design-sources/2026-05-25/tokens.css" implies live sync; `v3/src/styles/tokens.css` is the canonical live source and has diverged | ~163–164 |
 | K6 | COS | A | CLAUDE.md §Deviations | npm cache note ("partially root-owned") conflicts with resolved memory entry noting this is largely fixed | ~514 |
 | K7 | COS | B | docs/development/testing.md §Overview | "Slice 3.5" not an official slice name; CLAUDE.md uses "Phase 2 testing infrastructure" | ~5 |
 | K8 | COS | C | docs/development/testing.md §Fallstricke | Numbering gap: sections jump from §5 to §7 (no §6) | — |
@@ -683,7 +683,7 @@ Special scan requested: every passage presenting a decision as open/TBD/"to be c
 | Slice list §5.1 — presented as all-pending | 249–259 | **Resolved:** Slices 1–4 complete. CLAUDE.md §Slice progress is authoritative. |
 | "Default: Slice 1" in §7 step 5 | 324 | **Resolved (stale):** Slice 1 complete; Slice 5 is next. |
 | "Test suite (deferred)" in §6 | 315 | **Resolved:** Full Phase 2 test infrastructure built. See docs/development/testing.md, ADRs 0033–0038. |
-| §7 step 2: "Read `SoS_DESIGN_25052026/HANDOFF.md`" | 320 | **Partially resolved (ambiguous):** §3 says HANDOFF.md was moved to `v1-reference/`; both copies exist; §7 points to the original SoS copy. |
+| §7 step 2: "Read `design-sources/2026-05-25/HANDOFF.md`" | 320 | **Partially resolved (ambiguous):** §3 says HANDOFF.md was moved to `v1-reference/`; both copies exist; §7 points to the original SoS copy. |
 
 **Still genuinely open (no resolution found):**
 - The project structure tree and audio facade description are acknowledged as historical sketches in CLAUDE.md §Deviations; they are "stale by design" rather than active open questions.
@@ -745,7 +745,7 @@ ADR-0021 declares a "closed set" of `is-*` state classes. docs/design/design-sys
 
 **Documents fully audited:** All 20 non-archive project documents: CLAUDE.md, docs/architecture/concept-brief.md, docs/backlog.md, README.md, docs/design/design-system.md, docs/design/design-notes.md, docs/design/design-system-cheatsheet.md, docs/development/testing.md, docs/development/manual-iphone-checklist.md, docs/README.md, docs/analysis/foundation-analysis.md (as a document), docs/architecture/README.md, docs/architecture/_template.md, and all 45 ADRs (0001–0045).
 
-**Documents noted but not audited:** `v1-reference/HANDOFF.md` and `SoS_DESIGN_25052026/HANDOFF.md` are out-of-scope archives by design. `CHANGELOG.md` was not audited (it is a mechanical record, not a prescriptive doc).
+**Documents noted but not audited:** `v1-reference/HANDOFF.md` and `design-sources/2026-05-25/HANDOFF.md` are out-of-scope archives by design. `CHANGELOG.md` was not audited (it is a mechanical record, not a prescriptive doc).
 
 **Confidence in finding completeness:**
 - **(A) Verifiable drift:** High confidence. Every claim was checked against actual code, config files, and tokens. Code was read where relevant (not inferred).

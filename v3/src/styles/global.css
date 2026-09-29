@@ -60,7 +60,7 @@ button,
 }
 
 /* ─── sb-flicker (flame animation for StartScreen) ───────────── */
-/* Sourced from SoS_DESIGN_25052026/v2-screens.jsx — not in tokens.css */
+/* Sourced from design-sources/2026-05-25/v2-screens.jsx — not in tokens.css */
 @keyframes sb-flicker {
   0%,
   100% {

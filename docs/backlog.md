@@ -161,7 +161,7 @@ exported — pure UI work; no audio changes needed. See [Design Session 2026-06-
 
 ### Glanceable loop state
 
-Breathing aura (v8 §5) + loop-spine animation (v8 §6) — designed in `SoS_DESIGN_25052026/`,
+Breathing aura (v8 §5) + loop-spine animation (v8 §6) — designed in `design-sources/2026-05-25/`,
 not yet implemented. CSS animation + new `is-*` classes. On top of this design: One-Shot-Spark
 (see [Design Session 2026-06-04](#design--feature-clarification-session--2026-06-04) → Parked Candidates; not yet designed).
 **When:** Slice 8.
@@ -373,7 +373,7 @@ is correct; no implementation change needed.
 
 ### Code is the authoritative truth; design library is archive
 
-`SoS_DESIGN_25052026/` is the historical starting point, not a maintained living source.
+`design-sources/2026-05-25/` is the historical starting point, not a maintained living source.
 **Claude Design is used only for new UI elements** — not to keep existing files current.
 Design-code drift is NOT resolved by updating design files. Stale places (e.g., `v11-mobile`
 shows 3 columns; 4-column grid is binding) remain as archive.
@@ -833,7 +833,7 @@ Only missing: a UI button alongside the hard STOP. Pure UI work; no audio change
 
 ### Glanceable loop state _(see also Slice 8)_
 
-Designed in `SoS_DESIGN_25052026/` (v8 §5–§6), not yet implemented:
+Designed in `design-sources/2026-05-25/` (v8 §5–§6), not yet implemented:
 - **Now-Playing breathing aura** — pad glows and breathes while looping (distinct from
   static `is-hot`).
 - **Idle-Loop Breathing Spine** — type-color spine breathes continuously in loop state.
@@ -1043,7 +1043,7 @@ Decided 2026-09-28 ([docs/product/README.md §5 Pads](product/README.md#pads)): 
 **When:** Slice 9 (data model), together with the board pad pool below.
 
 ### Theme flames: Verdant, Neon, Crimson
-Parked 2026-09-29. `SoS_DESIGN_28092026/Design_Soundboard_of_Storytelling/Flammen.html` designs four flame personalities (Hearth, Verdant, Neon, Crimson) on one canvas engine. Hearth's freeze/thaw is in the StartScreen flame (hybrid, `docs/design/imports/animated-flame.md`); the other three belong to the themes.
+Parked 2026-09-29. `design-sources/2026-09-28/Design_Soundboard_of_Storytelling/Flammen.html` designs four flame personalities (Hearth, Verdant, Neon, Crimson) on one canvas engine. Hearth's freeze/thaw is in the StartScreen flame (hybrid, `docs/design/imports/animated-flame.md`); the other three belong to the themes.
 **When:** Slice 14 (settings & polish, themes).
 
 ### Settings: reduce motion (animated flame and other animations)
@@ -1347,10 +1347,10 @@ and going unread.
 
 **Deliverables:**
 - Define the role of every design doc locus: `docs/design/design-system.md`, `docs/design/design-system-cheatsheet.md`,
-  `SoS_DESIGN_25052026/` (jsx files + tokens.css), `Responsive_Strategy_V3.html`,
+  `design-sources/2026-05-25/` (jsx files + tokens.css), `Responsive_Strategy_V3.html`,
   `docs/design/design-notes.md`. Each must have a one-sentence "this is for X, source of truth for Y"
   definition.
-- Resolve the `tokens.css` duplication: `SoS_DESIGN_25052026/tokens.css` vs.
+- Resolve the `tokens.css` duplication: `design-sources/2026-05-25/tokens.css` vs.
   `v3/src/styles/tokens.css`. Pick one of three options deliberately: (a) both stay with
   explicit headers explaining the split, (b) design snapshot moves to an archive location,
   (c) design snapshot is removed entirely.
@@ -1411,7 +1411,7 @@ new classes.
    **Source:** Conversation 2026-05-29 — discussed alongside "should the backlog auto-update?"
 
 5. **Fix `sync:tokens` source — read from canonical file, verify all generators consistent:**
-   `sync:tokens` currently reads from `SoS_DESIGN_25052026/tokens.css` (the design handoff
+   `sync:tokens` currently reads from `design-sources/2026-05-25/tokens.css` (the design handoff
    origin, now explicitly marked non-canonical). As a result, `docs/design/design-system.md §A` — which
    should be the source of truth — is generated from the wrong file: it is missing 9 tokens
    added during V3 development (`--flame-soft`, `--flame-aura`, `--grid-cols/gap/rows`,
@@ -1420,7 +1420,7 @@ new classes.
    surface — one layer deeper into tooling.
 
    **Concrete fix:** Change `scripts/sync-tokens-inventory.ts` to read from
-   `v3/src/styles/tokens.css` instead of `SoS_DESIGN_25052026/tokens.css`. Regenerate §A —
+   `v3/src/styles/tokens.css` instead of `design-sources/2026-05-25/tokens.css`. Regenerate §A —
    should show 9 new tokens and correctly exclude `--pix-bg-layer`.
 
    **Broader verification (do at the same time):** Confirm that all `sync:*` generators read

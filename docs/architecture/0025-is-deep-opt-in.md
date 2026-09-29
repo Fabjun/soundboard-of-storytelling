@@ -59,5 +59,5 @@ auf dem iPhone performant zu machen, nicht es wegzulassen.
 
 - **Dateien:** `v3/src/styles/tokens.css` (--pad-edge-light, --pad-edge-dark, --shadow-pad-lift), `v3/src/components/PadGridCell.tsx`
 - **ADRs:** ADR-0021 (CSS-Naming / is-* States), ADR-0024 (clip-path + filter:drop-shadow)
-- **Quelldokumente:** `docs/design/design-notes.md §RESOLVED — DepthPad migration`, `SoS_DESIGN_25052026/v15-pad-depth.jsx`
+- **Quelldokumente:** `docs/design/design-notes.md §RESOLVED — DepthPad migration`, `design-sources/2026-05-25/v15-pad-depth.jsx`
 - **Commits:** `eac8690` — refactor: align slice 1+2 with current design system

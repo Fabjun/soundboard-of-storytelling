@@ -56,4 +56,4 @@ Sprache zwischen Screens und Komponenten.
 
 - **Dateien:** `v3/src/styles/tokens.css` (--night, --deep, --surface, --raised, --top)
 - **ADRs:** ADR-0022 (Design Tokens), ADR-0024 (clip-path + drop-shadow)
-- **Quelldokumente:** `SoS_DESIGN_25052026/HANDOFF.md §4.2`, `CLAUDE.md §Design language §Color palette`
+- **Quelldokumente:** `design-sources/2026-05-25/HANDOFF.md §4.2`, `CLAUDE.md §Design language §Color palette`

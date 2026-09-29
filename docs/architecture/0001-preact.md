@@ -13,7 +13,7 @@ ist ein messbarer Faktor: jedes KB, das über das Netzwerk geladen werden muss,
 verlängert den First-Load. React (~45 KB gzip) und Preact (~3 KB gzip) bieten
 dieselbe JSX-Kompatibilität.
 
-Das Design-System (`SoS_DESIGN_25052026/`) lieferte JSX-Komponenten als
+Das Design-System (`design-sources/2026-05-25/`) lieferte JSX-Komponenten als
 Ausgangsmaterial. Eine JSX-basierte Lösung war daher gesetzt; die Frage war nur,
 welche Laufzeit verwendet wird.
 

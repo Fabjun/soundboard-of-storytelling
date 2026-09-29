@@ -1,7 +1,7 @@
 // ─────────────────────────────────────────────────────────────────────────────
 // ModeToggle — interactive SETUP | GAME toggle with spark animation
 //
-// Source: SoS_DESIGN_25052026/v24-mode-toggle.jsx
+// Source: design-sources/2026-05-25/v24-mode-toggle.jsx
 //
 // Animation model: hammer-strike — sparks spawn at destination half and
 // fly outward in a ~200° fan. ~14 sparks desktop, 8 mobile.

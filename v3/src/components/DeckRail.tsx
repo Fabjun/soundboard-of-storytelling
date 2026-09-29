@@ -1,7 +1,7 @@
 // ─────────────────────────────────────────────────────────────────────────────
 // DeckRail — left deck list panel for BoardScreen
 //
-// Source: SoS_DESIGN_25052026/v21-deck-crud.jsx
+// Source: design-sources/2026-05-25/v21-deck-crud.jsx
 //
 // Features:
 //   - Deck tabs sorted by order

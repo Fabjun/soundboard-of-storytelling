@@ -13,7 +13,7 @@ Diese Farben erscheinen an vielen Stellen: Pad-Spine (linke Leiste), Typ-Pill,
 Mixer-Strip-Border, Bulk-Select-Highlight, Icon-Farbe. Das macht die Farbe zum
 primären semantischen Signal für den Pad-Typ.
 
-`SoS_DESIGN_25052026/HANDOFF.md §4.3` ist explizit: "Don't reuse these colors
+`design-sources/2026-05-25/HANDOFF.md §4.3` ist explizit: "Don't reuse these colors
 for anything else."
 
 > *Die Reservierung ist nicht als explizite Verbots-Regel in einem separaten
@@ -60,5 +60,5 @@ machen. Klar nicht gewählt.
 
 - **Dateien:** `v3/src/styles/tokens.css` (--pad-single, --pad-loop, --pad-playlist, --pad-combo und ihre Varianten)
 - **ADRs:** ADR-0022 (Design Tokens), ADR-0026 (Mode-Toggle Tokens)
-- **Quelldokumente:** `SoS_DESIGN_25052026/HANDOFF.md §4.3`, `CLAUDE.md §Design language §Color code rule`
+- **Quelldokumente:** `design-sources/2026-05-25/HANDOFF.md §4.3`, `CLAUDE.md §Design language §Color code rule`
 - **Commits:** `eac8690` — refactor: align slice 1+2 (--pad-combo Kupfer→Rose Magenta)

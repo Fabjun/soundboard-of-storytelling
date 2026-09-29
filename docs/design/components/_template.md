@@ -84,5 +84,5 @@ Touch target (min. 44 px), contrast, color-independent cues, keyboard access.
 ## Sources
 
 - ADRs: …
-- Design origin: `SoS_DESIGN_25052026/…`
+- Design origin: `design-sources/2026-05-25/…`
 - Decisions: …

@@ -45,9 +45,10 @@
   locally) is a short interim rewrite. **V1 and V2 are prototypes: explore
   them for behavior and ideas, never copy UI/CSS/markup 1:1** — re-implement
   in V3 idiom (`docs/product/README.md §7` P7). Only exception: the audio engine.
-- **`SoS_DESIGN_25052026/`** — design system: tokens, JSX components.
-  **Design folders (`SoS_DESIGN_<DDMMYYYY>/`, repo root):** every Claude Design download
-  goes into its own new dated folder; existing folders are never overwritten. Design
+- **`design-sources/2026-05-25/`** — design system: tokens, JSX components.
+  **Design folders (`design-sources/<YYYY-MM-DD>/`, ISO date — ADR-0050):** every Claude
+  Design download goes into its own new dated folder; existing folders are never
+  overwritten; downloaded file names inside are kept as delivered. Design
   folders are **proposals, not binding** — a design element counts as Decided only once
   confirmed by the user and recorded in a component spec (`docs/design/components/`).
 - **`v1-reference/HANDOFF.md`** — design system handoff document.
@@ -178,7 +179,7 @@ to any → refactor before shipping.
 ### Tokens
 
 Use the design system tokens from `v3/src/styles/tokens.css` (canonical
-source; `SoS_DESIGN_25052026/tokens.css` is the design-handoff reference
+source; `design-sources/2026-05-25/tokens.css` is the design-handoff reference
 and has diverged). Never hardcode colors, fonts, or spacing.
 
 ### Color palette (canonical names from design system)

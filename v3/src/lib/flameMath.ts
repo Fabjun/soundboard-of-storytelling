@@ -3,9 +3,9 @@
 // for <AnimatedFlame /> (hybrid flame).
 //
 // Sources (Claude Design):
-//   • Idle animation — SoS_DESIGN_25052026/v13-animated-flame.jsx (+ V3 additions:
+//   • Idle animation — design-sources/2026-05-25/v13-animated-flame.jsx (+ V3 additions:
 //     core-ring glow, heart flicker)
-//   • Freeze / hold / thaw, particles, glow — SoS_DESIGN_28092026/…/flame-engine.jsx
+//   • Freeze / hold / thaw, particles, glow — design-sources/2026-09-28/…/flame-engine.jsx
 //     and flame-themes.jsx ("Hearth"), values unchanged.
 // Colours are never hardcoded here: the palette is read from design tokens at runtime
 // and passed in. Import record: docs/design/imports/animated-flame.md

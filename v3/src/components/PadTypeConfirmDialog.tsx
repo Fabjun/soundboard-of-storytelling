@@ -1,7 +1,7 @@
 // ─────────────────────────────────────────────────────────────────────────────
 // PadTypeConfirmDialog — type-change confirmation per v23 Option C policy
 //
-// Source: SoS_DESIGN_25052026/v23-pad-type-change.jsx
+// Source: design-sources/2026-05-25/v23-pad-type-change.jsx
 //
 // Shows verdict pill + KEEPS / MIGRATES / DROPS sections.
 // RESET cases get a danger-tinted SWITCH button.

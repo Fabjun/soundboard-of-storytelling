@@ -114,7 +114,7 @@ without colour (current: spine position; to be reviewed). _Further details pendi
 - Product context: [docs/product/README.md §3, §5, §6](../../product/README.md).
 - ADRs: ADR-0027 (pad type colours), ADR-0045 (two-axis adaptive model).
 - Earlier related idea: docs/backlog.md "2b — Library form" (tiles stack details by display size).
-- Design explorations (proposals, not binding): `SoS_DESIGN_25052026/v15-pad-depth.jsx` (depth
+- Design explorations (proposals, not binding): `design-sources/2026-05-25/v15-pad-depth.jsx` (depth
   treatments → current DepthPad), `v17-pad-appearance.jsx` (Settings → pad appearance with live
   preview), `v18-pad-depth-migration.jsx`, `v26-pad-shape.jsx` (square vs. grid-stretched).
   v26 proposed **square** as default — superseded by the card format above. Its mechanism (an

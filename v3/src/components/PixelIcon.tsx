@@ -1,7 +1,7 @@
 // ─────────────────────────────────────────────────────────────────────────────
 // PixelIcon — 16×16 pixel-art icons
 //
-// Sourced from SoS_DESIGN_25052026/foundations.jsx PIXEL_ICONS dictionary.
+// Sourced from design-sources/2026-05-25/foundations.jsx PIXEL_ICONS dictionary.
 // Each icon is a list of "x y" coordinate strings on a 16×16 grid.
 // Rendered as crisp SVG rects — no rasterization, no blur.
 // ─────────────────────────────────────────────────────────────────────────────

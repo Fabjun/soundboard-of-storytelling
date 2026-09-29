@@ -1,7 +1,7 @@
 // ─────────────────────────────────────────────────────────────────────────────
 // BoardTopBarV3 — 3-column header for Board screen
 //
-// Source: SoS_DESIGN_25052026/v24-mode-toggle.jsx BoardTopBarV3
+// Source: design-sources/2026-05-25/v24-mode-toggle.jsx BoardTopBarV3
 //
 // Layout: 1fr (left: flame + breadcrumb) | auto (center: ModeToggle) | 1fr (right: actions)
 // ─────────────────────────────────────────────────────────────────────────────

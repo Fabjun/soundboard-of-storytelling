@@ -11,8 +11,8 @@ StartScreen are unchanged.
 
 | Part | Artifact | Why |
 |---|---|---|
-| **Idle animation** | `SoS_DESIGN_25052026/v13-animated-flame.jsx` `<AnimatedFlame />` (lines 76–407) | Product owner: livelier idle than Hearth |
-| **Freeze / hold / thaw, particles, glow, canvas engine** | `SoS_DESIGN_28092026/Design_Soundboard_of_Storytelling/flame-engine.jsx` + `flame-themes.jsx` → **Hearth** (lines 6–211) | Product owner: better ice transformation — no box or circle, better sparks and steam |
+| **Idle animation** | `design-sources/2026-05-25/v13-animated-flame.jsx` `<AnimatedFlame />` (lines 76–407) | Product owner: livelier idle than Hearth |
+| **Freeze / hold / thaw, particles, glow, canvas engine** | `design-sources/2026-09-28/Design_Soundboard_of_Storytelling/flame-engine.jsx` + `flame-themes.jsx` → **Hearth** (lines 6–211) | Product owner: better ice transformation — no box or circle, better sparks and steam |
 
 The 2026-09-28 v13-only import (SVG) is superseded by this hybrid. Hearth's siblings
 (Verdant, Neon, Crimson) are parked for the themes (BACKLOG, Slice 14).

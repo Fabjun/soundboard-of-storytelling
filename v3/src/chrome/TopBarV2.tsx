@@ -1,7 +1,7 @@
 // ─────────────────────────────────────────────────────────────────────────────
 // TopBarV2 — persistent 48px header used on all screens
 //
-// Source: SoS_DESIGN_25052026/v2-screens.jsx TopBarV2
+// Source: design-sources/2026-05-25/v2-screens.jsx TopBarV2
 // ─────────────────────────────────────────────────────────────────────────────
 
 import type { ComponentChildren, JSX } from 'preact';

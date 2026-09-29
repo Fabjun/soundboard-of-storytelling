@@ -2,7 +2,7 @@
 // LibraryScreen — asset management (Slice 2)
 //
 // Layout: 2-column CSS grid (220px filter rail | 1fr audio list)
-// Source reference: SoS_DESIGN_25052026/v2-screens.jsx LibraryV2
+// Source reference: design-sources/2026-05-25/v2-screens.jsx LibraryV2
 //
 // Slice 2 scope:
 //   - AUDIO tab: fully functional (upload, rename, delete, waveform, search)

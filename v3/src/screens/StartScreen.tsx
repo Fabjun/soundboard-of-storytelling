@@ -1,7 +1,7 @@
 // ─────────────────────────────────────────────────────────────────────────────
 // StartScreen — fire animation + TAP TO UNLOCK entry point
 //
-// Source: SoS_DESIGN_25052026/v2-screens.jsx StartScreen
+// Source: design-sources/2026-05-25/v2-screens.jsx StartScreen
 //
 // Responsibilities:
 //  1. Render the app splash (animated flame, title, tagline)

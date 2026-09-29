@@ -518,7 +518,7 @@ entries short — one paragraph max, link out for longer rationale.*
 
 ## RESOLVED — Slice 1+2 Audit-Pass (2026-05-27)
 
-Token-Drift zwischen `v3/src/styles/tokens.css` und `SoS_DESIGN_25052026/tokens.css`
+Token-Drift zwischen `v3/src/styles/tokens.css` und `design-sources/2026-05-25/tokens.css`
 vollständig beseitigt. Betroffene Dateien:
 
 **`v3/src/styles/tokens.css`**

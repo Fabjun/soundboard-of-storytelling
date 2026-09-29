@@ -1,7 +1,7 @@
 // ─────────────────────────────────────────────────────────────────────────────
 // PadCreationPopover — Path A pad creation (tap an empty slot)
 //
-// Source: SoS_DESIGN_25052026/v20-pad-creation-flow.jsx
+// Source: design-sources/2026-05-25/v20-pad-creation-flow.jsx
 //
 // Slice 3 scope:
 //   - Source modes: RECENT (last 5) + BROWSE (searchable) implemented

@@ -1,7 +1,7 @@
 // ─────────────────────────────────────────────────────────────────────────────
 // StatusBarV2 — fixed bottom bar showing mode, board, and info
 //
-// Source: SoS_DESIGN_25052026/v2-screens.jsx StatusBarV2
+// Source: design-sources/2026-05-25/v2-screens.jsx StatusBarV2
 // ─────────────────────────────────────────────────────────────────────────────
 
 import type { ComponentChildren, JSX } from 'preact';

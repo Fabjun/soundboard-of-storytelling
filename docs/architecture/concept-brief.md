@@ -45,7 +45,7 @@ V1 keeps running. V3.0 is built in parallel until ready.
 - Source of IndexedDB schema and template export/import format
 - Not to be modified
 
-**Design system (`SoS_DESIGN_25052026/`):**
+**Design system (`design-sources/2026-05-25/`):**
 - `tokens.css` — canonical tokens, used directly
 - JSX files (`v2-screens.jsx`, `foundations.jsx`, etc.) — **used as
   starting code**, not as reference. Lift them into V3.0, adapt to
@@ -249,7 +249,7 @@ Re-planned there: Slices 5–8 superseded (numbers not reused); new plan Slices 
 
 ### 5.2 · Using design-system JSX
 
-The JSX files in `SoS_DESIGN_25052026/` are starting material. Approach:
+The JSX files in `design-sources/2026-05-25/` are starting material. Approach:
 
 1. Read the relevant JSX file
 2. Copy the structure into a new TypeScript component
@@ -311,7 +311,7 @@ Ask the user — don't assume — when:
 3. Skim V1 (`v1-reference/index.html`) for orientation.
 4. Slices 1–4 are already implemented — check `v3/src/screens/` to orient on what
    exists. For future slices, relevant design-system JSX files are in
-   `SoS_DESIGN_25052026/` (versioned v2–v26 exploration files).
+   `design-sources/2026-05-25/` (versioned v2–v26 exploration files).
 5. Ask the user which slice to start with. Current next: see `CLAUDE.md §Slice progress`.
 6. Before writing code, summarize back:
    - Scope of the slice
