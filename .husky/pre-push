@@ -14,6 +14,16 @@ if [ -n "$REMOTE_VERSION" ] && [ "$LOCAL_VERSION" = "$REMOTE_VERSION" ]; then
 fi
 printf '✅ Version OK (%s → %s).\n\n' "${REMOTE_VERSION:-neu}" "$LOCAL_VERSION"
 
+printf '🛡  Pre-push: security audit (high/critical blocks)...\n'
+npm audit --audit-level=high || {
+  printf '\n❌ npm audit: high/critical vulnerability — Push abgebrochen.\n'
+  printf '   Details oben. Erst `npm audit fix` (ohne --force) versuchen;\n'
+  printf '   Major-Sprünge einzeln prüfen (BACKLOG "Major dependency updates").\n'
+  printf '   Bewusst überspringen: git push --no-verify\n\n'
+  exit 1
+}
+printf '✅ No high/critical vulnerabilities.\n\n'
+
 printf '📦 Pre-push: bundle size check...\n'
 npm run size || {
   printf '\n❌ Bundle size check FAILED — Push abgebrochen.\n'

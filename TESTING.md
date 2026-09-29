@@ -208,8 +208,10 @@ GitHub Actions unter [`.github/workflows/tests.yml`](.github/workflows/tests.yml
 
 ```
 unit-build-lint
+  ├── npm audit --audit-level=high   (high/critical blockiert)
   ├── npm run build          (tsc + vite)
-  ├── npm run test           (vitest, inkl. Wächter-Test für die E2E-Projekt-Zuordnung)
+  ├── npm run typecheck:scripts   (scripts/*.ts)
+  ├── npm run test:coverage  (vitest inkl. Wächter-Tests + Coverage-Untergrenze)
   ├── npm run lint           (eslint)
   ├── npm run format:check   (prettier)
   ├── npm run size           (size-limit)
@@ -227,8 +229,6 @@ e2e-prod (needs: unit-build-lint)
 
 e2e-full (needs: unit-build-lint)
   └── npm run test:e2e:full    (full in Chromium + full-webkit: Board/Deck/Pad-CRUD + Drag & Drop in der Safari-Engine)
-
-  └── npm run test:e2e:full    (Slices-3+4-Tests in Chromium: CRUD, Audio-Engine)
 ```
 
 Playwright-Reports werden als Artifact hochgeladen (7 Tage, bei Fehler).
@@ -245,6 +245,7 @@ Ablauf dann: siehe [Wackelige Tests (Quarantäne)](#wackelige-tests-quarantäne)
 Husky-Hook führt vor jedem lokalen Commit aus (in dieser Reihenfolge):
 1. `npm run sync:docs` + `git add` (~1s) — Auto-generierte Docs aktualisieren und stagen
 2. `npm run build` (~4s)
+2a. `npm run typecheck:scripts` (~1s) — Typprüfung der Generatoren/Audits in `scripts/` (`scripts/tsconfig.json`; liegen außerhalb von `v3/`, `npm run build` erfasst sie nicht)
 3. lint-staged: Prettier + ESLint auf gestageten Dateien
 4. `npm run test` (~2s) — inkl. Wächter-Test `e2eProjects.test.ts`
 5. `npm run test:e2e:smoke` (~6s, eigener Server auf Port 5199)
@@ -255,6 +256,7 @@ Gesamt ~20s. Schlägt einer der Schritte fehl → Commit wird abgebrochen.
 ### Pre-Push-Hook
 
 1. Versions-Bump-Check (`APP_VERSION` gegenüber `origin/main`)
+1a. `npm audit --audit-level=high` — bekannte Sicherheitslücken der Stufe high/critical blockieren (moderate/low nur Hinweis). Bei Fund: erst `npm audit fix` ohne `--force`; Major-Sprünge einzeln (BACKLOG "Major dependency updates")
 2. `npm run size` — Bundle-Größe
 3. `npm run test:e2e:all` — Smoke, Full, Mobile gegen den Dev-Server
 4. `npm run test:e2e:prod` — Build, dann Smoke, Full und **PWA** gegen den **fertigen Build** (`vite preview`, mit Service Worker)

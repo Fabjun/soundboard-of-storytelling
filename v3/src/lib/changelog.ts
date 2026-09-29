@@ -7,9 +7,16 @@ export type ChangelogEntry = {
   items: string[];
 };
 
-export const APP_VERSION = '3.0.47';
+export const APP_VERSION = '3.0.48';
 
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.48',
+    date: '2026-09-29',
+    items: [
+      'ci: npm audit (high/critical) blocks in CI and pre-push; scripts/*.ts type-checked in pre-commit and CI (T8b)',
+    ],
+  },
   {
     version: '3.0.47',
     date: '2026-09-29',

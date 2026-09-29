@@ -31,6 +31,7 @@
     "sync:classes": "tsx ../scripts/sync-sb-classes-inventory.ts",
     "sync:tokens": "tsx ../scripts/sync-tokens-inventory.ts",
     "sync:tests": "tsx ../scripts/sync-test-inventory.ts",
+    "typecheck:scripts": "tsc -p ../scripts/tsconfig.json",
     "sync:docs": "npm run sync:adr && npm run sync:classes && npm run sync:tokens && npm run sync:tests",
     "link:check": "find .. -name '*.md' -not -path '*/node_modules/*' | xargs markdown-link-check --config .markdown-link-check.json --quiet",
     "audit:inline-styles": "NODE_PATH=./node_modules tsx ../scripts/audit-inline-styles.ts"

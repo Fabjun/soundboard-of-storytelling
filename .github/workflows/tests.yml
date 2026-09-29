@@ -21,9 +21,17 @@ jobs:
         working-directory: v3
         run: npm ci
 
+      - name: Security audit (blocking at high/critical)
+        working-directory: v3
+        run: npm audit --audit-level=high
+
       - name: Build
         working-directory: v3
         run: npm run build
+
+      - name: Type-check scripts/ (doc generators, audits)
+        working-directory: v3
+        run: npm run typecheck:scripts
 
       - name: Unit tests + coverage floor
         working-directory: v3

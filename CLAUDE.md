@@ -408,15 +408,16 @@ Applies to slices, refactors, audit passes, bugfixes — every commit
 without exception:
 
 > **Automatisch erzwungen** (Phase 2 + Doku-Sync): Husky-Pre-Commit-Hook führt
-> sechs Gates in Folge aus und blockt bei Fehler:
+> sieben Gates in Folge aus und blockt bei Fehler:
 > 1. `npm run sync:docs` + `git add` (~1s) — Auto-generierte Docs; Ergebnis wird automatisch gestaged
 > 2. `npm run build` (tsc + vite, ~4s)
+> 2a. `npm run typecheck:scripts` (~1s) — Typprüfung von `scripts/*.ts` (Generatoren/Audits außerhalb von `v3/`)
 > 3. `npx lint-staged` — Prettier + ESLint nur auf gestageten Dateien; auto-fix + re-stage
 > 4. `npm run test` (vitest, ~1s)
 > 5. `npm run test:e2e:smoke` (Chromium + WebKit, ~6s)
 > 6. `npm run link:check` (markdown-link-check, ~1s) — tote interne Links
 >
-> CI führt zusätzlich `format:check`, `lint`, `sync:docs` (+ `git diff --exit-code`) und `link:check` aus.
+> CI führt zusätzlich `npm audit --audit-level=high` (blockierend), `test:coverage` (Coverage-Untergrenze), `format:check`, `lint`, `sync:docs` (+ `git diff --exit-code`) und `link:check` aus.
 >
 > Das manuelle Vorgehen unten bleibt als Baseline dokumentiert.
 > Nach `git clone`: `cd v3 && npm install` aktiviert den Hook automatisch.
@@ -425,9 +426,11 @@ without exception:
 
 > **Automatisch erzwungen**: Husky-Pre-Push-Hook läuft bei `git push` und blockt bei Fehler:
 > 1. **Version-Bump-Check** (~0s) — `APP_VERSION` in `v3/src/lib/changelog.ts` muss sich gegenüber `origin/main` geändert haben (one push = one version bump); übersprungen wenn `origin/main` nicht erreichbar (Erstpush)
-> 2. `npm run size` (~2s) — Bundle-Size-Limit (200 kB JS / 50 kB CSS gzip)
-> 3. `npm run test:e2e:all` (~2.5 min) — alle fünf nicht-visuellen Playwright-Projekte: smoke + smoke-webkit + full + mobile + mobile-chromium; entspricht den drei CI-E2E-Jobs
-> 4. **Nur macOS:** `npm run test:e2e:visual` (~15s) — visuelle Regression
+> 2. `npm audit --audit-level=high` (~2s) — Sicherheitslücken high/critical blockieren
+> 3. `npm run size` (~2s) — Bundle-Size-Limit (200 kB JS / 50 kB CSS gzip)
+> 4. `npm run test:e2e:all` (~3 min) — alle sechs Dev-Server-Projekte: smoke + smoke-webkit + full + full-webkit + mobile + mobile-chromium
+> 5. `npm run test:e2e:prod` — Build, dann smoke + full + pwa gegen den fertigen Build (`vite preview`, Service Worker)
+> 6. **Nur macOS:** `npm run test:e2e:visual` (~15s) — visuelle Regression
 >
 > Schlägt ein Schritt fehl: **erst Fehlerausgabe/Report lesen, dann neu starten** (ein neuer Lauf überschreibt den Report).
 >

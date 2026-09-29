@@ -19,6 +19,14 @@ npm run build || {
 }
 echo "✅ Build passed."
 
+echo "🔎 Pre-commit: type-checking scripts/ (doc generators, audits)..."
+npm run typecheck:scripts || {
+  printf '\n❌ Type-check of scripts/ failed — Commit abgebrochen.\n'
+  printf '   Fehler oben beheben (scripts/*.ts), dann erneut git commit.\n\n'
+  exit 1
+}
+echo "✅ scripts/ type-check passed."
+
 echo "🎨 Pre-commit: running lint-staged (format + lint on staged files)..."
 npx lint-staged || {
   printf '\n❌ lint-staged failed — Commit abgebrochen.\n'

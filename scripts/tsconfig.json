@@ -1,0 +1,22 @@
+{
+  // Type-check for the doc generators and audits in scripts/ (T8b, 2026-09-29).
+  // They live outside v3/, so types and modules resolve from v3/node_modules.
+  // Run: cd v3 && npm run typecheck:scripts
+  "compilerOptions": {
+    "target": "es2023",
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "strict": true,
+    "noEmit": true,
+    "skipLibCheck": true,
+    "allowImportingTsExtensions": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "typeRoots": ["../v3/node_modules/@types"],
+    "types": ["node"],
+    "paths": {
+      "*": ["../v3/node_modules/*"]
+    }
+  },
+  "include": ["*.ts"]
+}
