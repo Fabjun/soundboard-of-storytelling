@@ -1156,6 +1156,12 @@ Pinned by `tests/unit/audio/engine.test.ts` (`test.fails` + a precise current-be
 **When:** decided by the product owner — with Slice 9d (engine step) at the latest, before the
 V1 import (Slice 10) makes real combos usable.
 
+### Major dependency updates (one at a time)
+Pending since 2026-08 (Dependabot PR #15, which failed CI because they were bundled):
+TypeScript 6.0.3 → 7.0.2 (largest — own plan), jsdom 29 → 30, size-limit / @size-limit/file 12 → 13,
+@types/node 24 → 26. Each gets its own step with plan, approval and the full pipeline;
+with the new Dependabot grouping each arrives as a separate PR.
+
 ### Library audio as Blob — Safari Private Browsing (open question)
 Found 2026-09-29 (T6): WebKit in an ephemeral context (Playwright; technically like Safari
 Private Browsing) cannot store **Blobs** in IndexedDB — ArrayBuffers work. V3 stores library
@@ -1178,8 +1184,12 @@ Decided 2026-09-29 after a test-setup analysis. Order is binding; Slice 9c/9d wa
 | T10 | Lint rules against test traps (expect-expect, no-focused, no-skipped incl. fixme, valid-expect) for Vitest + Playwright; Playwright `forbidOnly`; counter-checked (10 lint errors + forbidOnly abort on planted traps) | ✅ Done (see git log: "test: lock test traps…(T10)") |
 | T5 | E2E against the production build (vite preview): smoke + full + new PWA tests (service worker, manifest, offline start, offline data) — in CI (job e2e-prod) and in pre-push; counter-checked (no SW registration → 3 PWA tests red) | ✅ Done (see git log: "test: E2E against the production build…(T5)") |
 | T6 | full-webkit project (board/deck/pad CRUD + drag & drop in the Safari engine; library seeded, playback stays Chromium); coverage floor in CI (69/71/61/67) — both counter-checked | ✅ Done (see git log: "test: full E2E subset in WebKit + coverage floor (T6)") |
-| T7 | Guards in `testGuards.test.ts`: every logic module has a test file (4 justified exemptions; nanoid got a real test); every skip/fixme/todo/fails marker references an existing BACKLOG heading (found and fixed 3 missing/wrong references). TESTING.md test inventory generated (`sync:tests`, part of `sync:docs`, pre-commit + CI). Slice-completion checklist: test review. All counter-checked | this commit |
-| T8 | **First:** clear the existing `npm audit` findings in dev dependencies (high: brace-expansion, browserslist, fast-uri, ip-address, js-yaml; moderate: @vitest/mocker, baseline-browser-mapping, esbuild — seen 2026-09-29; production deps: 0). Then: deploy the **tested** build artifact instead of rebuilding in deploy-pages.yml; weekly scheduled CI run (latest browsers, `npm outdated` report); `npm audit` (high+) blocking in CI; Dependabot for npm + GitHub Actions; lint + type-check `scripts/*.ts` (the doc generators are outside the ESLint scope of v3/) | open |
+| T7 | Guards in `testGuards.test.ts`: every logic module has a test file (4 justified exemptions; nanoid got a real test); every skip/fixme/todo/fails marker references an existing BACKLOG heading (found and fixed 3 missing/wrong references). TESTING.md test inventory generated (`sync:tests`, part of `sync:docs`, pre-commit + CI). Slice-completion checklist: test review. All counter-checked | ✅ Done (see git log: "test: guards for module tests…(T7)") |
+| T8a | Security: `npm audit` 15 findings (9 high, 5 moderate, 1 low — all dev tooling incl. vite/rolldown, which build the shipped bundle) → 0 via `npm audit fix` + vitest trio 4.1.7 → 4.1.11 (GHSA-82fw-gwwq-j7x9); no major jumps, no runtime deps changed; full pipeline green, no visual change. Dependabot: minor/patch grouped, majors as separate PRs | this commit |
+| T8b | `npm audit --audit-level=high` blocking in CI; lint + type-check `scripts/*.ts` | open |
+| T8c | Weekly scheduled CI run on main: full test suite, `npm audit`, `npm outdated` report, warn about Dependabot PRs older than 14 days | open |
+| T8d | Deploy the **tested** build artifact instead of rebuilding in deploy-pages.yml | open |
+| T8e | Close the stale Dependabot PRs #15 (failing since 2026-08-03) and #16 — GitHub action, needs the owner's go-ahead; Dependabot recreates them with the new grouping | open |
 | T9 | GitHub settings by the owner: secret scanning + push protection, Dependabot alerts (instructions from Claude) | open |
 
 ### Re-enable mobile layout tests

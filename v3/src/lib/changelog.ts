@@ -7,9 +7,16 @@ export type ChangelogEntry = {
   items: string[];
 };
 
-export const APP_VERSION = '3.0.46';
+export const APP_VERSION = '3.0.47';
 
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.47',
+    date: '2026-09-29',
+    items: [
+      'chore(security): npm audit 15 → 0 (dev tooling incl. vite/rolldown; vitest 4.1.11); Dependabot groups minor/patch, majors separately (T8a)',
+    ],
+  },
   {
     version: '3.0.46',
     date: '2026-09-29',
