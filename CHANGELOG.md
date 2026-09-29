@@ -4,6 +4,10 @@
 
 All notable changes to Soundboard of Storytelling, newest first.
 
+## 3.0.53 — 2026-09-29
+
+- security: GitHub protections on (Dependabot alerts/updates, secret scanning + push protection, private reporting, protected main, GitHub-owned actions only); SECURITY.md (T9)
+
 ## 3.0.52 — 2026-09-29
 
 - docs: one naming scheme (ADR-0050) — docs in docs/ (lowercase-kebab, hubs README.md), design-sources/<ISO date>, generated CHANGELOG.md, guarded by tests

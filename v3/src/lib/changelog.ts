@@ -7,9 +7,16 @@ export type ChangelogEntry = {
   items: string[];
 };
 
-export const APP_VERSION = '3.0.52';
+export const APP_VERSION = '3.0.53';
 
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.53',
+    date: '2026-09-29',
+    items: [
+      'security: GitHub protections on (Dependabot alerts/updates, secret scanning + push protection, private reporting, protected main, GitHub-owned actions only); SECURITY.md (T9)',
+    ],
+  },
   {
     version: '3.0.52',
     date: '2026-09-29',
