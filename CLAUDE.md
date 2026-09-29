@@ -36,7 +36,8 @@
    of a kind (file and folder names, code identifiers, components, CSS classes, test IDs,
    docs, commit messages) is the minimum:
    - never introduce a second style next to an existing one;
-   - no scheme yet → propose one (ADR) before adding more of that kind;
+   - no scheme yet → propose one (ADR) before adding more of that kind — based on
+     researched current industry standards (name the sources; deviate only with a reason);
    - inconsistency found → report it and plan the clean-up, never extend it;
    - guard schemes with tests where feasible (`testGuards`, `docsGuards`, lint rules).
 3. **Features** — only on top of 1 and 2.
