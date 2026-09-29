@@ -7,9 +7,16 @@ export type ChangelogEntry = {
   items: string[];
 };
 
-export const APP_VERSION = '3.0.42';
+export const APP_VERSION = '3.0.43';
 
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.43',
+    date: '2026-09-29',
+    items: [
+      'test: lint rules against test traps (no assertions, .only, silent skip/fixme, invalid expect); Playwright forbidOnly (T10)',
+    ],
+  },
   {
     version: '3.0.42',
     date: '2026-09-29',

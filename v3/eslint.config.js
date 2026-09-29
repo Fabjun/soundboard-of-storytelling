@@ -7,6 +7,8 @@
 import tsPlugin from '@typescript-eslint/eslint-plugin';
 import tsParser from '@typescript-eslint/parser';
 import hooksPlugin from 'eslint-plugin-react-hooks';
+import vitestPlugin from '@vitest/eslint-plugin';
+import playwrightPlugin from 'eslint-plugin-playwright';
 
 export default [
   // ── Production source ────────────────────────────────────────────────────
@@ -51,12 +53,18 @@ export default [
     },
     plugins: {
       '@typescript-eslint': tsPlugin,
+      vitest: vitestPlugin,
     },
     rules: {
       ...tsPlugin.configs.recommended.rules,
       '@typescript-eslint/no-unused-vars': 'off',
       '@typescript-eslint/no-explicit-any': 'off',
       '@typescript-eslint/consistent-type-imports': 'error',
+      // Test traps (T10, 2026-09-29): tests that pass for the wrong reason.
+      'vitest/expect-expect': 'error', // a test without an assertion always passes
+      'vitest/no-focused-tests': 'error', // .only silently drops every other test
+      'vitest/no-disabled-tests': 'error', // skip only as a visible, justified exception
+      'vitest/valid-expect': 'error', // expect() without matcher / missing await
     },
   },
 
@@ -72,12 +80,23 @@ export default [
     },
     plugins: {
       '@typescript-eslint': tsPlugin,
+      playwright: playwrightPlugin,
     },
     rules: {
       ...tsPlugin.configs.recommended.rules,
       '@typescript-eslint/no-unused-vars': 'off',
       '@typescript-eslint/no-explicit-any': 'off',
       '@typescript-eslint/consistent-type-imports': 'error',
+      // Test traps (T10, 2026-09-29): tests that pass for the wrong reason.
+      // A test without an assertion always passes. Helpers that assert internally are listed.
+      'playwright/expect-expect': [
+        'error',
+        { assertFunctionNames: ['assertTarget', 'assertNoOverflow'] },
+      ],
+      'playwright/no-focused-test': 'error', // .only silently drops every other test
+      // skip AND fixme only as a visible, justified exception (eslint-disable comment + reason)
+      'playwright/no-skipped-test': ['error', { disallowFixme: true }],
+      'playwright/valid-expect': 'error', // expect() without matcher / missing await
     },
   },
 

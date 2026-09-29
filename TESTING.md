@@ -384,6 +384,30 @@ test('beschreibt den Nutzer-Flow in einem Satz', async ({ page }) => {
 - Bei Visual-Regression-Änderung (Slice 8 / Polish): `npm run test:e2e:update-snapshots` lokal ausführen, neue Baseline committen
 - Bei wackeligen Tests: festes Verfahren, siehe unten.
 
+### Automatisch gesperrte Test-Fallen (T10)
+
+ESLint blockiert beim Commit Tests, die aus dem falschen Grund bestehen würden
+(`@vitest/eslint-plugin`, `eslint-plugin-playwright`, Konfiguration in `v3/eslint.config.js`):
+
+| Regel | Verhindert |
+|---|---|
+| `expect-expect` | Test ohne Prüfung — besteht immer. Prüf-Helfer (z. B. `assertTarget`) müssen in `assertFunctionNames` eingetragen werden. |
+| `no-focused-test(s)` | `.only` — alle anderen Tests fallen still weg. Playwright zusätzlich `forbidOnly: true`. |
+| `no-skipped-test` (inkl. `fixme`) / `no-disabled-tests` | stilles Abschalten |
+| `valid-expect` | `expect(x)` ohne Prüfmethode, fehlendes `await` |
+
+Begründete Ausnahme (Quarantäne) nur so — sichtbar, mit Grund:
+```ts
+// eslint-disable-next-line playwright/no-skipped-test -- quarantine: <Grund> (BACKLOG "<Eintrag>")
+test.fixme('…', async () => {});
+```
+Bekannte Fehler im App-Code werden mit Vitest `test.fails` + einem präzisen Test des
+Ist-Verhaltens + BACKLOG-Eintrag festgehalten (Beispiel: `tests/unit/audio/engine.test.ts`).
+
+**Gegenprobe (Pflicht für jeden neuen Test):** den geprüften Code gezielt kaputt machen →
+der Test muss rot werden; danach den Code per Kopie wiederherstellen und mit `git diff`
+prüfen, dass nichts zurückbleibt.
+
 ### Wackelige Tests (Quarantäne)
 
 Ein Test, der mal besteht und mal nicht, ist ein Fehler — im Test oder in der App.

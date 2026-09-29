@@ -66,6 +66,8 @@ export default defineConfig({
   // CI: a test that only passes on retry fails the run (and blocks deploy).
   // Quarantine procedure: TESTING.md §Flaky tests.
   failOnFlakyTests: !!process.env.CI,
+  // A committed test.only would silently drop every other test — always forbidden.
+  forbidOnly: true,
   use: {
     baseURL: TEST_ORIGIN,
     trace: 'on-first-retry',

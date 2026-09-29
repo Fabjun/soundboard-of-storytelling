@@ -26,6 +26,7 @@ const FIXME_REASON =
   'expected to fail these at 390px. ' +
   "See DESIGN_NOTES 'Known limitation: SETUP layout on narrow viewports'.";
 
+// eslint-disable-next-line playwright/no-skipped-test -- quarantine: mobile layout not built yet (Slice 13, CLAUDE.md slice plan)
 test.describe.fixme(FIXME_REASON, () => {
   async function assertNoOverflow(page: Page, locator: Locator, label: string): Promise<void> {
     const vp = page.viewportSize()!;
