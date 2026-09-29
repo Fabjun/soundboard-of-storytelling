@@ -20,8 +20,10 @@
 - **Primary target device**: iPhone + Brave browser + Bluetooth Numpad
   (Logilink ID0212v2)
 - **Secondary**: laptop/desktop
-- **App UI language**: English
-- **Communication language**: German or English
+- **Project language**: **English only** — app UI, code, comments, docs, commit messages,
+  tool/hook/CI messages (user decision 2026-09-29; German legacy text is translated in the
+  structure clean-up, stage 4)
+- **Chat with the user**: German only
 - **Lizenz und Status**: V3 ist ein privates Tool unter "All Rights Reserved"-Lizenz (siehe `LICENSE`). Langfristig potentielles kommerzielles Produkt. Keine Open-Source-Beiträge geplant. Beim Ergänzen von Code sicherstellen, dass keine Open-Source-Lizenzen verletzt werden. Kontakt: soundboard_of_storytelling@pm.me
 
 ---
