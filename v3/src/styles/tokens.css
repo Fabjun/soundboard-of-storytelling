@@ -68,19 +68,18 @@
   --flame-soft: rgba(232, 130, 30, 0.15); /* ambient bg wash (StartScreen radial) */
   --flame-aura: rgba(232, 130, 30, 0.32); /* mid-alpha glow ring                  */
 
-  /* Animated StartScreen flame (AnimatedFlame.tsx) — values 1:1 from v13-animated-flame.jsx */
+  /* Animated StartScreen flame (AnimatedFlame.tsx) — values 1:1 from v13-animated-flame.jsx + Hearth (flame-themes.jsx) */
   --flame-outer: #c46818; /* animated flame — outer pixel layer (warm)   */
   --flame-mid: #e8881e; /* animated flame — mid pixel layer (warm)       */
   --flame-core: #f5c242; /* animated flame — core pixel layer (warm)     */
   --flame-heart: #ffe8a0; /* animated flame — pulsing heart (warm)       */
-  --flame-halo-turn: #9f88e8; /* animated flame — lilac halo at half-frozen */
   --flame-highlight: #ffffff; /* animated flame — sparks, glitter, ice highlights */
-  --flame-smoke: #050404; /* animated flame — sparks cool down into black smoke */
+  --flame-steam: #e2eef4; /* animated flame — translucent steam when frozen / thawing */
+  --ice-glow: #78b4e0; /* animated flame — drop-shadow glow when frozen (warm glow = --flame) */
   --ice-outer: #3f88b8; /* animated flame — outer pixel layer (frozen)   */
   --ice-mid: #5bafd8; /* animated flame — mid layer + cold halo (frozen) */
   --ice-core: #9fd8ee; /* animated flame — core pixel layer (frozen)     */
   --ice-heart: #e8f8ff; /* animated flame — heart (frozen)               */
-  --ice-frost: #9bd2eb; /* animated flame — frost vignette base (alpha computed) */
 
   --blood: #a02828; /* +14% L* over #8b1a1a — readable on dark */
   --blood-bright: #ef7575; /* lifted from #D04545 for small-UI legibility —
@@ -1160,30 +1159,19 @@
   margin-bottom: var(--space-8);
 }
 .sb-animated-flame {
-  /* @inventory: Root of AnimatedFlame (StartScreen) — anchors halo + frost overlays; no text selection, no iOS tap flash, no double-tap zoom on rapid taps. Size + cursor set inline (prop-driven). */
+  /* @inventory: Root of AnimatedFlame (StartScreen) — footprint of the 16×17 flame itself; anchors the larger canvas field. Size set inline (prop-driven). */
   position: relative;
   user-select: none;
   -webkit-user-select: none;
   -webkit-tap-highlight-color: transparent;
-  touch-action: manipulation;
 }
-.sb-animated-flame-halo {
-  /* @inventory: AnimatedFlame radial halo layer — inset, gradient colour and opacity are computed per frame (inline). */
+.sb-animated-flame-canvas {
+  /* @inventory: AnimatedFlame canvas — 32×40-cell field overflowing the flame box (room for sparks, steam, shards); pixelated; no double-tap zoom. Size, offset, cursor and glow filter set inline (computed). */
   position: absolute;
-  pointer-events: none;
-  transition: opacity 0.15s;
-}
-.sb-animated-flame-svg {
-  /* @inventory: AnimatedFlame pixel SVG — block, overflow visible so sparks and the tip extension can leave the viewBox. */
-  position: relative;
   display: block;
-  overflow: visible;
-}
-.sb-animated-flame-frost {
-  /* @inventory: AnimatedFlame frost vignette overlay (visible when cold > 0.3) — gradient alpha computed inline. */
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  touch-action: manipulation;
 }
 .sb-start-title {
   /* @inventory: Layout additions for the sb-display hero title on StartScreen — xl font-size, centered, bottom margin. 1-use. */

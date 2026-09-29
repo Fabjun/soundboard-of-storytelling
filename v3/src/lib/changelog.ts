@@ -7,9 +7,18 @@ export type ChangelogEntry = {
   items: string[];
 };
 
-export const APP_VERSION = '3.0.37';
+export const APP_VERSION = '3.0.38';
 
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.38',
+    date: '2026-09-29',
+    items: [
+      'feat(flame): new ice transformation from the "Hearth" design — frost creeps in from the edge, 4 s frozen, ice shards, steam, melt drips, re-ignite; glow follows the pixel shape (no box, no circle)',
+      'feat(flame): canvas rendering; idle flicker, inner glow and heart flicker kept',
+      'docs(design): Claude Design state of 2026-09-28 added (SoS_DESIGN_28092026)',
+    ],
+  },
   {
     version: '3.0.37',
     date: '2026-09-29',

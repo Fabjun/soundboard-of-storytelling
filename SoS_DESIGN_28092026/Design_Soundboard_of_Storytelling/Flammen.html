@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Animierte Flammen — pro Theme</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&family=Share+Tech+Mono&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="tokens.css" />
+
+  <style>
+    html, body { margin: 0; background: #060410; }
+    body { font-family: var(--font-mono); color: var(--text); -webkit-font-smoothing: antialiased; }
+    * { box-sizing: border-box; }
+
+    .fg { min-height: 100vh; padding: 40px 30px 90px;
+      background: radial-gradient(120% 60% at 50% -10%, #1a1330 0%, transparent 60%), #060410; }
+    .fg-kicker { font-family: var(--font-ui); font-size: 12px; letter-spacing: .26em; text-transform: uppercase; color: var(--gold); }
+    .fg-h1 { font-family: var(--font-display); font-size: 24px; color: var(--gold-bright); text-shadow: 0 0 14px rgba(245,213,122,.28); margin: 12px 0 10px; }
+    .fg-lead { font-size: 13.5px; color: var(--text-dim); line-height: 1.65; max-width: 760px; margin: 0 0 20px; }
+    .fg-lead b { color: var(--text); }
+    .fg-size { display: inline-flex; flex-direction: column; gap: 7px; min-width: 220px; }
+    .fg-size span { display: flex; justify-content: space-between; font-family: var(--font-ui); font-size: 11px; letter-spacing: .12em; color: var(--text-dim); }
+    .fg-size span b { font-family: var(--font-mono); color: var(--gold-bright); font-weight: 400; }
+    .fg-size input { accent-color: var(--gold); }
+    .fg-reduce { font-size: 12px; color: var(--gold); margin-top: 14px; }
+
+    .fg-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 22px; margin-top: 30px; }
+    .fg-card { background: rgba(255,255,255,.02); border: 1px solid var(--border-soft); padding: 20px; display: flex; flex-direction: column; }
+    .fg-card-head { display: flex; align-items: flex-start; justify-content: space-between; }
+    .fg-card-head h3 { margin: 0; font-family: var(--font-ui); font-size: 17px; letter-spacing: .08em; }
+    .fg-sub { font-family: var(--font-mono); font-size: 11px; color: var(--text-mute); letter-spacing: .06em; }
+    .fg-card-head code { font-family: var(--font-mono); font-size: 11px; background: var(--sunk); border: 1px solid var(--border); padding: 1px 6px; }
+
+    .fg-stage { position: relative; display: flex; align-items: center; justify-content: center;
+      min-height: 280px; margin: 14px 0 10px; cursor: pointer; user-select: none; }
+    .fg-tap-hint { position: absolute; bottom: 4px; left: 50%; transform: translateX(-50%);
+      font-family: var(--font-mono); font-size: 10px; letter-spacing: .1em; color: var(--text-mute); opacity: .7; pointer-events: none; }
+
+    .flame-wrap { display: inline-block; line-height: 0; }
+    .flame-canvas { image-rendering: pixelated; image-rendering: crisp-edges; touch-action: none; display: block; }
+    /* per-theme glow */
+    .theme-hearth  .flame-canvas { filter: drop-shadow(0 0 12px rgba(232,130,30,.5)); }
+    .theme-verdant .flame-canvas { filter: drop-shadow(0 0 12px rgba(168,224,99,.4)); }
+    .theme-neon    .flame-canvas { filter: drop-shadow(0 0 14px rgba(255,61,139,.55)); }
+    .theme-crimson .flame-canvas { filter: drop-shadow(0 0 12px rgba(160,40,40,.55)); }
+
+    .fg-notes { border-top: 1px solid var(--border-soft); padding-top: 12px; display: flex; flex-direction: column; gap: 7px; }
+    .fg-notes p { margin: 0; font-size: 12px; color: var(--text-dim); line-height: 1.5; }
+    .fg-notes b { font-family: var(--font-ui); font-size: 10px; letter-spacing: .1em; color: var(--gold); margin-right: 6px; }
+  </style>
+
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel" src="flame-engine.jsx"></script>
+  <script type="text/babel" src="flame-themes.jsx"></script>
+  <script type="text/babel" src="flames-gallery.jsx"></script>
+
+  <style id="__om-edit-overrides"></style>
+</body>
+</html>

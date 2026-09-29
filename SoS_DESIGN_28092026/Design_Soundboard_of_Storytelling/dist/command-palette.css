@@ -1,0 +1,238 @@
+/* ════════════════════════════════════════════════════════════════════
+   dist/command-palette.css — ⌘K palette for jumping anywhere.
+   ─────────────────────────────────────────────────────────────────────
+   Requires tokens.css to be loaded first.
+
+   Markup pattern:
+
+     <div class="cp-overlay" hidden>
+       <div class="cp">
+         <div class="cp__input-row">
+           <span class="cp__search-icon">[svg]</span>
+           <input class="cp__input" type="text" placeholder="…">
+           <span class="cp__count">5 · enter to run</span>
+         </div>
+         <div class="cp__results">
+           <button class="cp__result cp__result--selected">
+             <span class="cp__icon">[svg]</span>
+             <span class="cp__kind">PAD</span>
+             <span class="cp__label">Thunder</span>
+             <span class="cp__meta">F8 · single · 0:03</span>
+             <span class="cp__enter">[svg]</span>
+           </button>
+           …
+         </div>
+         <div class="cp__footer">
+           <span>↑↓ navigate</span>
+           <span>↵ run</span>
+           <span class="cp__esc">esc close</span>
+         </div>
+       </div>
+     </div>
+   ════════════════════════════════════════════════════════════════════ */
+
+/* ── Overlay — dim background, sits on top of everything ───────── */
+.cp-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(8, 8, 26, 0.7);
+  z-index: 9999;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding-top: 14vh;
+  animation: cp-overlay-fade 0.12s ease-out;
+}
+.cp-overlay[hidden] { display: none; }
+
+@keyframes cp-overlay-fade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* ── Palette container ─────────────────────────────────────────── */
+.cp {
+  width: min(560px, 90vw);
+  max-height: 70vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--raised);
+  border: 2px solid var(--gold);
+  box-shadow:
+    inset 0 0 0 1px var(--gold),
+    0 12px 36px rgba(0, 0, 0, 0.6);
+  font-family: var(--font-ui);
+  animation: cp-panel-pop 0.14s ease-out;
+}
+
+@keyframes cp-panel-pop {
+  from { transform: translateY(-6px); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+
+/* ── Input row ─────────────────────────────────────────────────── */
+.cp__input-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--border);
+  background: var(--deep);
+}
+
+.cp__search-icon {
+  display: flex;
+  color: var(--gold);
+}
+.cp__search-icon svg { display: block; }
+
+.cp__input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: 16px;
+  letter-spacing: 0.02em;
+  padding: 0;
+  min-width: 0;
+}
+.cp__input::placeholder {
+  color: var(--text-mute);
+  font-style: italic;
+}
+/* Tabular caret using a custom inset caret would be nice, but the
+   native caret is fine — it inherits from --text. */
+
+.cp__count {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-mute);
+  white-space: nowrap;
+  letter-spacing: 0.04em;
+}
+
+/* ── Results list ──────────────────────────────────────────────── */
+.cp__results {
+  flex: 1;
+  overflow-y: auto;
+  min-height: 0;
+}
+.cp__results::-webkit-scrollbar { width: 6px; }
+.cp__results::-webkit-scrollbar-thumb { background: var(--border); }
+.cp__results::-webkit-scrollbar-track { background: transparent; }
+
+/* Empty state */
+.cp__empty {
+  padding: 28px 14px;
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--text-mute);
+}
+
+/* ── A single result row ───────────────────────────────────────── */
+.cp__result {
+  display: grid;
+  grid-template-columns: 20px 60px 1fr auto 14px;
+  gap: 12px;
+  align-items: center;
+  width: 100%;
+  padding: 9px 14px;
+  background: transparent;
+  border: none;
+  border-left: 2px solid transparent;
+  color: var(--text);
+  font-family: var(--font-ui);
+  font-size: 14px;
+  letter-spacing: 0.02em;
+  text-align: left;
+  cursor: pointer;
+}
+.cp__result + .cp__result { border-top: 1px solid var(--border-soft); }
+
+.cp__result:hover {
+  background: rgba(212, 178, 92, 0.06);
+}
+
+.cp__result--selected {
+  background: var(--top);
+  border-left-color: var(--gold);
+}
+.cp__result--selected .cp__label { color: var(--gold); }
+.cp__result--selected .cp__enter { opacity: 1; }
+
+.cp__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-dim);
+}
+.cp__icon svg { display: block; }
+.cp__result--selected .cp__icon { color: var(--gold); }
+
+.cp__kind {
+  font-family: var(--font-ui);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  color: var(--text-mute);
+  text-transform: uppercase;
+  text-align: left;
+}
+
+.cp__label {
+  font-family: var(--font-ui);
+  font-size: 14px;
+  color: var(--text);
+  letter-spacing: 0.04em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+/* Highlight inside the label — emphasised matched substring */
+.cp__label mark {
+  background: rgba(212, 178, 92, 0.25);
+  color: inherit;
+  padding: 0 1px;
+}
+
+.cp__meta {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-mute);
+  white-space: nowrap;
+  letter-spacing: 0.04em;
+}
+
+.cp__enter {
+  display: flex;
+  align-items: center;
+  color: var(--gold);
+  opacity: 0;
+  transition: opacity 0.08s ease;
+}
+.cp__enter svg { display: block; }
+
+/* ── Per-kind accent on the icon column ───────────────────────── */
+.cp__result[data-kind="pad-single"]   .cp__icon { color: var(--pad-single);   }
+.cp__result[data-kind="pad-loop"]     .cp__icon { color: var(--pad-loop);     }
+.cp__result[data-kind="pad-playlist"] .cp__icon { color: var(--pad-playlist); }
+.cp__result[data-kind="pad-combo"]    .cp__icon { color: var(--pad-combo);    }
+.cp__result[data-kind="scene"]        .cp__icon { color: var(--mode-setup);   }
+.cp__result[data-kind="action"]       .cp__icon { color: var(--gold);         }
+.cp__result[data-kind="setting"]      .cp__icon { color: var(--text-dim);     }
+
+/* ── Footer with keyboard hints ───────────────────────────────── */
+.cp__footer {
+  display: flex;
+  gap: 14px;
+  padding: 7px 14px;
+  border-top: 1px solid var(--border-soft);
+  background: var(--deep);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-mute);
+  letter-spacing: 0.04em;
+}
+.cp__esc { margin-left: auto; }

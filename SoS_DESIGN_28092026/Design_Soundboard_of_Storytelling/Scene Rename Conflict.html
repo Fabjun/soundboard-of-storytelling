@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Scene rename · conflict feedback</title>
+<style>
+/* PREVIEW-ONLY — NOT FOR IMPORT
+   Fallback definitions for the spec tokens actually referenced in the deliverable.
+   Nothing but --token: value; pairs here. */
+:root{
+  --surface:#1a1613;
+  --raised:#211c17;
+  --border-soft:#332b22;
+  --border-strong:#5c4a32;
+  --border-blood:#6e2420;
+  --text:#c9bca8;
+  --text-strong:#f0e6d2;
+  --text-mute:#7a6f5e;
+  --blood:#b23b30;
+  --blood-bright:#d4584a;
+  --space-1:4px;
+  --space-2:8px;
+  --space-3:12px;
+  --radius-md:6px;
+  --font-ui:ui-sans-serif,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --font-mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+  --fs-xs:12px;
+  --fs-sm:14px;
+  --fs-md:16px;
+}
+</style>
+</head>
+<body style="margin:0">
+<div id="root"></div>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+<script type="text/babel">
+/* PREVIEW-ONLY — NOT FOR IMPORT
+   The preview block above may only define tokens, not classes, so the spec layout
+   primitives (sb-*) and the is-italic render are materialized here as inline style so
+   the standalone preview lays out. className stays the production source of truth;
+   production resolves these from DESIGN_SYSTEM.md §5a / §3 and drops everything below. */
+const PRIM = {
+  'sb-row':       {display:'flex',flexDirection:'row',alignItems:'center',gap:'var(--space-2)',minWidth:0},
+  'sb-row-sm':    {display:'flex',flexDirection:'row',alignItems:'center',gap:'var(--space-1)'},
+  'sb-col':       {display:'flex',flexDirection:'column',minHeight:0},
+  'sb-flex-min':  {flex:1,minWidth:0},
+  'sb-flex-trunc':{flex:1,minWidth:0,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'},
+  'is-italic':    {fontStyle:'italic'},
+};
+function prim(...names){ return Object.assign({}, ...names.map(n => PRIM[n] || {})); }
+
+/* ============================================================================
+   DELIVERABLE START — Scene rename rows (4 states across 2 variants)
+   className uses ONLY spec classes (sb-* layout primitives, is-* states).
+   Tokens consumed exclusively as var(--name). Missing component classes are
+   flagged with TODO-CLASS comments — never invented, never inline-faked.
+   (The token-only inline style objects below are the preview-fidelity layer
+   described above; production replaces them with the TODO-CLASS'd classes.)
+   ============================================================================ */
+
+function Ordinal({n}){
+  return (
+    /* TODO-CLASS: scene-ordinal — muted mono index badge sitting before the label */
+    <span style={{fontFamily:'var(--font-mono)',fontSize:'var(--fs-xs)',color:'var(--text-mute)'}}>{n}</span>
+  );
+}
+
+// A resting (non-edit) scene tab — included only as immediate context so the
+// collision hint points at a scene the viewer can actually see.
+function SceneTab({n, name}){
+  return (
+    /* TODO-CLASS: scene-tab — base tab shell (surface fill, soft border, radius, padding, hover/selected affordance) */
+    <div className="sb-row" style={{...prim('sb-row'),
+      background:'var(--surface)', border:'1px solid var(--border-soft)',
+      borderRadius:'var(--radius-md)', padding:'var(--space-2) var(--space-3)'}}>
+      <Ordinal n={n} />
+      <span className="sb-flex-trunc" style={{...prim('sb-flex-trunc'),
+        fontFamily:'var(--font-ui)', fontSize:'var(--fs-md)', color:'var(--text)'}}>{name}</span>
+    </div>
+  );
+}
+
+// Rename row, neutral (editing; name unique). Shared by V1-A and V2-A.
+function RenameRowNeutral({n, value}){
+  return (
+    /* TODO-CLASS: scene-tab — base tab shell, here in edit/focus state (strong border, raised surface) */
+    <div className="sb-row is-active" style={{...prim('sb-row'),
+      background:'var(--raised)', border:'1px solid var(--border-strong)',
+      borderRadius:'var(--radius-md)', padding:'var(--space-2) var(--space-3)'}}>
+      <Ordinal n={n} />
+      {/* TODO-CLASS: scene-rename-input — inline editable label field (transparent fill, inherits tab type, caret only) */}
+      <input className="sb-flex-min" readOnly value={value} style={{...prim('sb-flex-min'),
+        background:'transparent', border:'none', outline:'none',
+        fontFamily:'var(--font-ui)', fontSize:'var(--fs-md)', color:'var(--text-strong)', padding:0}} />
+    </div>
+  );
+}
+
+// Rename row, conflict presentation. Shared by V1-B and V2-B (same skin, different trigger).
+function RenameRowConflict({n, value, conflictName}){
+  return (
+    <div className="sb-col" style={{...prim('sb-col'), gap:'var(--space-1)'}}>
+      {/* TODO-CLASS: scene-tab — base tab shell */}
+      {/* TODO-CLASS: is-conflict — rename-conflict state skin (blood border + left accent + alert mark); not in the closed is-* set, so flagged */}
+      <div className="sb-row is-active" style={{...prim('sb-row'),
+        background:'var(--raised)', border:'1px solid var(--border-blood)',
+        borderLeft:'3px solid var(--blood)', borderRadius:'var(--radius-md)',
+        padding:'var(--space-2) var(--space-3)'}}>
+        <Ordinal n={n} />
+        {/* TODO-CLASS: scene-rename-input */}
+        <input className="sb-flex-min" readOnly value={value} style={{...prim('sb-flex-min'),
+          background:'transparent', border:'none', outline:'none',
+          fontFamily:'var(--font-ui)', fontSize:'var(--fs-md)', color:'var(--text-strong)', padding:0}} />
+        {/* TODO-CLASS: conflict-glyph — blood alert mark anchored to the trailing edge */}
+        <span style={{fontFamily:'var(--font-mono)', fontSize:'var(--fs-sm)', color:'var(--blood-bright)'}}>!</span>
+      </div>
+      {/* TODO-CLASS: scene-conflict-hint — blood helper line beneath the row naming the owning scene */}
+      <div className="sb-row-sm" style={{...prim('sb-row-sm'), paddingLeft:'var(--space-3)'}}>
+        <span style={{fontFamily:'var(--font-ui)', fontSize:'var(--fs-xs)', color:'var(--blood)'}}>Name already used by</span>
+        <span className="is-italic" style={{...prim('is-italic'),
+          fontFamily:'var(--font-ui)', fontSize:'var(--fs-xs)', color:'var(--blood-bright)'}}>{conflictName}</span>
+      </div>
+    </div>
+  );
+}
+
+// A minimal rail slice: the owning neighbour + the row being renamed.
+function Rail({editValue, conflict}){
+  return (
+    <div className="sb-col" style={{...prim('sb-col'), gap:'var(--space-1)'}}>
+      <SceneTab n="07" name="Ambush" />
+      {conflict
+        ? <RenameRowConflict n="12" value={editValue} conflictName="07 · Ambush" />
+        : <RenameRowNeutral n="12" value={editValue} />}
+    </div>
+  );
+}
+
+/* ============================================================================
+   DELIVERABLE END
+   ============================================================================ */
+
+/* PREVIEW-ONLY HARNESS — NOT FOR IMPORT. Demo chrome only (labels, 2×2 grid).
+   Not part of the deliverable; styled with literals, disclosed in the self-audit. */
+function StateCard({caption, children}){
+  return (
+    <div style={{display:'flex',flexDirection:'column',gap:'10px'}}>
+      <div style={{fontFamily:'var(--font-mono)',fontSize:'11px',letterSpacing:'.08em',
+        textTransform:'uppercase',color:'var(--text-mute)'}}>{caption}</div>
+      <div style={{width:'260px'}}>{children}</div>
+    </div>
+  );
+}
+function VariantBlock({title, note, capA, capB, a, b}){
+  return (
+    <section style={{display:'flex',flexDirection:'column',gap:'18px',padding:'24px',
+      background:'#15110e',border:'1px solid var(--border-soft)',borderRadius:'10px'}}>
+      <div>
+        <div style={{fontFamily:'var(--font-ui)',fontSize:'18px',fontWeight:600,color:'var(--text-strong)'}}>{title}</div>
+        <div style={{fontFamily:'var(--font-ui)',fontSize:'13px',color:'var(--text-mute)',
+          marginTop:'5px',maxWidth:'560px',lineHeight:1.5}}>{note}</div>
+      </div>
+      <div style={{display:'flex',gap:'32px',flexWrap:'wrap'}}>
+        <StateCard caption={capA}>{a}</StateCard>
+        <StateCard caption={capB}>{b}</StateCard>
+      </div>
+    </section>
+  );
+}
+function App(){
+  return (
+    <div style={{minHeight:'100vh',background:'#100d0a',padding:'40px',boxSizing:'border-box',
+      display:'flex',flexDirection:'column',gap:'22px',fontFamily:'var(--font-ui)'}}>
+      <header>
+        <h1 style={{margin:0,fontSize:'24px',fontWeight:700,color:'var(--text-strong)'}}>Scene rename · conflict feedback</h1>
+        <p style={{margin:'6px 0 0',fontSize:'13px',color:'var(--text-mute)',maxWidth:'620px',lineHeight:1.5}}>
+          Inline rename in the scene rail (label → text field, commit on Enter / blur). Duplicate
+          names within a board are prevented — two approaches to the collision moment, each shown neutral then colliding.
+        </p>
+      </header>
+      <VariantBlock
+        title="V1 · Live feedback"
+        note="The row validates as you type. My call: while the typed name collides, committing is BLOCKED — Enter and blur are suppressed and the row stays in edit mode until the name is unique again."
+        capA="State A · unique so far"
+        capB="State B · collision (live)"
+        a={<Rail editValue="Tavern Brawl" conflict={false} />}
+        b={<Rail editValue="Ambush" conflict={true} />}
+      />
+      <VariantBlock
+        title="V2 · On-commit reject"
+        note="No checking while typing. The collision surfaces only after a commit attempt (Enter / blur); the row then flips to the conflict presentation and stays editable so the name can be corrected."
+        capA="State A · typing freely"
+        capB="State B · after Enter / blur"
+        a={<Rail editValue="Tavern Br" conflict={false} />}
+        b={<Rail editValue="Ambush" conflict={true} />}
+      />
+    </div>
+  );
+}
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>

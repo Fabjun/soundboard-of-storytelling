@@ -1,0 +1,52 @@
+/* mb-meters.css — Basis + Stile der modularen Pegelanzeigen.
+   Jede Anzeige-Wurzel ist .mtr und füllt ihren Container (skalierbar). */
+
+.mtr { width: 100%; height: 100%; display: block; position: relative; overflow: hidden; }
+
+/* ── Balkenfeld (gemeinsamer Renderer) ──────────────────────────── */
+.mtr-bars { display: flex; align-items: flex-end; gap: 1px; height: 100%; width: 100%; position: relative; }
+.mtr-col { flex: 1 1 0; min-width: 1px; height: 100%; position: relative; display: flex; align-items: flex-end; }
+.mtr-fill { width: 100%; height: 4%; display: block; }
+.mtr-peak { position: absolute; left: 0; right: 0; height: 2px; bottom: 0; display: none; opacity: .85; }
+
+/* 4 — Tip-Highlight (helle Kante an der Balkenspitze) */
+.mtr-tip .mtr-fill { box-shadow: inset 0 2px 0 rgba(255, 255, 255, .5); }
+/* 6 — Basis-Verankerung (dezenter Verlauf am Boden) */
+.mtr-anchor::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 34%;
+  background: linear-gradient(to top, rgba(255, 255, 255, .1), transparent); pointer-events: none; }
+
+/* Blend (Licht) — pro Typ eine Ebene, additiv überlagert */
+.mtr-blend { position: relative; }
+.mtr-blend-layer { position: absolute; inset: 0; mix-blend-mode: screen; }
+/* 5 — Sättigung gegen Ausbleichen beim additiven Mischen */
+.mtr-sat { filter: saturate(1.55); }
+
+/* ── Flow (fluide Flächen, SVG) ─────────────────────────────────── */
+.mtr-flow { position: relative; }
+.mtr-flow-svg { width: 100%; height: 100%; display: block; }
+.mtr-flow .mtr-blend-layer { position: absolute; inset: 0; mix-blend-mode: screen; }
+.mtr-flow-area { fill-opacity: .92; }
+.mtr-flow-top { stroke: rgba(255,255,255,.6); stroke-width: 1.4; }   /* 4 — Tip-Kante */
+.mtr-flow-peak { stroke-width: 1.2; opacity: .7; }                   /* 2 — Peak-Linie */
+.mtr-flow-anchor { -webkit-mask-image: linear-gradient(to top, #000, rgba(0,0,0,.5)); mask-image: linear-gradient(to top, #000, rgba(0,0,0,.5)); } /* 5/6 — Basis dichter */
+
+/* ── Ring / Radial / Stacked (SVG füllt Container) ──────────────── */
+.mtr-ring svg, .mtr-radial svg, .mtr-stacked svg { width: 100%; height: 100%; display: block; }
+.mtr-ring circle { transition: none; }
+
+/* ── LED-Matrix + Particle (Spalten aus Zellen) ─────────────────── */
+.mtr-led, .mtr-particle { display: flex; align-items: stretch; gap: 2px; }
+.mtr-led-col { flex: 1 1 0; display: flex; flex-direction: column-reverse; gap: 1px; min-width: 0; }
+.mtr-led-cell { flex: 1 1 0; display: block; background: rgba(255,255,255,.06); min-height: 1px; }
+.mtr-particle .mtr-led-col { justify-content: stretch; align-items: stretch; gap: 2px; }
+.mtr-particle-dot { flex: 1 1 0; width: 100%; min-height: 2px; border-radius: 50%; display: block; opacity: 0; transform-origin: center; }
+
+/* ── Wave ───────────────────────────────────────────────────────── */
+.mtr-wave .mtr-flow-svg { position: absolute; inset: 0; }
+.mtr-wave { position: relative; }
+
+/* ── Heat-Streifen ──────────────────────────────────────────────── */
+.mtr-heat { display: flex; align-items: stretch; gap: 1px; }
+.mtr-heat-cell { flex: 1 1 0; display: block; }
+
+/* ▒ Platz für deine eigenen Meter-Stile (.mtr-<id>) ▒ */

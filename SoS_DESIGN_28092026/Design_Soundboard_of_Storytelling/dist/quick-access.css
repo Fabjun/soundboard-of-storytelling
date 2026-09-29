@@ -1,0 +1,152 @@
+/* ════════════════════════════════════════════════════════════════════
+   dist/quick-access.css — Quick Access strip for pinned PADs.
+   ─────────────────────────────────────────────────────────────────────
+   A persistent horizontal strip with 4–8 pinned pad chips that DON'T
+   disappear when scenes change. The "always-available stingers".
+
+   Requires tokens.css to be loaded first.
+
+   Markup pattern (one chip per pinned pad):
+
+     <div class="qa-strip">
+       <div class="qa-strip__head">
+         <svg>…</svg> QUICK ACCESS
+       </div>
+       <div class="qa-strip__items">
+         <button class="qa-item qa-item--loop" data-pad-id="…">
+           <span class="qa-item__icon">[svg]</span>
+           <span class="qa-item__name">Heartbeat</span>
+           <span class="qa-item__key">⌘5</span>
+         </button>
+         …
+       </div>
+       <span class="qa-strip__count">6 / 8 pinned</span>
+     </div>
+
+   Reuses the PAD type-spine pattern so the strip reads as a row of
+   "mini-pads pinned to the toolbar".
+   ════════════════════════════════════════════════════════════════════ */
+
+.qa-strip {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  background: var(--deep);
+  border-top: 2px solid var(--gold);
+  border-bottom: 1px solid var(--border);
+}
+
+.qa-strip__head {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-ui);
+  font-size: 11px;
+  color: var(--gold);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  padding-right: 10px;
+  border-right: 1px solid var(--border-soft);
+}
+
+.qa-strip__items {
+  display: flex;
+  gap: 6px;
+  flex: 1;
+  min-width: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.qa-strip__items::-webkit-scrollbar { display: none; }
+
+.qa-strip__count {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-mute);
+  white-space: nowrap;
+  letter-spacing: 0.04em;
+}
+
+/* ── Item — a single pinned pad chip ───────────────────────────── */
+.qa-item {
+  /* Type colour wiring — modifiers below set these */
+  --qa-color: var(--pad-single);
+
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  background: var(--raised);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--qa-color);
+  color: var(--text);
+  font-family: var(--font-ui);
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  white-space: nowrap;
+  /* Same pixel-perfect drop-shadow as PADs — keeps the toolbar tactile */
+  filter: drop-shadow(2px 2px 0 rgba(0,0,0,.55));
+  transition: border-color 0.12s ease, background 0.12s ease;
+}
+
+.qa-item:hover,
+.qa-item:focus-visible {
+  background: var(--top);
+  border-color: var(--qa-color);
+  outline: none;
+}
+
+/* Pressing animates the chip down 1 px and dims the shadow — feels mechanical */
+.qa-item:active {
+  transform: translate(1px, 1px);
+  filter: drop-shadow(1px 1px 0 rgba(0,0,0,.55));
+}
+
+/* Type modifiers — match the PAD palette */
+.qa-item--single   { --qa-color: var(--pad-single);   }
+.qa-item--loop     { --qa-color: var(--pad-loop);     }
+.qa-item--playlist { --qa-color: var(--pad-playlist); }
+.qa-item--combo    { --qa-color: var(--pad-combo);    }
+
+/* Hot — the pinned pad is currently playing */
+.qa-item--hot {
+  border-color: var(--qa-color);
+  filter:
+    drop-shadow(2px 2px 0 rgba(0,0,0,.55))
+    drop-shadow(0 0 4px var(--qa-color));
+}
+.qa-item--hot .qa-item__name { color: var(--qa-color); }
+
+.qa-item__icon { color: var(--qa-color); display: flex; }
+.qa-item__icon svg { display: block; }
+
+.qa-item__name {
+  /* clamp to ~14 chars; longer names get an ellipsis */
+  max-width: 12ch;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.qa-item__key {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-mute);
+  background: var(--sunk);
+  border: 1px solid var(--border-soft);
+  padding: 1px 5px;
+  margin-left: 2px;
+}
+
+/* Empty slot — when the user has fewer than the suggested 4–8 pinned */
+.qa-item--empty {
+  border-style: dashed;
+  border-color: var(--border);
+  color: var(--text-mute);
+  filter: none;
+  cursor: default;
+  background: transparent;
+}
+.qa-item--empty .qa-item__name { font-style: italic; }

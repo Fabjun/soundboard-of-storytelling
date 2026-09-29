@@ -1,0 +1,1626 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Responsive V3 · Strategievorschlag</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Share+Tech+Mono&family=VT323&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="tokens.css">
+
+  <style>
+    /* ── Document shell ─────────────────────────────────────────── */
+    html, body { background: var(--night); margin: 0; padding: 0; }
+    body {
+      font-family: var(--font-mono);
+      color: var(--text);
+      min-height: 100vh;
+    }
+    .doc {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 48px 32px 96px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ── Masthead — matches the v3 topbar voice ────────────────── */
+    .doc-masthead {
+      display: flex; align-items: center; gap: 18px;
+      padding-bottom: 28px;
+      border-bottom: 1px solid var(--border-soft);
+      margin-bottom: 40px;
+    }
+    .doc-masthead .icon-cell {
+      width: 48px; height: 48px;
+      display: flex; align-items: center; justify-content: center;
+      background: var(--top);
+      color: var(--gold);
+      box-shadow: 0 0 16px rgba(245,213,122,.18);
+    }
+    .doc-masthead h1 {
+      margin: 0;
+      font-family: var(--font-ui);
+      font-size: 38px;
+      color: var(--gold-bright);
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      line-height: 1;
+      text-shadow:
+        0 0 4px rgba(245,213,122,.55),
+        0 0 16px rgba(245,213,122,.22);
+    }
+    .doc-masthead .sub {
+      margin-top: 6px;
+      font-family: var(--font-mono);
+      font-size: 13px;
+      color: var(--text-mute);
+      letter-spacing: .04em;
+    }
+    .doc-masthead .ornament {
+      display: inline-block; width: 7px; height: 7px;
+      background: var(--gold-dim);
+      transform: rotate(45deg);
+      margin-left: 8px;
+    }
+
+    /* ── Section scaffold ───────────────────────────────────────── */
+    section.block { margin-bottom: 56px; }
+    .section-head {
+      display: flex; align-items: baseline; gap: 14px;
+      margin-bottom: 18px;
+      padding-bottom: 10px;
+      border-bottom: 1px dashed var(--border-soft);
+    }
+    .section-head .num {
+      font-family: var(--font-display);
+      font-size: 14px;
+      color: var(--flame);
+      letter-spacing: .04em;
+    }
+    .section-head h2 {
+      margin: 0;
+      font-family: var(--font-ui);
+      font-size: 22px;
+      color: var(--gold-bright);
+      letter-spacing: .14em;
+      text-transform: uppercase;
+    }
+    .section-head .tag {
+      margin-left: auto;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-mute);
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    /* ── Prose ──────────────────────────────────────────────────── */
+    .prose p {
+      font-family: var(--font-mono);
+      font-size: 14px;
+      color: var(--text-dim);
+      line-height: 1.55;
+      max-width: 68ch;
+    }
+    .prose strong {
+      color: var(--text);
+      font-weight: 400;
+    }
+    .prose code {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--gold);
+      background: var(--sunk);
+      padding: 1px 6px;
+      border: 1px solid var(--border-soft);
+    }
+
+    /* ── Move cards (Section 1) ─────────────────────────────────── */
+    .moves {
+      display: grid; gap: 14px;
+      grid-template-columns: repeat(3, 1fr);
+    }
+    .move {
+      padding: 18px 18px 20px;
+      background: var(--surface);
+      border: 1px solid var(--border-soft);
+      position: relative;
+    }
+    .move .move-num {
+      position: absolute; top: 12px; right: 14px;
+      font-family: var(--font-display);
+      font-size: 11px;
+      color: var(--gold-dim);
+    }
+    .move h3 {
+      margin: 0 0 8px;
+      font-family: var(--font-ui);
+      font-size: 16px;
+      color: var(--gold-bright);
+      letter-spacing: .10em;
+      text-transform: uppercase;
+    }
+    .move p {
+      margin: 0;
+      font-family: var(--font-mono);
+      font-size: 12.5px;
+      color: var(--text-dim);
+      line-height: 1.5;
+    }
+
+    /* ── Breakpoint table ───────────────────────────────────────── */
+    .bp-table {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--surface);
+      border: 1px solid var(--border-soft);
+    }
+    .bp-table th, .bp-table td {
+      text-align: left;
+      padding: 10px 14px;
+      font-family: var(--font-mono);
+      font-size: 13px;
+      border-bottom: 1px solid var(--border-soft);
+      vertical-align: top;
+    }
+    .bp-table th {
+      font-family: var(--font-ui);
+      font-size: 12px;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--text-mute);
+      background: var(--deep);
+    }
+    .bp-table tr:last-child td { border-bottom: none; }
+    .bp-table .token {
+      font-family: var(--font-display);
+      font-size: 11px;
+      color: var(--gold);
+      letter-spacing: .04em;
+    }
+    .bp-table .px {
+      font-family: var(--font-mono);
+      color: var(--text);
+    }
+    .bp-table .device { color: var(--text-dim); }
+    .bp-table .swatch {
+      display: inline-block;
+      width: 8px; height: 8px;
+      background: var(--flame);
+      margin-right: 8px;
+    }
+    .bp-table tr td:first-child .swatch { background: var(--mode-setup); }
+    .bp-table tr:nth-child(2) td:first-child .swatch { background: var(--pad-loop); }
+    .bp-table tr:nth-child(3) td:first-child .swatch { background: var(--gold); }
+    .bp-table tr:nth-child(4) td:first-child .swatch { background: var(--flame); }
+    .bp-table tr:nth-child(5) td:first-child .swatch { background: var(--pad-playlist); }
+
+    /* ── Per-screen matrix ──────────────────────────────────────── */
+    .matrix {
+      display: grid;
+      grid-template-columns: 130px repeat(5, 1fr);
+      background: var(--surface);
+      border: 1px solid var(--border-soft);
+      font-family: var(--font-mono);
+      font-size: 12.5px;
+    }
+    .matrix > div {
+      padding: 10px 12px;
+      border-right: 1px solid var(--border-soft);
+      border-bottom: 1px solid var(--border-soft);
+      color: var(--text-dim);
+      line-height: 1.4;
+    }
+    .matrix > div:nth-child(6n) { border-right: none; }
+    .matrix .h {
+      font-family: var(--font-ui);
+      font-size: 12px;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--gold);
+      background: var(--deep);
+    }
+    .matrix .row-h {
+      font-family: var(--font-ui);
+      font-size: 13px;
+      letter-spacing: .10em;
+      text-transform: uppercase;
+      color: var(--text);
+      background: var(--top);
+    }
+
+    /* ── Sketches — mini layouts ────────────────────────────────── */
+    .sketches { display: flex; flex-direction: column; gap: 22px; }
+    .sketch-row {
+      display: flex; align-items: flex-end; gap: 18px;
+    }
+    .sketch-row .label {
+      flex: 0 0 110px;
+      padding-bottom: 8px;
+    }
+    .sketch-row .label .token {
+      font-family: var(--font-display);
+      font-size: 12px;
+      color: var(--gold);
+      letter-spacing: .04em;
+    }
+    .sketch-row .label .device {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-mute);
+      margin-top: 4px;
+    }
+    .sketch {
+      background: var(--deep);
+      border: 1px solid var(--border-soft);
+      display: flex; flex-direction: column;
+      position: relative;
+      flex-shrink: 0;
+    }
+    .sketch .topbar {
+      height: 14px;
+      background: var(--top);
+      border-bottom: 1px solid var(--border-soft);
+      display: flex; align-items: center;
+      padding: 0 5px;
+      gap: 4px;
+    }
+    .sketch .topbar::before {
+      content: "";
+      width: 6px; height: 6px;
+      background: var(--flame);
+    }
+    .sketch .topbar::after {
+      content: "";
+      width: 30px; height: 4px;
+      background: var(--gold-bright);
+      opacity: .7;
+    }
+    .sketch .body { display: flex; flex: 1; min-height: 0; }
+    .sketch .rail {
+      background: var(--deep);
+      border-right: 1px solid var(--border-soft);
+      flex-shrink: 0;
+    }
+    .sketch .rail.r { border-right: none; border-left: 1px solid var(--border-soft); }
+    .sketch .main {
+      flex: 1;
+      background: var(--surface);
+      padding: 4px;
+      display: grid;
+      gap: 3px;
+    }
+    .sketch .pad {
+      background: var(--raised);
+      border-left: 2px solid var(--gold-dim);
+    }
+    .sketch .pad.hot {
+      background: var(--gold);
+      border-left-color: var(--gold-bright);
+    }
+    .sketch .pad.loop { border-left-color: var(--mode-setup); }
+    .sketch .statusbar {
+      height: 8px;
+      background: var(--deep);
+      border-top: 1px solid var(--border-soft);
+    }
+    .sketch .annex {
+      background: var(--night);
+      border-left: 1px solid var(--gold-dim);
+      flex-shrink: 0;
+      position: relative;
+      overflow: hidden;
+    }
+    .sketch .annex::before {
+      content: "";
+      position: absolute; inset: 0;
+      background: radial-gradient(circle at 50% 70%, rgba(232,130,30,.32) 0%, transparent 60%);
+    }
+    .sketch .annex::after {
+      content: "";
+      position: absolute; bottom: 18%; left: 50%;
+      width: 6px; height: 6px;
+      background: var(--flame);
+      transform: translateX(-50%);
+      box-shadow: 0 0 6px var(--flame);
+    }
+    .sketch .drawer-handle {
+      position: absolute; top: 50%; left: -1px;
+      width: 3px; height: 18px;
+      background: var(--gold);
+      transform: translateY(-50%);
+    }
+    .sketch .sheet {
+      position: absolute; bottom: 8px; left: 0; right: 0;
+      height: 16px;
+      background: var(--top);
+      border-top: 1px solid var(--gold-dim);
+    }
+
+    .sketch-note {
+      flex: 1;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--text-mute);
+      line-height: 1.5;
+      padding-bottom: 4px;
+      max-width: 38ch;
+    }
+    .sketch-note .hl { color: var(--text-dim); }
+
+    /* ── Atmosphere visualisation ───────────────────────────────── */
+    .atmo {
+      background: var(--night);
+      border: 1px solid var(--border-soft);
+      padding: 18px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+      position: relative;
+      overflow: hidden;
+    }
+    .atmo::before {
+      content: "";
+      position: absolute; inset: 0;
+      background:
+        radial-gradient(60% 50% at 50% 110%, rgba(232,130,30,.18) 0%, transparent 60%),
+        radial-gradient(120% 70% at 50% -10%, var(--glow-radial, rgba(132,116,180,.10)) 0%, transparent 65%);
+      pointer-events: none;
+    }
+    .atmo .col { position: relative; z-index: 1; }
+    .atmo h4 {
+      margin: 0 0 8px;
+      font-family: var(--font-ui);
+      font-size: 13px;
+      letter-spacing: .12em;
+      color: var(--gold-bright);
+      text-transform: uppercase;
+    }
+    .atmo p {
+      margin: 0 0 10px;
+      font-family: var(--font-mono);
+      font-size: 12.5px;
+      color: var(--text-dim);
+      line-height: 1.5;
+    }
+    .atmo ul {
+      margin: 0; padding: 0; list-style: none;
+      font-family: var(--font-mono);
+      font-size: 12.5px;
+      color: var(--text-dim);
+      line-height: 1.5;
+    }
+    .atmo li::before {
+      content: "▸";
+      color: var(--gold-dim);
+      margin-right: 8px;
+    }
+
+    /* ── Primitives list ────────────────────────────────────────── */
+    .primitives {
+      display: grid;
+      gap: 12px;
+      grid-template-columns: repeat(2, 1fr);
+    }
+    .prim {
+      padding: 14px 16px;
+      background: var(--surface);
+      border-left: 2px solid var(--gold-dim);
+    }
+    .prim code {
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--gold);
+      background: var(--sunk);
+      padding: 2px 6px;
+      margin-bottom: 6px;
+      border: 1px solid var(--border-soft);
+    }
+    .prim p {
+      margin: 0;
+      font-family: var(--font-mono);
+      font-size: 12.5px;
+      color: var(--text-dim);
+      line-height: 1.45;
+    }
+
+    /* ── Footer ─────────────────────────────────────────────────── */
+    .doc-footer {
+      margin-top: 56px;
+      padding-top: 18px;
+      border-top: 1px solid var(--border-soft);
+      display: flex; justify-content: space-between;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-mute);
+    }
+
+    /* Scanlines bleed across the whole doc background — atmosphere
+       is part of the proposal, not an applied frame. */
+    body::before {
+      content: "";
+      position: fixed; inset: 0;
+      pointer-events: none;
+      background:
+        repeating-linear-gradient(180deg, rgba(255,255,255,0) 0 2px, rgba(0,0,0,.18) 2px 3px),
+        radial-gradient(80% 60% at 50% 110%, rgba(232,130,30,.06) 0%, transparent 60%);
+      z-index: 0;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="doc">
+
+    <!-- ═══ Masthead ════════════════════════════════════════════════ -->
+    <header class="doc-masthead">
+      <div class="icon-cell">
+        <!-- Inline lantern/breakpoint glyph (CSS only, no SVG library needed) -->
+        <div style="width:22px;height:22px;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);gap:2px;">
+          <span style="background:var(--gold-bright)"></span>
+          <span style="background:var(--gold)"></span>
+          <span style="background:var(--gold-dim)"></span>
+          <span style="background:var(--gold)"></span>
+          <span style="background:var(--flame)"></span>
+          <span style="background:var(--gold-dim)"></span>
+          <span style="background:var(--gold-dim)"></span>
+          <span style="background:var(--gold-dim)"></span>
+          <span style="background:var(--gold-dim);opacity:.5"></span>
+        </div>
+      </div>
+      <div>
+        <h1>Responsive V3<span class="ornament" aria-hidden="true"></span></h1>
+        <div class="sub">Strategievorschlag · Phone → Large Monitor · Slice 8 Polish</div>
+      </div>
+    </header>
+
+    <!-- ═══ 0 · Intro ═══════════════════════════════════════════════ -->
+    <section class="block prose">
+      <p>
+        Aktuell sind die Artboards auf eine Mid-Size-Anzeige (~1280×800) optimiert.
+        Damit V3 sich auf jedem Bildschirm <strong>natürlich angefühlt</strong> anfühlt
+        — nicht wie ein UI-Inselchen auf 27″ und nicht wie ein gequetschtes
+        Tablet-Layout am Phone — schlage ich drei architektonische Züge vor,
+        eine schlanke 5er-Breakpoint-Skala, und eine separate Behandlung der
+        Atmosphäre auf großen Bildschirmen.
+      </p>
+    </section>
+
+    <!-- ═══ 1 · Drei Züge ═══════════════════════════════════════════ -->
+    <section class="block">
+      <div class="section-head">
+        <span class="num">01</span>
+        <h2>Drei architektonische Züge</h2>
+        <span class="tag">Philosophie</span>
+      </div>
+
+      <div class="moves">
+
+        <div class="move">
+          <span class="move-num">I</span>
+          <h3>Fluid Main, Fixed Rails</h3>
+          <p>
+            Linke und rechte Spalten behalten ihre intrinsische Breite
+            (<code>min-content</code> / fixer Wert). Nur die mittlere Spalte
+            ist fluid. So fließt jeder Pixel zusätzlicher Bildschirmbreite
+            direkt in den Pad-/File-Bereich — nie in dekoratives Padding.
+          </p>
+        </div>
+
+        <div class="move">
+          <span class="move-num">II</span>
+          <h3>Dichte vor Geräte­klasse</h3>
+          <p>
+            Innerhalb der Hauptfläche zählt nicht "Phone vs. Desktop",
+            sondern "wie viele Pads/Tiles passen rein". Mit
+            <code>auto-fill</code> + <code>minmax()</code> skaliert die
+            Anzahl der Spalten fließend — kein Hart-Umspringen bei
+            Breakpoint-Grenzen. Library macht das bereits.
+          </p>
+        </div>
+
+        <div class="move">
+          <span class="move-num">III</span>
+          <h3>Atmosphärischer Annex</h3>
+          <p>
+            Ab <code>≥1600px</code> erscheint rechts eine vierte Spalte
+            mit kontextueller Ambient-Funktion (Szenen-Uhr, Lantern-State,
+            Recent Sounds). Sie ist <em>nicht</em> dekoratives Padding —
+            sie hat Inhalte und füllt die Fläche organisch.
+          </p>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ═══ 2 · Breakpoints ═════════════════════════════════════════ -->
+    <section class="block">
+      <div class="section-head">
+        <span class="num">02</span>
+        <h2>Breakpoints</h2>
+        <span class="tag">5 Stufen · benannt</span>
+      </div>
+
+      <table class="bp-table">
+        <thead>
+          <tr>
+            <th>Token</th>
+            <th>Bereich</th>
+            <th>Geräte­klasse</th>
+            <th>Layout-Modus</th>
+            <th>Container-Query alias</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="swatch"></span><span class="token">xs</span></td>
+            <td class="px">≤ 480 px</td>
+            <td class="device">Phone (portrait)</td>
+            <td>Single column · Drawer/Sheet UI</td>
+            <td><code>@container (max-width: 480px)</code></td>
+          </tr>
+          <tr>
+            <td><span class="swatch"></span><span class="token">sm</span></td>
+            <td class="px">481 – 768 px</td>
+            <td class="device">Phone (landscape) · Mini-Tablet</td>
+            <td>Single column · Hybrid sheets</td>
+            <td><code>@container (max-width: 768px)</code></td>
+          </tr>
+          <tr>
+            <td><span class="swatch"></span><span class="token">md</span></td>
+            <td class="px">769 – 1199 px</td>
+            <td class="device">Tablet · Schmaler Laptop</td>
+            <td>2-Spalten · Eine Rail collapsed</td>
+            <td><code>@container (min-width: 769px)</code></td>
+          </tr>
+          <tr>
+            <td><span class="swatch"></span><span class="token">lg</span></td>
+            <td class="px">1200 – 1599 px</td>
+            <td class="device">Laptop · Standard-Desktop</td>
+            <td>3-Spalten · Vollausstattung <em>(heutiger Stand)</em></td>
+            <td><code>@container (min-width: 1200px)</code></td>
+          </tr>
+          <tr>
+            <td><span class="swatch"></span><span class="token">xl</span></td>
+            <td class="px">≥ 1600 px</td>
+            <td class="device">Desktop · Großmonitor · 4K</td>
+            <td>3-Spalten + atmosphärischer Annex</td>
+            <td><code>@container (min-width: 1600px)</code></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="prose" style="margin-top:14px">
+        <p>
+          Empfehlung: <strong>Container-Queries statt Media-Queries</strong>.
+          Das macht jede Screen-Komponente unabhängig vom Viewport —
+          wichtig sobald Board, Library oder ein Editor in einem
+          Split-Pane, Sidebar oder Modal sitzen.
+        </p>
+      </div>
+    </section>
+
+    <!-- ═══ 3 · Per-Screen Matrix ═══════════════════════════════════ -->
+    <section class="block">
+      <div class="section-head">
+        <span class="num">03</span>
+        <h2>Pro Screen · Verhalten</h2>
+        <span class="tag">Layout-Matrix</span>
+      </div>
+
+      <div class="matrix">
+        <div class="h"></div>
+        <div class="h">xs</div>
+        <div class="h">sm</div>
+        <div class="h">md</div>
+        <div class="h">lg</div>
+        <div class="h">xl</div>
+
+        <div class="row-h">Board</div>
+        <div>1 Spalte · Scenes als <strong>Top-Drawer</strong> · Pad-Grid 2-spaltig · Inspector als <strong>Bottom-Sheet</strong> · Top-Bar icon-only</div>
+        <div>1 Spalte · Pad-Grid 3-spaltig · Inspector als <strong>Side-Sheet</strong> · Scenes als Top-Drawer</div>
+        <div>2 Spalten · Pad-Grid + Inspector permanent · Scenes als Top-Drawer (☰)</div>
+        <div>3 Spalten · Scenes · Pads · Inspector · alle Rails sichtbar</div>
+        <div>3 + Annex · Scene-Clock + Recent in vierter Rail</div>
+
+        <div class="row-h">Library</div>
+        <div>1 Spalte · Categories als <strong>Top-Drawer</strong> · ROWS-View forced · Preview als <strong>Bottom-Sheet</strong></div>
+        <div>1 Spalte · GRID-View 2-spaltig · Preview als <strong>Side-Sheet</strong></div>
+        <div>2 Spalten · Categories-Rail + Center · Preview als Side-Sheet on demand</div>
+        <div>3 Spalten · Heutiger Aufbau · GRID auto-fill ~4 Spalten</div>
+        <div>3 Spalten · GRID auto-fill ~6+ Spalten · Tag-Cloud aufklappbar</div>
+
+        <div class="row-h">PAD Editor</div>
+        <div><strong>Full-Screen-Modal</strong> · Waveform oben · Inspector als Akkordeon · Save/Cancel im Top-Bar</div>
+        <div><strong>Full-Screen-Modal</strong> · Waveform größer · Inspector scrollbar</div>
+        <div>2 Spalten · Canvas + Inspector schmal</div>
+        <div>2 Spalten · heutiger Aufbau</div>
+        <div>2 Spalten · Canvas wächst · Inspector fix · Annex zeigt linked-pads</div>
+
+        <div class="row-h">Combo Editor</div>
+        <div><strong>Full-Screen-Modal</strong> · Step-Liste vertikal · Inspector als Akkordeon</div>
+        <div><strong>Full-Screen-Modal</strong> · Step-Liste horizontal scrollbar</div>
+        <div>2 Spalten · Step-Chain + Inspector</div>
+        <div>2 Spalten · heutiger Aufbau</div>
+        <div>2 Spalten + Annex · Preview-Timeline und Audio-Bus-Map</div>
+
+        <div class="row-h">Settings</div>
+        <div>Menü als <strong>Top-Drawer</strong> · gewählter Bereich als <strong>Full-Screen-Modal</strong></div>
+        <div>Stack · Menü oben · Panel darunter</div>
+        <div>2 Spalten · Menü-Rail + Panel</div>
+        <div>2 Spalten · heutiger Aufbau · weiter Panel</div>
+        <div>2 Spalten · Panel zentriert mit Max-Width 720px · Atmosphäre rechts/links</div>
+
+        <div class="row-h">Start</div>
+        <div>Flame zentriert · Glow füllt Viewport · CTA full-width</div>
+        <div>Flame größer · Glow stärker</div>
+        <div>Flame zentriert · Tagline darunter · Atmosphäre full-bleed</div>
+        <div>Heutiger Aufbau</div>
+        <div>Flame skaliert mit <code>min(40vmin, 280px)</code> · Atmosphäre bleibt zentriert</div>
+      </div>
+    </section>
+
+    <!-- ═══ 4 · Atmosphäre ══════════════════════════════════════════ -->
+    <section class="block">
+      <div class="section-head">
+        <span class="num">04</span>
+        <h2>Atmosphäre auf großen Bildschirmen</h2>
+        <span class="tag">Annex-Konzept</span>
+      </div>
+
+      <div class="prose" style="margin-bottom:16px">
+        <p>
+          Der Knackpunkt bei XL-Schirmen ist <strong>nicht "wie zentrieren
+          wir die UI"</strong>, sondern <strong>"wie nutzen wir den Platz
+          ohne ihn zu blähen"</strong>. Ich schlage einen zweistufigen
+          Ansatz vor:
+        </p>
+      </div>
+
+      <div class="atmo">
+        <div class="col">
+          <h4>Stufe A · Hintergrund-Atmosphäre <span style="color:var(--text-mute);font-size:11px;letter-spacing:.04em;text-transform:none">(immer aktiv)</span></h4>
+          <p>
+            Der <code>--night</code>-Untergrund mit Scanlines und einer
+            warm-orangenen Radial-Glow vom unteren Bildschirmrand läuft
+            über die gesamte Viewport-Breite — auch hinter der App-Chrome.
+            Auf xs–lg ist das fast unsichtbar; auf xl wird es Teil der Bühne.
+          </p>
+          <ul>
+            <li>Scanlines: <code>repeating-linear-gradient</code>, fix</li>
+            <li>Flame-Radial: <code>radial-gradient at 50% 110%</code></li>
+            <li>Ember-Particles: optional <code>@media (prefers-reduced-motion: no-preference)</code></li>
+          </ul>
+        </div>
+        <div class="col">
+          <h4>Stufe B · Funktionaler Annex <span style="color:var(--text-mute);font-size:11px;letter-spacing:.04em;text-transform:none">(ab xl)</span></h4>
+          <p>
+            Rechte vierte Spalte (~ 260 px), nur auf <code>xl</code>.
+            Bewusst auf <strong>zwei</strong> konkrete Bausteine reduziert,
+            die beide schon im System verankert sind:
+          </p>
+          <ul>
+            <li><strong>SCENE CLOCK</strong> · spiegelt aktives Board-Theme
+              (PocketWatch · StandingClock · DigitalClock · GothicClock aus
+              <code>v10-clock-themes.jsx</code>)</li>
+            <li><strong>RECENT</strong> · letzte 5–8 abgespielte Pads mit
+              Timestamp · neue Mini-Komponente, baut auf <code>sb-menu-row</code></li>
+          </ul>
+          <p style="margin-top:10px;font-size:11.5px;color:var(--text-mute)">
+            Lantern-State und Breath-Indikator <em>nicht</em> Teil von V1 —
+            beides braucht separate konzeptionelle Klärung.
+          </p>
+        </div>
+      </div>
+
+      <div class="prose" style="margin-top:14px">
+        <p>
+          Wichtig: der Annex ist <strong>nicht Settings-getrieben</strong>,
+          sondern <em>responsive</em>. Wer ein 27″-Display nutzt, kriegt
+          die zusätzliche Bühne; wer sein Fenster verkleinert, kommt
+          fließend zurück in den 3-Spalten-Modus.
+        </p>
+      </div>
+
+      <!-- Konkrete Annex-Komposition ─────────────────────────────── -->
+      <div style="margin-top:28px">
+        <div style="display:flex;align-items:baseline;gap:10px;margin-bottom:14px">
+          <span style="font-family:var(--font-display);font-size:12px;color:var(--flame);letter-spacing:.04em">04 · A</span>
+          <h3 style="margin:0;font-family:var(--font-ui);font-size:16px;color:var(--gold-bright);letter-spacing:.12em;text-transform:uppercase">Annex-Komposition · Beispiel</h3>
+        </div>
+
+        <div style="display:grid;grid-template-columns:260px 1fr;gap:24px;align-items:start">
+
+          <!-- Annex-Visualisierung — nahe am echten Look -->
+          <div style="background:var(--night);border:1px solid var(--gold-dim);position:relative;overflow:hidden;padding:14px 14px 18px;font-family:var(--font-mono)">
+            <div style="position:absolute;inset:0;background:radial-gradient(80% 60% at 50% 110%, rgba(232,130,30,.18) 0%, transparent 60%);pointer-events:none"></div>
+
+            <!-- SCENE CLOCK panel -->
+            <div style="position:relative;z-index:1">
+              <div style="display:flex;align-items:baseline;gap:8px;padding-bottom:8px;border-bottom:1px solid var(--border-soft);margin-bottom:14px">
+                <span style="font-family:var(--font-ui);font-size:11px;letter-spacing:.14em;color:var(--gold);text-transform:uppercase">Scene Clock</span>
+                <span style="margin-left:auto;font-size:10px;color:var(--text-mute)">HEARTH</span>
+              </div>
+
+              <!-- Pocket-watch placeholder — concentric pixel-circles -->
+              <div style="display:flex;justify-content:center;margin-bottom:10px">
+                <div style="position:relative;width:110px;height:110px">
+                  <div style="position:absolute;inset:0;border:2px solid var(--gold-dim);border-radius:50%"></div>
+                  <div style="position:absolute;inset:6px;border:1px solid var(--gold);border-radius:50%;background:var(--sunk)"></div>
+                  <!-- 12 hour marks via radial pseudo-dots -->
+                  <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center">
+                    <span style="font-family:var(--font-display);font-size:12px;color:var(--gold-bright);text-shadow:0 0 6px rgba(245,213,122,.55)">02:14</span>
+                  </div>
+                  <!-- hour hand -->
+                  <div style="position:absolute;top:50%;left:50%;width:2px;height:30px;background:var(--gold-bright);transform-origin:top center;transform:translate(-50%,0) rotate(45deg);box-shadow:0 0 4px rgba(245,213,122,.7)"></div>
+                  <!-- minute hand -->
+                  <div style="position:absolute;top:50%;left:50%;width:2px;height:42px;background:var(--gold);transform-origin:top center;transform:translate(-50%,0) rotate(170deg)"></div>
+                  <!-- center pin -->
+                  <div style="position:absolute;top:50%;left:50%;width:6px;height:6px;background:var(--flame);transform:translate(-50%,-50%);box-shadow:0 0 6px var(--flame)"></div>
+                </div>
+              </div>
+              <div style="text-align:center;font-size:10px;color:var(--text-mute);letter-spacing:.04em">SESSION · 02h 14min</div>
+            </div>
+
+            <!-- divider -->
+            <div style="height:1px;background:var(--border-soft);margin:18px 0;position:relative;z-index:1"></div>
+
+            <!-- RECENT panel -->
+            <div style="position:relative;z-index:1">
+              <div style="display:flex;align-items:baseline;gap:8px;padding-bottom:8px;margin-bottom:8px">
+                <span style="font-family:var(--font-ui);font-size:11px;letter-spacing:.14em;color:var(--gold);text-transform:uppercase">Recent</span>
+                <span style="margin-left:auto;font-size:10px;color:var(--text-mute)">LAST 5</span>
+              </div>
+
+              <div style="display:flex;flex-direction:column;gap:3px">
+                <!-- Each row mirrors sb-menu-row but in a compact form -->
+                <div style="display:flex;align-items:center;gap:8px;padding:5px 8px;background:var(--top);border-left:2px solid var(--gold)">
+                  <span style="width:6px;height:6px;background:var(--mode-setup);flex-shrink:0"></span>
+                  <span style="font-family:var(--font-ui);font-size:11px;color:var(--text);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:.04em">RAIN HEAVY</span>
+                  <span style="font-size:9px;color:var(--text-mute)">just now</span>
+                </div>
+                <div style="display:flex;align-items:center;gap:8px;padding:5px 8px;background:var(--raised)">
+                  <span style="width:6px;height:6px;background:var(--gold);flex-shrink:0"></span>
+                  <span style="font-family:var(--font-ui);font-size:11px;color:var(--text-dim);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:.04em">SWORD CLASH</span>
+                  <span style="font-size:9px;color:var(--text-mute)">2m</span>
+                </div>
+                <div style="display:flex;align-items:center;gap:8px;padding:5px 8px;background:var(--raised)">
+                  <span style="width:6px;height:6px;background:var(--mode-setup);flex-shrink:0"></span>
+                  <span style="font-family:var(--font-ui);font-size:11px;color:var(--text-dim);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:.04em">FIREPLACE</span>
+                  <span style="font-size:9px;color:var(--text-mute)">4m</span>
+                </div>
+                <div style="display:flex;align-items:center;gap:8px;padding:5px 8px;background:var(--raised)">
+                  <span style="width:6px;height:6px;background:var(--pad-playlist);flex-shrink:0"></span>
+                  <span style="font-family:var(--font-ui);font-size:11px;color:var(--text-dim);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:.04em">TAVERN MIX</span>
+                  <span style="font-size:9px;color:var(--text-mute)">7m</span>
+                </div>
+                <div style="display:flex;align-items:center;gap:8px;padding:5px 8px;background:var(--raised);opacity:.7">
+                  <span style="width:6px;height:6px;background:var(--gold);flex-shrink:0"></span>
+                  <span style="font-family:var(--font-ui);font-size:11px;color:var(--text-mute);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:.04em">DOOR SLAM</span>
+                  <span style="font-size:9px;color:var(--text-mute)">12m</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- bottom flame ember decoration -->
+            <div style="position:absolute;bottom:6px;left:50%;width:4px;height:4px;background:var(--flame);transform:translateX(-50%);box-shadow:0 0 8px var(--flame),0 -2px 4px var(--flame);opacity:.8"></div>
+          </div>
+
+          <!-- Erklärung -->
+          <div class="prose">
+            <p>
+              Das Beispiel zeigt einen konkreten Annex auf dem
+              <strong>Hearth-Theme</strong> (Default-Fantasy). Schaltet
+              der User auf Verdant um, wird die Pocket-Watch zur
+              StandingClock; auf Neon zum DigitalClock; auf Crimson zum
+              GothicClock. Die Recent-Liste bleibt strukturell identisch,
+              tönt sich nur am aktiven Theme.
+            </p>
+            <p style="margin-top:10px">
+              Beide Bausteine sind <strong>read-only</strong> — keine
+              Edit-Aktionen im Annex. Klick auf einen Recent-Eintrag
+              springt zum Pad im Board; Klick auf die Clock öffnet den
+              Theme-Picker. So bleibt der Annex visuell präsent und
+              funktional fokussiert, ohne mit der Hauptbühne zu
+              konkurrieren.
+            </p>
+            <p style="margin-top:10px;color:var(--text-mute);font-size:12.5px">
+              <strong style="color:var(--text-dim)">Wenn das überzeugt</strong>,
+              baue ich Slice 8 darauf auf. <strong style="color:var(--text-dim)">Wenn nicht</strong>,
+              verwerfen wir den Annex und lassen XL einfach die 3-Spalten
+              breiter wachsen — Atmosphären-Hintergrund (Stufe A) bleibt
+              davon unberührt.
+            </p>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ 5 · Sketches: Board ═════════════════════════════════════ -->
+    <section class="block">
+      <div class="section-head">
+        <span class="num">05</span>
+        <h2>Layout-Sketches · Board</h2>
+        <span class="tag">5 Breakpoints</span>
+      </div>
+
+      <div class="sketches">
+
+        <!-- xs · 360 wide -->
+        <div class="sketch-row">
+          <div class="label">
+            <div class="token">xs · 360</div>
+            <div class="device">Phone portrait</div>
+          </div>
+          <div class="sketch" style="width:120px;height:220px">
+            <div class="topbar"></div>
+            <div class="body">
+              <div class="main" style="grid-template-columns:1fr 1fr;flex:1;position:relative">
+                <div class="pad hot" style="height:34px"></div>
+                <div class="pad" style="height:34px"></div>
+                <div class="pad loop" style="height:34px"></div>
+                <div class="pad" style="height:34px"></div>
+                <div class="pad" style="height:34px"></div>
+                <div class="pad loop" style="height:34px"></div>
+                <div class="sheet"></div>
+              </div>
+            </div>
+            <div class="statusbar"></div>
+            <div class="drawer-handle"></div>
+          </div>
+          <div class="sketch-note">
+            <span class="hl">Scenes</span> liegen als Drawer am linken Rand
+            (Handle sichtbar). <span class="hl">Inspector</span> öffnet
+            als Bottom-Sheet. Pads in 2 Spalten, Tap-Targets ≥ 44px.
+            Top-Bar zeigt nur Icon + Mode-Toggle.
+          </div>
+        </div>
+
+        <!-- sm · 640 wide -->
+        <div class="sketch-row">
+          <div class="label">
+            <div class="token">sm · 640</div>
+            <div class="device">Phone landscape · Mini-Tab</div>
+          </div>
+          <div class="sketch" style="width:200px;height:130px">
+            <div class="topbar"></div>
+            <div class="body">
+              <div class="main" style="grid-template-columns:1fr 1fr 1fr;flex:1;position:relative">
+                <div class="pad hot" style="height:22px"></div>
+                <div class="pad" style="height:22px"></div>
+                <div class="pad loop" style="height:22px"></div>
+                <div class="pad" style="height:22px"></div>
+                <div class="pad" style="height:22px"></div>
+                <div class="pad loop" style="height:22px"></div>
+                <div class="pad" style="height:22px"></div>
+                <div class="pad" style="height:22px"></div>
+                <div class="pad" style="height:22px"></div>
+              </div>
+            </div>
+            <div class="statusbar"></div>
+            <div class="drawer-handle"></div>
+          </div>
+          <div class="sketch-note">
+            Pad-Grid 3-spaltig, Top-Bar gewinnt Title. Inspector slidet
+            von rechts ein, wenn ein Pad selektiert wird — verdeckt
+            nicht die Pads.
+          </div>
+        </div>
+
+        <!-- md · 900 wide -->
+        <div class="sketch-row">
+          <div class="label">
+            <div class="token">md · 900</div>
+            <div class="device">Tablet</div>
+          </div>
+          <div class="sketch" style="width:300px;height:170px">
+            <div class="topbar"></div>
+            <div class="body">
+              <div class="main" style="grid-template-columns:repeat(4,1fr);flex:1">
+                <div class="pad hot" style="height:24px"></div>
+                <div class="pad" style="height:24px"></div>
+                <div class="pad loop" style="height:24px"></div>
+                <div class="pad" style="height:24px"></div>
+                <div class="pad" style="height:24px"></div>
+                <div class="pad loop" style="height:24px"></div>
+                <div class="pad" style="height:24px"></div>
+                <div class="pad" style="height:24px"></div>
+                <div class="pad" style="height:24px"></div>
+                <div class="pad" style="height:24px"></div>
+                <div class="pad" style="height:24px"></div>
+                <div class="pad" style="height:24px"></div>
+              </div>
+              <div class="rail r" style="width:75px"></div>
+            </div>
+            <div class="statusbar"></div>
+            <div class="drawer-handle"></div>
+          </div>
+          <div class="sketch-note">
+            2-Spalten-Modus: Pads + Inspector. Scenes weiterhin als
+            Drawer, Handle dauerhaft sichtbar. <span class="hl">Erste
+            Größenstufe mit dauerhaft sichtbarem Inspector.</span>
+          </div>
+        </div>
+
+        <!-- lg · 1280 wide (current) -->
+        <div class="sketch-row">
+          <div class="label">
+            <div class="token">lg · 1280</div>
+            <div class="device">Laptop · heute</div>
+          </div>
+          <div class="sketch" style="width:420px;height:200px">
+            <div class="topbar"></div>
+            <div class="body">
+              <div class="rail" style="width:70px"></div>
+              <div class="main" style="grid-template-columns:repeat(5,1fr);flex:1">
+                <div class="pad hot" style="height:30px"></div>
+                <div class="pad" style="height:30px"></div>
+                <div class="pad loop" style="height:30px"></div>
+                <div class="pad" style="height:30px"></div>
+                <div class="pad" style="height:30px"></div>
+                <div class="pad loop" style="height:30px"></div>
+                <div class="pad" style="height:30px"></div>
+                <div class="pad" style="height:30px"></div>
+                <div class="pad" style="height:30px"></div>
+                <div class="pad" style="height:30px"></div>
+                <div class="pad" style="height:30px"></div>
+                <div class="pad" style="height:30px"></div>
+                <div class="pad" style="height:30px"></div>
+                <div class="pad" style="height:30px"></div>
+                <div class="pad" style="height:30px"></div>
+              </div>
+              <div class="rail r" style="width:90px"></div>
+            </div>
+            <div class="statusbar"></div>
+          </div>
+          <div class="sketch-note">
+            Heutige Vollausstattung: Scenes-Rail + Pads + Inspector.
+            Alles permanent sichtbar. Pad-Grid wächst auto-fill.
+          </div>
+        </div>
+
+        <!-- xl · 1920 with annex -->
+        <div class="sketch-row">
+          <div class="label">
+            <div class="token">xl · 1920+</div>
+            <div class="device">Großmonitor</div>
+          </div>
+          <div class="sketch" style="width:560px;height:220px">
+            <div class="topbar"></div>
+            <div class="body">
+              <div class="rail" style="width:70px"></div>
+              <div class="main" style="grid-template-columns:repeat(7,1fr);flex:1">
+                <div class="pad hot" style="height:34px"></div>
+                <div class="pad" style="height:34px"></div>
+                <div class="pad loop" style="height:34px"></div>
+                <div class="pad" style="height:34px"></div>
+                <div class="pad" style="height:34px"></div>
+                <div class="pad loop" style="height:34px"></div>
+                <div class="pad" style="height:34px"></div>
+                <div class="pad" style="height:34px"></div>
+                <div class="pad" style="height:34px"></div>
+                <div class="pad" style="height:34px"></div>
+                <div class="pad" style="height:34px"></div>
+                <div class="pad" style="height:34px"></div>
+                <div class="pad" style="height:34px"></div>
+                <div class="pad loop" style="height:34px"></div>
+                <div class="pad" style="height:34px"></div>
+                <div class="pad" style="height:34px"></div>
+                <div class="pad" style="height:34px"></div>
+                <div class="pad" style="height:34px"></div>
+                <div class="pad" style="height:34px"></div>
+                <div class="pad" style="height:34px"></div>
+                <div class="pad" style="height:34px"></div>
+              </div>
+              <div class="rail r" style="width:90px"></div>
+              <div class="annex" style="width:120px"></div>
+            </div>
+            <div class="statusbar"></div>
+          </div>
+          <div class="sketch-note">
+            Atmosphärischer Annex rechts: Lantern-State + Scene-Clock
+            + Recent. Pad-Grid nutzt die zusätzliche Breite (7+
+            Spalten), nicht der Annex. <span class="hl">Hauptbühne
+            wächst, Annex bleibt fix.</span>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ═══ 6 · Sketches: Library ═══════════════════════════════════ -->
+    <section class="block">
+      <div class="section-head">
+        <span class="num">06</span>
+        <h2>Layout-Sketches · Library</h2>
+        <span class="tag">3 Schlüsselgrößen</span>
+      </div>
+
+      <div class="sketches">
+
+        <!-- xs -->
+        <div class="sketch-row">
+          <div class="label">
+            <div class="token">xs · 360</div>
+            <div class="device">ROWS forced</div>
+          </div>
+          <div class="sketch" style="width:120px;height:220px">
+            <div class="topbar"></div>
+            <div style="height:14px;background:var(--top);display:flex;gap:2px;padding:3px;border-bottom:1px solid var(--border-soft)">
+              <div style="background:var(--gold);width:18px;height:6px"></div>
+              <div style="background:var(--mode-setup);width:14px;height:6px;opacity:.5"></div>
+              <div style="background:var(--gold-dim);width:14px;height:6px;opacity:.4"></div>
+              <div style="background:var(--gold-dim);width:14px;height:6px;opacity:.4"></div>
+            </div>
+            <div class="body">
+              <div class="main" style="grid-template-columns:1fr;flex:1;gap:2px">
+                <div style="background:var(--top);height:18px;border-left:2px solid var(--gold)"></div>
+                <div style="background:var(--raised);height:18px"></div>
+                <div style="background:var(--raised);height:18px"></div>
+                <div style="background:var(--raised);height:18px"></div>
+                <div style="background:var(--raised);height:18px"></div>
+                <div style="background:var(--raised);height:18px"></div>
+                <div style="background:var(--raised);height:18px"></div>
+              </div>
+            </div>
+            <div class="statusbar"></div>
+          </div>
+          <div class="sketch-note">
+            Categories als Horizontal-Chip-Strip oben (statt linker Rail).
+            Files immer als Rows mit kompakter Höhe. Preview-Inspector
+            öffnet als Modal-Sheet bei Tap.
+          </div>
+        </div>
+
+        <!-- md -->
+        <div class="sketch-row">
+          <div class="label">
+            <div class="token">md · 900</div>
+            <div class="device">2 Spalten · GRID</div>
+          </div>
+          <div class="sketch" style="width:300px;height:180px">
+            <div class="topbar"></div>
+            <div style="height:14px;background:var(--top);display:flex;gap:2px;padding:3px;border-bottom:1px solid var(--border-soft)">
+              <div style="background:var(--gold);width:30px;height:6px"></div>
+              <div style="background:var(--gold-dim);width:20px;height:6px;opacity:.4"></div>
+              <div style="background:var(--gold-dim);width:20px;height:6px;opacity:.4"></div>
+              <div style="background:var(--gold-dim);width:20px;height:6px;opacity:.4"></div>
+            </div>
+            <div class="body">
+              <div class="rail" style="width:55px"></div>
+              <div class="main" style="grid-template-columns:repeat(3,1fr);flex:1;gap:3px">
+                <div style="background:var(--top);height:20px;border-left:2px solid var(--gold)"></div>
+                <div style="background:var(--raised);height:20px"></div>
+                <div style="background:var(--raised);height:20px"></div>
+                <div style="background:var(--raised);height:20px"></div>
+                <div style="background:var(--raised);height:20px"></div>
+                <div style="background:var(--raised);height:20px"></div>
+                <div style="background:var(--raised);height:20px"></div>
+                <div style="background:var(--raised);height:20px"></div>
+                <div style="background:var(--raised);height:20px"></div>
+              </div>
+            </div>
+            <div class="statusbar"></div>
+          </div>
+          <div class="sketch-note">
+            Categories-Rail links zurück, Preview als Side-Sheet bei
+            Selection. GRID 3 Spalten dank <code>auto-fill</code>.
+          </div>
+        </div>
+
+        <!-- xl -->
+        <div class="sketch-row">
+          <div class="label">
+            <div class="token">xl · 1920+</div>
+            <div class="device">3 Spalten · 6+ Cols</div>
+          </div>
+          <div class="sketch" style="width:560px;height:220px">
+            <div class="topbar"></div>
+            <div style="height:14px;background:var(--top);display:flex;gap:2px;padding:3px;border-bottom:1px solid var(--border-soft)">
+              <div style="background:var(--gold);width:40px;height:6px"></div>
+              <div style="background:var(--gold-dim);width:30px;height:6px;opacity:.4"></div>
+              <div style="background:var(--gold-dim);width:30px;height:6px;opacity:.4"></div>
+              <div style="background:var(--gold-dim);width:30px;height:6px;opacity:.4"></div>
+            </div>
+            <div class="body">
+              <div class="rail" style="width:90px"></div>
+              <div class="main" style="grid-template-columns:repeat(6,1fr);flex:1;gap:3px">
+                <div style="background:var(--top);height:26px;border-left:2px solid var(--gold)"></div>
+                <div style="background:var(--raised);height:26px"></div>
+                <div style="background:var(--raised);height:26px"></div>
+                <div style="background:var(--raised);height:26px"></div>
+                <div style="background:var(--raised);height:26px"></div>
+                <div style="background:var(--raised);height:26px"></div>
+                <div style="background:var(--raised);height:26px"></div>
+                <div style="background:var(--raised);height:26px"></div>
+                <div style="background:var(--raised);height:26px"></div>
+                <div style="background:var(--raised);height:26px"></div>
+                <div style="background:var(--raised);height:26px"></div>
+                <div style="background:var(--raised);height:26px"></div>
+                <div style="background:var(--raised);height:26px"></div>
+                <div style="background:var(--raised);height:26px"></div>
+                <div style="background:var(--raised);height:26px"></div>
+                <div style="background:var(--raised);height:26px"></div>
+                <div style="background:var(--raised);height:26px"></div>
+                <div style="background:var(--raised);height:26px"></div>
+              </div>
+              <div class="rail r" style="width:130px"></div>
+            </div>
+            <div class="statusbar"></div>
+          </div>
+          <div class="sketch-note">
+            Heutige 3-Spalten + GRID-View packt automatisch 6+ Spalten
+            (<code>repeat(auto-fill, minmax(200px, 1fr))</code> bereits
+            gesetzt). Preview-Rail wird etwas breiter — kann mehr
+            Meta-Daten gleichzeitig zeigen. <span class="hl">Library
+            braucht keinen Annex</span> — sie hat schon natürlich-
+            atmenden Inhalt.
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ═══ 6.5 · Mobile-Patterns ═══════════════════════════════════ -->
+    <section class="block">
+      <div class="section-head">
+        <span class="num">06·B</span>
+        <h2>Mobile-Pattern-Library</h2>
+        <span class="tag">xs / sm · vier Bewegungen</span>
+      </div>
+
+      <div class="prose" style="margin-bottom:18px">
+        <p>
+          Statt für jeden Screen eine eigene Mobile-Lösung zu erfinden,
+          definieren wir <strong>vier wiederkehrende Bewegungs-Muster</strong>.
+          Jeder Screen wählt aus dieser Liste — die Pixel-Choreographie
+          (Timings, Easing, Drag-Verhalten) gehört in ein separates
+          Mobile-Briefing nach Slice 8.
+        </p>
+      </div>
+
+      <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:14px">
+
+        <!-- Pattern 1 · Top-Drawer -->
+        <div style="background:var(--surface);border:1px solid var(--border-soft);padding:18px;display:flex;gap:14px;align-items:flex-start">
+          <div style="flex:0 0 80px">
+            <!-- Visualisierung: Drawer öffnet sich von oben -->
+            <div style="width:80px;height:120px;background:var(--deep);border:1px solid var(--border-soft);position:relative;overflow:hidden">
+              <div style="position:absolute;top:0;left:0;right:0;height:42px;background:var(--top);border-bottom:1px solid var(--gold-dim)">
+                <div style="display:flex;flex-direction:column;gap:3px;padding:5px 6px">
+                  <div style="height:4px;background:var(--gold);width:60%"></div>
+                  <div style="height:4px;background:var(--text-dim);width:40%;opacity:.5"></div>
+                  <div style="height:4px;background:var(--text-dim);width:50%;opacity:.5"></div>
+                </div>
+              </div>
+              <div style="position:absolute;bottom:6px;left:50%;width:14px;height:2px;background:var(--gold);transform:translateX(-50%);opacity:.6"></div>
+            </div>
+          </div>
+          <div style="flex:1;min-width:0">
+            <h3 style="margin:0 0 6px;font-family:var(--font-ui);font-size:14px;color:var(--gold-bright);letter-spacing:.10em;text-transform:uppercase">Top-Drawer</h3>
+            <p style="margin:0;font-family:var(--font-mono);font-size:12px;color:var(--text-dim);line-height:1.5">
+              Kategorische Navigation. Wischt von <strong>oben</strong> rein,
+              überlagert den Content. Schließt automatisch nach Auswahl.
+            </p>
+            <p style="margin:8px 0 0;font-family:var(--font-mono);font-size:11px;color:var(--text-mute)">
+              <strong style="color:var(--gold-dim)">Anwendung:</strong>
+              Library-Categories, Settings-Menü, Scene-Liste auf Board.
+            </p>
+          </div>
+        </div>
+
+        <!-- Pattern 2 · Bottom-Sheet -->
+        <div style="background:var(--surface);border:1px solid var(--border-soft);padding:18px;display:flex;gap:14px;align-items:flex-start">
+          <div style="flex:0 0 80px">
+            <div style="width:80px;height:120px;background:var(--deep);border:1px solid var(--border-soft);position:relative;overflow:hidden">
+              <div style="position:absolute;bottom:0;left:0;right:0;height:62px;background:var(--top);border-top:1px solid var(--gold-dim)">
+                <div style="display:flex;justify-content:center;padding-top:4px"><div style="width:18px;height:2px;background:var(--text-mute);border-radius:1px"></div></div>
+                <div style="display:flex;flex-direction:column;gap:3px;padding:6px 6px">
+                  <div style="height:4px;background:var(--gold);width:70%"></div>
+                  <div style="height:3px;background:var(--text-dim);width:55%;opacity:.5"></div>
+                  <div style="height:3px;background:var(--text-dim);width:65%;opacity:.5"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div style="flex:1;min-width:0">
+            <h3 style="margin:0 0 6px;font-family:var(--font-ui);font-size:14px;color:var(--gold-bright);letter-spacing:.10em;text-transform:uppercase">Bottom-Sheet</h3>
+            <p style="margin:0;font-family:var(--font-mono);font-size:12px;color:var(--text-dim);line-height:1.5">
+              Kontextuelle Details. Wischt von <strong>unten</strong> rein,
+              greifbare Daumen-Reichweite. Hat 2 Snap-Points (peek / full).
+            </p>
+            <p style="margin:8px 0 0;font-family:var(--font-mono);font-size:11px;color:var(--text-mute)">
+              <strong style="color:var(--gold-dim)">Anwendung:</strong>
+              Inspector (Board · SETUP), Pad-Preview (Library),
+              PAD-Editor-Inspector-Sektion.
+            </p>
+          </div>
+        </div>
+
+        <!-- Pattern 3 · Side-Sheet -->
+        <div style="background:var(--surface);border:1px solid var(--border-soft);padding:18px;display:flex;gap:14px;align-items:flex-start">
+          <div style="flex:0 0 80px">
+            <div style="width:80px;height:120px;background:var(--deep);border:1px solid var(--border-soft);position:relative;overflow:hidden">
+              <div style="position:absolute;top:0;bottom:0;right:0;width:46px;background:var(--top);border-left:1px solid var(--gold-dim)">
+                <div style="display:flex;flex-direction:column;gap:3px;padding:8px 5px">
+                  <div style="height:4px;background:var(--gold);width:80%"></div>
+                  <div style="height:3px;background:var(--text-dim);width:60%;opacity:.5"></div>
+                  <div style="height:3px;background:var(--text-dim);width:70%;opacity:.5"></div>
+                  <div style="height:3px;background:var(--text-dim);width:50%;opacity:.5"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div style="flex:1;min-width:0">
+            <h3 style="margin:0 0 6px;font-family:var(--font-ui);font-size:14px;color:var(--gold-bright);letter-spacing:.10em;text-transform:uppercase">Side-Sheet</h3>
+            <p style="margin:0;font-family:var(--font-mono);font-size:12px;color:var(--text-dim);line-height:1.5">
+              Persistente Detail-Spalte. Wischt von <strong>rechts</strong>
+              rein, lässt Content sichtbar daneben. Kein Auto-Dismiss.
+            </p>
+            <p style="margin:8px 0 0;font-family:var(--font-mono);font-size:11px;color:var(--text-mute)">
+              <strong style="color:var(--gold-dim)">Anwendung:</strong>
+              Inspector (Board · GAME · sm), Library-Preview ab sm.
+            </p>
+          </div>
+        </div>
+
+        <!-- Pattern 4 · Full-Screen-Modal -->
+        <div style="background:var(--surface);border:1px solid var(--border-soft);padding:18px;display:flex;gap:14px;align-items:flex-start">
+          <div style="flex:0 0 80px">
+            <div style="width:80px;height:120px;background:var(--deep);border:1px solid var(--border-soft);position:relative;overflow:hidden">
+              <div style="position:absolute;inset:6px;background:var(--top);border:1px solid var(--gold-dim)">
+                <div style="display:flex;flex-direction:column;gap:3px;padding:6px 5px">
+                  <div style="height:5px;background:var(--gold);width:65%"></div>
+                  <div style="height:3px;background:var(--text-dim);width:80%;opacity:.5"></div>
+                  <div style="height:3px;background:var(--text-dim);width:75%;opacity:.5"></div>
+                  <div style="height:3px;background:var(--text-dim);width:85%;opacity:.5"></div>
+                  <div style="height:3px;background:var(--text-dim);width:70%;opacity:.5"></div>
+                  <div style="margin-top:auto;height:6px;background:var(--gold);width:30%"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div style="flex:1;min-width:0">
+            <h3 style="margin:0 0 6px;font-family:var(--font-ui);font-size:14px;color:var(--gold-bright);letter-spacing:.10em;text-transform:uppercase">Full-Screen-Modal</h3>
+            <p style="margin:0;font-family:var(--font-mono);font-size:12px;color:var(--text-dim);line-height:1.5">
+              Atomarer Task, Fokus-pflichtig. Komplette Übernahme der
+              Bühne mit explizitem Close-Button. Kein Backdrop-Dismiss.
+            </p>
+            <p style="margin:8px 0 0;font-family:var(--font-mono);font-size:11px;color:var(--text-mute)">
+              <strong style="color:var(--gold-dim)">Anwendung:</strong>
+              PAD-Editor und Combo-Editor auf xs (zu komplex für Sheets),
+              Settings-Panels.
+            </p>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="prose" style="margin-top:16px">
+        <p style="color:var(--text-mute);font-size:12px">
+          <strong style="color:var(--text-dim)">Konsistenzregel:</strong>
+          ein Pattern pro Funktion — wenn der Inspector auf Board als
+          Bottom-Sheet erscheint, erscheint er <em>überall</em> als
+          Bottom-Sheet. Die User lernen den Muskel ein Mal.
+        </p>
+      </div>
+    </section>
+
+    <!-- ═══ 6·C · Breathing Room ════════════════════════════════════ -->
+    <section class="block">
+      <div class="section-head">
+        <span class="num">06·C</span>
+        <h2>Atmendes Innen-Padding</h2>
+        <span class="tag">Breathing Room · Spacing-Regel</span>
+      </div>
+
+      <div class="prose" style="margin-bottom:18px">
+        <p>
+          Beobachtung: Inhalte kleben aktuell auf allen Größen recht
+          stark an Rail-Kanten und Viewport-Rändern. Auf <strong>xs/sm</strong>
+          ist das richtig — jeder Pixel zählt. Auf <strong>md aufwärts</strong>
+          wirkt es ungemütlich, fast technisch. Lösung: <strong>die
+          Mittelspalte bekommt ein Innen-Padding, das mit der Container-Breite
+          fließend wächst</strong>. Rails selbst bleiben bündig — nur der
+          Main-Content atmet.
+        </p>
+      </div>
+
+      <!-- Formel-Box -->
+      <div style="background:var(--surface);border:1px solid var(--gold-dim);padding:18px 20px;margin-bottom:18px">
+        <div style="font-family:var(--font-display);font-size:11px;color:var(--gold);letter-spacing:.04em;margin-bottom:10px">FORMEL · MAIN-COLUMN PADDING</div>
+        <code style="display:block;font-family:var(--font-mono);font-size:14px;color:var(--gold-bright);background:var(--sunk);padding:12px 14px;border:1px solid var(--border-soft);letter-spacing:.02em;margin-bottom:12px">
+.sb-main { padding-inline: clamp(12px, 5cqi, 80px); }
+        </code>
+        <p style="margin:0;font-family:var(--font-mono);font-size:12px;color:var(--text-dim);line-height:1.5">
+          <code style="font-family:var(--font-mono);color:var(--gold);background:var(--sunk);padding:1px 5px;border:1px solid var(--border-soft)">cqi</code>
+          = container-query-inline-size. Das Padding skaliert mit der
+          Breite der Mittelspalte selbst, nicht mit dem Viewport — passt
+          deshalb auch in Split-Panes oder Modals. Min 12px (Mobile-tight),
+          Max 80px (XL-luftig).
+        </p>
+      </div>
+
+      <!-- Werte-Tabelle -->
+      <table class="bp-table" style="margin-bottom:24px">
+        <thead>
+          <tr>
+            <th>Token</th>
+            <th>Container ≈</th>
+            <th>Padding-inline</th>
+            <th>Wirkung</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="swatch"></span><span class="token">xs</span></td>
+            <td class="px">360 px</td>
+            <td class="px">12 px <span style="color:var(--text-mute);font-size:11px">(min clamp)</span></td>
+            <td class="device">Jeder Pixel zählt · keine künstlichen Ränder</td>
+          </tr>
+          <tr>
+            <td><span class="swatch"></span><span class="token">sm</span></td>
+            <td class="px">640 px</td>
+            <td class="px">32 px</td>
+            <td class="device">Atemzug spürbar, Content noch dominant</td>
+          </tr>
+          <tr>
+            <td><span class="swatch"></span><span class="token">md</span></td>
+            <td class="px">900 px</td>
+            <td class="px">45 px</td>
+            <td class="device">Erste deutlich gemütliche Stufe</td>
+          </tr>
+          <tr>
+            <td><span class="swatch"></span><span class="token">lg</span></td>
+            <td class="px">1280 px</td>
+            <td class="px">64 px</td>
+            <td class="device">Heutiger Stand wird "gerahmt" wirken</td>
+          </tr>
+          <tr>
+            <td><span class="swatch"></span><span class="token">xl</span></td>
+            <td class="px">1920 px</td>
+            <td class="px">80 px <span style="color:var(--text-mute);font-size:11px">(max clamp)</span></td>
+            <td class="device">Bühne · Annex-Übergang fühlt sich rund an</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- Vergleich OHNE / MIT -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:14px">
+
+        <div>
+          <div style="display:flex;align-items:baseline;gap:8px;margin-bottom:8px">
+            <span style="font-family:var(--font-display);font-size:11px;color:var(--flame);letter-spacing:.04em">OHNE</span>
+            <span style="font-family:var(--font-ui);font-size:12px;color:var(--text-dim);letter-spacing:.10em;text-transform:uppercase">lg · 1280</span>
+          </div>
+          <div style="background:var(--deep);border:1px solid var(--border-soft);width:100%;height:140px;display:flex">
+            <div style="width:50px;background:var(--deep);border-right:1px solid var(--border-soft);flex-shrink:0"></div>
+            <div style="flex:1;background:var(--surface);padding:6px;display:grid;grid-template-columns:repeat(5,1fr);gap:3px">
+              <div style="background:var(--raised);border-left:2px solid var(--gold);height:22px"></div>
+              <div style="background:var(--raised);border-left:2px solid var(--gold-dim);height:22px"></div>
+              <div style="background:var(--raised);border-left:2px solid var(--mode-setup);height:22px"></div>
+              <div style="background:var(--raised);border-left:2px solid var(--gold-dim);height:22px"></div>
+              <div style="background:var(--raised);border-left:2px solid var(--gold-dim);height:22px"></div>
+              <div style="background:var(--raised);border-left:2px solid var(--gold-dim);height:22px"></div>
+              <div style="background:var(--raised);border-left:2px solid var(--gold-dim);height:22px"></div>
+              <div style="background:var(--raised);border-left:2px solid var(--mode-setup);height:22px"></div>
+              <div style="background:var(--raised);border-left:2px solid var(--gold-dim);height:22px"></div>
+              <div style="background:var(--raised);border-left:2px solid var(--gold-dim);height:22px"></div>
+              <div style="background:var(--raised);border-left:2px solid var(--gold-dim);height:22px"></div>
+              <div style="background:var(--raised);border-left:2px solid var(--gold-dim);height:22px"></div>
+              <div style="background:var(--raised);border-left:2px solid var(--gold-dim);height:22px"></div>
+              <div style="background:var(--raised);border-left:2px solid var(--gold-dim);height:22px"></div>
+              <div style="background:var(--raised);border-left:2px solid var(--gold-dim);height:22px"></div>
+            </div>
+            <div style="width:70px;background:var(--deep);border-left:1px solid var(--border-soft);flex-shrink:0"></div>
+          </div>
+          <p style="margin:8px 0 0;font-family:var(--font-mono);font-size:11.5px;color:var(--text-mute);line-height:1.45">
+            Pads stoßen direkt an die Rails — sieht technisch,
+            "dicht gepackt" aus. Funktioniert, aber atmet nicht.
+          </p>
+        </div>
+
+        <div>
+          <div style="display:flex;align-items:baseline;gap:8px;margin-bottom:8px">
+            <span style="font-family:var(--font-display);font-size:11px;color:var(--mode-setup);letter-spacing:.04em">MIT</span>
+            <span style="font-family:var(--font-ui);font-size:12px;color:var(--text-dim);letter-spacing:.10em;text-transform:uppercase">lg · 1280 · 64 px breathing</span>
+          </div>
+          <div style="background:var(--deep);border:1px solid var(--border-soft);width:100%;height:140px;display:flex">
+            <div style="width:50px;background:var(--deep);border-right:1px solid var(--border-soft);flex-shrink:0"></div>
+            <div style="flex:1;background:var(--surface);padding:6px 32px;display:grid;grid-template-columns:repeat(5,1fr);gap:3px;position:relative">
+              <div style="position:absolute;left:0;top:0;bottom:0;width:32px;background:linear-gradient(to right, rgba(232,130,30,.04), transparent);pointer-events:none"></div>
+              <div style="position:absolute;right:0;top:0;bottom:0;width:32px;background:linear-gradient(to left, rgba(232,130,30,.04), transparent);pointer-events:none"></div>
+              <div style="background:var(--raised);border-left:2px solid var(--gold);height:22px"></div>
+              <div style="background:var(--raised);border-left:2px solid var(--gold-dim);height:22px"></div>
+              <div style="background:var(--raised);border-left:2px solid var(--mode-setup);height:22px"></div>
+              <div style="background:var(--raised);border-left:2px solid var(--gold-dim);height:22px"></div>
+              <div style="background:var(--raised);border-left:2px solid var(--gold-dim);height:22px"></div>
+              <div style="background:var(--raised);border-left:2px solid var(--gold-dim);height:22px"></div>
+              <div style="background:var(--raised);border-left:2px solid var(--gold-dim);height:22px"></div>
+              <div style="background:var(--raised);border-left:2px solid var(--mode-setup);height:22px"></div>
+              <div style="background:var(--raised);border-left:2px solid var(--gold-dim);height:22px"></div>
+              <div style="background:var(--raised);border-left:2px solid var(--gold-dim);height:22px"></div>
+            </div>
+            <div style="width:70px;background:var(--deep);border-left:1px solid var(--border-soft);flex-shrink:0"></div>
+          </div>
+          <p style="margin:8px 0 0;font-family:var(--font-mono);font-size:11.5px;color:var(--text-mute);line-height:1.45">
+            Pads rücken zur Mitte · subtiler Glow-Anklang an den Rändern
+            lässt die Bühne "leuchten". Etwas weniger Pads pro Reihe —
+            aber natürlicher.
+          </p>
+        </div>
+
+      </div>
+
+      <div class="prose">
+        <p style="color:var(--text-mute);font-size:12px">
+          <strong style="color:var(--text-dim)">Konsequenz für andere Screens:</strong>
+          die Regel gilt überall, wo eine "Mittelspalte" existiert —
+          Board (Pad-Grid), Library (File-Liste/Grid), Editors (Canvas-Bereich).
+          Settings-Panels haben dichteres Innenleben und brauchen
+          weniger Padding; dort empfehle ich
+          <code>clamp(12px, 3cqi, 56px)</code> als gedämpfte Variante.
+          <strong style="color:var(--text-dim)">Was nicht geht:</strong>
+          Padding auf Rails — die wachsen <em>nicht</em>, sie sind fix.
+        </p>
+      </div>
+    </section>
+
+    <section class="block">
+      <div class="section-head">
+        <span class="num">07</span>
+        <h2>Implementation-Primitives</h2>
+        <span class="tag">Für Slice 8</span>
+      </div>
+
+      <div class="primitives">
+
+        <div class="prim">
+          <code>@container (min-width: …)</code>
+          <p>
+            Container-Queries auf der App-Wurzel (<code>.sb</code>).
+            Jede Screen-Komponente reagiert auf ihre eigene Fläche —
+            funktioniert auch in Split-Panes, Modals oder iFrames.
+          </p>
+        </div>
+
+        <div class="prim">
+          <code>grid-template-columns: repeat(auto-fill, minmax(X, 1fr))</code>
+          <p>
+            Standard-Muster für jede Tile-Sammlung (Pads, Library-Tiles,
+            Scene-Cards). Spalten-Anzahl ist eine Folge der Fläche, nicht
+            ein hartkodierter Breakpoint.
+          </p>
+        </div>
+
+        <div class="prim">
+          <code>clamp(min, vw-formel, max)</code>
+          <p>
+            Für Typo-Skalierung (Top-Bar-Titel, Section-Header) und
+            Logo-Größe auf Start-Screen. Wechselt fließend statt zu
+            springen.
+          </p>
+        </div>
+
+        <div class="prim">
+          <code>padding-inline: clamp(12px, 5cqi, 80px)</code>
+          <p>
+            <strong style="color:var(--text)">Breathing-Room-Regel</strong>
+            für Mittelspalten (siehe §06·C). <code>cqi</code> bindet
+            das Padding an die Container-Inline-Size — funktioniert
+            auch in Split-Panes. Settings-Variante gedämpft:
+            <code>clamp(12px, 3cqi, 56px)</code>.
+          </p>
+        </div>
+
+        <div class="prim">
+          <code>:has(.drawer.open) { … }</code>
+          <p>
+            CSS-only Drawer/Sheet-Logik auf xs/sm. Kein JS-State nötig
+            für reine Show/Hide-Mechanik der Rails — nur für persistente
+            User-Präferenzen.
+          </p>
+        </div>
+
+        <div class="prim">
+          <code>@media (pointer: coarse)</code>
+          <p>
+            Touch-Target-Sizing entkoppelt von Bildschirmgröße:
+            ein 11″-Tablet mit Pen-Input ist nicht dasselbe wie ein
+            13″-Touchscreen-Laptop. Mindestens 44 px Tap-Target wo
+            <code>coarse</code> erkannt wird.
+          </p>
+        </div>
+
+        <div class="prim">
+          <code>--rail-w-scenes / --rail-w-inspector</code>
+          <p>
+            Token-isierte Rail-Breiten in <code>tokens.css</code>, sodass
+            ein Rail-Resize-Drag-Handle nur ein Custom-Property anpassen
+            muss. Ermöglicht später User-Saved-Layouts.
+          </p>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ═══ 8 · Resolved Decisions ══════════════════════════════════ -->
+    <section class="block">
+      <div class="section-head">
+        <span class="num">08</span>
+        <h2>Geklärte Entscheidungen</h2>
+        <span class="tag">Grundlage Slice 8</span>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr;gap:12px">
+
+        <div style="background:var(--surface);border:1px solid var(--border-soft);border-left:3px solid var(--mode-setup);padding:16px 18px">
+          <div style="display:flex;align-items:baseline;gap:10px;margin-bottom:8px">
+            <span style="font-family:var(--font-display);font-size:11px;color:var(--mode-setup);letter-spacing:.04em">A · GEKLÄRT</span>
+            <span style="font-family:var(--font-ui);font-size:13px;color:var(--text);letter-spacing:.10em;text-transform:uppercase">Annex-Inhalt</span>
+          </div>
+          <p style="margin:0;font-family:var(--font-mono);font-size:12.5px;color:var(--text-dim);line-height:1.55">
+            <strong style="color:var(--text)">Scene-Clock</strong> aus
+            <code style="font-family:var(--font-mono);color:var(--gold);background:var(--sunk);padding:1px 5px;border:1px solid var(--border-soft)">v10-clock-themes.jsx</code>
+            (theme-gebunden) + <strong style="color:var(--text)">Recent</strong>
+            als kompakte Pad-Verlaufsliste. Lantern-State und Breath-Indikator
+            verworfen — beide nicht im System verankert.
+          </p>
+        </div>
+
+        <div style="background:var(--surface);border:1px solid var(--border-soft);border-left:3px solid var(--mode-setup);padding:16px 18px">
+          <div style="display:flex;align-items:baseline;gap:10px;margin-bottom:8px">
+            <span style="font-family:var(--font-display);font-size:11px;color:var(--mode-setup);letter-spacing:.04em">B · GEKLÄRT</span>
+            <span style="font-family:var(--font-ui);font-size:13px;color:var(--text);letter-spacing:.10em;text-transform:uppercase">Mobile-Scope</span>
+          </div>
+          <p style="margin:0;font-family:var(--font-mono);font-size:12.5px;color:var(--text-dim);line-height:1.55">
+            <strong style="color:var(--text)">Strukturell ja</strong> —
+            xs/sm beschreiben konkrete Pattern-Anwendung
+            (Top-Drawer / Bottom-Sheet / Side-Sheet / Full-Screen-Modal,
+            siehe §06·B). <strong style="color:var(--text)">Visuell sparsam</strong>:
+            keine Touch-Animationen, keine Drag-Choreographie — die
+            kommen ins separate Mobile-Briefing nach Slice 8.
+          </p>
+        </div>
+
+        <div style="background:var(--surface);border:1px solid var(--border-soft);border-left:3px solid var(--mode-setup);padding:16px 18px">
+          <div style="display:flex;align-items:baseline;gap:10px;margin-bottom:8px">
+            <span style="font-family:var(--font-display);font-size:11px;color:var(--mode-setup);letter-spacing:.04em">C · GEKLÄRT</span>
+            <span style="font-family:var(--font-ui);font-size:13px;color:var(--text);letter-spacing:.10em;text-transform:uppercase">Container Queries</span>
+          </div>
+          <p style="margin:0;font-family:var(--font-mono);font-size:12.5px;color:var(--text-dim);line-height:1.55">
+            <strong style="color:var(--text)">Ja, verwenden</strong> —
+            Safari 16+ unterstützt, Brave/Chrome/Firefox lange.
+            Polyfill als Fallback bleibt eine Option, falls später
+            Edge-Cases auftauchen. Keine hybride Media-/Container-Query-Mischung.
+          </p>
+        </div>
+
+      </div>
+
+      <div class="prose" style="margin-top:18px">
+        <p style="color:var(--text-mute);font-size:12px">
+          <strong style="color:var(--text-dim)">Status:</strong>
+          Strategie-Dokument liegt fertig vor. Nächster Schritt — Claude-Code-Briefing
+          mit Slice-Einordnung (vermutlich Slice 8 · Polish). Bei der Umsetzung
+          empfehle ich die Reihenfolge: <strong style="color:var(--text-dim)">Container-Queries
+          zuerst</strong> auf Library (kleinster Risiko-Footprint),
+          dann Board, dann Editors, dann Settings, zuletzt Annex auf xl.
+        </p>
+      </div>
+    </section>
+
+    <!-- ═══ Footer ══════════════════════════════════════════════════ -->
+    <footer class="doc-footer">
+      <span>SOUNDBOARD OF STORYTELLING · V3 · Responsive Strategy</span>
+      <span>Stand · 27. Mai 2026</span>
+    </footer>
+
+  </div>
+
+</body>
+</html>

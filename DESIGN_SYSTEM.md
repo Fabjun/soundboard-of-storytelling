@@ -152,10 +152,8 @@ also in §6):
 <!-- AUTO-GENERATED:sb-classes START — nicht manuell editieren -->
 | Klasse | Beschreibung | Definiert in |
 |--------|-------------|-------------|
-| `sb-animated-flame` | Root of AnimatedFlame (StartScreen) — anchors halo + frost overlays; no text selection, no iOS tap flash, no double-tap zoom on rapid taps. Size + cursor set inline (prop-driven). | `v3/src/styles/tokens.css` |
-| `sb-animated-flame-frost` | AnimatedFlame frost vignette overlay (visible when cold > 0.3) — gradient alpha computed inline. | `v3/src/styles/tokens.css` |
-| `sb-animated-flame-halo` | AnimatedFlame radial halo layer — inset, gradient colour and opacity are computed per frame (inline). | `v3/src/styles/tokens.css` |
-| `sb-animated-flame-svg` | AnimatedFlame pixel SVG — block, overflow visible so sparks and the tip extension can leave the viewBox. | `v3/src/styles/tokens.css` |
+| `sb-animated-flame` | Root of AnimatedFlame (StartScreen) — footprint of the 16×17 flame itself; anchors the larger canvas field. Size set inline (prop-driven). | `v3/src/styles/tokens.css` |
+| `sb-animated-flame-canvas` | AnimatedFlame canvas — 32×40-cell field overflowing the flame box (room for sparks, steam, shards); pixelated; no double-tap zoom. Size, offset, cursor and glow filter set inline (computed). | `v3/src/styles/tokens.css` |
 | `sb-audio-col-duration` | Duration metadata column in AudioRow — mono xs, text-dim, centered. For the 70px duration column. | `v3/src/styles/tokens.css` |
 | `sb-audio-col-size` | File-size metadata column in AudioRow — mono xs, text-dim. For the 90px file-size column (not centered, unlike duration). | `v3/src/styles/tokens.css` |
 | `sb-audio-row` | Main container grid for AudioRow — 5-column table layout (name 160px | waveform 1fr | duration 70px | size 90px | delete 44px). Cursor + userSelect for row click; background and borderLeft set inline for selected state. NOTE: fixed columns (364px) + gaps (48px) = 412px min — overflows 390px mobile viewport; pre-existing design, deferred to Slice 8 responsive pass. | `v3/src/styles/tokens.css` |
@@ -401,14 +399,13 @@ also in §6):
 | `--flame-mid` | `#e8881e` | animated flame — mid pixel layer (warm) |
 | `--flame-core` | `#f5c242` | animated flame — core pixel layer (warm) |
 | `--flame-heart` | `#ffe8a0` | animated flame — pulsing heart (warm) |
-| `--flame-halo-turn` | `#9f88e8` | animated flame — lilac halo at half-frozen |
 | `--flame-highlight` | `#ffffff` | animated flame — sparks, glitter, ice highlights |
-| `--flame-smoke` | `#050404` | animated flame — sparks cool down into black smoke |
+| `--flame-steam` | `#e2eef4` | animated flame — translucent steam when frozen / thawing |
+| `--ice-glow` | `#78b4e0` | animated flame — drop-shadow glow when frozen (warm glow = --flame) |
 | `--ice-outer` | `#3f88b8` | animated flame — outer pixel layer (frozen) |
 | `--ice-mid` | `#5bafd8` | animated flame — mid layer + cold halo (frozen) |
 | `--ice-core` | `#9fd8ee` | animated flame — core pixel layer (frozen) |
 | `--ice-heart` | `#e8f8ff` | animated flame — heart (frozen) |
-| `--ice-frost` | `#9bd2eb` | animated flame — frost vignette base (alpha computed) |
 | `--blood` | `#a02828` | +14% L* over #8b1a1a — readable on dark |
 | `--blood-bright` | `#ef7575` | — |
 | `--blood-soft` | `rgba(160, 40, 40, 0.18)` | — |

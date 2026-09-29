@@ -1035,6 +1035,10 @@ comments with "sub-token: deliberate" justification notes.
 Decided 2026-09-28 ([PRODUCT.md §5 Pads](docs/product/PRODUCT.md#pads)): three pad types — Single, Loop, Combo. Loop and Single accept several files (Loop: in order / shuffle; Single: random / in turn). Requires an ADR superseding the `PadType` part of ADR-0042, a migration of stored `playlist` pads, and engine/editor changes (engine change needs explicit approval).
 **When:** Slice 9 (data model), together with the board pad pool below.
 
+### Theme flames: Verdant, Neon, Crimson
+Parked 2026-09-29. `SoS_DESIGN_28092026/Design_Soundboard_of_Storytelling/Flammen.html` designs four flame personalities (Hearth, Verdant, Neon, Crimson) on one canvas engine. Hearth's freeze/thaw is in the StartScreen flame (hybrid, `docs/design/imports/animated-flame.md`); the other three belong to the themes.
+**When:** Slice 14 (settings & polish, themes).
+
 ### Settings: reduce motion (animated flame and other animations)
 Parked 2026-09-29. The StartScreen flame animates continuously on purpose — users are meant to tap it and freeze it for fun; it does not honour `prefers-reduced-motion`. A Settings option to reduce or stop animations comes with the Settings screen. Record: `docs/design/imports/animated-flame.md`.
 **When:** Slice 14 (settings & polish).

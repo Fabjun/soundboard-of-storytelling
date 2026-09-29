@@ -1,0 +1,1163 @@
+/* mode-toggle-entwuerfe.css — 8 SETUP/GAME toggle Entwürfe.
+   Every variant is a real switch shown inside a MiniBar (TopBar context)
+   with a BoardStrip beneath, so the mode change has a visible consequence.
+   Colors strictly from tokens: SETUP = teal (--mode-setup), GAME = gold. */
+
+/* ── Demo shell ───────────────────────────────────────────────── */
+.mt-frame {
+  border: 1px solid var(--border-soft);
+  background: var(--night);
+  overflow: hidden;
+}
+
+/* ── MiniBar — the board's TopBar, 3-column grid (1fr auto 1fr) ── */
+.mt-bar {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 12px;
+  padding: 9px 14px;
+  min-height: 64px;
+  background: var(--deep);
+  border-bottom: 1px solid var(--border);
+  transition: background .32s ease;
+}
+.mt-bar.align-left { grid-template-columns: auto auto 1fr; }
+.mt-bar.align-left .mt-bar-center { justify-self: start; }
+/* variant 8 tints the whole bar toward the active mode */
+.mt-bar.tint[data-mode="setup"] {
+  background: linear-gradient(0deg, var(--mode-setup-soft), var(--mode-setup-soft)), var(--deep);
+}
+.mt-bar.tint[data-mode="game"] {
+  background: linear-gradient(0deg, var(--mode-game-soft), var(--mode-game-soft)), var(--deep);
+}
+
+.mt-bar-left { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.mt-menu {
+  flex: 0 0 auto;
+  padding: 5px 11px;
+  border: 1px solid var(--gold);
+  color: var(--gold);
+  font-family: var(--font-ui); font-size: 14px; letter-spacing: .1em;
+}
+.mt-crumb {
+  font-family: var(--font-mono); font-size: 12px; color: var(--text-mute);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.mt-bar-center { display: flex; justify-content: center; }
+.mt-bar-right { display: flex; gap: 8px; justify-content: flex-end; color: var(--gold); }
+.mt-ico {
+  width: 28px; height: 28px; flex: 0 0 auto;
+  border: 1px solid var(--gold-dim);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-ui); font-size: 14px; color: var(--gold);
+}
+
+/* ── BoardStrip — six mini pads, mode-reactive ──────────────────── */
+.mt-board {
+  display: flex; gap: 8px; padding: 14px 16px;
+  transition: background .32s ease;
+  background-color: var(--night);
+}
+.mt-board.is-setup { background-size: 16px 16px; }
+.mt-board.is-game {
+  background:
+    radial-gradient(95% 130% at 50% 135%, var(--mode-game-soft), transparent 62%),
+    var(--night);
+}
+.mt-pad {
+  flex: 1; height: 50px; position: relative;
+  background: var(--surface); border: 1px solid var(--border);
+}
+.mt-pad::before {
+  content: ""; position: absolute; left: 0; top: 0; bottom: 0;
+  width: 4px; background: var(--spine, var(--gold)); opacity: .85;
+}
+.mt-pad.loop     { --spine: var(--pad-loop); }
+.mt-pad.single   { --spine: var(--pad-single); }
+.mt-pad.playlist { --spine: var(--pad-playlist); }
+.mt-pad.combo    { --spine: var(--pad-combo); }
+.mt-pad.is-setup { border-style: dashed; border-color: var(--border-strong); }
+.mt-pad.is-setup::before { opacity: .5; }
+.mt-pad.is-hot {
+  border-color: var(--pad-loop);
+  box-shadow: 0 0 6px var(--pad-loop-glow), 0 0 14px var(--pad-loop-glow);
+}
+.mt-pad.is-hot::before { width: 6px; }
+.mt-pad-key {
+  position: absolute; top: 5px; right: 5px;
+  font-family: var(--font-mono); font-size: 10px; color: var(--text-dim);
+  border: 1px solid var(--border); background: var(--sunk); padding: 0 4px;
+}
+.mt-pad-handle {
+  position: absolute; top: 4px; left: 7px;
+  color: var(--border-strong); font-size: 12px; line-height: 1;
+  letter-spacing: -1px;
+}
+
+/* shared focus ring for keyboard users */
+.mt-frame button:focus-visible { outline: 2px solid var(--border-strong); outline-offset: 2px; }
+
+/* ════════════════════════════════════════════════════════════════
+   1 · SPLIT — two halves, active half colored (refined current)
+   ════════════════════════════════════════════════════════════════ */
+.mt1 {
+  --pix-step: 4px; --pix-bg: var(--sunk); --pix-border: var(--border);
+  display: inline-flex; align-items: stretch;
+  font-family: var(--font-ui); font-size: 22px; letter-spacing: .14em; line-height: 1;
+  transition: --pix-border .25s;
+}
+.mt1.is-setup { --pix-border: var(--mode-setup); }
+.mt1.is-game  { --pix-border: var(--gold); }
+.mt1-half {
+  background: transparent; border: 0; font: inherit; letter-spacing: inherit;
+  color: var(--text-mute); padding: 9px 22px; cursor: pointer;
+  transition: background .22s, text-shadow .22s;
+}
+.mt1.is-setup .mt1-half[data-side="setup"] {
+  color: var(--mode-setup); background: var(--mode-setup-soft);
+  text-shadow: 0 0 8px var(--mode-setup-glow);
+}
+.mt1.is-game .mt1-half[data-side="game"] {
+  color: var(--gold-bright); background: var(--mode-game-soft);
+  text-shadow: 0 0 8px var(--mode-game-glow);
+}
+.mt1-sep { width: 1px; align-self: stretch; background: var(--border); margin: 6px 0; }
+
+/* ════════════════════════════════════════════════════════════════
+   2 · SLIDING SEGMENT — filled thumb glides between halves
+   ════════════════════════════════════════════════════════════════ */
+.mt2 {
+  --pix-step: 4px; --pix-bg: var(--sunk); --pix-border: var(--border);
+  position: relative; display: inline-flex; padding: 4px;
+  font-family: var(--font-ui); font-size: 22px; letter-spacing: .14em; line-height: 1;
+}
+.mt2-thumb {
+  position: absolute; z-index: 0; top: 4px; bottom: 4px; left: 4px; width: 112px;
+  background: var(--mode-setup); box-shadow: 0 0 12px var(--mode-setup-glow);
+  transition: transform .28s cubic-bezier(.5,1.45,.5,1), background .28s, box-shadow .28s;
+}
+.mt2.is-game .mt2-thumb {
+  transform: translateX(112px);
+  background: var(--gold-bright); box-shadow: 0 0 12px var(--mode-game-glow);
+}
+.mt2-half {
+  position: relative; z-index: 1; width: 112px; text-align: center;
+  background: transparent; border: 0; font: inherit; letter-spacing: inherit;
+  color: var(--text-mute); padding: 8px 0; cursor: pointer;
+}
+.mt2.is-setup .mt2-half[data-side="setup"],
+.mt2.is-game  .mt2-half[data-side="game"] { color: var(--text-on-gold); }
+
+/* ════════════════════════════════════════════════════════════════
+   3 · HARDWARE ROCKER — chunky knob slides in a pixel track
+   ════════════════════════════════════════════════════════════════ */
+.mt3 {
+  display: flex; align-items: center; gap: 12px;
+  font-family: var(--font-ui); font-size: 18px; letter-spacing: .12em;
+}
+.mt3-side { color: var(--text-mute); transition: text-shadow .2s; }
+.mt3.is-setup .mt3-side[data-side="setup"] {
+  color: var(--mode-setup); text-shadow: 0 0 8px var(--mode-setup-glow);
+}
+.mt3.is-game .mt3-side[data-side="game"] {
+  color: var(--gold-bright); text-shadow: 0 0 8px var(--mode-game-glow);
+}
+.mt3-track {
+  position: relative; width: 86px; height: 34px; flex: 0 0 auto;
+  --pix-step: 4px; --pix-bg: var(--sunk); --pix-border: var(--border);
+  border: 0; padding: 0; cursor: pointer; transition: --pix-border .2s;
+}
+.mt3.is-setup .mt3-track { --pix-border: var(--mode-setup); }
+.mt3.is-game  .mt3-track { --pix-border: var(--gold); }
+.mt3-knob {
+  position: absolute; top: 4px; left: 4px; width: 36px; height: 22px;
+  background: var(--mode-setup);
+  box-shadow: 0 0 0 1px rgba(0,0,0,.5), 0 0 10px var(--mode-setup-glow);
+  display: flex; gap: 3px; align-items: center; justify-content: center;
+  transition: transform .26s cubic-bezier(.5,1.55,.5,1), background .26s, box-shadow .26s;
+}
+.mt3.is-game .mt3-knob {
+  transform: translateX(42px);
+  background: var(--gold-bright);
+  box-shadow: 0 0 0 1px rgba(0,0,0,.5), 0 0 10px var(--mode-game-glow);
+}
+.mt3-knob i { width: 2px; height: 11px; background: rgba(0,0,0,.45); }
+
+/* ════════════════════════════════════════════════════════════════
+   4 · KNIFE-SWITCH LEVER — handle throws between two seats (physical)
+   ════════════════════════════════════════════════════════════════ */
+.mt4 { --lev: var(--mode-setup); display: flex; align-items: center; gap: 14px; }
+.mt4.is-game { --lev: var(--gold-bright); }
+.mt4-seat {
+  background: none; border: 0; cursor: pointer;
+  font-family: var(--font-ui); font-size: 18px; letter-spacing: .12em;
+  color: var(--text-mute); transition: text-shadow .2s;
+}
+.mt4.is-setup .mt4-seat[data-side="setup"] {
+  color: var(--mode-setup); text-shadow: 0 0 8px var(--mode-setup-glow);
+}
+.mt4.is-game .mt4-seat[data-side="game"] {
+  color: var(--gold-bright); text-shadow: 0 0 8px var(--mode-game-glow);
+}
+.mt4-throw {
+  position: relative; width: 76px; height: 44px;
+  border: 0; background: none; cursor: pointer; padding: 0;
+}
+.mt4-plate {
+  position: absolute; left: 0; right: 0; bottom: 0; height: 16px;
+  background: var(--sunk); border: 1px solid var(--border);
+}
+.mt4-plate::before, .mt4-plate::after {
+  content: ""; position: absolute; top: 4px; width: 6px; height: 6px;
+  background: var(--border-strong);
+}
+.mt4-plate::before { left: 10px; }
+.mt4-plate::after  { right: 10px; }
+.mt4-lever {
+  position: absolute; left: 50%; bottom: 9px; width: 7px; height: 30px;
+  background: var(--lev); transform-origin: bottom center;
+  transform: translateX(-50%) rotate(-34deg);
+  transition: transform .3s cubic-bezier(.5,1.7,.45,1), background .3s;
+}
+.mt4.is-game .mt4-lever { transform: translateX(-50%) rotate(34deg); }
+.mt4-ball {
+  position: absolute; top: -10px; left: 50%; transform: translateX(-50%);
+  width: 18px; height: 18px; border-radius: 50%;
+  background: radial-gradient(circle at 38% 30%, rgba(255,255,255,.5), transparent 55%), var(--lev);
+  box-shadow: 0 0 10px var(--lev);
+}
+
+/* ════════════════════════════════════════════════════════════════
+   5 · FADER — cap slides along a track, fill follows
+   ════════════════════════════════════════════════════════════════ */
+.mt5 {
+  display: flex; align-items: center; gap: 12px;
+  font-family: var(--font-ui); font-size: 16px; letter-spacing: .12em;
+}
+.mt5-end {
+  background: none; border: 0; cursor: pointer; font: inherit; letter-spacing: inherit;
+  color: var(--text-mute); transition: text-shadow .2s;
+}
+.mt5.is-setup .mt5-end[data-side="setup"] {
+  color: var(--mode-setup); text-shadow: 0 0 8px var(--mode-setup-glow);
+}
+.mt5.is-game .mt5-end[data-side="game"] {
+  color: var(--gold-bright); text-shadow: 0 0 8px var(--mode-game-glow);
+}
+.mt5-track {
+  position: relative; width: 124px; height: 10px; flex: 0 0 auto;
+  background: var(--sunk); border: 1px solid var(--border-soft); cursor: pointer;
+}
+.mt5-fill {
+  position: absolute; inset: 0 auto 0 0; width: 12%;
+  background: var(--mode-setup);
+  transition: width .28s cubic-bezier(.5,1.3,.5,1), background .28s;
+}
+.mt5.is-game .mt5-fill { width: 90%; background: linear-gradient(90deg, var(--mode-setup), var(--gold)); }
+.mt5-cap {
+  position: absolute; top: 50%; left: 12%; width: 14px; height: 26px;
+  transform: translate(-50%, -50%);
+  background: var(--mode-setup);
+  box-shadow: 0 0 0 1px rgba(0,0,0,.5), 0 0 8px var(--mode-setup-glow);
+  transition: left .28s cubic-bezier(.5,1.4,.5,1), background .28s, box-shadow .28s;
+}
+.mt5.is-game .mt5-cap {
+  left: 90%; background: var(--gold-bright);
+  box-shadow: 0 0 0 1px rgba(0,0,0,.5), 0 0 8px var(--mode-game-glow);
+}
+
+/* ════════════════════════════════════════════════════════════════
+   6 · ARCADE LIGHT-BUTTONS — two illuminated push buttons
+   ════════════════════════════════════════════════════════════════ */
+.mt6 { display: flex; gap: 10px; }
+.mt6-btn {
+  display: flex; align-items: center; gap: 9px;
+  --pix-step: 4px; --pix-bg: var(--sunk); --pix-border: var(--border);
+  border: 0; cursor: pointer; padding: 9px 15px;
+  font-family: var(--font-ui); font-size: 17px; letter-spacing: .12em;
+  color: var(--text-mute);
+  transition: transform .06s, --pix-border .18s;
+}
+.mt6-btn:active { transform: translateY(2px); }
+.mt6-led {
+  width: 8px; height: 8px; flex: 0 0 auto;
+  background: var(--border-strong); transition: background .18s, box-shadow .18s;
+}
+.mt6-btn.setup.lit {
+  --pix-bg: var(--mode-setup-soft); --pix-border: var(--mode-setup); color: var(--mode-setup);
+}
+.mt6-btn.setup.lit .mt6-led { background: var(--mode-setup); box-shadow: 0 0 9px var(--mode-setup-glow); }
+.mt6-btn.game.lit {
+  --pix-bg: var(--mode-game-soft); --pix-border: var(--gold); color: var(--gold-bright);
+}
+.mt6-btn.game.lit .mt6-led { background: var(--gold-bright); box-shadow: 0 0 9px var(--mode-game-glow); }
+
+/* ════════════════════════════════════════════════════════════════
+   7 · TABS — sliding underline indicator (minimal)
+   ════════════════════════════════════════════════════════════════ */
+.mt7 {
+  position: relative; display: inline-flex;
+  font-family: var(--font-ui); font-size: 20px; letter-spacing: .12em;
+  border-bottom: 1px solid var(--border); padding-bottom: 9px;
+}
+.mt7-tab {
+  width: 92px; text-align: center;
+  background: none; border: 0; font: inherit; letter-spacing: inherit;
+  color: var(--text-mute); cursor: pointer; padding: 2px 0;
+  transition: text-shadow .22s;
+}
+.mt7.is-setup .mt7-tab[data-side="setup"] {
+  color: var(--mode-setup); text-shadow: 0 0 8px var(--mode-setup-glow);
+}
+.mt7.is-game .mt7-tab[data-side="game"] {
+  color: var(--gold-bright); text-shadow: 0 0 8px var(--mode-game-glow);
+}
+.mt7-ind {
+  position: absolute; bottom: -1px; left: 0; height: 2px; width: 92px;
+  background: var(--mode-setup); box-shadow: 0 0 8px var(--mode-setup-glow);
+  transition: transform .26s cubic-bezier(.5,1.3,.5,1), background .26s, box-shadow .26s;
+}
+.mt7.is-game .mt7-ind {
+  transform: translateX(92px);
+  background: var(--gold); box-shadow: 0 0 8px var(--mode-game-glow);
+}
+
+/* ════════════════════════════════════════════════════════════════
+   8 · MODE-PLATE — one big stamped plate, dramatic flip + bar tint
+   ════════════════════════════════════════════════════════════════ */
+.mt8 {
+  display: flex; align-items: center; gap: 16px; padding: 8px 22px;
+  flex: 0 0 auto; white-space: nowrap;
+  --pix-step: 5px; --pix-bg: var(--sunk); --pix-border: var(--mode-setup);
+  border: 0; cursor: pointer; transition: --pix-border .32s;
+}
+.mt8.is-game { --pix-border: var(--gold); }
+.mt8-icon { display: flex; color: var(--mode-setup); }
+.mt8.is-game .mt8-icon { color: var(--gold-bright); }
+.mt8-label {
+  font-family: var(--font-ui); font-size: 28px; line-height: 1; letter-spacing: .1em;
+  white-space: nowrap; min-width: 86px; text-align: center;
+  color: var(--mode-setup); text-shadow: 0 0 12px var(--mode-setup-glow);
+  transition: text-shadow .32s; transform-origin: center;
+}
+.mt8.is-game .mt8-label { color: var(--gold-bright); text-shadow: 0 0 12px var(--mode-game-glow); }
+.mt8-hint {
+  font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em;
+  color: var(--text-mute); white-space: nowrap;
+}
+.mt8.is-stamp .mt8-label { animation: mt8-stamp .36s ease-out; }
+@keyframes mt8-stamp {
+  0%   { transform: scale(1.28); filter: brightness(1.7); }
+  55%  { transform: scale(.95); }
+  100% { transform: scale(1); filter: brightness(1); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .mt2-thumb, .mt3-knob, .mt4-lever, .mt5-cap, .mt5-fill, .mt7-ind { transition: none; }
+  .mt8.is-stamp .mt8-label { animation: none; }
+}
+
+/* ════════════════════════════════════════════════════════════════
+   HEBEL · INTEGRATION — shared lever mechanic, mounted three ways
+   so the switch reads as built INTO the bar, not stuck on top.
+   ════════════════════════════════════════════════════════════════ */
+.lev { --lev: var(--mode-setup); }
+.lev.is-game { --lev: var(--gold-bright); }
+
+/* shared arm + ball */
+.lev-arm {
+  position: absolute; left: 50%; bottom: 0; width: 7px; height: 27px;
+  background: linear-gradient(90deg, color-mix(in srgb, var(--lev) 70%, #000) 0 40%, var(--lev) 40%);
+  transform-origin: bottom center; transform: translateX(-50%) rotate(-33deg); z-index: 3;
+  transition: transform .3s cubic-bezier(.5,1.7,.45,1), background .3s;
+}
+.lev.is-game .lev-arm { transform: translateX(-50%) rotate(33deg); }
+.lev-ball {
+  position: absolute; top: -10px; left: 50%; transform: translateX(-50%);
+  width: 17px; height: 17px; border-radius: 50%;
+  background: radial-gradient(circle at 37% 30%, rgba(255,255,255,.6), transparent 55%), var(--lev);
+  box-shadow: 0 0 10px var(--lev), 0 2px 3px rgba(0,0,0,.6);
+}
+/* engraved end-labels — carved into the housing, light up with the mode */
+.lev-engrave {
+  background: none; border: 0; cursor: pointer;
+  font-family: var(--font-ui); font-size: 16px; letter-spacing: .12em;
+  color: var(--text-mute);
+  text-shadow: 0 1px 0 rgba(255,255,255,.07), 0 -1px 0 rgba(0,0,0,.55);
+  transition: text-shadow .2s;
+}
+.lev.is-setup .lev-engrave[data-side="setup"] {
+  color: var(--mode-setup); text-shadow: 0 0 8px var(--mode-setup-glow);
+}
+.lev.is-game .lev-engrave[data-side="game"] {
+  color: var(--gold-bright); text-shadow: 0 0 8px var(--mode-game-glow);
+}
+.lev-screw {
+  position: absolute; width: 7px; height: 7px; border-radius: 50%;
+  /* brass rivet — domed head catching light from top-left, like the cog */
+  background: radial-gradient(circle at 35% 30%, var(--gold-bright, #f5d57a), var(--gold, #d4b25c) 45%, #6f5420 80%, #3a2a10 100%);
+  box-shadow:
+    inset 0 0 0 .5px rgba(0,0,0,.55),          /* seated rim */
+    0 1px 1.5px rgba(0,0,0,.6),                 /* cast shadow below */
+    0 0 0 1px rgba(0,0,0,.35);                  /* countersink ring */
+}
+.lev-throw {
+  position: relative; background: none; border: 0; cursor: pointer; padding: 0;
+}
+
+/* ── A · KONSOLEN-PLATTE — raised, beveled, screw-mounted console ── */
+.mt4a-console {
+  position: relative; display: flex; align-items: center; gap: 13px;
+  padding: 7px 22px; --pix-step: 4px; --pix-border: var(--border-strong);
+  transition: --pix-border .32s;
+  --pix-bg-layer:
+    linear-gradient(180deg, var(--pad-edge-light) 0%, transparent 30%) padding-box,
+    linear-gradient(0deg,   var(--pad-edge-dark)  0%, transparent 38%) padding-box,
+    linear-gradient(var(--raised), var(--raised)) padding-box;
+}
+/* the whole console frame takes on the mode colour, like the stone */
+.lev.is-setup .mt4a-console { --pix-border: var(--mode-setup); }
+.lev.is-game  .mt4a-console { --pix-border: var(--gold); }
+.mt4a-console .lev-screw:nth-of-type(1) { top: 5px; left: 6px; }
+.mt4a-console .lev-screw:nth-of-type(2) { top: 5px; right: 6px; }
+.mt4a-console .lev-screw:nth-of-type(3) { bottom: 5px; left: 6px; }
+.mt4a-console .lev-screw:nth-of-type(4) { bottom: 5px; right: 6px; }
+/* lower rivets sit further from the light — slightly darker brass */
+.mt4a-console .lev-screw:nth-of-type(3),
+.mt4a-console .lev-screw:nth-of-type(4) { filter: brightness(.78) saturate(.95); }
+.mt4a-throw { width: 46px; height: 34px; }
+.mt4a-mount {
+  position: absolute; left: 50%; bottom: 1px; transform: translateX(-50%);
+  width: 24px; height: 10px;
+  background: linear-gradient(var(--top), var(--surface));
+  border: 1px solid var(--border-strong); border-bottom: 0;
+}
+.mt4a .lev-arm { bottom: 6px; }
+
+/* ── B · EINGELASSENE MULDE — carved recess the lever rises out of ── */
+.mt4b-well {
+  position: relative; display: flex; align-items: center; gap: 13px;
+  padding: 7px 20px 9px; --pix-step: 4px; --pix-border: var(--border);
+  --pix-bg-layer:
+    linear-gradient(180deg, var(--pad-edge-dark)  0%, transparent 40%) padding-box,
+    linear-gradient(0deg,   var(--pad-edge-light) 0%, transparent 26%) padding-box,
+    linear-gradient(var(--sunk), var(--sunk)) padding-box;
+}
+.mt4b-throw { width: 46px; height: 32px; }
+.mt4b-slot {
+  position: absolute; left: 50%; bottom: 4px; transform: translateX(-50%);
+  width: 28px; height: 7px; background: #000;
+  box-shadow: inset 0 2px 3px rgba(0,0,0,.9), 0 1px 0 rgba(255,255,255,.05);
+  z-index: 1;
+}
+.mt4b .lev-arm { bottom: 4px; }
+.mt4b .lev-arm::after {
+  content: ""; position: absolute; left: 50%; bottom: -3px; transform: translateX(-50%);
+  width: 13px; height: 6px; border-radius: 50%;
+  background: radial-gradient(ellipse, rgba(0,0,0,.55), transparent 70%);
+}
+
+/* ── C · SCHALTKULISSE — ball rides a milled slot between two detents ── */
+.mt4c-gate {
+  position: relative; display: flex; flex-direction: column; align-items: center; gap: 5px;
+  padding: 6px 16px 7px; --pix-step: 4px; --pix-border: var(--border-strong);
+  --pix-bg-layer:
+    linear-gradient(180deg, var(--pad-edge-light) 0%, transparent 28%) padding-box,
+    linear-gradient(0deg,   var(--pad-edge-dark)  0%, transparent 34%) padding-box,
+    linear-gradient(var(--raised), var(--raised)) padding-box;
+}
+.mt4c-track {
+  position: relative; width: 132px; height: 26px;
+  background: none; border: 0; cursor: pointer; padding: 0;
+}
+.mt4c-slot {
+  position: absolute; top: 50%; left: 14px; right: 14px; height: 10px;
+  transform: translateY(-50%); background: var(--sunk);
+  box-shadow: inset 0 2px 3px rgba(0,0,0,.7), inset 0 -1px 0 rgba(255,255,255,.05);
+}
+.mt4c-detent {
+  position: absolute; top: 50%; width: 18px; height: 18px; border-radius: 50%;
+  transform: translateY(-50%); background: var(--sunk);
+  box-shadow: inset 0 1px 3px rgba(0,0,0,.85), inset 0 -1px 0 rgba(255,255,255,.05);
+}
+.mt4c-detent.l { left: 8px; }
+.mt4c-detent.r { right: 8px; }
+.mt4c-ball {
+  position: absolute; top: 50%; left: 17px; transform: translate(-50%, -50%);
+  width: 19px; height: 19px; border-radius: 50%; z-index: 2;
+  background: radial-gradient(circle at 37% 30%, rgba(255,255,255,.6), transparent 55%), var(--lev);
+  box-shadow: 0 0 10px var(--lev), 0 2px 3px rgba(0,0,0,.6);
+  transition: left .3s cubic-bezier(.5,1.5,.5,1), background .3s;
+}
+.mt4c.is-game .mt4c-ball { left: calc(100% - 17px); }
+.mt4c-labels {
+  display: flex; justify-content: space-between; width: 132px;
+  padding: 0 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lev-arm, .mt4c-ball { transition: none; }
+}
+
+/* ════════════════════════════════════════════════════════════════
+   HEBEL-KOPF · CHARAKTER — swappable lever heads on the console.
+   Shared rotation + mount; each .lhead-* restyles the shaft + knob
+   so the lever stops looking smooth/neutral.
+   ════════════════════════════════════════════════════════════════ */
+.lh-arm {
+  position: absolute; left: 50%; bottom: 6px; transform-origin: bottom center;
+  transform: translateX(-50%) rotate(-33deg); z-index: 3;
+  transition: transform .3s cubic-bezier(.5,1.7,.45,1);
+}
+.lev.is-game .lh-arm { transform: translateX(-50%) rotate(33deg); }
+.lh-knob { position: absolute; left: 50%; transform: translateX(-50%); }
+.lh-collar {
+  position: absolute; left: 50%; bottom: 10px; transform: translateX(-50%);
+  width: 17px; height: 6px; z-index: 2;
+  background: linear-gradient(var(--top), var(--surface));
+  border: 1px solid var(--border-strong);
+}
+
+/* ── Pixel-Knauf — faceted, stepped octagon knob ── */
+.lhead-pixel .lh-arm {
+  width: 8px; height: 23px;
+  background: linear-gradient(90deg, rgba(0,0,0,.5) 0 28%, var(--lev) 28% 60%, rgba(0,0,0,.35) 60%);
+}
+.lhead-pixel .lh-knob {
+  top: -14px; width: 22px; height: 22px; background: var(--lev);
+  clip-path: polygon(32% 0,68% 0,100% 32%,100% 68%,68% 100%,32% 100%,0 68%,0 32%);
+  box-shadow: 0 0 10px var(--lev), 0 2px 3px rgba(0,0,0,.6);
+}
+.lhead-pixel .lh-knob::before {
+  content: ""; position: absolute; inset: 0;
+  clip-path: polygon(32% 0,68% 0,100% 32%,100% 68%,68% 100%,32% 100%,0 68%,0 32%);
+  background: linear-gradient(150deg, rgba(255,255,255,.5), transparent 45%);
+}
+.lhead-pixel .lh-knob::after {
+  content: ""; position: absolute; inset: 7px; background: rgba(0,0,0,.32);
+  clip-path: polygon(30% 0,70% 0,100% 30%,100% 70%,70% 100%,30% 100%,0 70%,0 30%);
+}
+
+/* ── Geriffelter Schaft — horizontal grip ribs + collar ── */
+.lhead-ribbed .lh-arm {
+  width: 10px; height: 23px;
+  background: repeating-linear-gradient(0deg, var(--lev) 0 2px, rgba(0,0,0,.5) 2px 4px);
+}
+.lhead-ribbed .lh-knob {
+  top: -12px; width: 18px; height: 18px; border-radius: 50%;
+  background: radial-gradient(circle at 38% 30%, rgba(255,255,255,.6), transparent 55%), var(--lev);
+  box-shadow: 0 0 10px var(--lev), 0 2px 3px rgba(0,0,0,.6);
+}
+
+/* ── Bat-Griff — toggle bat: narrow base flaring to a paddle cap ── */
+.lhead-bat .lh-arm {
+  width: 16px; height: 25px;
+  background: linear-gradient(90deg, rgba(0,0,0,.5) 0%, var(--lev) 42%, var(--lev) 58%, rgba(0,0,0,.42) 100%);
+  clip-path: polygon(12% 0, 88% 0, 66% 100%, 34% 100%);
+}
+.lhead-bat .lh-knob {
+  top: -3px; width: 23px; height: 9px; border-radius: 5px;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--lev) 70%, #fff) 0%, var(--lev) 55%, color-mix(in srgb, var(--lev) 65%, #000) 100%);
+  box-shadow: 0 0 10px var(--lev), 0 2px 3px rgba(0,0,0,.6);
+}
+
+/* ── Rändel-Kugel — crosshatch knurled ball + collar ── */
+.lhead-knurl .lh-arm {
+  width: 7px; height: 21px;
+  background: linear-gradient(90deg, rgba(0,0,0,.45) 0 30%, var(--lev) 30% 62%, rgba(0,0,0,.3) 62%);
+}
+.lhead-knurl .lh-knob {
+  top: -14px; width: 21px; height: 21px; border-radius: 50%;
+  background:
+    repeating-linear-gradient(45deg, rgba(0,0,0,.3) 0 2px, transparent 2px 4px),
+    repeating-linear-gradient(-45deg, rgba(0,0,0,.3) 0 2px, transparent 2px 4px),
+    radial-gradient(circle at 37% 30%, rgba(255,255,255,.5), transparent 55%),
+    var(--lev);
+  box-shadow: 0 0 10px var(--lev), 0 2px 3px rgba(0,0,0,.6);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lh-arm { transition: none; }
+}
+
+/* ════════════════════════════════════════════════════════════════
+   ZAHNRAD — an old brass cog half-emerging from a shaft; a colored
+   marker rotates with it and points to SETUP / GAME (replaces the
+   lever). Console housing is reused unchanged.
+   ════════════════════════════════════════════════════════════════ */
+.cogw {
+  position: relative; width: 70px; height: 34px;
+  background: none; border: 0; cursor: pointer; padding: 0;
+  clip-path: inset(-28px -14px -6px -14px);
+}
+.cog {
+  position: absolute; left: 50%; top: 6px; width: 56px; height: 56px; border-radius: 50%;
+  transform: translateX(-50%) rotate(-65deg);
+  transition: transform .34s cubic-bezier(.34,1.56,.5,1);
+}
+/* teeth share the body's radial lighting (light top-left → dark bottom-right),
+   punched into tooth shape by a conic mask — wheel + teeth read as ONE body. */
+.cog-teeth {
+  position: absolute; inset: 0; border-radius: 50%; z-index: 0;
+  background: radial-gradient(circle at 37% 30%, var(--gold), var(--gold-dim) 58%, #3a2c14 100%);
+  -webkit-mask: repeating-conic-gradient(from 0deg, #000 0 7.5deg, transparent 7.5deg 15deg);
+  mask: repeating-conic-gradient(from 0deg, #000 0 7.5deg, transparent 7.5deg 15deg);
+}
+.lev.is-game .cog { transform: translateX(-50%) rotate(65deg); }
+.cog-body {
+  position: absolute; inset: 5px; border-radius: 50%; z-index: 1;
+  /* same lighting as .cog-teeth, recomputed for the inset box: identical
+     absolute light point + stop radii → body and teeth shade as one piece */
+  background: radial-gradient(circle at 34.2% 25.7%, var(--gold), var(--gold-dim) 67%, #3a2c14 115.5%);
+  box-shadow: inset 0 0 4px rgba(0,0,0,.35);
+}
+.cog::after {
+  content: ""; position: absolute; inset: 41%; border-radius: 50%; z-index: 1;
+  background: radial-gradient(circle, #000, var(--sunk));
+  box-shadow: inset 0 0 0 1px rgba(0,0,0,.7), 0 0 0 1px rgba(212,178,92,.3);
+}
+.cog-mark { position: absolute; left: 50%; transform: translateX(-50%); z-index: 2; }
+/* engraved ornaments cut into the brass face — share the marker colour so
+   they shift setup→game with the hand, with a faint carved edge + glow. */
+.cog-orn {
+  position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+  width: 84%; height: 84%; z-index: 2; pointer-events: none; overflow: visible;
+  /* carved edge in dark brass — same tone as the pointer-tip engraving (#5c4314) */
+  filter: drop-shadow(0 .6px 0 rgba(92,67,20,.8)) drop-shadow(0 0 2px var(--lev));
+  transition: filter .34s;
+}
+.cog-orn [data-orn] {
+  fill: none; stroke: var(--lev); vector-effect: non-scaling-stroke;
+  stroke-linecap: round; opacity: .8; transition: opacity .34s;
+}
+.cog-orn [data-orn="rim"]  { stroke-width: 1.1; }
+.cog-orn [data-orn="ring"] { stroke-width: .9; opacity: .65; }
+.cog-orn [data-orn="tick"] { stroke-width: 1; }
+.cog-orn [data-orn="bead"] { fill: var(--lev); stroke: none; opacity: .85; }
+.lev.is-game .cog-orn [data-orn] { opacity: .92; }
+/* clock hand — antique Breguet-ish: slim shaft, thick pierced head,
+   drawn as an SVG so the dark keyline (stroke) survives the shape. */
+.cog-hand {
+  position: absolute; left: 50%; top: -11px; transform: translateX(-50%);
+  width: 18px; height: 46px; z-index: 3; overflow: visible;
+  filter: drop-shadow(0 0 4px var(--lev));
+}
+.cog-hand > path {
+  fill: var(--lev); stroke: #0b0a06; stroke-width: 2; stroke-linejoin: round;
+}
+/* ── BRASS POINTER FAMILY ─────────────────────────────────────────
+   the hand is cast in the same brass as the wheel (gradient + dark
+   keyline), with a narrow shaft swelling to a wider tip. A small
+   inlay (eye / channel / gem / moon) glows in the marker colour and
+   flips setup→game like the old hand did. */
+.cog-hand--brass { filter: drop-shadow(0 1px 1.2px rgba(0,0,0,.7)); }
+.cog-hand--brass .ch-body {
+  stroke: #140e05; stroke-width: 1.3; stroke-linejoin: round; stroke-linecap: round;
+}
+.cog-hand--brass .ch-edge {           /* top-lit highlight on one flank */
+  fill: none; stroke: rgba(255,241,205,.55); stroke-width: .7; stroke-linecap: round;
+}
+.cog-hand--brass .ch-ring {           /* brass bezel around an inlay */
+  fill: none; stroke: #140e05; stroke-width: 1.1;
+}
+.cog-hand--brass .ch-orn {            /* colour-changing jewel / lume */
+  fill: var(--lev);
+  filter: drop-shadow(0 0 2.4px var(--lev));
+}
+/* the stone glows from within and breathes — a slow, subliminal swell.
+   brightness lifts the core (inner glow), the drop-shadow widens with it. */
+/* the stone glows from within and breathes — a slow, subliminal swell.
+   brightness lifts the core (inner glow), the drop-shadow widens with it.
+   (no reduced-motion gate: the swell is gentle and 5.6s slow by design) */
+.cog-hand--brass .ch-orn { animation: stoneBreath 5.6s ease-in-out infinite; }
+@keyframes stoneBreath {
+  0%, 100% { filter: brightness(1) saturate(1) drop-shadow(0 0 2.2px var(--lev)); }
+  50%      { filter: brightness(1.22) saturate(1.12) drop-shadow(0 0 4.6px var(--lev)); }
+}
+/* the shaft shimmer breathes in step with the stone — same 5.6s cycle */
+.cog-hand--brass .ch-shimmer { animation: shimmerBreath 5.6s ease-in-out infinite; }
+@keyframes shimmerBreath {
+  0%, 100% { opacity: .6;  filter: blur(.25px) brightness(1)    drop-shadow(0 0 1.2px var(--lev)); }
+  50%      { opacity: .85; filter: blur(.25px) brightness(1.22) drop-shadow(0 0 2.8px var(--lev)); }
+}
+/* lit core — a soft bright heart inside the stone that swells with it */
+.cog-hand--brass .ch-core {
+  fill: #fff; opacity: .32; filter: blur(.7px); pointer-events: none;
+  animation: coreBreath 5.6s ease-in-out infinite;
+}
+@keyframes coreBreath {
+  0%, 100% { opacity: .26; }
+  50%      { opacity: .5; }
+}
+.cog-hand--brass .ch-orn-line {       /* colour-changing engraved channel */
+  fill: none; stroke: var(--lev); stroke-linecap: round;
+  filter: drop-shadow(0 0 2px var(--lev));
+}
+.cog-hand--brass .ch-spec { fill: rgba(255,255,255,.85); }
+/* fixed light: the stone's highlight stays screen-top-left by counter-
+   rotating against the wheel's ±65° spin (driven inline from the mode;
+   no transition — it snaps to the correct side rather than sweeping). */
+.lev.is-game .cog-hand--brass .ch-orn { filter: drop-shadow(0 0 3.4px var(--lev)); }
+.lev.is-game .cog-hand--brass .ch-orn { animation: stoneBreathGame 5.6s ease-in-out infinite; }
+@keyframes stoneBreathGame {
+  0%, 100% { filter: brightness(1) saturate(1) drop-shadow(0 0 3.2px var(--lev)); }
+  50%      { filter: brightness(1.24) saturate(1.12) drop-shadow(0 0 6px var(--lev)); }
+}
+
+/* ── JUGENDSTIL POINTERS ──────────────────────────────────────────
+   bigger ornate brass head — a set, colour-changing cabochon framed
+   by Art-Nouveau scrollwork, with a discreet engraved vine on the
+   shaft. Larger canvas (30×80) but pivot still on the wheel centre. */
+.gear-xl .cog-hand.cog-hand--jug { width: 30px; height: 80px; top: -20px; z-index: 5; }
+.gear-jug .cog-mini { width: 34px; height: 34px; }
+.gear-jug.gear-socket .cog-mini::after { inset: 20%; }
+.cog-hand--brass .ch-ring2 {           /* brass bezel collar around the stone */
+  fill: none; stroke: #140e05; stroke-width: 1.1;
+}
+.cog-hand--brass .ch-set {             /* dark recessed setting that lifts the stone */
+  fill: #100b05; stroke: rgba(255,241,205,.4); stroke-width: .6;
+}
+.cog-hand--brass .ch-set-shadow {      /* cast shadow of the setting — fixed bottom-right */
+  fill: rgba(0,0,0,.5); filter: blur(1px);
+}
+.cog-hand--brass .ch-engrave {         /* fine incision — mostly a light catch, only a whisper of groove */
+  fill: none; stroke: rgba(74,54,22,.42); stroke-width: .6; stroke-linecap: round; stroke-linejoin: round;
+  filter: drop-shadow(0 .5px 0 rgba(255,246,219,.6));
+}
+/* true incision under top light: dark groove wall above, lit lip below.
+   Each motif path is drawn twice — .ch-eng-l offset slightly down. */
+.cog-hand--brass .ch-eng-d {
+  fill: none; stroke: #5c4314; stroke-width: .55; opacity: .6;
+  stroke-linecap: round; stroke-linejoin: round;
+}
+.cog-hand--brass .ch-eng-l {
+  fill: none; stroke: rgba(244,205,118,.38); stroke-width: .55;
+  stroke-linecap: round; stroke-linejoin: round;
+}
+.cog-hand--brass .ch-vine {            /* engraved shaft vine — carved, not glowing */
+  fill: none; stroke: #261c0d; stroke-width: 1.1; stroke-linecap: round; opacity: .85;
+  filter: drop-shadow(0 .5px 0 rgba(255,241,205,.32));
+}
+.cog-hand--brass .ch-vine-dot { fill: #261c0d; opacity: .8; }
+.cog-hand--brass .ch-glow-line {       /* engraved ornament that glows + flips colour like the wheel's */
+  fill: none; stroke: var(--lev); stroke-width: 1.1; stroke-linecap: round; opacity: .9;
+  filter: drop-shadow(0 .6px 0 rgba(0,0,0,.6)) drop-shadow(0 0 1.6px var(--lev));
+}
+.cog-hand--brass .ch-bud {             /* tiny colour-changing buds tipping the frame */
+  fill: var(--lev); filter: drop-shadow(0 0 1.6px var(--lev));
+}
+.cog-hub {
+  position: absolute; left: 50%; top: 28px; transform: translate(-50%, -50%);
+  width: 12px; height: 12px; border-radius: 50%; z-index: 5;
+  background: radial-gradient(circle at 38% 32%, var(--gold), var(--gold-dim) 70%);
+  box-shadow: 0 0 0 1px #000, inset 0 1px 0 rgba(255,255,255,.3);
+}
+.cog-lip {
+  position: absolute; left: -6px; right: -6px; bottom: -6px; height: 12px; z-index: 4;
+  /* the slot: the original box, gently softened — short fade on the upper
+     lip, slightly melted sides, stretched a touch below the wheel */
+  background: linear-gradient(to top, #000 0% 58%, rgba(0,0,0,.9) 78%, rgba(2,2,5,.42) 91%, transparent 100%);
+  -webkit-mask: linear-gradient(90deg, transparent 0%, #000 7%, #000 93%, transparent 100%);
+  mask: linear-gradient(90deg, transparent 0%, #000 7%, #000 93%, transparent 100%);
+  pointer-events: none;
+}
+/* ── Messing-Fassung: a machined brass housing the wheel turns in ──
+   replaces the dark slot with a visible brass fixture: domed housing strip,
+   dark bearing slit the gear sinks into, and two rivets. */
+.gear-brassbox .cogw { clip-path: inset(-32px -18px -11px -18px); }
+.gear-brassbox .cog-lip {
+  left: -12px; right: -12px; bottom: -9px; height: 20px;
+  -webkit-mask: none; mask: none;
+  background: linear-gradient(180deg, #f0d289 0%, var(--gold) 26%, #9a7b3c 62%, #5a4520 100%);
+  border-radius: 4px 4px 2px 2px;
+  box-shadow:
+    0 0 0 1px rgba(10,7,2,.7),
+    inset 0 1px 0 rgba(255,243,211,.55),
+    inset 0 -2px 3px rgba(0,0,0,.3),
+    0 2px 3px rgba(0,0,0,.45);
+}
+/* slit + bolts are real elements (pseudo-elements capture poorly); hidden
+   unless the brass housing variant is active */
+.cog-slit, .cog-bolt, .cog-slotback { display: none; }
+/* the dark slot interior BEHIND the wheel — the wheel rises out of it */
+.gear-brassbox .cog-slotback {
+  display: block; position: absolute; left: 50%; transform: translateX(-50%);
+  bottom: -4px; width: 87px; height: 18px; z-index: 0;
+  background: linear-gradient(to bottom, #0a0703, #000 55%);
+  border-radius: 5px / 3px;
+}
+/* the seam where wheel passes the housing's front wall — a thin dark gap */
+.gear-brassbox .cog-slit {
+  display: block; position: absolute; left: 15px; right: 15px; top: -2.5px; height: 5px; z-index: 1;
+  background: linear-gradient(to bottom, rgba(0,0,0,.92), rgba(0,0,0,.25) 75%, transparent);
+  border-radius: 4px / 2.5px;
+}
+.gear-brassbox .cog-bolt {
+  display: block; position: absolute; bottom: 4px; width: 5px; height: 5px; border-radius: 50%; z-index: 2;
+  background: radial-gradient(circle at 35% 30%, #f5d57a, #d4b25c 45%, #6f5420 85%, #3a2a10 100%);
+  box-shadow: inset 0 0 0 .5px rgba(0,0,0,.5), 0 .7px 1px rgba(0,0,0,.55);
+}
+.gear-brassbox .cog-bolt[data-side="l"] { left: 4.5px; }
+.gear-brassbox .cog-bolt[data-side="r"] { right: 4.5px; }
+
+/* ── Bündig zum Rahmen: no box, no housing — the wheel simply runs down
+   to the plate's bottom frame and is cut there. Sunk so a bit more than
+   half of the wheel shows above the cut. */
+.gear-flush .cog-lip { display: none; }
+.gear-flush .cogw { clip-path: inset(-32px -18px -8px -18px); }
+.gear-flush.gear-xl .cog { top: 14px; }
+/* die untere Rahmenkante liegt ÜBER dem Rad — gezeichnet als eigene
+   Schicht in Rahmenfarbe, damit der Rahmen geschlossen bleibt und das
+   Rad darunter in den Schlitz läuft. Folgt der Modusfarbe (--pix-border). */
+.gear-flush .mt4a-console::after {
+  content: ""; position: absolute;
+  /* bottom/left/right beziehen sich auf die Padding-Box — um die echte
+     Rahmenzone zu treffen, um die Rahmendicke nach außen versetzen */
+  left: calc(-1 * var(--pix-thick, 2px));
+  right: calc(-1 * var(--pix-thick, 2px));
+  bottom: calc(-1 * var(--pix-thick, 2px));
+  height: var(--pix-thick, 2px);
+  background: var(--pix-border);
+  z-index: 6; pointer-events: none;
+}
+
+/* sit the whole wheel a little lower — emerging from a slot near the base */
+.gear-clock .mt4a-console { padding-top: 15px; padding-bottom: 13px; }
+.gear-clock .cogw { transform: translateY(5px); }
+
+/* ── soft mode-coloured aura BEHIND the wheel — teal in EDIT, gold in
+   GAME. Painted as a ::before so every cog element stacks above it;
+   the cogw clip-path trims it at the housing so it reads as light
+   spilling out of the slot around the wheel. */
+.gear-clock .cogw::before {
+  content: ""; position: absolute; left: 50%; top: 34px;
+  width: 92px; height: 92px; transform: translate(-50%, -50%);
+  border-radius: 50%; pointer-events: none; z-index: 0;
+  background: radial-gradient(circle,
+    color-mix(in srgb, var(--lev) 32%, transparent) 0%,
+    color-mix(in srgb, var(--lev) 14%, transparent) 42%,
+    transparent 70%);
+  filter: blur(4px);
+}
+.gear-xl .cogw::before { top: 40px; width: 128px; height: 128px; }
+
+/* ── XL · big wheel filling the switch, >half out, central small gear ── */
+.gear-xl .mt4a-console { padding-top: 16px; padding-bottom: 14px; }
+.gear-xl .cogw {
+  width: 96px; height: 52px; clip-path: inset(-32px -18px -6px -18px); transform: translateY(6px);
+}
+.gear-xl .cog-lip { bottom: -6px; height: 14px; }
+.gear-xl .cog { top: 0; width: 80px; height: 80px; }
+.gear-xl .cog-body {
+  inset: 6px;
+  background: radial-gradient(circle at 34.7% 26.5%, var(--gold), var(--gold-dim) 65.3%, #3a2c14 112.5%);
+}
+.gear-xl .cog-hand { width: 24px; height: 63px; top: -13px; z-index: 5; }
+.gear-xl .cog-mini {
+  position: absolute; left: 50%; top: 40px; transform: translate(-50%, -50%);
+  width: 26px; height: 26px; border-radius: 50%; z-index: 4;
+}
+.gear-xl .cog-mini-teeth {
+  position: absolute; inset: 0; border-radius: 50%;
+  background: radial-gradient(circle at 38% 32%, var(--gold), var(--gold-dim) 60%, #3a2c14 100%);
+  -webkit-mask: repeating-conic-gradient(from 0deg, #000 0 6deg, transparent 6deg 12deg);
+  mask: repeating-conic-gradient(from 0deg, #000 0 6deg, transparent 6deg 12deg);
+}
+.gear-xl .cog-mini::before {
+  content: ""; position: absolute; inset: 4px; border-radius: 50%;
+  background: radial-gradient(circle at 38% 32%, var(--gold), var(--gold-dim) 60%, #3a2c14 100%);
+  box-shadow: inset 0 0 3px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.2);
+}
+.gear-xl .cog-mini::after {
+  content: ""; position: absolute; inset: 40%; border-radius: 50%;
+  background: #000; box-shadow: 0 0 0 1px rgba(212,178,92,.35);
+}
+/* bigger, deeper centre socket — the shaft of the moon-pointer plunges
+   into this hole, so it reads as growing out of the wheel, not glued on. */
+.gear-xl.gear-socket .cog-mini { width: 30px; height: 30px; }
+.gear-xl.gear-socket .cog-mini::after {
+  inset: 22%;
+  background: radial-gradient(circle at 50% 36%, #2c2113, #000 70%);
+  box-shadow:
+    inset 0 2px 4px rgba(0,0,0,.95),
+    inset 0 -1px 1px rgba(212,178,92,.22),
+    0 0 0 1px rgba(212,178,92,.45);
+}
+@media (prefers-reduced-motion: reduce) { .cog { transition: none; } }
+
+/* ════════════════════════════════════════════════════════════════
+   LABEL-ENTWÜRFE — EDIT/GAME markanter & lesbarer
+   (Sektion „Zahnrad · Beschriftung“ — Klassen via extra-Prop)
+   ════════════════════════════════════════════════════════════════ */
+
+/* A · SCHWARZE KONTUR — größer, enger, jede Letter dunkel umrandet */
+.lab-ink .lev-engrave {
+  font-size: 21px; letter-spacing: .05em; color: var(--text-dim);
+  text-shadow:
+    -1px 0 0 #000, 1px 0 0 #000, 0 -1px 0 #000, 0 1px 0 #000,
+    -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+}
+.lab-ink.is-setup .lev-engrave[data-side="setup"] {
+  color: var(--mode-setup);
+  text-shadow:
+    -1px 0 0 #000, 1px 0 0 #000, 0 -1px 0 #000, 0 1px 0 #000,
+    -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000,
+    0 0 12px var(--mode-setup-glow);
+}
+.lab-ink.is-game .lev-engrave[data-side="game"] {
+  color: var(--gold-bright);
+  text-shadow:
+    -1px 0 0 #000, 1px 0 0 #000, 0 -1px 0 #000, 0 1px 0 #000,
+    -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000,
+    0 0 12px var(--mode-game-glow);
+}
+
+/* B · MESSING-PLAKETTE — gravierte Namensschilder aus Rad-Messing.
+   Aktiv: volle Helligkeit + Modus-Ring; inaktiv: im Schatten. */
+.lab-plate .lev-engrave {
+  font-size: 15px; letter-spacing: .1em; padding: 3px 8px 2px;
+  color: #241a0b; border-radius: 1px;
+  background: linear-gradient(180deg, #f0d289 0%, var(--gold) 48%, #9a7b3c 100%);
+  text-shadow: 0 1px 0 rgba(255,243,211,.5);
+  box-shadow:
+    0 0 0 1px rgba(10,7,2,.75),
+    inset 0 1px 0 rgba(255,243,211,.6),
+    inset 0 -1px 2px rgba(0,0,0,.35),
+    0 1px 2px rgba(0,0,0,.5);
+  filter: brightness(.68) saturate(.85);
+  transition: filter .22s, box-shadow .22s;
+}
+.lab-plate.is-setup .lev-engrave[data-side="setup"],
+.lab-plate.is-game  .lev-engrave[data-side="game"] {
+  color: #241a0b; text-shadow: 0 1px 0 rgba(255,243,211,.5); filter: none;
+}
+.lab-plate.is-setup .lev-engrave[data-side="setup"] {
+  box-shadow:
+    0 0 0 1px var(--mode-setup), 0 0 12px var(--mode-setup-glow),
+    inset 0 1px 0 rgba(255,243,211,.6), inset 0 -1px 2px rgba(0,0,0,.35);
+}
+.lab-plate.is-game .lev-engrave[data-side="game"] {
+  box-shadow:
+    0 0 0 1px var(--gold-bright), 0 0 12px var(--mode-game-glow),
+    inset 0 1px 0 rgba(255,243,211,.6), inset 0 -1px 2px rgba(0,0,0,.35);
+}
+
+/* C · ANZEIGEFENSTER — dunkle, eingelassene Sichtfenster; die aktive
+   Seite glüht darin wie eine beleuchtete Anzeige. */
+.lab-slate .lev-engrave {
+  font-size: 18px; letter-spacing: .08em; padding: 2px 9px 1px;
+  color: var(--text-mute); text-shadow: none;
+  background: linear-gradient(180deg, #04040a, #10101c);
+  box-shadow:
+    inset 0 1px 3px rgba(0,0,0,.9),
+    inset 0 0 0 1px rgba(0,0,0,.6),
+    0 1px 0 rgba(255,255,255,.07);
+  transition: color .2s, text-shadow .2s;
+}
+.lab-slate.is-setup .lev-engrave[data-side="setup"] {
+  color: var(--mode-setup);
+  text-shadow: 0 0 9px var(--mode-setup-glow), 0 0 18px var(--mode-setup-glow);
+}
+.lab-slate.is-game .lev-engrave[data-side="game"] {
+  color: var(--gold-bright);
+  text-shadow: 0 0 9px var(--mode-game-glow), 0 0 18px var(--mode-game-glow);
+}
+
+/* D · PIXEL-VERSALIEN — Display-Pixelschrift, harter Pixel-Schlagschatten */
+.lab-pixel .lev-engrave {
+  font-family: var(--font-display); font-size: 11px; letter-spacing: .02em;
+  color: var(--text-dim);
+  text-shadow: 1px 1px 0 #000, 2px 2px 0 rgba(0,0,0,.55);
+}
+.lab-pixel.is-setup .lev-engrave[data-side="setup"] {
+  color: var(--mode-setup);
+  text-shadow: 1px 1px 0 #000, 2px 2px 0 rgba(0,0,0,.55), 0 0 10px var(--mode-setup-glow);
+}
+.lab-pixel.is-game .lev-engrave[data-side="game"] {
+  color: var(--gold-bright);
+  text-shadow: 1px 1px 0 #000, 2px 2px 0 rgba(0,0,0,.55), 0 0 10px var(--mode-game-glow);
+}
+
+/* E · GRÖSSER & ENGER — minimale Korrektur: 23 px, Abstand fast null,
+   hellere Grundfarbe, feine dunkle Kante */
+.lab-tight .lev-engrave {
+  font-size: 23px; letter-spacing: .01em; color: var(--text-dim);
+  text-shadow: 0 1px 0 rgba(0,0,0,.85);
+}
+.lab-tight.is-setup .lev-engrave[data-side="setup"] {
+  color: var(--mode-setup);
+  text-shadow: 0 1px 0 rgba(0,0,0,.85), 0 0 12px var(--mode-setup-glow);
+}
+.lab-tight.is-game .lev-engrave[data-side="game"] {
+  color: var(--gold-bright);
+  text-shadow: 0 1px 0 rgba(0,0,0,.85), 0 0 12px var(--mode-game-glow);
+}
+
+/* F · TIEFE GRAVUR — Buchstaben tief ins Gehäuse gekerbt (dunkle Rille,
+   Lichtgrat unten); aktiv füllen sie sich von innen mit Modus-Licht */
+.lab-deep .lev-engrave {
+  font-size: 20px; letter-spacing: .07em; color: #0c0a06;
+  text-shadow:
+    0 1.4px 0 rgba(255,241,205,.38),
+    0 -1px 1px rgba(0,0,0,.9);
+}
+.lab-deep.is-setup .lev-engrave[data-side="setup"] {
+  color: var(--mode-setup);
+  text-shadow: 0 1.4px 0 rgba(0,0,0,.7), 0 0 11px var(--mode-setup-glow);
+}
+.lab-deep.is-game .lev-engrave[data-side="game"] {
+  color: var(--gold-bright);
+  text-shadow: 0 1.4px 0 rgba(0,0,0,.7), 0 0 11px var(--mode-game-glow);
+}
+
+/* ★ B + E · MESSING-PLAKETTE, GRÖSSER & ENGER — die große, eng
+   gesetzte Gravur-Schrift auf Messing-Schildern; fürs bündige Rad */
+.lab-be .lev-engrave {
+  font-size: 19px; letter-spacing: .02em;
+  padding: 1px 8px 0;
+  color: #241a0b; border-radius: 1px;
+  background: linear-gradient(180deg, #f0d289 0%, var(--gold) 48%, #9a7b3c 100%);
+  text-shadow: 0 1px 0 rgba(255,243,211,.5);
+  box-shadow:
+    0 0 0 1px rgba(10,7,2,.75),
+    inset 0 1px 0 rgba(255,243,211,.6),
+    inset 0 -1px 2px rgba(0,0,0,.35),
+    0 1px 2px rgba(0,0,0,.5);
+  filter: brightness(.68) saturate(.85);
+  transition: filter .22s, box-shadow .22s;
+}
+.lab-be.is-setup .lev-engrave[data-side="setup"],
+.lab-be.is-game  .lev-engrave[data-side="game"] { filter: none; }
+/* die aktive Gravur glüht in der Modusfarbe — heißer Kern, Glow-Hof,
+   atmet im 5.6s-Takt synchron zum Stein im Zeiger. Der Kerbrand folgt
+   dem Licht von links oben (Buchstaben vertieft): Schattenwand oben/
+   links 2px dick, rechts unten bleibt der schmale 1px-Rand. */
+.lab-be.is-setup .lev-engrave[data-side="setup"] {
+  color: color-mix(in srgb, var(--mode-setup) 58%, #fff);
+  animation: plaqueEmberSetup 5.6s ease-in-out infinite;
+}
+@keyframes plaqueEmberSetup {
+  0%, 100% {
+    text-shadow:
+      -1px 0 0 #5c4314, 1px 0 0 #5c4314,
+      0 -1px 0 #5c4314, 0 1px 0 #5c4314,
+      -1px -1px 0 #5c4314, 1px -1px 0 #5c4314,
+      -1px 1px 0 #5c4314, 1px 1px 0 #5c4314,
+      -2px 0 0 rgba(92,67,20,.6), 0 -2px 0 rgba(92,67,20,.6),
+      -2px -1px 0 rgba(92,67,20,.55), -1px -2px 0 rgba(92,67,20,.55),
+      -2px -2px 0 rgba(92,67,20,.42),
+      0 0 3px var(--mode-setup),
+      0 0 7px var(--mode-setup-glow),
+      0 0 12px var(--mode-setup-glow);
+  }
+  50% {
+    text-shadow:
+      -1px 0 0 #5c4314, 1px 0 0 #5c4314,
+      0 -1px 0 #5c4314, 0 1px 0 #5c4314,
+      -1px -1px 0 #5c4314, 1px -1px 0 #5c4314,
+      -1px 1px 0 #5c4314, 1px 1px 0 #5c4314,
+      -2px 0 0 rgba(92,67,20,.6), 0 -2px 0 rgba(92,67,20,.6),
+      -2px -1px 0 rgba(92,67,20,.55), -1px -2px 0 rgba(92,67,20,.55),
+      -2px -2px 0 rgba(92,67,20,.42),
+      0 0 4px var(--mode-setup),
+      0 0 10px var(--mode-setup-glow),
+      0 0 20px var(--mode-setup-glow);
+  }
+}
+.lab-be.is-game .lev-engrave[data-side="game"] {
+  /* Modusfarbe Gold — die Lesbarkeit auf dem Messing sichert der dunkle
+     Messingrand (#5c4314), nicht mehr ein Farbversatz */
+  color: var(--gold-bright);
+  animation: plaqueEmberGame 5.6s ease-in-out infinite;
+}
+@keyframes plaqueEmberGame {
+  0%, 100% {
+    text-shadow:
+      -1px 0 0 #5c4314, 1px 0 0 #5c4314,
+      0 -1px 0 #5c4314, 0 1px 0 #5c4314,
+      -1px -1px 0 #5c4314, 1px -1px 0 #5c4314,
+      -1px 1px 0 #5c4314, 1px 1px 0 #5c4314,
+      -2px 0 0 rgba(92,67,20,.6), 0 -2px 0 rgba(92,67,20,.6),
+      -2px -1px 0 rgba(92,67,20,.55), -1px -2px 0 rgba(92,67,20,.55),
+      -2px -2px 0 rgba(92,67,20,.42),
+      0 0 3px var(--gold-bright),
+      0 0 7px var(--mode-game-glow),
+      0 0 12px var(--mode-game-glow);
+  }
+  50% {
+    text-shadow:
+      -1px 0 0 #5c4314, 1px 0 0 #5c4314,
+      0 -1px 0 #5c4314, 0 1px 0 #5c4314,
+      -1px -1px 0 #5c4314, 1px -1px 0 #5c4314,
+      -1px 1px 0 #5c4314, 1px 1px 0 #5c4314,
+      -2px 0 0 rgba(92,67,20,.6), 0 -2px 0 rgba(92,67,20,.6),
+      -2px -1px 0 rgba(92,67,20,.55), -1px -2px 0 rgba(92,67,20,.55),
+      -2px -2px 0 rgba(92,67,20,.42),
+      0 0 4px var(--gold-bright),
+      0 0 10px var(--mode-game-glow),
+      0 0 20px var(--mode-game-glow);
+  }
+}
+.lab-be.is-setup .lev-engrave[data-side="setup"] {
+  box-shadow:
+    0 0 0 1px var(--mode-setup), 0 0 12px var(--mode-setup-glow),
+    inset 0 1px 0 rgba(255,243,211,.6), inset 0 -1px 2px rgba(0,0,0,.35);
+}
+.lab-be.is-game .lev-engrave[data-side="game"] {
+  box-shadow:
+    0 0 0 1px var(--gold-bright), 0 0 12px var(--mode-game-glow),
+    inset 0 1px 0 rgba(255,243,211,.6), inset 0 -1px 2px rgba(0,0,0,.35);
+}
+
+/* ════════════════════════════════════════════════════════════════
+   KOMPAKT — die B+E-Kombi mit kleinerem Außenrahmen
+   (Sektion „Zahnrad · Kompakter“ — Klassen kombinierbar)
+   ════════════════════════════════════════════════════════════════ */
+
+/* K1 · GETRIMMT — Polster & Lücken reduziert, kleinere Eckschrauben */
+.compact-trim .mt4a-console { padding: 8px 12px 6px; gap: 8px; }
+.compact-trim .lev-screw { width: 6px; height: 6px; }
+.compact-trim .mt4a-console .lev-screw:nth-of-type(1) { top: 4px; left: 4px; }
+.compact-trim .mt4a-console .lev-screw:nth-of-type(2) { top: 4px; right: 4px; }
+.compact-trim .mt4a-console .lev-screw:nth-of-type(3) { bottom: 4px; left: 4px; }
+.compact-trim .mt4a-console .lev-screw:nth-of-type(4) { bottom: 4px; right: 4px; }
+.compact-trim .lev-engrave { padding-left: 6px; padding-right: 6px; }
+
+/* K2 · AN DER ACHSE — Plaketten sitzen unten, auf Höhe der Radachse */
+.compact-axle .lev-engrave { align-self: flex-end; margin-bottom: 3px; }
+
+/* K3 · GENIETET — keine Eckschrauben; jede Plakette trägt zwei Nieten */
+.compact-rivet .mt4a-console { padding: 7px 10px 5px; gap: 8px; }
+.compact-rivet .mt4a-console > .lev-screw { display: none; }
+.compact-rivet .lev-engrave { position: relative; padding-left: 16px; padding-right: 16px; }
+.compact-rivet .lev-engrave::before,
+.compact-rivet .lev-engrave::after {
+  content: ""; position: absolute; top: 50%; transform: translateY(-50%);
+  width: 4px; height: 4px; border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #fff0c0, #b8923f 50%, #4f3a16 90%);
+  box-shadow: inset 0 0 0 .5px rgba(0,0,0,.55), 0 .6px 1px rgba(0,0,0,.5);
+}
+.compact-rivet .lev-engrave::before { left: 5px; }
+.compact-rivet .lev-engrave::after  { right: 5px; }
+
+/* K4 · KLEINERES RAD — ⌀64 statt ⌀80, Zeiger + Mittelrad skalieren mit */
+.compact-small .mt4a-console { padding: 6px 12px 5px; gap: 8px; }
+.compact-small .cogw { width: 78px; height: 40px; }
+.compact-small .cogw::before { top: 32px; width: 104px; height: 104px; }
+.compact-small .cog { width: 64px; height: 64px; }
+.compact-small.gear-flush .cog { top: 8px; }
+.compact-small .cog-body { inset: 5px; }
+.compact-small .cog-mini { top: 32px; }
+.compact-small.gear-jug .cog-mini { width: 28px; height: 28px; }
+.compact-small .cog-hand.cog-hand--jug { width: 25px; height: 66px; top: -15px; }
+
+/* ★ K3 + K4 kombiniert — engstes Gehäuse, flach: kaum Luft über den
+   Plaketten, Radkammer niedriger, Rad dafür höher angesetzt */
+.compact-rivet.compact-small .mt4a-console { padding: 4px 9px 4px; gap: 7px; }
+.compact-rivet.compact-small .cogw { height: 34px; }
+/* Zeiger zeigt auf die OBEREN Plakettenecken — Geometrie für die flache
+   Kammer nachjustiert: Rad 3 px über Kammeroberkante, Wurf ±60°. */
+.compact-rivet.compact-small.gear-flush .cog { top: -3px; }
+.compact-rivet.compact-small .cog { transform: translateX(-50%) rotate(-60deg); }
+.compact-rivet.compact-small.is-game .cog { transform: translateX(-50%) rotate(60deg); }
+.compact-rivet.compact-small .cogw::before { top: 29px; }

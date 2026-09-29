@@ -1,0 +1,892 @@
+/* ════════════════════════════════════════════════════════════════
+   MOBILE BOARD PROTOTYPE — prototype-only styles.
+   Builds on tokens.css + the sb-* vocabulary. Everything here is
+   mb-* (mobile board) so it never collides with the shipped sb-*.
+   ════════════════════════════════════════════════════════════════ */
+
+html, body { margin: 0; padding: 0; background: #050410; }
+body {
+  font-family: var(--font-mono);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+}
+* { box-sizing: border-box; }
+
+/* ── Presentation page shell ─────────────────────────────────── */
+.mb-page {
+  min-height: 100vh;
+  background:
+    radial-gradient(120% 60% at 50% -10%, #1a1330 0%, transparent 60%),
+    #070514;
+  padding: 40px 24px 96px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+.mb-page-head { width: 100%; max-width: 1180px; }
+.mb-kicker {
+  font-family: var(--font-ui);
+  font-size: 13px;
+  letter-spacing: .28em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+.mb-h1 {
+  font-family: var(--font-display);
+  font-size: 26px;
+  line-height: 1.3;
+  color: var(--gold-bright);
+  text-shadow: 0 0 14px rgba(245,213,122,.28);
+  margin: 12px 0 8px;
+}
+.mb-sub {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  color: var(--text-dim);
+  max-width: 760px;
+  line-height: 1.6;
+}
+.mb-section-label {
+  width: 100%; max-width: 1180px;
+  margin-top: 46px;
+  display: flex; align-items: center; gap: 12px;
+  font-family: var(--font-ui);
+  font-size: 15px;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+.mb-section-label::after {
+  content: ""; flex: 1; height: 1px;
+  background: linear-gradient(90deg, var(--gold-dim), transparent);
+}
+.mb-section-note {
+  width: 100%; max-width: 1180px;
+  font-family: var(--font-mono);
+  font-size: 12.5px; color: var(--text-mute); line-height: 1.6;
+  margin-top: -4px;
+}
+
+/* ── Hero layout: phone + legend ─────────────────────────────── */
+.mb-hero {
+  width: 100%; max-width: 1180px;
+  display: flex; gap: 40px; align-items: flex-start;
+  flex-wrap: wrap; justify-content: center;
+}
+.mb-legend {
+  flex: 1 1 320px; min-width: 300px; max-width: 420px;
+  display: flex; flex-direction: column; gap: 14px;
+  padding-top: 8px;
+}
+.mb-legend-card {
+  background: rgba(255,255,255,.015);
+  border: 1px solid var(--border-soft);
+  border-left: 3px solid var(--gold-dim);
+  padding: 14px 16px;
+}
+.mb-legend-card h4 {
+  margin: 0 0 8px;
+  font-family: var(--font-ui);
+  font-size: 13px; letter-spacing: .12em; text-transform: uppercase;
+  color: var(--gold);
+}
+.mb-legend-card.is-teal { border-left-color: var(--mode-setup); }
+.mb-legend-card.is-teal h4 { color: var(--mode-setup); }
+.mb-legend-card ul { margin: 0; padding-left: 18px; }
+.mb-legend-card li {
+  font-family: var(--font-mono);
+  font-size: 12.5px; color: var(--text-dim); line-height: 1.7;
+}
+.mb-legend-card li b { color: var(--text); }
+.mb-kbd {
+  font-family: var(--font-mono); font-size: 11px;
+  color: var(--gold-bright);
+  background: var(--sunk); border: 1px solid var(--border);
+  padding: 0 5px;
+}
+
+/* ── Device bezel ────────────────────────────────────────────── */
+.mb-device {
+  width: 390px; height: 800px;
+  flex: 0 0 auto;
+  background: #000;
+  border-radius: 46px;
+  padding: 10px;
+  box-shadow:
+    0 0 0 2px #1c1c2a,
+    0 30px 80px rgba(0,0,0,.7),
+    0 0 60px rgba(120,90,200,.12);
+  position: relative;
+}
+.mb-device-screen {
+  width: 100%; height: 100%;
+  border-radius: 38px;
+  overflow: hidden;
+  position: relative;
+  background: var(--night);
+}
+.mb-notch {
+  position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+  width: 132px; height: 26px; background: #000;
+  border-bottom-left-radius: 14px; border-bottom-right-radius: 14px;
+  z-index: 60;
+}
+
+/* ── Phone surface · three-band frame ────────────────────────── */
+.mb-phone {
+  height: 100%; width: 100%;
+  display: flex; flex-direction: column;
+  position: relative; overflow: hidden;
+  background:
+    radial-gradient(120% 70% at 50% -10%, var(--glow-radial) 0%, transparent 62%),
+    var(--night);
+  transition: background .5s ease;
+}
+.mb-phone.is-setup {
+  background:
+    radial-gradient(120% 70% at 50% -10%, #14222a 0%, transparent 62%),
+    var(--night);
+}
+/* edge tint — peripheral mode cue, color-independent backstop is the pad face */
+.mb-phone::after {
+  content: ""; position: absolute; inset: 0; pointer-events: none; z-index: 40;
+  border: 2px solid transparent;
+  transition: border-color .45s ease;
+}
+.mb-phone.is-game::after  { border-color: rgba(212,178,92,.22); }
+.mb-phone.is-setup::after { border-color: rgba(109,181,184,.30); }
+
+.mb-statusbar {
+  flex: 0 0 auto; height: 30px;
+  display: flex; align-items: flex-end; justify-content: space-between;
+  padding: 0 26px 3px;
+  font-family: var(--font-mono); font-size: 12px;
+  color: var(--text-dim); letter-spacing: .04em;
+  position: relative; z-index: 50;
+}
+
+/* ── TOP BAND ────────────────────────────────────────────────── */
+.mb-band-top { flex: 0 0 auto; position: relative; z-index: 30; }
+
+/* mode heading / toggle */
+.mb-topbar {
+  display: flex; align-items: center; gap: 10px;
+  padding: 6px 12px 10px;
+}
+.mb-iconbtn {
+  width: 40px; height: 40px; flex: 0 0 auto;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--text-dim); cursor: pointer;
+  background: transparent; border: none;
+}
+.mb-iconbtn:active { color: var(--gold); }
+/* SETUP tool cluster — multi-select toggle + undo/redo */
+.mb-tool-cluster { display: flex; align-items: center; gap: 2px; flex: 0 0 auto; }
+.mb-tool { width: 36px; height: 40px; }
+.mb-iconbtn.is-on { color: var(--mode-setup); }
+.mb-iconbtn:disabled { opacity: .3; cursor: default; }
+
+/* the SETUP/GAME heading-toggle */
+.mb-modeswitch {
+  flex: 1; display: flex; align-items: stretch;
+  height: 40px; cursor: pointer; position: relative;
+  border: 1px solid var(--border);
+  background: var(--sunk);
+  --pix-step: 4px;
+  clip-path: polygon(
+    0 var(--pix-step), var(--pix-step) var(--pix-step), var(--pix-step) 0,
+    calc(100% - var(--pix-step)) 0, calc(100% - var(--pix-step)) var(--pix-step), 100% var(--pix-step),
+    100% calc(100% - var(--pix-step)), calc(100% - var(--pix-step)) calc(100% - var(--pix-step)), calc(100% - var(--pix-step)) 100%,
+    var(--pix-step) 100%, var(--pix-step) calc(100% - var(--pix-step)), 0 calc(100% - var(--pix-step))
+  );
+  overflow: hidden;
+}
+.mb-modeswitch-half {
+  flex: 1; display: flex; align-items: center; justify-content: center; gap: 7px;
+  font-family: var(--font-ui); font-size: 16px; letter-spacing: .16em;
+  color: var(--text-mute); transition: color .35s, background .35s;
+  position: relative; z-index: 2;
+}
+.mb-phone.is-setup .mb-modeswitch-half.h-setup { color: var(--text-on-gold); }
+.mb-phone.is-setup .mb-modeswitch-half.h-setup { color: #04201f; }
+.mb-phone.is-game  .mb-modeswitch-half.h-game  { color: var(--text-on-gold); }
+.mb-modeswitch-thumb {
+  position: absolute; top: 0; bottom: 0; width: 50%; z-index: 1;
+  transition: left .38s cubic-bezier(.6,.05,.2,1), background .38s;
+}
+.mb-phone.is-setup .mb-modeswitch-thumb { left: 0; background: var(--mode-setup); }
+.mb-phone.is-game  .mb-modeswitch-thumb { left: 50%; background: var(--gold); }
+
+/* now-playing collapsed strip */
+.mb-nowbar {
+  display: flex; align-items: center; gap: 8px;
+  padding: 7px 14px;
+  background: var(--deep);
+  border-top: 1px solid var(--border-soft);
+  border-bottom: 1px solid var(--border-soft);
+  cursor: pointer;
+}
+.mb-nowbar-label {
+  font-family: var(--font-ui); font-size: 11px; letter-spacing: .14em;
+  color: var(--gold); white-space: nowrap;
+}
+.mb-phone.is-setup .mb-nowbar-label { color: var(--mode-setup); }
+/* current scene title — sits on the right of the bar, beside the centered arrow */
+.mb-now-scene {
+  margin-left: auto; padding-left: 12px;
+  font-family: var(--font-ui); font-size: 12px; letter-spacing: .06em;
+  color: var(--gold-bright); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 44%;
+}
+.mb-phone.is-setup .mb-now-scene { color: var(--mode-setup); }
+.mb-nowbar .mb-eq { display: flex; align-items: flex-end; gap: 2px; height: 12px; }
+.mb-nowbar .mb-eq i {
+  width: 2px; background: var(--gold); display: block;
+  animation: mb-eq 900ms ease-in-out infinite;
+}
+.mb-nowbar .mb-eq i:nth-child(2){ animation-delay: 150ms; }
+.mb-nowbar .mb-eq i:nth-child(3){ animation-delay: 320ms; }
+.mb-nowbar .mb-eq i:nth-child(4){ animation-delay: 90ms; }
+@keyframes mb-eq { 0%,100%{ height: 3px } 50%{ height: 12px } }
+/* JS-driven level meter — disable the idle CSS animation, widen bars slightly */
+.mb-meter i { animation: none !important; width: 3px; transition: opacity .2s; }
+
+/* now-playing expanded overlay */
+.mb-now-overlay {
+  position: absolute; left: 0; right: 0; top: 0;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border-strong);
+  filter: var(--shadow-pop);
+  z-index: 45;
+  display: flex; flex-direction: column;
+  max-height: 60%;
+}
+/* centered chevron — integrated INTO the bar (collapsed) and the overlay
+   header (expanded); never protrudes over the grid. One clear affordance. */
+.mb-now-chev {
+  position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+  display: flex; align-items: center; justify-content: center;
+  width: 52px; height: 20px;
+  background: rgba(212,178,92,.14); border: 1px solid var(--gold-dim);
+  color: var(--gold); cursor: pointer;
+  --pix-step: 3px;
+  clip-path: polygon(
+    0 var(--pix-step), var(--pix-step) var(--pix-step), var(--pix-step) 0,
+    calc(100% - var(--pix-step)) 0, calc(100% - var(--pix-step)) var(--pix-step), 100% var(--pix-step),
+    100% calc(100% - var(--pix-step)), calc(100% - var(--pix-step)) calc(100% - var(--pix-step)), calc(100% - var(--pix-step)) 100%,
+    var(--pix-step) 100%, var(--pix-step) calc(100% - var(--pix-step)), 0 calc(100% - var(--pix-step))
+  );
+}
+.mb-now-chev:active { background: rgba(212,178,92,.28); }
+/* footer of the expanded panel — holds the collapse chevron, always reachable */
+.mb-now-foot {
+  position: relative; flex: 0 0 auto; height: 34px;
+  border-top: 1px solid var(--border-soft); background: var(--deep);
+  cursor: pointer;
+}
+.mb-now-overlay .mb-now-list { overflow-y: auto; padding: 8px 12px 12px; display: flex; flex-direction: column; gap: 6px; flex: 1 1 auto; min-height: 0; }
+.mb-mixrow {
+  display: flex; align-items: center; gap: 9px;
+  padding: 7px 9px; background: var(--raised);
+  border-left: 3px solid var(--pad-color, var(--gold));
+}
+.mb-mixrow .mb-mixrow-t { font-family: var(--font-ui); font-size: 12px; letter-spacing: .06em; }
+.mb-mixrow .mb-mixrow-s { font-family: var(--font-mono); font-size: 10px; color: var(--text-mute); }
+
+/* ── MIDDLE BAND · grid ──────────────────────────────────────── */
+.mb-band-grid { flex: 1 1 auto; position: relative; min-height: 0; overflow: hidden; }
+.mb-grid-scroll {
+  position: absolute; inset: 0; overflow-y: auto; overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
+  padding: 10px;
+}
+.mb-grid-scroll.is-locked { touch-action: none; overflow: hidden; }
+/* match the tablet/.sb scrollbar (tokens.css) so it fits the palette */
+.mb-grid-scroll::-webkit-scrollbar,
+.mb-now-list::-webkit-scrollbar,
+.mb-sheet-body::-webkit-scrollbar { width: 8px; height: 8px; }
+.mb-grid-scroll::-webkit-scrollbar-thumb,
+.mb-now-list::-webkit-scrollbar-thumb,
+.mb-sheet-body::-webkit-scrollbar-thumb { background: var(--border); }
+.mb-grid-scroll::-webkit-scrollbar-track,
+.mb-now-list::-webkit-scrollbar-track,
+.mb-sheet-body::-webkit-scrollbar-track { background: var(--sunk); }
+.mb-grid-scroll, .mb-now-list, .mb-sheet-body { scrollbar-width: thin; scrollbar-color: var(--border) var(--sunk); }
+.mb-grid {
+  display: grid; gap: var(--mb-gap, 8px);
+  grid-template-columns: repeat(var(--mb-cols, 4), 1fr);
+  align-content: start;
+}
+
+/* atmosphere layer (PROVISIONAL — toggleable) */
+.mb-atmos {
+  position: absolute; inset: 0; pointer-events: none; z-index: 1;
+  overflow: hidden;
+}
+.mb-atmos .mb-hearth {
+  position: absolute; left: -10%; right: -10%; bottom: -20%; height: 55%;
+  background: radial-gradient(60% 100% at 50% 100%, rgba(232,130,30,.20), transparent 70%);
+}
+.mb-ember {
+  position: absolute; bottom: -8px; width: 3px; height: 3px;
+  background: var(--flame); opacity: 0; border-radius: 1px;
+  animation: mb-rise linear infinite;
+}
+@keyframes mb-rise {
+  0% { transform: translateY(0) translateX(0); opacity: 0; }
+  15% { opacity: .8; }
+  100% { transform: translateY(-360px) translateX(var(--drift, 12px)); opacity: 0; }
+}
+
+/* pad cell wrapper (for FLIP + gesture target) */
+.mb-cell { position: relative; will-change: transform; }
+.mb-cell.is-empty-game { visibility: hidden; }
+/* insert marker — a bright bar in the gap to the side of the target cell */
+.mb-cell.is-ins-before::after,
+.mb-cell.is-ins-after::after {
+  content: ""; position: absolute; top: 4%; bottom: 4%; width: 4px; z-index: 25;
+  background: var(--gold-bright);
+  box-shadow: 0 0 8px rgba(245,213,122,.7);
+}
+.mb-cell.is-ins-before::after { left: calc(var(--mb-gap, 8px) / -2 - 2px); }
+.mb-cell.is-ins-after::after { right: calc(var(--mb-gap, 8px) / -2 - 2px); }
+
+/* the pad face — reuse sb-pad look, prototype-tuned */
+.mb-pad {
+  position: relative; height: 100%; min-height: var(--mb-pad-h, 92px);
+  padding: 9px;
+  display: flex; flex-direction: column; justify-content: space-between;
+  background: var(--raised);
+  border: 1.5px solid var(--border);
+  --pix-step: 5px;
+  clip-path: polygon(
+    0 var(--pix-step), var(--pix-step) var(--pix-step), var(--pix-step) 0,
+    calc(100% - var(--pix-step)) 0, calc(100% - var(--pix-step)) var(--pix-step), 100% var(--pix-step),
+    100% calc(100% - var(--pix-step)), calc(100% - var(--pix-step)) calc(100% - var(--pix-step)), calc(100% - var(--pix-step)) 100%,
+    var(--pix-step) 100%, var(--pix-step) calc(100% - var(--pix-step)), 0 calc(100% - var(--pix-step))
+  );
+  cursor: pointer; user-select: none;
+  transition: border-color .15s, transform .08s;
+}
+/* type spine */
+.mb-pad::before {
+  content: ""; position: absolute; top: 0; left: 0; bottom: 0; width: 4px;
+  background: var(--pad-color); opacity: .9;
+}
+.mb-pad-type {
+  display: flex; align-items: center; gap: 5px; padding-left: 5px;
+  font-family: var(--font-ui); font-size: 9px; letter-spacing: .12em;
+  color: var(--pad-color);
+}
+.mb-phone.is-setup .mb-pad-type { padding-right: 18px; }
+.mb-pad-title {
+  padding-left: 5px;
+  font-family: var(--font-ui);
+  font-size: var(--mb-label, 13px); letter-spacing: .03em; line-height: 1.05;
+  color: var(--text);
+}
+.mb-pad-meta {
+  padding-left: 5px; margin-top: 2px;
+  font-family: var(--font-mono); font-size: 10px; color: var(--text-mute);
+}
+
+/* GAME mode — performable: solid + depth */
+.mb-phone.is-game .mb-pad {
+  border-color: var(--border-strong);
+  box-shadow:
+    inset 1px 1px 0 0 var(--pad-edge-light),
+    inset -1px -1px 0 0 var(--pad-edge-dark);
+  background:
+    linear-gradient(180deg, var(--pad-edge-light) 0%, transparent 30%),
+    linear-gradient(0deg, var(--pad-edge-dark) 0%, transparent 36%),
+    var(--raised);
+  filter: drop-shadow(2px 2px 0 rgba(0,0,0,.55));
+}
+.mb-pad.is-hot {
+  border-color: var(--pad-color) !important;
+  filter: drop-shadow(2px 2px 0 rgba(0,0,0,.55))
+          drop-shadow(0 0 7px var(--pad-glow))
+          drop-shadow(0 0 16px var(--pad-glow)) !important;
+}
+.mb-pad.is-hot::before { width: 100%; opacity: .14; }
+/* per-pad background level meter */
+.mb-pad-bg {
+  position: absolute; inset: 0; z-index: 0; pointer-events: none;
+  display: flex; align-items: flex-end; gap: 2px; padding: 4px;
+  opacity: .22;
+  -webkit-mask-image: linear-gradient(to top, #000 0%, rgba(0,0,0,.4) 52%, transparent 100%);
+  mask-image: linear-gradient(to top, #000 0%, rgba(0,0,0,.4) 52%, transparent 100%);
+}
+.mb-pad-bg i { flex: 1; height: 18%; min-width: 2px; }
+/* keep pad content above the meter */
+.mb-pad-type, .mb-pad-title, .mb-pad-meta, .mb-pad-handle { position: relative; z-index: 1; }
+/* fire flash */
+.mb-pad.is-fire { animation: mb-fire 420ms ease-out; }
+@keyframes mb-fire {
+  0% { transform: scale(.96); filter: drop-shadow(0 0 0 var(--pad-glow)); }
+  30% { transform: scale(1.0); filter: drop-shadow(0 0 14px var(--pad-glow)) drop-shadow(0 0 26px var(--pad-glow)); }
+  100% { transform: scale(1); }
+}
+
+/* SETUP mode — arrangeable: dashed face + handle (COLOR-INDEPENDENT mode cue) */
+.mb-phone.is-setup .mb-pad {
+  background: var(--surface);
+  border: 1.5px dashed var(--border-strong);
+  box-shadow: none;
+  /* same stepped pixel-frame silhouette as GAME: a hard offset shadow traces
+     the clipped corners so they read as clearly "cut out" (no raised bevel,
+     so the flat/dashed = arrangeable mode cue is preserved). */
+  filter: drop-shadow(2px 2px 0 rgba(0,0,0,.5));
+}
+.mb-phone.is-setup .mb-pad::before { opacity: .55; }
+.mb-pad-handle {
+  position: absolute; top: 5px; right: 5px; color: var(--mode-setup); opacity: .8;
+  display: none;
+}
+.mb-phone.is-setup .mb-pad-handle { display: block; }
+.mb-pad.is-selected { border-style: solid !important; border-color: var(--gold) !important; }
+/* marked (multi-select) — solid teal frame + corner spark badge */
+.mb-pad.is-marked { border-style: solid !important; border-color: var(--mode-setup) !important; }
+.mb-pad-mark {
+  position: absolute; top: 4px; right: 4px; z-index: 2;
+  width: 16px; height: 16px; display: flex; align-items: center; justify-content: center;
+  background: var(--mode-setup);
+}
+.mb-phone.is-setup .mb-pad.is-marked .mb-pad-handle { display: none; }
+/* segmented loop-progress along the bottom edge of an active pad */
+.mb-pad-progress { position: absolute; left: 0; right: 0; bottom: 0; height: 3px; z-index: 1; display: flex; gap: 1.5px; padding: 0 1px; }
+.mb-prog-seg { flex: 1; height: 100%; background: rgba(255,255,255,.12); overflow: hidden; }
+.mb-prog-seg i { display: block; height: 100%; width: 0; opacity: .9; }
+/* endless loop → single breathing bar */
+.mb-pad-progress.is-infinite { gap: 0; padding: 0; }
+.mb-prog-breathe { width: 100%; height: 100%; animation: mb-breathe 2.6s ease-in-out infinite; }
+@keyframes mb-breathe { 0%, 100% { opacity: .26; filter: brightness(.85); } 50% { opacity: 1; filter: brightness(1.35); } }
+@media (prefers-reduced-motion: reduce) { .mb-prog-breathe { animation: none; opacity: .7; } }
+.mb-pad.is-lifted {
+  border-color: var(--gold) !important; border-style: solid !important;
+  box-shadow: 0 10px 26px rgba(0,0,0,.6) !important;
+  transform: scale(1.06); z-index: 20; opacity: .95;
+}
+.mb-pad.is-droptarget { border-color: var(--gold-bright) !important; background: var(--top); }
+
+/* empty slot (SETUP = visible tappable add cell; GAME = empty space) */
+.mb-empty {
+  height: 100%; min-height: var(--mb-pad-h, 92px);
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;
+  border: 1.5px dashed var(--border-soft);
+  color: var(--mode-setup); cursor: pointer;
+  font-family: var(--font-ui); font-size: 9px; letter-spacing: .12em;
+  /* same stepped pixel-frame silhouette as every pad — corners always cut */
+  --pix-step: 5px;
+  clip-path: polygon(
+    0 var(--pix-step), var(--pix-step) var(--pix-step), var(--pix-step) 0,
+    calc(100% - var(--pix-step)) 0, calc(100% - var(--pix-step)) var(--pix-step), 100% var(--pix-step),
+    100% calc(100% - var(--pix-step)), calc(100% - var(--pix-step)) calc(100% - var(--pix-step)), calc(100% - var(--pix-step)) 100%,
+    var(--pix-step) 100%, var(--pix-step) calc(100% - var(--pix-step)), 0 calc(100% - var(--pix-step))
+  );
+}
+.mb-empty .mb-plus { font-family: var(--font-display); font-size: 15px; line-height: 1; }
+.mb-empty:active { border-color: var(--mode-setup); background: rgba(109,181,184,.06); }
+
+/* fill-ring on long-hold (SETUP pickup) */
+.mb-ring {
+  position: absolute; z-index: 30; pointer-events: none;
+  width: 54px; height: 54px; transform: translate(-50%, -50%);
+}
+.mb-ring circle { fill: none; stroke-width: 4; }
+.mb-ring .bg { stroke: rgba(0,0,0,.4); }
+.mb-ring .fg { stroke: var(--gold-bright); stroke-linecap: round; transition: stroke-dashoffset .03s linear; filter: drop-shadow(0 0 5px var(--gold-glow, rgba(245,213,122,.6))); }
+
+/* scene edge-peek (GAME swipe-to-page) */
+.mb-peek {
+  position: absolute; top: 0; bottom: 0; width: 64px; z-index: 8;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px;
+  background: linear-gradient(90deg, transparent, var(--deep) 60%);
+  font-family: var(--font-ui); font-size: 10px; letter-spacing: .1em; color: var(--gold);
+  pointer-events: none; opacity: 0; transition: opacity .12s;
+}
+.mb-peek.r { right: 0; background: linear-gradient(270deg, transparent, var(--deep) 60%); }
+.mb-peek.l { left: 0; }
+.mb-peek.is-on { opacity: 1; }
+
+/* ── SETUP DISPLAY sheet (summonable bottom-sheet, both grip layers) ── */
+.mb-sheet {
+  position: absolute; left: 0; right: 0; bottom: 0; z-index: 35;
+  background: var(--surface);
+  border-top: 1px solid var(--border-strong);
+  display: flex; flex-direction: column;
+  transform: translate(0, 0);
+  transition: transform .34s cubic-bezier(.6,.05,.2,1);
+  height: auto; max-height: 70%;
+}
+.mb-sheet.is-closed { transform: translate(0, 100%); }
+.mb-sheet.is-preview { height: 82px !important; }
+.mb-sheet-grips { position: relative; height: 32px; flex: 0 0 auto; }
+.mb-sheet-grip-tab {
+  position: absolute; left: 50%; top: 4px; transform: translateX(-50%);
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
+  width: 66px; height: 24px; cursor: ns-resize; touch-action: none;
+  background: rgba(109,181,184,.16); border: 1px solid var(--mode-setup); color: var(--mode-setup);
+  --pix-step: 3px;
+  clip-path: polygon(
+    0 var(--pix-step), var(--pix-step) var(--pix-step), var(--pix-step) 0,
+    calc(100% - var(--pix-step)) 0, calc(100% - var(--pix-step)) var(--pix-step), 100% var(--pix-step),
+    100% calc(100% - var(--pix-step)), calc(100% - var(--pix-step)) calc(100% - var(--pix-step)), calc(100% - var(--pix-step)) 100%,
+    var(--pix-step) 100%, var(--pix-step) calc(100% - var(--pix-step)), 0 calc(100% - var(--pix-step))
+  );
+}
+.mb-sheet-grip-tab:active { background: rgba(109,181,184,.3); }
+.mb-grip-ridge { width: 24px; height: 2px; background: var(--mode-setup); opacity: .65; }
+.mb-sheet-head {
+  display: flex; align-items: center; gap: 8px; padding: 4px 14px 8px;
+  border-bottom: 1px solid var(--border-soft);
+}
+.mb-sheet-head .t {
+  font-family: var(--font-ui); font-size: 12px; letter-spacing: .12em; color: var(--mode-setup);
+}
+.mb-sheet-body { flex: 0 1 auto; min-height: 0; overflow-y: auto; padding: 12px 14px; display: flex; flex-direction: column; gap: 14px; }
+.mb-sheet.is-preview .mb-sheet-head { display: none; }
+.mb-sheet.is-preview .mb-sheet-body { padding-top: 10px; overflow: hidden; }
+.mb-sheet.is-preview .mb-ctl:not(.is-active) { display: none; }
+.mb-ctl-preview-flag {
+  display: none; font-family: var(--font-mono); font-size: 9px; letter-spacing: .1em;
+  color: var(--mode-setup); margin-left: 8px;
+}
+.mb-sheet.is-preview .is-active .mb-ctl-preview-flag { display: inline; }
+
+.mb-ctl-label {
+  display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px;
+  font-family: var(--font-ui); font-size: 11px; letter-spacing: .1em; color: var(--text-dim);
+}
+.mb-ctl-label b { font-family: var(--font-mono); font-size: 12px; color: var(--gold-bright); letter-spacing: 0; }
+.mb-track {
+  position: relative; height: 30px; display: flex; align-items: center; cursor: ew-resize; touch-action: none;
+}
+.mb-track-rail { position: absolute; left: 0; right: 0; height: 6px; background: var(--sunk); border: 1px solid var(--border-soft); }
+.mb-track-fill { position: absolute; left: 0; height: 6px; background: var(--mode-setup); }
+.mb-track-thumb {
+  position: absolute; width: 18px; height: 18px; background: var(--mode-setup);
+  transform: translateX(-50%); box-shadow: 0 0 7px var(--mode-setup-glow);
+}
+
+/* columns control */
+.mb-cols { display: flex; align-items: center; gap: 8px; }
+.mb-seg {
+  display: flex; border: 1px solid var(--border); background: var(--sunk);
+}
+.mb-seg button {
+  font-family: var(--font-ui); font-size: 12px; letter-spacing: .1em;
+  padding: 6px 12px; min-height: 36px; background: transparent; border: none;
+  color: var(--text-mute); cursor: pointer;
+}
+.mb-seg button.is-on { background: var(--mode-setup); color: #04201f; }
+.mb-stepper { display: flex; align-items: center; gap: 0; border: 1px solid var(--border); }
+.mb-stepper button {
+  width: 40px; height: 36px; background: var(--raised); border: none; color: var(--text);
+  font-family: var(--font-ui); font-size: 18px; cursor: pointer;
+}
+.mb-stepper button:disabled { opacity: .3; }
+.mb-stepper .v { width: 40px; text-align: center; font-family: var(--font-mono); font-size: 15px; color: var(--gold-bright); }
+
+/* ── BOTTOM BAND · thumb zone ────────────────────────────────── */
+.mb-band-bottom {
+  flex: 0 0 auto; position: relative; z-index: 30;
+  background: var(--deep);
+  border-top: 1px solid var(--border-soft);
+}
+/* summon pull-tab grip (Option A default, on the top seam of the thumb zone) */
+.mb-summon {
+  position: absolute; top: -16px; left: 50%; transform: translateX(-50%);
+  z-index: 36; cursor: pointer; border: none; background: transparent; padding: 0;
+}
+.mb-scenes {
+  display: flex; gap: 6px; padding: 9px 12px 7px; overflow-x: auto;
+  scrollbar-width: none; border-bottom: 1px solid var(--border-soft);
+}
+.mb-scenes::-webkit-scrollbar { display: none; }
+.mb-scene {
+  flex: 0 0 auto; padding: 7px 14px; min-height: 36px;
+  display: flex; align-items: center;
+  font-family: var(--font-ui); font-size: 13px; letter-spacing: .04em;
+  white-space: nowrap; color: var(--text-dim);
+  background: transparent; border: 1px solid var(--border); cursor: pointer;
+}
+.mb-scene.is-on { color: var(--gold); border-color: var(--gold); border-left: 3px solid var(--gold); background: var(--top); }
+.mb-phone.is-setup .mb-scene.is-on { color: var(--mode-setup); border-color: var(--mode-setup); border-left-color: var(--mode-setup); }
+.mb-scene { touch-action: pan-x; }
+.mb-scene.is-dragging {
+  z-index: 5; position: relative; opacity: .92; cursor: grabbing;
+  border-color: var(--gold) !important; color: var(--gold) !important;
+  box-shadow: 0 8px 18px rgba(0,0,0,.55); transition: none;
+}
+.mb-scene-ins {
+  flex: 0 0 auto; width: 3px; align-self: stretch; margin: 0 -2px;
+  background: var(--gold-bright); box-shadow: 0 0 8px rgba(245,213,122,.7);
+}
+
+.mb-transport {
+  display: flex; align-items: center; gap: 10px; padding: 10px 12px;
+}
+/* STOP ALL — dedicated oversized high-contrast */
+.mb-stop {
+  flex: 0 0 auto; width: 78px; height: 54px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
+  background: var(--blood); color: #fff; border: 2px solid var(--blood-bright);
+  font-family: var(--font-ui); font-size: 12px; letter-spacing: .12em; cursor: pointer;
+  --pix-step: 4px;
+  clip-path: polygon(
+    0 var(--pix-step), var(--pix-step) var(--pix-step), var(--pix-step) 0,
+    calc(100% - var(--pix-step)) 0, calc(100% - var(--pix-step)) var(--pix-step), 100% var(--pix-step),
+    100% calc(100% - var(--pix-step)), calc(100% - var(--pix-step)) calc(100% - var(--pix-step)), calc(100% - var(--pix-step)) 100%,
+    var(--pix-step) 100%, var(--pix-step) calc(100% - var(--pix-step)), 0 calc(100% - var(--pix-step))
+  );
+}
+.mb-stop:active { background: var(--blood-bright); }
+.mb-master { flex: 1; position: relative; align-self: stretch; display: flex; flex-direction: column; justify-content: center; gap: 5px; }
+/* master output meter — fills the whole master field, behind label + control */
+.mb-master-meter {
+  position: absolute; inset: 0; z-index: 0; pointer-events: none;
+  display: flex; align-items: flex-end; gap: 1px;
+  opacity: .42;
+  -webkit-mask-image: linear-gradient(to top, #000, #000 64%, transparent);
+  mask-image: linear-gradient(to top, #000, #000 64%, transparent);
+}
+.mb-master-meter i { flex: 1; height: 4%; background: var(--gold); transition: background .15s; }
+.mb-master-meter.is-clip i { background: var(--blood-bright); }
+/* full-height level control — no horizontal band cutting the meter */
+.mb-master-ctl { overflow: hidden; border: 1px solid var(--border); }
+.mb-master-level {
+  position: absolute; top: 0; bottom: 0; left: 0; z-index: 1; pointer-events: none;
+  background: linear-gradient(90deg, rgba(212,178,92,.16), rgba(212,178,92,.05));
+  border-right: 1px solid rgba(212,178,92,.25);
+}
+.mb-master-handle {
+  position: absolute; top: 0; bottom: 0; width: 2px; z-index: 2; pointer-events: none;
+  background: var(--gold-bright); transform: translateX(-1px);
+}
+.mb-master-handle::after {
+  content: ""; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+  width: 7px; height: 13px; background: var(--gold-bright);
+  --pix-step: 2px;
+  clip-path: polygon(
+    0 var(--pix-step), var(--pix-step) var(--pix-step), var(--pix-step) 0,
+    calc(100% - var(--pix-step)) 0, calc(100% - var(--pix-step)) var(--pix-step), 100% var(--pix-step),
+    100% calc(100% - var(--pix-step)), calc(100% - var(--pix-step)) calc(100% - var(--pix-step)), calc(100% - var(--pix-step)) 100%,
+    var(--pix-step) 100%, var(--pix-step) calc(100% - var(--pix-step)), 0 calc(100% - var(--pix-step))
+  );
+}
+/* merged: marker bleibt clean/flach — nur das Chip leuchtet dezent auf */
+/* dark label chip — single underlay holding MASTER + value, readable on the meter */
+.mb-master-chip {
+  position: absolute; left: 6px; top: 50%; transform: translateY(-50%); z-index: 3;
+  display: flex; align-items: center; gap: 6px;
+  padding: 4px 9px; pointer-events: none;
+  background: rgba(8,8,18,.8); border: 1px solid var(--border);
+  font-family: var(--font-ui); font-size: 11px; letter-spacing: .12em; color: var(--text-dim);
+  transition: border-color .2s, box-shadow .2s, background .2s, color .2s;
+  --pix-step: 3px;
+  clip-path: polygon(
+    0 var(--pix-step), var(--pix-step) var(--pix-step), var(--pix-step) 0,
+    calc(100% - var(--pix-step)) 0, calc(100% - var(--pix-step)) var(--pix-step), 100% var(--pix-step),
+    100% calc(100% - var(--pix-step)), calc(100% - var(--pix-step)) calc(100% - var(--pix-step)), calc(100% - var(--pix-step)) 100%,
+    var(--pix-step) 100%, var(--pix-step) calc(100% - var(--pix-step)), 0 calc(100% - var(--pix-step))
+  );
+}
+.mb-master-chip b { font-family: var(--font-mono); font-size: 12px; color: var(--gold-bright); font-weight: 400; }
+/* value-knob — the live number rides inside the fader handle */
+.mb-master-knob {
+  position: absolute; top: 0; transform: translateX(-50%); z-index: 4;
+  pointer-events: none; min-width: 20px; padding: 2px 4px;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--gold-bright); color: var(--deep);
+  font-family: var(--font-mono); font-size: 10px; font-weight: 400; line-height: 1;
+  box-shadow: 0 0 0 1px rgba(0,0,0,.45), 0 0 10px rgba(245,213,122,.35);
+  --pix-step: 2px;
+  clip-path: polygon(
+    0 var(--pix-step), var(--pix-step) var(--pix-step), var(--pix-step) 0,
+    calc(100% - var(--pix-step)) 0, calc(100% - var(--pix-step)) var(--pix-step), 100% var(--pix-step),
+    100% calc(100% - var(--pix-step)), calc(100% - var(--pix-step)) calc(100% - var(--pix-step)), calc(100% - var(--pix-step)) 100%,
+    var(--pix-step) 100%, var(--pix-step) calc(100% - var(--pix-step)), 0 calc(100% - var(--pix-step))
+  );
+}
+/* merged state — Chip leuchtet dezent auf (ohne räumlichen Schimmer) */
+.mb-master-chip.is-merged {
+  border-color: var(--gold-bright); color: var(--gold);
+  background: rgba(20,16,8,.85);
+  box-shadow: inset 0 0 0 1px rgba(245,213,122,.2);
+}
+.mb-setup-actions { display: flex; gap: 8px; flex: 1; }
+.mb-action {
+  flex: 1; height: 54px; display: flex; align-items: center; justify-content: center; gap: 7px;
+  background: var(--raised); border: 1px solid var(--border); color: var(--text-dim);
+  font-family: var(--font-ui); font-size: 12px; letter-spacing: .1em; cursor: pointer;
+}
+.mb-action.is-accent { border-color: var(--mode-setup); color: var(--mode-setup); }
+.mb-action.is-danger { border-color: var(--blood-bright); color: var(--blood-bright); }
+.mb-action:disabled { opacity: .35; cursor: default; }
+.mb-action-icon { flex: 0 0 auto; width: 54px; }
+.mb-sel-count {
+  flex: 0 0 auto; display: flex; align-items: center; padding: 0 4px;
+  font-family: var(--font-ui); font-size: 12px; letter-spacing: .1em; color: var(--mode-setup);
+}
+
+.mb-homebar { flex: 0 0 auto; height: 22px; display: flex; align-items: center; justify-content: center; position: relative; z-index: 50; }
+.mb-homebar i { width: 128px; height: 4px; background: var(--text); opacity: .45; border-radius: 2px; }
+
+/* mode spark sweep on transition */
+.mb-spark {
+  position: absolute; inset: 0; z-index: 55; pointer-events: none; overflow: hidden;
+}
+.mb-spark i {
+  position: absolute; width: 4px; height: 4px; top: var(--y); left: -10px;
+  background: var(--c); box-shadow: 0 0 6px var(--c);
+  animation: mb-fly 480ms ease-out forwards; animation-delay: var(--d);
+}
+@keyframes mb-fly {
+  0% { transform: translateX(0); opacity: 0; }
+  20% { opacity: 1; }
+  100% { transform: translateX(420px); opacity: 0; }
+}
+
+/* lock pill */
+.mb-lock-note {
+  position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
+  z-index: 70; background: var(--deep); border: 1px solid var(--gold);
+  padding: 14px 18px; font-family: var(--font-ui); font-size: 12px; letter-spacing: .08em;
+  color: var(--gold); pointer-events: none; opacity: 0; transition: opacity .2s;
+  display: flex; align-items: center; gap: 8px;
+}
+.mb-lock-note.is-on { opacity: 1; }
+
+/* ── GRIP PRIMITIVES (shared by board summon + comparison frame) ── */
+/* Option A · summon = protruding colored stepped tab */
+.grip-A-summon {
+  display: flex; align-items: center; justify-content: center;
+  width: 56px; height: 16px; background: var(--mode-setup); color: #04201f;
+  --pix-step: 3px;
+  clip-path: polygon(
+    var(--pix-step) 0, calc(100% - var(--pix-step)) 0, calc(100% - var(--pix-step)) var(--pix-step),
+    100% var(--pix-step), 100% 100%, 0 100%, 0 var(--pix-step), var(--pix-step) var(--pix-step));
+  box-shadow: 0 -2px 8px var(--mode-setup-glow);
+}
+.grip-A-summon.v { width: 16px; height: 56px;
+  clip-path: polygon(0 var(--pix-step), var(--pix-step) var(--pix-step), var(--pix-step) 0,
+    100% 0, 100% 100%, var(--pix-step) 100%, var(--pix-step) calc(100% - var(--pix-step)), 0 calc(100% - var(--pix-step)));
+  box-shadow: -2px 0 8px var(--mode-setup-glow);
+}
+/* Option A · resize = flush gray stepped ridges on the seam */
+.grip-A-resize { display: flex; flex-direction: column; gap: 3px; align-items: center; justify-content: center; }
+.grip-A-resize i { width: 24px; height: 3px; background: var(--border-strong); display: block; }
+.grip-A-resize.v { flex-direction: row; }
+.grip-A-resize.v i { width: 3px; height: 24px; }
+
+/* Option B · both flush, distinguished by glyph */
+.grip-B { display: flex; align-items: center; justify-content: center; width: 54px; height: 18px;
+  background: var(--deep); border: 1px solid var(--border); color: var(--text-mute); }
+.grip-B.summon { color: var(--mode-setup); border-color: var(--mode-setup); }
+.grip-B.v { width: 18px; height: 54px; }
+
+/* Option C · summon = raised beveled cap; resize = recessed groove */
+.grip-C-summon { width: 54px; height: 17px; background:
+  linear-gradient(180deg, rgba(255,255,255,.18), transparent 50%), var(--mode-setup);
+  color: #04201f; display: flex; align-items: center; justify-content: center;
+  box-shadow: inset 1px 1px 0 rgba(255,255,255,.3), inset -1px -1px 0 rgba(0,0,0,.4), 0 2px 4px rgba(0,0,0,.5); }
+.grip-C-summon.v { width: 17px; height: 54px;
+  background: linear-gradient(90deg, rgba(255,255,255,.18), transparent 50%), var(--mode-setup); }
+.grip-C-resize { width: 40px; height: 8px; background: var(--sunk);
+  box-shadow: inset 1px 1px 2px rgba(0,0,0,.7), inset 0 -1px 0 rgba(255,255,255,.06);
+  display: flex; align-items: center; justify-content: center; gap: 3px; }
+.grip-C-resize i { width: 2px; height: 4px; background: var(--border-strong); }
+.grip-C-resize.v { width: 8px; height: 40px; flex-direction: column; }
+.grip-C-resize.v i { width: 4px; height: 2px; }
+
+/* ── GRIP COMPARISON FRAME ───────────────────────────────────── */
+.mb-grips-wrap { width: 100%; max-width: 1180px; display: flex; flex-direction: column; gap: 18px; }
+.mb-grip-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+.mb-grip-card {
+  background: rgba(255,255,255,.015); border: 1px solid var(--border-soft); padding: 18px;
+}
+.mb-grip-card h4 {
+  margin: 0 0 4px; font-family: var(--font-ui); font-size: 14px; letter-spacing: .1em; color: var(--gold-bright);
+}
+.mb-grip-card .opt { font-family: var(--font-ui); font-size: 11px; letter-spacing: .14em; color: var(--gold); }
+.mb-grip-card p { font-family: var(--font-mono); font-size: 11.5px; color: var(--text-dim); line-height: 1.6; margin: 8px 0 0; }
+.mb-grip-demos { display: flex; gap: 18px; margin: 16px 0 4px; flex-wrap: wrap; }
+.mb-grip-demo { display: flex; flex-direction: column; gap: 7px; }
+.mb-grip-demo .cap { font-family: var(--font-mono); font-size: 10px; letter-spacing: .1em; color: var(--text-mute); text-transform: uppercase; }
+
+/* a seam canvas: phone bottom-seam (horizontal) */
+.mb-seam-h {
+  width: 220px; height: 96px; background: var(--surface);
+  border: 1px solid var(--border); position: relative; overflow: hidden;
+}
+.mb-seam-h .panel { position: absolute; left: 0; right: 0; bottom: 0; height: 40px; background: var(--deep); border-top: 1px solid var(--border-strong); }
+.mb-seam-h.dim { opacity: .42; }
+/* vertical seam (tablet side-rail) */
+.mb-seam-v {
+  width: 120px; height: 150px; background: var(--surface);
+  border: 1px solid var(--border); position: relative; overflow: hidden;
+}
+.mb-seam-v .panel { position: absolute; top: 0; bottom: 0; right: 0; width: 44px; background: var(--deep); border-left: 1px solid var(--border-strong); }
+.mb-seam-v.dim { opacity: .42; }
+
+/* ── TABLET FRAME ────────────────────────────────────────────── */
+.mb-tablet-wrap { width: 100%; max-width: 1180px; display: flex; justify-content: center; }
+.mb-tablet {
+  width: 1024px; height: 720px; max-width: 100%;
+  background: #000; border-radius: 30px; padding: 12px;
+  box-shadow: 0 30px 80px rgba(0,0,0,.6);
+}
+.mb-tablet-screen {
+  width: 100%; height: 100%; border-radius: 20px; overflow: hidden; position: relative;
+  display: flex; flex-direction: column;
+  background: radial-gradient(120% 70% at 50% -10%, var(--glow-radial) 0%, transparent 62%), var(--night);
+}
+
+/* ════════════════════════════════════════════════════════════════
+   AXIS 1 · SIDE-OPENING MENUS (landscape)
+   The two collapsible arrow-menus keep their identity; only the edge
+   they unfold from rotates with the aspect ratio:
+     · Menu A · Now-Playing → top  (portrait) | LEFT  (landscape)
+     · Menu B · DISPLAY      → bottom (portrait) | RIGHT (landscape)
+   The persistent chrome bands DON'T move. Scoped to .is-landscape.
+   ════════════════════════════════════════════════════════════════ */
+
+/* Menu A · Now-Playing — unfolds from the LEFT edge */
+.mb-phone.is-landscape .mb-now-overlay {
+  top: 0; bottom: 0; left: 0; right: auto;
+  width: min(340px, 62%); max-height: none;
+  border-bottom: none; border-right: 1px solid var(--border-strong);
+}
+
+/* Menu B · DISPLAY sheet — unfolds from the RIGHT edge */
+.mb-phone.is-landscape .mb-sheet {
+  top: 0; bottom: 0; left: auto; right: 0;
+  width: min(360px, 64%); max-height: none; height: auto;
+  border-top: none; border-left: 1px solid var(--border-strong);
+}
+.mb-phone.is-landscape .mb-sheet.is-closed { transform: translate(100%, 0); }
+.mb-phone.is-landscape .mb-sheet.is-preview { height: auto !important; width: 210px; }
+/* the single chevron toggle rides the LEFT seam of the right-docked panel */
+.mb-phone.is-landscape .mb-sheet-toggle {
+  left: -22px; top: 50%; bottom: auto; right: auto; transform: translateY(-50%);
+  width: 22px; height: 52px;
+}
+
+/* ── the one arrow button · same build as Menu A's .mb-now-chev ──── */
+.mb-sheet-toggle {
+  position: absolute; left: 50%; top: -22px; transform: translateX(-50%);
+  z-index: 37; display: flex; align-items: center; justify-content: center;
+  width: 52px; height: 22px; padding: 0; cursor: pointer;
+  background: rgba(109,181,184,.16); border: 1px solid var(--mode-setup); color: var(--mode-setup);
+  --pix-step: 3px;
+  clip-path: polygon(
+    0 var(--pix-step), var(--pix-step) var(--pix-step), var(--pix-step) 0,
+    calc(100% - var(--pix-step)) 0, calc(100% - var(--pix-step)) var(--pix-step), 100% var(--pix-step),
+    100% calc(100% - var(--pix-step)), calc(100% - var(--pix-step)) calc(100% - var(--pix-step)), calc(100% - var(--pix-step)) 100%,
+    var(--pix-step) 100%, var(--pix-step) calc(100% - var(--pix-step)), 0 calc(100% - var(--pix-step))
+  );
+}
+.mb-sheet-toggle:active { background: rgba(109,181,184,.3); }
+

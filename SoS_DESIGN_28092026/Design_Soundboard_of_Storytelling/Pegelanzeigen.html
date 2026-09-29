@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Pegelanzeigen — modulare Testumgebung</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&family=Share+Tech+Mono&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="tokens.css" />
+  <link rel="stylesheet" href="mb-meters.css" />
+
+  <style>
+    html, body { margin: 0; background: #070514; }
+    body { font-family: var(--font-mono); color: var(--text); -webkit-font-smoothing: antialiased; }
+    * { box-sizing: border-box; }
+
+    .gx { min-height: 100vh; padding: 36px 30px 90px;
+      background: radial-gradient(120% 60% at 50% -10%, #1a1330 0%, transparent 60%), #070514; }
+    .gx-kicker { font-family: var(--font-ui); font-size: 12px; letter-spacing: .26em; text-transform: uppercase; color: var(--gold); }
+    .gx-h1 { font-family: var(--font-display); font-size: 24px; color: var(--gold-bright); text-shadow: 0 0 14px rgba(245,213,122,.28); margin: 12px 0 8px; }
+    .gx-sub { font-size: 13px; color: var(--text-dim); line-height: 1.6; max-width: 720px; margin: 0; }
+    .gx-sub code, .gx-desc code, .gx-empty code, .gx-card-head code { font-family: var(--font-mono); color: var(--gold-bright); background: var(--sunk); border: 1px solid var(--border); padding: 0 5px; }
+
+    /* controls */
+    .gx-controls { display: flex; flex-wrap: wrap; align-items: center; gap: 16px 22px;
+      margin: 26px 0 30px; padding: 16px 18px; background: rgba(255,255,255,.015);
+      border: 1px solid var(--border-soft); }
+    .gx-ctl { display: flex; flex-direction: column; gap: 7px; min-width: 180px; }
+    .gx-ctl span { display: flex; justify-content: space-between; font-family: var(--font-ui); font-size: 11px; letter-spacing: .12em; color: var(--text-dim); }
+    .gx-ctl span b { font-family: var(--font-mono); color: var(--gold-bright); font-weight: 400; }
+    .gx-ctl input[type=range] { accent-color: var(--gold); }
+    .gx-fire { font-family: var(--font-ui); font-size: 12px; letter-spacing: .1em; padding: 9px 14px;
+      background: var(--gold); color: var(--text-on-gold); border: none; cursor: pointer; }
+    .gx-fire:active { background: var(--gold-bright); }
+    .gx-toggle { display: flex; align-items: center; gap: 8px; font-family: var(--font-ui); font-size: 11px; letter-spacing: .1em;
+      padding: 9px 12px; background: transparent; border: 1px solid var(--border); color: var(--text-dim); cursor: pointer; }
+    .gx-toggle.is-on { border-color: var(--gold); color: var(--gold); }
+    .gx-toggle-box { width: 16px; height: 16px; display: inline-flex; align-items: center; justify-content: center;
+      border: 1px solid var(--border-strong); color: var(--text-on-gold); font-size: 11px; }
+    .gx-toggle.is-on .gx-toggle-box { background: var(--gold); border-color: var(--gold); }
+    .gx-colors { display: flex; gap: 6px; }
+    .gx-swatch { width: 24px; height: 24px; border: 1px solid var(--border); cursor: pointer; padding: 0; }
+    .gx-swatch.is-on { outline: 2px solid var(--gold-bright); outline-offset: 1px; }
+
+    /* per-type controls */
+    .gx-bytype { flex-direction: column; align-items: stretch; gap: 12px; margin-top: -14px; }
+    .gx-bytype-title { font-family: var(--font-ui); font-size: 11px; letter-spacing: .12em; color: var(--gold); }
+    .gx-bytype-row { display: flex; flex-wrap: wrap; gap: 22px; }
+    .gx-typ { display: flex; flex-direction: column; gap: 7px; min-width: 150px; flex: 1; }
+    .gx-typ-head { display: flex; align-items: center; gap: 7px; font-family: var(--font-ui); font-size: 11px; letter-spacing: .1em; color: var(--text-dim); }
+    .gx-typ-head b { margin-left: auto; font-family: var(--font-mono); color: var(--text); font-weight: 400; }
+    .gx-typ-dot { width: 10px; height: 10px; display: inline-block; }
+    .gx-opts { display: flex; flex-wrap: wrap; gap: 10px; }
+    .gx-seg { display: inline-flex; border: 1px solid var(--border); }
+    .gx-seg button { font-family: var(--font-ui); font-size: 11px; letter-spacing: .12em; padding: 9px 14px; background: transparent; border: none; color: var(--text-mute); cursor: pointer; }
+    .gx-seg button.is-on { background: var(--gold); color: var(--text-on-gold); }
+
+    /* grid of meter cards */
+    .gx-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(420px, 1fr)); gap: 20px; }
+    .gx-card { background: rgba(255,255,255,.015); border: 1px solid var(--border-soft); padding: 18px; }
+    .gx-card-head { display: flex; align-items: baseline; justify-content: space-between; }
+    .gx-card-head h3 { margin: 0; font-family: var(--font-ui); font-size: 15px; letter-spacing: .08em; color: var(--gold-bright); }
+    .gx-desc { font-size: 12px; color: var(--text-dim); line-height: 1.55; margin: 8px 0 16px; }
+
+    .gx-sizes { display: flex; flex-wrap: wrap; gap: 18px; align-items: flex-end; }
+    .gx-size { display: flex; flex-direction: column; gap: 7px; }
+    .gx-box { background: var(--night); border: 1px solid var(--border); display: block; }
+    .gx-size-label { font-family: var(--font-mono); font-size: 10px; letter-spacing: .08em; color: var(--text-mute); text-transform: uppercase; }
+
+    .gx-empty { grid-column: 1 / -1; padding: 22px; border: 1px dashed var(--border); color: var(--text-mute); font-size: 12.5px; line-height: 1.6; }
+  </style>
+
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel" src="mb-meters.jsx"></script>
+  <script type="text/babel" src="mb-meters-forms.jsx"></script>
+  <script type="text/babel" src="mb-meters-gallery.jsx"></script>
+
+  <style id="__om-edit-overrides"></style>
+</body>
+</html>

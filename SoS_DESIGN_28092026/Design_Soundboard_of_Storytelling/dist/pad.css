@@ -1,0 +1,224 @@
+/* ════════════════════════════════════════════════════════════════════
+   dist/pad.css — Drop-in PAD styling for Soundboard of Storytelling.
+   ─────────────────────────────────────────────────────────────────────
+   Requires tokens.css to be loaded first (provides --pad-*, --surface,
+   etc.). After loading, mark a pad container with classes:
+
+     <div class="pad pad--loop">              idle Loop PAD
+     <div class="pad pad--loop pad--hot">      Loop PAD that's playing
+     <div class="pad pad--single pad--setup">  Single PAD in SETUP mode
+
+   Type colour and glow are bound via two CSS custom properties:
+
+     --pad-color: var(--pad-loop);
+     --pad-glow:  var(--pad-loop-glow);
+
+   The .pad--single / .pad--loop / .pad--playlist / .pad--combo
+   modifiers set those automatically; you can also override via inline
+   style or a data-attribute if you prefer.
+   ════════════════════════════════════════════════════════════════════ */
+
+/* ── Base shell ────────────────────────────────────────────────── */
+.pad {
+  /* Type colour wiring — overridden by modifiers below */
+  --pad-color:    var(--pad-single);
+  --pad-glow:     var(--pad-single-glow);
+
+  position: relative;
+  min-height: 110px;
+  padding: 8px 8px 8px 12px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  cursor: pointer;
+  user-select: none;
+  color: var(--text);
+
+  /* === DEPTH STACK — the "full" treatment from v15 ===
+     Brighter face + light-from-above bevel + 1 px edge relief +
+     chunky 3 px pixel drop-shadow. Reads as "pad sits above the board". */
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.10) 0%, rgba(255,255,255,.04) 12%, transparent 32%) padding-box,
+    linear-gradient(  0deg, rgba(0,0,0,.30)        0%, rgba(0,0,0,.14)       14%, transparent 38%) padding-box,
+    var(--raised) padding-box;
+  border: 1px solid var(--border-strong);
+  border-radius: 0;
+  box-shadow:
+    inset  1px  1px 0 0 rgba(255,255,255,.12),
+    inset -1px -1px 0 0 rgba(0,0,0,.40);
+  /* Hard pixel drop-shadow — no blur to stay true to the pixel-art voice.
+     drop-shadow is used (not box-shadow) because it follows the stepped
+     silhouette if you later add a clip-path. */
+  filter: drop-shadow(3px 3px 0 rgba(0,0,0,.65));
+  transition: filter 0.15s ease, border-color 0.15s ease;
+}
+
+/* ── Type spine — the 3 px coloured bar on the left edge ───────── */
+.pad::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; bottom: 0;
+  width: 3px;
+  background: var(--pad-color);
+  opacity: 0.85;
+  pointer-events: none;
+}
+
+/* ── Type modifiers — set --pad-color + --pad-glow ─────────────── */
+.pad--single   { --pad-color: var(--pad-single);   --pad-glow: var(--pad-single-glow);   }
+.pad--loop     { --pad-color: var(--pad-loop);     --pad-glow: var(--pad-loop-glow);     }
+.pad--playlist { --pad-color: var(--pad-playlist); --pad-glow: var(--pad-playlist-glow); }
+.pad--combo    { --pad-color: var(--pad-combo);    --pad-glow: var(--pad-combo-glow);    }
+
+/* ── Hover (GAME mode interaction) ─────────────────────────────── */
+.pad:hover {
+  border-color: var(--pad-color);
+}
+
+/* ── HOT state — pad is currently playing ─────────────────────── */
+.pad--hot {
+  border-color: var(--pad-color);
+  /* Layered glow: 6 px tight + 14 px wider — pixel-art "lit lantern" feel.
+     The drop-shadow + glow layers are merged into one filter chain. */
+  filter:
+    drop-shadow(3px 3px 0 rgba(0,0,0,.65))
+    drop-shadow(0 0 6px  var(--pad-glow))
+    drop-shadow(0 0 14px var(--pad-glow));
+}
+.pad--hot::before { width: 6px; opacity: 1; }
+.pad--hot .pad__title { color: var(--pad-color); }
+
+/* ── SETUP mode — dashed border, drag handle visible ──────────── */
+.pad--setup {
+  /* Override the bevel face with a flatter --surface; SETUP is for editing, not playing */
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.06) 0%, transparent 32%) padding-box,
+    var(--surface) padding-box;
+  border: 2px dashed var(--border-strong);
+  /* Keep the drop-shadow so SETUP pads still feel tactile while editing */
+}
+.pad--setup::before { opacity: .55; }
+.pad--setup:hover   { border-color: var(--mode-setup); }
+
+/* In SETUP mode the type spine reads as "PAD type" but mode reads as teal */
+.pad--setup.pad--hot {
+  border-color: var(--mode-setup);
+  filter: drop-shadow(3px 3px 0 rgba(0,0,0,.65));
+}
+
+/* ── Pad sub-elements ──────────────────────────────────────────── */
+
+/* Hotkey badge — top-right */
+.pad__hotkey {
+  position: absolute;
+  top: 6px; right: 6px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-dim);
+  background: var(--sunk);
+  border: 1px solid var(--border-soft);
+  padding: 1px 5px;
+  line-height: 1;
+  letter-spacing: 0.04em;
+}
+
+/* Drag handle dots — top-left, SETUP mode only.
+   Hidden by default; shown when .pad--setup is present. */
+.pad__drag {
+  position: absolute;
+  top: 6px; left: 6px;
+  width: 9px; height: 11px;
+  color: var(--mode-setup);
+  opacity: .8;
+  display: none;
+}
+.pad--setup .pad__drag { display: block; }
+.pad--setup .pad__hotkey { display: none; }
+
+/* Type tag row — top inside the padding */
+.pad__type {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--pad-color);
+  font-family: var(--font-ui);
+  font-size: 10px;
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+}
+.pad__type svg { display: block; }
+
+/* Title — primary label */
+.pad__title {
+  font-family: var(--font-ui);
+  font-size: 13px;
+  color: var(--text);
+  letter-spacing: 0.04em;
+  line-height: 1.05;
+}
+
+/* Meta — duration / count / state below the title */
+.pad__meta {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-mute);
+  margin-top: 2px;
+}
+
+/* Optional level meter — shown only on hot pads */
+.pad__meter {
+  display: flex;
+  align-items: flex-end;
+  gap: 1px;
+  height: 10px;
+  margin-top: 6px;
+}
+.pad__meter > i {
+  flex: 1;
+  background: var(--pad-color);
+  opacity: 0.85;
+  animation: pad-meter-bounce 1.2s ease-in-out infinite;
+}
+.pad__meter > i:nth-child(2)  { animation-delay: .05s; }
+.pad__meter > i:nth-child(3)  { animation-delay: .10s; }
+.pad__meter > i:nth-child(4)  { animation-delay: .15s; }
+.pad__meter > i:nth-child(5)  { animation-delay: .20s; }
+.pad__meter > i:nth-child(6)  { animation-delay: .25s; }
+.pad__meter > i:nth-child(7)  { animation-delay: .30s; }
+.pad__meter > i:nth-child(8)  { animation-delay: .35s; }
+.pad__meter > i:nth-child(9)  { animation-delay: .40s; }
+.pad__meter > i:nth-child(10) { animation-delay: .45s; }
+
+@keyframes pad-meter-bounce {
+  0%, 100% { height: 30%; }
+  50%      { height: 100%; }
+}
+
+/* ── Active "now-playing aura" — wider radial glow behind hot pads.
+   Optional; toggle via .pads-canvas--aura on the parent container. */
+.pads-canvas--aura .pad--hot {
+  z-index: 1;
+}
+.pads-canvas--aura .pad--hot::after {
+  content: "";
+  position: absolute;
+  inset: -16px;
+  background: radial-gradient(circle at 50% 50%, var(--pad-glow) 0%, transparent 60%);
+  pointer-events: none;
+  z-index: -1;
+  animation: pad-aura-breath 3.4s ease-in-out infinite;
+}
+@keyframes pad-aura-breath {
+  0%, 100% { opacity: .8; transform: scale(1); }
+  50%      { opacity: 1;  transform: scale(1.04); }
+}
+
+/* ── Breathing on idle Loop pads — subtle "alive but sleeping" cue.
+   Toggle via .pads-canvas--breathing on the parent container. */
+.pads-canvas--breathing .pad--loop:not(.pad--hot)::before {
+  animation: pad-spine-breath 5.2s ease-in-out infinite;
+}
+@keyframes pad-spine-breath {
+  0%, 100% { opacity: .55; }
+  50%      { opacity: .95; }
+}

@@ -1,16 +1,22 @@
 // ─────────────────────────────────────────────────────────────────────────────
-// flameMath — shape data and colour maths for <AnimatedFlame />
+// flameMath — shape data, colour maths, freeze state machine and particles
+// for <AnimatedFlame /> (hybrid flame).
 //
-// Source: SoS_DESIGN_25052026/v13-animated-flame.jsx (lines 11–71), imported 1:1.
-// All coordinates and numbers are unchanged from the design. Colours are not
-// hardcoded here: the palette is read from design tokens at runtime and passed
-// in (see AnimatedFlame.tsx). Import record: docs/design/imports/animated-flame.md
+// Sources (Claude Design):
+//   • Idle animation — SoS_DESIGN_25052026/v13-animated-flame.jsx (+ V3 additions:
+//     core-ring glow, heart flicker)
+//   • Freeze / hold / thaw, particles, glow — SoS_DESIGN_28092026/…/flame-engine.jsx
+//     and flame-themes.jsx ("Hearth"), values unchanged.
+// Colours are never hardcoded here: the palette is read from design tokens at runtime
+// and passed in. Import record: docs/design/imports/animated-flame.md
 // ─────────────────────────────────────────────────────────────────────────────
 
 /** A pixel on the 16×17 flame grid: [x, y, layer] — layer 0 = outer, 1 = mid, 2 = core. */
 export type FlamePixel = [number, number, number];
 /** A grid position without layer: [x, y]. */
 export type GridPos = [number, number];
+
+// ── Shape (identical in v13 and Hearth) ─────────────────────────────────────
 
 /** Tip rows (y = 0, 1) — animated. */
 export const FLAME_TIP: FlamePixel[] = [
@@ -39,34 +45,64 @@ export const FLAME_BODY: FlamePixel[] = [
   [6, 15, 0], [7, 15, 0], [8, 15, 0], [9, 15, 0],
 ];
 
-/** Ice facets — fade in when freezing. The first 11 are tinted, the rest white. */
+/** Tip + body — every pixel of the flame (Hearth: FLAME_PIX). */
+export const FLAME_PIX: FlamePixel[] = FLAME_TIP.concat(FLAME_BODY);
+
+/** The 2×2 heart as four pixels (top-left, top-right, bottom-left, bottom-right). V3 addition. */
 // prettier-ignore
-export const ICE_FACETS: GridPos[] = [
-  [4, 7], [5, 8], [6, 9], [7, 10],
-  [11, 7], [10, 8], [9, 9],
-  [6, 11], [7, 12], [8, 13],
-  [4, 5], [11, 5], [3, 10], [12, 10], [5, 13], [10, 13],
+export const HEART_PIXELS: GridPos[] = [
+  [7, 9], [8, 9], [7, 10], [8, 10],
 ];
 
-/** Pixels that can chip off as ice-chip particles. */
+/** Neighbours of the 2×2 heart that can briefly light up. V3 addition. */
 // prettier-ignore
-export const CHIP_SOURCES: GridPos[] = [
-  [4, 7], [5, 5], [6, 8], [7, 10], [10, 5], [11, 7], [10, 8], [9, 9],
-  [4, 9], [5, 11], [10, 11], [6, 13], [9, 13], [5, 8], [11, 9],
+export const HEART_NEIGHBOURS: GridPos[] = [
+  [7, 8], [8, 8], [6, 9], [9, 10], [7, 11], [8, 11],
 ];
 
-/** Possible glitter positions on the ice. */
+/** Stable facets of the ice crystal (Hearth). */
 // prettier-ignore
-export const GLITTER_POS: GridPos[] = [
-  [4, 5], [5, 5], [10, 5], [11, 5], [5, 7], [10, 7], [4, 9], [11, 9],
-  [6, 11], [9, 11], [5, 13], [10, 13], [7, 8], [8, 8], [3, 10], [12, 10],
+export const HEARTH_FACETS: GridPos[] = [
+  [5, 5], [10, 5], [7, 3], [4, 9], [11, 9], [6, 8], [9, 8], [7, 11], [5, 13], [10, 13], [8, 6],
 ];
 
-/** Icicles below the base when fully frozen. */
+/** Edge pixels ice shards break off from when tapping the frozen flame (Hearth). */
 // prettier-ignore
-export const ICICLES: GridPos[] = [
-  [5, 15], [6, 16], [8, 16], [10, 15], [11, 16],
+export const SHARD_EDGES: GridPos[] = [
+  [3, 8], [4, 6], [4, 9], [5, 5], [11, 6], [12, 8], [12, 10], [11, 9], [10, 5], [5, 13], [10, 13], [7, 2],
 ];
+
+// ── Canvas field (Hearth) ───────────────────────────────────────────────────
+
+/** Field size in cells; the 16×17 flame sits at (FIELD_OX, FIELD_OY). */
+export const FIELD_W = 32;
+export const FIELD_H = 40;
+export const FIELD_OX = 8;
+export const FIELD_OY = 12;
+/** Canvas pixels per cell. */
+export const CELL = 10;
+
+// ── Timing (v13 idle + V3 additions) ────────────────────────────────────────
+
+/** Heart flicker frame rate (jitter, dim corner, neighbour) — V3 addition. */
+export const CORE_FLICKER_FPS = 5;
+/** New glow targets per second for the core ring — pixels glide between them. V3 addition. */
+export const RING_GLOW_FPS = 3;
+/** Max. share the core ring moves towards the heart (brighter) or mid colour (darker). */
+export const RING_GLOW_STRENGTH = 0.22;
+/** How much the randomly chosen dim heart corner loses (0.35 → shines at 65 %). */
+export const HEART_CORNER_DIM = 0.35;
+
+// ── Hearth behaviour (values 1:1) ───────────────────────────────────────────
+
+export const HEARTH = {
+  chargePerTap: 0.15,
+  thawRate: 0.34,
+  holdDur: 4.0,
+  grace: 0.22,
+} as const;
+
+// ── Palette ─────────────────────────────────────────────────────────────────
 
 /** One temperature family of the flame (warm = GAME colours, cold = SETUP ice). */
 export type FlameFamily = { outer: string; mid: string; core: string; heart: string };
@@ -75,32 +111,23 @@ export type FlameFamily = { outer: string; mid: string; core: string; heart: str
 export type FlamePalette = {
   warm: FlameFamily;
   cold: FlameFamily;
-  /** Halo at cold = 0 (design: #E8821E). */
-  haloWarm: string;
-  /** Halo at cold = 0.5 — lilac turning point (design: #9F88E8). */
-  haloTurn: string;
-  /** Halo at cold = 1 (design: #5BAFD8 — same as the ice mid colour). */
-  haloCold: string;
-  /** Frost vignette base colour (design: rgba(155,210,235,…)). */
-  frost: string;
-  /** Spark / glitter / highlight white (design: #FFFFFF). */
+  /** Glow at charge 0 (Hearth: rgb(232,130,30)). */
+  glowWarm: string;
+  /** Glow at charge 1 (Hearth: rgb(120,180,224)). */
+  glowCold: string;
+  /** Steam (Hearth: #e2eef4). */
+  steam: string;
+  /** White for sparks' hot core, glints, cracks, shard glitter. */
   highlight: string;
-  /** Smoke the sparks cool down into (V3 addition — design sparks only faded out). */
-  smoke: string;
 };
+
+// ── Colour maths ────────────────────────────────────────────────────────────
 
 export function lerp(a: number, b: number, t: number): number {
   return a + (b - a) * t;
 }
 
-/**
- * Parses '#rrggbb' (leading '#' optional, surrounding whitespace ignored) and also
- * 'rgb(r,g,b)' — the output format of lerpColor.
- *
- * Deviation from the design: the design's hexToRgb only read hex, but its spark colour
- * nests lerpColor (an 'rgb(…)' string) into lerpColor — yielding rgb(NaN,…), which
- * browsers draw black. Accepting 'rgb(…)' restores the intended white-hot → gold sparks.
- */
+/** Parses '#rrggbb' (leading '#' optional, whitespace ignored) and 'rgb(r,g,b)'. */
 export function hexToRgb(color: string): [number, number, number] {
   const c = color.trim();
   const rgb = /^rgb\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)$/.exec(c);
@@ -116,64 +143,177 @@ export function lerpColor(c1: string, c2: string, t: number): string {
   return `rgb(${Math.round(lerp(r1, r2, t))},${Math.round(lerp(g1, g2, t))},${Math.round(lerp(b1, b2, t))})`;
 }
 
-/** Colour of a body layer at a given coldness (0 = warm, 1 = frozen). */
-export function colorAt(layer: number, cold: number, palette: FlamePalette): string {
-  const w = palette.warm;
-  const c = palette.cold;
-  if (layer === 0) return lerpColor(w.outer, c.outer, cold);
-  if (layer === 1) return lerpColor(w.mid, c.mid, cold);
-  return lerpColor(w.core, c.core, cold);
+/** Colour of a layer (0 outer · 1 mid · 2 core) within one family. */
+export function layerOf(family: FlameFamily, layer: number): string {
+  if (layer === 0) return family.outer;
+  if (layer === 1) return family.mid;
+  return family.core;
 }
 
-/** Halo colour: warm → lilac turn (cold 0–0.5) → cold (0.5–1). */
-export function haloColorAt(cold: number, palette: FlamePalette): string {
-  return cold < 0.5
-    ? lerpColor(palette.haloWarm, palette.haloTurn, cold * 2)
-    : lerpColor(palette.haloTurn, palette.haloCold, (cold - 0.5) * 2);
+/** Glow colour for the canvas drop-shadow (Hearth: alpha 0.5, warm → cold with charge). */
+export function glowColorAt(charge: number, palette: FlamePalette): string {
+  const [r1, g1, b1] = hexToRgb(palette.glowWarm);
+  const [r2, g2, b2] = hexToRgb(palette.glowCold);
+  return `rgba(${Math.round(lerp(r1, r2, charge))},${Math.round(lerp(g1, g2, charge))},${Math.round(lerp(b1, b2, charge))},0.5)`;
 }
 
-/** Frost vignette colour with the design's alpha formula: (cold − 0.3) × 0.18. */
-export function frostColorAt(cold: number, palette: FlamePalette): string {
-  const [r, g, b] = hexToRgb(palette.frost);
-  return `rgba(${r},${g},${b},${(cold - 0.3) * 0.18})`;
+/** Glow blur radius in CSS px (Hearth: 12 + charge × 4). */
+export function glowBlurAt(charge: number): number {
+  return 12 + charge * 4;
 }
 
-// ── Core flicker (V3 addition, not in the design — product owner request 2026-09-29) ──
+// ── Freeze front (Hearth) ───────────────────────────────────────────────────
 
-/** Frame rate of the heart flicker (jitter, dim corner, neighbour) — slower than the 12fps tip. */
-export const CORE_FLICKER_FPS = 5;
+/**
+ * Freeze threshold per pixel: LOW at the edge and top (freezes first), HIGH in the core
+ * bottom-centre (freezes last). Thawing reverses it — warmth spreads from the inside out.
+ */
+export function freezeThreshold(x: number, y: number): number {
+  const edge = Math.abs(x - 7.5) / 4.5; // 0 centre … 1 edge
+  return (1 - edge) * 0.5 + (y / 15) * 0.28;
+}
 
-/** New glow targets per second for the core ring — pixels glide smoothly between them. */
-export const RING_GLOW_FPS = 3;
+/** How far a pixel has turned to ice (0 warm … 1 ice) at a given charge (Hearth colorAt). */
+export function pixelFreeze(charge: number, x: number, y: number): number {
+  const globalCool = charge * 0.7;
+  const front = Math.max(0, Math.min(1, (charge - freezeThreshold(x, y)) * 2.4));
+  return Math.min(1, globalCool + front * 0.6);
+}
 
-/** Max. share the core ring moves towards the heart (brighter) or mid colour (darker). */
-export const RING_GLOW_STRENGTH = 0.22;
+// ── State machine (Hearth: idle → transform → hold → revert → idle) ────────
 
-/** The 2×2 heart as four pixels (top-left, top-right, bottom-left, bottom-right). */
-// prettier-ignore
-export const HEART_PIXELS: GridPos[] = [
-  [7, 9], [8, 9], [7, 10], [8, 10],
-];
+export type FlamePhase = 'idle' | 'transform' | 'hold' | 'revert';
 
-/** How much the randomly chosen dim heart corner loses (0.35 → shines at 65 %). */
-export const HEART_CORNER_DIM = 0.35;
+export type FlameState = {
+  charge: number;
+  phase: FlamePhase;
+  /** Time (s) of the last tap that added charge. */
+  lastTap: number;
+  /** Time (s) the hold phase started (refreshed by taps while holding). */
+  holdStart: number;
+  /** Tap shake, decays quickly. */
+  shiver: number;
+};
 
-/** Neighbours of the 2×2 heart (x 7–8, y 9–10) that can briefly light up. */
-// prettier-ignore
-export const HEART_NEIGHBOURS: GridPos[] = [
-  [7, 8], [8, 8], [6, 9], [9, 10], [7, 11], [8, 11],
-];
+export function initialFlameState(): FlameState {
+  return { charge: 0, phase: 'idle', lastTap: -9, holdStart: 0, shiver: 0 };
+}
 
-/** Deterministic pseudo-random value in [0, 1) for a flicker frame and a pixel index. */
+/** Advances the phase automaton by dt at time t (seconds). Mutates and returns `st`. */
+export function stepFlameState(st: FlameState, t: number, dt: number): FlameState {
+  if (st.phase === 'transform') {
+    if (st.charge >= 0.999) {
+      st.phase = 'hold';
+      st.holdStart = t;
+    } else if (t - st.lastTap > HEARTH.grace) st.phase = 'revert';
+  } else if (st.phase === 'hold') {
+    st.charge = 1;
+    if (t - st.holdStart > HEARTH.holdDur) st.phase = 'revert';
+  } else if (st.phase === 'revert') {
+    st.charge = Math.max(0, st.charge - dt * HEARTH.thawRate);
+    if (st.charge <= 0.001) {
+      st.charge = 0;
+      st.phase = 'idle';
+    }
+  }
+  if (st.shiver > 0) st.shiver = Math.max(0, st.shiver - dt * 5);
+  return st;
+}
+
+/**
+ * Applies a tap at time t. Returns 'hold-tap' when the flame was frozen solid (the hold is
+ * refreshed and shards should burst) or 'charge' when the tap added charge.
+ */
+export function tapFlameState(st: FlameState, t: number): 'hold-tap' | 'charge' {
+  if (st.phase === 'hold') {
+    st.shiver = 0.7;
+    st.holdStart = t;
+    return 'hold-tap';
+  }
+  st.charge = Math.min(1, st.charge + HEARTH.chargePerTap);
+  st.lastTap = t;
+  if (st.charge >= 0.999) {
+    st.phase = 'hold';
+    st.holdStart = t;
+  } else st.phase = 'transform';
+  st.shiver = 1;
+  return 'charge';
+}
+
+// ── Particles (Hearth engine) ───────────────────────────────────────────────
+
+export type ParticleKind = 'ember' | 'frost' | 'steam' | 'shard' | 'drip';
+
+export type Particle = {
+  kind: ParticleKind;
+  /** Position in field cells. */
+  x: number;
+  y: number;
+  vx: number;
+  vy: number;
+  /** Gravity (cells/s²); negative rises. */
+  g: number;
+  life: number;
+  maxLife: number;
+  /** Fade-out duration at the end of life (s). */
+  fade: number;
+  color: string;
+  /** Size in cells. */
+  s: number;
+  rot: number;
+  spin: number;
+  /** Steam only: grows and drifts sideways. */
+  steamDrift: boolean;
+  /** Steam only: stable per-particle variation seed. */
+  seed: number;
+};
+
+/** Advances and prunes particles (Hearth updateParticles + steam onUpd). Mutates `ps`. */
+export function updateParticles(ps: Particle[], dt: number): void {
+  for (let i = ps.length - 1; i >= 0; i--) {
+    const p = ps[i];
+    p.life -= dt;
+    if (p.life <= 0) {
+      ps.splice(i, 1);
+      continue;
+    }
+    p.vy += p.g * dt;
+    p.x += p.vx * dt;
+    p.y += p.vy * dt;
+    p.rot += p.spin * dt;
+    if (p.steamDrift) {
+      p.s += dt * 0.4;
+      p.vx += Math.sin((p.maxLife - p.life) * 1.6 + p.x) * dt * 0.8;
+    }
+  }
+}
+
+/** Particle opacity: full until the last `fade` seconds (Hearth drawParticles). */
+export function particleAlpha(p: Particle): number {
+  return Math.max(0, Math.min(1, p.life / (p.fade || 0.3)));
+}
+
+/**
+ * Random emission point over the whole flame, weighted towards the tip (Hearth flameEmit).
+ * `rand` returns [0, 1) — injectable for tests.
+ */
+export function flameEmit(rand: () => number = Math.random): GridPos {
+  for (let tries = 0; tries < 8; tries++) {
+    const e = FLAME_PIX[Math.floor(rand() * FLAME_PIX.length)];
+    if (rand() < 1 - e[1] / 17) return [e[0], e[1]];
+  }
+  return [7, 3];
+}
+
+// ── V3 additions: heart flicker + core-ring glow ────────────────────────────
+
+/** Deterministic pseudo-random value in [0, 1) for a frame and a pixel index. */
 export function flickerNoise(frame: number, i: number): number {
   const n = Math.sin(frame * 12.9898 + i * 78.233) * 43758.5453;
   return n - Math.floor(n);
 }
 
-/**
- * Smoothly interpolated noise in [0, 1): glides from the value of frame ⌊pos⌋ to the next
- * with a smoothstep ease, so the core ring glows instead of jumping.
- */
+/** Smoothly interpolated noise in [0, 1): glides between frame values (smoothstep). */
 export function smoothNoise(pos: number, i: number): number {
   const f0 = Math.floor(pos);
   const frac = pos - f0;
@@ -182,9 +322,8 @@ export function smoothNoise(pos: number, i: number): number {
 }
 
 /**
- * Colour of one core-layer pixel with a subtle flicker: brighter towards the heart or
- * darker towards the mid colour, by at most `strength` (scaled by the flame's flicker,
- * so a frozen flame is still).
+ * Colour of one core-ring pixel: brighter towards the heart or darker towards the mid
+ * colour, by at most `strength`, scaled by the flame's flicker (a frozen flame is still).
  */
 export function coreFlickerColor(
   core: string,
@@ -192,38 +331,10 @@ export function coreFlickerColor(
   mid: string,
   noise: number,
   flicker: number,
-  strength = 0.3,
+  strength = RING_GLOW_STRENGTH,
 ): string {
   const a = noise * 2 - 1; // −1 … 1
   return a >= 0
     ? lerpColor(core, heart, a * strength * flicker)
     : lerpColor(core, mid, -a * strength * flicker);
-}
-
-// ── Spark → smoke (V3 addition, not in the design — product owner request 2026-09-29) ──
-
-/** Spark lifetime multiplier: sparks live ~60 % longer so the smoke phase stays visible. */
-export const SPARK_LIFE_SCALE = 1.6;
-
-/** Share of the spark's life (from birth) spent glowing; the rest turns into smoke. */
-export const SPARK_GLOW_PHASE = 0.45;
-
-/**
- * Spark colour over its life. `t` = remaining life ratio (1 at birth → 0 at death).
- * Glow phase: white-hot → ember (core/mid by `warmth`), as in the design.
- * Smoke phase: ember → smoke (black).
- */
-export function sparkColorAt(t: number, warmth: number, palette: FlamePalette): string {
-  const ember = lerpColor(palette.warm.core, palette.warm.mid, warmth);
-  const glowEnd = 1 - SPARK_GLOW_PHASE; // t at which the glow phase ends
-  if (t >= glowEnd) {
-    const k = (1 - t) / SPARK_GLOW_PHASE; // 0 at birth → 1 at end of glow
-    return lerpColor(palette.highlight, ember, 0.6 + k * 0.4);
-  }
-  return lerpColor(ember, palette.smoke, 1 - t / glowEnd);
-}
-
-/** Spark opacity: fully visible through glow and most of the smoke phase, fades at the end. */
-export function sparkOpacityAt(t: number): number {
-  return Math.min(1, t * 3);
 }
