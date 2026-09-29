@@ -26,6 +26,21 @@
 
 ---
 
+## Guiding priorities (user decision 2026-09-29)
+
+1. **Safety** — a trustworthy test environment and secure development and deployment
+   come first (Workflow rule 15, `docs/development/testing.md`).
+2. **Structure and clarity** — work strictly structured. One uniform scheme for everything
+   of a kind (file and folder names, code identifiers, components, CSS classes, test IDs,
+   docs, commit messages) is the minimum:
+   - never introduce a second style next to an existing one;
+   - no scheme yet → propose one (ADR) before adding more of that kind;
+   - inconsistency found → report it and plan the clean-up, never extend it;
+   - guard schemes with tests where feasible (`testGuards`, `docsGuards`, lint rules).
+3. **Features** — only on top of 1 and 2.
+
+---
+
 ## Reference documents
 
 - **File naming (ADR-0050, enforced by `docsGuards.test.ts`)** — root holds only
