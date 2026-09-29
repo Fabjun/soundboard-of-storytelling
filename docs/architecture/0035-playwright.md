@@ -20,8 +20,10 @@ besonders wertvoll.
 
 Playwright mit sechs Projekten: `smoke` (Chromium), `smoke-webkit` (WebKit), `full` (Chromium), `mobile` (iPhone 13 Pro, WebKit), `mobile-chromium` (iPhone 13 Pro, Chromium), `visual` (Chromium, macOS-only). Konfiguration in `v3/playwright.config.ts`.
 
-`webServer`-Konfiguration: Playwright startet den Vite-Dev-Server automatisch
-vor dem Test-Run. Tests laufen gegen `http://localhost:5173/soundboard-of-storytelling/`.
+`webServer`-Konfiguration: Playwright startet einen **eigenen** Vite-Dev-Server auf dem
+Test-Port 5199 (`--strictPort`, `reuseExistingServer: false`, seit 2026-09-29). Tests laufen
+gegen `http://localhost:5199/soundboard-of-storytelling/`. Projekt-Zuordnung der Specs:
+`v3/tests/e2e/projects.ts` (Wächter-Test `tests/unit/e2eProjects.test.ts`).
 
 **Selector-Priorität** (aus TESTING.md):
 `getByTestId` > `getByRole` > `.filter({ hasText })` > CSS-Klasse

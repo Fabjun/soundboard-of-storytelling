@@ -8,7 +8,7 @@ Vier Schichten, eingeführt in Phase 1 & 2 (Phase 2 — Testing Infrastructure):
 |---------|---------|-------|---------|
 | Unit | Vitest | Logik-Korrektheit (pure functions, signals, IDB-API) | ~1s |
 | E2E Smoke | Playwright | Kritische Pfade in Chromium + WebKit | ~6s |
-| E2E Full | Playwright | Vollständige Verifikation (Slices 3–4): Board/Scene/Pad CRUD, Audio-Engine | ~90s |
+| E2E Full | Playwright | Vollständige Verifikation (Slices 3–4): Board/Deck/Pad CRUD, Audio-Engine | ~30s |
 | Mobile E2E | Playwright (WebKit + Chromium) | Touch-wiring via tap() — 3 aktive WebKit-Specs + 2 Chromium-Specs; 2 WebKit-Specs deferred/fixme'd (touch-targets, overflow) bis Slice 8 | ~30s |
 | Visual Regression | Playwright Screenshots | Pixel-Vergleich (lokal-only) | ~30s |
 
@@ -17,7 +17,8 @@ Vier Schichten, eingeführt in Phase 1 & 2 (Phase 2 — Testing Infrastructure):
 ## Werkzeuge
 
 - **Vitest** — Unit-Tests. Schnell (ms), kein Browser, keine Netzwerk-Abhängigkeit. Konfiguration: [v3/vitest.config.ts](v3/vitest.config.ts)
-- **Playwright** — E2E-Tests in Chromium (+ WebKit für Smoke). Startet den Vite-Dev-Server automatisch via `webServer`. Konfiguration: [v3/playwright.config.ts](v3/playwright.config.ts)
+- **Playwright** — E2E-Tests in Chromium (+ WebKit für Smoke/Mobile). Startet einen **eigenen** Vite-Dev-Server auf dem **Test-Port 5199** (`--strictPort`, nie einen vorhandenen Server wiederverwenden — belegter Port = lauter Fehler). Der normale Dev-Server bleibt auf 5173. Konfiguration: [v3/playwright.config.ts](v3/playwright.config.ts), Projekt-Zuordnung: [v3/tests/e2e/projects.ts](v3/tests/e2e/projects.ts)
+- **Node-Version** — festgelegt in [`.nvmrc`](.nvmrc) (24); CI liest sie von dort (`node-version-file`).
 - **fake-indexeddb** — In-Memory-IndexedDB für Unit-Tests. Ersetzt jsdom's fehlende IDB-Implementierung. Setup: [v3/tests/unit/setup.ts](v3/tests/unit/setup.ts)
 - **@vitest/coverage-v8** — Coverage-Report via V8 (`npm run test:coverage`)
 - **ESLint** — Statische Analyse. Flat-Config in [v3/eslint.config.js](v3/eslint.config.js). TypeScript + react-hooks Regeln.
@@ -38,10 +39,14 @@ v3/
       padUtils.test.ts        ← pure functions (nextFreeSlot, typeInference, migration)
       padDnd.test.ts          ← applySwap, applyInsert (pure, kein DOM)
       store.test.ts           ← Preact Signals mutations + computed reactivity
-      idb.test.ts             ← IDB-Layer round-trips (boardPut/Get/Delete, libGetAllMeta)
+      idb.test.ts             ← IDB-Layer round-trips (boardPut/Get/Delete, libGetAllMeta, DB-Upgrade)
+      deckConflict.test.ts    ← Deck-Umbenennung: Namenskonflikt-Erkennung
+      flameMath.test.ts       ← StartScreen-Flamme: Formdaten, Phasen, Partikel
+      e2eProjects.test.ts     ← Wächter: jede E2E-Spec in genau einem Playwright-Projekt
       audio/
         lru.test.ts           ← LRU Buffer-Cache (Größenlimit, Eviction-Logik)
     e2e/
+      projects.ts             ← Projekt-Zuordnung (SMOKE/FULL/MOBILE-Listen) — einzige Quelle
       helpers.ts              ← Shared helpers: goToBoardList, createBoardAndNavigate, ...
       app-loads.spec.ts       ← Smoke: StartScreen mit TAP TO UNLOCK
       library-empty.spec.ts   ← Smoke: LIBRARY-Button → LibraryScreen
@@ -49,7 +54,7 @@ v3/
       board-create.spec.ts    ← Smoke: Board anlegen → BoardScreen
       mode-toggle.spec.ts     ← Smoke: GAME ↔ SETUP umschalten
       board-crud.spec.ts      ← Full: Tests 1–5 (Board CRUD + Reload)
-      scene-crud.spec.ts      ← Full: Tests 6–11 (Scene CRUD + Undo)
+      deck-crud.spec.ts       ← Full: Tests 6–11 (Deck CRUD + Undo)
       pad-creation.spec.ts    ← Full: Tests 12–15 (Pad erzeugen: Popover, Drag)
       pad-editing.spec.ts     ← Full: Tests 16–19 (PadEditorPanel, TypChange)
       pad-dnd.spec.ts         ← Full: Tests 20–21 (SWAP/INSERT DnD) [test.skip]
@@ -71,7 +76,7 @@ v3/
         visual-boardscreen-setup.spec.ts
         visual-boardscreen-game.spec.ts
         visual-modetoggle-states.spec.ts
-        visual-scene-rail.spec.ts
+        visual-deck-rail.spec.ts
         visual-library-empty.spec.ts
   vitest.config.ts
   playwright.config.ts
@@ -100,8 +105,8 @@ data-testid="<component>-<element>-<instance-id>"
 ```
 new-board-button           ← eindeutig, kein Suffix nötig
 board-row-{board.id}       ← Instanz-ID für Listen-Elemente
-scene-tab-{scene.id}
-scene-delete-{scene.id}
+deck-tab-{deck.id}
+deck-delete-{deck.id}
 mode-toggle                ← Container
 mode-toggle-setup          ← Unter-Element
 pad-cell-empty-{col}-{row} ← Koordinaten als Suffix
@@ -181,7 +186,7 @@ haben unterschiedliches Font-Rendering → Baseline-Mismatch auf Ubuntu).
 cd v3 && npm run test:e2e:update-snapshots
 ```
 
-Generiert `*.png`-Dateien in `tests/e2e/visual/__snapshots__/` (Format: `<name>-darwin.png`).
+Generiert `*.png`-Dateien in `tests/e2e/visual/<spec>.spec.ts-snapshots/` (Format: `<name>-visual-darwin.png`).
 Diese Dateien werden committed und gehören zum Repo.
 
 ### Verifikation
@@ -194,11 +199,12 @@ Läuft gegen committed Baselines. Bei Diff: Test schlägt fehl mit Screenshot-Ve
 
 ### Wann ausführen
 
-**Vor UI-relevanten Commits** (Komponenten, CSS, Design-System-Token):
+**Automatisch im Pre-Push-Hook (nur macOS).** Zusätzlich sinnvoll vor UI-relevanten Commits:
 ```bash
 cd v3 && npm run test:e2e:visual
 ```
-Regressionen prüfen → bei absichtlichem Change: `--update-snapshots` + neue Baseline committen.
+Bei Diff: **jedes** `*-diff.png` ansehen. Nur bei nachweislich gewollter Änderung
+`npm run test:e2e:update-snapshots` + neue Baseline committen.
 
 ### Anti-Flakiness
 
@@ -221,7 +227,7 @@ GitHub Actions unter [`.github/workflows/tests.yml`](.github/workflows/tests.yml
 ```
 unit-build-lint
   ├── npm run build          (tsc + vite)
-  ├── npm run test           (vitest 102 Tests, Stand v3.0.18)
+  ├── npm run test           (vitest, inkl. Wächter-Test für die E2E-Projekt-Zuordnung)
   ├── npm run lint           (eslint)
   ├── npm run format:check   (prettier)
   ├── npm run size           (size-limit)
@@ -239,6 +245,9 @@ e2e-full (needs: unit-build-lint)
 ```
 
 Playwright-Reports werden als Artifact hochgeladen (7 Tage, bei Fehler).
+Node-Version aus `.nvmrc`. In CI gilt `failOnFlakyTests`: ein Test, der erst im
+Wiederholungsversuch besteht, lässt den Lauf **fehlschlagen** (→ kein Deployment).
+Ablauf dann: siehe [Wackelige Tests (Quarantäne)](#wackelige-tests-quarantäne).
 
 **`deploy-pages.yml`** — Läuft nur wenn `tests.yml` auf `main` erfolgreich abgeschlossen hat:
 - Trigger: `workflow_run` (Tests, completed, success) + `workflow_dispatch`
@@ -250,11 +259,21 @@ Husky-Hook führt vor jedem lokalen Commit aus (in dieser Reihenfolge):
 1. `npm run sync:docs` + `git add` (~1s) — Auto-generierte Docs aktualisieren und stagen
 2. `npm run build` (~4s)
 3. lint-staged: Prettier + ESLint auf gestageten Dateien
-4. `npm run test` (~1s)
-5. `npm run test:e2e:smoke` (~6s)
+4. `npm run test` (~2s) — inkl. Wächter-Test `e2eProjects.test.ts`
+5. `npm run test:e2e:smoke` (~6s, eigener Server auf Port 5199)
 6. `npm run link:check` (~1s) — Tote interne Markdown-Links erkennen
 
-Gesamt ~14s. Schlägt einer der Schritte fehl → Commit wird abgebrochen.
+Gesamt ~20s. Schlägt einer der Schritte fehl → Commit wird abgebrochen.
+
+### Pre-Push-Hook
+
+1. Versions-Bump-Check (`APP_VERSION` gegenüber `origin/main`)
+2. `npm run size` — Bundle-Größe
+3. `npm run test:e2e:all` — Smoke, Full, Mobile (wie die drei CI-E2E-Jobs)
+4. **Nur macOS:** `npm run test:e2e:visual` — visuelle Regression
+
+Schlägt ein Schritt fehl: **zuerst die Fehlerausgabe bzw. den Report lesen**, erst dann
+neu starten (ein neuer Lauf überschreibt `playwright-report/`).
 
 ---
 
@@ -343,14 +362,15 @@ test('beschreibt den Nutzer-Flow in einem Satz', async ({ page }) => {
 - `page.goto('/soundboard-of-storytelling/')` am Anfang jedes Tests (IndexedDB ist per Browser-Context isoliert)
 - **Selector-Priorität**: `getByTestId` > `getByRole` > `.filter({ hasText })` > CSS-Klasse
 - Tests in der `full`-Suite müssen in Chromium bestehen; Smoke auch in WebKit
-- `test.skip` mit Begründung für bekannt flaky Tests (z.B. Pointer-Events-Drag in Playwright)
+- Neue Spec-Datei **immer in `tests/e2e/projects.ts` eintragen** — sonst schlägt der Wächter-Test fehl
+- Wackelige Tests: siehe [Wackelige Tests (Quarantäne)](#wackelige-tests-quarantäne)
 
 ### Wohin gehört der Test?
 
 | Flow | Datei | Projekt |
 |------|-------|---------|
-| Kern-Navigation, App-Start | `tests/e2e/*.spec.ts` (Smoke-Namelist in playwright.config) | `smoke` |
-| Slice-3 Verifikation | `tests/e2e/<feature>.spec.ts` (Full-Namelist) | `full` |
+| Kern-Navigation, App-Start | `tests/e2e/*.spec.ts` (`SMOKE_TESTS` in `projects.ts`) | `smoke` |
+| Feature-Verifikation | `tests/e2e/<feature>.spec.ts` (`FULL_TESTS` in `projects.ts`) | `full` |
 | Touch-wiring (audio-free), Touch-Targets, Overflow | `tests/e2e/mobile/*` (audio-free specs) | `mobile` (WebKit) |
 | Touch-wiring (pad tap → is-hot/is-looping, pad creation) | `tests/e2e/mobile/*` (audio-dependent specs) | `mobile-chromium` (Chromium) |
 | Pixel-Vergleich | `tests/e2e/visual/*.spec.ts` | `visual` |
@@ -362,7 +382,15 @@ test('beschreibt den Nutzer-Flow in einem Satz', async ({ page }) => {
 - Bei Funktions-Änderung: Tests anpassen ist Teil der Aufgabe, nicht optional
 - Bei UI-Änderung (Texte, Struktur): E2E-Selektoren sofort prüfen und korrigieren
 - Bei Visual-Regression-Änderung (Slice 8 / Polish): `npm run test:e2e:update-snapshots` lokal ausführen, neue Baseline committen
-- Bei flaky Tests: **erst untersuchen warum**, dann fixen oder als `test.skip` mit Begründung markieren. Nie stillschweigend ignorieren.
+- Bei wackeligen Tests: festes Verfahren, siehe unten.
+
+### Wackelige Tests (Quarantäne)
+
+Ein Test, der mal besteht und mal nicht, ist ein Fehler — im Test oder in der App.
+
+1. **Beweise sichern:** Fehlerausgabe und `playwright-report/` (bzw. CI-Artifact) lesen, **bevor** neu gestartet wird.
+2. **Ursache suchen und beheben** (Timing, fehlendes Warten auf einen Zustand, echter App-Fehler).
+3. **Nur wenn das nicht sofort geht:** Quarantäne mit `test.fixme(…)` **und** Begründung im Testnamen/Kommentar **und** BACKLOG-Eintrag. Nie stillschweigend `skip`, nie Retries hochdrehen.
 
 ---
 
@@ -404,7 +432,7 @@ Nur lokal ausführen. Bei UI-Änderungen: Baselines lokal neu generieren + commi
 
 ### 5. Pointer-Events-Drag in Playwright
 
-Tests 9, 14, 20, 21 (Scene-Reorder, Library-Drag Path B, Pad SWAP, Pad INSERT)
+Tests 9, 14, 20, 21 (Deck-Reorder, Library-Drag Path B, Pad SWAP, Pad INSERT)
 erfordern pointer-event-basiertes Drag (`mouse.down + move + up`). Diese Tests
 sind als `test.skip` markiert — in Phase 3 aktivieren wenn Drag-Sequenz stabil ist.
 

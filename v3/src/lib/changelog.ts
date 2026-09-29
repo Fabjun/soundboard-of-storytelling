@@ -16,6 +16,7 @@ export const CHANGELOG: ChangelogEntry[] = [
     items: [
       'docs(adr): ADR-0048 pad pool, decks and three pad types (Slice 9 plan)',
       'refactor: Scene renamed to Deck in UI, code, CSS classes and tests (Slice 9b); DB v3 clears old test boards',
+      'test: guard for E2E project membership, dedicated test port 5199, Node 24 in CI, visual tests in pre-push, flaky tests fail CI',
     ],
   },
   {

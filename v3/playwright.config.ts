@@ -1,7 +1,7 @@
 // ─────────────────────────────────────────────────────────────────────────────
 // Playwright configuration — E2E tests
 //
-// baseURL is http://localhost:5173 (without the Vite base path).
+// baseURL is http://localhost:5199 — a dedicated test port (dev server stays on 5173).
 // Tests navigate explicitly to /soundboard-of-storytelling/ so the URL is readable.
 //
 // Projects:
@@ -23,40 +23,24 @@
 // Default `playwright test` (no flags) runs all projects.
 // Use --project=<name> to run a subset.
 //
-// webServer: starts `npm run dev` and waits for the Vite server to be ready
-// at the app's actual URL. `reuseExistingServer` allows reuse on local dev
-// so tests can run quickly without a cold start every time.
+// webServer: starts its own Vite dev server on the dedicated test port and waits
+// for the app URL. Never reuses an existing server (see TEST_PORT).
+// Project membership lives in tests/e2e/projects.ts (guarded by a unit test).
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { defineConfig, devices } from '@playwright/test';
+import {
+  FULL_TESTS,
+  MOBILE_CHROMIUM_TESTS,
+  MOBILE_WEBKIT_TESTS,
+  SMOKE_TESTS,
+  VISUAL_DIR,
+} from './tests/e2e/projects';
 
-const SMOKE_TESTS = [
-  'app-loads',
-  'library-empty',
-  'board-list-empty',
-  'board-create',
-  'mode-toggle',
-];
-const FULL_TESTS = [
-  'board-crud',
-  'deck-crud',
-  'pad-creation',
-  'pad-editing',
-  'pad-dnd',
-  'game-mode',
-  'audio',
-];
-// Audio-free mobile specs: WebKit exercises the real Safari engine path.
-const MOBILE_WEBKIT_TESTS = [
-  'mobile-unlock-nav',
-  'mobile-board-flow',
-  'mobile-mode-toggle',
-  'mobile-touch-targets',
-  'mobile-overflow',
-];
-// Audio-dependent mobile specs: Chromium needed because headless WebKit has
-// no audio codec support (decodeAudioData fails → upload pipeline is skipped).
-const MOBILE_CHROMIUM_TESTS = ['mobile-pad-interaction', 'mobile-pad-creation'];
+// Dedicated test port — never reuse a server that happens to run on the dev port
+// (it may serve other code). Port in use → the run fails loudly (strictPort).
+const TEST_PORT = 5199;
+const TEST_ORIGIN = `http://localhost:${TEST_PORT}`;
 
 const smokeMatch = new RegExp(
   `tests/e2e/(${SMOKE_TESTS.join('|')})\\.spec\\.ts$`,
@@ -79,8 +63,11 @@ export default defineConfig({
   // list: failing tests with name + error in the terminal (pre-push hook, CI log);
   // html: full report in playwright-report/ (overwritten by the next run).
   reporter: [['list'], ['html', { open: 'never' }]],
+  // CI: a test that only passes on retry fails the run (and blocks deploy).
+  // Quarantine procedure: TESTING.md §Flaky tests.
+  failOnFlakyTests: !!process.env.CI,
   use: {
-    baseURL: 'http://localhost:5173',
+    baseURL: TEST_ORIGIN,
     trace: 'on-first-retry',
   },
   expect: {
@@ -129,14 +116,15 @@ export default defineConfig({
     },
     {
       name: 'visual',
-      testMatch: /tests\/e2e\/visual\/.*\.spec\.ts$/,
+      testMatch: new RegExp(`tests/e2e/${VISUAL_DIR}/.*\\.spec\\.ts$`),
       use: { ...devices['Desktop Chrome'] },
     },
   ],
   webServer: {
-    command: 'npm run dev',
-    url: 'http://localhost:5173/soundboard-of-storytelling/',
-    reuseExistingServer: !process.env.CI,
+    command: `npm run dev -- --port ${TEST_PORT} --strictPort`,
+    url: `${TEST_ORIGIN}/soundboard-of-storytelling/`,
+    // Always start a fresh server for tests (locally and in CI).
+    reuseExistingServer: false,
     timeout: 30_000,
   },
 });

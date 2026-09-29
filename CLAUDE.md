@@ -362,8 +362,8 @@ any non-doc file flagged ⚠ for approval. Routine additionally: `v3/src/lib/cha
    visual styling — buttons, colors, typography and similar element-level appearance.
    Layout, screen structure and adaptive behavior are designed and built together
    directly in code, not via Claude Design prototypes.
-10. **Visual Regression**: Before UI-relevant commits (components, CSS,
-    design-system tokens — especially Slice 8 / Polish), run:
+10. **Visual Regression**: Runs automatically in the pre-push hook on macOS.
+    Additionally useful before UI-relevant commits (components, CSS, tokens):
     `cd v3 && npm run test:e2e:visual`
     Check for unexpected diffs. If change is intentional: update baselines
     with `npm run test:e2e:update-snapshots` and commit the new `.png` files.
@@ -395,6 +395,11 @@ any non-doc file flagged ⚠ for approval. Routine additionally: `v3/src/lib/cha
     `BACKLOG.md` (repo root). Slice plans should consult and update it. At each
     slice completion, before the final commit: mark completed items `✅ Done (commit SHA)`
     and add any new deferred items surfaced during the slice.
+15. **Test infrastructure first (user decision 2026-09-29):** a safe, trustworthy test
+    environment has the highest priority. Gaps found in the test setup (unassigned or
+    skipped specs, untested critical modules, env drift) are closed **before** feature work
+    continues. New E2E specs must be listed in `v3/tests/e2e/projects.ts` (guard test).
+    Flaky tests follow the quarantine procedure in `TESTING.md` — never silently skipped.
 
 ### Pre-commit checklist (mandatory before ANY commit)
 
@@ -421,6 +426,9 @@ without exception:
 > 1. **Version-Bump-Check** (~0s) — `APP_VERSION` in `v3/src/lib/changelog.ts` muss sich gegenüber `origin/main` geändert haben (one push = one version bump); übersprungen wenn `origin/main` nicht erreichbar (Erstpush)
 > 2. `npm run size` (~2s) — Bundle-Size-Limit (200 kB JS / 50 kB CSS gzip)
 > 3. `npm run test:e2e:all` (~2.5 min) — alle fünf nicht-visuellen Playwright-Projekte: smoke + smoke-webkit + full + mobile + mobile-chromium; entspricht den drei CI-E2E-Jobs
+> 4. **Nur macOS:** `npm run test:e2e:visual` (~15s) — visuelle Regression
+>
+> Schlägt ein Schritt fehl: **erst Fehlerausgabe/Report lesen, dann neu starten** (ein neuer Lauf überschreibt den Report).
 >
 > Bypass (bewusst): `git push --no-verify` — für Notfälle oder wenn der Hook bereits lokal grün verifiziert wurde.
 > Der pre-push-Hook schließt die Lücke zwischen lokalem pre-commit (nur smoke) und CI (smoke + full + mobile).
@@ -498,7 +506,7 @@ Before committing a slice, also:
 All commands run from the `v3/` subdirectory:
 
 ```bash
-cd v3 && npm run dev           # dev server → http://localhost:5173 (HMR)
+cd v3 && npm run dev           # dev server → http://localhost:5173 (HMR); E2E tests start their own server on 5199
 cd v3 && npm run build         # production build → v3/dist/ (tsc + vite)
 cd v3 && npm run preview       # serve v3/dist/ locally for PWA testing
 cd v3 && npm run test          # unit tests (vitest, once) — run before commit

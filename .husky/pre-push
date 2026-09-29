@@ -34,4 +34,19 @@ npm run test:e2e:all || {
   exit 1
 }
 
-printf '\n✅ Full E2E suite PASSED — Push freigegeben.\n\n'
+printf '✅ Full E2E suite PASSED.\n\n'
+
+# Visual regression — macOS only (baselines are macOS font rendering; CI/Ubuntu excluded)
+if [ "$(uname)" = "Darwin" ]; then
+  printf '🖼  Pre-push: visual regression (macOS)...\n'
+  npm run test:e2e:visual || {
+    printf '\n❌ Visual regression FAILED — Push abgebrochen.\n'
+    printf '   Diffs prüfen: v3/test-results/**/*-diff.png\n'
+    printf '   Gewollte Änderung? npm run test:e2e:update-snapshots, Diffs geprüft committen.\n'
+    printf '   Bewusst überspringen: git push --no-verify\n\n'
+    exit 1
+  }
+  printf '✅ Visual regression PASSED.\n\n'
+fi
+
+printf '✅ Pre-push checks PASSED — Push freigegeben.\n\n'
