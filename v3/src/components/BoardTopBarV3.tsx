@@ -13,7 +13,7 @@ import type { AppMode } from '../types';
 
 interface BoardTopBarV3Props {
   boardName: string;
-  sceneName?: string;
+  deckName?: string;
   mode: AppMode;
   onModeSwitch: (newMode: AppMode) => void;
   /** Toggle state of the library panel (right slot) */
@@ -24,7 +24,7 @@ interface BoardTopBarV3Props {
 
 export function BoardTopBarV3({
   boardName,
-  sceneName,
+  deckName,
   mode,
   onModeSwitch,
   libraryOpen,
@@ -53,7 +53,7 @@ export function BoardTopBarV3({
           >
             {boardName}
           </span>
-          {sceneName && <span class="sb-topbar-secondary">· {sceneName}</span>}
+          {deckName && <span class="sb-topbar-secondary">· {deckName}</span>}
         </div>
       </div>
 

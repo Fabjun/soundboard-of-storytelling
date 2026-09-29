@@ -83,8 +83,9 @@ layout follow in Slice 13.
 ### 3. Persistence
 
 - ADR-0010 stays: a board is one JSON document (now with `pads`, `decks`, `quickAccess`).
-- `sos-v3` goes to **version 3**: the upgrade **clears only the `boards` store** (old-format test
-  boards); the `library` store (audio) is untouched. No other database is ever touched — the
+- Each structural change of the stored board shape in Slice 9 bumps the `sos-v3` version and
+  **clears only the `boards` store** (old-format test boards): v3 with the Scene → Deck rename
+  (9b), v4 with the pad pool (9c). The `library` store (audio) is untouched. No other database is ever touched — the
   V1 database `botc` shares the origin `fabjun.github.io` and must never be affected.
 
 ### 4. Audio engine — change under product-owner control

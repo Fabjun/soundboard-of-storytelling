@@ -11,9 +11,9 @@ import type { Board } from '../../src/types';
 import {
   boards,
   currentBoardId,
-  currentSceneId,
+  currentDeckId,
   currentBoard,
-  currentScene,
+  currentDeck,
   playingPads,
   loopingPads,
   upsertBoard,
@@ -32,7 +32,7 @@ function makeBoard(id: string, name = 'Test Board'): Board {
     name,
     themeId: 'hearth',
     settings: { quickAccessLayout: 'hidden', quickAccessSetCount: 1 },
-    scenes: [],
+    decks: [],
     sets: [],
   };
 }
@@ -42,7 +42,7 @@ function makeBoard(id: string, name = 'Test Board'): Board {
 beforeEach(() => {
   boards.value = [];
   currentBoardId.value = null;
-  currentSceneId.value = null;
+  currentDeckId.value = null;
   playingPads.value = new globalThis.Set<string>();
   loopingPads.value = new globalThis.Set<string>();
 });
@@ -133,23 +133,23 @@ describe('currentBoard computed', () => {
   });
 });
 
-// ── currentScene (computed) ───────────────────────────────────────────────────
+// ── currentDeck (computed) ───────────────────────────────────────────────────
 
-describe('currentScene computed', () => {
+describe('currentDeck computed', () => {
   test('null when no board is selected', () => {
-    expect(currentScene.value).toBeNull();
+    expect(currentDeck.value).toBeNull();
   });
 
-  test('null when board has no scenes', () => {
+  test('null when board has no decks', () => {
     upsertBoard(makeBoard('b1'));
     currentBoardId.value = 'b1';
-    expect(currentScene.value).toBeNull();
+    expect(currentDeck.value).toBeNull();
   });
 
-  test('resolves correct scene when currentSceneId is set', () => {
+  test('resolves correct deck when currentDeckId is set', () => {
     const board: Board = {
       ...makeBoard('b1'),
-      scenes: [
+      decks: [
         {
           id: 's1',
           name: 'Intro',
@@ -168,14 +168,14 @@ describe('currentScene computed', () => {
     };
     upsertBoard(board);
     currentBoardId.value = 'b1';
-    currentSceneId.value = 's2';
-    expect(currentScene.value?.name).toBe('Act 1');
+    currentDeckId.value = 's2';
+    expect(currentDeck.value?.name).toBe('Act 1');
   });
 
-  test('returns null for unknown scene id', () => {
+  test('returns null for unknown deck id', () => {
     const board: Board = {
       ...makeBoard('b1'),
-      scenes: [
+      decks: [
         {
           id: 's1',
           name: 'Intro',
@@ -187,8 +187,8 @@ describe('currentScene computed', () => {
     };
     upsertBoard(board);
     currentBoardId.value = 'b1';
-    currentSceneId.value = 'GHOST';
-    expect(currentScene.value).toBeNull();
+    currentDeckId.value = 'GHOST';
+    expect(currentDeck.value).toBeNull();
   });
 });
 

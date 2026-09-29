@@ -39,7 +39,7 @@ const SMOKE_TESTS = [
 ];
 const FULL_TESTS = [
   'board-crud',
-  'scene-crud',
+  'deck-crud',
   'pad-creation',
   'pad-editing',
   'pad-dnd',

@@ -22,7 +22,7 @@
 
 import { useState, useRef, useEffect } from 'preact/hooks';
 import type { JSX } from 'preact';
-import type { Board, Pad, PadBase, PadType, Scene } from '../types';
+import type { Board, Pad, PadBase, PadType, Deck } from '../types';
 import { isSinglePad, isLoopPad, isPlaylistPad, isComboPad } from '../types';
 import { PixelIcon } from './PixelIcon';
 import { Waveform } from './Waveform';
@@ -34,7 +34,7 @@ import { upsertBoard } from '../state/store';
 
 interface PadEditorPanelProps {
   pad: Pad;
-  scene: Scene;
+  deck: Deck;
   board: Board;
   onClose: () => void;
   onDelete: (padId: string) => void;
@@ -44,7 +44,7 @@ const PAD_TYPES: PadType[] = ['single', 'loop', 'playlist', 'combo'];
 
 export function PadEditorPanel({
   pad,
-  scene,
+  deck,
   board,
   onClose,
   onDelete,
@@ -84,13 +84,13 @@ export function PadEditorPanel({
   function scheduleAutoSave(updatedPad: Pad) {
     if (debounceRef.current !== null) clearTimeout(debounceRef.current);
     debounceRef.current = setTimeout(async () => {
-      const updatedScene: Scene = {
-        ...scene,
-        pads: scene.pads.map((p) => (p.id === updatedPad.id ? updatedPad : p)),
+      const updatedDeck: Deck = {
+        ...deck,
+        pads: deck.pads.map((p) => (p.id === updatedPad.id ? updatedPad : p)),
       };
       const updatedBoard: Board = {
         ...board,
-        scenes: board.scenes.map((s) => (s.id === updatedScene.id ? updatedScene : s)),
+        decks: board.decks.map((s) => (s.id === updatedDeck.id ? updatedDeck : s)),
       };
       try {
         await boardPut(updatedBoard);

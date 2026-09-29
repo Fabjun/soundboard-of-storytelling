@@ -172,7 +172,7 @@ v3/
 │   │   ├── index.ts
 │   │   └── types.ts
 │   ├── chrome/             (TopBarV2, StatusBarV2)
-│   ├── components/         (Pad, Button, PixelIcon, SceneRail, etc.)
+│   ├── components/         (Pad, Button, PixelIcon, DeckRail, etc.)
 │   ├── db/
 │   │   └── idb.ts          (all IDB access — no raw transactions elsewhere)
 │   ├── lib/                (upload, padDnd, libDnd, padUtils, nanoid, changelog)

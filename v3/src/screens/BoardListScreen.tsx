@@ -13,7 +13,7 @@ import { PixelIcon } from '../components/PixelIcon';
 import {
   currentScreen,
   currentBoardId,
-  currentSceneId,
+  currentDeckId,
   boards,
   upsertBoard,
   removeBoardFromStore,
@@ -32,7 +32,7 @@ export function BoardListScreen(): JSX.Element {
       name,
       themeId: 'hearth',
       settings: { quickAccessLayout: 'hidden', quickAccessSetCount: 1 },
-      scenes: [],
+      decks: [],
       sets: [],
     };
     try {
@@ -45,8 +45,8 @@ export function BoardListScreen(): JSX.Element {
 
   function openBoard(board: Board) {
     currentBoardId.value = board.id;
-    currentSceneId.value =
-      board.scenes.length > 0 ? [...board.scenes].sort((a, b) => a.order - b.order)[0].id : null;
+    currentDeckId.value =
+      board.decks.length > 0 ? [...board.decks].sort((a, b) => a.order - b.order)[0].id : null;
     currentScreen.value = 'board';
   }
 
@@ -105,8 +105,8 @@ function BoardRow({ board, onOpen }: { board: Board; onOpen: () => void }): JSX.
   const [editValue, setEditValue] = useState(board.name);
   const [deleteConfirm, setDeleteConfirm] = useState(false);
 
-  const totalPads = board.scenes.reduce((sum, s) => sum + s.pads.length, 0);
-  const scenesCount = board.scenes.length;
+  const totalPads = board.decks.reduce((sum, s) => sum + s.pads.length, 0);
+  const decksCount = board.decks.length;
 
   async function commitRename() {
     const newName = editValue.trim();
@@ -179,7 +179,7 @@ function BoardRow({ board, onOpen }: { board: Board; onOpen: () => void }): JSX.
         )}
         {!editing && (
           <div class="sb-row-sub">
-            {scenesCount} scene{scenesCount !== 1 ? 's' : ''} · {totalPads} pad
+            {decksCount} deck{decksCount !== 1 ? 's' : ''} · {totalPads} pad
             {totalPads !== 1 ? 's' : ''}
           </div>
         )}
@@ -222,7 +222,7 @@ function EmptyBoardsState({ onCreate }: { onCreate: () => void }): JSX.Element {
       <PixelIcon name="scroll" size={48} color="var(--border)" />
       <div class="sb-display-vt is-heading">No Boards Yet</div>
       <div class="sb-empty-body">
-        A Board holds your Scenes and Pads for one game session or campaign.
+        A Board holds your pads and decks for one game session or campaign.
       </div>
       <button
         class="sb-btn sb-btn-primary sb-btn-cta"

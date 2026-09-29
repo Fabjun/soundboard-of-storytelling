@@ -12,7 +12,7 @@
 
 import { useEffect, useState } from 'preact/hooks';
 import type { JSX } from 'preact';
-import type { AppMode, Board, Pad, PadPosition, Scene } from '../types';
+import type { AppMode, Board, Pad, PadPosition, Deck } from '../types';
 import { PadGridCell } from './PadGridCell';
 import { PadCreationPopover, type CreationResult } from './PadCreationPopover';
 import {
@@ -28,7 +28,7 @@ import { upsertBoard } from '../state/store';
 import { boardPut } from '../db/idb';
 
 interface PadGridProps {
-  scene: Scene;
+  deck: Deck;
   board: Board;
   mode: AppMode;
   selectedPadId: string | null;
@@ -41,7 +41,7 @@ interface PadGridProps {
 }
 
 export function PadGrid({
-  scene,
+  deck,
   board,
   mode,
   selectedPadId,
@@ -50,8 +50,8 @@ export function PadGrid({
   placeMode,
   onPlaceModeTap,
 }: PadGridProps): JSX.Element {
-  const cols = scene.gridConfig.cols;
-  const rows = scene.gridConfig.rows;
+  const cols = deck.gridConfig.cols;
+  const rows = deck.gridConfig.rows;
   const isSetup = mode === 'edit';
 
   // Path A popover state
@@ -60,7 +60,7 @@ export function PadGrid({
 
   // Build lookup map: "col,row" → Pad
   const padMap = new Map<string, Pad>();
-  for (const pad of scene.pads) {
+  for (const pad of deck.pads) {
     if (pad.position) {
       padMap.set(`${pad.position.col},${pad.position.row}`, pad);
     }
@@ -73,7 +73,7 @@ export function PadGrid({
   }, [cols, rows]);
 
   useEffect(() => {
-    setPadsRef(scene.pads);
+    setPadsRef(deck.pads);
   });
 
   async function handleDrop(result: DndDropResult) {
@@ -81,15 +81,15 @@ export function PadGrid({
 
     let updatedPads: Pad[];
     if (result.kind === 'swap') {
-      updatedPads = applySwap(scene.pads, result.srcId, result.tgtPos);
+      updatedPads = applySwap(deck.pads, result.srcId, result.tgtPos);
     } else {
-      updatedPads = applyInsert(scene.pads, result.srcId, result.toIndex, cols, rows);
+      updatedPads = applyInsert(deck.pads, result.srcId, result.toIndex, cols, rows);
     }
 
-    const updatedScene: Scene = { ...scene, pads: updatedPads };
+    const updatedDeck: Deck = { ...deck, pads: updatedPads };
     const updatedBoard: Board = {
       ...board,
-      scenes: board.scenes.map((s) => (s.id === scene.id ? updatedScene : s)),
+      decks: board.decks.map((s) => (s.id === deck.id ? updatedDeck : s)),
     };
     try {
       await boardPut(updatedBoard);
@@ -108,11 +108,11 @@ export function PadGrid({
 
   // ── Pad CRUD ───────────────────────────────────────────────────────────────
 
-  async function savePadToScene(newPad: Pad) {
-    const updatedScene: Scene = { ...scene, pads: [...scene.pads, newPad] };
+  async function savePadToDeck(newPad: Pad) {
+    const updatedDeck: Deck = { ...deck, pads: [...deck.pads, newPad] };
     const updatedBoard: Board = {
       ...board,
-      scenes: board.scenes.map((s) => (s.id === scene.id ? updatedScene : s)),
+      decks: board.decks.map((s) => (s.id === deck.id ? updatedDeck : s)),
     };
     try {
       await boardPut(updatedBoard);
@@ -129,11 +129,11 @@ export function PadGrid({
     if (result.action === 'cancel') return;
 
     if (result.action === 'create') {
-      await savePadToScene(result.pad);
+      await savePadToDeck(result.pad);
     } else if (result.action === 'open-editor') {
       // Build a partial pad and open the editor (sets selectedPad)
       const partial = result.partialPad;
-      await savePadToScene(partial);
+      await savePadToDeck(partial);
       onRequestNewPad(partial);
     }
   }
@@ -148,7 +148,7 @@ export function PadGrid({
           {
             '--grid-cols': String(cols),
             '--grid-rows': String(rows),
-            '--grid-gap': `${scene.gridConfig.gap}px`,
+            '--grid-gap': `${deck.gridConfig.gap}px`,
           } as Record<string, string>
         }
       >

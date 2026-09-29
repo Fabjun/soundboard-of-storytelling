@@ -25,7 +25,7 @@ import {
   goToLibrary,
   goToBoardList,
   createBoardAndNavigate,
-  createScene,
+  createDeck,
   enterSetupMode,
 } from '../helpers';
 import { mobileUploadTestAudio } from './mobile-helpers';
@@ -40,7 +40,7 @@ test('A+B — empty cell tap opens popover; source + ADD PAD tap creates pad', a
   await page.goto('/soundboard-of-storytelling/');
   await goToBoardList(page);
   await createBoardAndNavigate(page);
-  await createScene(page);
+  await createDeck(page);
   await enterSetupMode(page);
 
   // Tap empty cell → popover opens (tests touch hit-target on pad grid)

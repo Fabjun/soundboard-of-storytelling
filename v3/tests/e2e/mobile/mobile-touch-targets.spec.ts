@@ -15,12 +15,12 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { test, expect, type Locator } from '@playwright/test';
-import { goToBoardList, createBoardAndNavigate, createScene } from '../helpers';
+import { goToBoardList, createBoardAndNavigate, createDeck } from '../helpers';
 
 const MIN = 44;
 
 // These tests assert against a layout that is intentionally not yet mobile-adapted.
-// The current desktop-oriented three-panel layout (SceneRail 220px + inspector 280px)
+// The current desktop-oriented three-panel layout (DeckRail 220px + inspector 280px)
 // collapses the center grid to 0px at 390px when any panel is open.
 // See DESIGN_NOTES "Known limitation: SETUP layout on narrow viewports".
 // Re-enable once the dedicated mobile adaptation (Slice 8) is in place.
@@ -65,7 +65,7 @@ test.describe.fixme(FIXME_REASON, () => {
     await page.goto('/soundboard-of-storytelling/');
     await goToBoardList(page);
     await createBoardAndNavigate(page);
-    await createScene(page);
+    await createDeck(page);
 
     await assertTarget(page.getByTestId('board-back-button'), 'board-back-button');
 
@@ -93,7 +93,7 @@ test.describe.fixme(FIXME_REASON, () => {
     await page.goto('/soundboard-of-storytelling/');
     await goToBoardList(page);
     await createBoardAndNavigate(page);
-    await createScene(page);
+    await createDeck(page);
 
     // Cell (0,0) — first cell in the grid; representative for all cells
     await assertTarget(page.getByTestId('pad-cell-empty-0-0'), 'pad-cell-empty-0-0');

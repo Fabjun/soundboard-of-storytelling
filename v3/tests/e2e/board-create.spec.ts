@@ -18,6 +18,6 @@ test('create board → appears in list → BoardScreen loads with pad grid', asy
   // Navigate into the board (click the row title area, not the action buttons)
   await rows.first().locator('.sb-row-title').click();
 
-  // BoardScreen: ModeToggle is always visible regardless of whether a scene exists
+  // BoardScreen: ModeToggle is always visible regardless of whether a deck exists
   await expect(page.locator('.sb-mode-toggle')).toBeVisible();
 });

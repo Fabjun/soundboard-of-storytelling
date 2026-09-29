@@ -197,6 +197,14 @@ also in §6):
 | `sb-creation-popover-section` | Section container in creation popover — column layout, var(--space-2) padding, top border separator (--border-soft), no-shrink. Used for the name+type form section. | `v3/src/styles/tokens.css` |
 | `sb-creation-sheet` | Mobile bottom sheet for pad creation and pad-type confirmation (slides up from bottom, max 85dvh). | `v3/src/styles/tokens.css` |
 | `sb-creation-sheet-backdrop` | Mobile backdrop behind sb-creation-sheet; sb-type-confirm-backdrop is the desktop equivalent. | `v3/src/styles/tokens.css` |
+| `sb-deck-add-btn` | Full-width inset button at the bottom of the deck rail — 8px margins, calc(100% − 16px) width, 44px touch target, centered flex with 6px gap. Modifies sb-btn layout for the rail context. 1-use (DeckRail). | `v3/src/styles/tokens.css` |
+| `sb-deck-conflict-hint` | Hint line below a conflict deck tab — "Name already used by [owning deck]". font-ui fs-xs, blood text, space-3 left indent. 1-use (DeckRail). | `v3/src/styles/tokens.css` |
+| `sb-deck-num-badge` | Deck-number indicator badge in deck rail tabs — mono xs muted, 16px minimum width for numeral alignment, no flex-shrink. 1-use (DeckRail). | `v3/src/styles/tokens.css` |
+| `sb-deck-rail` | Left 220px deck navigation column on BoardScreen (fixed width, scrollable). | `v3/src/styles/tokens.css` |
+| `sb-deck-rename-input` | Inline rename input for deck tabs — font-ui fs-md 0.06em uppercase, matching sb-deck-tab's own font scale. Distinct from sb-row-rename-input (fs-lg/0.08em for board names). 1-use (DeckRail). | `v3/src/styles/tokens.css` |
+| `sb-deck-tab` | Clickable deck entry in the deck rail; is-active highlights the current deck. | `v3/src/styles/tokens.css` |
+| `sb-deck-tab-actions` | Action buttons (duplicate, delete) revealed on hover or on the active deck tab. | `v3/src/styles/tokens.css` |
+| `sb-deck-tab-conflict-glyph` | Trailing blood "!" alert mark inside a deck tab editing row in conflict state. font-mono fs-sm blood-bright, no shrink. 1-use (DeckRail). | `v3/src/styles/tokens.css` |
 | `sb-dialog-action-btn` | Minimum-width enforcer on CANCEL/SWITCH buttons in the dialog actions row — ensures readable button width. 2-use within PadTypeConfirmDialog. | `v3/src/styles/tokens.css` |
 | `sb-dialog-actions` | Footer actions row in a dialog sheet — spacious padding (12/16px), border-top separator, flex justify-end. Wider padding than sb-creation-popover-actions (space-1/2), for dialog context. | `v3/src/styles/tokens.css` |
 | `sb-dialog-danger-note` | Red danger note block inside a dialog (used for RESET warning) — blood-soft bg, blood border-top, mono xs blood-bright text. | `v3/src/styles/tokens.css` |
@@ -255,9 +263,9 @@ also in §6):
 | `sb-pad` | Base pad shell — pixel-frame, type-colour left spine, is-hot glow, is-setup dashed border. | `v3/src/styles/tokens.css` |
 | `sb-pad-cell-add` | "+" symbol in empty grid cells; the tap-to-create affordance. | `v3/src/styles/tokens.css` |
 | `sb-pad-editor` | Right inspector panel shown when a pad is selected in SETUP mode (280px, scrolls). | `v3/src/styles/tokens.css` |
-| `sb-pad-grid` | CSS grid for the active scene's pads; col/row counts from --grid-cols/--grid-rows CSS vars. | `v3/src/styles/tokens.css` |
+| `sb-pad-grid` | CSS grid for the active deck's pads; col/row counts from --grid-cols/--grid-rows CSS vars. | `v3/src/styles/tokens.css` |
 | `sb-pad-grid-cell` | Single cell wrapper in the pad grid; carries position, DnD states, and touch targets. | `v3/src/styles/tokens.css` |
-| `sb-panel-empty` | Empty-state text message inside a scrollable panel or rail — centered, padded, mono xs muted, relaxed line-height. Used in SceneRail (no scenes) and LibraryPanel (no results). | `v3/src/styles/tokens.css` |
+| `sb-panel-empty` | Empty-state text message inside a scrollable panel or rail — centered, padded, mono xs muted, relaxed line-height. Used in DeckRail (no decks) and LibraryPanel (no results). | `v3/src/styles/tokens.css` |
 | `sb-panel-header` | Compact 28px header strip on inspector panels (icon + uppercase label). | `v3/src/styles/tokens.css` |
 | `sb-panel-title` | Flexible-fill title span inside a panel header — mono xs in normal text color. | `v3/src/styles/tokens.css` |
 | `sb-pill` | Compact pixel-frame badge; type-colour variants via is-on, is-loop, is-playlist, is-combo. | `v3/src/styles/tokens.css` |
@@ -278,14 +286,6 @@ also in §6):
 | `sb-row-title` | Primary title in a board-list menu row — UI font lg, uppercase, gold, truncating. | `v3/src/styles/tokens.css` |
 | `sb-row-wrap` | Wrapping flex row; 4px gap (--space-1). For type-selector grids and wrapping button groups. | `v3/src/styles/tokens.css` |
 | `sb-scanlines` | CRT scanline overlay via ::after pseudo-element; currently applied to StartScreen only. | `v3/src/styles/tokens.css` |
-| `sb-scene-add-btn` | Full-width inset button at the bottom of the scene rail — 8px margins, calc(100% − 16px) width, 44px touch target, centered flex with 6px gap. Modifies sb-btn layout for the rail context. 1-use (SceneRail). | `v3/src/styles/tokens.css` |
-| `sb-scene-conflict-hint` | Hint line below a conflict scene tab — "Name already used by [owning scene]". font-ui fs-xs, blood text, space-3 left indent. 1-use (SceneRail). | `v3/src/styles/tokens.css` |
-| `sb-scene-num-badge` | Scene-number indicator badge in scene rail tabs — mono xs muted, 16px minimum width for numeral alignment, no flex-shrink. 1-use (SceneRail). | `v3/src/styles/tokens.css` |
-| `sb-scene-rail` | Left 220px scene navigation column on BoardScreen (fixed width, scrollable). | `v3/src/styles/tokens.css` |
-| `sb-scene-rename-input` | Inline rename input for scene tabs — font-ui fs-md 0.06em uppercase, matching sb-scene-tab's own font scale. Distinct from sb-row-rename-input (fs-lg/0.08em for board names). 1-use (SceneRail). | `v3/src/styles/tokens.css` |
-| `sb-scene-tab` | Clickable scene entry in the scene rail; is-active highlights the current scene. | `v3/src/styles/tokens.css` |
-| `sb-scene-tab-actions` | Action buttons (duplicate, delete) revealed on hover or on the active scene tab. | `v3/src/styles/tokens.css` |
-| `sb-scene-tab-conflict-glyph` | Trailing blood "!" alert mark inside a scene tab editing row in conflict state. font-mono fs-sm blood-bright, no shrink. 1-use (SceneRail). | `v3/src/styles/tokens.css` |
 | `sb-screen` | Full-height screen root container — flex column, 100dvh, surface background, positioned, overflow hidden; outline-offset for inset drag indicators. | `v3/src/styles/tokens.css` |
 | `sb-screen-empty` | Full-screen centered empty state — flex column, centered both axes, fills parent, mono xs text in text-mute. | `v3/src/styles/tokens.css` |
 | `sb-screen-layout` | 2-column content grid for LibraryScreen — 220px filter rail + 1fr content, fills parent, min-height:0 for scroll. | `v3/src/styles/tokens.css` |
@@ -318,10 +318,10 @@ also in §6):
 | `sb-text-input` | Pixel-style text input — sunk background, bordered, VT323 uppercase. For pad name and form fields. | `v3/src/styles/tokens.css` |
 | `sb-toggle` | Binary on/off toggle switch (40×20px); is-on moves thumb right and adds gold glow. Currently no TSX usage. [unused-css] | `v3/src/styles/tokens.css` |
 | `sb-topbar` | Root container for TopBarV2 — flex row, 48px height, deep bg, bottom border. Uses flex (vs sb-board-topbar's grid). Sub-token padding: 10px/16px (no exact token match). | `v3/src/styles/tokens.css` |
-| `sb-topbar-bc-col` | Breadcrumb column flex wrapper in BoardTopBarV3 — stacks board name above scene name, min-width:0 for truncation. | `v3/src/styles/tokens.css` |
+| `sb-topbar-bc-col` | Breadcrumb column flex wrapper in BoardTopBarV3 — stacks board name above deck name, min-width:0 for truncation. | `v3/src/styles/tokens.css` |
 | `sb-topbar-icon-btn` | Icon button size override in the board top bar — 44px min-width (iOS touch target), 0/space-2 padding, space-1 gap for icon+label. 2-use: back button + library toggle. | `v3/src/styles/tokens.css` |
 | `sb-topbar-logo` | Flame icon wrapper in TopBarV2 — flame colour, no-shrink. | `v3/src/styles/tokens.css` |
-| `sb-topbar-secondary` | Secondary muted mono text in topbar context — font-mono 12px (normalized from 11px on V3, sub-token), text-mute, truncating. Cross-topbar: used on V2 breadcrumb and V3 scene name. | `v3/src/styles/tokens.css` |
+| `sb-topbar-secondary` | Secondary muted mono text in topbar context — font-mono 12px (normalized from 11px on V3, sub-token), text-mute, truncating. Cross-topbar: used on V2 breadcrumb and V3 deck name. | `v3/src/styles/tokens.css` |
 | `sb-topbar-title` | Truncating title span base — used by TopBarV2 (is-app) and BoardTopBarV3 (is-board). Base provides truncation; scale set via is-app / is-board modifier. | `v3/src/styles/tokens.css` |
 | `sb-topbar-title-group` | Title + breadcrumb flex group in TopBarV2 — baseline-aligned row, fills remaining space, min-width:0 for truncation. | `v3/src/styles/tokens.css` |
 | `sb-type-btn` | Type-selector button (pad type pill) — fills row evenly, mono xs font, uppercase, tight padding, 28px min-height; color/border/background set inline for active pad-type state. | `v3/src/styles/tokens.css` |
@@ -333,7 +333,7 @@ also in §6):
 | `sb-type-indicator` | 8×8px colored dot indicating pad type in inspector header; color set inline by caller. | `v3/src/styles/tokens.css` |
 | `sb-undo-btn` | UNDO action button inside the undo toast — tight 2px vertical padding (sub-token, space-3 horizontal), no-shrink to stay visible. | `v3/src/styles/tokens.css` |
 | `sb-undo-message` | Message text span inside the undo toast — mono 13px (sub-token between xs/sm, intentional toast sizing), dim colour. | `v3/src/styles/tokens.css` |
-| `sb-undo-toast` | Fixed notification toast above the status bar shown after scene deletion. | `v3/src/styles/tokens.css` |
+| `sb-undo-toast` | Fixed notification toast above the status bar shown after deck deletion. | `v3/src/styles/tokens.css` |
 | `sb-undo-toast-progress` | Animated gold progress bar at the bottom of the undo toast (linear shrink). | `v3/src/styles/tokens.css` |
 | `sb-upload-bar` | Upload status notification bar — flex row, raised background, top border, mono xs text. Color set inline for error/normal state. | `v3/src/styles/tokens.css` |
 | `sb-value-text` | Numeric value display in inspector — mono xs gold; for fade/volume values next to sliders. | `v3/src/styles/tokens.css` |

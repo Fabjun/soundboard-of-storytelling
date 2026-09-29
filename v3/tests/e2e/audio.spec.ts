@@ -17,7 +17,7 @@ import {
   goToLibrary,
   uploadTestAudio,
   createBoardAndNavigate,
-  createScene,
+  createDeck,
   enterSetupMode,
   enterGameMode,
 } from './helpers';
@@ -47,7 +47,7 @@ test.beforeEach(async ({ page }, testInfo) => {
   await page.getByRole('button', { name: 'TAP TO UNLOCK' }).click();
   await page.getByTestId('new-board-button').waitFor();
   await createBoardAndNavigate(page);
-  await createScene(page);
+  await createDeck(page);
   await enterSetupMode(page);
 });
 

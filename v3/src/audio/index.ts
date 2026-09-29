@@ -43,8 +43,8 @@ export function initAudioBridge(): void {
     },
     getPad: (id) => {
       for (const board of boards.value) {
-        for (const scene of board.scenes) {
-          const pad = scene.pads.find((p) => p.id === id);
+        for (const deck of board.decks) {
+          const pad = deck.pads.find((p) => p.id === id);
           if (pad) return pad;
         }
       }

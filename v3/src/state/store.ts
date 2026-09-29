@@ -12,7 +12,7 @@ import type {
   AudioContextState,
   Board,
   LibraryItemMeta,
-  Scene,
+  Deck,
   UploadResult,
 } from '../types';
 
@@ -33,7 +33,7 @@ export type AppScreen = 'start' | 'library' | 'board-list' | 'board';
 export const currentScreen = signal<AppScreen>('start');
 
 export const currentBoardId = signal<string | null>(null);
-export const currentSceneId = signal<string | null>(null);
+export const currentDeckId = signal<string | null>(null);
 
 // ---------------------------------------------------------------------------
 // Mode
@@ -137,9 +137,9 @@ export function renameLibraryItemMeta(id: string, newName: string): void {
 // ---------------------------------------------------------------------------
 // Boards
 //
-// boards[] is the source of truth for all Board, Scene, and Pad data in RAM.
+// boards[] is the source of truth for all Board, Deck, and Pad data in RAM.
 // IDB is the persistence layer — always call boardPut() after mutating boards.
-// currentBoard and currentScene are derived signals (no extra state needed).
+// currentBoard and currentDeck are derived signals (no extra state needed).
 // ---------------------------------------------------------------------------
 
 /** All boards, loaded from IDB at app boot. */
@@ -154,11 +154,11 @@ export const currentBoard = computed<Board | null>(
 );
 
 /**
- * The currently active scene (derived from currentSceneId within currentBoard).
- * Null when no scene is selected or no board is open.
+ * The currently active deck (derived from currentDeckId within currentBoard).
+ * Null when no deck is selected or no board is open.
  */
-export const currentScene = computed<Scene | null>(
-  () => currentBoard.value?.scenes.find((s) => s.id === currentSceneId.value) ?? null,
+export const currentDeck = computed<Deck | null>(
+  () => currentBoard.value?.decks.find((s) => s.id === currentDeckId.value) ?? null,
 );
 
 /** Replace or insert a board in the signal (after IDB boardPut). */

@@ -20,7 +20,7 @@ import {
   uploadTestAudio,
   goToBoardList,
   createBoardAndNavigate,
-  createScene,
+  createDeck,
   enterSetupMode,
   createPadAtCell00,
 } from './helpers';
@@ -33,7 +33,7 @@ async function setupTwoPads(page: Page): Promise<void> {
   await page.goto('/soundboard-of-storytelling/');
   await goToBoardList(page);
   await createBoardAndNavigate(page);
-  await createScene(page);
+  await createDeck(page);
   await enterSetupMode(page);
   await createPadAtCell00(page);
   // Create second pad at 1,0

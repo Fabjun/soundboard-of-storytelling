@@ -29,7 +29,7 @@ import {
   goToLibrary,
   goToBoardList,
   createBoardAndNavigate,
-  createScene,
+  createDeck,
   enterSetupMode,
   enterGameMode,
 } from '../helpers';
@@ -48,7 +48,7 @@ test.beforeEach(async ({ page }) => {
   await page.getByTestId('new-board-button').waitFor();
 
   await createBoardAndNavigate(page);
-  await createScene(page);
+  await createDeck(page);
   await enterSetupMode(page);
 });
 

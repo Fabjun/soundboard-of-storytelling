@@ -15,11 +15,11 @@ export type Board = {
     quickAccessLayout: 'tabs' | 'stack' | 'hidden';
     quickAccessSetCount: number; // default 1
   };
-  scenes: Scene[];
+  decks: Deck[];
   sets: PadSet[];
 };
 
-export type Scene = {
+export type Deck = {
   id: string;
   name: string;
   order: number;
@@ -163,7 +163,7 @@ export type AudioContextState = 'locked' | 'running' | 'suspended';
 
 export interface AppState {
   currentBoardId: string | null;
-  currentSceneId: string | null;
+  currentDeckId: string | null;
   currentMode: AppMode;
   activeTheme: string;
   activeSetIds: string[];

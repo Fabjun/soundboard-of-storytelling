@@ -15,11 +15,11 @@
 //     released as soon as libRename() returns. This is intentional and safe.
 //
 // BOARD PERSISTENCE TRADE-OFF (conscious decision):
-//   Boards are stored as complete JSON documents containing embedded Scenes and
-//   Pads. Any pad edit rewrites the entire Board document. At 5 Scenes × 16 Pads
+//   Boards are stored as complete JSON documents containing embedded Decks and
+//   Pads. Any pad edit rewrites the entire Board document. At 5 Decks × 16 Pads
 //   this is ~50 KB — fast and unproblematic. If boards grow significantly (20+
-//   scenes), write-amplification may become measurable. Optimisation path (only
-//   if measured): separate 'scenes' store with Board holding scene IDs only.
+//   decks), write-amplification may become measurable. Optimisation path (only
+//   if measured): separate 'decks' store with Board holding deck IDs only.
 //   Do not optimise until the problem is observed and quantified.
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -31,7 +31,7 @@ import type { Board, Pad, LibraryItem, LibraryItemMeta } from '../types';
 // ---------------------------------------------------------------------------
 
 const DB_NAME = 'sos-v3';
-const DB_VERSION = 2;
+const DB_VERSION = 3;
 
 let _db: IDBPDatabase | null = null;
 
@@ -43,7 +43,7 @@ export function _resetDB(): void {
 async function getDB(): Promise<IDBPDatabase> {
   if (_db) return _db;
   _db = await openDB(DB_NAME, DB_VERSION, {
-    upgrade(db, oldVersion) {
+    upgrade(db, oldVersion, _newVersion, tx) {
       // v1: library store (audio blobs + metadata)
       if (oldVersion < 1) {
         db.createObjectStore('library', { keyPath: 'id' });
@@ -51,6 +51,12 @@ async function getDB(): Promise<IDBPDatabase> {
       // v2: boards store (Board documents — JSON only, no blobs)
       if (oldVersion < 2) {
         db.createObjectStore('boards', { keyPath: 'id' });
+      }
+      // v3: Board field `scenes` renamed to `decks` (ADR-0048, Slice 9b). Stored boards
+      // are old-format test data → clear ONLY the boards store. The library store (audio)
+      // is untouched, and no other database (e.g. V1's 'botc' on the same origin) is touched.
+      if (oldVersion >= 2 && oldVersion < 3) {
+        void tx.objectStore('boards').clear();
       }
     },
   });
@@ -160,16 +166,16 @@ function migratePad(raw: unknown): Pad {
 function migrateBoard(board: Board): Board {
   return {
     ...board,
-    scenes: board.scenes.map((scene) => ({
-      ...scene,
-      pads: scene.pads.map(migratePad),
+    decks: board.decks.map((deck) => ({
+      ...deck,
+      pads: deck.pads.map(migratePad),
     })),
   };
 }
 
 // ── Board API ─────────────────────────────────────────────────────────────────
 //
-// Boards are stored as complete JSON documents (Board contains Scenes and Pads).
+// Boards are stored as complete JSON documents (Board contains Decks and Pads).
 // No blobs live in Board documents — memory safety is not a concern here.
 // See the BOARD PERSISTENCE TRADE-OFF comment at the top of this file.
 
@@ -197,7 +203,7 @@ export async function boardGet(id: string): Promise<Board | null> {
 /**
  * Add or update a board (upsert).
  * Always writes the complete Board document. Called after any mutation
- * (scene add/remove/reorder, pad add/edit/delete).
+ * (deck add/remove/reorder, pad add/edit/delete).
  */
 export async function boardPut(board: Board): Promise<void> {
   const db = await getDB();

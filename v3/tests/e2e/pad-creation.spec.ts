@@ -13,7 +13,7 @@ import {
   uploadTestAudio,
   goToBoardList,
   createBoardAndNavigate,
-  createScene,
+  createDeck,
   enterSetupMode,
 } from './helpers';
 
@@ -26,7 +26,7 @@ test.beforeEach(async ({ page }) => {
   await page.goto('/soundboard-of-storytelling/');
   await goToBoardList(page);
   await createBoardAndNavigate(page);
-  await createScene(page);
+  await createDeck(page);
   await enterSetupMode(page);
 });
 

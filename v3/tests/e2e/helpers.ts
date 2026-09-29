@@ -66,18 +66,18 @@ export async function createBoardAndNavigate(page: Page): Promise<void> {
   await page.getByTestId('mode-toggle').waitFor();
 }
 
-// ── Scene helpers ─────────────────────────────────────────────────────────────
+// ── Deck helpers ─────────────────────────────────────────────────────────────
 
 /**
- * Create a new scene in the current BoardScreen.
- * Returns the scene's data-testid ID part (e.g. "abc123").
+ * Create a new deck in the current BoardScreen.
+ * Returns the deck's data-testid ID part (e.g. "abc123").
  */
-export async function createScene(page: Page): Promise<string> {
-  await page.getByTestId('new-scene-button').click();
-  const sceneTab = page.locator('[data-testid^="scene-tab-"]').first();
-  await sceneTab.waitFor();
-  const testid = await sceneTab.getAttribute('data-testid');
-  return testid!.replace('scene-tab-', '');
+export async function createDeck(page: Page): Promise<string> {
+  await page.getByTestId('new-deck-button').click();
+  const deckTab = page.locator('[data-testid^="deck-tab-"]').first();
+  await deckTab.waitFor();
+  const testid = await deckTab.getAttribute('data-testid');
+  return testid!.replace('deck-tab-', '');
 }
 
 // ── Mode helpers ──────────────────────────────────────────────────────────────
@@ -103,23 +103,23 @@ export async function enterGameMode(page: Page): Promise<void> {
 // ── Compound helpers ──────────────────────────────────────────────────────────
 
 /**
- * Full setup: library audio → board → scene.
+ * Full setup: library audio → board → deck.
  * Starts from a fresh page (page.goto('/soundboard-of-storytelling/') already called).
- * After this call, the page is on a BoardScreen in SETUP mode with one scene.
+ * After this call, the page is on a BoardScreen in SETUP mode with one deck.
  */
-export async function setupBoardAndScene(page: Page): Promise<void> {
+export async function setupBoardAndDeck(page: Page): Promise<void> {
   await goToLibrary(page);
   await uploadTestAudio(page);
   await page.goto('/soundboard-of-storytelling/');
   await goToBoardList(page);
   await createBoardAndNavigate(page);
-  await createScene(page);
+  await createDeck(page);
   await enterSetupMode(page);
 }
 
 /**
  * Create one pad at grid position (col=0, row=0) via Path A (tap-empty-cell).
- * Requires: BoardScreen in SETUP mode, scene exists, audio in library.
+ * Requires: BoardScreen in SETUP mode, deck exists, audio in library.
  * After this call, a pad occupying cell 0,0 exists.
  */
 export async function createPadAtCell00(page: Page): Promise<string> {

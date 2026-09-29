@@ -12,6 +12,7 @@
 // fake-indexeddb/auto is loaded via vitest setupFiles (tests/unit/setup.ts).
 // IDBFactory is imported here only to create fresh per-test instances.
 import { IDBFactory } from 'fake-indexeddb';
+import { openDB } from 'idb';
 import type { Board, LibraryItem } from '../../src/types';
 import {
   boardPut,
@@ -32,7 +33,7 @@ function makeBoard(id: string, name = 'Test Board'): Board {
     name,
     themeId: 'hearth',
     settings: { quickAccessLayout: 'hidden', quickAccessSetCount: 1 },
-    scenes: [],
+    decks: [],
     sets: [],
   };
 }
@@ -72,7 +73,7 @@ describe('boardPut → boardGet', () => {
     expect(fetched?.id).toBe('b1');
     expect(fetched?.name).toBe('My Board');
     expect(fetched?.themeId).toBe('hearth');
-    expect(fetched?.scenes).toHaveLength(0);
+    expect(fetched?.decks).toHaveLength(0);
     expect(fetched?.sets).toHaveLength(0);
   });
 
@@ -186,5 +187,39 @@ describe('libRename', () => {
 
   test('rename of non-existent id is a no-op (no throw)', async () => {
     await expect(libRename('GHOST', 'new.mp3')).resolves.not.toThrow();
+  });
+});
+
+// ── Upgrade v2 → v3 (ADR-0048, Slice 9b) ──────────────────────────────────────
+
+describe('DB upgrade to v3', () => {
+  test('clears only the boards store; library audio and other databases are untouched', async () => {
+    // Old v2 database with one old-format board and one library item
+    const v2 = await openDB('sos-v3', 2, {
+      upgrade(db) {
+        db.createObjectStore('library', { keyPath: 'id' });
+        db.createObjectStore('boards', { keyPath: 'id' });
+      },
+    });
+    await v2.put('boards', { id: 'OLD', name: 'Old board', scenes: [] });
+    await v2.put('library', makeLibraryItem('HASH1', 'keep.mp3'));
+    v2.close();
+
+    // A V1 database on the same origin must never be touched
+    const v1 = await openDB('botc', 2, {
+      upgrade(db) {
+        db.createObjectStore('lib', { keyPath: 'hash' });
+      },
+    });
+    await v1.put('lib', { hash: 'V1HASH', name: 'v1.mp3' });
+    v1.close();
+
+    expect(await boardGetAll()).toEqual([]);
+    const lib = await libGetAllMeta();
+    expect(lib.map((m) => m.id)).toEqual(['HASH1']);
+
+    const v1Again = await openDB('botc', 2);
+    expect(await v1Again.get('lib', 'V1HASH')).toEqual({ hash: 'V1HASH', name: 'v1.mp3' });
+    v1Again.close();
   });
 });

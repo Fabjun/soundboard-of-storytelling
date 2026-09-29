@@ -1216,7 +1216,7 @@
 }
 
 /* ════════════════════════════════════════════════════════════════════
-   SLICE 3 — Board + Scene + Pad CRUD
+   SLICE 3 — Board + Deck + Pad CRUD
    ════════════════════════════════════════════════════════════════════ */
 
 /* ── sb-pad.is-deep ── opt-in depth treatment for board-grid pads ─────
@@ -1320,7 +1320,7 @@
   letter-spacing: 0.06em;
 }
 .sb-topbar-secondary {
-  /* @inventory: Secondary muted mono text in topbar context — font-mono 12px (normalized from 11px on V3, sub-token), text-mute, truncating. Cross-topbar: used on V2 breadcrumb and V3 scene name. */
+  /* @inventory: Secondary muted mono text in topbar context — font-mono 12px (normalized from 11px on V3, sub-token), text-mute, truncating. Cross-topbar: used on V2 breadcrumb and V3 deck name. */
   font-family: var(--font-mono);
   font-size: 12px; /* sub-token: secondary topbar text, deliberate between xs/sm */
   color: var(--text-mute);
@@ -1336,7 +1336,7 @@
   gap: var(--space-1);
 }
 .sb-topbar-bc-col {
-  /* @inventory: Breadcrumb column flex wrapper in BoardTopBarV3 — stacks board name above scene name, min-width:0 for truncation. */
+  /* @inventory: Breadcrumb column flex wrapper in BoardTopBarV3 — stacks board name above deck name, min-width:0 for truncation. */
   display: flex;
   flex-direction: column;
   min-width: 0;
@@ -1439,9 +1439,9 @@
   }
 }
 
-/* ── Scene Rail ── left 220px column ──────────────────────────────── */
-.sb-scene-rail {
-  /* @inventory: Left 220px scene navigation column on BoardScreen (fixed width, scrollable). */
+/* ── Deck Rail ── left 220px column ──────────────────────────────── */
+.sb-deck-rail {
+  /* @inventory: Left 220px deck navigation column on BoardScreen (fixed width, scrollable). */
   width: 220px;
   flex-shrink: 0;
   background: var(--deep);
@@ -1452,8 +1452,8 @@
   -webkit-overflow-scrolling: touch;
   overscroll-behavior: contain;
 }
-.sb-scene-tab {
-  /* @inventory: Clickable scene entry in the scene rail; is-active highlights the current scene. */
+.sb-deck-tab {
+  /* @inventory: Clickable deck entry in the deck rail; is-active highlights the current deck. */
   display: flex;
   align-items: center;
   gap: var(--space-2);
@@ -1471,50 +1471,50 @@
     background 0.1s,
     color 0.1s;
 }
-.sb-scene-tab:hover {
+.sb-deck-tab:hover {
   background: var(--raised);
   color: var(--text);
 }
-.sb-scene-tab.is-active {
+.sb-deck-tab.is-active {
   background: var(--raised);
   color: var(--gold);
   border-left: 2px solid var(--gold);
 }
-.sb-scene-tab.is-editing {
+.sb-deck-tab.is-editing {
   background: var(--raised);
 }
-.sb-scene-tab.is-conflict {
+.sb-deck-tab.is-conflict {
   /* 3px: intentionally thicker than 2px is-active accent; stronger conflict signal */
   border-left: 3px solid var(--blood-bright);
 }
-.sb-scene-tab-actions {
-  /* @inventory: Action buttons (duplicate, delete) revealed on hover or on the active scene tab. */
+.sb-deck-tab-actions {
+  /* @inventory: Action buttons (duplicate, delete) revealed on hover or on the active deck tab. */
   display: none;
   align-items: center;
   gap: 2px;
   margin-left: auto;
   flex-shrink: 0;
 }
-.sb-scene-tab:hover .sb-scene-tab-actions,
-.sb-scene-tab.is-active .sb-scene-tab-actions {
+.sb-deck-tab:hover .sb-deck-tab-actions,
+.sb-deck-tab.is-active .sb-deck-tab-actions {
   display: flex;
 }
 
-.sb-scene-tab-conflict-glyph {
-  /* @inventory: Trailing blood "!" alert mark inside a scene tab editing row in conflict state. font-mono fs-sm blood-bright, no shrink. 1-use (SceneRail). */
+.sb-deck-tab-conflict-glyph {
+  /* @inventory: Trailing blood "!" alert mark inside a deck tab editing row in conflict state. font-mono fs-sm blood-bright, no shrink. 1-use (DeckRail). */
   font-family: var(--font-mono);
   font-size: var(--fs-sm);
   color: var(--blood-bright);
   flex-shrink: 0;
 }
-.sb-scene-conflict-hint {
-  /* @inventory: Hint line below a conflict scene tab — "Name already used by [owning scene]". font-ui fs-xs, blood text, space-3 left indent. 1-use (SceneRail). */
+.sb-deck-conflict-hint {
+  /* @inventory: Hint line below a conflict deck tab — "Name already used by [owning deck]". font-ui fs-xs, blood text, space-3 left indent. 1-use (DeckRail). */
   font-family: var(--font-ui);
   font-size: var(--fs-xs);
   color: var(--blood);
   padding: 2px var(--space-2) var(--space-1) var(--space-3);
 }
-.sb-scene-conflict-hint em {
+.sb-deck-conflict-hint em {
   /* .is-italic (L499) is .sb-mono-scoped — it does not apply here; local rule is correct */
   color: var(--blood-bright);
   font-style: italic;
@@ -1522,7 +1522,7 @@
 
 /* ── Pad Grid ── center panel ─────────────────────────────────────── */
 .sb-pad-grid {
-  /* @inventory: CSS grid for the active scene's pads; col/row counts from --grid-cols/--grid-rows CSS vars. */
+  /* @inventory: CSS grid for the active deck's pads; col/row counts from --grid-cols/--grid-rows CSS vars. */
   display: grid;
   grid-template-columns: repeat(var(--grid-cols, 4), 1fr);
   grid-template-rows: repeat(var(--grid-rows, 4), 1fr);
@@ -1856,7 +1856,7 @@
 
 /* ── Undo Toast ── anchored above status bar ─────────────────────── */
 .sb-undo-toast {
-  /* @inventory: Fixed notification toast above the status bar shown after scene deletion. */
+  /* @inventory: Fixed notification toast above the status bar shown after deck deletion. */
   position: fixed;
   bottom: 28px; /* just above 24px StatusBar */
   left: 50%;
@@ -2476,10 +2476,10 @@
   white-space: nowrap;
 }
 
-/* ── SceneRail (Session 3g) ──────────────────────────────────────── */
+/* ── DeckRail (Session 3g) ──────────────────────────────────────── */
 
 .sb-panel-empty {
-  /* @inventory: Empty-state text message inside a scrollable panel or rail — centered, padded, mono xs muted, relaxed line-height. Used in SceneRail (no scenes) and LibraryPanel (no results). */
+  /* @inventory: Empty-state text message inside a scrollable panel or rail — centered, padded, mono xs muted, relaxed line-height. Used in DeckRail (no decks) and LibraryPanel (no results). */
   padding: var(--space-6) var(--space-3);
   font-family: var(--font-mono);
   font-size: var(--fs-xs);
@@ -2487,16 +2487,16 @@
   text-align: center;
   line-height: 1.6;
 }
-.sb-scene-num-badge {
-  /* @inventory: Scene-number indicator badge in scene rail tabs — mono xs muted, 16px minimum width for numeral alignment, no flex-shrink. 1-use (SceneRail). */
+.sb-deck-num-badge {
+  /* @inventory: Deck-number indicator badge in deck rail tabs — mono xs muted, 16px minimum width for numeral alignment, no flex-shrink. 1-use (DeckRail). */
   font-family: var(--font-mono);
   font-size: var(--fs-xs);
   color: var(--text-mute);
   min-width: 16px;
   flex-shrink: 0;
 }
-.sb-scene-rename-input {
-  /* @inventory: Inline rename input for scene tabs — font-ui fs-md 0.06em uppercase, matching sb-scene-tab's own font scale. Distinct from sb-row-rename-input (fs-lg/0.08em for board names). 1-use (SceneRail). */
+.sb-deck-rename-input {
+  /* @inventory: Inline rename input for deck tabs — font-ui fs-md 0.06em uppercase, matching sb-deck-tab's own font scale. Distinct from sb-row-rename-input (fs-lg/0.08em for board names). 1-use (DeckRail). */
   flex: 1;
   min-width: 0;
   background: var(--sunk);
@@ -2509,8 +2509,8 @@
   padding: 2px 6px;
   outline: none;
 }
-.sb-scene-add-btn {
-  /* @inventory: Full-width inset button at the bottom of the scene rail — 8px margins, calc(100% − 16px) width, 44px touch target, centered flex with 6px gap. Modifies sb-btn layout for the rail context. 1-use (SceneRail). */
+.sb-deck-add-btn {
+  /* @inventory: Full-width inset button at the bottom of the deck rail — 8px margins, calc(100% − 16px) width, 44px touch target, centered flex with 6px gap. Modifies sb-btn layout for the rail context. 1-use (DeckRail). */
   margin: var(--space-2);
   width: calc(100% - 2 * var(--space-2));
   min-height: 44px;
