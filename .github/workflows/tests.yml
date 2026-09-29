@@ -25,9 +25,9 @@ jobs:
         working-directory: v3
         run: npm run build
 
-      - name: Unit tests
+      - name: Unit tests + coverage floor
         working-directory: v3
-        run: npm run test
+        run: npm run test:coverage
 
       - name: Lint
         working-directory: v3
@@ -135,11 +135,11 @@ jobs:
         working-directory: v3
         run: npm ci
 
-      - name: Install Playwright browsers (Chromium only)
+      - name: Install Playwright browsers (Chromium + WebKit)
         working-directory: v3
-        run: npx playwright install --with-deps chromium
+        run: npx playwright install --with-deps chromium webkit
 
-      - name: Run full E2E tests
+      - name: Run full E2E tests (Chromium + WebKit subset)
         working-directory: v3
         run: npm run test:e2e:full
 

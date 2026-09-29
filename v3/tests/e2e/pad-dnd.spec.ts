@@ -17,8 +17,7 @@
 
 import { test, expect, type Page } from '@playwright/test';
 import {
-  goToLibrary,
-  uploadTestAudio,
+  ensureTestAudio,
   goToBoardList,
   createBoardAndNavigate,
   createDeck,
@@ -51,9 +50,7 @@ async function createPadAt(page: Page, col: number, row: number): Promise<string
 
 /** Board with one deck and three pads: A at 0,0 · B at 1,0 · C at 2,0 (SETUP mode). */
 async function setupThreePads(page: Page): Promise<{ a: string; b: string; c: string }> {
-  await page.goto('/soundboard-of-storytelling/');
-  await goToLibrary(page);
-  await uploadTestAudio(page);
+  await ensureTestAudio(page);
   await page.goto('/soundboard-of-storytelling/');
   await goToBoardList(page);
   await createBoardAndNavigate(page);

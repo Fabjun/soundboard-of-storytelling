@@ -19,13 +19,15 @@ export default defineConfig({
       reporter: ['text', 'html', 'json-summary'],
       include: ['src/lib/**', 'src/state/**', 'src/db/**', 'src/audio/**'],
       exclude: ['tests/**', '**/*.config.ts', 'src/main.tsx', 'src/app.tsx'],
-      // Thresholds intentionally 0 — this tracks trends, not gates CI.
-      // Raise these when meaningful coverage targets are established.
+      // Coverage FLOOR (T6, 2026-09-29): just below the measured values
+      // (lines 69.45 · statements 67.8 · functions 71.75 · branches 61.61).
+      // Enforced in CI via `npm run test:coverage`. Only ever RAISE these —
+      // at slice completion, to the new measured values rounded down.
       thresholds: {
-        lines: 0,
-        functions: 0,
-        branches: 0,
-        statements: 0,
+        lines: 69,
+        functions: 71,
+        branches: 61,
+        statements: 67,
       },
     },
   },

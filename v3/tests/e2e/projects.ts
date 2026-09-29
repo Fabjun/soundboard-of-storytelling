@@ -27,6 +27,19 @@ export const FULL_TESTS = [
   'audio',
 ];
 
+/**
+ * Subset of FULL_TESTS that ALSO runs in WebKit (desktop Safari engine). Audio playback
+ * is impossible in headless WebKit; these specs need the library but no playback —
+ * helpers.ensureTestAudio seeds it there. Must stay a subset of FULL_TESTS (guarded).
+ */
+export const FULL_WEBKIT_TESTS = [
+  'board-crud',
+  'deck-crud',
+  'pad-creation',
+  'pad-editing',
+  'pad-dnd',
+];
+
 /** tests/e2e/mobile/<name>.spec.ts — audio-free, WebKit / iPhone 13 Pro (real Safari engine path). */
 export const MOBILE_WEBKIT_TESTS = [
   'mobile-unlock-nav',

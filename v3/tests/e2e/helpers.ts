@@ -49,6 +49,66 @@ export async function uploadTestAudio(page: Page): Promise<void> {
   });
 }
 
+/**
+ * WebKit only: headless WebKit cannot decode audio, so the real upload fails there.
+ * Instead, write one library entry (metadata shape of the upload pipeline, no audio) straight
+ * into the app's IndexedDB and reload. Waits until the APP has created its database —
+ * opening it first from here would create it without the app's object stores.
+ * The upload path itself stays covered in Chromium (uploadTestAudio).
+ */
+export async function seedTestAudio(page: Page): Promise<void> {
+  await page.goto('/soundboard-of-storytelling/');
+  await page.waitForFunction(async () =>
+    (await indexedDB.databases()).some((d) => d.name === 'sos-v3'),
+  );
+  await page.evaluate(
+    (name) =>
+      new Promise<void>((resolve, reject) => {
+        const open = indexedDB.open('sos-v3');
+        open.onerror = () => reject(open.error);
+        open.onsuccess = () => {
+          const db = open.result;
+          const tx = db.transaction('library', 'readwrite');
+          tx.objectStore('library').put({
+            id: 'e2e0000000000000000000000000000000000000000000000000000000000001',
+            type: 'audio',
+            name,
+            size: 44,
+            tags: [],
+            addedAt: Date.now(),
+            duration: 1,
+            peaks: new Array(30).fill(0.5),
+            // No blob: Playwright's WebKit context (ephemeral, like Safari Private
+            // Browsing) cannot store Blobs in IndexedDB (verified 2026-09-29). The
+            // WebKit specs never play audio, and libGetAllMeta never reads the blob.
+          });
+          tx.oncomplete = () => {
+            db.close();
+            resolve();
+          };
+          tx.onerror = () => reject(tx.error);
+        };
+      }),
+    `${TEST_AUDIO_NAME}.wav`,
+  );
+  await page.reload();
+}
+
+/**
+ * Make one test audio file available in the library: real upload in Chromium,
+ * seeded entry in WebKit (no audio codecs headless). Ends on the StartScreen.
+ */
+export async function ensureTestAudio(page: Page): Promise<void> {
+  const browser = page.context().browser()?.browserType().name();
+  if (browser === 'webkit') {
+    await seedTestAudio(page);
+    return;
+  }
+  await page.goto('/soundboard-of-storytelling/');
+  await goToLibrary(page);
+  await uploadTestAudio(page);
+}
+
 // ── Board helpers ─────────────────────────────────────────────────────────────
 
 /**

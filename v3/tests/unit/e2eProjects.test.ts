@@ -12,6 +12,7 @@ import { readdirSync, statSync } from 'node:fs';
 import { join, relative } from 'node:path';
 import {
   FULL_TESTS,
+  FULL_WEBKIT_TESTS,
   MOBILE_CHROMIUM_TESTS,
   MOBILE_WEBKIT_TESTS,
   PWA_TESTS,
@@ -85,6 +86,11 @@ describe('E2E project membership (tests/e2e/projects.ts)', () => {
     const existing = new Set(specs);
     const missing = listed.filter((l) => !existing.has(l.path)).map((l) => `${l.list}: ${l.path}`);
     expect(missing, 'listed specs without a file — rename or remove the entry').toEqual([]);
+  });
+
+  it('runs FULL_WEBKIT_TESTS only as a subset of FULL_TESTS', () => {
+    const notInFull = FULL_WEBKIT_TESTS.filter((n) => !FULL_TESTS.includes(n));
+    expect(notInFull, 'FULL_WEBKIT_TESTS entries must also be in FULL_TESTS').toEqual([]);
   });
 
   it('keeps only visual specs in the visual folder', () => {

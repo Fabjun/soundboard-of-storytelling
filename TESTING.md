@@ -244,6 +244,8 @@ e2e-prod (needs: unit-build-lint)
   └── npm run test:e2e:prod    (Build → Smoke + Full + PWA gegen vite preview; Service Worker, Manifest, Offline)
 
 e2e-full (needs: unit-build-lint)
+  └── npm run test:e2e:full    (full in Chromium + full-webkit: Board/Deck/Pad-CRUD + Drag & Drop in der Safari-Engine)
+
   └── npm run test:e2e:full    (Slices-3+4-Tests in Chromium: CRUD, Audio-Engine)
 ```
 
@@ -378,6 +380,7 @@ test('beschreibt den Nutzer-Flow in einem Satz', async ({ page }) => {
 | Touch-wiring (audio-free), Touch-Targets, Overflow | `tests/e2e/mobile/*` (audio-free specs) | `mobile` (WebKit) |
 | Touch-wiring (pad tap → is-hot/is-looping, pad creation) | `tests/e2e/mobile/*` (audio-dependent specs) | `mobile-chromium` (Chromium) |
 | Pixel-Vergleich | `tests/e2e/visual/*.spec.ts` | `visual` |
+| Feature-Flows ohne Abspielen, zusätzlich in WebKit | Eintrag in `FULL_TESTS` **und** `FULL_WEBKIT_TESTS`; Library über `ensureTestAudio` (Chromium: echter Upload, WebKit: vorbelegt) | `full` + `full-webkit` |
 | Service Worker, Manifest, Offline (nur fertiger Build) | `tests/e2e/pwa.spec.ts` (`PWA_TESTS`) | `pwa` — nur mit `E2E_TARGET=prod` |
 
 ---
@@ -388,6 +391,19 @@ test('beschreibt den Nutzer-Flow in einem Satz', async ({ page }) => {
 - Bei UI-Änderung (Texte, Struktur): E2E-Selektoren sofort prüfen und korrigieren
 - Bei Visual-Regression-Änderung (Slice 8 / Polish): `npm run test:e2e:update-snapshots` lokal ausführen, neue Baseline committen
 - Bei wackeligen Tests: festes Verfahren, siehe unten.
+
+### Untergrenze der Testabdeckung (T6)
+
+`v3/vitest.config.ts` → `coverage.thresholds` (knapp unter dem gemessenen Stand). CI führt
+`npm run test:coverage` aus — sinkt die Abdeckung darunter, schlägt CI fehl. Die Grenzen werden
+**nur angehoben**: beim Slice-Abschluss auf die neuen Messwerte, abgerundet.
+
+### WebKit und IndexedDB-Blobs
+
+Playwrights WebKit läuft in einem kurzlebigen Profil (wie Safaris privates Surfen) und kann
+**keine Blobs in IndexedDB speichern** (geprüft 2026-09-29; ArrayBuffer geht). Deshalb legt
+`seedTestAudio` den Library-Eintrag in WebKit **ohne** Audiodaten an. Offene Produktfrage dazu:
+BACKLOG „Library audio as Blob — Safari Private Browsing“.
 
 ### Automatisch gesperrte Test-Fallen (T10)
 

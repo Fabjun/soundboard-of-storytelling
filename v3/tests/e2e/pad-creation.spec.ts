@@ -9,8 +9,7 @@
 
 import { test, expect } from '@playwright/test';
 import {
-  goToLibrary,
-  uploadTestAudio,
+  ensureTestAudio,
   goToBoardList,
   createBoardAndNavigate,
   createDeck,
@@ -21,9 +20,8 @@ import {
 
 test.beforeEach(async ({ page }) => {
   await page.goto('/soundboard-of-storytelling/');
-  // Upload audio first (required for pad creation)
-  await goToLibrary(page);
-  await uploadTestAudio(page);
+  // Audio in the library (required for pad creation): upload (Chromium) / seed (WebKit)
+  await ensureTestAudio(page);
   // Navigate to board
   await page.goto('/soundboard-of-storytelling/');
   await goToBoardList(page);

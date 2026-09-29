@@ -9,8 +9,7 @@
 
 import { test, expect } from '@playwright/test';
 import {
-  goToLibrary,
-  uploadTestAudio,
+  ensureTestAudio,
   goToBoardList,
   createBoardAndNavigate,
   createDeck,
@@ -19,9 +18,7 @@ import {
 } from './helpers';
 
 test.beforeEach(async ({ page }) => {
-  await page.goto('/soundboard-of-storytelling/');
-  await goToLibrary(page);
-  await uploadTestAudio(page);
+  await ensureTestAudio(page);
   await page.goto('/soundboard-of-storytelling/');
   await goToBoardList(page);
   await createBoardAndNavigate(page);

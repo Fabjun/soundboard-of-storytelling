@@ -31,6 +31,7 @@
 import { defineConfig, devices } from '@playwright/test';
 import {
   FULL_TESTS,
+  FULL_WEBKIT_TESTS,
   MOBILE_CHROMIUM_TESTS,
   MOBILE_WEBKIT_TESTS,
   PWA_TESTS,
@@ -54,6 +55,7 @@ const smokeMatch = new RegExp(
 const fullMatch = new RegExp(
   `tests/e2e/(${FULL_TESTS.join('|')})\\.spec\\.ts$`,
 );
+const fullWebkitMatch = new RegExp(`tests/e2e/(${FULL_WEBKIT_TESTS.join('|')})\\.spec\\.ts$`);
 const pwaMatch = new RegExp(`tests/e2e/(${PWA_TESTS.join('|')})\\.spec\\.ts$`);
 const mobileWebKitMatch = new RegExp(
   `tests/e2e/mobile/(${MOBILE_WEBKIT_TESTS.join('|')})\\.spec\\.ts$`,
@@ -103,6 +105,12 @@ export default defineConfig({
       name: 'full',
       testMatch: fullMatch,
       use: { ...devices['Desktop Chrome'] },
+    },
+    {
+      // Same specs as `full` where no playback is needed — in the Safari engine.
+      name: 'full-webkit',
+      testMatch: fullWebkitMatch,
+      use: { ...devices['Desktop Safari'] },
     },
     {
       // iPhone 13 Pro: viewport 390×844, hasTouch: true, isMobile: true,

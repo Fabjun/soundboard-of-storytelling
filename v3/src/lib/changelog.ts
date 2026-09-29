@@ -7,9 +7,16 @@ export type ChangelogEntry = {
   items: string[];
 };
 
-export const APP_VERSION = '3.0.44';
+export const APP_VERSION = '3.0.45';
 
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.45',
+    date: '2026-09-29',
+    items: [
+      'test: full E2E subset in WebKit (CRUD + drag & drop in the Safari engine); coverage floor in CI (T6)',
+    ],
+  },
   {
     version: '3.0.44',
     date: '2026-09-29',
