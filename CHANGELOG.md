@@ -4,6 +4,10 @@
 
 All notable changes to Soundboard of Storytelling, newest first.
 
+## 3.0.70 — 2026-09-30
+
+- ci: Dependabot groups lockstep dependency families (incl. majors), guarded by a test; guard file headers numbered in order
+
 ## 3.0.69 — 2026-09-30
 
 - test: unit tests have a 500 ms local time budget (5 s in CI), so slow tests fail before the push

@@ -7,9 +7,16 @@ export type ChangelogEntry = {
   items: string[];
 };
 
-export const APP_VERSION = '3.0.69';
+export const APP_VERSION = '3.0.70';
 
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.70',
+    date: '2026-09-30',
+    items: [
+      'ci: Dependabot groups lockstep dependency families (incl. majors), guarded by a test; guard file headers numbered in order',
+    ],
+  },
   {
     version: '3.0.69',
     date: '2026-09-30',

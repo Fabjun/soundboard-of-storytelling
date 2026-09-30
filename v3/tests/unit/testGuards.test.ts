@@ -14,6 +14,8 @@
 // 4. Every TypeScript file in v3/ (incl. v3/scripts/) belongs to a project that `tsc -b` checks
 //    (T12, ADR-0055) — Vitest and Playwright run tests without type checking, so an
 //    unchecked file hides type errors (found: 6 in unit tests, 1 in E2E, 2026-09-30).
+// 5. Lockstep dependency families (exact peer pins) share a Dependabot group (audit A6).
+// 6. Guard files (this one included) number their header rules 1..n in order.
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
@@ -181,5 +183,61 @@ describe('guard: every TypeScript file is type-checked (ADR-0055)', () => {
   it('covers every .ts/.tsx file with a project referenced from v3/tsconfig.json', () => {
     const unchecked = tsFiles.filter((f) => !checked.has(f));
     expect(unchecked, 'add the file (or its folder) to a referenced tsconfig').toEqual([]);
+  });
+});
+
+describe('guard: lockstep dependency families update together (audit A6)', () => {
+  // A package that pins another direct dependency to an EXACT version as peer (vitest ↔
+  // @vitest/coverage-v8, size-limit ↔ @size-limit/file) cannot be updated alone: `npm ci`
+  // fails on the peer conflict. Both must share a Dependabot group.
+  const pkg = JSON.parse(readFileSync(join(V3, 'package.json'), 'utf8')) as {
+    dependencies: Record<string, string>;
+    devDependencies: Record<string, string>;
+  };
+  const direct = Object.keys({ ...pkg.dependencies, ...pkg.devDependencies });
+  const pairs: [string, string][] = [];
+  for (const name of direct) {
+    const meta = JSON.parse(
+      readFileSync(join(V3, 'node_modules', name, 'package.json'), 'utf8'),
+    ) as { peerDependencies?: Record<string, string> };
+    for (const [peer, range] of Object.entries(meta.peerDependencies ?? {})) {
+      if (direct.includes(peer) && /^\d+\.\d+\.\d+$/.test(range)) pairs.push([name, peer]);
+    }
+  }
+  // Groups as written in .github/dependabot.yml: `<name>:` followed by `patterns: [...]`.
+  const yml = readFileSync(join(V3, '..', '.github', 'dependabot.yml'), 'utf8');
+  const groups = [...yml.matchAll(/^ {6}([\w-]+):\n {8}patterns: \[([^\]]*)\]/gm)].map((m) =>
+    m[2].split(',').map((p) => new RegExp(`^${p.trim().replace(/'/g, '').replace(/\*/g, '.*')}$`)),
+  );
+  const shareGroup = (a: string, b: string): boolean =>
+    groups.some((g) => g.some((re) => re.test(a)) && g.some((re) => re.test(b)));
+
+  it('finds exact peer pins and groups (sanity)', () => {
+    expect(pairs.length).toBeGreaterThanOrEqual(2);
+    expect(groups.length).toBeGreaterThanOrEqual(3);
+  });
+
+  it('every exact peer pin is inside one group', () => {
+    const bad = pairs.filter(([a, b]) => !shareGroup(a, b)).map(([a, b]) => `${a} → ${b}`);
+    expect(bad, 'add both packages to one group in .github/dependabot.yml').toEqual([]);
+  });
+});
+
+describe('guard: guard files list their rules in order', () => {
+  // The numbered rule list in a guard file's header is its table of contents; it drifted out
+  // of order twice (docsGuards 4-6-5, testGuards 5 before 4 on 2026-09-30).
+  const files = readdirSync(join(V3, 'tests', 'unit')).filter((f) => f.endsWith('Guards.test.ts'));
+
+  it('finds the guard files (sanity)', () => {
+    expect(files.length).toBeGreaterThanOrEqual(3);
+  });
+
+  it('header rules are numbered 1..n without gaps', () => {
+    const bad = files.flatMap((f) => {
+      const header = readFileSync(join(V3, 'tests', 'unit', f), 'utf8').split('\n\n')[0];
+      const nums = [...header.matchAll(/^\/\/ (\d+)\. /gm)].map((m) => Number(m[1]));
+      return nums.every((n, i) => n === i + 1) ? [] : [`${f}: ${nums.join(' ')}`];
+    });
+    expect(bad).toEqual([]);
   });
 });

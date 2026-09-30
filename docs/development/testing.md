@@ -66,8 +66,8 @@ number in brackets = test cases in the file (incl. quarantine)._
 | `pwa`             | Chromium (Desktop)             | Build only  | `pwa` (7)                                                                                                                                                                                  |
 | `visual`          | Chromium (Desktop), macOS only | Dev         | `board-list-empty` (1), `board-list-with-board` (1), `board-screen-game` (1), `board-screen-setup` (1), `deck-rail` (1), `library-empty` (1), `mode-toggle-states` (2), `start-screen` (1) |
 
-**Unit tests (Vitest):** 14 files, 219 test cases —
-`audio/engine.test.ts` (24), `audio/lru.test.ts` (11), `codeGuards.test.ts` (11), `deckConflict.test.ts` (9), `docsGuards.test.ts` (18), `e2eProjects.test.ts` (6), `flameMath.test.ts` (22), `idb.test.ts` (15), `nanoid.test.ts` (2), `padDnd.test.ts` (11), `padUtils.test.ts` (43), `store.test.ts` (23), `testGuards.test.ts` (11), `upload.test.ts` (13)
+**Unit tests (Vitest):** 14 files, 223 test cases —
+`audio/engine.test.ts` (24), `audio/lru.test.ts` (11), `codeGuards.test.ts` (11), `deckConflict.test.ts` (9), `docsGuards.test.ts` (18), `e2eProjects.test.ts` (6), `flameMath.test.ts` (22), `idb.test.ts` (15), `nanoid.test.ts` (2), `padDnd.test.ts` (11), `padUtils.test.ts` (43), `store.test.ts` (23), `testGuards.test.ts` (15), `upload.test.ts` (13)
 
 <!-- AUTO-GENERATED:test-inventory END -->
 

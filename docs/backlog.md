@@ -1347,8 +1347,12 @@ Owner decisions 2026-09-30: A1–A3 as recommended.
 - ⬜ **A5 Exception register misses config-level rule switches** — `eslint.config.js` turns
   rules off (`no-unused-vars`) without a register entry. Done: the unused `no-explicit-any` off
   for unit and E2E tests removed (probe: an `any` in a test is reported again).
-- ⬜ **A6 Dependabot splits package families** — the vitest 5 PR fails `npm ci` because
-  `@vitest/coverage-v8` stays on 4.x (peer conflict); group families incl. majors.
+- ✅ **A6 Dependabot splits package families** — the vitest 5 PR fails `npm ci` because
+  `@vitest/coverage-v8` stays on 4.x (peer conflict). Lockstep families (vitest,
+  typescript-eslint, size-limit, fontsource) are grouped incl. majors, listed before the
+  minor/patch groups; testGuards checks that every exact peer pin between direct dependencies
+  shares a group (counter-checked). Also guarded now: guard files number their header rules
+  1..n (drifted twice).
 - ⬜ **A7 Vale skips code blocks** — superseded "Scenes" in CLAUDE.md's API block, a `SceneCard`
   sample in the concept brief; the API list in CLAUDE.md is a hand copy of the `idb.ts` /
   `upload.ts` exports (guard the names against the code).
