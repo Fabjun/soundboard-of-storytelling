@@ -1,14 +1,14 @@
 # Soundboard of Storytelling — Design Notes
 
-> **Open backlog items live in `docs/backlog.md`** (repo root). This file documents
+> **Open backlog items live in `docs/backlog.md`**. This file documents
 > design-detail decisions, RESOLVED entries, and slice-specific notes — not the
 > living backlog of deferred work. When an item graduates from "design decision"
 > to "deferred feature or known limitation", move it to docs/backlog.md.
 
-> **Architektur-Entscheidungen** (Datenmodell, Persistenz, Cross-Cutting-Pattern,
-> Plattform-Annahmen) leben in `docs/architecture/` als ADRs. Diese Datei
-> dokumentiert Design-Detail-Entscheidungen, offene Slice-Fragen und
-> RESOLVED-Einträge zu konkreten Refactoring-Schritten.
+> **Architecture decisions** (data model, persistence, cross-cutting patterns,
+> platform assumptions) live in `docs/architecture/` as ADRs. This file
+> records design detail decisions, open slice questions and
+> RESOLVED entries for concrete refactoring steps.
 
 > Captured design ideas that came up during design sessions but were not
 > implemented in the explorations. Entries get pulled into V3 implementation when
@@ -516,44 +516,43 @@ entries short — one paragraph max, link out for longer rationale.*
 
 ---
 
-## RESOLVED — Slice 1+2 Audit-Pass (2026-05-27)
+## RESOLVED — Slice 1+2 audit pass (2026-05-27)
 
-Token-Drift zwischen `v3/src/styles/tokens.css` und `design-sources/2026-05-25/tokens.css`
-vollständig beseitigt. Betroffene Dateien:
+Token drift between `v3/src/styles/tokens.css` and `design-sources/2026-05-25/tokens.css`
+fully removed. Affected files:
 
 **`v3/src/styles/tokens.css`**
-- Neue Tokens: `--pad-edge-light`, `--pad-edge-dark` (v18 Depth-Stack),
+- New tokens: `--pad-edge-light`, `--pad-edge-dark` (v18 depth stack),
   `--shadow-pad-lift` (v18), `--mode-setup-glow`, `--mode-game-glow` (v24
-  Mode-Toggle), `--fade`, `--fade-soft`, `--flame-soft`, `--flame-aura`
-- Wert-Updates: `--blood-bright` #D04545→#EF7575 (Legibility-Fix),
-  `--danger` →`var(--blood-bright)`, `--pad-combo` Kupfer→Rose Magenta
-  (#C9529D, user-confirmed — hue ~325° klar getrennt von Gold/Teal/Blood)
-- Legacy-Alias-Scope-Bug gefixt: `--sb-*` Aliase jetzt auf
-  `:root, .sb-theme-verdant, .sb-theme-neon, .sb-theme-crimson` (vorher nur `:root` —
-  hätte Theme-Switching in Slice 8 gebrochen)
-- `--sb-danger` →`var(--blood-bright)` (konsistent mit --danger-Korrektur)
-- Theme-Overrides vervollständigt: `.sb-theme-verdant` (pad-single, pad-playlist),
+  mode toggle), `--fade`, `--fade-soft`, `--flame-soft`, `--flame-aura`
+- Value updates: `--blood-bright` #D04545→#EF7575 (legibility fix),
+  `--danger` →`var(--blood-bright)`, `--pad-combo` copper→rose magenta
+  (#C9529D, user-confirmed — hue ~325° clearly separated from gold/teal/blood)
+- Legacy alias scope bug fixed: `--sb-*` aliases now on
+  `:root, .sb-theme-verdant, .sb-theme-neon, .sb-theme-crimson` (previously only `:root` —
+  would have broken theme switching in Slice 8)
+- `--sb-danger` →`var(--blood-bright)` (consistent with the --danger correction)
+- Theme overrides completed: `.sb-theme-verdant` (pad-single, pad-playlist),
   `.sb-theme-crimson` (pad-single, pad-combo)
 
 **`v3/src/screens/StartScreen.tsx`**
-- FlameLogo filter →`var(--glow-flame)` (war hardcoded rgba)
-- Hintergrund-Gradient →`var(--flame-soft)`, Glow-Ring →`var(--flame-aura)`
+- FlameLogo filter →`var(--glow-flame)` (was hard-coded rgba)
+- background gradient →`var(--flame-soft)`, glow ring →`var(--flame-aura)`
 
 **`v3/src/components/TopBar.tsx`**
-- Titel-Span: Inline-Styling →`class="sb-display-vt"` + fontSize 22px
-  (war 16px + var(--text); Design-Referenz: VT323 22px gold-bright mit Glow)
+- title span: inline styling →`class="sb-display-vt"` + fontSize 22px
+  (was 16px + var(--text); design reference: VT323 22px gold-bright with glow)
 
 ---
 
-## iOS Plattform-Grenzen
+## iOS platform limits
 
-### Ringer-Switch (physischer Stummschalter)
+### Ringer switch (physical mute switch)
 
-Ringer-Switch (iOS): App ist stummgeschaltet, wenn der physische Schalter auf
-lautlos steht — wie V1. Der AVAudioSession-Silent-WAV-Trick kann den physischen
-Schalter nicht überstimmen (iOS-Plattformgrenze), dient aber weiterhin
-konsistentem `resume()` nach Interruptions/Tab-Wechsel. Bewusst akzeptiert,
-kein toter Code.
+Ringer switch (iOS): the app is muted when the physical switch is set to
+silent — like V1. The AVAudioSession silent-WAV trick cannot override the physical
+switch (iOS platform limit), but still provides a consistent `resume()` after
+interruptions / tab switches. Deliberately accepted, not dead code.
 
 ---
 

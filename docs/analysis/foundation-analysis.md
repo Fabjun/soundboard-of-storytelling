@@ -569,7 +569,7 @@ Findings are tagged `[SEV][CAT]` where:
 | C2 | CRIT | B | docs/architecture/concept-brief.md §4.3 | "Components read via hooks": Preact Signals uses `.value` / JSX binding, not hooks | 97 |
 | C3 | CRIT | B | docs/architecture/concept-brief.md §6 | "Test suite (deferred)" listed as out-of-scope: full Phase 2 testing infra is built | 315 |
 | C4 | CRIT | A | CLAUDE.md §Path B / docs/design/design-system-cheatsheet.md | `sb-stack` named as a created layout primitive — class does not exist; actual vertical-stack primitive is `sb-col` | CLAUDE.md 231; Cheatsheet 44 |
-| C5 | CRIT | A | docs/development/testing.md §Mobile Testing | All mobile touch-target and overflow tests are `test.describe.fixme()` — zero active tests; documentation claims active automated coverage | various |
+| C5 | CRIT | A | docs/development/testing.md §Mobile testing | All mobile touch-target and overflow tests are `test.describe.fixme()` — zero active tests; documentation claims active automated coverage | various |
 | C6 | CRIT | B | README.md §Status | "Slice 4 (Audio Playback) in progress" — Slice 4 complete since 2026-05-28 | 7–8 |
 | C7 | CRIT | C | docs/README.md | `docs/architecture/concept-brief.md` — the most important mandatory-read doc — has no entry in the map | — |
 | C8 | CRIT | C | docs/design/design-notes.md | Dead cross-reference to "docs/design/design-system.md §8.8" (two occurrences); docs/design/design-system.md has sections §1–§6 and §A only | 384, 433 |
@@ -603,8 +603,8 @@ Findings are tagged `[SEV][CAT]` where:
 | I23 | IMP | C | docs/backlog.md §Slice 7 | ADR-0015 cited as source for V1-compatible template format; ADR-0015 covers DB name only | 94 |
 | I24 | IMP | B | docs/backlog.md §3 | Delete-last-scene behavior decided in code (SceneRail drops to empty-board state) but still listed as an open decision | ~1073 |
 | I25 | IMP | B | docs/backlog.md §3 | Scene rename duplicate-name policy decided in code (allow, no validation) but still listed as "verify before Slice 5" | ~1079 |
-| I26 | IMP | B | ADR-0018 §Decision | Facade still described as unbuilt ("noch nicht erstellt"); `play()` and `crossfade()` signatures wrong (Slice 4 implemented different API) | 37–38, 70 |
-| I27 | IMP | B+A | ADR-0020 §Decision | "noch nicht erstellt" stale (Slice 4 done); `ctx.suspend()` on `visibilitychange` and `audioContextState='suspended'` described but not implemented | 27–30, 67 |
+| I26 | IMP | B | ADR-0018 §Decision | Facade still described as unbuilt ("not yet created"); `play()` and `crossfade()` signatures wrong (Slice 4 implemented different API) | 37–38, 70 |
+| I27 | IMP | B+A | ADR-0020 §Decision | "not yet created" stale (Slice 4 done); `ctx.suspend()` on `visibilitychange` and `audioContextState='suspended'` described but not implemented | 27–30, 67 |
 | I28 | IMP | A | ADR-0012 §Decision | Code snippet uses wrong import path: `sha256` not `sha2.js`, missing `.js` extension | 25–32 |
 | I29 | IMP | B | ADR-0021 §Decision | State vocabulary "closed set" claim stale — 5 classes added after this ADR: `is-looping`, `is-insert-before`, `is-insert-after`, `is-drag-swap`, `is-drag-source` | various |
 | I30 | IMP | A | ADR-0026 §Decision | `prefers-reduced-motion` behavior documented as "220 ms flash" but `sb-mode-toggle-flash` is `[unused-css]`; actual behavior: skip animation entirely | 28 |
@@ -630,8 +630,8 @@ Findings are tagged `[SEV][CAT]` where:
 | K5 | COS | C | CLAUDE.md §Design language §Tokens | "imported from design-sources/2026-05-25/tokens.css" implies live sync; `v3/src/styles/tokens.css` is the canonical live source and has diverged | ~163–164 |
 | K6 | COS | A | CLAUDE.md §Deviations | npm cache note ("partially root-owned") conflicts with resolved memory entry noting this is largely fixed | ~514 |
 | K7 | COS | B | docs/development/testing.md §Overview | "Slice 3.5" not an official slice name; CLAUDE.md uses "Phase 2 testing infrastructure" | ~5 |
-| K8 | COS | C | docs/development/testing.md §Fallstricke | Numbering gap: sections jump from §5 to §7 (no §6) | — |
-| K9 | COS | C | docs/design/design-system.md §3 | TODO comment about "Träger" (carrier elements) column never added | ~64 |
+| K8 | COS | C | docs/development/testing.md §Known pitfalls | Numbering gap: sections jump from §5 to §7 (no §6) | — |
+| K9 | COS | C | docs/design/design-system.md §3 | TODO comment about a "carrier elements" column never added | ~64 |
 | K10 | COS | C | docs/design/design-notes.md §A3 | Scene CRUD questions listed under "Slice 6 — capacity questions" — they relate to Slice 3 features | ~228 |
 | K11 | COS | B | docs/backlog.md §Session 3 header | Session 3 header has no ✅ Done marker; Sessions 0/1/2 headers all marked done | 1371 |
 | K12 | COS | C | docs/backlog.md §Slice 8 | "Desktop-first layout; mobile adaptation is a dedicated phase" — uses superseded framing; ADR-0045 replaced "desktop-first" with two-axis terminology | 220 |

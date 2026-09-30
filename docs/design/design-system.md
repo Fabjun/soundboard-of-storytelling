@@ -49,62 +49,62 @@
 
 ---
 
-## §2 Pixel-Frame-System
+## §2 Pixel frame system
 
-<!-- TODO: Ausschreiben — Kurzfassung in docs/design/design-system-cheatsheet.md Decision Tree -->
+<!-- TODO: write out in full — short version in docs/design/design-system-cheatsheet.md decision tree -->
 
-Basis-Klassen der Pixel-Frame-Familie: `sb-pix`, `sb-card`, `sb-pad`, `sb-btn`,
-`sb-pill`, `sb-menu-row`. Anpassung via CSS Custom Properties `--pix-bg`,
-`--pix-border`, `--pix-step` — kein neues clip-path/border CSS schreiben.
+Base classes of the pixel frame family: `sb-pix`, `sb-card`, `sb-pad`, `sb-btn`,
+`sb-pill`, `sb-menu-row`. Customise via the CSS custom properties `--pix-bg`,
+`--pix-border`, `--pix-step` — never write new clip-path/border CSS.
 
 ---
 
-## §3 State Vocabulary (geschlossene Menge)
+## §3 State vocabulary (closed set)
 
-Aktuell registrierte Zustands-Klassen (aus docs/design/design-system-cheatsheet.md §3):
+Currently registered state classes (from docs/design/design-system-cheatsheet.md §3):
 
-| Klasse | Bedeutung |
+| Class | Meaning |
 |--------|-----------|
-| `is-active` | Aktives Element in einer Gruppe |
-| `is-on` | Binärer Ein-Zustand (Toggle) |
-| `is-hot` | Audio läuft gerade |
-| `is-setup` | SETUP-Modus aktiv |
-| `is-game` | GAME-Modus aktiv |
-| `is-danger` | Destruktive Aktion (2-Tap-Confirm) |
-| `is-conflict` | Namenskonflikt / ungültige Eingabe |
-| `is-raised` | Erhöhte Fläche (Surface-Hierarchie) |
-| `is-italic` | Kursive Darstellung |
-| `is-loop` | Loop-Kontext |
-| `is-playlist` | Playlist-Kontext |
-| `is-combo` | Combo-Kontext |
-| `is-deep` | Opt-In für Pad-Depth-Stack |
-| `is-compact` | Kompakte Darstellung |
-| `is-looping` | Pad läuft aktuell im Loop |
-| `is-drag-source` | DnD: dieses Pad wird gerade gezogen |
-| `is-drag-swap` | DnD-Ziel: Swap mit diesem Pad |
-| `is-insert-before` | DnD-Ziel: Einfügen vor diesem Pad |
-| `is-insert-after` | DnD-Ziel: Einfügen nach diesem Pad |
+| `is-active` | Active element within a group |
+| `is-on` | Binary on state (toggle) |
+| `is-hot` | Audio is playing |
+| `is-setup` | SETUP mode active |
+| `is-game` | GAME mode active |
+| `is-danger` | Destructive action (2-tap confirm) |
+| `is-conflict` | Name conflict / invalid input |
+| `is-raised` | Raised surface (surface hierarchy) |
+| `is-italic` | Italic rendering |
+| `is-loop` | Loop context |
+| `is-playlist` | Playlist context |
+| `is-combo` | Combo context |
+| `is-deep` | Opt-in for the pad depth stack |
+| `is-compact` | Compact rendering |
+| `is-looping` | Pad is currently looping |
+| `is-drag-source` | DnD: this pad is being dragged |
+| `is-drag-swap` | DnD target: swap with this pad |
+| `is-insert-before` | DnD target: insert before this pad |
+| `is-insert-after` | DnD target: insert after this pad |
 
-Neue Zustands-Klassen hier ergänzen, **bevor** sie im Code verwendet werden.
-
----
-
-## §4 Komponentenanatomie
-
-<!-- TODO: Beschreiben wie sb-pix, sb-card, sb-pad strukturell aufgebaut sind -->
+Add new state classes here **before** they are used in code. `has-*` classes (e.g. `has-divider`) are allowed as state classes too (ADR-0052).
 
 ---
 
-## §5 Token-Verwendungsregeln
+## §4 Component anatomy
 
-<!-- TODO: Wann welches Token — Farb-Tokens, Spacing, Typography, Radius, Schatten -->
+<!-- TODO: describe how sb-pix, sb-card, sb-pad are built structurally -->
 
-Verbotene Muster in neuem V3-Code:
-- Farbliterale (hardcodierte `#hex` oder `rgb(...)`)
-- `--sb-*` Legacy-Aliases (nur für Rückwärtskompatibilität mit altem CSS)
-- `border-radius` auf `sb-pix`-Familie (pixel-art-Shapes nutzen clip-path)
-- `box-shadow` auf clip-path-Elementen (stattdessen `filter: drop-shadow()`)
-- Utility-Klassen (`sb-mt-4` etc.)
+---
+
+## §5 Token usage rules
+
+<!-- TODO: which token when — colour tokens, spacing, typography, radius, shadows -->
+
+Forbidden patterns in new V3 code:
+- colour literals (hard-coded `#hex` or `rgb(...)`)
+- `--sb-*` legacy aliases (only for backward compatibility with old CSS)
+- `border-radius` on the `sb-pix` family (pixel-art shapes use clip-path)
+- `box-shadow` on clip-path elements (use `filter: drop-shadow()` instead)
+- utility classes (`sb-mt-4` etc.)
 
 ---
 
@@ -142,12 +142,12 @@ also in §6):
 
 ---
 
-## §6 Komponenten-Inventur
+## §6 Component inventory
 
-> Auto-generiert via `npm run sync:classes`. Beschreibungen via
-> `/* @inventory: Beschreibung */`-Kommentar an der CSS-Definition.
-> Klassen ohne Kommentar erscheinen mit leerer Beschreibung — das ist
-> gewollt, um fehlende Dokumentation sichtbar zu machen.
+> Generated via `npm run sync:classes`. Descriptions come from the
+> `/* @inventory: description */` comment at the CSS definition.
+> Classes without a comment appear with an empty description — deliberately,
+> to make missing documentation visible.
 
 <!-- AUTO-GENERATED:sb-classes START — do not edit by hand -->
 | Class | Description | Defined in |
@@ -348,11 +348,11 @@ also in §6):
 
 ---
 
-## §A Token-Inventur
+## §A Token inventory
 
-> Auto-generiert via `npm run sync:tokens` aus
-> `v3/src/styles/tokens.css`. Gruppen entsprechen den
-> Abschnitts-Kommentaren in der Token-Quelldatei.
+> Generated via `npm run sync:tokens` from
+> `v3/src/styles/tokens.css`. Groups correspond to the
+> section comments in the token source file.
 
 <!-- AUTO-GENERATED:tokens START — do not edit by hand -->
 ### SURFACE HIERARCHY

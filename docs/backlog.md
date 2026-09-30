@@ -334,10 +334,10 @@ folder via a `+ NEW` row at the bottom.
 
 ## Design & Feature Clarification Session — 2026-06-04
 
-> **Beschlussstand einer Klärungssession, kein abgeschlossener Plan.** Die Feature-Liste ist
-> ausdrücklich offen — Ergänzungen und Änderungen sind erwartet. Stabilere
-> Richtungsentscheidungen können sich ändern, aber nur als bewusste Kursänderung mit Begründung;
-> vorläufige Posten sind erwartungsgemäß in Bewegung.
+> **State of decisions from a clarification session, not a finished plan.** The feature list is
+> explicitly open — additions and changes are expected. More stable directional decisions can
+> change, but only as a deliberate change of course with a reason; provisional items are
+> expected to move.
 
 ---
 
@@ -518,105 +518,104 @@ panel-fit check 2026-06-04.
 
 #### Design session round 2 — 2026-06-04 (continued)
 
-> Die folgenden drei Blöcke haben **unterschiedlichen Status** und dürfen nicht vermischt werden.
-> A = vorgeschlagener Design-Input (nicht beschlossen), B = getroffene Beschlüsse, C = Architektur-Konflikt
-> (C10 resolved 2026-06-04). Der Statusunterschied ist der Kern dieser Einträge.
+> The following three blocks have **different status** and must not be mixed.
+> A = proposed design input (not decided), B = decisions taken, C = architecture conflict
+> (C10 resolved 2026-06-04). The difference in status is the core of these entries.
 
 ---
 
-#### A — Claude Design layout input _(gesichtet, NICHT als Beschluss übernommen)_
+#### A — Claude Design layout input _(reviewed, NOT adopted as a decision)_
 
-Diese Vorschläge kamen von Claude Design und wurden besprochen, aber **nicht als Entscheidungen
-angenommen**. Sie sind Input für die kommende visuelle Ausarbeitung, die dann geprüft wird.
+These proposals came from Claude Design and were discussed, but **not accepted as decisions**.
+They are input for the upcoming visual design work, which will then be reviewed.
 
-### A1 — Geometrie-Beobachtung und Gesten-Grammatik-Idee
+### A1 — Geometry observation and gesture-grammar idea
 
-Aus dem (bindenden) 4-Spalten-Grid folgt: Pads wachsen statt sich zu vermehren → das Grid wird
-ein hoher vertikaler Streifen. Abgeleitete Idee (Vorschlag, nicht beschlossen): diese Geometrie
-nahegelegt eine zweiachsige Gesten-Grammatik — vertikal = innerhalb einer Szene, horizontal =
-zwischen Szenen. Diese Idee berührt Beschluss B8 (Swipe-to-page) und Konflikt C10 (Scroll-Bedarf).
+It follows from the (binding) 4-column grid that pads grow rather than multiply → the grid
+becomes a tall vertical strip. Derived idea (proposal, not decided): this geometry suggests a
+two-axis gesture grammar — vertical = within a scene, horizontal = between scenes. This idea
+touches decision B8 (swipe-to-page) and conflict C10 (need to scroll).
 
-### A2 — Drei-Band-Struktur (Vorschlag)
+### A2 — Three-band structure (proposal)
 
-Grobgliederung des Screen-Layouts: oberes Band = Glanceable-Infos / selten berührt; mittleres Band
-= Pad-Grid (füllt den Hauptteil); unteres Band = Daumenzone (Szenen-Switcher, Master-Controls,
-Summon-Grips). Noch nicht layoutiert oder implementiert; Vorschlag für die visuelle Ausarbeitung.
+Rough division of the screen layout: top band = glanceable info / rarely touched; middle band
+= pad grid (fills the main part); bottom band = thumb zone (scene switcher, master controls,
+summon grips). Not yet laid out or implemented; a proposal for the visual design work.
 
-### A3 — Grip-Vokabular: Rail vs. Pull-Tab _(betrifft Summonable-Overlay-Vertrag)_
+### A3 — Grip vocabulary: rail vs. pull tab _(concerns the summonable overlay contract)_
 
-Vorschlag zur visuellen Schichten-Unterscheidung des Summonable-Overlay-Vertrags
+Proposal for visually distinguishing the layers of the summonable overlay contract
 (→ [Summonable overlay contract](#summonable-overlay-contract-_pending-not-yet-finalized--refined-after-panel-fit-check_)):
-**Rail** (Schiene, „schieb mich") = Resize-Basis-Schicht; **Pull-Tab** (Lasche, „ich öffne") =
-Summon-Schicht. Die Frage „hat es eine Lasche?" wäre dann das visuelle Unterscheidungs-Merkmal
-zwischen den Schichten. Konkrete Ausgestaltung ist Aufgabe der visuellen Ausarbeitung, nicht hier
-entschieden.
+**Rail** ("slide me") = resize base layer; **pull tab** ("I open") = summon layer. The question
+"does it have a tab?" would then be the visual distinguishing feature between the layers. The
+concrete design is the job of the visual design work, not decided here.
 
-### A4 — Drei-Gesten-Auflösung (Vorschlag)
+### A4 — Three-gesture resolution (proposal)
 
-Innerhalb eines Griffs: Bewegungsschwelle → Resize; unter Schwelle / Tap-Zeit → Summon-Toggle;
-Hold ohne Bewegung → Momentary. Jeder Zweig bekommt eigenes Feedback. Vorschlag — die
-Schwellenwerte und Feedback-Form sind nicht festgelegt.
+Within one grip: movement threshold → resize; below threshold / tap time → summon toggle;
+hold without movement → momentary. Each branch gets its own feedback. Proposal — the
+thresholds and the form of feedback are not fixed.
 
-### A5 — Adaptive Andock-Regel (Vorschlag)
+### A5 — Adaptive docking rule (proposal)
 
-Invariante: 4-Spalten-Grid, Zellen wachsen mit Viewport-Größe. Variable: Andock-Kante rotiert
-nach Formfaktor — schmal/Hochformat = Bottom-Sheets, breit/Querformat = Side-Rail. Idee für
-die Layout-Ausarbeitung, nicht beschlossen.
-**Framing-Korrektur (2026-06-04):** Die Regel ist screen-format-getrieben (Axis 1), nicht
-geräte- oder eingabetyp-getrieben — die ursprüngliche "Phone/Tablet"-Formulierung war ein
-Kurzname für "schmal/breit", nicht das eigentliche Kriterium.
+Invariant: 4-column grid, cells grow with the viewport size. Variable: the docking edge rotates
+with the form factor — narrow/portrait = bottom sheets, wide/landscape = side rail. An idea for
+the layout work, not decided.
+**Framing correction (2026-06-04):** the rule is driven by screen format (axis 1), not by
+device or input type — the original "phone/tablet" wording was shorthand for "narrow/wide",
+not the actual criterion.
 → [Two-axis adaptive model](#two-axis-adaptive-model).
 
-### A6 — Screen-Skizzen (Vorschlag)
+### A6 — Screen sketches (proposal)
 
-Vier Skizzen zu Modi-Zuständen: **Play** (Grid im Vordergrund, Szenen-Switcher unten,
-spring-loaded Quick-Pads); **Setup** (deutlicher Mode-Shift, Tap → Editor, Drag → Reorder);
-**Library** (beide Grip-Schichten sichtbar); **Editor** (nur Resize-Schicht). Noch keine
-konkreten Maße oder Pixel-Entscheidungen — Orientierungsbilder für die visuelle Ausarbeitung.
+Four sketches of mode states: **Play** (grid in front, scene switcher at the bottom,
+spring-loaded quick pads); **Setup** (clear mode shift, tap → editor, drag → reorder);
+**Library** (both grip layers visible); **Editor** (resize layer only). No concrete
+dimensions or pixel decisions yet — orientation images for the visual design work.
 
 ---
 
-#### B — Getroffene Beschlüsse
+#### B — Decisions taken
 
-Diese Punkte sind vom User entschieden, nicht nur vorgeschlagen.
+These points were decided by the user, not only proposed.
 
-### B7 — PadEditor-Schließen = Variante B (expliziter Close-Button)
+### B7 — Closing the PadEditor = variant B (explicit close button)
 
-**Beschluss:** Der PadEditorPanel wird durch einen expliziten Close-Button geschlossen. Resize
-ändert **strikt nur die Größe** — er kann den Editor nie schließen. Keine Summon-Schicht, keine
-Wegzieh-Geste. Vorgabe: Close-Button ist in allen Resize-Zuständen erreichbar (sichtbare
-Mindestgröße des Panels existiert).
-Dieser Beschluss ist konsistent mit dem Summonable-Overlay-Vertrag (PadEditor = Layer 1 only,
-selektions-getrieben; → [Summonable overlay contract](#summonable-overlay-contract-_pending-not-yet-finalized--refined-after-panel-fit-check_)).
+**Decision:** the PadEditorPanel is closed with an explicit close button. Resize changes
+**strictly only the size** — it can never close the editor. No summon layer, no swipe-away
+gesture. Requirement: the close button is reachable in every resize state (a visible minimum
+panel size exists).
+This decision is consistent with the summonable overlay contract (PadEditor = layer 1 only,
+selection-driven; → [Summonable overlay contract](#summonable-overlay-contract-_pending-not-yet-finalized--refined-after-panel-fit-check_)).
 
-### B8 — Szenenwechsel-Mechanismus: Tap-Switcher primär, Swipe optional und GAME-only
+### B8 — Scene switching mechanism: tap switcher primary, swipe optional and GAME only
 
 → moved to [product/README.md §3](product/README.md#3-app-modes-game-and-setup) (2026-09-28). Revised there: swiping between decks (formerly "scenes") is now **Parked**; decks switch via classic controls only.
 
-### B9 — Gap-Einordnung: drei Bestätigungen, zwei neue Kandidaten
+### B9 — Gap classification: three confirmations, two new candidates
 
-Claude Designs fünf geflagte Gaps wurden eingeordnet:
+Claude Design's five flagged gaps were classified:
 
-**Drei Bestätigungen bekannter Punkte (nicht neu):**
-- **Cross-scene active sounds** = das Slice-5-Audio-Kontroll-Problem. Claude Designs konkrete Form:
-  Top-Band mit Quick-Stop-Chips (≈ frühere Option B).
+**Three confirmations of known points (not new):**
+- **Cross-scene active sounds** = the Slice 5 audio control problem. Claude Design's concrete
+  form: a top band with quick-stop chips (≈ earlier option B).
   → [Audio continues during scene switch](#audio-continues-during-scene-switch-_confirmed-correct--slice-5_).
-- **Panic/Fade-all** = bestehender Quick-Win (`fadeOutAll()` fertig). Neuer Zusatz: Auslösung
-  gegen versehentliches Aktivieren sichern („guarded").
+- **Panic/fade-all** = existing quick win (`fadeOutAll()` done). New addition: guard the
+  trigger against accidental activation ("guarded").
   → [PANIC / fade-all button](#panic--fade-all-button).
-- **Unmissverständliches Mode-Signal** = v25-Mode-awareness + Stage-Lock-Kandidat.
+- **Unambiguous mode signal** = v25 mode awareness + Stage Lock candidate.
   → [Stage Lock](#stage-lock).
 
-**Zwei wirklich neue Kandidaten (in den Kandidaten-Pool aufgenommen):**
-- **Audition vs. live output:** Vorhören eines Sounds darf nicht in den Raum hörbar sein — braucht
-  getrenntes Audio-Routing plus visuelle Unterscheidung (Kopfhörer-Icon o.ä.). Neu; noch kein
-  Design, keine Implementierung.
-- **Überlauf-/Scroll-Frage:** Unbegrenzte Pad-Zahl pro Szene vs. nicht scrollendes Grid. Dieser
-  Punkt hat sich zu einem Architektur-Konflikt ausgeweitet → vollständig in C10 dokumentiert.
+**Two genuinely new candidates (added to the candidate pool):**
+- **Audition vs. live output:** previewing a sound must not be audible in the room — needs
+  separate audio routing plus a visual distinction (headphone icon or similar). New; no design,
+  no implementation yet.
+- **Overflow / scroll question:** unlimited pads per scene vs. a non-scrolling grid. This point
+  grew into an architecture conflict → fully documented in C10.
 
 ---
 
-#### C — Architektur-Konflikt _(C10: concept resolved 2026-06-04; implementation pending Slice 8)_
+#### C — Architecture conflict _(C10: concept resolved 2026-06-04; implementation pending Slice 8)_
 
 ### C10 — Variable grid, gap-preserving reflow, gesture-based scroll protection, settings architecture
 
@@ -667,7 +666,7 @@ Both are exceptions for users who want it differently — consistent with the gu
 Before building: check interaction expectations for existing saved boards. The new gesture model (point 7) changes the current SETUP reorder, which starts immediately on `pointerdown` (new: long hold instead of immediate drag). A migration/compatibility question to keep in mind when building.
 
 **→ Slice 8:** [Mobile layout adaptation](#mobile-layout-adaptation) · [Grid configurability](#grid-configurability-gridconfig-popover) · [Cell-size setting](#cell-size-setting).
-**Cross-references:** Settings architecture (point 8) → full model in [2e — Multi-level settings hierarchy](#2e--multi-level-settings-hierarchy); display setting scope per surface → [2c — Modular display controls](#2c--modular-display-controls); quick-access/quick-menu display consistency → [Quick-Access content deferred](#quick-access-content-deferred-_pending-real-scene-experience_) and [B9](#b9--gap-einordnung-drei-bestätigungen-zwei-neue-kandidaten).
+**Cross-references:** Settings architecture (point 8) → full model in [2e — Multi-level settings hierarchy](#2e--multi-level-settings-hierarchy); display setting scope per surface → [2c — Modular display controls](#2c--modular-display-controls); quick-access/quick-menu display consistency → [Quick-Access content deferred](#quick-access-content-deferred-_pending-real-scene-experience_) and [B9](#b9--gap-classification-three-confirmations-two-new-candidates).
 
 ---
 
@@ -922,7 +921,7 @@ A distinct buzz on pickup-engage (fill-ring completes) and on fire; expresses "m
 
 **Status: DROPPED.** The user knows their own sounds; auditioning solves a non-problem for this audience. Recorded as a conceptual idea only; not a deferred feature.
 Two notes if ever revisited: (i) it would collide with the decided SETUP long-press (= pick up pad) and would need a different gesture or location; (ii) it overlaps the Pad Editor preview scope and the audition-vs-live-output routing question.
-**→ Relation to existing:** [B9 — audition-vs-live-output candidate](#b9--gap-einordnung-drei-bestätigungen-zwei-neue-kandidaten) (B9-d is a separate concern about audio routing — dropping hold-to-audition does not close B9-d) · [Long-Press-Peek](#long-press-peek) (the only remaining long-press candidate in SETUP; its coexistence question is already documented there).
+**→ Relation to existing:** [B9 — audition-vs-live-output candidate](#b9--gap-classification-three-confirmations-two-new-candidates) (B9-d is a separate concern about audio routing — dropping hold-to-audition does not close B9-d) · [Long-Press-Peek](#long-press-peek) (the only remaining long-press candidate in SETUP; its coexistence question is already documented there).
 
 ### Named display presets _(parked candidate — low priority)_
 
@@ -947,7 +946,7 @@ Fill-ring on long-hold is kept. Any movement past the scroll threshold cancels t
 
 Claude Design will show THREE treatments side-by-side: **A** (protrude+color), **B** (pictographic flush), **C** (raised vs. recessed) — each on phone bottom-seam AND tablet vertical-seam, in active AND dimmed states (dimmed is the real test). Winner propagates everywhere.
 **Status:** No decision yet — options to be reviewed.
-**→ Cross-reference:** [Summonable overlay contract](#summonable-overlay-contract-_pending-not-yet-finalized--refined-after-panel-fit-check_) (the grip is the visual face of the contract's seam handle) · [A3 — Grip-Vokabular: Rail vs. Pull-Tab](#a3--grip-vokabular-rail-vs-pull-tab-_betrifft-summonable-overlay-vertrag_).
+**→ Cross-reference:** [Summonable overlay contract](#summonable-overlay-contract-_pending-not-yet-finalized--refined-after-panel-fit-check_) (the grip is the visual face of the contract's seam handle) · [A3 — Grip-Vokabular: Rail vs. Pull-Tab](#a3--grip-vocabulary-rail-vs-pull-tab-_concerns-the-summonable-overlay-contract_).
 
 ---
 
@@ -973,7 +972,7 @@ actual system documentation.
 **Source:** Referenced in multiple sessions as "not yet written."
 
 ### docs/design/design-system.md §5 — inset box-shadow exception undocumented
-`§5 Verbotene Muster` says `box-shadow auf clip-path-Elementen (stattdessen filter: drop-shadow())`.
+`§5 Token usage rules` (forbidden patterns) says `box-shadow` on clip-path elements (use `filter: drop-shadow()` instead).
 This covers outer box-shadow only. Inset `box-shadow` renders inside the padding box, within the
 clip region, and therefore remains visible on clip-path elements — it is explicitly allowed. See
 v15 treatments D/F and the hot-pad inner glow as canonical examples. The nuance was recorded in
@@ -1234,7 +1233,7 @@ Re-enable once the Slice 8 mobile adaptation is in place.
 Tests 9, 14, 20, 21 in `pad-dnd.spec.ts` are `test.skip` (Scene reorder, Library drag Path B,
 Pad SWAP, Pad INSERT). Need a stable Pointer Events drag sequence in Playwright.
 **When:** When a reliable `dragByPointer()` helper is established in Playwright (Phase 3).
-**Source:** docs/development/testing.md §Bekannte Fallstricke #5.
+**Source:** docs/development/testing.md §Known pitfalls #5.
 
 ### Board persistence optimisation
 `boardPut()` rewrites the full ~50 KB Board document on every pad/scene edit. Acceptable at
@@ -1249,7 +1248,7 @@ Pre-commit hook currently runs in ~16 s (sync:docs + build + lint-staged + 102 u
 smoke E2E is the first candidate to move to CI-only (it's the most expensive gate, and CI
 runs it anyway; removing it from the pre-commit saves ~6 s locally with no CI coverage gap).
 **When:** When the hook exceeds ~25 s in practice.
-**Source:** docs/development/testing.md §CI-Integration; empirical measure.
+**Source:** docs/development/testing.md §CI integration; empirical measure.
 
 ### Cheatsheet state-vocab quick-ref: consider generating from §3 (drift risk)
 `docs/design/design-system-cheatsheet.md` §state vocab is a hand-maintained 13-entry subset of the
@@ -1527,7 +1526,7 @@ DoD for each file session: `audit:inline-styles` → 0 violations for that file.
 | **3e** ✅ Done (96ae78d) | `StartScreen.tsx` | 19 | 0 | 0 | 0 violations, 0 d-w-s. 18 new classes (sb-overlay family, sb-changelog family, sb-flame-icon, sb-start-* family, sb-btn-unlock, sb-version-link). §6: 112→130. Resolution: 1 Path A / 1 A+B / 1 0+B / 1 Primitiv+B / 15 new-class = 19. Reuse rate 10.5% — StartScreen is a centered splash with no tab bar and no empty state; all 3c bets (sb-screen, sb-screen-empty, sb-tab-bar) FAILED (inapplicable — not promoted, not cleaned up — each is still in active use on its own screen). Token normalization: 10 off-token values aligned (all ≤4px drift). New Sorte-2 bets for 3e (Verfallsbedingung: Slice 8): sb-overlay, sb-overlay-header, sb-overlay-body flagged for promotion if settings/future overlays appear. Changelog-family classes (sb-changelog-*) to demote if changelog component is removed. Opportunistic 3b-bet test: sb-panel-title evaluated against ChangelogOverlay's "CHANGELOG" heading — rejected (sb-panel-title is font-mono/fs-xs/flex:1; overlay title needs font-ui/fs-lg). Does not change sb-panel-title's bet status: its declared target is 3g (LibraryPanel), not 3e; this was a side test only — status remains PENDING. |
 | **3f** ✅ Done (b46fb44) | `BoardScreen.tsx` + `BoardListScreen.tsx` | 31 (BS: 17, BLS: 14) | 1 (BLS:161 d-w-s → sb-board-row) | 0 | 0 violations, 0 d-w-s. §6: 130→145 (+15 new sb-* classes). Audit total: 88→57. Resolution breakdown: DELETE 1 / Path A §6 7 / intra-session 1 / cross-file intra-session 3 / CSS extension 1 / new modifier 3 / new class 15 = 31. Reuse rate 35% (11/31). 3a residual (BLS:238 flexShrink:0) resolved via flat sb-row-actions class applied at element level — flat model maintained throughout. sb-screen: **WON** (3 uses: BS×2 + BLS×1). sb-tab-bar: still PARTIALLY-FAILED (3g pending). sb-section-header-row: not found in 3f files, moves to 3g. New 3f bets: sb-row-rename-input, sb-row-actions, sb-btn-icon-sm (all pending 3g — AudioRow scope). Token normalizations: 13px→--fs-xs (1px drift), fontSize:22px=--fs-xl exact, 11px sb-hint-text→10px (1px drift), padding 10px/14px→8px/12px (2px drift each). Off-token literals: 6px×3 (sb-place-banner, sb-setup-toolbar, sb-btn-icon-sm), 56px×1 (sb-board-row minHeight), 60px×1 (is-loose padding) — see §5 BACKLOG note below. Architecture: flat model invariant formally stated; sb-menu-row pre-flat legacy noted and left for dedicated consolidation pass. |
 | **3g** ✅ Done (12fbbc0) | `SceneRail.tsx` + `LibraryPanel.tsx` + `AudioRow.tsx` | 9 + 11 + 8 = 28 | 0+0+2 = 2 | 0 | 0 violations, 0 d-w-s. §6: 145→159 (+14 new classes). Audit total: 57→29. Resolution: 1 DELETE / 14 Path-A §6 / 2 intra-session / 13 new class = 30 resolutions for 28 violations (+2 from d-w-s dual split). Reuse rate 57% overall (73% LibraryPanel — thesis confirmed for screen→panel siblings; 50% AudioRow). 0 new literal 11px values — SR-2 and AR-9 normalized to var(--fs-xs). 4 existing class updates: sb-row (min-width:0), sb-scroll-fill (overscroll-behavior:contain), sb-count-text (flex-shrink:0), sb-hint-text (truncation triplet). Bet outcomes: #3 WON (sb-panel-title on Library span), #5 WON (sb-search-field LP-3), #6 WON (sb-btn-clear LP-5), #12 WON (sb-scroll-fill LP-7); #4 PARTIAL (sb-search-bar → sb-lib-panel-search-bar sibling); #7 FAILED (sb-item-list wrong structure), #10 FINAL-FAILED→screen-local (sb-tab-bar, LibraryPanel has no tab bar), #11 FAILED (sb-filter-rail), #21 FAILED (sb-row-rename-input: wrong font scale for filenames), #22 FAILED (sb-row-actions: AudioRow uses grid, not flex+actions), #23 FAILED (sb-btn-icon-sm: 36px fits neither 28px SceneRail nor 44px AudioRow). |
-| **3h** ✅ Done (994d2eb) | `PadTypeConfirmDialog.tsx` + `TopBar.tsx` + `BoardTopBar.tsx` + `PadGridCell.tsx` + `UndoToast.tsx` + `StatusBar.tsx` + `Waveform.tsx` + `PixelIcon.tsx` | 13+5+4+4+2+1+0+0 = 29 | 1+1+1+0+0+0+2+0 = 5 | 1(PTD ternary)+1(Pix spread) = 2 | 0 violations, 0 d-w-s. §6: 159→186 (+27 new sb-* classes). Audit total: 29→0 (project-wide Total=0 confirmed — Session 3 migration COMPLETE). Resolution breakdown: 1 DELETE / 4 pre-flat-family extensions (.sb-pad family: is-deep height+touch-action, pad-title fs unify, new pad-type-label + pad-drag-handle descendants) / 5 d-w-s splits (TopBar:85 cursor, BoardTopBar:59 maxWidth, PadTypeConfirmDialog:117 verdict-pill bg, Waveform:23 height+opacity, Waveform:37 height+background) / 19 Path B new classes. Near-miss merge: sb-topbar-breadcrumb(V2) + sb-topbar-scene-name(V3) → sb-topbar-secondary (cross-topbar 2-use, same function, 1px size normalization, color intrinsic). Anti-utility ruling: sb-text-dim/sb-text-mute rejected as standalone utilities; colors absorbed into semantic element classes (sb-type-change-from/-arrow, sb-undo-message, sb-topbar-secondary). PixelIcon: sb-pixel-icon hardcoded as base class in component; DOM-verified all 4 SVGs hasBase=true. Visual: TopBar + BoardTopBar (sb-topbar-secondary font-mono/12px/text-mute confirmed), StatusBar, PixelIcon verified headlessly. PadGridCell/PadTypeConfirmDialog/UndoToast/Waveform: CSS audit (0 Path-D) + build confirm migration; NOT laufzeit-verifiziert headlessly (ADD PAD disabled without audio fixture — pre-existing constraint). Beim nächsten Einsatz mit geladenen Audio-Dateien bestätigen: PadTypeConfirmDialog (FROM/ARROW/TO-Farben, Verdict-Pill-Hintergrund, Field-Label-Farbe), Waveform-Balken, PadGridCell (Type-Badge/Drag-Handle), UndoToast (message dim + UNDO + Progressbar). Bet settlement: all 8 open bets closed (see §5 Sorte-2 Bet Index below); final scorecard: WON 7 / LOST-justified 8 / FINALLY-LOST-consolidation 7 / SPECULATIVE-Slice8 3. |
+| **3h** ✅ Done (994d2eb) | `PadTypeConfirmDialog.tsx` + `TopBar.tsx` + `BoardTopBar.tsx` + `PadGridCell.tsx` + `UndoToast.tsx` + `StatusBar.tsx` + `Waveform.tsx` + `PixelIcon.tsx` | 13+5+4+4+2+1+0+0 = 29 | 1+1+1+0+0+0+2+0 = 5 | 1(PTD ternary)+1(Pix spread) = 2 | 0 violations, 0 d-w-s. §6: 159→186 (+27 new sb-* classes). Audit total: 29→0 (project-wide Total=0 confirmed — Session 3 migration COMPLETE). Resolution breakdown: 1 DELETE / 4 pre-flat-family extensions (.sb-pad family: is-deep height+touch-action, pad-title fs unify, new pad-type-label + pad-drag-handle descendants) / 5 d-w-s splits (TopBar:85 cursor, BoardTopBar:59 maxWidth, PadTypeConfirmDialog:117 verdict-pill bg, Waveform:23 height+opacity, Waveform:37 height+background) / 19 Path B new classes. Near-miss merge: sb-topbar-breadcrumb(V2) + sb-topbar-scene-name(V3) → sb-topbar-secondary (cross-topbar 2-use, same function, 1px size normalization, color intrinsic). Anti-utility ruling: sb-text-dim/sb-text-mute rejected as standalone utilities; colors absorbed into semantic element classes (sb-type-change-from/-arrow, sb-undo-message, sb-topbar-secondary). PixelIcon: sb-pixel-icon hardcoded as base class in component; DOM-verified all 4 SVGs hasBase=true. Visual: TopBar + BoardTopBar (sb-topbar-secondary font-mono/12px/text-mute confirmed), StatusBar, PixelIcon verified headlessly. PadGridCell/PadTypeConfirmDialog/UndoToast/Waveform: CSS audit (0 Path-D) + build confirm migration; NOT laufzeit-verifiziert headlessly (ADD PAD disabled without audio fixture — pre-existing constraint). Confirm at the next use with loaded audio files: PadTypeConfirmDialog (FROM/ARROW/TO colours, verdict pill background, field label colour), waveform bars, PadGridCell (type badge / drag handle), UndoToast (message dim + UNDO + progress bar). Bet settlement: all 8 open bets closed (see §5 Sorte-2 Bet Index below); final scorecard: WON 7 / LOST-justified 8 / FINALLY-LOST-consolidation 7 / SPECULATIVE-Slice8 3. |
 
 **Arithmetic verification:** 12+23+20+15+19+31+28+29 = 177 ✓ | d-w-s: 4+3+6+0+0+2+5 = 20 ✓ | unclassified: 2 ✓
 _(3a resolves 12 fully + 1 residual deferred to 3f; 3f scope is 31 = 17+14. Total closes to 177.)_
@@ -1852,8 +1851,8 @@ classes on the same element. No descendant selectors inside any class.
 **Exception resolved:** `sb-menu-row` pre-flat legacy descendant rules (`.sb-menu-row .sb-icon`,
 `.sb-menu-row .sb-row-title`, `.sb-menu-row .sb-row-sub`) flattened in consolidation pass.
 The three child classes are now standalone flat rules. `is-active` + `is-active::after` removed
-(dead code — kein TSX hat je `is-active` gesetzt; `currentBoardId` dient nur der Navigation,
-nicht der Aktiv-Hervorhebung in der BoardRow). §6 = 187. **No pre-flat families remain.**
+(dead code — no TSX ever set `is-active`; `currentBoardId` only serves navigation, not an
+active highlight in the BoardRow). §6 = 187. **No pre-flat families remain.**
 
 **Note:** No active-board highlight exists in BoardListScreen (the row that was last opened has
 no visual indicator). If this feature is wanted in a future slice, `is-active` + `currentBoardId`
@@ -1871,8 +1870,8 @@ Fixed widths: 160+70+90+44 = 364px. Gaps: 4 × var(--space-3) = 4 × 12px = 48px
 Minimum before the 1fr column: **412px** — 22px wider than the 390px CSS viewport.
 
 The LibraryScreen content column at 390px (after the 220px filter rail) is ~170px.
-AudioRow rows would overflow this column on every use — **tritt im Normalbetrieb auf,
-sobald die Bibliothek Dateien enthält** (leere Bibliothek verdeckt es in Tests).
+AudioRow rows would overflow this column on every use — **it happens in normal use as soon
+as the library contains files** (an empty library hides it in tests).
 
 **Status:** PRE-EXISTING — this grid was in the original inline style before Session 3g.
 Session 3g faithfully migrated the values to `sb-audio-row` without changing the layout
@@ -2021,7 +2020,7 @@ use Pointer Events. Canonical patterns: `src/lib/padDnd.ts` (pad-to-pad) and
 Playwright's headless WebKit build cannot decode audio (`decodeAudioData()` fails). As a
 workaround, audio-dependent mobile tests run on Chromium with the iPhone 13 Pro device
 profile. Audio-free mobile specs continue on WebKit.
-**Source:** docs/development/testing.md §Bekannte Fallstricke #7.
+**Source:** docs/development/testing.md §Known pitfalls #7.
 
 ### `boardPut()` full-document rewrite
 Any pad or scene edit rewrites the entire ~50 KB Board document. Acceptable at current board
@@ -2041,4 +2040,4 @@ that touches audio code (`src/audio/`), the IDB layer (`src/db/`), or file-handl
 - Tab-switch / backgrounding lifecycle
 - Backup import/export via iOS Files app
 
-See `docs/development/testing.md §Mobile Testing` for the full rationale.
+See `docs/development/testing.md §Mobile testing` for the full rationale.

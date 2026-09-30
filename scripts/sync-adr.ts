@@ -90,8 +90,8 @@ function generateTable(adrs: AdrMeta[]): string {
     if (group.length === 0) continue;
     lines.push(`### ${cat}`);
     lines.push('');
-    lines.push('| # | Titel | Status | Slice | Datum |');
-    lines.push('|---|-------|--------|-------|-------|');
+    lines.push('| # | Title | Status | Slice | Date |');
+    lines.push('|---|-------|--------|-------|------|');
     for (const a of group.sort((x, y) => x.num.localeCompare(y.num))) {
       const link = `[ADR-${a.num}](${a.file})`;
       lines.push(`| ${link} | ${a.title} | ${a.status} | ${a.slice} | ${a.date} |`);

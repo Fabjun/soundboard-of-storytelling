@@ -69,5 +69,5 @@ but still deploys an untested build. Rejected.
 - **Dateien:** `.github/workflows/tests.yml`, `.github/workflows/deploy-pages.yml`,
   `.github/workflows/weekly.yml`
 - **ADRs:** ADR-0040 (CI-gated deployment, refined here)
-- **Quelldokumente:** `docs/development/testing.md §CI-Integration`, `docs/backlog.md` T8d
+- **Quelldokumente:** `docs/development/testing.md §CI integration`, `docs/backlog.md` T8d
 - **Commits:** see git log "…(T8d)"

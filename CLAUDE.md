@@ -24,7 +24,7 @@
   tool/hook/CI messages (user decision 2026-09-29; German legacy text is translated in the
   structure clean-up, stage 4)
 - **Chat with the user**: German only
-- **Lizenz und Status**: V3 ist ein privates Tool unter "All Rights Reserved"-Lizenz (siehe `LICENSE`). Langfristig potentielles kommerzielles Produkt. Keine Open-Source-Beiträge geplant. Beim Ergänzen von Code sicherstellen, dass keine Open-Source-Lizenzen verletzt werden. Kontakt: soundboard_of_storytelling@pm.me
+- **License and status**: V3 is a private tool under an "All Rights Reserved" license (see `LICENSE`). A potential commercial product in the long term. No open-source contributions planned. When adding code, make sure no open-source licenses are violated. Contact: soundboard_of_storytelling@pm.me
 
 ---
 
@@ -407,31 +407,28 @@ any non-doc file flagged ⚠ for approval. Routine additionally: `v3/src/lib/cha
 11. **Lint + Format**: ESLint and Prettier are configured. Before committing
     any TypeScript/TSX: `npm run lint` must exit 0. Format with
     `npm run format` if needed. CI enforces both.
-12. **Architecture Decision Records**: Bei jeder substantiellen Architektur-
-    Entscheidung (Datenmodell, Persistenz, Cross-Cutting-Pattern, Plattform-
-    Annahmen, neue Infrastruktur) ein ADR in `docs/architecture/` anlegen.
-    Format laut `docs/architecture/_template.md`. Index in
-    `docs/architecture/README.md` ergänzen. Verstreute Architektur-Notizen in
-    `docs/design/design-notes.md` sind keine ADRs — `docs/design/design-notes.md` dokumentiert
-    Design-Detail-Entscheidungen; `docs/architecture/` dokumentiert
-    Architektur-Entscheidungen.
-    **Neues ADR-Header-Feld:** `**Category:**` (nach `**Slice:**`) — eines der
-    8 kanonischen Werte; Generator-Fehler wenn fehlend → "Unkategorisiert".
-13. **Auto-generierte Inventuren**: Sechs Stellen werden per Generator befüllt —
-    nie manuell editieren:
+12. **Architecture Decision Records**: for every substantial architecture decision (data
+    model, persistence, cross-cutting pattern, platform assumptions, new infrastructure)
+    create an ADR in `docs/architecture/`, following `docs/architecture/_template.md`; the
+    index in `docs/architecture/README.md` is generated. Scattered architecture notes in
+    `docs/design/design-notes.md` are not ADRs — `docs/design/design-notes.md` records design
+    detail decisions; `docs/architecture/` records architecture decisions.
+    **ADR header** (fixed order): `**Status:**`, `**Date:**`, `**Slice:**`, `**Refines:**`
+    (`—` if none), `**Category:**` — one of the 9 canonical values listed in the template; a
+    missing category shows up as "Uncategorized" in the generated index.
+13. **Generated inventories**: six places are filled by generators — never edit them by hand:
     - `docs/architecture/README.md §Index` — via `npm run sync:adr`
-    - `docs/design/design-system.md §6` (sb-*-Klassen) — via `npm run sync:classes`
+    - `docs/design/design-system.md §6` (sb-* classes) — via `npm run sync:classes`
     - `docs/design/design-system.md §A` (Tokens) — via `npm run sync:tokens`
-    - `docs/development/testing.md §Test-Inventar` (Specs je Projekt, Unit-Tests) — via `npm run sync:tests`
-    - `CHANGELOG.md` (ganze Datei, aus `v3/src/lib/changelog.ts`) — via `npm run sync:changelog`
-    - `docs/development/exceptions.md` (Ausnahme-Register, ganze Datei) — via `npm run sync:exceptions`
-    Der Pre-Commit-Hook führt `sync:docs` automatisch aus und staged die
-    Ergebnisse. Zum manuellen Aktualisieren: `cd v3 && npm run sync:docs`.
-    Neue sb-*-Klassen dokumentieren mit `/* @inventory: Beschreibung */`
-    am CSS-Selektor. Neue Tokens bekommen ihre Beschreibung aus dem
-    Inline-Kommentar nach dem Semikolon in `tokens.css`.
+    - `docs/development/testing.md §Test inventory` (specs per project, unit tests) — via `npm run sync:tests`
+    - `CHANGELOG.md` (whole file, from `v3/src/lib/changelog.ts`) — via `npm run sync:changelog`
+    - `docs/development/exceptions.md` (exception register, whole file) — via `npm run sync:exceptions`
+    The pre-commit hook runs `sync:docs` and stages the results. To refresh manually:
+    `cd v3 && npm run sync:docs`. Document new sb-* classes with
+    `/* @inventory: description */` at the CSS selector. New tokens take their description
+    from the inline comment after the semicolon in `tokens.css`.
 14. **Open work items**: All deferred items and known limitations are tracked in
-    `docs/backlog.md` (repo root). Slice plans should consult and update it. At each
+    `docs/backlog.md`. Slice plans should consult and update it. At each
     slice completion, before the final commit: mark completed items `✅ Done (commit SHA)`
     and add any new deferred items surfaced during the slice.
 15. **Test infrastructure first (user decision 2026-09-29):** a safe, trustworthy test
@@ -445,37 +442,37 @@ any non-doc file flagged ⚠ for approval. Routine additionally: `v3/src/lib/cha
 Applies to slices, refactors, audit passes, bugfixes — every commit
 without exception:
 
-> **Automatisch erzwungen** (Phase 2 + Doku-Sync): Husky-Pre-Commit-Hook führt
-> sechs Gates in Folge aus und blockt bei Fehler:
-> 1. `npm run sync:docs` + `git add` (~1s) — Auto-generierte Docs; Ergebnis wird automatisch gestaged
+> **Enforced automatically:** the Husky pre-commit hook runs six gates in sequence and
+> blocks on failure:
+> 1. `npm run sync:docs` + `git add` (~1s) — generated docs; the result is staged automatically
 > 2. `npm run build` (`tsc -b` + vite, ~6s) — type-checks **every** TypeScript file: app, unit + E2E tests, tool configs, `scripts/` (ADR-0055)
-> 3. `npx lint-staged` — Prettier + ESLint nur auf gestageten Dateien; auto-fix + re-stage
+> 3. `npx lint-staged` — Prettier + ESLint on staged files only; auto-fix + re-stage
 > 4. `npm run test` (vitest, ~1s)
 > 5. `npm run test:e2e:smoke` (Chromium + WebKit, ~6s)
-> 6. `npm run link:check` (markdown-link-check, ~1s) — tote interne Links
+> 6. `npm run link:check` (markdown-link-check, ~1s) — dead internal links
 >
-> CI führt zusätzlich `npm audit --audit-level=high` (blockierend), `test:coverage` (Coverage-Untergrenze), `format:check`, `lint`, `sync:docs` (+ `git diff --exit-code`) und `link:check` aus.
+> CI additionally runs `npm audit --audit-level=high` (blocking), `test:coverage` (coverage floor), `format:check`, `lint`, `sync:docs` (+ `git diff --exit-code`) and `link:check`.
 >
-> Das manuelle Vorgehen unten bleibt als Baseline dokumentiert.
-> Nach `git clone`: `cd v3 && npm install` aktiviert den Hook automatisch.
+> The manual procedure below stays documented as the baseline.
+> After `git clone`: `cd v3 && npm install` activates the hook automatically.
 
 ### Pre-push gate (mandatory before every push)
 
-> **Automatisch erzwungen**: Husky-Pre-Push-Hook läuft bei `git push` und blockt bei Fehler:
-> 1. **Version-Bump-Check** (~0s) — `APP_VERSION` in `v3/src/lib/changelog.ts` muss sich gegenüber `origin/main` geändert haben (one push = one version bump); übersprungen wenn `origin/main` nicht erreichbar (Erstpush)
-> 2. `npm audit --audit-level=high` (~2s) — Sicherheitslücken high/critical blockieren
+> **Enforced automatically:** the Husky pre-push hook runs on `git push` and blocks on failure:
+> 1. **Version-Bump-Check** (~0s) — `APP_VERSION` in `v3/src/lib/changelog.ts` must differ from `origin/main` (one push = one version bump); skipped if `origin/main` is unreachable (first push)
+> 2. `npm audit --audit-level=high` (~2s) — high/critical vulnerabilities block
 > 3. `npm run size` (~2s) — Bundle-Size-Limit (200 kB JS / 50 kB CSS gzip)
-> 4. `npm run test:e2e:all` (~3 min) — alle sechs Dev-Server-Projekte: smoke + smoke-webkit + full + full-webkit + mobile + mobile-chromium
-> 5. `npm run test:e2e:prod` — Build, dann smoke + full + pwa gegen den fertigen Build (`vite preview`, Service Worker)
-> 6. **Nur macOS:** `npm run test:e2e:visual` (~15s) — visuelle Regression
+> 4. `npm run test:e2e:all` (~3 min) — all six dev-server projects: smoke + smoke-webkit + full + full-webkit + mobile + mobile-chromium
+> 5. `npm run test:e2e:prod` — build, then smoke + full + pwa against the finished build (`vite preview`, service worker)
+> 6. **macOS only:** `npm run test:e2e:visual` (~15s) — visual regression
 >
-> Schlägt ein Schritt fehl: **erst Fehlerausgabe/Report lesen, dann neu starten** (ein neuer Lauf überschreibt den Report).
+> If a step fails: **read the error output / report first, then re-run** (a new run overwrites the report).
 >
-> Bypass (bewusst): `git push --no-verify` — only for probe pushes without app code, or when the hook already ran green for exactly this state; state the reason in chat / commit message (ADR-0053).
-> Der pre-push-Hook schließt die Lücke zwischen lokalem pre-commit (nur smoke) und CI (smoke + full + mobile).
-> Nach `git clone`: `cd v3 && npm install` aktiviert den Hook automatisch.
+> Deliberate bypass: `git push --no-verify` — only for probe pushes without app code, or when the hook already ran green for exactly this state; state the reason in chat / commit message (ADR-0053).
+> The pre-push hook closes the gap between the local pre-commit (smoke only) and CI (all suites).
+> After `git clone`: `cd v3 && npm install` activates the hook automatically.
 
-0. **Bump `APP_VERSION` + CHANGELOG-Eintrag** in `v3/src/lib/changelog.ts` — vor jedem Push erforderlich, im selben Commit wie die Änderung. Wird vom Pre-push-Hook erzwungen.
+0. **Bump `APP_VERSION` + changelog entry** in `v3/src/lib/changelog.ts` — required before every push, in the same commit as the change. Enforced by the pre-push hook.
 1. `cd v3 && npm run build` — must exit 0 with zero TypeScript errors
 2. `git add` the relevant files, then `git commit` — lint-staged auto-formats + lints staged files
 3. `cd v3 && npm run test` — all unit tests must pass (exit 0)

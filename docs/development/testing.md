@@ -1,52 +1,52 @@
 # Testing — V3 (Soundboard of Storytelling)
 
-## Überblick
+## Overview
 
-Vier Schichten, eingeführt in Phase 1 & 2 (Phase 2 — Testing Infrastructure):
+Four layers, introduced in phases 1 and 2 (phase 2 — testing infrastructure):
 
-| Schicht | Werkzeug | Zweck | Laufzeit |
+| Layer | Tool | Purpose | Runtime |
 |---------|---------|-------|---------|
-| Unit | Vitest | Logik-Korrektheit (pure functions, signals, IDB-API) | ~1s |
-| E2E Smoke | Playwright | Kritische Pfade in Chromium + WebKit | ~6s |
-| E2E Full | Playwright | Vollständige Verifikation (Slices 3–4): Board/Deck/Pad CRUD, Audio-Engine | ~30s |
-| Mobile E2E | Playwright (WebKit + Chromium) | Touch-wiring via tap() — 3 aktive WebKit-Specs + 2 Chromium-Specs; 2 WebKit-Specs deferred/fixme'd (touch-targets, overflow) bis Slice 8 | ~30s |
-| Visual Regression | Playwright Screenshots | Pixel-Vergleich (lokal-only) | ~30s |
+| Unit | Vitest | Logic correctness (pure functions, signals, IDB API) | ~1s |
+| E2E smoke | Playwright | Critical paths in Chromium + WebKit | ~6s |
+| E2E full | Playwright | Full verification (slices 3–4): board/deck/pad CRUD, audio engine | ~30s |
+| Mobile E2E | Playwright (WebKit + Chromium) | Touch wiring via tap() — 3 active WebKit specs + 2 Chromium specs; 2 WebKit specs deferred/fixme'd (touch-targets, overflow) until Slice 13 | ~30s |
+| Visual regression | Playwright screenshots | Pixel comparison (local only) | ~30s |
 
 ---
 
-## Werkzeuge
+## Tools
 
-- **Vitest** — Unit-Tests. Schnell (ms), kein Browser, keine Netzwerk-Abhängigkeit. Konfiguration: [v3/vitest.config.ts](../../v3/vitest.config.ts)
-- **Playwright** — E2E-Tests in Chromium (+ WebKit für Smoke/Mobile). Startet einen **eigenen** Vite-Dev-Server auf dem **Test-Port 5199** (`--strictPort`, nie einen vorhandenen Server wiederverwenden — belegter Port = lauter Fehler). Der normale Dev-Server bleibt auf 5173. Konfiguration: [v3/playwright.config.ts](../../v3/playwright.config.ts), Projekt-Zuordnung: [v3/tests/e2e/projects.ts](../../v3/tests/e2e/projects.ts)
-- **Node-Version** — festgelegt in [`.nvmrc`](../../.nvmrc) (24); CI liest sie von dort (`node-version-file`).
-- **fake-indexeddb** — In-Memory-IndexedDB für Unit-Tests. Ersetzt jsdom's fehlende IDB-Implementierung. Setup: [v3/tests/unit/setup.ts](../../v3/tests/unit/setup.ts)
-- **@vitest/coverage-v8** — Coverage-Report via V8 (`npm run test:coverage`)
-- **ESLint** — Statische Analyse. Flat-Config in [v3/eslint.config.js](../../v3/eslint.config.js). TypeScript + react-hooks Regeln.
-- **Prettier** — Code-Formatierung. Konfiguration: [v3/.prettierrc.json](../../v3/.prettierrc.json)
-- **size-limit** — Bundle-Größen-Monitoring. Limits: JS 200 KB, CSS 50 KB (gzip). Konfiguration: [v3/.size-limit.json](../../v3/.size-limit.json)
+- **Vitest** — unit tests. Fast (ms), no browser, no network dependency. Configuration: [v3/vitest.config.ts](../../v3/vitest.config.ts)
+- **Playwright** — E2E tests in Chromium (+ WebKit for smoke/mobile). Starts its **own** Vite dev server on **test port 5199** (`--strictPort`, never reuses an existing server — a busy port is a loud failure). The normal dev server stays on 5173. Configuration: [v3/playwright.config.ts](../../v3/playwright.config.ts), project assignment: [v3/tests/e2e/projects.ts](../../v3/tests/e2e/projects.ts)
+- **Node version** — pinned in [`.nvmrc`](../../.nvmrc) (24); CI reads it from there (`node-version-file`).
+- **fake-indexeddb** — in-memory IndexedDB for unit tests. Replaces jsdom's missing IDB implementation. Setup: [v3/tests/unit/setup.ts](../../v3/tests/unit/setup.ts)
+- **@vitest/coverage-v8** — coverage report via V8 (`npm run test:coverage`)
+- **ESLint** — static analysis. Flat config in [v3/eslint.config.js](../../v3/eslint.config.js). TypeScript + react-hooks rules.
+- **Prettier** — code formatting. Configuration: [v3/.prettierrc.json](../../v3/.prettierrc.json)
+- **size-limit** — bundle size monitoring. Limits: JS 200 KB, CSS 50 KB (gzip). Configuration: [v3/.size-limit.json](../../v3/.size-limit.json)
 
 ---
 
-## Verzeichnis-Struktur
+## Directory structure
 
 ```
 v3/
   tests/
-    fixtures/test-audio-1s.wav  ← Minimal-WAV (8-bit mono 8kHz, 1s silence)
+    fixtures/test-audio-1s.wav  ← minimal WAV (8-bit mono 8kHz, 1s silence)
     unit/                       ← Vitest (setup.ts: fake-indexeddb/auto)
     e2e/
-      projects.ts               ← Projekt-Zuordnung aller Specs — einzige Quelle
-      helpers.ts                ← Shared helpers (Navigation, Upload/Seed, pointerDrag …)
+      projects.ts               ← project assignment of all specs — single source
+      helpers.ts                ← shared helpers (navigation, upload/seed, pointerDrag …)
       *.spec.ts                 ← Smoke / Full / PWA
-      mobile/                   ← iPhone-13-Pro-Profil
-      visual/                   ← Screenshot-Vergleiche (macOS)
+      mobile/                   ← iPhone 13 Pro profile
+      visual/                   ← screenshot comparisons (macOS)
   vitest.config.ts · playwright.config.ts · eslint.config.js
   tsconfig.test.json · tsconfig.e2e.json
 ```
 
-Welche Datei in welchem Projekt läuft: **Test-Inventar** (unten, automatisch erzeugt).
+Which file runs in which project: **test inventory** (below, generated).
 
-## Test-Inventar
+## Test inventory
 
 <!-- AUTO-GENERATED:test-inventory START — do not edit by hand -->
 
@@ -103,14 +103,14 @@ listed in [`exceptions.md`](exceptions.md)).
 
 ---
 
-## Mobile Testing (iPhone / iOS)
+## Mobile testing
 
 Mobile tests are split across two Playwright projects, both using the **iPhone 13 Pro**
 device profile (viewport 390×844, `hasTouch: true`, `isMobile: true`):
 
 | Project | Browser | Tests |
 |---------|---------|-------|
-| `mobile` | WebKit | 5 Spec-Dateien: 3 aktiv (navigation, mode toggle, unlock-nav), 2 deferred/fixme'd (touch-targets, overflow — pending Slice 8 mobile adaptation) |
+| `mobile` | WebKit | 5 spec files: 3 active (navigation, mode toggle, unlock-nav), 2 deferred/fixme'd (touch-targets, overflow — pending the Slice 13 mobile layout) |
 | `mobile-chromium` | Chromium | 2 audio-dependent specs (pad interaction, pad creation) |
 
 All tested interactions use `tap()` to send real touch events (pointerType: 'touch').
@@ -125,11 +125,11 @@ iPhone 13 Pro device settings (viewport, hasTouch, isMobile, UA) applied.
 | Spec | Project | What it tests |
 |------|---------|--------------|
 | `unlock-nav` | `mobile` (WebKit) | TAP TO UNLOCK + BOARD/LIBRARY navigation buttons respond to `tap()` |
-| `board-flow` | `mobile` (WebKit) | NEW BOARD, board-row-title, back button respond to `tap()` |
+| `board-flow` | `mobile` (WebKit) | NEW BOARD, board name, back button respond to `tap()` |
 | `mode-toggle` | `mobile` (WebKit) | SETUP ↔ GAME toggle switches in both directions via `tap()` |
-| `touch-targets` | `mobile` (WebKit) | ⬜ Deferred (Slice 8): `test.describe.fixme` — alle Tests übersprungen bis mobile layout adaptation implementiert |
-| `overflow` | `mobile` (WebKit) | ⬜ Deferred (Slice 8): `test.describe.fixme` — alle Tests übersprungen bis mobile layout adaptation implementiert |
-| `pad-interaction` | `mobile-chromium` | **Core:** pad `tap()` → `.sb-pad.is-hot` / `.sb-pad.is-looping` DOM state |
+| `touch-targets` | `mobile` (WebKit) | ⬜ Deferred (Slice 13): `test.describe.fixme` — all tests skipped until the mobile layout exists |
+| `overflow` | `mobile` (WebKit) | ⬜ Deferred (Slice 13): `test.describe.fixme` — all tests skipped until the mobile layout exists |
+| `pad-interaction` | `mobile-chromium` | **Core:** pad `tap()` → pad reports `aria-pressed` while playing |
 | `pad-creation` | `mobile-chromium` | Empty cell `tap()` → popover → `tap()` through to pad creation |
 
 ### What is deliberately NOT automated (manual only)
@@ -150,7 +150,7 @@ These items are covered by the manual checklist at
 ### Running mobile tests
 
 ```bash
-cd v3 && npm run test:e2e:mobile   # Beide Projekte: 5 Spec-Dateien WebKit (2 davon fixme'd) + 2 Spec-Dateien Chromium
+cd v3 && npm run test:e2e:mobile   # both projects: 5 WebKit spec files (2 fixme'd) + 2 Chromium spec files
 ```
 
 Mobile tests run in CI as a separate `e2e-mobile` job (parallel to `e2e-smoke` and
@@ -158,60 +158,61 @@ Mobile tests run in CI as a separate `e2e-mobile` job (parallel to `e2e-smoke` a
 
 ---
 
-## Visual Regression (lokal-only)
+## Visual regression (local only)
 
-Screenshot-Baselines für Komponenten-Vergleiche. **Nicht in CI** (macOS und Ubuntu
-haben unterschiedliches Font-Rendering → Baseline-Mismatch auf Ubuntu).
+Screenshot baselines for component comparisons. **Not in CI** (macOS and Ubuntu render fonts
+differently → baseline mismatch on Ubuntu).
 
-### Baselines generieren / aktualisieren
+### Generating / updating baselines
 
 ```bash
 cd v3 && npm run test:e2e:update-snapshots
 ```
 
-Generiert `*.png`-Dateien in `tests/e2e/visual/<spec>.spec.ts-snapshots/` (Format: `<name>-visual-darwin.png`).
-Diese Dateien werden committed und gehören zum Repo.
+Generates `*.png` files in `tests/e2e/visual/<spec>.spec.ts-snapshots/` (format: `<name>-visual-darwin.png`).
+These files are committed and belong to the repository.
 
-### Verifikation
+### Verification
 
 ```bash
 cd v3 && npm run test:e2e:visual
 ```
 
-Läuft gegen committed Baselines. Bei Diff: Test schlägt fehl mit Screenshot-Vergleich im Report.
+Runs against the committed baselines. On a diff the test fails with a screenshot comparison in
+the report.
 
-### Wann ausführen
+### When to run
 
-**Automatisch im Pre-Push-Hook (nur macOS).** Zusätzlich sinnvoll vor UI-relevanten Commits:
+**Automatically in the pre-push hook (macOS only).** Also useful before UI-relevant commits:
 ```bash
 cd v3 && npm run test:e2e:visual
 ```
-Bei Diff: **jedes** `*-diff.png` ansehen. Nur bei nachweislich gewollter Änderung
-`npm run test:e2e:update-snapshots` + neue Baseline committen.
+On a diff: look at **every** `*-diff.png`. Only for a demonstrably intended change run
+`npm run test:e2e:update-snapshots` and commit the new baseline.
 
-### Anti-Flakiness
+### Anti-flakiness
 
-Alle Visual-Tests rufen `stableScreenshot(page)` auf, das:
-- `reducedMotion: 'reduce'` setzt (CSS-Animationen stoppen)
-- `waitForLoadState('networkidle')` wartet
-- `document.fonts.ready` abwartet
-- 100ms extra Buffer wartet
+Every visual test calls `stableScreenshot(page)`, which:
+- sets `reducedMotion: 'reduce'` (stops CSS animations)
+- waits for `waitForLoadState('networkidle')`
+- waits for `document.fonts.ready`
+- waits an extra 100ms buffer
 
 ---
 
-## CI-Integration
+## CI integration
 
-GitHub Actions unter [`.github/workflows/tests.yml`](../../.github/workflows/tests.yml).
+GitHub Actions in [`.github/workflows/tests.yml`](../../.github/workflows/tests.yml).
 
 ### Workflows
 
-**`tests.yml`** — Läuft auf Push zu `main`, Pull Requests und wird von `weekly.yml` aufgerufen:
+**`tests.yml`** — runs on pushes to `main`, on pull requests, and is called by `weekly.yml`:
 
 ```
 unit-build-lint
-  ├── npm audit --audit-level=high   (high/critical blockiert)
+  ├── npm audit --audit-level=high   (high/critical blocks)
   ├── npm run build          (tsc -b: app, unit + E2E tests, tool configs, scripts/ — then vite)
-  ├── npm run test:coverage  (vitest inkl. Wächter-Tests + Coverage-Untergrenze)
+  ├── npm run test:coverage  (vitest incl. guard tests + coverage floor)
   ├── npm run lint           (eslint)
   ├── npm run format:check   (prettier)
   ├── npm run size           (size-limit)
@@ -219,212 +220,212 @@ unit-build-lint
   └── npm run link:check     (markdown-link-check)     ← Link integrity
 
 e2e-smoke (needs: unit-build-lint)
-  └── npm run test:e2e:smoke   (10 Tests: 5 × Chromium + 5 × WebKit)
+  └── npm run test:e2e:smoke   (10 tests: 5 × Chromium + 5 × WebKit)
 
 e2e-mobile (needs: unit-build-lint)
-  └── npm run test:e2e:mobile  (7 Spec-Dateien: 5 WebKit + 2 Chromium — iPhone 13 Pro profile; 2 WebKit-Specs fixme'd/deferred bis Slice 8)
+  └── npm run test:e2e:mobile  (7 spec files: 5 WebKit + 2 Chromium — iPhone 13 Pro profile; 2 WebKit specs fixme'd/deferred until Slice 13)
 
 e2e-prod (needs: unit-build-lint)
-  └── npm run test:e2e:prod    (Build → Smoke + Full + PWA gegen vite preview; Service Worker, Manifest, Offline)
+  └── npm run test:e2e:prod    (build → smoke + full + PWA against vite preview; service worker, manifest, offline)
 
 e2e-full (needs: unit-build-lint)
-  └── npm run test:e2e:full    (full in Chromium + full-webkit: Board/Deck/Pad-CRUD + Drag & Drop in der Safari-Engine)
+  └── npm run test:e2e:full    (full in Chromium + full-webkit: board/deck/pad CRUD + drag & drop in the Safari engine)
 ```
 
-Playwright-Reports werden als Artifact hochgeladen (7 Tage, bei Fehler).
-Node-Version aus `.nvmrc`. In CI gilt `failOnFlakyTests`: ein Test, der erst im
-Wiederholungsversuch besteht, lässt den Lauf **fehlschlagen** (→ kein Deployment).
-Ablauf dann: siehe [Wackelige Tests (Quarantäne)](#wackelige-tests-quarantäne).
+Playwright reports are uploaded as artifacts (7 days, on failure). Node version from `.nvmrc`.
+CI uses `failOnFlakyTests`: a test that only passes on retry **fails** the run (→ no
+deployment). What to do then: see [Flaky tests (quarantine)](#flaky-tests-quarantine).
 
-**`deploy-pages.yml`** — Veröffentlicht **genau den getesteten Build**, baut nie neu (ADR-0049):
-- `e2e-prod` baut `v3/dist`, testet ihn (smoke + full + PWA) und bewahrt ihn bei Push auf `main`
-  als Artefakt `pages-dist` auf (30 Tage); der Deploy lädt dieses Artefakt herunter
-- Trigger: `workflow_run` (Tests, completed) — nur wenn erfolgreich, durch **Push** ausgelöst
-  und aus **diesem Repo** (kein PR-/Fork-Code) — sowie `workflow_dispatch` (nimmt das Artefakt
-  des letzten erfolgreichen Push-Laufs auf `main`; abgelaufen → Tests für den Commit neu starten)
-- Scheitert der Deploy, bleibt die bisherige Version live
-- Visual Tests werden **nicht** in CI ausgeführt (macOS-only Baselines)
+**`deploy-pages.yml`** — publishes **exactly the tested build**, never rebuilds (ADR-0049):
+- `e2e-prod` builds `v3/dist`, tests it (smoke + full + PWA) and, on a push to `main`, keeps it
+  as artifact `pages-dist` (30 days); the deploy downloads this artifact
+- Trigger: `workflow_run` (Tests, completed) — only if successful, triggered by a **push** and
+  from **this repository** (no PR / fork code) — plus `workflow_dispatch` (takes the artifact of
+  the latest successful push run on `main`; expired → re-run the tests for that commit)
+- If the deploy fails, the previous version stays live
+- Visual tests do **not** run in CI (macOS-only baselines)
 
-**`weekly.yml`** — Wöchentlicher Kontroll-Lauf, Montag 06:00 UTC (+ manuell per `workflow_dispatch`),
-auch ohne Push. Fängt ab, was sich ohne Code-Änderung verschlechtert: neue Sicherheitshinweise zu
-unveränderten Paketen, geänderte Runner/Browser, liegengebliebene Dependabot-PRs.
-- Job `tests`: ruft `tests.yml` auf (wiederverwendet, nicht kopiert — kann nicht abweichen)
-- Job `maintenance`: `npm audit` (alle Stufen) und `npm outdated` als Bericht in der
-  Lauf-Zusammenfassung; **Dependabot-PRs, die länger als 14 Tage offen sind, machen den Lauf rot**
-- **Rot = Benachrichtigung:** GitHub schickt bei fehlgeschlagenen geplanten Läufen eine Mail
-  (Benachrichtigungseinstellungen: BACKLOG T9). Bei Rot: Zusammenfassung des Laufs lesen, PRs
-  mergen/reparieren/schließen bzw. Testfehler wie jeden anderen behandeln.
-- GitHub deaktiviert geplante Läufe in öffentlichen Repos nach **60 Tagen ohne Aktivität** —
-  nach längerer Pause unter *Actions → Weekly check* wieder aktivieren.
-- Manuell starten: `gh workflow run weekly.yml`
+**`weekly.yml`** — weekly check, Monday 06:00 UTC (+ manually via `workflow_dispatch`), also
+without a push. Catches what degrades without a code change: new advisories for unchanged
+packages, changed runners/browsers, forgotten Dependabot PRs.
+- Job `tests`: calls `tests.yml` (reused, not copied — cannot drift)
+- Job `maintenance`: `npm audit` (all levels) and `npm outdated` as a report in the run
+  summary; **Dependabot PRs open longer than 14 days turn the run red**
+- **Red = notification:** GitHub mails failed scheduled runs (notification settings: BACKLOG
+  T9). When red: read the run summary, merge / fix / close the PRs, or treat test failures like
+  any other.
+- GitHub disables scheduled runs in public repositories after **60 days without activity** —
+  re-enable under *Actions → Weekly check* after a longer pause.
+- Start manually: `gh workflow run weekly.yml`
 
-### Pre-Commit-Hook
+### Pre-commit hook
 
-Husky-Hook führt vor jedem lokalen Commit aus (in dieser Reihenfolge):
-1. `npm run sync:docs` + `git add` (~1s) — Auto-generierte Docs aktualisieren und stagen (ADR-Index, Klassen, Tokens, Test-Inventar, `CHANGELOG.md`)
+The Husky hook runs before every local commit (in this order):
+1. `npm run sync:docs` + `git add` (~1s) — regenerate and stage the generated docs (ADR index, classes, tokens, test inventory, `CHANGELOG.md`, exception register)
 2. `npm run build` (~6s) — `tsc -b` type-checks every TypeScript file (app, unit + E2E tests, tool configs, `scripts/`; ADR-0055) — Vitest and Playwright do not check types themselves
-3. lint-staged: Prettier + ESLint auf gestageten Dateien
-4. `npm run test` (~2s) — inkl. Wächter-Tests `e2eProjects.test.ts`, `testGuards.test.ts` und `docsGuards.test.ts` (Dateinamen nach ADR-0050, Links mit exakter Groß-/Kleinschreibung — der Mac ignoriert sie, CI nicht —, README-Fakten)
-5. `npm run test:e2e:smoke` (~6s, eigener Server auf Port 5199)
-6. `npm run link:check` (~1s) — Tote interne Markdown-Links erkennen
+3. lint-staged: Prettier + ESLint on the staged files
+4. `npm run test` (~2s) — incl. the guard tests `e2eProjects.test.ts`, `testGuards.test.ts`, `docsGuards.test.ts` and `codeGuards.test.ts` (file names per ADR-0050/0052, links with exact case — macOS ignores case, CI does not —, README facts, test IDs, exception markers)
+5. `npm run test:e2e:smoke` (~6s, own server on port 5199)
+6. `npm run link:check` (~1s) — detects dead internal Markdown links
 
-Gesamt ~20s. Schlägt einer der Schritte fehl → Commit wird abgebrochen.
+About 20s in total. If any step fails → the commit is aborted.
 
-### Pre-Push-Hook
+### Pre-push hook
 
-1. Versions-Bump-Check (`APP_VERSION` gegenüber `origin/main`)
-1a. `npm audit --audit-level=high` — bekannte Sicherheitslücken der Stufe high/critical blockieren (moderate/low nur Hinweis). Bei Fund: erst `npm audit fix` ohne `--force`; Major-Sprünge einzeln (BACKLOG "Major dependency updates")
-2. `npm run size` — Bundle-Größe
-3. `npm run test:e2e:all` — Smoke, Full, Mobile gegen den Dev-Server
-4. `npm run test:e2e:prod` — Build, dann Smoke, Full und **PWA** gegen den **fertigen Build** (`vite preview`, mit Service Worker)
-5. **Nur macOS:** `npm run test:e2e:visual` — visuelle Regression
+1. Version bump check (`APP_VERSION` against `origin/main`)
+1a. `npm audit --audit-level=high` — known vulnerabilities of level high/critical block (moderate/low only reported). If found: first `npm audit fix` without `--force`; major upgrades one at a time (BACKLOG "Major dependency updates")
+2. `npm run size` — bundle size
+3. `npm run test:e2e:all` — all six dev-server projects (smoke, smoke-webkit, full, full-webkit, mobile, mobile-chromium)
+4. `npm run test:e2e:prod` — build, then smoke, full and **PWA** against the **finished build** (`vite preview`, with service worker)
+5. **macOS only:** `npm run test:e2e:visual` — visual regression
 
-Schlägt ein Schritt fehl: **zuerst die Fehlerausgabe bzw. den Report lesen**, erst dann
-neu starten (ein neuer Lauf überschreibt `playwright-report/`).
+If a step fails: **read the error output / report first**, only then re-run (a new run
+overwrites `playwright-report/`).
 
 ---
 
-## Befehle
+## Commands
 
 ```bash
 # ── Unit ──────────────────────────────────────────────────────────────────
-cd v3 && npm run test              # Einmalig ausführen
-cd v3 && npm run test:watch        # Watch-Mode (beim Entwickeln)
-cd v3 && npm run test:coverage     # Mit Coverage-Report (v3/coverage/)
-cd v3 && npm run test:ui           # Browser-Interface
+cd v3 && npm run test              # run once
+cd v3 && npm run test:watch        # watch mode (while developing)
+cd v3 && npm run test:coverage     # with coverage report (v3/coverage/)
+cd v3 && npm run test:ui           # browser interface
 
 # ── E2E ───────────────────────────────────────────────────────────────────
-cd v3 && npm run test:e2e:smoke    # 10 Smoke-Tests (Chromium + WebKit)
-cd v3 && npm run test:e2e:full     # Slices-3+4-Tests (Chromium: CRUD, Audio-Engine)
-cd v3 && npm run test:e2e:mobile   # Beide Projekte: 5 Spec-Dateien WebKit (2 fixme'd) + 2 Spec-Dateien Chromium
-cd v3 && npm run test:e2e          # Smoke + Full kombiniert
+cd v3 && npm run test:e2e:smoke    # 10 smoke tests (Chromium + WebKit)
+cd v3 && npm run test:e2e:full     # full (Chromium) + full-webkit: CRUD, drag & drop, audio engine
+cd v3 && npm run test:e2e:mobile   # both projects: 5 WebKit spec files (2 fixme'd) + 2 Chromium spec files
+cd v3 && npm run test:e2e          # smoke + full combined
 
-# ── Visual Regression (lokal only) ────────────────────────────────────────
-cd v3 && npm run test:e2e:visual           # Gegen bestehende Baselines prüfen
-cd v3 && npm run test:e2e:update-snapshots # Baselines neu generieren
+# ── Visual regression (local only) ────────────────────────────────────────
+cd v3 && npm run test:e2e:visual           # compare against the existing baselines
+cd v3 && npm run test:e2e:update-snapshots # regenerate the baselines
 
 # ── Lint + Format ─────────────────────────────────────────────────────────
-cd v3 && npm run lint          # ESLint (exit 0 = sauber)
-cd v3 && npm run lint:fix      # ESLint mit Auto-Fix
-cd v3 && npm run format        # Prettier: alle Dateien formatieren
-cd v3 && npm run format:check  # Prettier: nur prüfen (CI-Mode)
+cd v3 && npm run lint          # ESLint (exit 0 = clean)
+cd v3 && npm run lint:fix      # ESLint with auto-fix
+cd v3 && npm run format        # Prettier: format all files
+cd v3 && npm run format:check  # Prettier: check only (CI mode)
 
-# ── Bundle Size ───────────────────────────────────────────────────────────
-cd v3 && npm run build && npm run size  # Build + Größen-Check
+# ── Bundle size ───────────────────────────────────────────────────────────
+cd v3 && npm run build && npm run size  # build + size check
 ```
 
 ---
 
-## Neue Unit-Tests schreiben
+## Writing unit tests
 
-Für jede neue Logik-Funktion in `src/lib/` oder `src/state/`:
+For every new logic function in `src/lib/` or `src/state/`:
 
 ```typescript
-// v3/tests/unit/meineModule.test.ts
-import { meineFunktion } from '../../src/lib/meineModule';
+// v3/tests/unit/myModule.test.ts
+import { myFunction } from '../../src/lib/myModule';
 
-describe('meineFunktion', () => {
-  test('Beschreibung des erwarteten Verhaltens', () => {
+describe('myFunction', () => {
+  test('describes the expected behaviour', () => {
     // Arrange
     const input = { ... };
     // Act
-    const result = meineFunktion(input);
+    const result = myFunction(input);
     // Assert
     expect(result).toEqual({ ... });
   });
 
-  test('Edge Case: ...',  () => {
-    expect(meineFunktion(null)).toBeNull(); // ein Test = eine Annahme
+  test('edge case: ...', () => {
+    expect(myFunction(null)).toBeNull(); // one test = one assumption
   });
 });
 ```
 
-**Richtlinien:**
-- Keine realen Browser-APIs in Unit-Tests (IndexedDB ausnahmsweise via fake-indexeddb)
-- Signals in `beforeEach` zurücksetzen (sie sind module-level singletons)
-- IDB-Tests: `_resetDB()` + `new IDBFactory()` in `beforeEach`
+**Guidelines:**
+- No real browser APIs in unit tests (IndexedDB as the exception, via fake-indexeddb)
+- Reset signals in `beforeEach` (they are module-level singletons)
+- IDB tests: `_resetDB()` + `new IDBFactory()` in `beforeEach`
+- Test fixtures have the concrete type they build (e.g. `SinglePad`, not `Partial<Pad>`) — every test file is type-checked (ADR-0055)
 
 ---
 
-## Neue E2E-Tests schreiben
+## Writing E2E tests
 
-Für jeden neuen Nutzer-Flow:
+For every new user flow:
 
 ```typescript
-// v3/tests/e2e/meinFeature.spec.ts
+// v3/tests/e2e/my-feature.spec.ts
 import { test, expect } from '@playwright/test';
 import { goToBoardList, createBoardAndNavigate, enterSetupMode } from './helpers';
 
-test('beschreibt den Nutzer-Flow in einem Satz', async ({ page }) => {
+test('describes the user flow in one sentence', async ({ page }) => {
   await page.goto('/soundboard-of-storytelling/');
   await goToBoardList(page);
   await createBoardAndNavigate(page);
-  // Verifizieren via data-testid
-  await expect(page.getByTestId('mode-toggle')).toBeVisible();
+  // Verify via role (ADR-0054): the GAME half is pressed after creating a board
+  await expect(page.getByRole('button', { name: 'GAME', pressed: true })).toBeVisible();
 });
 ```
 
-**Richtlinien:**
-- Jeder Test ist self-contained (eigener Zustand, keine Abhängigkeit von anderen Tests)
-- `page.goto('/soundboard-of-storytelling/')` am Anfang jedes Tests (IndexedDB ist per Browser-Context isoliert)
-- **Selector-Priorität**: `getByTestId` > `getByRole` > `.filter({ hasText })` > CSS-Klasse
-- Tests in der `full`-Suite müssen in Chromium bestehen; Smoke auch in WebKit
-- Neue Spec-Datei **immer in `tests/e2e/projects.ts` eintragen** — sonst schlägt der Wächter-Test fehl
-- Wackelige Tests: siehe [Wackelige Tests (Quarantäne)](#wackelige-tests-quarantäne)
+**Guidelines:**
+- Every test is self-contained (own state, no dependency on other tests)
+- `page.goto('/soundboard-of-storytelling/')` at the start of every test (IndexedDB is isolated per browser context)
+- **Locators:** role first, test ID as fallback, never CSS classes — see [Test locators (ADR-0054)](#test-locators-adr-0054)
+- Tests in the `full` suite must pass in Chromium; smoke also in WebKit
+- **Always add a new spec file to `tests/e2e/projects.ts`** — otherwise the guard test fails
+- Flaky tests: see [Flaky tests (quarantine)](#flaky-tests-quarantine)
 
-### Wohin gehört der Test?
+### Where does the test belong?
 
-| Flow | Datei | Projekt |
+| Flow | File | Project |
 |------|-------|---------|
-| Kern-Navigation, App-Start | `tests/e2e/*.spec.ts` (`SMOKE_TESTS` in `projects.ts`) | `smoke` |
-| Feature-Verifikation | `tests/e2e/<feature>.spec.ts` (`FULL_TESTS` in `projects.ts`) | `full` |
-| Touch-wiring (audio-free), Touch-Targets, Overflow | `tests/e2e/mobile/*` (audio-free specs) | `mobile` (WebKit) |
-| Touch-wiring (pad tap → is-hot/is-looping, pad creation) | `tests/e2e/mobile/*` (audio-dependent specs) | `mobile-chromium` (Chromium) |
-| Pixel-Vergleich | `tests/e2e/visual/*.spec.ts` | `visual` |
-| Feature-Flows ohne Abspielen, zusätzlich in WebKit | Eintrag in `FULL_TESTS` **und** `FULL_WEBKIT_TESTS`; Library über `ensureTestAudio` (Chromium: echter Upload, WebKit: vorbelegt) | `full` + `full-webkit` |
-| Service Worker, Manifest, Offline (nur fertiger Build) | `tests/e2e/pwa.spec.ts` (`PWA_TESTS`) | `pwa` — nur mit `E2E_TARGET=prod` |
+| Core navigation, app start | `tests/e2e/*.spec.ts` (`SMOKE_TESTS` in `projects.ts`) | `smoke` |
+| Feature verification | `tests/e2e/<feature>.spec.ts` (`FULL_TESTS` in `projects.ts`) | `full` |
+| Touch wiring (audio-free), touch targets, overflow | `tests/e2e/mobile/*` (audio-free specs) | `mobile` (WebKit) |
+| Touch wiring (pad tap → playing state, pad creation) | `tests/e2e/mobile/*` (audio-dependent specs) | `mobile-chromium` (Chromium) |
+| Pixel comparison | `tests/e2e/visual/*.spec.ts` | `visual` |
+| Feature flows without playback, additionally in WebKit | entry in `FULL_TESTS` **and** `FULL_WEBKIT_TESTS`; library via `ensureTestAudio` (Chromium: real upload, WebKit: seeded) | `full` + `full-webkit` |
+| Service worker, manifest, offline (finished build only) | `tests/e2e/pwa.spec.ts` (`PWA_TESTS`) | `pwa` — only with `E2E_TARGET=prod` |
 
 ---
 
-## Tests aktualisieren
+## Updating tests
 
-- Bei Funktions-Änderung: Tests anpassen ist Teil der Aufgabe, nicht optional
-- Bei UI-Änderung (Texte, Struktur): E2E-Selektoren sofort prüfen und korrigieren
-- Bei Visual-Regression-Änderung (Slice 8 / Polish): `npm run test:e2e:update-snapshots` lokal ausführen, neue Baseline committen
-- Bei wackeligen Tests: festes Verfahren, siehe unten.
+- When behaviour changes: updating the tests is part of the task, not optional
+- When the UI changes (texts, structure): check and fix the E2E locators immediately
+- When a visual baseline changes intentionally: run `npm run test:e2e:update-snapshots` locally and commit the new baseline
+- Flaky tests: fixed procedure, see below.
 
-### Untergrenze der Testabdeckung (T6)
+### Coverage floor (T6)
 
-`v3/vitest.config.ts` → `coverage.thresholds` (knapp unter dem gemessenen Stand). CI führt
-`npm run test:coverage` aus — sinkt die Abdeckung darunter, schlägt CI fehl. Die Grenzen werden
-**nur angehoben**: beim Slice-Abschluss auf die neuen Messwerte, abgerundet.
+`v3/vitest.config.ts` → `coverage.thresholds` (just below the measured level). CI runs
+`npm run test:coverage` — if coverage drops below, CI fails. The thresholds are **only ever
+raised**: at slice completion, to the new measured values, rounded down.
 
-### WebKit und IndexedDB-Blobs
+### WebKit and IndexedDB blobs
 
-Playwrights WebKit läuft in einem kurzlebigen Profil (wie Safaris privates Surfen) und kann
-**keine Blobs in IndexedDB speichern** (geprüft 2026-09-29; ArrayBuffer geht). Deshalb legt
-`seedTestAudio` den Library-Eintrag in WebKit **ohne** Audiodaten an. Offene Produktfrage dazu:
-BACKLOG „Library audio as Blob — Safari Private Browsing“.
+Playwright's WebKit runs in a short-lived profile (like Safari's private browsing) and
+**cannot store Blobs in IndexedDB** (checked 2026-09-29; ArrayBuffer works). That is why
+`seedTestAudio` creates the library entry in WebKit **without** audio data. Open product
+question: BACKLOG "Library audio as Blob — Safari Private Browsing".
 
-### Automatisch gesperrte Test-Fallen (T10)
+### Test traps blocked automatically (T10)
 
-ESLint blockiert beim Commit Tests, die aus dem falschen Grund bestehen würden
-(`@vitest/eslint-plugin`, `eslint-plugin-playwright`, Konfiguration in `v3/eslint.config.js`):
+ESLint blocks tests at commit time that would pass for the wrong reason
+(`@vitest/eslint-plugin`, `eslint-plugin-playwright`, configuration in `v3/eslint.config.js`):
 
-| Regel | Verhindert |
+| Rule | Prevents |
 |---|---|
-| `expect-expect` | Test ohne Prüfung — besteht immer. Prüf-Helfer (z. B. `assertTarget`) müssen in `assertFunctionNames` eingetragen werden. |
-| `no-focused-test(s)` | `.only` — alle anderen Tests fallen still weg. Playwright zusätzlich `forbidOnly: true`. |
-| `no-skipped-test` (inkl. `fixme`) / `no-disabled-tests` | stilles Abschalten |
-| `valid-expect` | `expect(x)` ohne Prüfmethode, fehlendes `await` |
+| `expect-expect` | A test without an assertion — always passes. Assertion helpers (e.g. `assertTarget`) must be listed in `assertFunctionNames`. |
+| `no-focused-test(s)` | `.only` — every other test silently drops out. Playwright additionally uses `forbidOnly: true`. |
+| `no-skipped-test` (incl. `fixme`) / `no-disabled-tests` | silently switching tests off |
+| `valid-expect` | `expect(x)` without a matcher, missing `await` |
 
-Begründete Ausnahme (Quarantäne) nur so — sichtbar, mit Grund:
+A justified exception (quarantine) only like this — visible, with a reason:
 ```ts
-// eslint-disable-next-line playwright/no-skipped-test -- quarantine: <Grund> (BACKLOG "<Eintrag>")
+// eslint-disable-next-line playwright/no-skipped-test -- quarantine: <reason> (BACKLOG "<heading part>")
 test.fixme('…', async () => {});
 ```
-Bekannte Fehler im App-Code werden mit Vitest `test.fails` + einem präzisen Test des
-Ist-Verhaltens + BACKLOG-Eintrag festgehalten (Beispiel: `tests/unit/audio/engine.test.ts`).
+Known bugs in app code are recorded with Vitest `test.fails` + a precise test of the current
+behaviour + a BACKLOG entry (example: `tests/unit/audio/engine.test.ts`).
 
 **Exception scheme (ADR-0053):** every exception — lint suppressions, `prettier-ignore`,
 to-do markers, quarantine, untested modules, tool ignore lists, ADR exceptions — names the
@@ -433,61 +434,60 @@ directives fail lint; to-do markers and `prettier-ignore` are checked by `testGu
 All exceptions are listed in the generated register
 [`exceptions.md`](exceptions.md) (`npm run sync:exceptions`).
 
-**Gegenprobe (Pflicht für jeden neuen Test):** den geprüften Code gezielt kaputt machen →
-der Test muss rot werden; danach den Code per Kopie wiederherstellen und mit `git diff`
-prüfen, dass nichts zurückbleibt.
+**Counter-check (mandatory for every new test):** break the code under test on purpose → the
+test must turn red; then restore the code from a copy and confirm with `git diff` that nothing
+is left behind.
 
-### Wackelige Tests (Quarantäne)
+### Flaky tests (quarantine)
 
-Ein Test, der mal besteht und mal nicht, ist ein Fehler — im Test oder in der App.
+A test that sometimes passes and sometimes fails is a bug — in the test or in the app.
 
-1. **Beweise sichern:** Fehlerausgabe und `playwright-report/` (bzw. CI-Artifact) lesen, **bevor** neu gestartet wird.
-2. **Ursache suchen und beheben** (Timing, fehlendes Warten auf einen Zustand, echter App-Fehler).
-3. **Nur wenn das nicht sofort geht:** Quarantäne mit `test.fixme(…)` **und** Begründung im Testnamen/Kommentar **und** BACKLOG-Eintrag. Nie stillschweigend `skip`, nie Retries hochdrehen.
+1. **Secure the evidence:** read the error output and `playwright-report/` (or the CI artifact) **before** re-running.
+2. **Find and fix the cause** (timing, missing wait for a state, real app bug).
+3. **Only if that is not possible right away:** quarantine with `test.fixme(…)` **and** a reason in the test name/comment **and** a BACKLOG entry. Never silently `skip`, never raise retries.
 
 ---
 
-## Bekannte Fallstricke
+## Known pitfalls
 
-### 1. Preact Signals sind module-level Singletons
+### 1. Preact signals are module-level singletons
 
-Signals (`boards`, `currentBoardId` etc.) in `src/state/store.ts` persistieren
-zwischen Tests, weil der Modul-Cache nicht zurückgesetzt wird. Lösung: `beforeEach`
-mit explizitem Reset:
+Signals (`boards`, `currentBoardId` etc.) in `src/state/store.ts` persist between tests
+because the module cache is not reset. Solution: an explicit reset in `beforeEach`:
 
 ```typescript
 beforeEach(() => {
   boards.value = [];
   currentBoardId.value = null;
-  // ... weitere Signals die der Test berührt
+  // ... any other signals the test touches
 });
 ```
 
-### 2. IDB-Singleton in idb.ts
+### 2. IDB singleton in idb.ts
 
-`idb.ts` hält `let _db` als Modul-Singleton. Ohne Reset würde jeder Test in
-derselben Fake-DB-Instanz operieren. Lösung: `_resetDB()` aus `idb.ts` exportiert
-und in `beforeEach` aufrufen (zusammen mit `new IDBFactory()`).
+`idb.ts` keeps `let _db` as a module singleton. Without a reset every test would operate on
+the same fake DB instance. Solution: `_resetDB()` is exported from `idb.ts`; call it in
+`beforeEach` (together with `new IDBFactory()`).
 
-### 3. CSS textTransform ist visuell-only
+### 3. CSS textTransform is visual only
 
-`textTransform: uppercase` im CSS zeigt Text großgeschrieben an, aber der DOM-Wert
-ist immer der gespeicherte (gemischte) String. Playwright-Assertions müssen den
-gespeicherten String verwenden:
+`textTransform: uppercase` in CSS shows text in capitals, but the DOM value is always the
+stored (mixed-case) string. Playwright assertions must use the stored string:
 - ✅ `await expect(el).toContainText('My Renamed Board')`
-- ❌ `await expect(el).toContainText('MY RENAMED BOARD')` (scheitert auch wenn visuell uppercase)
+- ❌ `await expect(el).toContainText('MY RENAMED BOARD')` (fails even though it looks uppercase)
 
-### 4. Visual Regression: macOS vs. Ubuntu
+### 4. Visual regression: macOS vs. Ubuntu
 
-Screenshot-Baselines (`.png`-Dateien mit `-darwin.png`-Suffix) passen nur auf macOS.
-Ubuntu-CI rendert Fonts anders → Visual-Tests sind aus CI ausgeschlossen.
-Nur lokal ausführen. Bei UI-Änderungen: Baselines lokal neu generieren + committen.
+Screenshot baselines (`.png` files with the `-darwin.png` suffix) only match on macOS. Ubuntu
+CI renders fonts differently → visual tests are excluded from CI. Run them locally only. On
+UI changes: regenerate the baselines locally and commit them.
 
-### 5. Pointer-Events-Drag in Playwright
+### 5. Pointer-events drag in Playwright
 
-Tests 9, 14, 20, 21 (Deck-Reorder, Library-Drag Path B, Pad SWAP, Pad INSERT)
-erfordern pointer-event-basiertes Drag (`mouse.down + move + up`). Diese Tests
-sind als `test.skip` markiert — in Phase 3 aktivieren wenn Drag-Sequenz stabil ist.
+Drag tests (library drag, pad SWAP / INSERT, later deck reorder) need a pointer-event drag
+(`mouse.down + move + up`) — use `pointerDrag` from `tests/e2e/helpers.ts`. Tests 14, 20 and 21
+are active since T3; test 9 (deck reorder) is quarantined because the feature is not built
+(BACKLOG "Deck reorder").
 
 ### 6. WebKit headless: no audio codec support
 
@@ -515,10 +515,10 @@ A `patchAudioDecodeForWebKit` approach was attempted (replacing `decodeAudioData
 `addInitScript`) but does not work: Playwright's WebKit runs `addInitScript` in an
 isolated context that does not affect the app's main realm, so the mock is never applied.
 
-### 7. getByText-Ambiguität in Playwright
+### 7. getByText ambiguity in Playwright
 
-`page.getByText('X')` schlägt fehl wenn "X" mehrfach im DOM vorkommt (strict mode
-violation). Immer präzisere Selektoren verwenden:
-- `page.getByTestId('...')`
-- `.locator('.some-class').filter({ hasText: 'X' })`
+`page.getByText('X')` fails if "X" occurs more than once in the DOM (strict mode violation).
+Scope or narrow the locator instead:
 - `getByRole('button', { name: /X/ })`
+- `page.getByTestId('top-bar').getByText('X', { exact: true })` — scoped to a region
+- `page.getByTestId('...')` as the fallback
