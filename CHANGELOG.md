@@ -4,6 +4,10 @@
 
 All notable changes to Soundboard of Storytelling, newest first.
 
+## 3.0.73 — 2026-09-30
+
+- chore(deps): preact 10.29.8, @preact/signals 2.11.3, @noble/hashes 2.4.0 (minor/patch)
+
 ## 3.0.72 — 2026-09-30
 
 - docs: CI and hook step lists generated from their sources; code blocks and the API list in CLAUDE.md checked; one .gitignore (audit A4, A7, A8)

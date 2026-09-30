@@ -7,9 +7,16 @@ export type ChangelogEntry = {
   items: string[];
 };
 
-export const APP_VERSION = '3.0.72';
+export const APP_VERSION = '3.0.73';
 
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.73',
+    date: '2026-09-30',
+    items: [
+      'chore(deps): preact 10.29.8, @preact/signals 2.11.3, @noble/hashes 2.4.0 (minor/patch)',
+    ],
+  },
   {
     version: '3.0.72',
     date: '2026-09-30',
