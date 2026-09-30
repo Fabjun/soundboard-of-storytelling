@@ -35,7 +35,6 @@ const SKIP = new Set([
   '.git', // repository internals
   'dist', // build output
   'design-sources', // Claude Design downloads, kept exactly as delivered (ADR-0050)
-  'v1-reference', // frozen V1 reference copy, not maintained
 ]);
 
 function walkMd(dir: string): string[] {
@@ -179,7 +178,6 @@ describe('guard: project language is English (CLAUDE.md)', () => {
     'playwright-report', // generated E2E report
     'test-results', // generated E2E artefacts
     'design-sources', // Claude Design downloads, kept exactly as delivered (ADR-0050)
-    'v1-reference', // frozen V1 reference copy, not maintained
   ]);
   const walkText = (dir: string): string[] =>
     readdirSync(dir, { withFileTypes: true }).flatMap((e) => {

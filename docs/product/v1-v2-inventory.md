@@ -10,7 +10,8 @@
 
 ## Sources
 
-- **V1** — `v1-reference/index.html` (APP_VERSION 179, 2026-05-26). Changelog v37–v179
+- **V1** — index.html of the V1 repo (APP_VERSION 179, 2026-05-26; local archive
+  `~/dev/archive/botc-soundboard/`, until 2026-09-30 also `v1-reference/` in this repo). Changelog v37–v179
   (earlier entries not recorded), keyboard handler `index.html:8586ff`.
 - **V2** — folder `v1_5/` of the V1 repo `Fabjun/botc-soundboard` (v1.5.x → renamed
   v2.0.0–v2.0.12, 2026-05-25/26; 52 commits). Repo private since 2026-09-29; complete local

@@ -1226,10 +1226,8 @@ Found 2026-09-30 during S5: stale facts and dead references were found only by c
   (exception register). Found and fixed stale "Scene"/"Sets store"/`SceneRail.tsx` statements.
 - ✅ **Paths in code spans exist** (docsGuards) — ambiguous short names (`tokens.css` ×3,
   `HANDOFF.md` ×3) replaced by full paths; a false "moved" claim about HANDOFF.md corrected.
-- ⬜ **Project-wide structure audit** (owner request 2026-09-30) after T13 — incl. the patterns
-  seen repeatedly: `scripts/*.ts` outside Prettier's config (5 of 7 files misformatted, not in
-  `format:check`); text edits that break Markdown structure; checks that pass vacuously.
-  Already fixed systematically: **local verification took a different path than CI** (link probe
+- ✅ **Project-wide structure audit** (owner request 2026-09-30) — run; findings and status in
+  "Structure audit 2026-09-30" below. Already fixed systematically before it: **local verification took a different path than CI** (link probe
   on case-insensitive macOS, Prettier check with the exclusion active, `prepare` script never run
   locally → CI red on a0c1962) → pre-push now runs `npm ci` in a fresh worktree whenever install
   files change. Owner action: 11 root-owned entries in `~/.npm` (from an old `sudo npm`) —
@@ -1239,6 +1237,39 @@ Found 2026-09-30 during S5: stale facts and dead references were found only by c
   the hook has seven (Vale was missing), CI tree in testing.md lacked Vale and the inline-style
   audit — fixed. Remaining pattern for the structure audit: hook/CI step lists in the docs are
   still hand-maintained copies of `.husky/*` and `tests.yml` — candidate for generation.
+
+### Structure audit 2026-09-30
+Owner decisions 2026-09-30: A1–A3 as recommended.
+- ✅ **A1 Public third-party assets** — `v1-reference/` (V1 source, a composed 1-bit icon set
+  of 2,971 files, 5 font files, no licence or credits file) removed from the public repo; a
+  complete snapshot is in the local archive (`~/dev/archive/v1-reference/`), V1 itself in
+  `~/dev/archive/botc-soundboard/`. The icon set most likely comes from Nikoichu's CC0 pack
+  (V1 commit 3548bdf: "1476 icons from 1-bit Pixel Icons pack"), so the git history is not
+  rewritten. `HANDOFF.md` references now point to the identical
+  `design-sources/2026-05-25/HANDOFF.md`.
+- ⬜ **A2 Fonts from Google's CDN** — `v3/src/styles/global.css` loads the fonts from
+  fonts.googleapis.com: not in the offline cache (service worker globs have no woff2), and the
+  public site sends every visitor's IP to Google (LG München I, 3 O 17493/20). Decision:
+  self-host (OFL) with licence notices.
+- ⬜ **A3 Formatter and linter cover only `v3/`** — 86 of 87 Markdown files, 4 of 7 scripts and
+  2 YAML files never formatted; `scripts/` never linted. Decision: one root config for the whole
+  repository, Markdown included (one-time reformat).
+- ⬜ **A4 Hook step lists typed three times** (CLAUDE.md rule 8, CLAUDE.md pre-commit section,
+  `testing.md`) — drifted again (Vale missing twice; ADR-0037 once said "three gates" for six).
+  Generate from `.husky/*`, reference elsewhere.
+- ⬜ **A5 Exception register misses config-level rule switches** — `eslint.config.js` turns
+  rules off (`no-unused-vars`, `no-explicit-any`) without a register entry; `no-explicit-any`
+  off for tests is unused (no `any` in tests).
+- ⬜ **A6 Dependabot splits package families** — the vitest 5 PR fails `npm ci` because
+  `@vitest/coverage-v8` stays on 4.x (peer conflict); group families incl. majors.
+- ⬜ **A7 Vale skips code blocks** — superseded "Scenes" in CLAUDE.md's API block, a `SceneCard`
+  sample in the concept brief; the API list in CLAUDE.md is a hand copy of the `idb.ts` /
+  `upload.ts` exports (guard the names against the code).
+- ⬜ **A8 Small drift** — stale ESLint comment (config files are type-checked since ADR-0055);
+  duplicate entries in the two `.gitignore` files.
+- ✅ **A9 Own measurement errors (pattern)** — twice a zsh quirk made a measurement vacuous
+  (option+value in one variable; unquoted `--include=*.ts`). Rule for the agent: measurements
+  run via bash with quoted globs; "0 hits" counts only after a positive probe.
 
 ### Role-based E2E locators
 Temporary exception from ADR-0054: many E2E tests still locate controls by test ID although a

@@ -84,7 +84,8 @@
 - **`docs/architecture/concept-brief.md`** — binding technical architecture decisions for V3
   (stack, state, audio engine, IDB, platforms). Product concepts → `docs/product/README.md`;
   slice plan → "Slice progress" table in this file. Read first in every session.
-- **`v1-reference/index.html`** — V1 source, reference for behavior,
+- **V1 source** — index.html in the local archive (`~/dev/archive/botc-soundboard/`, see
+  "Origin repo"; not in this public repo since 2026-09-30), reference for behavior,
   audio engine, IndexedDB schema, template export/import.
   V2 (`v1_5/` in the V1 repo, versions v1.5.x → v2.0.12; available in the local
   archive, see "Origin repo") is a short interim rewrite. **V1 and V2 are prototypes: explore
@@ -96,7 +97,7 @@
   overwritten; downloaded file names inside are kept as delivered. Design
   folders are **proposals, not binding** — a design element counts as Decided only once
   confirmed by the user and recorded in a component spec (`docs/design/components/`).
-- **`v1-reference/HANDOFF.md`** — design system handoff document.
+- **`design-sources/2026-05-25/HANDOFF.md`** — design system handoff document.
   Originally written for V1 migration context (refers to "porting JSX
   to vanilla", phase plan for V1 modernization). For V3, ignore the
   porting guidance and phase plan — V3 uses JSX directly via Preact
@@ -118,7 +119,7 @@
   Pad sets (`Board.sets`) exist in the model only; they are replaced by the
   quick-access bar (ADR-0048).
 - **Preferences**: `localStorage` (small UI state, theme choice, etc.)
-- **PWA**: managed via `vite-plugin-pwa`. No manual `sw.js`. Auto-
+- **PWA**: managed via `vite-plugin-pwa`. No hand-written service worker (V1 had one). Auto-
   generated SHELL list, auto-bumped version on build.
 - **Audio engine**: V1's engine code, copied unchanged into V3 and
   wrapped behind a typed facade in `src/audio/`. Do not redesign.

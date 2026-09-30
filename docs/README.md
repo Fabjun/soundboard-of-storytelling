@@ -15,7 +15,7 @@ not yet filled and confirmed.
 | Area | Hub | Leaves | Template | State | Source(s) |
 |---|---|---|---|---|---|
 | Product | [`docs/product/README.md`](product/README.md) | [`features/data-backup.md`](product/features/data-backup.md), [`v1-v2-inventory.md`](product/v1-v2-inventory.md) | — | In progress (see below) | `docs/architecture/concept-brief.md` (product parts), `docs/backlog.md` (decisions) |
-| Design | docs/design/README.md _(planned)_ | [`components/pad.md`](design/components/pad.md) (Draft) | [`_template.md`](design/components/_template.md) | First spec; hub pending | `docs/design/design-system.md`, `docs/design/design-system-cheatsheet.md`, `docs/design/design-notes.md`, [`v1-reference/HANDOFF.md` §4](../v1-reference/HANDOFF.md#4--key-design-decisions--why-it-is-this-way) |
+| Design | docs/design/README.md _(planned)_ | [`components/pad.md`](design/components/pad.md) (Draft) | [`_template.md`](design/components/_template.md) | First spec; hub pending | `docs/design/design-system.md`, `docs/design/design-system-cheatsheet.md`, `docs/design/design-notes.md`, [HANDOFF.md §4](../design-sources/2026-05-25/HANDOFF.md#4--key-design-decisions--why-it-is-this-way) |
 | Architecture | `docs/architecture/README.md` | ADRs in `docs/architecture/` | [`_template.md`](architecture/_template.md) | ADRs exist; hub pending | `docs/architecture/concept-brief.md` (technical parts) |
 | Development | docs/development/README.md _(planned)_ | — | — | Pending | `docs/development/testing.md`, `CLAUDE.md` (workflow parts) |
 
@@ -40,7 +40,7 @@ not yet filled and confirmed.
 Slice 13 (adaptive layout).
 
 Full old-file → new-home mapping, including files that are only partially emptied
-(`docs/backlog.md`) or stay outside this table (`CLAUDE.md`, `v1-reference/HANDOFF.md`), and the
+(`docs/backlog.md`) or stay outside this table (`CLAUDE.md`, `design-sources/2026-05-25/HANDOFF.md`), and the
 open `CHANGELOG.md` (root) question: see
 [ADR-0047 Decision §6](architecture/0047-documentation-architecture.md#decision).
 

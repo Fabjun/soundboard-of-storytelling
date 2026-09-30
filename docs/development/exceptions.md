@@ -64,7 +64,7 @@ EXEMPT list in `v3/tests/unit/testGuards.test.ts`.
 | `v3/src/audio/index.ts` | audio facade — tested through tests/unit/audio/engine.test.ts |
 | `v3/src/lib/libDnd.ts` | pointer/DOM drag — covered by E2E pad-creation test 14 in Chromium and WebKit |
 
-## Tool ignore lists (15)
+## Tool ignore lists (14)
 
 Paths excluded from formatting, linting or doc guards.
 
@@ -84,7 +84,6 @@ Paths excluded from formatting, linting or doc guards.
 | docsGuards SKIP | `.git` | repository internals |
 | docsGuards SKIP | `dist` | build output |
 | docsGuards SKIP | `design-sources` | Claude Design downloads, kept exactly as delivered (ADR-0050) |
-| docsGuards SKIP | `v1-reference` | frozen V1 reference copy, not maintained |
 
 ## Prose lint exceptions (Vale) (14)
 
@@ -100,7 +99,7 @@ Historical docs excluded in `.vale.ini`, and passages marked `<!-- vale … = NO
 | `.vale.ini` | `docs/product/v1-v2-inventory.md` | historical record — keeps the names valid at its time |
 | `.vale.ini` | `CHANGELOG.md` | historical record — keeps the names valid at its time |
 | `.vale.ini` | `docs/development/exceptions.md` | historical record — keeps the names valid at its time |
-| `CLAUDE.md:659` | `SoS.SupersededTerms` off | historical slice records keep the names valid at the time (Scene before Slice 9b) |
+| `CLAUDE.md:660` | `SoS.SupersededTerms` off | historical slice records keep the names valid at the time (Scene before Slice 9b) |
 | `docs/architecture/0056-documentation-freshness.md:32` | `SoS.SupersededTerms` off | … |
 | `docs/architecture/concept-brief.md:72` | `SoS.SupersededTerms` off | explains the rename |
 | `docs/product/README.md:108` | `SoS.SupersededTerms` off | records the rename decision |

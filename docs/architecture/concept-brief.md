@@ -8,7 +8,7 @@
 > this work. Read them only as background on what V1 does and what
 > was learned about it.
 >
-> V3.0 lives in a new project directory. V1 (`index.html`) remains
+> V3.0 lives in a new project directory. V1 (index.html) remains
 > untouched and stays usable for real gaming sessions until V3.0
 > reaches feature parity.
 
@@ -39,7 +39,8 @@ V1 keeps running. V3.0 is built in parallel until ready.
 
 ## 3 · Relationship to existing artifacts
 
-**V1 (`v1-reference/index.html`, `v1-reference/sw.js`):**
+**V1 (index.html and sw.js in the local archive `~/dev/archive/botc-soundboard/` — not in this
+public repo since 2026-09-30):**
 - Reference for behavior — read when porting features
 - Source of the audio engine (copy into V3.0, wrap behind clean API)
 - Source of IndexedDB schema and template export/import format
@@ -51,8 +52,7 @@ V1 keeps running. V3.0 is built in parallel until ready.
 - JSX files (`v2-screens.jsx`, `foundations.jsx`, etc.) — **used as
   starting code**, not as reference. Lift them into V3.0, adapt to
   TypeScript and the V3.0 state model.
-- `design-sources/2026-05-25/HANDOFF.md` — an identical copy lives in `v1-reference/HANDOFF.md`
-  (the one CLAUDE.md refers to); originally written
+- `design-sources/2026-05-25/HANDOFF.md` — originally written
   for V1 migration context, still valuable for design intent and JSX-file
   index (see [CLAUDE.md §Reference documents](../../CLAUDE.md#reference-documents) for usage guidance)
 - `dist/` — partial vanilla ports, ignore in V3.0 (we use JSX directly)
@@ -195,7 +195,7 @@ cache invalidation, asset listing, version bumps. Configure for:
 - Network-first for dynamic content (none yet, but ready)
 - Skip-waiting + clients-claim on update
 
-Why a plugin: V1's manual `sw.js` worked but required discipline
+Why a plugin: V1's hand-written sw.js worked but required discipline
 (SHELL list, VERSION bumps). The plugin removes that failure mode.
 
 ### 4.10 · Responsive
@@ -307,8 +307,8 @@ Ask the user — don't assume — when:
 ## 7 · How to start
 
 1. Read this brief in full.
-2. Read `v1-reference/HANDOFF.md`.
-3. Skim V1 (`v1-reference/index.html`) for orientation.
+2. Read `design-sources/2026-05-25/HANDOFF.md`.
+3. Skim V1 (index.html in the local archive) for orientation.
 4. Slices 1–4 are already implemented — check `v3/src/screens/` to orient on what
    exists. For future slices, relevant design-system JSX files are in
    `design-sources/2026-05-25/` (versioned v2–v26 exploration files).

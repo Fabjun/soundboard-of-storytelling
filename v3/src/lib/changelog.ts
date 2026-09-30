@@ -7,9 +7,16 @@ export type ChangelogEntry = {
   items: string[];
 };
 
-export const APP_VERSION = '3.0.64';
+export const APP_VERSION = '3.0.65';
 
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.65',
+    date: '2026-09-30',
+    items: [
+      'chore: remove the V1 reference copy (incl. third-party icons without licence file) from the public repository; structure audit findings recorded',
+    ],
+  },
   {
     version: '3.0.64',
     date: '2026-09-30',

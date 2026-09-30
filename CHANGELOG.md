@@ -4,6 +4,10 @@
 
 All notable changes to Soundboard of Storytelling, newest first.
 
+## 3.0.65 — 2026-09-30
+
+- chore: remove the V1 reference copy (incl. third-party icons without licence file) from the public repository; structure audit findings recorded
+
 ## 3.0.64 — 2026-09-30
 
 - docs: slice completion checklist gains a short structure review; full audits only on occasion

@@ -133,7 +133,7 @@ const valeRows: string[] = [];
     );
   }
   const mdFiles = walk(ROOT, (f) => f.endsWith('.md')).filter(
-    (f) => !/\/(node_modules|design-sources|v1-reference)\//.test(f),
+    (f) => !/\/(node_modules|design-sources)\//.test(f),
   );
   for (const f of mdFiles) {
     readFileSync(f, 'utf8')

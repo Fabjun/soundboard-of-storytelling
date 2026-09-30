@@ -2,7 +2,8 @@
 // Audio Engine — core logic (ADR-0044)
 //
 // Algorithm fidelity: V1's LRU cache, iOS hacks, playlist advancement, and
-// combo sequencer are ported from v1-reference/index.html (lines 2751–4238).
+// combo sequencer are ported from V1's index.html (lines 2751–4238; local archive
+// ~/dev/archive/botc-soundboard/, not in this repository).
 // No algorithm redesign; module-scope state replaces V1's globals.
 // ─────────────────────────────────────────────────────────────────────────────
 
