@@ -1341,9 +1341,11 @@ Owner decisions 2026-09-30: A1–A3 as recommended.
   table guard timed out in CI under coverage (2.1 s locally) — replaced by a line scan (7 ms),
   which also found a table GitHub rendered as plain text (delimiter row with one cell too many). Follow-up: move to npm workspaces with a
   root `package.json` when a second package appears.
-- ⬜ **A4 Hook step lists typed three times** (CLAUDE.md rule 8, CLAUDE.md pre-commit section,
-  `testing.md`) — drifted again (Vale missing twice; ADR-0037 once said "three gates" for six).
-  Generate from `.husky/*`, reference elsewhere.
+- ✅ **A4 Hook step lists typed three times** — generated now: `npm run sync:steps` writes the CI
+  jobs/steps (from `tests.yml`, parsed with `yaml`) and the pre-commit / pre-push steps (from the
+  hooks' "Pre-…:" messages) into `testing.md`; CLAUDE.md links there. The generator fails if a
+  hook step runs more than one command (a step without its own message would be undocumented) —
+  counter-checked. Hand counts removed ("six gates", "seven places", "two projects").
 - ✅ **A5 Exception register misses config-level rule switches** — `no-unused-vars` off, justified
   by tsc, now one `TSC_COVERED` switch with an inline reason, listed in the exception register;
   testGuards requires a reason on every config switch and checks that the reason holds. That check
@@ -1356,11 +1358,11 @@ Owner decisions 2026-09-30: A1–A3 as recommended.
   minor/patch groups; testGuards checks that every exact peer pin between direct dependencies
   shares a group (counter-checked). Also guarded now: guard files number their header rules
   1..n (drifted twice).
-- ⬜ **A7 Vale skips code blocks** — superseded "Scenes" in CLAUDE.md's API block, a `SceneCard`
-  sample in the concept brief; the API list in CLAUDE.md is a hand copy of the `idb.ts` /
-  `upload.ts` exports (guard the names against the code).
-- ⬜ **A8 Small drift** — duplicate entries in the two `.gitignore` files. Done: the stale ESLint
-  comment about untyped config files.
+- ✅ **A7 Vale skips code blocks** — docsGuards checks code blocks of active docs against Vale's
+  term list (single source) and that every function in CLAUDE.md's API list is exported by
+  `idb.ts` / `upload.ts`; the stale "Scenes" comments and the `SceneCard` sample are fixed.
+- ✅ **A8 Small drift** — one `.gitignore` for the repository (the ignored set was verified
+  identical before/after); the stale ESLint comment fixed earlier.
 - ✅ **A10 Local run ≠ CI run (pattern, again)** — the table guard passed locally (0.7 s) and timed
   out in CI (>5 s, coverage + slower runner). Unit tests now have a local budget of 500 ms against
   5 s in CI (`v3/vitest.config.ts`), counter-checked with a 700 ms test.

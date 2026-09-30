@@ -409,8 +409,9 @@ any non-doc file flagged ⚠ for approval. Routine additionally: `v3/src/lib/cha
 7. **Update this CLAUDE.md** when permanent standards change.
 8. **Testing**: see `docs/development/testing.md` for full test architecture, commands, and
    conventions. Phase 2 testing infrastructure is complete:
-   - Pre-commit: sync:docs (auto-stage) + build + lint + unit tests + smoke E2E + link:check
-   - CI: GitHub Actions `tests.yml` runs unit + lint + size + docs sync check + link check + full E2E
+   - Pre-commit, pre-push and CI steps: generated tables in
+     [testing.md §CI integration](docs/development/testing.md#ci-integration) (`npm run sync:steps`)
+     — never list them by hand.
    - Deploy is gated on green `tests.yml` push run (via `workflow_run`) and publishes the
      exact build tested in `e2e-prod` — never rebuilds (ADR-0049)
    - Weekly: `weekly.yml` (Monday) reruns `tests.yml` + audit/outdated report; Dependabot
@@ -443,11 +444,12 @@ any non-doc file flagged ⚠ for approval. Routine additionally: `v3/src/lib/cha
     **ADR header** (fixed order): `**Status:**`, `**Date:**`, `**Slice:**`, `**Refines:**`
     (`—` if none), `**Category:**` — one of the 9 canonical values listed in the template; a
     missing category shows up as "Uncategorized" in the generated index.
-13. **Generated inventories**: six places are filled by generators — never edit them by hand:
+13. **Generated inventories**: these places are filled by generators (all run by `npm run sync:docs`) — never edit them by hand:
     - [docs/architecture/README.md §Index](docs/architecture/README.md#index) — via `npm run sync:adr`
     - [docs/design/design-system.md §6](docs/design/design-system.md#6-component-inventory) (`sb-*` classes) — via `npm run sync:classes`
     - [docs/design/design-system.md §A](docs/design/design-system.md#a-token-inventory) (Tokens) — via `npm run sync:tokens`
     - [docs/development/testing.md §Test inventory](docs/development/testing.md#test-inventory) (specs per project, unit tests) — via `npm run sync:tests`
+    - [docs/development/testing.md §CI integration](docs/development/testing.md#ci-integration) (CI, pre-commit and pre-push steps) — via `npm run sync:steps`
     - `CHANGELOG.md` (whole file, from `v3/src/lib/changelog.ts`) — via `npm run sync:changelog`
     - `docs/development/exceptions.md` (exception register, whole file) — via `npm run sync:exceptions`
       The pre-commit hook runs `sync:docs` and stages the results. To refresh manually:
@@ -469,33 +471,21 @@ any non-doc file flagged ⚠ for approval. Routine additionally: `v3/src/lib/cha
 Applies to slices, refactors, audit passes, bugfixes — every commit
 without exception:
 
-> **Enforced automatically:** the Husky pre-commit hook (`.husky/pre-commit`, the source of
-> truth for this list) runs these gates in sequence and blocks on failure:
->
-> 1. `npm run sync:docs` + `git add` (~1s) — generated docs; the result is staged automatically
-> 2. `npm run build` (`tsc -b` + vite, ~6s) — type-checks **every** TypeScript file: app, unit + E2E tests, tool configs, `v3/scripts/` (ADR-0055)
-> 3. `npx lint-staged` (config: `.lintstagedrc.json`, whole repository) — Prettier + ESLint on staged files only; Markdown via `format:md`, which fails instead of changing content; auto-fix + re-stage
-> 4. `npm run test` (vitest, ~1s)
-> 5. `npm run test:e2e:smoke` (Chromium + WebKit, ~6s)
-> 6. `npm run lint:docs` (Vale, ~1s) — superseded terms in active docs (ADR-0056)
-> 7. `npm run link:check` (remark-validate-links, ~1s) — dead internal links and anchors, also across files
->
-> CI additionally runs `npm audit --audit-level=high` (blocking), `test:coverage` (coverage floor), `format:check`, `lint`, `sync:docs` (+ `git diff --exit-code`), `lint:docs` and `link:check`.
+> **Enforced automatically** by the Husky pre-commit hook (`.husky/pre-commit`); it blocks on
+> failure. The steps are generated from the hook:
+> [testing.md §Pre-commit hook](docs/development/testing.md#pre-commit-hook). CI runs more
+> (coverage floor, format check, docs sync check …):
+> [testing.md §Workflows](docs/development/testing.md#workflows).
 >
 > The manual procedure below stays documented as the baseline.
 > After `git clone`: `cd v3 && npm install` activates the hook automatically.
 
 ### Pre-push gate (mandatory before every push)
 
-> **Enforced automatically:** the Husky pre-push hook runs on `git push` and blocks on failure:
->
-> 1. **Version-Bump-Check** (~0s) — `APP_VERSION` in `v3/src/lib/changelog.ts` must differ from `origin/main` (one push = one version bump); skipped if `origin/main` is unreachable (first push)
-> 2. Only if install files changed: `npm ci` in a fresh worktree with its own cache (~10s) — the CI install path
-> 3. `npm audit --audit-level=high` (~2s) — high/critical vulnerabilities block
-> 4. `npm run size` (~2s) — Bundle-Size-Limit (200 kB JS / 50 kB CSS gzip)
-> 5. `npm run test:e2e:all` (~3 min) — all six dev-server projects: smoke + smoke-webkit + full + full-webkit + mobile + mobile-chromium
-> 6. `npm run test:e2e:prod` — build, then smoke + full + pwa against the finished build (`vite preview`, service worker)
-> 7. **macOS only:** `npm run test:e2e:visual` (~15s) — visual regression
+> **Enforced automatically** by the Husky pre-push hook (`.husky/pre-push`) on `git push`; it
+> blocks on failure. The steps are generated from the hook:
+> [testing.md §Pre-push hook](docs/development/testing.md#pre-push-hook). One push = one
+> version bump (`APP_VERSION` in `v3/src/lib/changelog.ts` must differ from `origin/main`).
 >
 > If a step fails: **read the error output / report first, then re-run** (a new run overwrites the report).
 >
@@ -659,13 +649,13 @@ boardGet(id: string): Promise<Board | null>
   // Load a single board by ID. Used for optimistic reads before edits.
 
 boardPut(board: Board): Promise<void>
-  // Upsert entire board document (Board + embedded Scenes + Pads).
-  // TRADE-OFF: any pad/scene edit rewrites the full ~50KB document.
+  // Upsert entire board document (Board + embedded decks + pads).
+  // TRADE-OFF: any pad/deck edit rewrites the full ~50KB document.
   // Acceptable at 5×16 pads; see docs/design/design-notes.md "Slice 8 / Performance"
   // for optimisation path if measured to be a bottleneck.
 
 boardDelete(id: string): Promise<void>
-  // Delete board and all embedded scenes/pads in one operation.
+  // Delete board and all embedded decks/pads in one operation.
 ```
 
 ---

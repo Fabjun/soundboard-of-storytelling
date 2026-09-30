@@ -4,6 +4,10 @@
 
 All notable changes to Soundboard of Storytelling, newest first.
 
+## 3.0.72 — 2026-09-30
+
+- docs: CI and hook step lists generated from their sources; code blocks and the API list in CLAUDE.md checked; one .gitignore (audit A4, A7, A8)
+
 ## 3.0.71 — 2026-09-30
 
 - test: unused code in tests is reported again; ESLint rule switches carry a checked reason and appear in the exception register

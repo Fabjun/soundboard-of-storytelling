@@ -21,6 +21,8 @@
 //    Markdown link target is resolved here with GitHub's slug algorithm (github-slugger) —
 //    Markdown link targets are checked by remark-validate-links.
 // 8. Every GFM table row has as many cells as its header — GitHub drops extra cells silently.
+// 9. Code blocks in active docs use no superseded term (Vale skips code).
+// 10. The API list in CLAUDE.md names functions that idb.ts / upload.ts export.
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { readdirSync, readFileSync, statSync } from 'node:fs';
@@ -420,5 +422,52 @@ describe('guard: table rows have as many cells as the header (audit A3)', () => 
       }
     }
     expect(bad, 'escape | inside cells as \\|').toEqual([]);
+  });
+});
+
+describe('guard: code blocks in active docs are current (audit A7)', () => {
+  // Vale deliberately skips code, so superseded names survived in code blocks. Same term list
+  // as Vale (.vale/styles/SoS/SupersededTerms.yml — single source), same exclusions.
+  const rule = readFileSync(join(ROOT, '.vale', 'styles', 'SoS', 'SupersededTerms.yml'), 'utf8');
+  const terms = [...(rule.split(/^swap:\s*$/m)[1] ?? '').matchAll(/^\s+'?([^':]+)'?:/gm)].map(
+    (m) => new RegExp(`\\b${m[1]}\\b`),
+  );
+  const VALE_OFF =
+    /<!-- vale SoS\.SupersededTerms = NO -->[\s\S]*?<!-- vale SoS\.SupersededTerms = YES -->/g;
+  const codeBlocks = (text: string): string[] =>
+    [...text.replace(VALE_OFF, '').matchAll(/^```[^\n]*\n([\s\S]*?)^```/gm)].map((m) => m[1]);
+
+  it('reads the term list (sanity)', () => {
+    expect(terms.length).toBeGreaterThanOrEqual(4);
+  });
+
+  it('no superseded term in a code block', () => {
+    const bad = ACTIVE_DOCS.flatMap((f) =>
+      codeBlocks(readFileSync(join(ROOT, f), 'utf8')).flatMap((block) =>
+        terms.filter((re) => re.test(block)).map((re) => `${f}: ${re.source}`),
+      ),
+    );
+    expect(bad).toEqual([]);
+  });
+});
+
+describe('guard: the API list in CLAUDE.md names real exports (audit A7)', () => {
+  const claude = readFileSync(join(ROOT, 'CLAUDE.md'), 'utf8');
+  const section = claude.split(/^## V3 audio\/IDB API$/m)[1]?.split(/^## /m)[0] ?? '';
+  const listed = [...section.matchAll(/^(\w+)\(/gm)].map((m) => m[1]);
+  const exported = new Set(
+    ['v3/src/db/idb.ts', 'v3/src/lib/upload.ts'].flatMap((f) =>
+      [...readFileSync(join(ROOT, f), 'utf8').matchAll(/^export (?:async )?function (\w+)/gm)].map(
+        (m) => m[1],
+      ),
+    ),
+  );
+
+  it('finds the listed functions (sanity)', () => {
+    expect(listed.length).toBeGreaterThanOrEqual(10);
+  });
+
+  it('every listed function is exported by idb.ts or upload.ts', () => {
+    expect(listed.filter((name) => !exported.has(name))).toEqual([]);
   });
 });

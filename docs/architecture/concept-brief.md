@@ -88,7 +88,7 @@ Every UI element has **one** component. Variants via props.
 function Pad({ pad, mode, isHot }: PadProps) { ... }
 function Button({ label, variant, icon, onClick }: ButtonProps) { ... }
 function PixelIcon({ name, size, color }: PixelIconProps) { ... }
-function SceneCard({ scene, active, onClick }: SceneCardProps) { ... }
+function DeckRail({ board, activeDeckId, onDeckSelect }: DeckRailProps) { ... }
 ```
 
 When a new variant is needed: **extend the existing component with a

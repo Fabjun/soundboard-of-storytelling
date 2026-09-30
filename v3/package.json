@@ -33,9 +33,10 @@
     "sync:tests": "tsx scripts/sync-tests.ts",
     "sync:changelog": "tsx scripts/sync-changelog.ts",
     "sync:exceptions": "tsx scripts/sync-exceptions.ts",
+    "sync:steps": "tsx scripts/sync-steps.ts",
     "vale:install": "tsx scripts/vale-install.ts",
     "typecheck": "tsc -b",
-    "sync:docs": "npm run sync:adr && npm run sync:classes && npm run sync:tokens && npm run sync:tests && npm run sync:changelog && npm run sync:exceptions",
+    "sync:docs": "npm run sync:adr && npm run sync:classes && npm run sync:tokens && npm run sync:tests && npm run sync:changelog && npm run sync:steps && npm run sync:exceptions",
     "link:check": "remark --no-stdout --quiet --frail --use remark-validate-links ..",
     "lint:docs": "cd .. && vale README.md CLAUDE.md docs",
     "audit:inline-styles": "tsx scripts/audit-inline-styles.ts"
@@ -81,6 +82,7 @@
     "typescript": "~6.0.2",
     "vite": "^8.0.12",
     "vite-plugin-pwa": "^1.3.0",
-    "vitest": "^4.1.11"
+    "vitest": "^4.1.11",
+    "yaml": "^2.9.1"
   }
 }

@@ -7,9 +7,16 @@ export type ChangelogEntry = {
   items: string[];
 };
 
-export const APP_VERSION = '3.0.71';
+export const APP_VERSION = '3.0.72';
 
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.72',
+    date: '2026-09-30',
+    items: [
+      'docs: CI and hook step lists generated from their sources; code blocks and the API list in CLAUDE.md checked; one .gitignore (audit A4, A7, A8)',
+    ],
+  },
   {
     version: '3.0.71',
     date: '2026-09-30',

@@ -66,8 +66,8 @@ number in brackets = test cases in the file (incl. quarantine)._
 | `pwa`             | Chromium (Desktop)             | Build only  | `pwa` (7)                                                                                                                                                                                  |
 | `visual`          | Chromium (Desktop), macOS only | Dev         | `board-list-empty` (1), `board-list-with-board` (1), `board-screen-game` (1), `board-screen-setup` (1), `deck-rail` (1), `library-empty` (1), `mode-toggle-states` (2), `start-screen` (1) |
 
-**Unit tests (Vitest):** 14 files, 226 test cases —
-`audio/engine.test.ts` (24), `audio/lru.test.ts` (11), `codeGuards.test.ts` (11), `deckConflict.test.ts` (9), `docsGuards.test.ts` (18), `e2eProjects.test.ts` (6), `flameMath.test.ts` (22), `idb.test.ts` (15), `nanoid.test.ts` (2), `padDnd.test.ts` (11), `padUtils.test.ts` (43), `store.test.ts` (23), `testGuards.test.ts` (18), `upload.test.ts` (13)
+**Unit tests (Vitest):** 14 files, 230 test cases —
+`audio/engine.test.ts` (24), `audio/lru.test.ts` (11), `codeGuards.test.ts` (11), `deckConflict.test.ts` (9), `docsGuards.test.ts` (22), `e2eProjects.test.ts` (6), `flameMath.test.ts` (22), `idb.test.ts` (15), `nanoid.test.ts` (2), `padDnd.test.ts` (11), `padUtils.test.ts` (43), `store.test.ts` (23), `testGuards.test.ts` (18), `upload.test.ts` (13)
 
 <!-- AUTO-GENERATED:test-inventory END -->
 
@@ -107,7 +107,7 @@ listed in [`exceptions.md`](exceptions.md)).
 
 ## Mobile testing
 
-Mobile tests are split across two Playwright projects, both using the **iPhone 13 Pro**
+Mobile tests are split across the Playwright projects `mobile` and `mobile-chromium`, both using the **iPhone 13 Pro**
 device profile (viewport 390×844, `hasTouch: true`, `isMobile: true`):
 
 | Project           | Browser  | Covers                                                                                                        |
@@ -117,7 +117,7 @@ device profile (viewport 390×844, `hasTouch: true`, `isMobile: true`):
 
 All tested interactions use `tap()` to send real touch events (pointerType: 'touch').
 
-**Why two projects:** Playwright's headless WebKit has no audio codec support.
+**Why the split:** Playwright's headless WebKit has no audio codec support.
 `decodeAudioData()` fails, the upload pipeline skips the file, and any test waiting for
 audio in the library times out. Audio-dependent tests run on Chromium with the same
 iPhone 13 Pro device settings (viewport, hasTouch, isMobile, UA) applied.
@@ -211,33 +211,53 @@ GitHub Actions in [`.github/workflows/tests.yml`](../../.github/workflows/tests.
 
 ### Workflows
 
-**`tests.yml`** — runs on pushes to `main`, on pull requests, and is called by `weekly.yml`:
+**`tests.yml`** — runs on pushes to `main`, on pull requests, and is called by `weekly.yml`.
+Jobs and steps, generated from the workflow:
 
-```
-unit-build-lint
-  ├── npm audit --audit-level=high   (high/critical blocks)
-  ├── npm run build          (tsc -b: app, unit + E2E tests, tool configs, v3/scripts/ — then vite)
-  ├── npm run test:coverage  (vitest incl. guard tests + coverage floor)
-  ├── npm run lint           (eslint)
-  ├── npm run format:check   (prettier)
-  ├── npm run size           (size-limit)
-  ├── npm run sync:docs      (+ git diff --exit-code)  ← Docs sync check
-  ├── npm run lint:docs      (Vale)                    ← Superseded terms in active docs
-  ├── npm run link:check     (remark-validate-links)   ← Links + anchors across files
-  └── npm run audit:inline-styles                      ← informational, never blocks
+<!-- AUTO-GENERATED:ci-steps START — do not edit by hand (npm run sync:steps) -->
 
-e2e-smoke (needs: unit-build-lint)
-  └── npm run test:e2e:smoke   (smoke + smoke-webkit)
+| Job               | Needs           | Step                                                               | Command                                                                                                                                                                                                                                                                                                |
+| ----------------- | --------------- | ------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `unit-build-lint` | —               | (setup)                                                            | actions/checkout@v7                                                                                                                                                                                                                                                                                    |
+| `unit-build-lint` | —               | (setup)                                                            | actions/setup-node@v7                                                                                                                                                                                                                                                                                  |
+| `unit-build-lint` | —               | Install dependencies                                               | `npm ci`                                                                                                                                                                                                                                                                                               |
+| `unit-build-lint` | —               | Security audit (blocking at high/critical)                         | `npm audit --audit-level=high`                                                                                                                                                                                                                                                                         |
+| `unit-build-lint` | —               | Build (tsc -b type-checks app, tests, configs, scripts — ADR-0055) | `npm run build`                                                                                                                                                                                                                                                                                        |
+| `unit-build-lint` | —               | Unit tests + coverage floor                                        | `npm run test:coverage`                                                                                                                                                                                                                                                                                |
+| `unit-build-lint` | —               | Lint                                                               | `npm run lint`                                                                                                                                                                                                                                                                                         |
+| `unit-build-lint` | —               | Format check                                                       | `npm run format:check`                                                                                                                                                                                                                                                                                 |
+| `unit-build-lint` | —               | Bundle size                                                        | `npm run size`                                                                                                                                                                                                                                                                                         |
+| `unit-build-lint` | —               | Docs sync check                                                    | `npm run sync:docs && git diff --exit-code -- ../docs/architecture/README.md ../docs/design/design-system.md ../docs/development/testing.md ../docs/development/exceptions.md ../CHANGELOG.md \ &&   \|\| { echo "❌ Generated docs are stale — run npm run sync:docs locally and commit."; exit 1; }` |
+| `unit-build-lint` | —               | Vale — superseded terms in active docs (ADR-0056)                  | `npm run lint:docs`                                                                                                                                                                                                                                                                                    |
+| `unit-build-lint` | —               | Link integrity check                                               | `npm run link:check`                                                                                                                                                                                                                                                                                   |
+| `unit-build-lint` | —               | Inline style audit (informational)                                 | `npm run audit:inline-styles`                                                                                                                                                                                                                                                                          |
+| `e2e-smoke`       | unit-build-lint | (setup)                                                            | actions/checkout@v7                                                                                                                                                                                                                                                                                    |
+| `e2e-smoke`       | unit-build-lint | (setup)                                                            | actions/setup-node@v7                                                                                                                                                                                                                                                                                  |
+| `e2e-smoke`       | unit-build-lint | Install dependencies                                               | `npm ci`                                                                                                                                                                                                                                                                                               |
+| `e2e-smoke`       | unit-build-lint | Install Playwright browsers                                        | `npx playwright install --with-deps chromium webkit`                                                                                                                                                                                                                                                   |
+| `e2e-smoke`       | unit-build-lint | Run smoke E2E tests                                                | `npm run test:e2e:smoke`                                                                                                                                                                                                                                                                               |
+| `e2e-smoke`       | unit-build-lint | (setup)                                                            | actions/upload-artifact@v7                                                                                                                                                                                                                                                                             |
+| `e2e-mobile`      | unit-build-lint | (setup)                                                            | actions/checkout@v7                                                                                                                                                                                                                                                                                    |
+| `e2e-mobile`      | unit-build-lint | (setup)                                                            | actions/setup-node@v7                                                                                                                                                                                                                                                                                  |
+| `e2e-mobile`      | unit-build-lint | Install dependencies                                               | `npm ci`                                                                                                                                                                                                                                                                                               |
+| `e2e-mobile`      | unit-build-lint | Install Playwright browsers (WebKit + Chromium)                    | `npx playwright install --with-deps webkit chromium`                                                                                                                                                                                                                                                   |
+| `e2e-mobile`      | unit-build-lint | Run mobile E2E tests                                               | `npm run test:e2e:mobile`                                                                                                                                                                                                                                                                              |
+| `e2e-mobile`      | unit-build-lint | (setup)                                                            | actions/upload-artifact@v7                                                                                                                                                                                                                                                                             |
+| `e2e-full`        | unit-build-lint | (setup)                                                            | actions/checkout@v7                                                                                                                                                                                                                                                                                    |
+| `e2e-full`        | unit-build-lint | (setup)                                                            | actions/setup-node@v7                                                                                                                                                                                                                                                                                  |
+| `e2e-full`        | unit-build-lint | Install dependencies                                               | `npm ci`                                                                                                                                                                                                                                                                                               |
+| `e2e-full`        | unit-build-lint | Install Playwright browsers (Chromium + WebKit)                    | `npx playwright install --with-deps chromium webkit`                                                                                                                                                                                                                                                   |
+| `e2e-full`        | unit-build-lint | Run full E2E tests (Chromium + WebKit subset)                      | `npm run test:e2e:full`                                                                                                                                                                                                                                                                                |
+| `e2e-full`        | unit-build-lint | (setup)                                                            | actions/upload-artifact@v7                                                                                                                                                                                                                                                                             |
+| `e2e-prod`        | unit-build-lint | (setup)                                                            | actions/checkout@v7                                                                                                                                                                                                                                                                                    |
+| `e2e-prod`        | unit-build-lint | (setup)                                                            | actions/setup-node@v7                                                                                                                                                                                                                                                                                  |
+| `e2e-prod`        | unit-build-lint | Install dependencies                                               | `npm ci`                                                                                                                                                                                                                                                                                               |
+| `e2e-prod`        | unit-build-lint | Install Playwright browsers (Chromium only)                        | `npx playwright install --with-deps chromium`                                                                                                                                                                                                                                                          |
+| `e2e-prod`        | unit-build-lint | Run E2E against the production build (smoke + full + PWA)          | `npm run test:e2e:prod`                                                                                                                                                                                                                                                                                |
+| `e2e-prod`        | unit-build-lint | Keep the tested build for deployment                               | actions/upload-artifact@v7                                                                                                                                                                                                                                                                             |
+| `e2e-prod`        | unit-build-lint | (setup)                                                            | actions/upload-artifact@v7                                                                                                                                                                                                                                                                             |
 
-e2e-mobile (needs: unit-build-lint)
-  └── npm run test:e2e:mobile  (mobile + mobile-chromium — iPhone 13 Pro profile)
-
-e2e-prod (needs: unit-build-lint)
-  └── npm run test:e2e:prod    (build → smoke + full + PWA against vite preview; service worker, manifest, offline)
-
-e2e-full (needs: unit-build-lint)
-  └── npm run test:e2e:full    (full in Chromium + full-webkit: board/deck/pad CRUD + drag & drop in the Safari engine)
-```
+<!-- AUTO-GENERATED:ci-steps END -->
 
 Playwright reports are uploaded as artifacts (7 days, on failure). Node version from `.nvmrc`.
 CI uses `failOnFlakyTests`: a test that only passes on retry **fails** the run (→ no
@@ -269,26 +289,50 @@ packages, changed runners/browsers, forgotten Dependabot PRs.
 
 ### Pre-commit hook
 
-The Husky hook runs before every local commit (in this order):
+The Husky hook (`.husky/pre-commit`) runs before every local commit, in this order — generated
+from the hook's step messages:
 
-1. `npm run sync:docs` + `git add` (~1s) — regenerate and stage the generated docs (ADR index, classes, tokens, test inventory, `CHANGELOG.md`, exception register)
-2. `npm run build` (~6s) — `tsc -b` type-checks every TypeScript file (app, unit + E2E tests, tool configs, `v3/scripts/`; ADR-0055) — Vitest and Playwright do not check types themselves
-3. lint-staged: Prettier + ESLint on the staged files
-4. `npm run test` (~2s) — incl. the guard tests `e2eProjects.test.ts`, `testGuards.test.ts`, `docsGuards.test.ts` and `codeGuards.test.ts` (file names per ADR-0050/0052, links with exact case — macOS ignores case, CI does not —, README facts, test IDs, exception markers)
-5. `npm run test:e2e:smoke` (~6s, own server on port 5199)
-6. `npm run link:check` (~1s) — detects dead internal Markdown links and anchors, also into other files (`remark-validate-links`)
+<!-- AUTO-GENERATED:pre-commit-steps START — do not edit by hand (npm run sync:steps) -->
 
-About 20s in total. If any step fails → the commit is aborted.
+| #   | Step                                                | Command                  |
+| --- | --------------------------------------------------- | ------------------------ |
+| 1   | syncing auto-generated docs                         | `npm run sync:docs`      |
+| 2   | running build check in v3/                          | `npm run build`          |
+| 3   | running lint-staged (format + lint on staged files) | `npx lint-staged`        |
+| 4   | running unit tests in v3/                           | `npm run test`           |
+| 5   | running smoke E2E tests                             | `npm run test:e2e:smoke` |
+| 6   | Vale — superseded terms in active docs              | `npm run lint:docs`      |
+| 7   | checking markdown link integrity                    | `npm run link:check`     |
+
+<!-- AUTO-GENERATED:pre-commit-steps END -->
+
+`npm run test` includes the guard tests (`e2eProjects`, `testGuards`, `docsGuards`, `codeGuards`);
+`npm run build` type-checks every TypeScript file with `tsc -b` (ADR-0055) — Vitest and
+Playwright do not check types themselves. About 20s in total. If any step fails → the commit is aborted.
 
 ### Pre-push hook
 
-1. Version bump check (`APP_VERSION` against `origin/main`)
-   1a. **Install files changed** (`package.json`, lockfile, `.husky/`, `.nvmrc`, Vale installer): `npm ci` in a fresh worktree with its own npm cache — exactly the CI install path (added 2026-09-30 after a `prepare` script passed locally but failed in CI)
-   1b. `npm audit --audit-level=high` — known vulnerabilities of level high/critical block (moderate/low only reported). If found: first `npm audit fix` without `--force`; major upgrades one at a time (BACKLOG "Major dependency updates")
-2. `npm run size` — bundle size
-3. `npm run test:e2e:all` — all six dev-server projects (smoke, smoke-webkit, full, full-webkit, mobile, mobile-chromium)
-4. `npm run test:e2e:prod` — build, then smoke, full and **PWA** against the **finished build** (`vite preview`, with service worker)
-5. **macOS only:** `npm run test:e2e:visual` — visual regression
+Generated from `.husky/pre-push`:
+
+<!-- AUTO-GENERATED:pre-push-steps START — do not edit by hand (npm run sync:steps) -->
+
+| #   | Step                                                                       | Command                        |
+| --- | -------------------------------------------------------------------------- | ------------------------------ |
+| 1   | version bump check                                                         | shell check                    |
+| 2   | install files changed — npm ci in a fresh worktree (CI path) (conditional) | `npm ci`                       |
+| 3   | security audit (high/critical blocks)                                      | `npm audit --audit-level=high` |
+| 4   | bundle size check                                                          | `npm run size`                 |
+| 5   | full E2E suite (all dev-server projects) for CI parity                     | `npm run test:e2e:all`         |
+| 6   | E2E against the production build (smoke + full + PWA)                      | `npm run test:e2e:prod`        |
+| 7   | visual regression (macOS) (conditional)                                    | `npm run test:e2e:visual`      |
+
+<!-- AUTO-GENERATED:pre-push-steps END -->
+
+The fresh install runs only when install files changed (`package.json`, lockfile, `.husky/`,
+`.nvmrc`, Vale installer) — exactly the CI install path (added 2026-09-30 after a `prepare` script
+passed locally but failed in CI). The audit blocks high/critical advisories; first try
+`npm audit fix` without `--force`, major upgrades one at a time (BACKLOG "Major dependency
+updates").
 
 If a step fails: **read the error output / report first**, only then re-run (a new run
 overwrites `playwright-report/`).
