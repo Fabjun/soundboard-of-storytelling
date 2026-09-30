@@ -131,6 +131,20 @@ for (const [file, label] of [
   }
 }
 
+// ── Dependabot: deliberately ignored updates (reason = comment line directly above) ──
+{
+  const lines = readFileSync(join(ROOT, '.github', 'dependabot.yml'), 'utf8').split('\n');
+  lines.forEach((line, i) => {
+    const m = /^\s*- dependency-name: '([^']+)'/.exec(line);
+    if (!m) return;
+    const reason = /^\s*#\s*(.+)$/.exec(lines[i - 1] ?? '')?.[1] ?? '';
+    const types = /update-types: \[([^\]]*)\]/.exec(lines[i + 1] ?? '')?.[1] ?? 'all';
+    toolRows.push(
+      `| Dependabot ignore | \`${esc(m[1])}\` (${esc(types.replace(/'/g, ''))}) | ${esc(reason)} |`,
+    );
+  });
+}
+
 // ── Vale: historical docs and marked historical passages ───────────────────────
 const valeRows: string[] = [];
 {

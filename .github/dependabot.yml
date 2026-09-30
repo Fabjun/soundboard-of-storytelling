@@ -36,6 +36,16 @@ updates:
           - 'minor'
           - 'patch'
 
+    # Deliberately ignored majors (ADR-0053: rule + reason + review trigger; listed in the
+    # exception register). The comment directly above each entry is its reason.
+    ignore:
+      # @types/node follows the Node runtime (.nvmrc); a newer major describes APIs the runtime lacks — raise with .nvmrc (guarded by testGuards)
+      - dependency-name: '@types/node'
+        update-types: ['version-update:semver-major']
+      # typescript-eslint supports only TypeScript <6.1.0 (peer) — review when it supports 7 (BACKLOG "Major dependency updates")
+      - dependency-name: 'typescript'
+        update-types: ['version-update:semver-major']
+
   - package-ecosystem: 'github-actions'
     directory: '/'
     schedule:

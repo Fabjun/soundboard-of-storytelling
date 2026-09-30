@@ -66,27 +66,29 @@ EXEMPT list in `v3/tests/unit/testGuards.test.ts`.
 | `v3/src/audio/index.ts`   | audio facade — tested through tests/unit/audio/engine.test.ts                 |
 | `v3/src/lib/libDnd.ts`    | pointer/DOM drag — covered by E2E pad-creation test 14 in Chromium and WebKit |
 
-## Tool ignore lists (15)
+## Tool ignore lists (17)
 
 Paths excluded from formatting, linting or doc guards.
 
-| Tool                  | Pattern                 | Reason                                                        |
-| --------------------- | ----------------------- | ------------------------------------------------------------- |
-| `.prettierignore`     | `v3/dist/`              | Build output (vite build)                                     |
-| `.prettierignore`     | `node_modules/`         | Installed dependencies                                        |
-| `.prettierignore`     | `v3/coverage/`          | Generated coverage report                                     |
-| `.prettierignore`     | `v3/playwright-report/` | Generated E2E report and artefacts                            |
-| `.prettierignore`     | `v3/test-results/`      | Generated E2E report and artefacts                            |
-| `.prettierignore`     | `design-sources/`       | Claude Design downloads, kept exactly as delivered (ADR-0050) |
-| ESLint global ignores | `dist/**`               | build output (vite build)                                     |
-| ESLint global ignores | `node_modules/**`       | installed dependencies                                        |
-| ESLint global ignores | `coverage/**`           | generated coverage report                                     |
-| ESLint global ignores | `playwright-report/**`  | generated E2E report                                          |
-| ESLint global ignores | `test-results/**`       | generated E2E artefacts                                       |
-| docsGuards SKIP       | `node_modules`          | installed dependencies                                        |
-| docsGuards SKIP       | `.git`                  | repository internals                                          |
-| docsGuards SKIP       | `dist`                  | build output                                                  |
-| docsGuards SKIP       | `design-sources`        | Claude Design downloads, kept exactly as delivered (ADR-0050) |
+| Tool                  | Pattern                                     | Reason                                                                                                                                    |
+| --------------------- | ------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| `.prettierignore`     | `v3/dist/`                                  | Build output (vite build)                                                                                                                 |
+| `.prettierignore`     | `node_modules/`                             | Installed dependencies                                                                                                                    |
+| `.prettierignore`     | `v3/coverage/`                              | Generated coverage report                                                                                                                 |
+| `.prettierignore`     | `v3/playwright-report/`                     | Generated E2E report and artefacts                                                                                                        |
+| `.prettierignore`     | `v3/test-results/`                          | Generated E2E report and artefacts                                                                                                        |
+| `.prettierignore`     | `design-sources/`                           | Claude Design downloads, kept exactly as delivered (ADR-0050)                                                                             |
+| ESLint global ignores | `dist/**`                                   | build output (vite build)                                                                                                                 |
+| ESLint global ignores | `node_modules/**`                           | installed dependencies                                                                                                                    |
+| ESLint global ignores | `coverage/**`                               | generated coverage report                                                                                                                 |
+| ESLint global ignores | `playwright-report/**`                      | generated E2E report                                                                                                                      |
+| ESLint global ignores | `test-results/**`                           | generated E2E artefacts                                                                                                                   |
+| docsGuards SKIP       | `node_modules`                              | installed dependencies                                                                                                                    |
+| docsGuards SKIP       | `.git`                                      | repository internals                                                                                                                      |
+| docsGuards SKIP       | `dist`                                      | build output                                                                                                                              |
+| docsGuards SKIP       | `design-sources`                            | Claude Design downloads, kept exactly as delivered (ADR-0050)                                                                             |
+| Dependabot ignore     | `@types/node` (version-update:semver-major) | @types/node follows the Node runtime (.nvmrc); a newer major describes APIs the runtime lacks — raise with .nvmrc (guarded by testGuards) |
+| Dependabot ignore     | `typescript` (version-update:semver-major)  | typescript-eslint supports only TypeScript <6.1.0 (peer) — review when it supports 7 (BACKLOG "Major dependency updates")                 |
 
 ## Prose lint exceptions (Vale) (14)
 

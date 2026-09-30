@@ -7,9 +7,16 @@ export type ChangelogEntry = {
   items: string[];
 };
 
-export const APP_VERSION = '3.0.77';
+export const APP_VERSION = '3.0.78';
 
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.78',
+    date: '2026-09-30',
+    items: [
+      'ci: Dependabot ignores @types/node majors (follows .nvmrc) and TypeScript majors (blocked by typescript-eslint), with reasons in the exception register and guards',
+    ],
+  },
   {
     version: '3.0.77',
     date: '2026-09-30',

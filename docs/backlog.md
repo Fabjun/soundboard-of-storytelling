@@ -1228,10 +1228,20 @@ V1 import (Slice 10) makes real combos usable.
 
 ### Major dependency updates (one at a time)
 
-Pending since 2026-08 (Dependabot PR #15, which failed CI because they were bundled):
-TypeScript 6.0.3 → 7.0.2 (largest — own plan), jsdom 29 → 30, size-limit / @size-limit/file 12 → 13,
-@types/node 24 → 26. Each gets its own step with plan, approval and the full pipeline;
-with the new Dependabot grouping each arrives as a separate PR.
+Status 2026-09-30 (owner approval of the plan; each major measured in a throwaway worktree first,
+then applied with the full gate):
+
+- ✅ vitest / @vitest/coverage-v8 / @vitest/ui 4 → 5 (2c2447d)
+- ✅ size-limit / @size-limit/file 12 → 14 (01f2e21) — gate counter-checked (10 KB limit → exit 1)
+- ✅ jsdom 29 → 30 (f9da34f)
+- ⏸ @types/node stays on the Node runtime major (`.nvmrc` 24) — Dependabot ignores its majors;
+  testGuards keeps both in step. **Trigger:** raise together with `.nvmrc`.
+- ⏸ TypeScript 6 → 7 — blocked: typescript-eslint supports only `<6.1.0` (peer). Dependabot
+  ignores TypeScript majors. **Trigger:** a typescript-eslint release supporting TypeScript 7.
+- ⬜ Preact 10 → 11 — own plan pending: the trial build fails (`JSXInternal.CSSProperties` removed,
+  used in `PixelIcon.tsx`), and Preact 11 no longer appends `px` to numeric style values
+  (about 5–10 places, e.g. `BoardTopBar`, `AnimatedFlame`); needs a guard against unitless
+  lengths and the visual regression.
 
 ### Library audio as Blob — Safari Private Browsing (open question)
 

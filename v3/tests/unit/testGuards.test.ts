@@ -17,6 +17,7 @@
 // 5. Lockstep dependency families (exact peer pins) share a Dependabot group (audit A6).
 // 6. Guard files (this one included) number their header rules 1..n in order.
 // 7. ESLint config rule switches name their reason inline; the tsc flags behind them stay on.
+// 8. Dependabot ignore rules carry a reason; @types/node matches the Node major in .nvmrc.
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
@@ -266,5 +267,32 @@ describe('guard: ESLint rule switches carry a reason that stays true (audit A5)'
     expect(bad, 're-enable no-unused-vars in eslint.config.js or restore the tsc flags').toEqual(
       [],
     );
+  });
+});
+
+describe('guard: deliberately ignored dependency updates stay justified', () => {
+  const yml = readFileSync(join(V3, '..', '.github', 'dependabot.yml'), 'utf8').split('\n');
+  const ignores = yml
+    .map((line, i) => ({ line, i }))
+    .filter(({ line }) => /^\s*- dependency-name: /.test(line));
+
+  it('finds the ignore rules (sanity)', () => {
+    expect(ignores.length).toBeGreaterThanOrEqual(1);
+  });
+
+  it('every ignore rule has a reason comment directly above (ADR-0053)', () => {
+    const bad = ignores.filter(({ i }) => !/^\s*#\s*\S/.test(yml[i - 1] ?? '')).map((x) => x.line);
+    expect(bad).toEqual([]);
+  });
+
+  it('@types/node has the same major version as the Node runtime (.nvmrc)', () => {
+    const nvmrc = readFileSync(join(V3, '..', '.nvmrc'), 'utf8')
+      .trim()
+      .split('.')[0];
+    const pkg = JSON.parse(readFileSync(join(V3, 'package.json'), 'utf8')) as {
+      devDependencies: Record<string, string>;
+    };
+    const major = /\d+/.exec(pkg.devDependencies['@types/node'])?.[0];
+    expect(major, 'raise @types/node together with .nvmrc').toBe(nvmrc);
   });
 });

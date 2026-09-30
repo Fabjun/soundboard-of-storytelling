@@ -4,6 +4,10 @@
 
 All notable changes to Soundboard of Storytelling, newest first.
 
+## 3.0.78 — 2026-09-30
+
+- ci: Dependabot ignores @types/node majors (follows .nvmrc) and TypeScript majors (blocked by typescript-eslint), with reasons in the exception register and guards
+
 ## 3.0.77 — 2026-09-30
 
 - chore(deps): jsdom 30 (major, unit-test DOM)
