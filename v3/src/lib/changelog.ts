@@ -7,9 +7,14 @@ export type ChangelogEntry = {
   items: string[];
 };
 
-export const APP_VERSION = '3.0.75';
+export const APP_VERSION = '3.0.76';
 
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.76',
+    date: '2026-09-30',
+    items: ['chore(deps): size-limit and @size-limit/file 14 (major)'],
+  },
   {
     version: '3.0.75',
     date: '2026-09-30',

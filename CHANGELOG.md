@@ -4,6 +4,10 @@
 
 All notable changes to Soundboard of Storytelling, newest first.
 
+## 3.0.76 — 2026-09-30
+
+- chore(deps): size-limit and @size-limit/file 14 (major)
+
 ## 3.0.75 — 2026-09-30
 
 - chore(deps): vitest 5 with @vitest/coverage-v8 and @vitest/ui 5 (major, one family)
