@@ -468,6 +468,7 @@ without exception:
 > **Enforced automatically:** the Husky pre-push hook runs on `git push` and blocks on failure:
 > 1. **Version-Bump-Check** (~0s) — `APP_VERSION` in `v3/src/lib/changelog.ts` must differ from `origin/main` (one push = one version bump); skipped if `origin/main` is unreachable (first push)
 > 2. `npm audit --audit-level=high` (~2s) — high/critical vulnerabilities block
+> 2a. only if install files changed: `npm ci` in a fresh worktree with its own cache (~10s) — the CI install path
 > 3. `npm run size` (~2s) — Bundle-Size-Limit (200 kB JS / 50 kB CSS gzip)
 > 4. `npm run test:e2e:all` (~3 min) — all six dev-server projects: smoke + smoke-webkit + full + full-webkit + mobile + mobile-chromium
 > 5. `npm run test:e2e:prod` — build, then smoke + full + pwa against the finished build (`vite preview`, service worker)

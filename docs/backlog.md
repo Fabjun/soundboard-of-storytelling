@@ -1226,6 +1226,11 @@ Found 2026-09-30 during S5: stale facts and dead references were found only by c
 - ⬜ **Project-wide structure audit** (owner request 2026-09-30) after T13 — incl. the patterns
   seen repeatedly: `scripts/*.ts` outside Prettier's config (5 of 7 files misformatted, not in
   `format:check`); text edits that break Markdown structure; checks that pass vacuously.
+  Already fixed systematically: **local verification took a different path than CI** (link probe
+  on case-insensitive macOS, Prettier check with the exclusion active, `prepare` script never run
+  locally → CI red on a0c1962) → pre-push now runs `npm ci` in a fresh worktree whenever install
+  files change. Owner action: 11 root-owned entries in `~/.npm` (from an old `sudo npm`) —
+  `sudo chown -R $(id -u):$(id -g) ~/.npm`.
 - ⬜ **Derivable facts from code** — hard-coded counts in active docs replaced by generated data.
 
 ### Role-based E2E locators

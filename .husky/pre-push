@@ -14,6 +14,26 @@ if [ -n "$REMOTE_VERSION" ] && [ "$LOCAL_VERSION" = "$REMOTE_VERSION" ]; then
 fi
 printf '✅ Version OK (%s → %s).\n\n' "${REMOTE_VERSION:-new}" "$LOCAL_VERSION"
 
+# Install path check (T13, 2026-09-30): local checks once passed while CI's `npm ci` failed
+# (prepare script). When install-relevant files change, run exactly the CI install path in a
+# fresh worktree of the commit being pushed.
+if git diff --name-only origin/main...HEAD 2>/dev/null | grep -qE '^(v3/package(-lock)?\.json|\.husky/|\.nvmrc|scripts/vale-install\.ts)'; then
+  printf '📥 Pre-push: install files changed — npm ci in a fresh worktree (CI path)...\n'
+  WT="$(mktemp -d)/wt"
+  git worktree add -q --detach "$WT" HEAD
+  # Own fresh npm cache: independent of the local ~/.npm state, like a CI runner.
+  (cd "$WT/v3" && npm ci --cache "$WT.npm-cache" > "$WT.log" 2>&1)
+  RC=$?
+  git worktree remove --force "$WT"
+  rm -rf "$WT.npm-cache"
+  if [ $RC -ne 0 ]; then
+    printf '\n❌ npm ci failed in a fresh worktree — push aborted. Log: %s\n' "$WT.log"
+    printf '   This is the path CI takes; fix the install scripts first.\n\n'
+    exit 1
+  fi
+  printf '✅ Fresh install OK.\n\n'
+fi
+
 printf '🛡  Pre-push: security audit (high/critical blocks)...\n'
 npm audit --audit-level=high || {
   printf '\n❌ npm audit: high/critical vulnerability — push aborted.\n'

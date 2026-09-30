@@ -7,9 +7,16 @@ export type ChangelogEntry = {
   items: string[];
 };
 
-export const APP_VERSION = '3.0.61';
+export const APP_VERSION = '3.0.62';
 
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.62',
+    date: '2026-09-30',
+    items: [
+      'fix(ci): prepare script installs Vale from v3/ (CI npm ci failed); pre-push runs npm ci in a fresh worktree when install files change',
+    ],
+  },
   {
     version: '3.0.61',
     date: '2026-09-30',

@@ -273,7 +273,8 @@ About 20s in total. If any step fails → the commit is aborted.
 ### Pre-push hook
 
 1. Version bump check (`APP_VERSION` against `origin/main`)
-1a. `npm audit --audit-level=high` — known vulnerabilities of level high/critical block (moderate/low only reported). If found: first `npm audit fix` without `--force`; major upgrades one at a time (BACKLOG "Major dependency updates")
+1a. **Install files changed** (`package.json`, lockfile, `.husky/`, `.nvmrc`, Vale installer): `npm ci` in a fresh worktree with its own npm cache — exactly the CI install path (added 2026-09-30 after a `prepare` script passed locally but failed in CI)
+1b. `npm audit --audit-level=high` — known vulnerabilities of level high/critical block (moderate/low only reported). If found: first `npm audit fix` without `--force`; major upgrades one at a time (BACKLOG "Major dependency updates")
 2. `npm run size` — bundle size
 3. `npm run test:e2e:all` — all six dev-server projects (smoke, smoke-webkit, full, full-webkit, mobile, mobile-chromium)
 4. `npm run test:e2e:prod` — build, then smoke, full and **PWA** against the **finished build** (`vite preview`, with service worker)
