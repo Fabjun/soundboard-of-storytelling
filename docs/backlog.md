@@ -1238,10 +1238,11 @@ then applied with the full gate):
   testGuards keeps both in step. **Trigger:** raise together with `.nvmrc`.
 - ⏸ TypeScript 6 → 7 — blocked: typescript-eslint supports only `<6.1.0` (peer). Dependabot
   ignores TypeScript majors. **Trigger:** a typescript-eslint release supporting TypeScript 7.
-- ⬜ Preact 10 → 11 — own plan pending: the trial build fails (`JSXInternal.CSSProperties` removed,
-  used in `PixelIcon.tsx`), and Preact 11 no longer appends `px` to numeric style values
-  (about 5–10 places, e.g. `BoardTopBar`, `AnimatedFlame`); needs a guard against unitless
-  lengths and the visual regression.
+- ✅ Preact 10 → 11 (owner-approved plan) — step 1–3 on Preact 10 first (c5ae371): a type-checker
+  guard for unitless lengths in `style` (10 places fixed, visual regression unchanged),
+  `PixelIcon` style type; then the upgrade itself: `CSSProperties` is a top-level export of
+  `preact` in 11. Visual 9/9, all dev-server E2E 64/64, production-build E2E 36/36. **Owner
+  check:** open the live app on the iPhone once after the deploy.
 
 ### Library audio as Blob — Safari Private Browsing (open question)
 

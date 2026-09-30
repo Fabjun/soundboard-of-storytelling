@@ -6,7 +6,7 @@
 // Rendered as crisp SVG rects — no rasterization, no blur.
 // ─────────────────────────────────────────────────────────────────────────────
 
-import type { JSX } from 'preact';
+import type { CSSProperties, JSX } from 'preact';
 
 // ---------------------------------------------------------------------------
 // Icon data (verbatim from foundations.jsx, typed)
@@ -1184,7 +1184,7 @@ interface PixelIconProps {
   color?: string;
   /** Additional CSS class applied to the SVG element. */
   class?: string;
-  style?: JSX.SVGAttributes<SVGSVGElement>['style']; // version-neutral (Preact 11 has no CSSProperties)
+  style?: CSSProperties;
 }
 
 /**

@@ -4,6 +4,10 @@
 
 All notable changes to Soundboard of Storytelling, newest first.
 
+## 3.0.80 — 2026-09-30
+
+- chore(deps): Preact 11 (major)
+
 ## 3.0.79 — 2026-09-30
 
 - refactor: inline style lengths carry explicit units (preparation for Preact 11), guarded by the type checker

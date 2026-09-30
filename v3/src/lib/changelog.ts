@@ -7,9 +7,14 @@ export type ChangelogEntry = {
   items: string[];
 };
 
-export const APP_VERSION = '3.0.79';
+export const APP_VERSION = '3.0.80';
 
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.80',
+    date: '2026-09-30',
+    items: ['chore(deps): Preact 11 (major)'],
+  },
   {
     version: '3.0.79',
     date: '2026-09-30',
