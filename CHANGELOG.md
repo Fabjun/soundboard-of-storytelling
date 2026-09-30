@@ -4,6 +4,10 @@
 
 All notable changes to Soundboard of Storytelling, newest first.
 
+## 3.0.64 — 2026-09-30
+
+- docs: slice completion checklist gains a short structure review; full audits only on occasion
+
 ## 3.0.63 — 2026-09-30
 
 - docs: section references are anchored links, checked by docsGuards; hard-coded test counts removed; hook step list corrected (T13, ADR-0056)

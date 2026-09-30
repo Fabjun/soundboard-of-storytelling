@@ -549,6 +549,20 @@ Before committing a slice, also:
    live URL are guarded by `tests/unit/docsGuards.test.ts`.
 5. **Update docs/backlog.md**: mark completed items `✅ Done (commit SHA)`, add any
    new deferred items surfaced during the slice.
+5a. **Structure review (~15 min, user decision 2026-09-30)** — a short retrospective on
+   structure, not a full audit. Goal: every finding that can be automated becomes a check
+   (guard, lint rule, generator), so the next review has less to find.
+   - Read the generated `docs/development/exceptions.md`: is every new exception justified;
+     is any temporary one due (its BACKLOG trigger reached)?
+   - Did this slice introduce a new kind of thing (names, files, formats, IDs, references)?
+     → a scheme exists (ADR) and is guarded.
+   - Is any fact typed by hand that the code determines (counts, lists, step lists)?
+     → generate it or reference the source.
+   - Did an error class occur twice? → pattern: root cause, project-wide search, check.
+   - Findings: fix now, or record in `docs/backlog.md` with a trigger.
+
+   A **full structure audit** runs only on occasion: before a new phase (e.g. first live use),
+   after large upgrades, or when the review finds a pattern it cannot settle in 15 minutes.
 6. **For slices touching audio (`src/audio/`), IDB (`src/db/`), or file-handling
    (import/export):** run through `docs/development/manual-iphone-checklist.md` before the final
    commit. These checks cannot be automated in Playwright and have caught iOS-only bugs

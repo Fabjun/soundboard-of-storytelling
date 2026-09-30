@@ -7,9 +7,16 @@ export type ChangelogEntry = {
   items: string[];
 };
 
-export const APP_VERSION = '3.0.63';
+export const APP_VERSION = '3.0.64';
 
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.64',
+    date: '2026-09-30',
+    items: [
+      'docs: slice completion checklist gains a short structure review; full audits only on occasion',
+    ],
+  },
   {
     version: '3.0.63',
     date: '2026-09-30',
