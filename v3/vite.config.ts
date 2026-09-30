@@ -1,6 +1,56 @@
-import { defineConfig } from 'vite';
+import { existsSync, readdirSync, readFileSync } from 'node:fs';
+import { join } from 'node:path';
+import { defineConfig, type Plugin } from 'vite';
 import preact from '@preact/preset-vite';
 import { VitePWA } from 'vite-plugin-pwa';
+
+/**
+ * Ships the license text of every production dependency — direct and transitive — as
+ * dist/third-party-licenses.txt. MIT/ISC require the notice in copies; the self-hosted fonts'
+ * OFL requires the license alongside the font files (audit A2). Derived from package.json at
+ * build time; a package without a license file fails the build instead of shipping silently.
+ */
+function licenseNotices(): Plugin {
+  const pkgDir = (name: string, from: string): string => {
+    const nested = join(from, 'node_modules', name);
+    return existsSync(nested) ? nested : join('node_modules', name);
+  };
+  return {
+    name: 'license-notices',
+    apply: 'build',
+    generateBundle() {
+      const seen = new Map<string, string>();
+      const visit = (name: string, from: string): void => {
+        const dir = pkgDir(name, from);
+        const meta = JSON.parse(readFileSync(join(dir, 'package.json'), 'utf8')) as {
+          name: string;
+          version: string;
+          license?: string;
+          dependencies?: Record<string, string>;
+        };
+        const key = `${meta.name}@${meta.version}`;
+        if (seen.has(key)) return;
+        const file = readdirSync(dir).find((f) => /^licen[cs]e(\.|$)/i.test(f));
+        if (!file) throw new Error(`license-notices: ${key} has no license file`);
+        seen.set(
+          key,
+          `${key} — ${meta.license ?? 'see text'}\n\n${readFileSync(join(dir, file), 'utf8').trim()}`,
+        );
+        for (const dep of Object.keys(meta.dependencies ?? {})) visit(dep, dir);
+      };
+      const own = JSON.parse(readFileSync('package.json', 'utf8')) as {
+        dependencies: Record<string, string>;
+      };
+      for (const dep of Object.keys(own.dependencies)) visit(dep, '.');
+      const texts = [...seen.keys()].sort().map((k) => seen.get(k));
+      this.emitFile({
+        type: 'asset',
+        fileName: 'third-party-licenses.txt',
+        source: `Third-party licenses\n\n${texts.join(`\n\n${'-'.repeat(72)}\n\n`)}\n`,
+      });
+    },
+  };
+}
 
 // https://vite.dev/config/
 export default defineConfig(({ command }) => ({
@@ -14,12 +64,15 @@ export default defineConfig(({ command }) => ({
   base: '/soundboard-of-storytelling/',
   plugins: [
     preact(),
+    licenseNotices(),
     VitePWA({
       registerType: 'autoUpdate',
       workbox: {
         clientsClaim: true,
         skipWaiting: true,
-        globPatterns: ['**/*.{js,css,html,ico,png,svg}'],
+        // woff2: the self-hosted fonts must be there offline (audit A2); every supported
+        // browser reads woff2, so the woff fallbacks are not precached.
+        globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
       },
       manifest: {
         name: 'Soundboard of Storytelling',

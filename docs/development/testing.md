@@ -61,7 +61,7 @@ number in brackets = test cases in the file (incl. quarantine)._
 | `full-webkit` | WebKit (Desktop) | Dev | `board-crud` (5), `deck-crud` (6), `pad-creation` (4), `pad-editing` (4), `pad-dnd` (2) |
 | `mobile` | WebKit (iPhone 13 Pro) | Dev | `unlock-nav` (3), `board-flow` (2), `mode-toggle` (2), `touch-targets` (5), `overflow` (2) |
 | `mobile-chromium` | Chromium (iPhone 13 Pro) | Dev | `pad-interaction` (2), `pad-creation` (1) |
-| `pwa` | Chromium (Desktop) | Build only | `pwa` (4) |
+| `pwa` | Chromium (Desktop) | Build only | `pwa` (7) |
 | `visual` | Chromium (Desktop), macOS only | Dev | `board-list-empty` (1), `board-list-with-board` (1), `board-screen-game` (1), `board-screen-setup` (1), `deck-rail` (1), `library-empty` (1), `mode-toggle-states` (2), `start-screen` (1) |
 
 **Unit tests (Vitest):** 14 files, 217 test cases —

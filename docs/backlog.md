@@ -1241,16 +1241,18 @@ Found 2026-09-30 during S5: stale facts and dead references were found only by c
 ### Structure audit 2026-09-30
 Owner decisions 2026-09-30: A1–A3 as recommended.
 - ✅ **A1 Public third-party assets** — `v1-reference/` (V1 source, a composed 1-bit icon set
-  of 2,971 files, 5 font files, no licence or credits file) removed from the public repo; a
+  of 2,971 files, 5 font files, no license or credits file) removed from the public repo; a
   complete snapshot is in the local archive (`~/dev/archive/v1-reference/`), V1 itself in
   `~/dev/archive/botc-soundboard/`. The icon set most likely comes from Nikoichu's CC0 pack
   (V1 commit 3548bdf: "1476 icons from 1-bit Pixel Icons pack"), so the git history is not
   rewritten. `HANDOFF.md` references now point to the identical
   `design-sources/2026-05-25/HANDOFF.md`.
-- ⬜ **A2 Fonts from Google's CDN** — `v3/src/styles/global.css` loads the fonts from
+- ✅ **A2 Fonts from Google's CDN** (ADR-0057) — `v3/src/styles/global.css` loads the fonts from
   fonts.googleapis.com: not in the offline cache (service worker globs have no woff2), and the
   public site sends every visitor's IP to Google (LG München I, 3 O 17493/20). Decision:
-  self-host (OFL) with licence notices.
+  self-host (OFL) with license notices. Done: `@fontsource/*`, woff2 precached,
+  `third-party-licenses.txt` generated per build, three pwa-spec tests (counter-checked). Follow-up:
+  link the license notices from the app (Slice 14 settings / about).
 - ⬜ **A3 Formatter and linter cover only `v3/`** — 86 of 87 Markdown files, 4 of 7 scripts and
   2 YAML files never formatted; `scripts/` never linted. Decision: one root config for the whole
   repository, Markdown included (one-time reformat).

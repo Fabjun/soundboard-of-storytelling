@@ -4,6 +4,10 @@
 
 All notable changes to Soundboard of Storytelling, newest first.
 
+## 3.0.66 — 2026-09-30
+
+- fix: fonts are self-hosted and work offline; no request to third-party origins; license notices ship with every build (ADR-0057)
+
 ## 3.0.65 — 2026-09-30
 
 - chore: remove the V1 reference copy (incl. third-party icons without licence file) from the public repository; structure audit findings recorded

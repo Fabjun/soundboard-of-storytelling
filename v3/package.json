@@ -40,6 +40,9 @@
     "audit:inline-styles": "NODE_PATH=./node_modules tsx ../scripts/audit-inline-styles.ts"
   },
   "dependencies": {
+    "@fontsource/press-start-2p": "^5.3.0",
+    "@fontsource/share-tech-mono": "^5.3.0",
+    "@fontsource/vt323": "^5.3.0",
     "@noble/hashes": "^2.2.0",
     "@preact/signals": "^2.9.1",
     "idb": "^8.0.3",

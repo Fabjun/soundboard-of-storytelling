@@ -7,9 +7,16 @@ export type ChangelogEntry = {
   items: string[];
 };
 
-export const APP_VERSION = '3.0.65';
+export const APP_VERSION = '3.0.66';
 
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.66',
+    date: '2026-09-30',
+    items: [
+      'fix: fonts are self-hosted and work offline; no request to third-party origins; license notices ship with every build (ADR-0057)',
+    ],
+  },
   {
     version: '3.0.65',
     date: '2026-09-30',

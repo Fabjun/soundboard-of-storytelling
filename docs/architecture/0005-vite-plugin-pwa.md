@@ -4,6 +4,7 @@
 **Date:** 2026-05-27
 **Slice:** Slice 1
 **Refines:** —
+**Refined by:** ADR-0057 (fonts self-hosted and precached; license notices shipped)
 **Category:** Tech stack
 
 ## Context

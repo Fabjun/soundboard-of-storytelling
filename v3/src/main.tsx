@@ -1,5 +1,9 @@
 import { render } from 'preact';
 import { App } from './App';
+// Fonts are self-hosted (OFL, from @fontsource) — no request to a third-party origin (audit A2).
+import '@fontsource/press-start-2p';
+import '@fontsource/vt323';
+import '@fontsource/share-tech-mono';
 import './styles/global.css';
 import { initAudioBridge } from './audio/index';
 

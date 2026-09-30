@@ -30,6 +30,7 @@ file. Format: `docs/architecture/_template.md`.
 |---|-------|--------|-------|------|
 | [ADR-0006](0006-platform-targets.md) | iOS Safari 15+ minimum, iPhone 13 Pro as primary target | Accepted | cross-cutting | 2026-05-27 |
 | [ADR-0007](0007-pointer-events-dnd.md) | Pointer events for DnD — HTML5 drag and drop forbidden | Accepted | Slice 3 | 2026-05-27 |
+| [ADR-0057](0057-self-hosted-assets-and-license-notices.md) | Self-hosted assets and shipped license notices | Accepted | infrastructure | 2026-09-30 |
 
 ### Data model
 

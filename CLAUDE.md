@@ -121,6 +121,9 @@
 - **Preferences**: `localStorage` (small UI state, theme choice, etc.)
 - **PWA**: managed via `vite-plugin-pwa`. No hand-written service worker (V1 had one). Auto-
   generated SHELL list, auto-bumped version on build.
+- **No third-party origins at runtime** (ADR-0057): fonts and all other assets are
+  self-hosted and precached; every build ships `third-party-licenses.txt` with the license
+  of each production dependency. Guarded by `v3/tests/e2e/pwa.spec.ts`.
 - **Audio engine**: V1's engine code, copied unchanged into V3 and
   wrapped behind a typed facade in `src/audio/`. Do not redesign.
 
