@@ -381,13 +381,13 @@ also in [§6](#6-component-inventory)):
 
 ### BORDERS
 
-| Token             | Value     | Description                       |
-| ----------------- | --------- | --------------------------------- |
-| `--border`        | `#383868` | default 1px hairline · L\* ~0.116 |
-| `--border-soft`   | `#232348` | dividers inside dense lists       |
-| `--border-strong` | `#5252a0` | drag handles, focused inputs      |
-| `--border-gold`   | `#c9a84c` | selected / active                 |
-| `--border-blood`  | `#a02828` | destructive zones                 |
+| Token             | Value     | Description                      |
+| ----------------- | --------- | -------------------------------- |
+| `--border`        | `#383868` | default 1px hairline · L* ~0.116 |
+| `--border-soft`   | `#232348` | dividers inside dense lists      |
+| `--border-strong` | `#5252a0` | drag handles, focused inputs     |
+| `--border-gold`   | `#c9a84c` | selected / active                |
+| `--border-blood`  | `#a02828` | destructive zones                |
 
 ### TEXT
 
@@ -404,7 +404,7 @@ also in [§6](#6-component-inventory)):
 
 | Token               | Value                      | Description                                                         |
 | ------------------- | -------------------------- | ------------------------------------------------------------------- |
-| `--gold`            | `#d4b25c`                  | +9% L\* over original — readable at 14px                            |
+| `--gold`            | `#d4b25c`                  | +9% L* over original — readable at 14px                             |
 | `--gold-bright`     | `#f5d57a`                  | highlights, "now playing", focus rings                              |
 | `--gold-dim`        | `#8a6e34`                  | muted gold — divider lines                                          |
 | `--gold-soft`       | `rgba(212, 178, 92, 0.18)` | —                                                                   |
@@ -422,7 +422,7 @@ also in [§6](#6-component-inventory)):
 | `--ice-mid`         | `#5bafd8`                  | animated flame — mid layer + cold halo (frozen)                     |
 | `--ice-core`        | `#9fd8ee`                  | animated flame — core pixel layer (frozen)                          |
 | `--ice-heart`       | `#e8f8ff`                  | animated flame — heart (frozen)                                     |
-| `--blood`           | `#a02828`                  | +14% L\* over #8b1a1a — readable on dark                            |
+| `--blood`           | `#a02828`                  | +14% L* over #8b1a1a — readable on dark                             |
 | `--blood-bright`    | `#ef7575`                  | —                                                                   |
 | `--blood-soft`      | `rgba(160, 40, 40, 0.18)`  | —                                                                   |
 

@@ -4,6 +4,10 @@
 
 All notable changes to Soundboard of Storytelling, newest first.
 
+## 3.0.74 — 2026-09-30
+
+- chore(deps): development minor/patch updates (Playwright 1.63, ESLint 10.11, Prettier 3.9, typescript-eslint 8.71, lint-staged, tsx, vite); libDnd.ts reformatted for Prettier 3.9
+
 ## 3.0.73 — 2026-09-30
 
 - chore(deps): preact 10.29.8, @preact/signals 2.11.3, @noble/hashes 2.4.0 (minor/patch)
@@ -79,7 +83,7 @@ All notable changes to Soundboard of Storytelling, newest first.
 
 ## 3.0.55 — 2026-09-29
 
-- refactor: code naming scheme (ADR-0052) — TopBar/StatusBar/BoardTopBar without version suffixes, App.tsx, sb-theme-\*, unused CSS removed, scripts named after npm scripts; guarded by tests (S2)
+- refactor: code naming scheme (ADR-0052) — TopBar/StatusBar/BoardTopBar without version suffixes, App.tsx, sb-theme-*, unused CSS removed, scripts named after npm scripts; guarded by tests (S2)
 
 ## 3.0.54 — 2026-09-29
 
@@ -107,7 +111,7 @@ All notable changes to Soundboard of Storytelling, newest first.
 
 ## 3.0.48 — 2026-09-29
 
-- ci: npm audit (high/critical) blocks in CI and pre-push; scripts/\*.ts type-checked in pre-commit and CI (T8b)
+- ci: npm audit (high/critical) blocks in CI and pre-push; scripts/*.ts type-checked in pre-commit and CI (T8b)
 
 ## 3.0.47 — 2026-09-29
 
@@ -208,7 +212,7 @@ All notable changes to Soundboard of Storytelling, newest first.
 
 ## 3.0.27 — 2026-06-15
 
-- docs: register is-conflict in closed is-\* vocabulary (§3 + ADR-0021) per scene-rename (a) decision
+- docs: register is-conflict in closed is-* vocabulary (§3 + ADR-0021) per scene-rename (a) decision
 
 ## 3.0.26 — 2026-06-15
 
@@ -248,7 +252,7 @@ All notable changes to Soundboard of Storytelling, newest first.
 
 ## 3.0.17 — 2026-06-06
 
-- Docs: Pass 3 corrections — fix sb-stack→sb-col in CLAUDE.md+Cheatsheet (§5a as canonical list), align GAME color rule to --mode-game, remove dead update_log rule, correct IDB/build-command/framework staleness, register 5 is-\* DnD+looping classes in DESIGN_SYSTEM §3, fix token-source file in §A header, add coupling-map entries
+- Docs: Pass 3 corrections — fix sb-stack→sb-col in CLAUDE.md+Cheatsheet (§5a as canonical list), align GAME color rule to --mode-game, remove dead update_log rule, correct IDB/build-command/framework staleness, register 5 is-* DnD+looping classes in DESIGN_SYSTEM §3, fix token-source file in §A header, add coupling-map entries
 
 ## 3.0.16 — 2026-06-05
 
@@ -298,7 +302,7 @@ All notable changes to Soundboard of Storytelling, newest first.
 
 ## 3.0.5 — 2026-05-28
 
-- Fix: iOS file picker shows MP3 files — explicit MIME types instead of audio/\* (Brave/Safari need both: MIME + extension)
+- Fix: iOS file picker shows MP3 files — explicit MIME types instead of audio/* (Brave/Safari need both: MIME + extension)
 
 ## 3.0.4 — 2026-05-28
 

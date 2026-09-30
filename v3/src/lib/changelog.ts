@@ -7,9 +7,16 @@ export type ChangelogEntry = {
   items: string[];
 };
 
-export const APP_VERSION = '3.0.73';
+export const APP_VERSION = '3.0.74';
 
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.74',
+    date: '2026-09-30',
+    items: [
+      'chore(deps): development minor/patch updates (Playwright 1.63, ESLint 10.11, Prettier 3.9, typescript-eslint 8.71, lint-staged, tsx, vite); libDnd.ts reformatted for Prettier 3.9',
+    ],
+  },
   {
     version: '3.0.73',
     date: '2026-09-30',

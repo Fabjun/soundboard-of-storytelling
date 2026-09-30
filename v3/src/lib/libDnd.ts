@@ -18,8 +18,7 @@ import type { PadPosition } from '../types';
 // ── Types ─────────────────────────────────────────────────────────────────────
 
 export type LibDndDropResult =
-  | { kind: 'cancel' }
-  | { kind: 'drop'; itemId: string; targetPos: PadPosition };
+  { kind: 'cancel' } | { kind: 'drop'; itemId: string; targetPos: PadPosition };
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 
