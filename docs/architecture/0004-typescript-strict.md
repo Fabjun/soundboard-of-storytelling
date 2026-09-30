@@ -3,49 +3,45 @@
 **Status:** Accepted
 **Date:** 2026-05-27
 **Slice:** cross-cutting
-
+**Refines:** —
 **Category:** Tech stack
 
 ## Context
 
-Der Projekt-Grundsatz (CLAUDE.md §Permanent coding standards) ist:
-"TypeScript strict mode. No `any`." Das ist eine Engineering-Disziplin-Entscheidung:
-implizite Annahmen im Typsystem sind eine Hauptursache für Bugs — besonders bei
-einer App mit komplexem Datenmodell (Boards, Scenes, Pads, Library, Audio-State)
-und wenig manuell verifizierbaren Edge-Cases.
+The project principle (CLAUDE.md §Permanent coding standards) is: "TypeScript strict mode. No
+`any`." This is an engineering-discipline decision: implicit assumptions in the type system
+are a main cause of bugs — especially in an app with a complex data model (boards, scenes,
+pads, library, audio state) and few edge cases that can be verified manually.
 
 ## Decision
 
-`tsconfig.app.json` hat `"strict": true` gesetzt sowie `"noUnusedLocals": true`.
-`any`-Typen sind verboten. Bei schwer ausdrückbaren Typen: mit User klären, bevor
-`unknown` oder Type-Assertions verwendet werden.
+`tsconfig.app.json` has `"strict": true` set, as well as `"noUnusedLocals": true`. `any`
+types are forbidden. For types that are hard to express: clarify with the user before
+resorting to `unknown` or type assertions.
 
-ESLint überwacht nicht zusätzlich auf `no-unused-vars` (das ist `noUnusedLocals`
-im tsconfig) — dokumentiert als Deviation in CLAUDE.md.
+ESLint does not additionally check `no-unused-vars` (that is `noUnusedLocals` in the
+tsconfig) — documented as a deviation in CLAUDE.md.
 
 ## Consequences
 
-**Positiv:**
-- Null-Checks werden erzwungen: `position: PadPosition | null` muss am Call-Site
-  gehandelt werden, keine versehentlichen `undefined`-Dereferenzierungen.
-- Ungenutzte Variablen werden zur Compile-Zeit aufgedeckt.
-- Typ-Splits wie `LibraryItemMeta` vs. `LibraryItem` werden durch das Typsystem
-  erzwungen (ADR-0011): Code, der fälschlicherweise einen Blob in Signals
-  speichert, kompiliert nicht.
+**Positive:**
+- Null checks are enforced: `position: PadPosition | null` has to be handled at the call
+  site, no accidental `undefined` dereferences.
+- Unused variables are revealed at compile time.
+- Type splits like `LibraryItemMeta` vs. `LibraryItem` are enforced by the type system
+  (ADR-0011): code that wrongly stores a Blob in signals does not compile.
 
-**Negativ / Trade-offs:**
-- Mehr Upfront-Aufwand beim Typen von V1-Audio-Engine-Code (der ursprünglich in
-  ungetyptem JS geschrieben wurde). Gelöst durch explizite Type-Assertions an der
-  Facade-Grenze.
+**Negative / Trade-offs:**
+- More upfront effort when typing V1 audio engine code (originally written in untyped JS).
+  Solved with explicit type assertions at the facade boundary.
 
-## Alternatives Considered
+## Alternatives considered
 
-**Kein strict mode:** Würde die `any`-Entscheidungen stillschweigend erlauben.
-Bei einer App mit iOS-Memory-Constraints (ADR-0019) sind versehentliche
-Blob-Leaks im State zu riskant.
+**No strict mode:** would silently allow the `any` decisions. In an app with iOS memory
+constraints (ADR-0019), accidental Blob leaks into state are too risky.
 
 ## Related
 
-- **Dateien:** `v3/tsconfig.app.json`, `v3/tsconfig.json`
-- **ADRs:** ADR-0011 (LibraryItem-Split erzwingt Typsicherheit), ADR-0019 (iOS Memory Safety)
-- **Quelldokumente:** `CLAUDE.md §Permanent coding standards`
+- **Files:** `v3/tsconfig.app.json`, `v3/tsconfig.json`
+- **ADRs:** ADR-0011 (LibraryItem split enforces type safety), ADR-0019 (iOS memory safety)
+- **Source documents:** `CLAUDE.md §Permanent coding standards`

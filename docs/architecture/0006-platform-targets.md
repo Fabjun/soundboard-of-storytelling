@@ -1,74 +1,69 @@
-# ADR-0006: iOS Safari 15+ Minimum, iPhone 13 Pro als Primärtarget
+# ADR-0006: iOS Safari 15+ minimum, iPhone 13 Pro as primary target
 
 **Status:** Accepted
 **Date:** 2026-05-27
 **Slice:** cross-cutting
-
+**Refines:** —
 **Category:** Platform constraints
 
 ## Context
 
-V3 wird primär auf einem iPhone 13 Pro + Brave Browser verwendet (Live-Einsatz
-beim Tabletop-Rollenspiel). Gleichzeitig soll die App auf Desktop und anderen
-Mobilgeräten nutzbar sein. Die Frage: Welche Browser-APIs können als guaranteed
-vorausgesetzt werden, welche brauchen Graceful Degradation, welche sind explizit
-ausgeschlossen?
+V3 is used primarily on an iPhone 13 Pro + Brave browser (live use during tabletop
+role-playing). At the same time the app should be usable on desktop and other mobile devices.
+The question: which browser APIs can be assumed as guaranteed, which need graceful
+degradation, and which are explicitly excluded?
 
-Diese Entscheidung wurde als formaler Eintrag in `docs/architecture/concept-brief.md §4.13` und
-`CLAUDE.md §Supported Platforms` dokumentiert, nachdem in Slice 3 ein
-iOS-Inkompatibilitäts-Bug durch fehlendes Platform-Bewusstsein entstanden war
-(HTML5 Drag-and-Drop — siehe ADR-0007).
+This decision was documented as a formal entry in `docs/architecture/concept-brief.md §4.13`
+and `CLAUDE.md §Supported Platforms` after an iOS incompatibility bug caused by missing
+platform awareness had occurred in Slice 3 (HTML5 drag and drop — see ADR-0007).
 
 ## Decision
 
-**Primärtarget:** iPhone 13 Pro (iOS 17/18) + Brave Browser.
+**Primary target:** iPhone 13 Pro (iOS 17/18) + Brave browser.
 
-**Minimum:** iOS Safari 15+ (iPhone 6s, 2015, und neuer).
+**Minimum:** iOS Safari 15+ (iPhone 6s, 2015, and newer).
 
-**Guaranteed APIs (kein Polyfill nötig):**
+**Guaranteed APIs (no polyfill needed):**
 - Pointer Events API (iOS 13+)
 - IndexedDB
-- Web Audio API (mit User-Gesture-Unlock)
-- Service Worker / PWA / Add to Home Screen
+- Web Audio API (with user-gesture unlock)
+- Service worker / PWA / Add to Home Screen
 - CSS `clamp()`, `prefers-reduced-motion`
 - IntersectionObserver, ResizeObserver
 
-**Graceful Degradation:**
-- Container Queries (iOS 16+) — Fallback zu Media Queries auf iOS 15
-- View Transitions API (iOS 18+) — optionaler Polish, nie harte Dependency
+**Graceful degradation:**
+- Container queries (iOS 16+) — fall back to media queries on iOS 15
+- View Transitions API (iOS 18+) — optional polish, never a hard dependency
 
-**Explizit ausgeschlossen:**
-- HTML5 Drag-and-Drop (`draggable`, `ondragstart`, `ondrop`) — nicht auf
-  iOS Safari/Brave. Jedes DnD-Interaction muss Pointer Events verwenden.
-- Jedes API das iOS 17+ als harte Dependency erfordert.
+**Explicitly excluded:**
+- HTML5 drag and drop (`draggable`, `ondragstart`, `ondrop`) — not on iOS Safari/Brave. Every
+  DnD interaction must use pointer events.
+- Any API that requires iOS 17+ as a hard dependency.
 
 ## Consequences
 
-**Positiv:**
-- Klares Feature-Set: Entwicklung kann sich auf garantierte APIs verlassen,
-  ohne jeden Feature-Check.
-- DnD-Verbot ist explizit dokumentiert → verhindert Wiederholung des
-  Slice-3-Fehlers.
+**Positive:**
+- A clear feature set: development can rely on guaranteed APIs without checking every
+  feature.
+- The DnD ban is documented explicitly → prevents a repeat of the Slice 3 bug.
 
-**Negativ / Trade-offs:**
-- Container Queries können nicht als einzige Layout-Strategie verwendet werden;
-  Media-Query-Fallbacks müssen mitgeliefert werden.
-- Einige moderne CSS-Features (z.B. `:has()`, `@layer`) sind iOS 15-riskant
-  und müssen geprüft werden.
+**Negative / Trade-offs:**
+- Container queries cannot be the only layout strategy; media-query fallbacks have to ship as
+  well.
+- Some modern CSS features (e.g. `:has()`, `@layer`) are risky on iOS 15 and have to be
+  checked.
 
-## Alternatives Considered
+## Alternatives considered
 
-**iOS 17+ als Minimum:** Würde View Transitions und andere moderne Features
-freigeben. Aber iPhone 6s/7/8 (iOS 15/16) sind noch im Umlauf; unnötige
-Einschränkung.
+**iOS 17+ as minimum:** would unlock View Transitions and other modern features. But iPhone
+6s/7/8 (iOS 15/16) are still in circulation; an unnecessary restriction.
 
-**Desktop-first:** App wird primär am Desktop für TTRPG-Hosting verwendet.
-Gegen Desktop-first spricht, dass der User V3 explizit für den iPhone-Live-
-Einsatz am Spieltisch baut.
+**Desktop first:** the app would be used primarily on the desktop for TTRPG hosting. Against
+desktop first: the user builds V3 explicitly for live use at the gaming table on the iPhone.
 
 ## Related
 
-- **Dateien:** `v3/src/lib/padDnd.ts`, `v3/src/lib/libDnd.ts` (kanonische Pointer-Events-Implementierungen)
-- **ADRs:** ADR-0007 (Pointer Events DnD), ADR-0024 (clip-path Konsequenz)
-- **Quelldokumente:** `docs/architecture/concept-brief.md §4.13`, `CLAUDE.md §Supported Platforms`
+- **Files:** `v3/src/lib/padDnd.ts`, `v3/src/lib/libDnd.ts` (canonical pointer events implementations)
+- **ADRs:** ADR-0007 (pointer events DnD), ADR-0024 (clip-path consequence)
+- **Source documents:** `docs/architecture/concept-brief.md §4.13`, `CLAUDE.md §Supported Platforms`
 - **Commits:** `8b2aef1` — docs: define platform support matrix

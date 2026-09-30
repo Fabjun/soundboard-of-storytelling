@@ -1,25 +1,24 @@
-# ADR-0009: Pad-Position kann `null` sein (UNPLACED-State)
+# ADR-0009: Pad position can be `null` (UNPLACED state)
 
 **Status:** Superseded by ADR-0048
 **Date:** 2026-05-27
 **Slice:** Slice 3
-
+**Refines:** —
 **Category:** Data model
 
 ## Context
 
-Grid-Konfigurationen können sich ändern (Slice 8: user ändert cols/rows).
-Wenn ein 4×4-Grid auf 3×3 schrumpft, passen die Pads aus Slots (3,3), (0,3),
-(1,3), (2,3) nicht mehr ins Grid. Was passiert mit diesen Pads?
+Grid configurations can change (Slice 8: the user changes cols/rows). When a 4×4 grid shrinks
+to 3×3, the pads from slots (3,3), (0,3), (1,3), (2,3) no longer fit into the grid. What
+happens to these pads?
 
-Optionen:
-1. Löschen — Datenverlust, schlecht
-2. In einem separaten Array speichern — Datenmodell-Komplexität
-3. `position: null` setzen (UNPLACED-State) — Pad bleibt erhalten, aber
-   ohne sichtbaren Slot
+Options:
+1. Delete them — data loss, bad
+2. Store them in a separate array — data model complexity
+3. Set `position: null` (UNPLACED state) — the pad is kept, but without a visible slot
 
-Das `docs/architecture/concept-brief.md §4.1` dokumentiert `position: PadPosition | null`
-explizit: `null = unplaced (reserved for Slice 8)`.
+`docs/architecture/concept-brief.md §4.1` documents `position: PadPosition | null` explicitly:
+`null = unplaced (reserved for Slice 8)`.
 
 ## Decision
 
@@ -31,35 +30,32 @@ type Pad = {
 };
 ```
 
-`null` bedeutet: das Pad ist vorhanden, aber hat keinen sichtbaren Slot im Grid.
-Slice 3 weist immer eine echte Position zu (kein Pad wird unplaced erstellt).
-Der UNPLACED-Mechanismus wird in Slice 8 implementiert.
+`null` means: the pad exists but has no visible slot in the grid. Slice 3 always assigns a
+real position (no pad is created unplaced). The UNPLACED mechanism is implemented in Slice 8.
 
-Das Typ-System erzwingt, dass alle Call-Sites mit `null` umgehen müssen
-(TypeScript strict, ADR-0004).
+The type system forces every call site to handle `null` (TypeScript strict, ADR-0004).
 
 ## Consequences
 
-**Positiv:**
-- Kein Datenverlust beim Grid-Schrumpfen (Slice 8).
-- Pads erinnern sich an ihre gewünschte Position (docs/design/design-notes.md §A4 ·
-  "Unplaced pads remember their desired position"): bei Grid-Vergrößerung
-  werden sie automatisch re-platziert.
-- Typ-System erzwingt Null-Handling überall.
+**Positive:**
+- No data loss when the grid shrinks (Slice 8).
+- Pads remember their desired position (docs/design/design-notes.md §A4 · "Unplaced pads
+  remember their desired position"): when the grid grows they are re-placed automatically.
+- The type system enforces null handling everywhere.
 
-**Negativ / Trade-offs:**
-- Jeder Code-Pfad, der `position.col/row` verwendet, muss auf `null` prüfen.
-  Das ist etwas Boilerplate, verhindert aber versehentliche Crashes.
+**Negative / Trade-offs:**
+- Every code path that uses `position.col/row` has to check for `null`. That is some
+  boilerplate, but it prevents accidental crashes.
 
-## Alternatives Considered
+## Alternatives considered
 
-**Separate `unplacedPads`-Array:** Würde Pads aus dem Scene-Scope herausnehmen,
-was Querverweise erfordern würde. Komplexer ohne Mehrwert.
+**Separate `unplacedPads` array:** would take pads out of the scene scope, which would require
+cross-references. More complex without added value.
 
-**Löschen bei Grid-Schrumpfen:** Datenverlust. Nicht akzeptabel.
+**Delete when the grid shrinks:** data loss. Not acceptable.
 
 ## Related
 
-- **Dateien:** `v3/src/types.ts` (Pad.position), `v3/src/lib/padUtils.ts`
-- **ADRs:** ADR-0008 (Pad-Position als {col, row}), ADR-0004 (TypeScript strict erzwingt null-Handling)
-- **Quelldokumente:** `docs/architecture/concept-brief.md §4.1`, `docs/design/design-notes.md §A4 · Unplaced pads remember their desired position`
+- **Files:** `v3/src/types.ts` (Pad.position), `v3/src/lib/padUtils.ts`
+- **ADRs:** ADR-0008 (pad position as {col, row}), ADR-0004 (TypeScript strict enforces null handling)
+- **Source documents:** `docs/architecture/concept-brief.md §4.1`, `docs/design/design-notes.md §A4 · Unplaced pads remember their desired position`

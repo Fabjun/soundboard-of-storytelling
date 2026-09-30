@@ -1,63 +1,59 @@
-# ADR-0002: Preact Signals als State Manager
+# ADR-0002: Preact Signals as state manager
 
 **Status:** Accepted
 **Date:** 2026-05-27
 **Slice:** Slice 1
-
+**Refines:** —
 **Category:** Tech stack
 
 ## Context
 
-V3 braucht einen zentralen Store für UI-State (current board, current scene,
-current mode, library items, playback state). Das `docs/architecture/concept-brief.md §4.3`
-nannte zwei Optionen als gleichwertig: **Zustand** (~1 KB, beliebt im
-React/Preact-Ecosystem) und **Preact Signals** (~1 KB, natives Preact-Paket).
-Die Wahl war an Claude Code delegiert mit Begründungspflicht.
+V3 needs a central store for UI state (current board, current scene, current mode, library
+items, playback state). `docs/architecture/concept-brief.md §4.3` named two options as equal:
+**Zustand** (~1 KB, popular in the React/Preact ecosystem) and **Preact Signals** (~1 KB,
+native Preact package). The choice was delegated to Claude Code with a duty to justify it.
 
 ## Decision
 
-**Preact Signals** (`@preact/signals`) wurde für Slice 1 gewählt.
+**Preact Signals** (`@preact/signals`) was chosen for Slice 1.
 
-Begründung: Signals sind ein natives Preact-Konzept — keine Wrapper-Komponenten,
-kein `useSelector`, kein `Provider`. Komponenten subscriben automatisch auf die
-Signals, die sie lesen (JSX-Binding via `.value`). Mutationen über exportierte
-Setter-Funktionen. Der Store lebt in `src/state/store.ts` als Modul-Singletons.
+Reasoning: signals are a native Preact concept — no wrapper components, no `useSelector`, no
+`Provider`. Components subscribe automatically to the signals they read (JSX binding via
+`.value`). Mutations go through exported setter functions. The store lives in
+`src/state/store.ts` as module singletons.
 
-Der User bestätigte die Wahl in Slice 1.
+The user confirmed the choice in Slice 1.
 
 ## Consequences
 
-**Positiv:**
-- Kein Provider-Wrapping nötig — Signals sind global zugreifbar.
-- Computed Signals (`computed()`) ersetzen Selector-Logik: `currentBoard` und
-  `currentScene` sind derived signals, kein extra State.
-- Granulare Re-Renders: nur Komponenten, die ein Signal lesen, re-rendern bei
-  Mutation — ohne `shouldComponentUpdate` oder Memo.
-- Unit-Tests müssen Signals vor jedem Test explizit resetten (Modul-Singletons
-  persistieren zwischen Tests). Gelöst via `beforeEach`-Resets in Unit-Tests.
+**Positive:**
+- No provider wrapping needed — signals are globally accessible.
+- Computed signals (`computed()`) replace selector logic: `currentBoard` and `currentScene`
+  are derived signals, no extra state.
+- Granular re-renders: only components that read a signal re-render on mutation — without
+  `shouldComponentUpdate` or memo.
+- Unit tests must reset signals explicitly before every test (module singletons persist
+  between tests). Solved via `beforeEach` resets in unit tests.
 
-**Negativ / Trade-offs:**
-- Signals sind Modul-Singletons: Tests können nicht einfach einen "fresh store"
-  provisionieren. Workaround: expliziter `beforeEach`-Reset (dokumentiert in
-  `docs/development/testing.md §Bekannte Fallstricke`).
-- Kein Time-Travel-Debugging (Redux DevTools etc.). Für dieses Projekt kein
-  Verlust.
+**Negative / Trade-offs:**
+- Signals are module singletons: tests cannot simply provision a "fresh store". Workaround:
+  an explicit `beforeEach` reset (documented in `docs/development/testing.md §Known pitfalls`).
+- No time-travel debugging (Redux DevTools etc.). No loss for this project.
 
-## Alternatives Considered
+## Alternatives considered
 
-**Zustand:** Beliebt, middleware-fähig, optional DevTools-Support. Wäre ebenfalls
-fine gewesen. Preact Signals gewählt weil nativer Preact-Fit und kein
-Zustand-Provider nötig.
+**Zustand:** popular, supports middleware, optional DevTools support. Would also have been
+fine. Preact Signals were chosen because of the native Preact fit and because no Zustand
+provider is needed.
 
-**Preact Context + useReducer:** Mehr Boilerplate, keine automatische Granularität.
-Zudem wäre Context für globalen State auf jedem Level verfügbar — kein wirklicher
-Vorteil gegenüber Signals.
+**Preact Context + useReducer:** more boilerplate, no automatic granularity. Context for
+global state would also be available on every level — no real advantage over signals.
 
-**MobX:** Größer, komplexer, nicht nötig.
+**MobX:** larger, more complex, not needed.
 
 ## Related
 
-- **Dateien:** `v3/src/state/store.ts`, `v3/src/types.ts` (AppState interface)
-- **ADRs:** ADR-0001 (Preact), ADR-0011 (LibraryItem nie als Blob im Signal)
-- **Quelldokumente:** `docs/architecture/concept-brief.md §4.3`, `CLAUDE.md §Architecture → State`
-- **Commits:** `8be64d4` — Slice 1 scaffold (Signals eingeführt)
+- **Files:** `v3/src/state/store.ts`, `v3/src/types.ts` (AppState interface)
+- **ADRs:** ADR-0001 (Preact), ADR-0011 (LibraryItem never as a Blob in a signal)
+- **Source documents:** `docs/architecture/concept-brief.md §4.3`, `CLAUDE.md §Architecture → State`
+- **Commits:** `8be64d4` — Slice 1 scaffold (signals introduced)

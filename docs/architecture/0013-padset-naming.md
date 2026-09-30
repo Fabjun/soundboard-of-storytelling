@@ -1,18 +1,18 @@
-# ADR-0013: Type `PadSet` statt `Set`
+# ADR-0013: Type `PadSet` instead of `Set`
 
 **Status:** Superseded by ADR-0048
 **Date:** 2026-05-27
 **Slice:** Slice 3
-
+**Refines:** —
 **Category:** Data model
 
 ## Context
 
-Das Datenmodell aus `docs/architecture/concept-brief.md §4.1` nennt das Konzept "Set" —
-eine benannte Sammlung von Pads für den Quick-Access-Strip (Slice 6):
+The data model in `docs/architecture/concept-brief.md §4.1` calls the concept "Set" — a named
+collection of pads for the quick-access strip (Slice 6):
 
 ```typescript
-// Aus dem Concept Brief:
+// From the concept brief:
 type Set = {
   id: string;
   name: string;
@@ -21,48 +21,46 @@ type Set = {
 };
 ```
 
-In TypeScript / JavaScript ist `Set` ein built-in Typ (`Set<T>`). Einen eigenen
-`type Set` zu definieren würde zu Namens-Kollision und Lese-Verwirrung führen —
-insbesondere weil `store.ts` `Set<string>` für `playingPads` und `loopingPads`
-verwendet:
+In TypeScript / JavaScript, `Set` is a built-in type (`Set<T>`). Defining our own `type Set`
+would lead to a name collision and confusing code — especially because `store.ts` uses
+`Set<string>` for `playingPads` and `loopingPads`:
 
 ```typescript
 export const playingPads = signal<ReadonlySet<string>>(new globalThis.Set<string>());
 ```
 
-> *Diese Entscheidung war nicht explizit vorab dokumentiert; sie wurde als
-> notwendige Konsequenz beim Implementieren von Slice 3 abgeleitet und
-> direkt im Code gelöst. Die Deviation ist in CLAUDE.md festgehalten.*
+> *This decision was not documented explicitly beforehand; it was derived as a necessary
+> consequence while implementing Slice 3 and solved directly in code. The deviation is
+> recorded in CLAUDE.md.*
 
 ## Decision
 
-Der Soundboard-Typ wird `PadSet` benannt (nicht `Set`). Überall im Code,
-in IDB, in Typen: `PadSet`. Wenn auf den built-in `Set<T>` referenziert wird
-(z.B. in `store.ts`), kann `globalThis.Set` oder einfach `Set<string>` in
-nicht-kollisionierendem Kontext verwendet werden.
+The soundboard type is named `PadSet` (not `Set`). Everywhere in code, in IDB, in types:
+`PadSet`. Where the built-in `Set<T>` is referenced (e.g. in `store.ts`), `globalThis.Set` or
+simply `Set<string>` can be used in a non-colliding context.
 
 ## Consequences
 
-**Positiv:**
-- Kein Naming-Conflict. Compiler-Fehler wären sonst schwer zu debuggen.
-- `PadSet` ist auch semantisch treffender: es ist explizit ein Set von Pads,
-  nicht ein generischer Set.
+**Positive:**
+- No naming conflict. Compiler errors would otherwise be hard to debug.
+- `PadSet` is also more precise semantically: it is explicitly a set of pads, not a generic
+  set.
 
-**Negativ / Trade-offs:**
-- Weicht vom Concept Brief ab. `docs/architecture/concept-brief.md §4.1` nennt den Typ `Set`.
-  Wer den Brief liest und den Code sucht, muss wissen: `Set` im Brief = `PadSet`
-  im Code.
+**Negative / Trade-offs:**
+- Deviates from the concept brief. `docs/architecture/concept-brief.md §4.1` calls the type
+  `Set`. Anyone reading the brief and looking for the code has to know: `Set` in the brief =
+  `PadSet` in the code.
 
-## Alternatives Considered
+## Alternatives considered
 
-**Namespace-Prefix:** `SBSet` oder `BoardSet`. Entschieden gegen, weil `PadSet`
-die Semantik besser transportiert.
+**Namespace prefix:** `SBSet` or `BoardSet`. Decided against, because `PadSet` carries the
+semantics better.
 
-**Import-Alias:** `import type { Set as PadSet } from './types'`. Würde den
-built-in weiterhin shadowed. Keine Verbesserung.
+**Import alias:** `import type { Set as PadSet } from './types'`. Would still shadow the
+built-in. No improvement.
 
 ## Related
 
-- **Dateien:** `v3/src/types.ts` (PadSet type), `v3/src/state/store.ts` (globalThis.Set für playingPads)
-- **ADRs:** ADR-0008 (Pad-Datenmodell), ADR-0004 (TypeScript strict)
-- **Quelldokumente:** `docs/architecture/concept-brief.md §4.1`, `CLAUDE.md §Deviations from plan`
+- **Files:** `v3/src/types.ts` (PadSet type), `v3/src/state/store.ts` (globalThis.Set for playingPads)
+- **ADRs:** ADR-0008 (pad data model), ADR-0004 (TypeScript strict)
+- **Source documents:** `docs/architecture/concept-brief.md §4.1`, `CLAUDE.md §Deviations from plan`

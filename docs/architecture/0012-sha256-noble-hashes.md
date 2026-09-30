@@ -1,28 +1,27 @@
-# ADR-0012: SHA-256 via `@noble/hashes` statt Web Crypto API
+# ADR-0012: SHA-256 via `@noble/hashes` instead of the Web Crypto API
 
 **Status:** Accepted
 **Date:** 2026-05-27
 **Slice:** Slice 2
-
+**Refines:** —
 **Category:** Data model
 
 ## Context
 
-Library-Einträge werden über ihren SHA-256-Hash identifiziert (`LibraryItem.id`).
-Der Hash wird einmalig beim Upload berechnet. Er dient als Deduplizierungs-Key:
-dieselbe Audio-Datei (gleicher Inhalt) erhält immer denselben Hash-ID.
+Library entries are identified by their SHA-256 hash (`LibraryItem.id`). The hash is computed
+once at upload. It serves as the deduplication key: the same audio file (same content) always
+gets the same hash ID.
 
-Die naheliegende Implementierung: `crypto.subtle.digest('SHA-256', buffer)`
-(Web Crypto API). Diese API ist jedoch nur in einem **Secure Context** (HTTPS)
-verfügbar.
+The obvious implementation: `crypto.subtle.digest('SHA-256', buffer)` (Web Crypto API). This
+API is, however, only available in a **secure context** (HTTPS).
 
-**Problem:** Während der Entwicklung läuft der Vite-Dev-Server unter HTTP auf
-dem lokalen IP (z.B. `http://192.168.1.x:5173`) für iPhone-Tests im LAN.
-Das ist kein Secure Context → `crypto.subtle` ist dort nicht verfügbar.
+**Problem:** during development the Vite dev server runs over HTTP on the local IP (e.g.
+`http://192.168.1.x:5173`) for iPhone tests in the LAN. That is not a secure context →
+`crypto.subtle` is not available there.
 
 ## Decision
 
-SHA-256 wird mit `@noble/hashes/sha2.js` berechnet:
+SHA-256 is computed with `@noble/hashes/sha2.js`:
 
 ```typescript
 import { sha256 } from '@noble/hashes/sha2.js';
@@ -33,37 +32,36 @@ export function computeHash(buf: ArrayBuffer): string {
 }
 ```
 
-`@noble/hashes` ist eine pure-JS-Implementierung, die keinen Secure Context
-benötigt. Sie funktioniert in jedem Browser-Kontext.
+`@noble/hashes` is a pure-JS implementation that needs no secure context. It works in every
+browser context.
 
 ## Consequences
 
-**Positiv:**
-- Hash-Berechnung funktioniert auf HTTP (LAN-Dev-Server) und HTTPS (Production).
-- `@noble/hashes` ist auditiert, weit verbreitet in der Web-Crypto-Community.
-- Keine conditional-polyfill-Logik nötig.
+**Positive:**
+- Hash computation works over HTTP (LAN dev server) and HTTPS (production).
+- `@noble/hashes` is audited and widely used in the web crypto community.
+- No conditional polyfill logic needed.
 
-**Negativ / Trade-offs:**
-- Zusätzliche Dependency (~14 KB gzip). Für einen einmaligen Upload-Schritt
-  akzeptabel.
-- Etwas langsamer als native Web Crypto API (pure JS vs. native). Bei
-  Single-File-Upload nicht messbar (Audio-File von 5 MB: <10 ms für SHA-256).
+**Negative / Trade-offs:**
+- An additional dependency (~14 KB gzip). Acceptable for a one-off upload step.
+- Somewhat slower than the native Web Crypto API (pure JS vs. native). Not measurable for a
+  single-file upload (5 MB audio file: <10 ms for SHA-256).
 
-## Alternatives Considered
+## Alternatives considered
 
-**Web Crypto API (`crypto.subtle.digest`):** Nativ, schnell. Nicht verwendbar
-auf HTTP (LAN-Dev), was das Primärtarget-Testing blockieren würde.
+**Web Crypto API (`crypto.subtle.digest`):** native, fast. Not usable over HTTP (LAN dev),
+which would block testing on the primary target.
 
-**Conditional:** `crypto.subtle` wenn verfügbar, sonst Fallback. Würde
-unterschiedliches Verhalten in Dev und Production produzieren — keine gute
-Engineering-Praxis (Invarianten sollen in allen Kontexten gleich sein).
+**Conditional:** `crypto.subtle` when available, otherwise a fallback. Would produce different
+behaviour in dev and production — not good engineering practice (invariants should be the
+same in every context).
 
-**CRC32 / MD5:** Wären schneller, aber keine kryptografischen Hashes.
-Kollisionsresistenz ist für Deduplizierung relevant.
+**CRC32 / MD5:** would be faster, but are not cryptographic hashes. Collision resistance
+matters for deduplication.
 
 ## Related
 
-- **Dateien:** `v3/src/lib/upload.ts` (computeHash), `v3/package.json` (@noble/hashes dependency)
-- **ADRs:** ADR-0006 (iOS LAN-Testing als Anforderung), ADR-0011 (LibraryItem.id ist der Hash)
-- **Quelldokumente:** `CLAUDE.md §Deviations from plan`
+- **Files:** `v3/src/lib/upload.ts` (computeHash), `v3/package.json` (@noble/hashes dependency)
+- **ADRs:** ADR-0006 (iOS LAN testing as a requirement), ADR-0011 (LibraryItem.id is the hash)
+- **Source documents:** `CLAUDE.md §Deviations from plan`
 - **Commits:** `c81992e` — feat(slice-2)

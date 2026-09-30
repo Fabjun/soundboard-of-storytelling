@@ -1,61 +1,56 @@
-# ADR-0001: Preact statt React
+# ADR-0001: Preact instead of React
 
 **Status:** Accepted
 **Date:** 2026-05-27
 **Slice:** cross-cutting
-
+**Refines:** —
 **Category:** Tech stack
 
 ## Context
 
-V3 ist eine PWA, die auf dem iPhone 13 Pro (Brave Browser) läuft. Bundle-Größe
-ist ein messbarer Faktor: jedes KB, das über das Netzwerk geladen werden muss,
-verlängert den First-Load. React (~45 KB gzip) und Preact (~3 KB gzip) bieten
-dieselbe JSX-Kompatibilität.
+V3 is a PWA that runs on the iPhone 13 Pro (Brave browser). Bundle size is a measurable
+factor: every KB that has to be loaded over the network lengthens the first load. React
+(~45 KB gzip) and Preact (~3 KB gzip) offer the same JSX compatibility.
 
-Das Design-System (`design-sources/2026-05-25/`) lieferte JSX-Komponenten als
-Ausgangsmaterial. Eine JSX-basierte Lösung war daher gesetzt; die Frage war nur,
-welche Laufzeit verwendet wird.
+The design system (`design-sources/2026-05-25/`) delivered JSX components as source material.
+A JSX-based solution was therefore a given; the only question was which runtime to use.
 
-Quelldokument: `docs/architecture/concept-brief.md §1` — "Preact (not React) — smaller bundle,
+Source document: `docs/architecture/concept-brief.md §1` — "Preact (not React) — smaller bundle,
 same JSX".
 
 ## Decision
 
-Preact wird als UI-Laufzeit verwendet. React ist nicht installiert; alle Imports
-verwenden `preact` und `@preact/signals`. Die JSX-Transform in `vite.config.ts`
-zeigt auf `preact/jsx-runtime`.
+Preact is used as the UI runtime. React is not installed; all imports use `preact` and
+`@preact/signals`. The JSX transform in `vite.config.ts` points to `preact/jsx-runtime`.
 
 ## Consequences
 
-**Positiv:**
-- Bundle bleibt klein: JS aktuell ~100 KB gzip (inkl. App-Code), Preact-Anteil ~3 KB.
-- Preact Signals sind eine First-Party-Ergänzung: kein Impedanz-Mismatch mit dem
-  State-Management (ADR-0002).
-- JSX-Kompatibilität: das Design-System-JSX musste für Slice 1 nicht umgeschrieben
-  werden.
+**Positive:**
+- The bundle stays small: JS currently ~100 KB gzip (incl. app code), Preact's share ~3 KB.
+- Preact Signals are a first-party addition: no impedance mismatch with the state
+  management (ADR-0002).
+- JSX compatibility: the design-system JSX did not have to be rewritten for Slice 1.
 
-**Negativ / Trade-offs:**
-- Preact's Ecosystem ist kleiner als React. Einige React-Bibliotheken sind nicht
-  direkt kompatibel (React-only hooks, React-Testing-Library). In der Praxis
-  bisher kein Blocker.
-- Vitest + Playwright testen den Code direkt, ohne jsdom/React-Testing-Library —
-  das war ohnehin der Ansatz (ADR-0033).
+**Negative / Trade-offs:**
+- Preact's ecosystem is smaller than React's. Some React libraries are not directly
+  compatible (React-only hooks, React Testing Library). In practice not a blocker so far.
+- Vitest + Playwright test the code directly, without jsdom/React Testing Library — that was
+  the approach anyway (ADR-0033).
 
-## Alternatives Considered
+## Alternatives considered
 
-**React 18:** Wäre direkt mit React-Ecosystem kompatibel, aber ~42 KB größer im
-Bundle. Für eine PWA mit iPhone als Primärtarget nicht gerechtfertigt.
+**React 18:** would be directly compatible with the React ecosystem, but ~42 KB larger in the
+bundle. Not justified for a PWA with the iPhone as the primary target.
 
-**Vanilla JS / Lit:** Würde das Design-System-JSX nicht direkt verwenden können.
-Mehr Portierungsaufwand ohne Mehrwert.
+**Vanilla JS / Lit:** could not use the design-system JSX directly. More porting effort
+without added value.
 
-**Solid.js:** Signals-basiert wie Preact, ähnliche Bundle-Größe. Kein
-JSX-Kompatibilitäts-Vorteil gegenüber dem Design-System; Ökosystem noch kleiner.
+**Solid.js:** signals-based like Preact, similar bundle size. No JSX compatibility advantage
+with respect to the design system; ecosystem even smaller.
 
 ## Related
 
-- **Dateien:** `v3/package.json` (preact, @preact/signals Dependency), `v3/vite.config.ts` (JSX-Transform)
+- **Files:** `v3/package.json` (preact, @preact/signals dependency), `v3/vite.config.ts` (JSX transform)
 - **ADRs:** ADR-0002 (Preact Signals), ADR-0003 (Vite)
-- **Quelldokumente:** `docs/architecture/concept-brief.md §1`
+- **Source documents:** `docs/architecture/concept-brief.md §1`
 - **Commits:** `8be64d4` — Slice 1: Vite + Preact scaffold

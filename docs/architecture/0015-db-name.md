@@ -1,26 +1,25 @@
-# ADR-0015: DB-Name `sos-v3` (getrennt von V1)
+# ADR-0015: DB name `sos-v3` (separate from V1)
 
 **Status:** Accepted
 **Date:** 2026-05-27
 **Slice:** Slice 1
-
+**Refines:** —
 **Category:** Persistence
 
 ## Context
 
-V1 und V3 laufen während der Entwicklungsphase parallel auf demselben Gerät
-(V1 auf GitHub Pages, V3 auf dem Dev-Server). Wenn beide denselben IDB-Namen
-verwenden würden, könnten sie sich gegenseitig in den Daten stören.
+V1 and V3 run in parallel on the same device during the development phase (V1 on GitHub
+Pages, V3 on the dev server). If both used the same IDB name, they could interfere with each
+other's data.
 
-V3 ist außerdem die App "Soundboard of Storytelling" (SoS), nicht mehr
-"Blood on the Clocktower Soundboard" (botc) — die Umbenennung des Apps spiegelt
-sich im DB-Namen wider.
+V3 is also the app "Soundboard of Storytelling" (SoS), no longer the V1 app (abbreviated
+"botc") — the rename of the app is reflected in the DB name.
 
-> *Diese Entscheidung war nicht explizit als eigene Regel in den Quelldokumenten
-> festgehalten. Der DB-Name `sos-v3` wurde beim Einrichten von Slice 2 direkt im
-> Code gesetzt. Der Name wurde im Plan als mögliche "botc-sb-v3"-Inkonsistenz
-> identifiziert — eine Suche im Repo bestätigt, dass `botc-sb-v3` nie in CLAUDE.md
-> vorkam. Der kanonische Name ist `sos-v3` (aus `v3/src/db/idb.ts`).*
+> *This decision was not recorded as a rule of its own in the source documents. The DB name
+> `sos-v3` was set directly in code while setting up Slice 2. The name had been identified in
+> the plan as a possible "botc-sb-v3" inconsistency — a search in the repo confirms that
+> `botc-sb-v3` never appeared in CLAUDE.md. The canonical name is `sos-v3` (from
+> `v3/src/db/idb.ts`).*
 
 ## Decision
 
@@ -28,30 +27,29 @@ sich im DB-Namen wider.
 const DB_NAME = 'sos-v3';
 ```
 
-Der Name leitet sich von "Soundboard of Storytelling" ab und ist explizit
-von V1's Datenbank getrennt.
+The name derives from "Soundboard of Storytelling" and is explicitly separate from V1's
+database.
 
 ## Consequences
 
-**Positiv:**
-- Kein Datensegment-Konflikt zwischen V1 und V3.
-- Der Name `sos-v3` signalisiert die App-Identität (SoS = Soundboard of Storytelling).
+**Positive:**
+- No data conflict between V1 and V3.
+- The name `sos-v3` signals the app identity (SoS = Soundboard of Storytelling).
 
-**Negativ / Trade-offs:**
-- V1-Daten werden nicht automatisch migriert. Import über Template-Export (Slice 7)
-  ist der vorgesehene Migrations-Pfad.
-- Eine zukünftige V4 muss wieder einen neuen DB-Namen wählen (oder einen
-  Migration-Pfad implementieren).
+**Negative / Trade-offs:**
+- V1 data is not migrated automatically. Import via template export (Slice 7) is the intended
+  migration path.
+- A future V4 has to choose a new DB name again (or implement a migration path).
 
-## Alternatives Considered
+## Alternatives considered
 
-**`botc-soundboard-v3`:** Wäre konsistenter mit dem GitHub-Repo-Namen, aber
-beibehält die veraltete "botc"-Bezeichnung nach App-Umbenennung.
+**`botc-soundboard-v3`:** would be more consistent with the GitHub repo name, but keeps the
+outdated "botc" label after the app rename.
 
-**Gleicher Name wie V1:** Würde Konflikte bei parallelem Betrieb riskieren.
+**Same name as V1:** would risk conflicts when both run in parallel.
 
 ## Related
 
-- **Dateien:** `v3/src/db/idb.ts` (DB_NAME Konstante)
-- **ADRs:** ADR-0014 (IndexedDB als Persistenz), ADR-0017 (Schema-Versioning)
-- **Quelldokumente:** `docs/architecture/concept-brief.md §4.5`
+- **Files:** `v3/src/db/idb.ts` (DB_NAME constant)
+- **ADRs:** ADR-0014 (IndexedDB as persistence), ADR-0017 (schema versioning)
+- **Source documents:** `docs/architecture/concept-brief.md §4.5`

@@ -1,69 +1,68 @@
-# ADR-0020: AudioContext-Lifecycle — TAP TO UNLOCK + visibilitychange
+# ADR-0020: AudioContext lifecycle — TAP TO UNLOCK + visibilitychange
 
 **Status:** Accepted
 **Date:** 2026-05-27
 **Slice:** Slice 4
-
+**Refines:** —
 **Category:** Audio engine & iOS memory
 
 ## Context
 
-Web Audio API auf iOS erfordert, dass der `AudioContext` in einer User-Gesture-
-Callback erstellt oder resumed wird. Ohne das bleibt der Context in `suspended`
-State — Playback ist nicht möglich.
+The Web Audio API on iOS requires the `AudioContext` to be created or resumed inside a
+user-gesture callback. Without that the context stays in the `suspended` state — playback is
+impossible.
 
-Zusätzlich: Wenn der User das Tab wechselt (z.B. Nachricht empfangen während der
-Gaming-Session), suspendiert iOS Safari den AudioContext. Beim Zurückkehren muss
-er resume()-t werden. Das ist ein V1-bekanntes Problem.
+In addition: when the user switches tabs (e.g. a message arrives during the gaming session),
+iOS Safari suspends the AudioContext. On return it has to be resumed with resume(). This is a
+problem known from V1.
 
-V1 implementiert:
-1. "TAP TO UNLOCK" — ein Overlay das beim ersten Tap den AudioContext erstellt
-2. `visibilitychange`-Handler der bei `document.hidden` suspended und bei
-   `visible` den Context resumed
+V1 implements:
+1. "TAP TO UNLOCK" — an overlay that creates the AudioContext on the first tap
+2. a `visibilitychange` handler that suspends on `document.hidden` and resumes the context on
+   `visible`
 
-Diese Lösung kommt aus V1's Erfahrung und wird in V3 übernommen (ADR-0018:
-V1-Engine 1:1 kopiert).
+This solution comes from V1's experience and is carried over into V3 (ADR-0018: V1 engine
+copied 1:1).
 
-> **Stand Slice 3:** Der AudioContext-Lifecycle wird in Slice 4 implementiert.
-> Die App hat bereits einen `audioContextState` Signal (`'locked' | 'running' | 'suspended'`)
-> und einen `TAP TO UNLOCK`-Button auf der StartScreen. Die Implementierung
-> der tatsächlichen Web Audio Verbindung ist Slice 4.
+> **As of Slice 3:** the AudioContext lifecycle is implemented in Slice 4. The app already has
+> an `audioContextState` signal (`'locked' | 'running' | 'suspended'`) and a `TAP TO UNLOCK`
+> button on the StartScreen. The actual Web Audio connection is Slice 4.
 
 ## Decision
 
-Der AudioContext-Lifecycle folgt V1's Muster:
+The AudioContext lifecycle follows V1's pattern:
 
-1. **Initialer State:** `audioContextState = 'locked'`
-2. **TAP TO UNLOCK:** User-Tap auf dem StartScreen-Overlay erstellt den
-   `AudioContext` und setzt State auf `'running'`
-3. **visibilitychange:** Bei `document.hidden` → `ctx.suspend()` + State `'suspended'`;
-   bei `!document.hidden` → `ctx.resume()` + State `'running'`
-4. **AppState-Signal:** `audioContextState` Signal in `store.ts` reflektiert den
-   aktuellen State für UI-Feedback
+1. **Initial state:** `audioContextState = 'locked'`
+2. **TAP TO UNLOCK:** a user tap on the StartScreen overlay creates the `AudioContext` and
+   sets the state to `'running'`
+3. **visibilitychange:** on `document.hidden` → `ctx.suspend()` + state `'suspended'`; on
+   `!document.hidden` → `ctx.resume()` + state `'running'`
+4. **AppState signal:** the `audioContextState` signal in `store.ts` reflects the current
+   state for UI feedback
 
 ## Consequences
 
-**Positiv:**
-- Funktioniert auf iOS Safari / Brave (User-Gesture-Anforderung erfüllt).
-- Tab-Wechsel im Live-Einsatz unterbricht Audio korrekt und resumed beim Zurückkehren.
-- UI kann auf State reagieren (z.B. "Audio paused" Indicator).
+**Positive:**
+- Works on iOS Safari / Brave (user-gesture requirement met).
+- A tab switch during live use interrupts audio correctly and resumes on return.
+- The UI can react to the state (e.g. an "Audio paused" indicator).
 
-**Negativ / Trade-offs:**
-- TAP TO UNLOCK ist ein extra User-Schritt bei jedem App-Start.
-  Unvermeidlich wegen iOS-Anforderung.
-- `visibilitychange` ist nicht 100% zuverlässig in allen iOS-Versionen.
-  Workarounds aus V1 werden übernommen.
+**Negative / Trade-offs:**
+- TAP TO UNLOCK is an extra user step at every app start. Unavoidable because of the iOS
+  requirement.
+- `visibilitychange` is not 100% reliable in every iOS version. Workarounds from V1 are
+  carried over.
 
-## Alternatives Considered
+## Alternatives considered
 
-**AudioContext bei App-Init erstellen (ohne Gesture):** Würde auf iOS in
-`suspended` bleiben — keine Audio. Nicht verwendbar.
+**Create the AudioContext at app init (without a gesture):** would stay `suspended` on iOS —
+no audio. Not usable.
 
-**Page Visibility API ignorieren:** Audio würde beim Tab-Wechsel weiterlaufen.
-Auf iOS wird der Tab ohnehin eingefroren — undefined behavior.
+**Ignore the Page Visibility API:** audio would keep running on a tab switch. On iOS the tab
+is frozen anyway — undefined behaviour.
 
 ## Related
 
-- **Dateien:** `v3/src/state/store.ts` (audioContextState signal), `v3/src/screens/StartScreen.tsx` (TAP TO UNLOCK UI), `v3/src/audio/` (Slice 4 — noch nicht erstellt)
-- **ADRs:** ADR-0018 (V1 Audio Engine), ADR-0019 (iOS Memory Safety)
-- **Quelldokumente:** `docs/architecture/concept-brief.md §4.4`, `v1-reference/index.html` (TAP TO UNLOCK Implementierung)
+- **Files:** `v3/src/state/store.ts` (audioContextState signal), `v3/src/screens/StartScreen.tsx` (TAP TO UNLOCK UI), `v3/src/audio/` (Slice 4 — not yet created)
+- **ADRs:** ADR-0018 (V1 audio engine), ADR-0019 (iOS memory safety)
+- **Source documents:** `docs/architecture/concept-brief.md §4.4`, `v1-reference/index.html` (TAP TO UNLOCK implementation)

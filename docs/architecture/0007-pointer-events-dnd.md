@@ -1,75 +1,72 @@
-# ADR-0007: Pointer Events für DnD — HTML5 Drag-and-Drop verboten
+# ADR-0007: Pointer events for DnD — HTML5 drag and drop forbidden
 
 **Status:** Accepted
 **Date:** 2026-05-27
 **Slice:** Slice 3
-
+**Refines:** —
 **Category:** Platform constraints
 
 ## Context
 
-Slice 3 (Board + Scene + Pad CRUD) erforderte zwei DnD-Interaktionen:
-- Pad-zu-Pad-Drag: SWAP / INSERT innerhalb des Grids
-- Library-zu-Grid-Drag: Audio-Datei aus der Library auf ein Pad-Slot ziehen
+Slice 3 (board + scene + pad CRUD) required two DnD interactions:
+- pad-to-pad drag: SWAP / INSERT within the grid
+- library-to-grid drag: drag an audio file from the library onto a pad slot
 
-Path B (Library → Grid, "drag from library") wurde initial mit HTML5 DnD
-implementiert (`draggable`, `ondragstart`, `ondragover`, `ondrop`). Das
-funktionierte auf Desktop-Brave problemlos.
+Path B (library → grid, "drag from library") was first implemented with HTML5 DnD
+(`draggable`, `ondragstart`, `ondragover`, `ondrop`). That worked without problems in desktop
+Brave.
 
-**Auf dem iPhone (Brave, iOS) war es stillschweigend kaputt:** iOS WebKit
-unterstützt HTML5 DnD-Events auf Touch-Geräten nicht. Kein Fehler, kein Event —
-der Drag initiierte einfach nie. Der Bug wurde erst beim manuellen Testen auf
-dem Primärtarget entdeckt (nach dem Desktop-Test).
+**On the iPhone (Brave, iOS) it was silently broken:** iOS WebKit does not support HTML5 DnD
+events on touch devices. No error, no event — the drag simply never started. The bug was only
+found during manual testing on the primary target (after the desktop test).
 
-Nach dem Fix (Portierung auf Pointer Events) wurde die Platform-Constraint-
-Entscheidung (ADR-0006) als formale Regel festgeschrieben: HTML5 DnD ist verboten.
+After the fix (porting to pointer events), the platform constraint decision (ADR-0006) was
+written down as a formal rule: HTML5 DnD is forbidden.
 
 ## Decision
 
-**Jede DnD-Interaktion in V3 verwendet ausschließlich Pointer Events.**
+**Every DnD interaction in V3 uses pointer events exclusively.**
 
-`draggable`, `ondragstart`, `ondragover`, `ondragenter`, `ondragleave`, `ondrop`
-sind in neuem V3-Code verboten.
+`draggable`, `ondragstart`, `ondragover`, `ondragenter`, `ondragleave`, `ondrop` are forbidden
+in new V3 code.
 
-**Kanonische Referenz-Implementierungen:**
-- `v3/src/lib/padDnd.ts` — Pad-zu-Pad (SWAP + INSERT, Ghost, cellRef-Registry)
-- `v3/src/lib/libDnd.ts` — Library-zu-Grid (Drop only, Ghost, elementFromPoint)
+**Canonical reference implementations:**
+- `v3/src/lib/padDnd.ts` — pad to pad (SWAP + INSERT, ghost, cellRef registry)
+- `v3/src/lib/libDnd.ts` — library to grid (drop only, ghost, elementFromPoint)
 
-**Muster (aus beiden Implementierungen):**
-1. `element.setPointerCapture(e.pointerId)` auf `pointerdown`
-2. `pointermove` auf `document` für Tracking
-3. `pointerup` auf `document` für Drop-Detection
-4. Ghost: `position: fixed; pointer-events: none` — Pointer-Events passieren durch den Ghost hindurch (Voraussetzung für `elementFromPoint` in libDnd.ts; padDnd.ts nutzt die gleiche Eigenschaft, verwendet aber die cellRef-Registry statt `elementFromPoint` für die Drop-Zone-Erkennung)
-5. `touch-action: none` auf draggable Elements — verhindert Scroll-Capture
-6. 8 px Threshold vor Drag-Start (verhindert versehentliche Drags)
-7. Isoliertes Modul-State pro DnD-Typ — kein Shared State zwischen Modulen
+**Pattern (from both implementations):**
+1. `element.setPointerCapture(e.pointerId)` on `pointerdown`
+2. `pointermove` on `document` for tracking
+3. `pointerup` on `document` for drop detection
+4. Ghost: `position: fixed; pointer-events: none` — pointer events pass through the ghost (prerequisite for `elementFromPoint` in libDnd.ts; padDnd.ts relies on the same property but uses the cellRef registry instead of `elementFromPoint` for drop-zone detection)
+5. `touch-action: none` on draggable elements — prevents scroll capture
+6. 8 px threshold before the drag starts (prevents accidental drags)
+7. Isolated module state per DnD type — no shared state between modules
 
 ## Consequences
 
-**Positiv:**
-- Einheitliche DnD-Implementierung funktioniert auf iOS, Android und Desktop.
-- Pointer Events sind in allen Supported Platforms garantiert (ADR-0006).
+**Positive:**
+- One DnD implementation works on iOS, Android and desktop.
+- Pointer events are guaranteed on all supported platforms (ADR-0006).
 
-**Negativ / Trade-offs:**
-- Mehr Code als HTML5 DnD: Pointer Events erfordern manuelle Ghost-Element-
-  Verwaltung, manuelle Drop-Zone-Erkennung via `elementFromPoint`, manuelle
-  Capture-Freigabe. HTML5 DnD macht das implizit (aber nur auf Desktop).
-- Playwright-Tests für Pointer-Events-Drag sind aufwändiger (Tests 9, 14, 20, 21
-  sind aktuell als `test.skip` markiert, bis die Drag-Sequenz in Playwright
-  stabil ist).
+**Negative / Trade-offs:**
+- More code than HTML5 DnD: pointer events require manual ghost element handling, manual
+  drop-zone detection via `elementFromPoint`, manual capture release. HTML5 DnD does this
+  implicitly (but only on desktop).
+- Playwright tests for pointer-events drag are more effort (tests 9, 14, 20, 21 are currently
+  marked `test.skip` until the drag sequence is stable in Playwright).
 
-## Alternatives Considered
+## Alternatives considered
 
-**HTML5 DnD mit Pointer-Events-Fallback:** Wäre doppelter Implementierungsaufwand.
-Kein Vorteil gegenüber reinen Pointer Events, die auf allen Platforms laufen.
+**HTML5 DnD with a pointer events fallback:** would be double implementation effort. No
+advantage over pure pointer events, which run on all platforms.
 
-**react-dnd / dnd-kit:** Bibliotheken mit Pointer-Events-Support. Nicht verwendet,
-weil V3 keine externe DnD-Bibliothek braucht — die zwei isolierten Module sind
-ausreichend schlank und vollständig kontrollierbar.
+**react-dnd / dnd-kit:** libraries with pointer events support. Not used because V3 needs no
+external DnD library — the two isolated modules are lean enough and fully controllable.
 
 ## Related
 
-- **Dateien:** `v3/src/lib/padDnd.ts`, `v3/src/lib/libDnd.ts`
-- **ADRs:** ADR-0006 (Platform Targets), ADR-0029 (SWAP + INSERT Semantik)
-- **Quelldokumente:** `CLAUDE.md §Supported Platforms`, `docs/design/design-notes.md §Slice 3 / Lessons — DnD pattern`
+- **Files:** `v3/src/lib/padDnd.ts`, `v3/src/lib/libDnd.ts`
+- **ADRs:** ADR-0006 (platform targets), ADR-0029 (SWAP + INSERT semantics)
+- **Source documents:** `CLAUDE.md §Supported Platforms`, `docs/design/design-notes.md §Slice 3 / Lessons — DnD pattern`
 - **Commits:** `86502b2` — fix(slice-3): replace HTML5 DnD with pointer events in path B

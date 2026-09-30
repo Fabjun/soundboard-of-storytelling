@@ -1,37 +1,35 @@
-# ADR-0010: Board als monolithisches JSON-Dokument in IDB
+# ADR-0010: Board as a monolithic JSON document in IDB
 
 **Status:** Accepted
 **Date:** 2026-05-27
 **Slice:** Slice 3
-
+**Refines:** —
 **Category:** Data model
 
 ## Context
 
-Das Board-Datenmodell ist hierarchisch: `Board → [Scene → [Pad]]`. In einer
-relationalen Datenbank würden diese in separaten Tabellen mit Foreign Keys
-gespeichert. In IndexedDB gibt es keine Joins — Daten können entweder in
-separaten Stores mit manuellen Lookups gespeichert werden, oder als
-eingebettetes Dokument.
+The board data model is hierarchical: `Board → [Scene → [Pad]]`. A relational database would
+store these in separate tables with foreign keys. IndexedDB has no joins — data can either be
+stored in separate stores with manual lookups, or as an embedded document.
 
-Entscheidungspunkt Slice 3: Wie wird ein Board in IDB persistiert?
+Decision point in Slice 3: how is a board persisted in IDB?
 
 ## Decision
 
-Ein Board wird als einzelnes JSON-Dokument gespeichert. Scenes und Pads sind
-embedded (nicht in separaten IDB-Stores). Jede Mutation (Pad umbenennen,
-Scene hinzufügen, Pad bewegen) schreibt das komplette Board-Dokument.
+A board is stored as a single JSON document. Scenes and pads are embedded (not in separate
+IDB stores). Every mutation (rename a pad, add a scene, move a pad) writes the complete board
+document.
 
 ```typescript
 boardPut(board: Board): Promise<void>
-// Upsert des kompletten Dokuments, enthält alle Scenes und Pads.
+// Upsert of the complete document, containing all scenes and pads.
 ```
 
-Einschätzung der Größe: Bei 5 Scenes × 16 Pads sind es ~50 KB JSON.
-IDB-Writes dieser Größe sind auf modernen Geräten typischerweise <5 ms.
+Size estimate: with 5 scenes × 16 pads it is ~50 KB of JSON. IDB writes of this size typically
+take <5 ms on modern devices.
 
-Der Trade-off ist bewusst und ist in `v3/src/db/idb.ts` (Kommentarblock am
-Anfang) sowie in `docs/design/design-notes.md` dokumentiert:
+The trade-off is deliberate and documented in `v3/src/db/idb.ts` (comment block at the top)
+and in `docs/design/design-notes.md`:
 
 > *BOARD PERSISTENCE TRADE-OFF: Boards are stored as complete JSON documents.
 > Any pad edit rewrites the full ~50KB document. Acceptable at 5×16 pads;
@@ -40,37 +38,37 @@ Anfang) sowie in `docs/design/design-notes.md` dokumentiert:
 
 ## Consequences
 
-**Positiv:**
-- Einfache Transaktionen: kein Join-Code, kein referential integrity management.
-- Auto-Save (ADR-0030): eine einzige `boardPut(board)` nach jeder Mutation.
-  Kein Tracking welche Sub-Entity sich geändert hat.
-- Konsistente Snapshots: Das gespeicherte Dokument ist immer consistent
-  (Board + alle Scenes + alle Pads in einem Atomic Write).
-- Loading-Einfachheit: `boardGetAll()` lädt alle Boards komplett (keine
-  Joins, keine Second-Level-Queries).
+**Positive:**
+- Simple transactions: no join code, no referential integrity management.
+- Auto-save (ADR-0030): a single `boardPut(board)` after every mutation. No tracking of which
+  sub-entity changed.
+- Consistent snapshots: the stored document is always consistent (board + all scenes + all
+  pads in one atomic write).
+- Simple loading: `boardGetAll()` loads all boards completely (no joins, no second-level
+  queries).
 
-**Negativ / Trade-offs:**
-- Write-Amplification: Ein Pad-Rename schreibt das komplette 50 KB-Dokument.
-  Bei 5 Scenes × 16 Pads akzeptabel; bei 20+ Scenes könnte das messbar werden.
-- Kein partielles Update in IDB (IDB hat keinen UPDATE-Operator). Das Dokument
-  muss immer vollständig gelesen → geändert → geschrieben werden.
+**Negative / Trade-offs:**
+- Write amplification: a pad rename writes the complete 50 KB document. Acceptable at 5 scenes
+  × 16 pads; with 20+ scenes it could become measurable.
+- No partial update in IDB (IDB has no UPDATE operator). The document always has to be fully
+  read → changed → written.
 
-**Optimierungspfad (nur wenn gemessen):**
-Separaten `scenes`-Store einführen, Board hält nur `sceneIds: string[]`.
-Erst wenn Performance-Problem quantifiziert ist — nicht spekulativ.
+**Optimisation path (only if measured):**
+introduce a separate `scenes` store; the board holds only `sceneIds: string[]`. Only once a
+performance problem is quantified — not speculatively.
 
-## Alternatives Considered
+## Alternatives considered
 
-**Separate `scenes` + `pads` Stores:** Würde granulare Updates erlauben.
-Nachteil: Joins in JavaScript, referential integrity manuell verwalten,
-komplexere Transaktionen. Bei ≤5 Scenes kein Mehrwert.
+**Separate `scenes` + `pads` stores:** would allow granular updates. Drawback: joins in
+JavaScript, referential integrity managed by hand, more complex transactions. No added value
+with ≤5 scenes.
 
-**Scenes embedded, Pads in separatem Store:** Hybrid. Komplexer als
-Full-Document ohne klaren Vorteil bei der erwarteten Datenmenge.
+**Scenes embedded, pads in a separate store:** a hybrid. More complex than the full document
+without a clear advantage at the expected data volume.
 
 ## Related
 
-- **Dateien:** `v3/src/db/idb.ts` (boardPut/Get/GetAll/Delete), `v3/src/state/store.ts` (upsertBoard)
-- **ADRs:** ADR-0014 (IndexedDB sole persistence), ADR-0030 (Auto-Save debounce)
-- **Quelldokumente:** `CLAUDE.md §V3 audio/IDB API`, `docs/design/design-notes.md §Slice 8 / Performance`
+- **Files:** `v3/src/db/idb.ts` (boardPut/Get/GetAll/Delete), `v3/src/state/store.ts` (upsertBoard)
+- **ADRs:** ADR-0014 (IndexedDB sole persistence), ADR-0030 (auto-save debounce)
+- **Source documents:** `CLAUDE.md §V3 audio/IDB API`, `docs/design/design-notes.md §Slice 8 / Performance`
 - **Commits:** `9eeceeb` — feat(slice-3): Board + Scene + Pad CRUD

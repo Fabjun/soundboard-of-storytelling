@@ -1,32 +1,32 @@
-# ADR-0022: Design-Tokens in `tokens.css` — keine Farbliterale
+# ADR-0022: Design tokens in `tokens.css` — no colour literals
 
 **Status:** Accepted
 **Date:** 2026-05-27
 **Slice:** cross-cutting
-
+**Refines:** —
 **Category:** UI architecture
 
 ## Context
 
-Das Design-System liefert `design-sources/2026-05-25/tokens.css` als komplettes
-Token-System: Farben, Typography, Spacing, Pixel-Frame-Styles, Theme-Overrides,
-Animation-Keyframes. `docs/architecture/concept-brief.md §4.7` legt fest: "Token language
-follows the design system canonically."
+The design system delivers `design-sources/2026-05-25/tokens.css` as a complete token system:
+colours, typography, spacing, pixel frame styles, theme overrides, animation keyframes.
+`docs/architecture/concept-brief.md §4.7` states: "Token language follows the design system
+canonically."
 
-Die Alternative wäre, Farben/Fonts/Spacing direkt im JSX oder CSS zu kodieren.
+The alternative would be to hard-code colours/fonts/spacing directly in JSX or CSS.
 
 ## Decision
 
-**Keine Farbliterale, keine hardcodierten Spacing-Werte ≥12 px in neuem Code.**
-Alle visuellen Werte kommen aus `tokens.css` Custom Properties:
+**No colour literals, no hard-coded spacing values ≥12 px in new code.** All visual values
+come from `tokens.css` custom properties:
 
 ```css
-/* Erlaubt */
+/* Allowed */
 color: var(--text);
 background: var(--surface);
 gap: var(--space-4);
 
-/* Verboten */
+/* Forbidden */
 color: #ccc;
 background: #1a1a2e;
 gap: 16px;
@@ -39,40 +39,40 @@ variables, grid layout variables, new ambient glow tokens — `--flame-soft`,
 and `--pix-bg-layer` was removed. The design handoff origin
 (`design-sources/2026-05-25/tokens.css`) is kept as a reference only and is not loaded by
 the app. See `docs/README.md` for the full documentation structure.
-Theme-Overrides (`.sb-theme-verdant`, `.sb-theme-neon`,
-`.sb-theme-crimson`) sind in `tokens.css` enthalten.
+Theme overrides (`.sb-theme-verdant`, `.sb-theme-neon`, `.sb-theme-crimson`) are contained in
+`tokens.css`.
 
-**Verboten in neuem V3-Code (aus docs/design/design-system-cheatsheet.md):**
-- Neue Farbliterale
-- `--sb-*` Legacy-Aliase (nur für rückwärtskompatible Verweise)
-- `border-radius` auf `sb-pix`-family (clip-path, ADR-0024)
-- Theme-Overrides für Spacing / Radius / Type (nur Farben werden theme-spezifisch)
+**Forbidden in new V3 code (from docs/design/design-system-cheatsheet.md):**
+- new colour literals
+- `--sb-*` legacy aliases (only for backward-compatible references)
+- `border-radius` on the `sb-pix` family (clip-path, ADR-0024)
+- theme overrides for spacing / radius / type (only colours are theme-specific)
 
 ## Consequences
 
-**Positiv:**
-- Theme-Switching (Slice 8) ist trivial: anderes CSS-Class auf Root-Element,
-  Token-Overrides greifen automatisch überall.
-- Konsistenz: 50+ Komponenten verwenden dieselben Token-Namen.
-- Token-Dokumentation in `CLAUDE.md §Design language` ist kanonisch.
+**Positive:**
+- Theme switching (Slice 8) is trivial: a different CSS class on the root element, token
+  overrides apply automatically everywhere.
+- Consistency: 50+ components use the same token names.
+- The token documentation in `CLAUDE.md §Design language` is canonical.
 
-**Negativ / Trade-offs:**
-- Token-Namen müssen bekannt sein (`--gold` statt `#F5D57A`). Learning-Aufwand
-  einmalig beim Einlesen des Cheatsheets.
-- Kein TypeScript-Support für Token-Namen (CSS Custom Properties sind Strings).
-  Tippfehler werden erst beim Rendern sichtbar.
+**Negative / Trade-offs:**
+- Token names have to be known (`--gold` instead of `#F5D57A`). A one-off learning effort when
+  reading the cheat sheet.
+- No TypeScript support for token names (CSS custom properties are strings). Typos only
+  become visible when rendering.
 
-## Alternatives Considered
+## Alternatives considered
 
-**CSS-in-JS (Emotion, styled-components):** TypeScript-Support für Token-Namen.
-Nicht kompatibel mit dem Design-System-Ansatz (HANDOFF.md: "copy tokens.css
-verbatim"). Overhead ohne Mehrwert für diese App-Größe.
+**CSS-in-JS (Emotion, styled-components):** TypeScript support for token names. Not
+compatible with the design-system approach (HANDOFF.md: "copy tokens.css verbatim").
+Overhead without added value at this app size.
 
-**Tailwind:** Utility-first, kein Token-System per se. Würde das bestehende
-Design-System ersetzen. Nicht gewählt.
+**Tailwind:** utility-first, no token system per se. Would replace the existing design
+system. Not chosen.
 
 ## Related
 
-- **Dateien:** `v3/src/styles/tokens.css`, `design-sources/2026-05-25/tokens.css`
-- **ADRs:** ADR-0021 (CSS-Naming), ADR-0023 (Surface Hierarchy), ADR-0027 (Pad-Typ-Farben)
-- **Quelldokumente:** `docs/architecture/concept-brief.md §4.7`, `CLAUDE.md §Design language`, `design-sources/2026-05-25/HANDOFF.md §4`
+- **Files:** `v3/src/styles/tokens.css`, `design-sources/2026-05-25/tokens.css`
+- **ADRs:** ADR-0021 (CSS naming), ADR-0023 (surface hierarchy), ADR-0027 (pad type colours)
+- **Source documents:** `docs/architecture/concept-brief.md §4.7`, `CLAUDE.md §Design language`, `design-sources/2026-05-25/HANDOFF.md §4`

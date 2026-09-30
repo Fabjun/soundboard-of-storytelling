@@ -1,75 +1,72 @@
-# ADR-0019: iOS Memory Safety Rules (150 MB LRU-Cache, serielles Decode)
+# ADR-0019: iOS memory safety rules (150 MB LRU cache, serial decode)
 
 **Status:** Accepted
 **Date:** 2026-05-27
 **Slice:** cross-cutting
-
+**Refines:** —
 **Category:** Audio engine & iOS memory
 
 ## Context
 
-iOS Safari killt den Browser-Tab, wenn der JS-Heap eine Grenze überschreitet:
-~600 MB auf älteren iPhones (iPhone 8 und früher), ~1–1.5 GB auf neueren
-(iPhone 12+). Das ist V1's härteste Lektion — mehrfach beim Live-Einsatz
-erfahren.
+iOS Safari kills the browser tab when the JS heap crosses a limit: ~600 MB on older iPhones
+(iPhone 8 and earlier), ~1–1.5 GB on newer ones (iPhone 12+). This is V1's hardest lesson —
+experienced several times in live use.
 
-Das `CLAUDE.md §iPhone / iOS Safari — memory & stability rules` dokumentiert
-7 Kern-Prinzipien aus V1, die 1:1 für V3 gelten. Diese Regeln sind nicht
-verhandelbar — Verstöße führen zu Tab-Kills im Live-Gaming-Einsatz.
+`CLAUDE.md §iPhone / iOS Safari — memory & stability rules` documents 7 core principles from
+V1 that apply 1:1 to V3. These rules are non-negotiable — violations lead to tab kills during
+live gaming use.
 
 ## Decision
 
-**7 Verbotene Muster (aus V1 übernommen):**
+**7 forbidden patterns (carried over from V1):**
 
-1. **Nie alle Audio-Buffers in RAM laden.** Library-Listing, Filtering, Rename
-   brauchen keine Audio-Daten — Metadata-only Query.
-2. **Nie Audio parallel dekodieren.** Seriell: ein File zur Zeit; Buffer des
-   vorigen nullen bevor der nächste startet.
-3. **Nie raw Audio in Component-State.** Nur `{name, hash, size}` Referenzen;
-   Buffers lazy über `libGet(id)` (Slice 4+).
-4. **Nie komplette Library-JSON für Export laden.** Streaming: ein Entry pro Zeit
-   in einen Blob.
-5. **Immer decoded Buffers nach Playback freigeben.** `onended`-Handler must
-   `source.buffer = null` setzen.
-6. **Immer große Strings sofort nullen.** Base64, JSON nach dem Parsen.
-7. **LRU-Cache cap: 150 MB.** V1's bewährte Grenze. Nicht erhöhen ohne Messung.
+1. **Never load all audio buffers into RAM.** Library listing, filtering and rename need no
+   audio data — metadata-only query.
+2. **Never decode audio in parallel.** Serially: one file at a time; null the previous
+   buffer before the next one starts.
+3. **Never keep raw audio in component state.** Only `{name, hash, size}` references;
+   buffers lazily via `libGet(id)` (Slice 4+).
+4. **Never load the complete library JSON for export.** Streaming: one entry at a time into a
+   Blob.
+5. **Always release decoded buffers after playback.** The `onended` handler must set
+   `source.buffer = null`.
+6. **Always null large strings immediately.** Base64, JSON after parsing.
+7. **LRU cache cap: 150 MB.** V1's proven limit. Do not raise without measuring.
 
-**Implementierungskonsequenz:**
-- `libGetAllMeta()` verwendet Cursor und referenziert nie `cursor.value.blob`
-  (ADR-0011).
-- `processFilesSerial()` in `upload.ts` dekodiert ein File zur Zeit.
-- `libraryItems` Signal enthält nur `LibraryItemMeta[]`, nie `LibraryItem[]`
-  (ADR-0011).
+**Implementation consequences:**
+- `libGetAllMeta()` uses a cursor and never references `cursor.value.blob` (ADR-0011).
+- `processFilesSerial()` in `upload.ts` decodes one file at a time.
+- The `libraryItems` signal only holds `LibraryItemMeta[]`, never `LibraryItem[]` (ADR-0011).
 
-**Verbotene Muster in neuem Code (CLAUDE.md §Banned patterns):**
+**Forbidden patterns in new code (CLAUDE.md §Banned patterns):**
 
-| Pattern | Warum | Alternative |
+| Pattern | Why | Alternative |
 |---------|-------|-------------|
-| Alle Library-Buffers laden für Non-Playback | 150–240 MB RAM | Metadata-only cursor |
-| Parallel `decodeAudioData` für N Files | N × 50–100 MB PCM = OOM | Seriell, Buffer dazwischen freigeben |
-| Raw Audio in State-Arrays | Komprimiert + Decoded im RAM | `{name, hash, size}`, lazy load |
-| Komplette Library JSON für Export | 150–300 MB String | Stream Entry für Entry |
-| `FileReader` Loop parallel | N Reads + N Decodes | Seriell |
+| Loading all library buffers for non-playback | 150–240 MB RAM | Metadata-only cursor |
+| Parallel `decodeAudioData` for N files | N × 50–100 MB PCM = OOM | Serial, release the buffer in between |
+| Raw audio in state arrays | Compressed + decoded in RAM | `{name, hash, size}`, lazy load |
+| Complete library JSON for export | 150–300 MB string | Stream entry by entry |
+| `FileReader` loop in parallel | N reads + N decodes | Serial |
 
 ## Consequences
 
-**Positiv:**
-- Tab-Kills im Live-Einsatz werden verhindert.
-- Die Regeln sind defensiv genug für ältere iPhones (600 MB Limit).
+**Positive:**
+- Tab kills in live use are prevented.
+- The rules are defensive enough for older iPhones (600 MB limit).
 
-**Negativ / Trade-offs:**
-- Code, der intuitiv "alle Files auf einmal laden" würde, muss streaming-mäßig
-  umstrukturiert werden. Das ist mehr Entwicklungsaufwand.
-- Debugging ist schwieriger: Memory-Leaks auf iOS sind nicht direkt sichtbar
-  (kein Memory Profiler im Brave-Browser auf dem Gerät).
+**Negative / Trade-offs:**
+- Code that would intuitively "load all files at once" has to be restructured as streaming.
+  That is more development effort.
+- Debugging is harder: memory leaks on iOS are not directly visible (no memory profiler in
+  the Brave browser on the device).
 
-## Alternatives Considered
+## Alternatives considered
 
-**Keine spezifischen iOS-Regeln:** Würde Tab-Kills im Live-Einsatz produzieren.
-Das ist das tatsächliche V1-Ergebnis vor diesen Regeln — nicht akzeptabel.
+**No iOS-specific rules:** would produce tab kills in live use. That is the actual V1 result
+before these rules — not acceptable.
 
 ## Related
 
-- **Dateien:** `v3/src/db/idb.ts` (libGetAllMeta cursor), `v3/src/lib/upload.ts` (processFilesSerial), `v3/src/state/store.ts` (libraryItems = Meta only)
-- **ADRs:** ADR-0006 (iPhone als Primärtarget), ADR-0011 (LibraryItem-Split), ADR-0018 (V1 Audio Engine), ADR-0020 (AudioContext Lifecycle)
-- **Quelldokumente:** `CLAUDE.md §iPhone / iOS Safari — memory & stability rules`, `v1-reference/CLAUDE.md`
+- **Files:** `v3/src/db/idb.ts` (libGetAllMeta cursor), `v3/src/lib/upload.ts` (processFilesSerial), `v3/src/state/store.ts` (libraryItems = Meta only)
+- **ADRs:** ADR-0006 (iPhone as primary target), ADR-0011 (LibraryItem split), ADR-0018 (V1 audio engine), ADR-0020 (AudioContext lifecycle)
+- **Source documents:** `CLAUDE.md §iPhone / iOS Safari — memory & stability rules`, `v1-reference/CLAUDE.md`

@@ -1,26 +1,24 @@
-# ADR-0017: IDB Schema-Versioning mit Upgrade-Pfaden
+# ADR-0017: IDB schema versioning with upgrade paths
 
 **Status:** Accepted
 **Date:** 2026-05-27
 **Slice:** Slice 2 (v1: library), Slice 3 (v2: boards)
-
+**Refines:** —
 **Category:** Persistence
 
 ## Context
 
-IndexedDB-Schemas müssen versioniert werden. Wenn ein User V3 nach einem Update
-öffnet und die DB-Struktur sich geändert hat (neuer Store, neuer Index), muss
-IDB einen Upgrade-Callback ausführen. Ohne korrekte Versioning führt ein
-Schema-Mismatch zu einem `VersionError` und die App ist unnutzbar.
+IndexedDB schemas have to be versioned. When a user opens V3 after an update and the DB
+structure has changed (new store, new index), IDB has to run an upgrade callback. Without
+correct versioning, a schema mismatch leads to a `VersionError` and the app is unusable.
 
-> *Das Versioning-Muster war nicht explizit als Regel dokumentiert; es ist eine
-> zwingende technische Anforderung von IDB und wurde beim ersten Schema-Aufbau
-> (Slice 2) etabliert.*
+> *The versioning pattern was not documented explicitly as a rule; it is a mandatory
+> technical requirement of IDB and was established with the first schema (Slice 2).*
 
 ## Decision
 
 ```typescript
-const DB_VERSION = 2; // Erhöht bei jeder Schema-Änderung
+const DB_VERSION = 2; // Increased on every schema change
 
 openDB(DB_NAME, DB_VERSION, {
   upgrade(db, oldVersion) {
@@ -36,39 +34,37 @@ openDB(DB_NAME, DB_VERSION, {
 });
 ```
 
-Jede neue Version fügt ein `if (oldVersion < N)` Block hinzu. Bestehende Daten
-bleiben erhalten. Schema-Downgrade ist nicht unterstützt (IDB-Limitierung).
+Every new version adds an `if (oldVersion < N)` block. Existing data is kept. Schema downgrade
+is not supported (IDB limitation).
 
-**Regeln:**
-- `DB_VERSION` bei jeder Schema-Änderung erhöhen
-- Neue Stores immer mit `if (oldVersion < N)` addieren, nicht ersetzen
-- Existing-Daten nie in Upgrade-Callback löschen ohne User-Kommunikation
+**Rules:**
+- increase `DB_VERSION` on every schema change
+- always add new stores with `if (oldVersion < N)`, never replace them
+- never delete existing data in the upgrade callback without telling the user
 
 ## Consequences
 
-**Positiv:**
-- Nutzer können V3 über Monate mit Daten befüllen und nach App-Updates
-  verlieren sie keine Daten.
-- Der `oldVersion`-Guard macht den Upgrade-Pfad audit-fähig: jede DB-Version
-  ist im Code dokumentiert.
+**Positive:**
+- Users can fill V3 with data over months and do not lose it after app updates.
+- The `oldVersion` guard makes the upgrade path auditable: every DB version is documented in
+  code.
 
-**Negativ / Trade-offs:**
-- Schema kann nicht einfach vereinfacht werden (Stores entfernen wäre ein
-  breaking change für User-Daten). Technische Schulden akkumulieren sich,
-  wenn alte Stores nie genutzt werden.
-- Schema-Downgrade ist unmöglich: wenn `DB_VERSION` erhöht wurde, gibt es
-  kein Zurück ohne vollständige DB-Löschung.
+**Negative / Trade-offs:**
+- The schema cannot simply be simplified (removing stores would be a breaking change for user
+  data). Technical debt accumulates if old stores are never used.
+- Schema downgrade is impossible: once `DB_VERSION` has been increased, there is no way back
+  without deleting the whole DB.
 
-## Alternatives Considered
+## Alternatives considered
 
-**Kein Versioning (immer aktuellste Struktur):** Würde `VersionError` bei
-Nutzern auslösen, die eine ältere V3-Version hatten. Datenverlust-Risiko.
+**No versioning (always the latest structure):** would cause a `VersionError` for users who
+had an older V3 version. Risk of data loss.
 
-**Migrations als separate SQL-ähnliche Scripts:** Wie in Dexie.js. Für
-drei Stores unnötige Komplexität.
+**Migrations as separate SQL-like scripts:** as in Dexie.js. Unnecessary complexity for three
+stores.
 
 ## Related
 
-- **Dateien:** `v3/src/db/idb.ts` (DB_VERSION, upgrade callback)
-- **ADRs:** ADR-0014 (IDB Persistenz), ADR-0015 (DB-Name), ADR-0016 (idb Library)
+- **Files:** `v3/src/db/idb.ts` (DB_VERSION, upgrade callback)
+- **ADRs:** ADR-0014 (IDB persistence), ADR-0015 (DB name), ADR-0016 (idb library)
 - **Commits:** `c81992e` — feat(slice-2): v1 schema; `9eeceeb` — feat(slice-3): v2 schema (boards store)

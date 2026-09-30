@@ -1,18 +1,18 @@
-# ADR-0008: Pad-Position als `{col, row}` Struct
+# ADR-0008: Pad position as a `{col, row}` struct
 
 **Status:** Accepted
 **Date:** 2026-05-27
 **Slice:** Slice 3
-
+**Refines:** —
 **Category:** Data model
 
 ## Context
 
-Pads leben in einem 2D-Grid (default 4×4). Eine Position kann als Array-Index
-(0–15 für ein 4×4-Grid) oder als explizites `{col, row}` Struct codiert werden.
+Pads live in a 2D grid (default 4×4). A position can be encoded as an array index (0–15 for a
+4×4 grid) or as an explicit `{col, row}` struct.
 
-Das `docs/architecture/concept-brief.md §4.1` spezifiziert `{col, row}` direkt im Typ. Die
-Wahl hat Konsequenzen für Datenmodell-Stabilität und API-Klarheit.
+`docs/architecture/concept-brief.md §4.1` specifies `{col, row}` directly in the type. The
+choice has consequences for data model stability and API clarity.
 
 ## Decision
 
@@ -23,34 +23,33 @@ type PadPosition = {
 };
 ```
 
-Position ist ein explizites 2D-Koordinatenpaar. Array-Indizes werden intern nicht
-verwendet.
+A position is an explicit 2D coordinate pair. Array indices are not used internally.
 
 ## Consequences
 
-**Positiv:**
-- Viewport-stabil: `position.col` bedeutet dasselbe auf jedem Gerät und bei
-  jeder Grid-Konfiguration. Bei Array-Index-Codierung müsste bei Grid-Resize
-  eine Index-Neukalkulation stattfinden.
-- Hotkey-Mapping ist stabil: Die F1-F4-Tasten-Zeile (Slice 4+) mappt auf
-  `row=0, col=0..3`. Diese Semantik ist grid-invariant.
-- 4-Spalten-Constraint (ADR-0032): `position.col` ≤ 3 ist eine validierbare
-  Invariante. Bei Array-Index wäre `index % 4` ein implizites Verhältnis.
-- `elementFromPoint` und cellRef-Registry in `padDnd.ts` verwenden `col/row`
-  direkt für Drop-Zone-Erkennung.
+**Positive:**
+- Viewport-stable: `position.col` means the same on every device and in every grid
+  configuration. With array-index encoding, a grid resize would require recalculating the
+  index.
+- Hotkey mapping is stable: the F1–F4 key row (Slice 4+) maps to `row=0, col=0..3`. These
+  semantics are grid-invariant.
+- 4-column constraint (ADR-0032): `position.col` ≤ 3 is a verifiable invariant. With an array
+  index, `index % 4` would be an implicit relationship.
+- `elementFromPoint` and the cellRef registry in `padDnd.ts` use `col/row` directly for
+  drop-zone detection.
 
-**Negativ / Trade-offs:**
-- IDB-Serialisierung schreibt `{col, row}` statt einer Zahl. Kein Laufzeit-
-  Problem (IndexedDB serialisiert Objekte nativ), aber minimal mehr Speicher.
+**Negative / Trade-offs:**
+- IDB serialisation writes `{col, row}` instead of a number. No runtime problem (IndexedDB
+  serialises objects natively), but minimally more storage.
 
-## Alternatives Considered
+## Alternatives considered
 
-**Array-Index (0-based):** Kompakter in IDB, einfacher für sequenzielle
-Iteration. Nachteil: Grid-Resize erfordert Neukalkulation aller Indizes.
-Index 13 in einem 4×4-Grid ist ein anderes Pad als Index 13 in einem 5×3-Grid.
+**Array index (0-based):** more compact in IDB, simpler for sequential iteration. Drawback: a
+grid resize requires recalculating every index. Index 13 in a 4×4 grid is a different pad
+than index 13 in a 5×3 grid.
 
 ## Related
 
-- **Dateien:** `v3/src/types.ts` (PadPosition type), `v3/src/lib/padUtils.ts` (nextFreeSlot), `v3/src/lib/padDnd.ts`
-- **ADRs:** ADR-0009 (Pad-Position kann null sein), ADR-0032 (4-Spalten-Invariante)
-- **Quelldokumente:** `docs/architecture/concept-brief.md §4.1`, `docs/design/design-notes.md §A4 · grid stays 4-col`
+- **Files:** `v3/src/types.ts` (PadPosition type), `v3/src/lib/padUtils.ts` (nextFreeSlot), `v3/src/lib/padDnd.ts`
+- **ADRs:** ADR-0009 (pad position can be null), ADR-0032 (4-column invariant)
+- **Source documents:** `docs/architecture/concept-brief.md §4.1`, `docs/design/design-notes.md §A4 · grid stays 4-col`

@@ -1,59 +1,57 @@
-# ADR-0016: `idb` Library als IDB-Wrapper
+# ADR-0016: `idb` library as the IDB wrapper
 
 **Status:** Accepted
 **Date:** 2026-05-27
 **Slice:** Slice 2
-
+**Refines:** —
 **Category:** Persistence
 
 ## Context
 
-Raw IndexedDB hat eine verbose, callback-basierte API. Für TypeScript-Code
-ist eine Promise-basierte API mit Type-Safety deutlich ergonomischer.
+Raw IndexedDB has a verbose, callback-based API. For TypeScript code a promise-based API with
+type safety is considerably more ergonomic.
 
-> *Diese Entscheidung war nicht explizit in den Quelldokumenten begründet.
-> Sie wurde als konsistente Wahl aus `v3/package.json` und `v3/src/db/idb.ts`
-> abgeleitet. `idb` ist die Standard-Empfehlung im Web-Ecosystem für typed
-> IDB-Access.*
+> *This decision was not justified explicitly in the source documents. It was derived as a
+> consistent choice from `v3/package.json` and `v3/src/db/idb.ts`. `idb` is the standard
+> recommendation in the web ecosystem for typed IDB access.*
 
 ## Decision
 
-`idb` (Jake Archibald's IndexedDB Wrapper, ~1.4 KB gzip) wird als einzige
-IDB-Schnittstelle verwendet. Das gesamte Routing läuft über `src/db/idb.ts`:
+`idb` (Jake Archibald's IndexedDB wrapper, ~1.4 KB gzip) is used as the only IDB interface.
+All routing goes through `src/db/idb.ts`:
 
 ```typescript
 import { openDB, type IDBPDatabase } from 'idb';
 ```
 
-Raw IDB-Transaktionen (`indexedDB.open(...)`, IDBTransaction, IDBRequest)
-sind im Code-Basis außerhalb von `src/db/idb.ts` verboten.
+Raw IDB transactions (`indexedDB.open(...)`, IDBTransaction, IDBRequest) are forbidden in the
+code base outside `src/db/idb.ts`.
 
 ## Consequences
 
-**Positiv:**
-- Promise-basierte API: `await db.get('library', id)` statt Callback-Chains.
-- TypeScript generics für den Store-Zugriff.
-- `openDB` mit `upgrade`-Callback macht Schema-Migration sauber (ADR-0017).
-- Kleines Bundle: ~1.4 KB gzip.
+**Positive:**
+- Promise-based API: `await db.get('library', id)` instead of callback chains.
+- TypeScript generics for store access.
+- `openDB` with the `upgrade` callback keeps schema migration clean (ADR-0017).
+- Small bundle: ~1.4 KB gzip.
 
-**Negativ / Trade-offs:**
-- Eine externe Dependency für IDB-Zugriff. Falls `idb` nicht mehr maintained
-  wird, müsste migriert werden. Risiko: gering (gut maintained, weit verbreitet).
+**Negative / Trade-offs:**
+- An external dependency for IDB access. If `idb` were no longer maintained, we would have to
+  migrate. Risk: low (well maintained, widely used).
 
-## Alternatives Considered
+## Alternatives considered
 
-**Raw IndexedDB:** Mehr Kontrolle, aber verbose callback-basierte API.
-Fehleranfällig in TypeScript ohne Type-Safety.
+**Raw IndexedDB:** more control, but a verbose callback-based API. Error-prone in TypeScript
+without type safety.
 
-**Dexie.js:** Mächtiger ORM-ähnlicher Wrapper, ~30 KB. Für die aktuellen
-Use-Cases (simple get/put/delete/cursor) erheblich oversized.
+**Dexie.js:** a powerful ORM-like wrapper, ~30 KB. Considerably oversized for the current use
+cases (simple get/put/delete/cursor).
 
-**localforage:** Höhere Abstraction, verbirgt IDB-Details. Für `libGetAllMeta()`
-(cursor-based enumeration, memory-safe) nicht geeignet: localforage abstrahiert
-Cursors weg.
+**localforage:** higher abstraction, hides IDB details. Not suitable for `libGetAllMeta()`
+(cursor-based enumeration, memory-safe): localforage abstracts cursors away.
 
 ## Related
 
-- **Dateien:** `v3/src/db/idb.ts`, `v3/package.json`
-- **ADRs:** ADR-0014 (IndexedDB als Persistenz), ADR-0017 (Schema Versioning)
-- **Quelldokumente:** `docs/architecture/concept-brief.md §4.5`
+- **Files:** `v3/src/db/idb.ts`, `v3/package.json`
+- **ADRs:** ADR-0014 (IndexedDB as persistence), ADR-0017 (schema versioning)
+- **Source documents:** `docs/architecture/concept-brief.md §4.5`
