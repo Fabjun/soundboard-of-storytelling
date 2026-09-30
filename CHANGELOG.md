@@ -4,6 +4,10 @@
 
 All notable changes to Soundboard of Storytelling, newest first.
 
+## 3.0.77 — 2026-09-30
+
+- chore(deps): jsdom 30 (major, unit-test DOM)
+
 ## 3.0.76 — 2026-09-30
 
 - chore(deps): size-limit and @size-limit/file 14 (major)
