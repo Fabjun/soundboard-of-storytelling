@@ -43,8 +43,10 @@ generators did not escape `|` in cells.
    generators write through the same check (`v3/scripts/lib/write-generated.ts`), so their output
    is always formatted and `sync:docs` never fights Prettier.
 5. **Table cells are escaped at the source.** Generators build rows with `tableRow()` /
-   `escapeCell()`; `docsGuards.test.ts` checks that every table row in the repository has as many
-   cells as its header (GitHub drops extra cells silently).
+   `escapeCell()`; `docsGuards.test.ts` checks that the delimiter and every row of every table in
+   the repository have as many cells as the header (GitHub drops extra cells silently, and a
+   delimiter with another count turns the whole table into plain text). It scans lines instead
+   of parsing Markdown: the parser took more than 5 s in CI under coverage.
 
 Standards: Prettier's documented config resolution (nearest config file); lint-staged's
 "closest configuration" rule for monorepos; mdast / micromark (unified) as the Markdown parser

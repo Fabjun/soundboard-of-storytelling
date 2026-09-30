@@ -7,9 +7,16 @@ export type ChangelogEntry = {
   items: string[];
 };
 
-export const APP_VERSION = '3.0.67';
+export const APP_VERSION = '3.0.68';
 
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.68',
+    date: '2026-09-30',
+    items: [
+      'fix(test): table guard scans lines instead of parsing (CI timeout); a table GitHub showed as plain text repaired',
+    ],
+  },
   {
     version: '3.0.67',
     date: '2026-09-30',

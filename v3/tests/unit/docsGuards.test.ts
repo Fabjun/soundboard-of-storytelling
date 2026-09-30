@@ -26,10 +26,6 @@
 import { readdirSync, readFileSync, statSync } from 'node:fs';
 import { dirname, join, normalize, relative, sep } from 'node:path';
 import GithubSlugger from 'github-slugger';
-import type { Nodes, Table } from 'mdast';
-import { fromMarkdown } from 'mdast-util-from-markdown';
-import { gfmFromMarkdown } from 'mdast-util-gfm';
-import { gfm } from 'micromark-extension-gfm';
 
 const ROOT = join(__dirname, '..', '..', '..');
 const ROOT_MD = ['CHANGELOG.md', 'CLAUDE.md', 'README.md'];
@@ -372,39 +368,54 @@ describe('guard: section references are links (ADR-0056)', () => {
 
 describe('guard: table rows have as many cells as the header (audit A3)', () => {
   // GitHub silently drops the extra cells of a row, so an unescaped | inside a cell (also
-  // inside a code span) loses content without any visible error.
-  const cells = (line: string): number => {
-    const body = line.trim().replace(/^\||\|$/g, '');
-    return body.split(/(?<!\\)\|/).length;
+  // inside a code span) loses content without any visible error. Line scan instead of a full
+  // Markdown parse: the parser took >5 s in CI under coverage.
+  const cells = (line: string): number =>
+    line
+      .trim()
+      .replace(/^\||\|$/g, '')
+      .split(/(?<!\\)\|/).length;
+  const DELIMITER = /^\|?\s*:?-{3,}:?\s*(\|\s*:?-{3,}:?\s*)*\|?\s*$/;
+
+  /** Tables as [header line, row lines…] with 1-based line numbers; fenced code is skipped. */
+  const tablesOf = (text: string): { line: number; text: string }[][] => {
+    const lines = text.split('\n').map((l) => l.replace(/^(?:>\s?)+/, ''));
+    const tables: { line: number; text: string }[][] = [];
+    let fence = false;
+    for (let i = 0; i < lines.length; i++) {
+      if (/^\s*(```|~~~)/.test(lines[i])) fence = !fence;
+      if (fence || !lines[i].trim().startsWith('|') || !DELIMITER.test(lines[i + 1] ?? ''))
+        continue;
+      // Header, delimiter (a delimiter with another cell count turns the whole table into text),
+      // then the body rows.
+      const table = [
+        { line: i + 1, text: lines[i] },
+        { line: i + 2, text: lines[i + 1] },
+      ];
+      let j = i + 2;
+      while (j < lines.length && lines[j].trim().startsWith('|')) {
+        table.push({ line: j + 1, text: lines[j] });
+        j++;
+      }
+      tables.push(table);
+      i = j - 1;
+    }
+    return tables;
   };
 
   it('finds tables (sanity)', () => {
-    const text = readFileSync(join(ROOT, 'docs', 'development', 'testing.md'), 'utf8');
-    const tree = fromMarkdown(text, { extensions: [gfm()], mdastExtensions: [gfmFromMarkdown()] });
-    expect(tree.children.some((n) => n.type === 'table')).toBe(true);
+    const count = walkMd(ROOT).reduce((n, f) => n + tablesOf(readFileSync(f, 'utf8')).length, 0);
+    expect(count).toBeGreaterThan(50);
   });
 
   it('every row of every table in the repository', () => {
     const bad: string[] = [];
     for (const f of walkMd(ROOT)) {
-      const text = readFileSync(f, 'utf8');
-      const lines = text.split('\n');
-      const tree = fromMarkdown(text, {
-        extensions: [gfm()],
-        mdastExtensions: [gfmFromMarkdown()],
-      });
-      const tables: Table[] = [];
-      const collect = (node: Nodes): void => {
-        if (node.type === 'table') tables.push(node);
-        else if ('children' in node) node.children.forEach(collect);
-      };
-      collect(tree);
-      for (const table of tables) {
-        const rows = table.children.map((r) => r.position?.start.line ?? 0);
-        const want = cells(lines[rows[0] - 1]);
-        for (const line of rows.slice(1)) {
-          const got = cells(lines[line - 1]);
-          if (got !== want) bad.push(`${rel(f)}:${line}: ${got} cells, header has ${want}`);
+      for (const [header, ...rows] of tablesOf(readFileSync(f, 'utf8'))) {
+        const want = cells(header.text);
+        for (const row of rows) {
+          const got = cells(row.text);
+          if (got !== want) bad.push(`${rel(f)}:${row.line}: ${got} cells, header has ${want}`);
         }
       }
     }

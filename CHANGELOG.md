@@ -4,6 +4,10 @@
 
 All notable changes to Soundboard of Storytelling, newest first.
 
+## 3.0.68 — 2026-09-30
+
+- fix(test): table guard scans lines instead of parsing (CI timeout); a table GitHub showed as plain text repaired
+
 ## 3.0.67 — 2026-09-30
 
 - chore: one formatter and linter setup for the whole repository; scripts moved to v3/scripts; Markdown formatting refuses content changes; table cells escaped (ADR-0058)

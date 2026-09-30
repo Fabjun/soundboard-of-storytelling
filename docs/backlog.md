@@ -1337,7 +1337,9 @@ Owner decisions 2026-09-30: A1–A3 as recommended.
   the root; the whole repository formatted. The first plain Prettier run changed the content of
   seven Markdown files (bare `*`, `|` in table cells, indented continuation lines) — so Markdown
   is now formatted only through `format:md`, which fails on any content change, generators escape
-  table cells, and a docs guard checks every table row. Follow-up: move to npm workspaces with a
+  table cells, and a docs guard checks every table row. CI follow-up: the first, parser-based
+  table guard timed out in CI under coverage (2.1 s locally) — replaced by a line scan (7 ms),
+  which also found a table GitHub rendered as plain text (delimiter row with one cell too many). Follow-up: move to npm workspaces with a
   root `package.json` when a second package appears.
 - ⬜ **A4 Hook step lists typed three times** (CLAUDE.md rule 8, CLAUDE.md pre-commit section,
   `testing.md`) — drifted again (Vale missing twice; ADR-0037 once said "three gates" for six).
