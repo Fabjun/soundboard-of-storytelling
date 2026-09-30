@@ -7,9 +7,14 @@ export type ChangelogEntry = {
   items: string[];
 };
 
-export const APP_VERSION = '3.0.74';
+export const APP_VERSION = '3.0.75';
 
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.75',
+    date: '2026-09-30',
+    items: ['chore(deps): vitest 5 with @vitest/coverage-v8 and @vitest/ui 5 (major, one family)'],
+  },
   {
     version: '3.0.74',
     date: '2026-09-30',

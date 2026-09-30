@@ -4,6 +4,10 @@
 
 All notable changes to Soundboard of Storytelling, newest first.
 
+## 3.0.75 — 2026-09-30
+
+- chore(deps): vitest 5 with @vitest/coverage-v8 and @vitest/ui 5 (major, one family)
+
 ## 3.0.74 — 2026-09-30
 
 - chore(deps): development minor/patch updates (Playwright 1.63, ESLint 10.11, Prettier 3.9, typescript-eslint 8.71, lint-staged, tsx, vite); libDnd.ts reformatted for Prettier 3.9
