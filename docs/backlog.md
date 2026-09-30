@@ -1344,9 +1344,12 @@ Owner decisions 2026-09-30: A1–A3 as recommended.
 - ⬜ **A4 Hook step lists typed three times** (CLAUDE.md rule 8, CLAUDE.md pre-commit section,
   `testing.md`) — drifted again (Vale missing twice; ADR-0037 once said "three gates" for six).
   Generate from `.husky/*`, reference elsewhere.
-- ⬜ **A5 Exception register misses config-level rule switches** — `eslint.config.js` turns
-  rules off (`no-unused-vars`) without a register entry. Done: the unused `no-explicit-any` off
-  for unit and E2E tests removed (probe: an `any` in a test is reported again).
+- ✅ **A5 Exception register misses config-level rule switches** — `no-unused-vars` off, justified
+  by tsc, now one `TSC_COVERED` switch with an inline reason, listed in the exception register;
+  testGuards requires a reason on every config switch and checks that the reason holds. That check
+  found a real gap: the unit and E2E tsconfigs turned `noUnusedLocals`/`noUnusedParameters` off, so
+  unused code in tests was reported by nothing — flags inherited again, 3 unused declarations
+  removed. The unused `no-explicit-any` off for tests is gone (probe: `any` reported again).
 - ✅ **A6 Dependabot splits package families** — the vitest 5 PR fails `npm ci` because
   `@vitest/coverage-v8` stays on 4.x (peer conflict). Lockstep families (vitest,
   typescript-eslint, size-limit, fontsource) are grouped incl. majors, listed before the

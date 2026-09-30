@@ -4,6 +4,10 @@
 
 All notable changes to Soundboard of Storytelling, newest first.
 
+## 3.0.71 — 2026-09-30
+
+- test: unused code in tests is reported again; ESLint rule switches carry a checked reason and appear in the exception register
+
 ## 3.0.70 — 2026-09-30
 
 - ci: Dependabot groups lockstep dependency families (incl. majors), guarded by a test; guard file headers numbered in order

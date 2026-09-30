@@ -64,6 +64,16 @@ for (const [file, ls] of lines) {
     if (m) eslintRows.push(`| \`${rel(file)}:${i + 1}\` | \`${esc(m[1])}\` | ${esc(m[2])} |`);
   });
 }
+// Rule switches in the ESLint config: `'<rule>': 'off', // <reason>` (reason enforced by testGuards).
+readFileSync(join(V3, 'eslint.config.js'), 'utf8')
+  .split('\n')
+  .forEach((line, i) => {
+    const m = /^\s*'([^']+)':\s*'off',\s*\/\/\s*(.+)$/.exec(line);
+    if (m)
+      eslintRows.push(
+        `| \`v3/eslint.config.js:${i + 1}\` | \`${esc(m[1])}\` (off) | ${esc(m[2])} |`,
+      );
+  });
 
 // ── prettier-ignore ──────────────────────────────────────────────────────────
 const prettierRows: string[] = [];
@@ -214,7 +224,8 @@ const out = [
   ),
   ...section(
     'ESLint rule suppressions',
-    'Format: `// eslint-disable-next-line <rule> -- <reason>` — enforced by `require-description`.',
+    'Inline: `// eslint-disable-next-line <rule> -- <reason>` (enforced by `require-description`). ' +
+      "Config: `'<rule>': 'off', // <reason>` in `v3/eslint.config.js` (enforced by `testGuards.test.ts`).",
     '| Location | Rule | Reason |',
     eslintRows,
   ),

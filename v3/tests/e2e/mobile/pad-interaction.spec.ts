@@ -27,7 +27,6 @@
 import { test, expect } from '@playwright/test';
 import {
   goToLibrary,
-  goToBoardList,
   createBoardAndNavigate,
   createDeck,
   enterSetupMode,

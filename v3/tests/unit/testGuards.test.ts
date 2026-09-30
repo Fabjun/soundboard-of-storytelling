@@ -16,6 +16,7 @@
 //    unchecked file hides type errors (found: 6 in unit tests, 1 in E2E, 2026-09-30).
 // 5. Lockstep dependency families (exact peer pins) share a Dependabot group (audit A6).
 // 6. Guard files (this one included) number their header rules 1..n in order.
+// 7. ESLint config rule switches name their reason inline; the tsc flags behind them stay on.
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
@@ -118,7 +119,6 @@ describe('guard: every quarantine marker references an existing BACKLOG entry', 
 });
 
 describe('guard: exception markers follow the scheme (ADR-0053)', () => {
-  const ROOT = join(V3, '..');
   const files = [
     ...walk(join(V3, 'src'), (f) => /\.(ts|tsx|css)$/.test(f)),
     ...walk(join(V3, 'tests'), (f) => /\.ts$/.test(f)),
@@ -160,7 +160,6 @@ describe('guard: exception markers follow the scheme (ADR-0053)', () => {
 });
 
 describe('guard: every TypeScript file is type-checked (ADR-0055)', () => {
-  const ROOT = join(V3, '..');
   const rootConfig = ts.readConfigFile(join(V3, 'tsconfig.json'), ts.sys.readFile).config as {
     references: { path: string }[];
   };
@@ -239,5 +238,33 @@ describe('guard: guard files list their rules in order', () => {
       return nums.every((n, i) => n === i + 1) ? [] : [`${f}: ${nums.join(' ')}`];
     });
     expect(bad).toEqual([]);
+  });
+});
+
+describe('guard: ESLint rule switches carry a reason that stays true (audit A5)', () => {
+  const config = readFileSync(join(V3, 'eslint.config.js'), 'utf8').split('\n');
+  const switches = config.filter((l) => /^\s*'[^']+':\s*'off'/.test(l));
+
+  it('finds the rule switches (sanity)', () => {
+    expect(switches.length).toBeGreaterThanOrEqual(1);
+  });
+
+  it("every `'rule': 'off'` names its reason inline (exception register, ADR-0053)", () => {
+    const bad = switches.filter((l) => !/'off',\s*\/\/\s*\S/.test(l)).map((l) => l.trim());
+    expect(bad).toEqual([]);
+  });
+
+  it('the reason of TSC_COVERED holds: every tsconfig project reports unused code', () => {
+    const projects = readdirSync(V3).filter((f) => /^tsconfig\..+\.json$/.test(f));
+    const bad = projects.filter((f) => {
+      // parseJsonConfigFileContent resolves `extends` (the test projects inherit the flags).
+      const { config: cfg } = ts.readConfigFile(join(V3, f), ts.sys.readFile);
+      const opts = ts.parseJsonConfigFileContent(cfg, ts.sys, V3).options;
+      return opts.noUnusedLocals !== true || opts.noUnusedParameters !== true;
+    });
+    expect(projects.length).toBeGreaterThanOrEqual(4);
+    expect(bad, 're-enable no-unused-vars in eslint.config.js or restore the tsc flags').toEqual(
+      [],
+    );
   });
 });

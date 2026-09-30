@@ -11,6 +11,13 @@ import vitestPlugin from '@vitest/eslint-plugin';
 import playwrightPlugin from 'eslint-plugin-playwright';
 import eslintComments from '@eslint-community/eslint-plugin-eslint-comments/configs';
 
+// Rules tsc already enforces in every tsconfig (noUnusedLocals / noUnusedParameters, checked by
+// testGuards): turned off so the same finding is not reported twice. Each switch names its
+// reason inline — sync-exceptions lists them in docs/development/exceptions.md (ADR-0053).
+const TSC_COVERED = {
+  '@typescript-eslint/no-unused-vars': 'off', // tsc noUnusedLocals/noUnusedParameters report it
+};
+
 export default [
   // ── Exception scheme (ADR-0053) — applies to every linted file ─────────────
   // Every disable directive names its rule(s) and carries a reason after " -- ";
@@ -44,10 +51,7 @@ export default [
       'react-hooks/rules-of-hooks': 'error',
       'react-hooks/exhaustive-deps': 'warn',
 
-      // tsc (noUnusedLocals/noUnusedParameters) already enforces this for src/.
-      // Turning it off here avoids duplicate reporting. NOTE: if noUnusedLocals
-      // is ever disabled in tsconfig.app.json, re-enable this rule here too.
-      '@typescript-eslint/no-unused-vars': 'off',
+      ...TSC_COVERED,
 
       // verbatimModuleSyntax: true requires import type for type-only imports.
       // This rule enforces it at lint-time too (belt + suspenders).
@@ -71,7 +75,7 @@ export default [
     },
     rules: {
       ...tsPlugin.configs.recommended.rules,
-      '@typescript-eslint/no-unused-vars': 'off',
+      ...TSC_COVERED,
       '@typescript-eslint/consistent-type-imports': 'error',
       // Test traps (T10, 2026-09-29): tests that pass for the wrong reason.
       'vitest/expect-expect': 'error', // a test without an assertion always passes
@@ -97,7 +101,7 @@ export default [
     },
     rules: {
       ...tsPlugin.configs.recommended.rules,
-      '@typescript-eslint/no-unused-vars': 'off',
+      ...TSC_COVERED,
       '@typescript-eslint/consistent-type-imports': 'error',
       // Test traps (T10, 2026-09-29): tests that pass for the wrong reason.
       // A test without an assertion always passes. Helpers that assert internally are listed.

@@ -7,9 +7,16 @@ export type ChangelogEntry = {
   items: string[];
 };
 
-export const APP_VERSION = '3.0.70';
+export const APP_VERSION = '3.0.71';
 
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.71',
+    date: '2026-09-30',
+    items: [
+      'test: unused code in tests is reported again; ESLint rule switches carry a checked reason and appear in the exception register',
+    ],
+  },
   {
     version: '3.0.70',
     date: '2026-09-30',

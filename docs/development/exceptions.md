@@ -18,18 +18,19 @@ From the `## Exceptions` section of each ADR.
 | [ADR-0054](../architecture/0054-test-locators-and-ids.md)      | `pwa.spec.ts` reads `link[rel="manifest"]` with an attribute selector                           | Document metadata in `<head>`, no user-facing element exists                                                                                                                         | —                                 | permanent                              |
 | [ADR-0058](../architecture/0058-repository-wide-formatting.md) | `design-sources/` is not formatted                                                              | Claude Design downloads are kept exactly as delivered                                                                                                                                | ADR-0050                          | permanent                              |
 
-## ESLint rule suppressions (6)
+## ESLint rule suppressions (7)
 
-Format: `// eslint-disable-next-line <rule> -- <reason>` — enforced by `require-description`.
+Inline: `// eslint-disable-next-line <rule> -- <reason>` (enforced by `require-description`). Config: `'<rule>': 'off', // <reason>` in `v3/eslint.config.js` (enforced by `testGuards.test.ts`).
 
-| Location                                       | Rule                          | Reason                                                                                       |
-| ---------------------------------------------- | ----------------------------- | -------------------------------------------------------------------------------------------- |
-| `v3/src/components/PadEditorPanel.tsx:79`      | `react-hooks/exhaustive-deps` | reset only when a different pad is opened (pad.id), not on every auto-save                   |
-| `v3/src/screens/BoardScreen.tsx:60`            | `react-hooks/exhaustive-deps` | auto-select only on board identity change, never override the user's deck choice             |
-| `v3/src/screens/BoardScreen.tsx:117`           | `react-hooks/exhaustive-deps` | handleAddPad is a new ref each render; its real deps (mode, deck, board) are listed          |
-| `v3/tests/e2e/deck-crud.spec.ts:74`            | `playwright/no-skipped-test`  | quarantine: feature not built (BACKLOG "Deck reorder")                                       |
-| `v3/tests/e2e/mobile/overflow.spec.ts:30`      | `playwright/no-skipped-test`  | quarantine: mobile layout not built until Slice 13 (BACKLOG "Re-enable mobile layout tests") |
-| `v3/tests/e2e/mobile/touch-targets.spec.ts:34` | `playwright/no-skipped-test`  | quarantine: mobile layout not built until Slice 13 (BACKLOG "Re-enable mobile layout tests") |
+| Location                                       | Rule                                      | Reason                                                                                       |
+| ---------------------------------------------- | ----------------------------------------- | -------------------------------------------------------------------------------------------- |
+| `v3/src/components/PadEditorPanel.tsx:79`      | `react-hooks/exhaustive-deps`             | reset only when a different pad is opened (pad.id), not on every auto-save                   |
+| `v3/src/screens/BoardScreen.tsx:60`            | `react-hooks/exhaustive-deps`             | auto-select only on board identity change, never override the user's deck choice             |
+| `v3/src/screens/BoardScreen.tsx:117`           | `react-hooks/exhaustive-deps`             | handleAddPad is a new ref each render; its real deps (mode, deck, board) are listed          |
+| `v3/tests/e2e/deck-crud.spec.ts:74`            | `playwright/no-skipped-test`              | quarantine: feature not built (BACKLOG "Deck reorder")                                       |
+| `v3/tests/e2e/mobile/overflow.spec.ts:30`      | `playwright/no-skipped-test`              | quarantine: mobile layout not built until Slice 13 (BACKLOG "Re-enable mobile layout tests") |
+| `v3/tests/e2e/mobile/touch-targets.spec.ts:34` | `playwright/no-skipped-test`              | quarantine: mobile layout not built until Slice 13 (BACKLOG "Re-enable mobile layout tests") |
+| `v3/eslint.config.js:18`                       | `@typescript-eslint/no-unused-vars` (off) | tsc noUnusedLocals/noUnusedParameters report it                                              |
 
 ## Formatting exceptions (prettier-ignore) (5)
 
