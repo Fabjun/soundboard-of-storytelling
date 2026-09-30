@@ -263,7 +263,7 @@ export function PadCreationPopover({
       <div
         class="sb-creation-popover"
         data-testid="pad-creation-popover"
-        style={{ top, left, height: popoverHeight }}
+        style={{ top: `${top}px`, left: `${left}px`, height: `${popoverHeight}px` }}
         onClick={(e) => e.stopPropagation()}
       >
         {content}

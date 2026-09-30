@@ -104,7 +104,7 @@ Historical docs excluded in `.vale.ini`, and passages marked `<!-- vale … = NO
 | `.vale.ini`                                            | `docs/product/v1-v2-inventory.md` | historical record — keeps the names valid at its time                             |
 | `.vale.ini`                                            | `CHANGELOG.md`                    | historical record — keeps the names valid at its time                             |
 | `.vale.ini`                                            | `docs/development/exceptions.md`  | historical record — keeps the names valid at its time                             |
-| `CLAUDE.md:665`                                        | `SoS.SupersededTerms` off         | historical slice records keep the names valid at the time (Scene before Slice 9b) |
+| `CLAUDE.md:667`                                        | `SoS.SupersededTerms` off         | historical slice records keep the names valid at the time (Scene before Slice 9b) |
 | `docs/architecture/0056-documentation-freshness.md:32` | `SoS.SupersededTerms` off         | …                                                                                 |
 | `docs/architecture/concept-brief.md:75`                | `SoS.SupersededTerms` off         | explains the rename                                                               |
 | `docs/product/README.md:108`                           | `SoS.SupersededTerms` off         | records the rename decision                                                       |

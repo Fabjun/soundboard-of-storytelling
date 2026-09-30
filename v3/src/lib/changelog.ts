@@ -7,9 +7,16 @@ export type ChangelogEntry = {
   items: string[];
 };
 
-export const APP_VERSION = '3.0.78';
+export const APP_VERSION = '3.0.79';
 
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.79',
+    date: '2026-09-30',
+    items: [
+      'refactor: inline style lengths carry explicit units (preparation for Preact 11), guarded by the type checker',
+    ],
+  },
   {
     version: '3.0.78',
     date: '2026-09-30',

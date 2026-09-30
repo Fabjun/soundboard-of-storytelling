@@ -49,7 +49,7 @@ export function BoardTopBar({
         <div class="sb-topbar-bc-col">
           <span
             class="sb-display-vt sb-topbar-title is-board"
-            style={{ maxWidth: compact ? 80 : 140 }}
+            style={{ maxWidth: compact ? '80px' : '140px' }}
           >
             {boardName}
           </span>

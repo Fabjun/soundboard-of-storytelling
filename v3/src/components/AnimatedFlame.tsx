@@ -618,7 +618,7 @@ export function AnimatedFlame({ size = 120, interactive = true }: AnimatedFlameP
 
   const unit = size / 16; // CSS px per cell
   return (
-    <div class="sb-animated-flame" style={{ width: size, height: size * (17 / 16) }}>
+    <div class="sb-animated-flame" style={{ width: `${size}px`, height: `${size * (17 / 16)}px` }}>
       <canvas
         ref={canvasRef}
         class="sb-animated-flame-canvas"
@@ -628,10 +628,10 @@ export function AnimatedFlame({ size = 120, interactive = true }: AnimatedFlameP
         height={FIELD_H * CELL}
         onPointerDown={handlePointerDown}
         style={{
-          width: FIELD_W * unit,
-          height: FIELD_H * unit,
-          left: -FIELD_OX * unit,
-          top: -FIELD_OY * unit,
+          width: `${FIELD_W * unit}px`,
+          height: `${FIELD_H * unit}px`,
+          left: `${-FIELD_OX * unit}px`,
+          top: `${-FIELD_OY * unit}px`,
           cursor: interactive ? 'pointer' : 'default',
         }}
       />

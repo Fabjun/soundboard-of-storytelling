@@ -1184,7 +1184,7 @@ interface PixelIconProps {
   color?: string;
   /** Additional CSS class applied to the SVG element. */
   class?: string;
-  style?: JSX.CSSProperties;
+  style?: JSX.SVGAttributes<SVGSVGElement>['style']; // version-neutral (Preact 11 has no CSSProperties)
 }
 
 /**

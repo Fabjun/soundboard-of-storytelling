@@ -307,7 +307,9 @@ and has diverged). Never hardcode colors, fonts, or spacing.
   - **Path C — inline = dynamic only:** `style={}` is legitimate only for values computed at
     runtime: animation coordinates, drag positions, data-driven dimensions, state-dependent
     values. Test: "can this value be written as a CSS string literal without referencing
-    runtime data?" If yes → it belongs in a class, not inline.
+    runtime data?" If yes → it belongs in a class, not inline. Lengths always carry their unit
+    (`` `${n}px` ``, never a bare number — Preact 11 no longer appends `px`); guarded by
+    `codeGuards.test.ts`.
   - **Path D — forbidden:** Inline styles for static values. Covers three sub-cases:
     - Token-using values: `style={{ color: 'var(--flame)' }}` is the same violation as
       `style={{ color: '#F5A623' }}` — the token reference does not make it Path C.

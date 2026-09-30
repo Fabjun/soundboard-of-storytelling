@@ -9,10 +9,13 @@
 //    its component file and ends with an element kind (root: the component name alone);
 //    E2E tests never locate by CSS class; spec files are kebab-case without a folder prefix,
 //    helper files are named helpers.ts.
+// 5. Inline style lengths carry a unit (Preact 11 no longer appends px to numbers) — checked
+//    with the TypeScript type checker, so variables, ternaries and shorthands count.
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { readdirSync, readFileSync } from 'node:fs';
 import { basename, join, relative } from 'node:path';
+import ts from 'typescript';
 
 const V3 = join(__dirname, '..', '..');
 const SRC = join(V3, 'src');
@@ -174,5 +177,69 @@ describe('guard: E2E locators and spec names (ADR-0054)', () => {
         return !['helpers.ts', 'projects.ts'].includes(name);
       });
     expect(bad).toEqual([]);
+  });
+});
+
+describe('guard: inline style lengths carry a unit (Preact 11 upgrade)', () => {
+  // Preact 10 appends "px" to numeric style values; Preact 11 does not (upgrade guide). A number
+  // for a length would silently stop working, so every length is written with its unit. The
+  // TypeScript checker sees through variables, ternaries and shorthand properties.
+  const UNITLESS = new Set([
+    'opacity',
+    'zIndex',
+    'flex',
+    'flexGrow',
+    'flexShrink',
+    'order',
+    'lineHeight',
+    'fontWeight',
+    'zoom',
+    'animationIterationCount',
+  ]);
+  let program: ts.Program;
+  beforeAll(() => {
+    const { config } = ts.readConfigFile(join(V3, 'tsconfig.app.json'), ts.sys.readFile);
+    const parsed = ts.parseJsonConfigFileContent(config, ts.sys, V3);
+    program = ts.createProgram(parsed.fileNames, parsed.options);
+  }, 30_000); // building the type checker is a one-off setup, not a test
+
+  const numericStyles = (): string[] => {
+    const checker = program.getTypeChecker();
+    const isNumber = (t: ts.Type): boolean =>
+      t.isUnion() ? t.types.some(isNumber) : (t.flags & ts.TypeFlags.NumberLike) !== 0;
+    const found: string[] = [];
+    for (const sf of program.getSourceFiles()) {
+      if (!sf.fileName.startsWith(SRC) || !sf.fileName.endsWith('.tsx')) continue;
+      const visit = (node: ts.Node): void => {
+        if (
+          ts.isJsxAttribute(node) &&
+          node.name.getText(sf) === 'style' &&
+          node.initializer &&
+          ts.isJsxExpression(node.initializer) &&
+          node.initializer.expression
+        ) {
+          const type = checker.getTypeAtLocation(node.initializer.expression);
+          for (const prop of type.getProperties()) {
+            if (UNITLESS.has(prop.name) || prop.name.startsWith('--')) continue;
+            if (isNumber(checker.getTypeOfSymbolAtLocation(prop, node))) {
+              const { line } = sf.getLineAndCharacterOfPosition(node.getStart(sf));
+              found.push(`${relative(V3, sf.fileName)}:${line + 1} ${prop.name}`);
+            }
+          }
+        }
+        ts.forEachChild(node, visit);
+      };
+      visit(sf);
+    }
+    return found;
+  };
+
+  it('finds style attributes (sanity)', () => {
+    const files = program.getSourceFiles().filter((f) => f.fileName.startsWith(SRC));
+    expect(files.length).toBeGreaterThan(20);
+  });
+
+  it('no numeric value for a length in style={…}', () => {
+    expect(numericStyles(), 'write the unit, e.g. `${n}px`').toEqual([]);
   });
 });

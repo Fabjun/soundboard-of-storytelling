@@ -4,6 +4,10 @@
 
 All notable changes to Soundboard of Storytelling, newest first.
 
+## 3.0.79 — 2026-09-30
+
+- refactor: inline style lengths carry explicit units (preparation for Preact 11), guarded by the type checker
+
 ## 3.0.78 — 2026-09-30
 
 - ci: Dependabot ignores @types/node majors (follows .nvmrc) and TypeScript majors (blocked by typescript-eslint), with reasons in the exception register and guards
