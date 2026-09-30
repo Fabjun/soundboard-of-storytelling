@@ -5,7 +5,7 @@
 **Slice:** cross-cutting
 **Refined by:** ADR-0052 (`has-*` states allowed; themes `sb-theme-*`; no other namespaces)
 
-**Category:** UI-Architektur
+**Category:** UI architecture
 
 ## Context
 

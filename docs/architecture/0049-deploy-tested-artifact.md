@@ -5,7 +5,7 @@
 **Slice:** infrastructure
 **Refines:** ADR-0040
 
-**Category:** Test-Infrastruktur & Workflow
+**Category:** Test infrastructure & workflow
 
 ## Context
 

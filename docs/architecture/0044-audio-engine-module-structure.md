@@ -4,7 +4,7 @@
 **Date:** 2026-05-28
 **Slice:** Slice 4
 **Refines:** ADR-0018 (Audio Engine Strategy — "copy V1 unchanged")
-**Category:** Audio-Engine & iOS Memory
+**Category:** Audio engine & iOS memory
 
 ---
 

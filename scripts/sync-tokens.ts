@@ -23,7 +23,7 @@ const ROOT = resolve(__dirname, '..');
 const TOKENS_CSS = join(ROOT, 'v3', 'src', 'styles', 'tokens.css');
 const DESIGN_SYSTEM = join(ROOT, 'docs/design/design-system.md');
 
-const MARKER_START = '<!-- AUTO-GENERATED:tokens START — nicht manuell editieren -->';
+const MARKER_START = '<!-- AUTO-GENERATED:tokens START — do not edit by hand -->';
 const MARKER_END = '<!-- AUTO-GENERATED:tokens END -->';
 
 interface TokenEntry {
@@ -145,7 +145,7 @@ function generateTable(entries: TokenEntry[]): string {
   for (const [group, tokens] of groups) {
     lines.push(`### ${group}`);
     lines.push('');
-    lines.push('| Token | Wert | Beschreibung |');
+    lines.push('| Token | Value | Description |');
     lines.push('|-------|------|-------------|');
     for (const t of tokens) {
       const desc = t.description || '—';

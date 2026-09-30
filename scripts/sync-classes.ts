@@ -28,7 +28,7 @@ const SRC_DIR = join(ROOT, 'v3', 'src');
 const DESIGN_SYSTEM = join(ROOT, 'docs/design/design-system.md');
 
 const MARKER_START =
-  '<!-- AUTO-GENERATED:sb-classes START — nicht manuell editieren -->';
+  '<!-- AUTO-GENERATED:sb-classes START — do not edit by hand -->';
 const MARKER_END = '<!-- AUTO-GENERATED:sb-classes END -->';
 
 // Only classes with this prefix are tracked
@@ -174,7 +174,7 @@ function run(): void {
 
   // Generate table
   const lines: string[] = [];
-  lines.push('| Klasse | Beschreibung | Definiert in |');
+  lines.push('| Class | Description | Defined in |');
   lines.push('|--------|-------------|-------------|');
   for (const e of entries) {
     const desc = e.description || '';

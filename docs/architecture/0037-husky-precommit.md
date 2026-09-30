@@ -4,7 +4,7 @@
 **Date:** 2026-05-27
 **Slice:** infrastructure
 
-**Category:** Test-Infrastruktur & Workflow
+**Category:** Test infrastructure & workflow
 
 ## Context
 

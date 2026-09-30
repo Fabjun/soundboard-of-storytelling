@@ -3,7 +3,7 @@
 **Status:** Accepted
 **Date:** 2026-06-04
 **Slice:** cross-cutting
-**Category:** UI-Architektur
+**Category:** UI architecture
 
 ## Context
 

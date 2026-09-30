@@ -4,27 +4,27 @@
 **Date:** YYYY-MM-DD
 **Slice:** Slice X | cross-cutting | infrastructure
 **Refines:** ADR-XXXX | —
-<!-- Refines (optional): dieses ADR baut auf einem früheren auf und verfeinert es, OHNE es zu ersetzen.
-     Das frühere ADR bleibt Accepted.
-     Abgrenzung:
-       "Superseded by" (im Status-Feld) = das frühere ADR ist jetzt deprecated/ersetzt.
-       "Related" (im Related-Abschnitt) = lose Assoziation, kein hierarchisches Verhältnis.
-       "Refines" = dieses ADR fügt Implementierungsdetail oder Einschränkung hinzu,
-                   die das frühere ADR nicht spezifiziert hat.
-     Weglassen wenn dieses ADR kein früheres verfeinert. -->
-**Category:** Tech Stack | Plattform-Constraints | Datenmodell | Persistenz | Audio-Engine & iOS Memory | UI-Architektur | Interaktion | Test-Infrastruktur & Workflow | Prozess- & Produktentscheidungen
+<!-- Refines: this ADR builds on an earlier one and adds detail or a constraint WITHOUT
+     replacing it — the earlier ADR stays Accepted (and gets a "Refined by" line).
+     Distinction:
+       "Superseded by" (in Status) = the earlier ADR is replaced / deprecated.
+       "Related" (section below)   = loose association, no hierarchy.
+       "Refines"                   = adds implementation detail or a constraint the earlier
+                                     ADR did not specify.
+     Write "—" when this ADR refines none. -->
+**Category:** Tech stack | Platform constraints | Data model | Persistence | Audio engine & iOS memory | UI architecture | Interaction | Test infrastructure & workflow | Process & product decisions
 
 ## Context
 
-Was war die Situation, das Problem, die Anforderung?
-Wenn die Entscheidung nicht explizit dokumentiert war, sondern aus dem konsistenten
-Code-Stand abgeleitet wurde, hier kennzeichnen:
-> *Diese Entscheidung war nicht explizit dokumentiert; sie wurde aus dem konsistenten
-> Code-Stand per Datum YYYY-MM-DD abgeleitet.*
+What was the situation, the problem, the requirement? If the decision was not documented
+explicitly but derived from a consistent code state, say so:
+> *This decision was not documented explicitly; it was derived from the consistent code
+> state as of YYYY-MM-DD.*
 
 ## Decision
 
-Was wurde entschieden? Konkret und unmissverständlich.
+What was decided? Concrete and unambiguous. Name the industry standard / sources the
+decision is based on (CLAUDE.md §Working principles).
 
 ## Exceptions
 
@@ -37,22 +37,23 @@ the section is collected into `docs/development/exceptions.md` by `npm run sync:
 
 ## Consequences
 
-Was sind die Konsequenzen — gute UND schlechte?
+What follows from the decision — good AND bad?
 
-**Positiv:**
+**Positive:**
 - …
 
-**Negativ / Trade-offs:**
+**Negative / Trade-offs:**
 - …
 
-## Alternatives Considered
+## Alternatives considered
 
-Welche Alternativen wurden geprüft? Warum verworfen?
-"Wir haben keine Alternativen geprüft" ist eine valide Antwort, wenn das der Fall ist.
+Which alternatives were examined, and why were they rejected? "No alternatives were
+considered" is a valid answer if true.
 
 ## Related
 
-- **Dateien:** `v3/src/...`
+- **Files:** `v3/src/...`
 - **ADRs:** ADR-XXXX, ADR-YYYY
-- **Quelldokumente:** `docs/architecture/concept-brief.md §X.Y`, `CLAUDE.md §Y`
+- **Source documents:** `docs/architecture/concept-brief.md §X.Y`, `CLAUDE.md §Y`
+- **Sources:** https://… (external standards the decision relies on)
 - **Commits:** `abc1234` — short description

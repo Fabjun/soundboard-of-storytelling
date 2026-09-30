@@ -5,7 +5,7 @@
 **Slice:** cross-cutting
 **Refines:** —
 **Refined by:** ADR-0050 (file naming — hubs are `README.md`, lowercase-kebab leaves)
-**Category:** Prozess- & Produktentscheidungen
+**Category:** Process & product decisions
 
 ## Context
 

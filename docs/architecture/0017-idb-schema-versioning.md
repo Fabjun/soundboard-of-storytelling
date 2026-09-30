@@ -4,7 +4,7 @@
 **Date:** 2026-05-27
 **Slice:** Slice 2 (v1: library), Slice 3 (v2: boards)
 
-**Category:** Persistenz
+**Category:** Persistence
 
 ## Context
 

@@ -149,8 +149,8 @@ also in §6):
 > Klassen ohne Kommentar erscheinen mit leerer Beschreibung — das ist
 > gewollt, um fehlende Dokumentation sichtbar zu machen.
 
-<!-- AUTO-GENERATED:sb-classes START — nicht manuell editieren -->
-| Klasse | Beschreibung | Definiert in |
+<!-- AUTO-GENERATED:sb-classes START — do not edit by hand -->
+| Class | Description | Defined in |
 |--------|-------------|-------------|
 | `sb-animated-flame` | Root of AnimatedFlame (StartScreen) — footprint of the 16×17 flame itself; anchors the larger canvas field. Size set inline (prop-driven). | `v3/src/styles/tokens.css` |
 | `sb-animated-flame-canvas` | AnimatedFlame canvas — 32×40-cell field overflowing the flame box (room for sparks, steam, shards); pixelated; no double-tap zoom. Size, offset, cursor and glow filter set inline (computed). | `v3/src/styles/tokens.css` |
@@ -354,10 +354,10 @@ also in §6):
 > `v3/src/styles/tokens.css`. Gruppen entsprechen den
 > Abschnitts-Kommentaren in der Token-Quelldatei.
 
-<!-- AUTO-GENERATED:tokens START — nicht manuell editieren -->
+<!-- AUTO-GENERATED:tokens START — do not edit by hand -->
 ### SURFACE HIERARCHY
 
-| Token | Wert | Beschreibung |
+| Token | Value | Description |
 |-------|------|-------------|
 | `--night` | `#08081a` | — |
 | `--deep` | `#0e0e22` | — |
@@ -368,7 +368,7 @@ also in §6):
 
 ### BORDERS
 
-| Token | Wert | Beschreibung |
+| Token | Value | Description |
 |-------|------|-------------|
 | `--border` | `#383868` | default 1px hairline · L* ~0.116 |
 | `--border-soft` | `#232348` | dividers inside dense lists |
@@ -378,7 +378,7 @@ also in §6):
 
 ### TEXT
 
-| Token | Wert | Beschreibung |
+| Token | Value | Description |
 |-------|------|-------------|
 | `--text` | `#f0e8d0` | — |
 | `--text-strong` | `#ffffff` | high emphasis · numbers, headings on raised |
@@ -389,7 +389,7 @@ also in §6):
 
 ### BRAND ACCENTS
 
-| Token | Wert | Beschreibung |
+| Token | Value | Description |
 |-------|------|-------------|
 | `--gold` | `#d4b25c` | +9% L* over original — readable at 14px |
 | `--gold-bright` | `#f5d57a` | highlights, "now playing", focus rings |
@@ -415,7 +415,7 @@ also in §6):
 
 ### PAD TYPES
 
-| Token | Wert | Beschreibung |
+| Token | Value | Description |
 |-------|------|-------------|
 | `--pad-single` | `#d4b25c` | — |
 | `--pad-single-soft` | `rgba(212, 178, 92, 0.16)` | — |
@@ -432,7 +432,7 @@ also in §6):
 
 ### PAD SURFACE
 
-| Token | Wert | Beschreibung |
+| Token | Value | Description |
 |-------|------|-------------|
 | `--pad-edge-light` | `rgba(255, 255, 255, 0.12)` | — |
 | `--pad-edge-dark` | `rgba(0, 0, 0, 0.4)` | — |
@@ -441,7 +441,7 @@ also in §6):
 
 ### SEMANTIC
 
-| Token | Wert | Beschreibung |
+| Token | Value | Description |
 |-------|------|-------------|
 | `--success` | `#6db5b8` | — |
 | `--warning` | `#d4b25c` | gold doubles as caution |
@@ -450,7 +450,7 @@ also in §6):
 
 ### MODE
 
-| Token | Wert | Beschreibung |
+| Token | Value | Description |
 |-------|------|-------------|
 | `--mode-setup` | `#6db5b8` | — |
 | `--mode-setup-soft` | `rgba(109, 181, 184, 0.06)` | — |
@@ -461,13 +461,13 @@ also in §6):
 
 ### ATMOSPHERE
 
-| Token | Wert | Beschreibung |
+| Token | Value | Description |
 |-------|------|-------------|
 | `--glow-radial` | `#2c1f4a` | — |
 
 ### SPACING
 
-| Token | Wert | Beschreibung |
+| Token | Value | Description |
 |-------|------|-------------|
 | `--space-1` | `4px` | — |
 | `--space-2` | `8px` | — |
@@ -482,7 +482,7 @@ also in §6):
 
 ### RADIUS
 
-| Token | Wert | Beschreibung |
+| Token | Value | Description |
 |-------|------|-------------|
 | `--radius-sm` | `4px` | — |
 | `--radius-pad` | `6px` | — |
@@ -492,7 +492,7 @@ also in §6):
 
 ### ELEVATION
 
-| Token | Wert | Beschreibung |
+| Token | Value | Description |
 |-------|------|-------------|
 | `--shadow-card` | `drop-shadow(0 4px 8px rgba(0, 0, 0, 0.28))` | — |
 | `--shadow-pop` | `drop-shadow(0 8px 24px rgba(0, 0, 0, 0.45))` | — |
@@ -501,7 +501,7 @@ also in §6):
 
 ### TYPE
 
-| Token | Wert | Beschreibung |
+| Token | Value | Description |
 |-------|------|-------------|
 | `--font-display` | `'Press Start 2P', 'VT323', monospace` | — |
 | `--font-ui` | `'VT323', 'Share Tech Mono', monospace` | — |

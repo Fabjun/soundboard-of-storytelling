@@ -52,7 +52,7 @@ jobs:
         run: |
           npm run sync:docs
           git diff --exit-code -- ../docs/architecture/README.md ../docs/design/design-system.md ../docs/development/testing.md ../docs/development/exceptions.md ../CHANGELOG.md \
-            || { echo "❌ Doku veraltet — npm run sync:docs lokal ausführen und committen."; exit 1; }
+            || { echo "❌ Generated docs are stale — run npm run sync:docs locally and commit."; exit 1; }
 
       - name: Link integrity check
         working-directory: v3

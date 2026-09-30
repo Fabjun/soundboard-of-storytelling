@@ -4,7 +4,7 @@
 **Date:** 2026-09-29
 **Slice:** cross-cutting
 **Refines:** ADR-0021, ADR-0028
-**Category:** UI-Architektur
+**Category:** UI architecture
 
 ## Context
 

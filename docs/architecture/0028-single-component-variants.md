@@ -5,7 +5,7 @@
 **Slice:** cross-cutting
 **Refined by:** ADR-0052 (`BoardTopBar` exception kept, re-evaluated in Slice 13)
 
-**Category:** UI-Architektur
+**Category:** UI architecture
 
 ## Context
 

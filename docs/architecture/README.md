@@ -13,8 +13,8 @@ Jede Entscheidung bekommt eine eigene Datei. Format: `docs/architecture/_templat
 
 ## Index
 
-<!-- AUTO-GENERATED:adr-index START — nicht manuell editieren -->
-### Tech Stack
+<!-- AUTO-GENERATED:adr-index START — do not edit by hand -->
+### Tech stack
 
 | # | Titel | Status | Slice | Datum |
 |---|-------|--------|-------|-------|
@@ -24,14 +24,14 @@ Jede Entscheidung bekommt eine eigene Datei. Format: `docs/architecture/_templat
 | [ADR-0004](0004-typescript-strict.md) | TypeScript strict mode | Accepted | cross-cutting | 2026-05-27 |
 | [ADR-0005](0005-vite-plugin-pwa.md) | vite-plugin-pwa für Service Worker | Accepted | Slice 1 | 2026-05-27 |
 
-### Plattform-Constraints
+### Platform constraints
 
 | # | Titel | Status | Slice | Datum |
 |---|-------|--------|-------|-------|
 | [ADR-0006](0006-platform-targets.md) | iOS Safari 15+ Minimum, iPhone 13 Pro als Primärtarget | Accepted | cross-cutting | 2026-05-27 |
 | [ADR-0007](0007-pointer-events-dnd.md) | Pointer Events für DnD — HTML5 Drag-and-Drop verboten | Accepted | Slice 3 | 2026-05-27 |
 
-### Datenmodell
+### Data model
 
 | # | Titel | Status | Slice | Datum |
 |---|-------|--------|-------|-------|
@@ -44,7 +44,7 @@ Jede Entscheidung bekommt eine eigene Datei. Format: `docs/architecture/_templat
 | [ADR-0042](0042-pad-discriminated-union.md) | Pad als Discriminated Union | Superseded by ADR-0048 | Slice 4 | 2026-05-28 |
 | [ADR-0048](0048-pad-pool-decks.md) | Pad pool, decks and three pad types | Accepted | Slice 9 | 2026-09-29 |
 
-### Persistenz
+### Persistence
 
 | # | Titel | Status | Slice | Datum |
 |---|-------|--------|-------|-------|
@@ -53,7 +53,7 @@ Jede Entscheidung bekommt eine eigene Datei. Format: `docs/architecture/_templat
 | [ADR-0016](0016-idb-library.md) | `idb` Library als IDB-Wrapper | Accepted | Slice 2 | 2026-05-27 |
 | [ADR-0017](0017-idb-schema-versioning.md) | IDB Schema-Versioning mit Upgrade-Pfaden | Accepted | Slice 2 (v1: library), Slice 3 (v2: boards) | 2026-05-27 |
 
-### Audio-Engine & iOS Memory
+### Audio engine & iOS memory
 
 | # | Titel | Status | Slice | Datum |
 |---|-------|--------|-------|-------|
@@ -63,7 +63,7 @@ Jede Entscheidung bekommt eine eigene Datei. Format: `docs/architecture/_templat
 | [ADR-0043](0043-audiocontext-timing.md) | AudioContext Timing — Synchronous in Click Handler | Accepted | Slice 4 | 2026-05-28 |
 | [ADR-0044](0044-audio-engine-module-structure.md) | Audio Engine Module Structure | Accepted | Slice 4 | 2026-05-28 |
 
-### UI-Architektur
+### UI architecture
 
 | # | Titel | Status | Slice | Datum |
 |---|-------|--------|-------|-------|
@@ -78,7 +78,7 @@ Jede Entscheidung bekommt eine eigene Datei. Format: `docs/architecture/_templat
 | [ADR-0045](0045-two-axis-adaptive-model.md) | Zwei-Achsen-Adaptives Modell — eine App, keine getrennten Systeme | Accepted | cross-cutting | 2026-06-04 |
 | [ADR-0052](0052-code-naming-conventions.md) | Code naming conventions | Accepted | cross-cutting | 2026-09-29 |
 
-### Interaktion
+### Interaction
 
 | # | Titel | Status | Slice | Datum |
 |---|-------|--------|-------|-------|
@@ -87,7 +87,7 @@ Jede Entscheidung bekommt eine eigene Datei. Format: `docs/architecture/_templat
 | [ADR-0031](0031-two-tap-delete.md) | 2-Tap-Delete als Standard-Confirm-Pattern | Accepted | cross-cutting | 2026-05-27 |
 | [ADR-0032](0032-grid-4col-constant.md) | 4-Spalten-Grid konstant über alle Viewports | Accepted | Slice 3 | 2026-05-27 |
 
-### Test-Infrastruktur & Workflow
+### Test infrastructure & workflow
 
 | # | Titel | Status | Slice | Datum |
 |---|-------|--------|-------|-------|
@@ -104,7 +104,7 @@ Jede Entscheidung bekommt eine eigene Datei. Format: `docs/architecture/_templat
 | [ADR-0054](0054-test-locators-and-ids.md) | Test locators and test IDs | Accepted | infrastructure | 2026-09-30 |
 | [ADR-0055](0055-typecheck-everything.md) | Every TypeScript file is type-checked | Accepted | infrastructure | 2026-09-30 |
 
-### Prozess- & Produktentscheidungen
+### Process & product decisions
 
 | # | Titel | Status | Slice | Datum |
 |---|-------|--------|-------|-------|

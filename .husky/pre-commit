@@ -4,8 +4,8 @@ cd "$ROOT/v3" || exit 1
 
 echo "📚 Pre-commit: syncing auto-generated docs..."
 npm run sync:docs || {
-  printf '\n❌ sync:docs failed — Commit abgebrochen.\n'
-  printf '   Generator-Fehler oben beheben und erneut git commit.\n\n'
+  printf '\n❌ sync:docs failed — commit aborted.\n'
+  printf '   Fix the generator error above, then run git commit again.\n\n'
   exit 1
 }
 git -C "$ROOT" add docs/architecture/README.md docs/design/design-system.md docs/development/testing.md docs/development/exceptions.md CHANGELOG.md
@@ -13,41 +13,41 @@ echo "✅ Docs synced and staged."
 
 echo "🔨 Pre-commit: running build check in v3/..."
 npm run build || {
-  printf '\n❌ Build failed — Commit abgebrochen.\n'
-  printf '   Fehler beheben und dann erneut git commit ausführen.\n\n'
+  printf '\n❌ Build failed (type check or vite build) — commit aborted.\n'
+  printf '   Fix the errors above, then run git commit again.\n\n'
   exit 1
 }
 echo "✅ Build passed."
 
 echo "🎨 Pre-commit: running lint-staged (format + lint on staged files)..."
 npx lint-staged || {
-  printf '\n❌ lint-staged failed — Commit abgebrochen.\n'
-  printf '   Fehler oben beheben, Dateien erneut stagen, dann git commit.\n\n'
+  printf '\n❌ lint-staged failed — commit aborted.\n'
+  printf '   Fix the errors above, stage the files again, then git commit.\n\n'
   exit 1
 }
 echo "✅ lint-staged passed."
 
 echo "🧪 Pre-commit: running unit tests in v3/..."
 npm run test || {
-  printf '\n❌ Unit tests failed — Commit abgebrochen.\n'
-  printf '   Tests fixen und dann erneut git commit ausführen.\n\n'
+  printf '\n❌ Unit tests failed — commit aborted.\n'
+  printf '   Read the failure first, fix it, then run git commit again.\n\n'
   exit 1
 }
 echo "✅ Unit tests passed."
 
 echo "🎭 Pre-commit: running smoke E2E tests..."
 npm run test:e2e:smoke || {
-  printf '\n❌ Smoke E2E tests failed — Commit abgebrochen.\n'
-  printf '   Playwright-Report unter v3/playwright-report/ für Details.\n'
-  printf '   Tests fixen und dann erneut git commit ausführen.\n\n'
+  printf '\n❌ Smoke E2E tests failed — commit aborted.\n'
+  printf '   Details: the output above and v3/playwright-report/ — read them before re-running.\n'
+  printf '   Fix it, then run git commit again.\n\n'
   exit 1
 }
 echo "✅ Smoke E2E passed."
 
 echo "🔗 Pre-commit: checking markdown link integrity..."
 npm run link:check || {
-  printf '\n❌ Link check failed — Commit abgebrochen.\n'
-  printf '   Tote interne Links oben fixen und erneut git commit.\n\n'
+  printf '\n❌ Link check failed — commit aborted.\n'
+  printf '   Fix the dead internal links above, then run git commit again.\n\n'
   exit 1
 }
 echo "✅ Link check passed — Commit wird fortgesetzt."

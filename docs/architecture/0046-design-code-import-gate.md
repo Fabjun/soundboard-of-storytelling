@@ -4,7 +4,7 @@
 **Date:** 2026-06-11
 **Slice:** cross-cutting
 **Refines:** —
-**Category:** Prozess- & Produktentscheidungen
+**Category:** Process & product decisions
 
 ## Context
 

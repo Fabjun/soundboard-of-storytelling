@@ -3,7 +3,7 @@
 **Status:** Accepted
 **Date:** 2026-09-29
 **Slice:** Slice 9
-**Category:** Datenmodell
+**Category:** Data model
 
 ## Context
 

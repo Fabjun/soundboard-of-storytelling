@@ -4,7 +4,7 @@
 **Date:** 2026-09-29
 **Slice:** infrastructure
 **Refines:** —
-**Category:** Test-Infrastruktur & Workflow
+**Category:** Test infrastructure & workflow
 
 ## Context
 

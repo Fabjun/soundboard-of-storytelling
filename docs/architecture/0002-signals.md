@@ -4,7 +4,7 @@
 **Date:** 2026-05-27
 **Slice:** Slice 1
 
-**Category:** Tech Stack
+**Category:** Tech stack
 
 ## Context
 

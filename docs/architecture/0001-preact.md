@@ -4,7 +4,7 @@
 **Date:** 2026-05-27
 **Slice:** cross-cutting
 
-**Category:** Tech Stack
+**Category:** Tech stack
 
 ## Context
 

@@ -4,7 +4,7 @@
 **Date:** 2026-05-27
 **Slice:** cross-cutting
 
-**Category:** Plattform-Constraints
+**Category:** Platform constraints
 
 ## Context
 

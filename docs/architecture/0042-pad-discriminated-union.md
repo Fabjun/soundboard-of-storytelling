@@ -4,7 +4,7 @@
 **Date:** 2026-05-28
 **Slice:** Slice 4
 
-**Category:** Datenmodell
+**Category:** Data model
 
 ## Context
 

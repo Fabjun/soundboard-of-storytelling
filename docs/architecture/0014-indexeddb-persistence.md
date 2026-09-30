@@ -4,7 +4,7 @@
 **Date:** 2026-05-27
 **Slice:** cross-cutting
 
-**Category:** Persistenz
+**Category:** Persistence
 
 ## Context
 

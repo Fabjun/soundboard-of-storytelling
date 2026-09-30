@@ -6,29 +6,29 @@ printf '\n🔢 Pre-push: version bump check...\n'
 LOCAL_VERSION=$(grep "APP_VERSION = " src/lib/changelog.ts | grep -oE "[0-9]+\.[0-9]+\.[0-9]+" || true)
 REMOTE_VERSION=$(git show origin/main:v3/src/lib/changelog.ts 2>/dev/null | grep "APP_VERSION = " | grep -oE "[0-9]+\.[0-9]+\.[0-9]+" || true)
 if [ -n "$REMOTE_VERSION" ] && [ "$LOCAL_VERSION" = "$REMOTE_VERSION" ]; then
-  printf '\n❌ APP_VERSION nicht gebumpt — Push abgebrochen.\n'
-  printf '   Lokal: %s  Remote: %s (unverändert)\n' "$LOCAL_VERSION" "$REMOTE_VERSION"
-  printf '   v3/src/lib/changelog.ts aktualisieren, erneut commiten, dann pushen.\n'
-  printf '   Bewusst überspringen: git push --no-verify\n\n'
+  printf '\n❌ APP_VERSION not bumped — push aborted.\n'
+  printf '   Local: %s  Remote: %s (unchanged)\n' "$LOCAL_VERSION" "$REMOTE_VERSION"
+  printf '   Update v3/src/lib/changelog.ts, commit again, then push.\n'
+  printf '   Deliberate bypass (ADR-0053 rules): git push --no-verify\n\n'
   exit 1
 fi
-printf '✅ Version OK (%s → %s).\n\n' "${REMOTE_VERSION:-neu}" "$LOCAL_VERSION"
+printf '✅ Version OK (%s → %s).\n\n' "${REMOTE_VERSION:-new}" "$LOCAL_VERSION"
 
 printf '🛡  Pre-push: security audit (high/critical blocks)...\n'
 npm audit --audit-level=high || {
-  printf '\n❌ npm audit: high/critical vulnerability — Push abgebrochen.\n'
-  printf '   Details oben. Erst `npm audit fix` (ohne --force) versuchen;\n'
-  printf '   Major-Sprünge einzeln prüfen (BACKLOG "Major dependency updates").\n'
-  printf '   Bewusst überspringen: git push --no-verify\n\n'
+  printf '\n❌ npm audit: high/critical vulnerability — push aborted.\n'
+  printf '   Details above. Try `npm audit fix` (without --force) first;\n'
+  printf '   review major upgrades one at a time (BACKLOG "Major dependency updates").\n'
+  printf '   Deliberate bypass (ADR-0053 rules): git push --no-verify\n\n'
   exit 1
 }
 printf '✅ No high/critical vulnerabilities.\n\n'
 
 printf '📦 Pre-push: bundle size check...\n'
 npm run size || {
-  printf '\n❌ Bundle size check FAILED — Push abgebrochen.\n'
-  printf '   Bundle-Limit überschritten. Diff prüfen: was wurde hinzugefügt?\n'
-  printf '   Bewusst überspringen: git push --no-verify\n\n'
+  printf '\n❌ Bundle size check FAILED — push aborted.\n'
+  printf '   Bundle limit exceeded. Check the diff: what was added?\n'
+  printf '   Deliberate bypass (ADR-0053 rules): git push --no-verify\n\n'
   exit 1
 }
 printf '✅ Bundle size OK.\n\n'
@@ -37,10 +37,10 @@ printf '🎭 Pre-push: full E2E suite (smoke + full + mobile) for CI parity...\n
 printf '   Estimated: ~2-3 min. Bypass with: git push --no-verify\n\n'
 
 npm run test:e2e:all || {
-  printf '\n❌ Full E2E suite FAILED — Push abgebrochen.\n'
+  printf '\n❌ Full E2E suite FAILED — push aborted.\n'
   printf '   Playwright-Report: v3/playwright-report/index.html\n'
-  printf '   Falls Browser fehlen: cd v3 && npx playwright install chromium webkit\n'
-  printf '   Bewusst überspringen: git push --no-verify\n\n'
+  printf '   Browsers missing? cd v3 && npx playwright install chromium webkit\n'
+  printf '   Deliberate bypass (ADR-0053 rules): git push --no-verify\n\n'
   exit 1
 }
 
@@ -48,9 +48,9 @@ printf '✅ Full E2E suite PASSED.\n\n'
 
 printf '🏗  Pre-push: E2E against the production build (smoke + full + PWA)...\n'
 npm run test:e2e:prod || {
-  printf '\n❌ Production-build E2E FAILED — Push abgebrochen.\n'
-  printf '   Erst Fehlerausgabe/Report lesen (v3/playwright-report/), dann neu starten.\n'
-  printf '   Bewusst überspringen: git push --no-verify\n\n'
+  printf '\n❌ Production-build E2E FAILED — push aborted.\n'
+  printf '   Read the output / report (v3/playwright-report/) first, then re-run.\n'
+  printf '   Deliberate bypass (ADR-0053 rules): git push --no-verify\n\n'
   exit 1
 }
 printf '✅ Production-build E2E PASSED.\n\n'
@@ -59,13 +59,13 @@ printf '✅ Production-build E2E PASSED.\n\n'
 if [ "$(uname)" = "Darwin" ]; then
   printf '🖼  Pre-push: visual regression (macOS)...\n'
   npm run test:e2e:visual || {
-    printf '\n❌ Visual regression FAILED — Push abgebrochen.\n'
-    printf '   Diffs prüfen: v3/test-results/**/*-diff.png\n'
-    printf '   Gewollte Änderung? npm run test:e2e:update-snapshots, Diffs geprüft committen.\n'
-    printf '   Bewusst überspringen: git push --no-verify\n\n'
+    printf '\n❌ Visual regression FAILED — push aborted.\n'
+    printf '   Check the diffs: v3/test-results/**/*-diff.png\n'
+    printf '   Intended change? npm run test:e2e:update-snapshots, review the diffs, commit.\n'
+    printf '   Deliberate bypass (ADR-0053 rules): git push --no-verify\n\n'
     exit 1
   }
   printf '✅ Visual regression PASSED.\n\n'
 fi
 
-printf '✅ Pre-push checks PASSED — Push freigegeben.\n\n'
+printf '✅ Pre-push checks PASSED — push allowed.\n\n'

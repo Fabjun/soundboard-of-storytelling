@@ -18,21 +18,21 @@ const ROOT = resolve(__dirname, '..');
 const ADR_DIR = join(ROOT, 'docs', 'architecture');
 const README = join(ADR_DIR, 'README.md');
 
-const MARKER_START = '<!-- AUTO-GENERATED:adr-index START — nicht manuell editieren -->';
+const MARKER_START = '<!-- AUTO-GENERATED:adr-index START — do not edit by hand -->';
 const MARKER_END = '<!-- AUTO-GENERATED:adr-index END -->';
 
 // Canonical category order — matches the established README section order.
 const CATEGORY_ORDER = [
-  'Tech Stack',
-  'Plattform-Constraints',
-  'Datenmodell',
-  'Persistenz',
-  'Audio-Engine & iOS Memory',
-  'UI-Architektur',
-  'Interaktion',
-  'Test-Infrastruktur & Workflow',
-  'Prozess- & Produktentscheidungen',
-  'Unkategorisiert',
+  'Tech stack',
+  'Platform constraints',
+  'Data model',
+  'Persistence',
+  'Audio engine & iOS memory',
+  'UI architecture',
+  'Interaction',
+  'Test infrastructure & workflow',
+  'Process & product decisions',
+  'Uncategorized',
 ];
 
 interface AdrMeta {
@@ -68,7 +68,7 @@ function parseAdr(file: string): AdrMeta | null {
   const status = extractField(content, 'Status') || '—';
   const date = extractField(content, 'Date') || '—';
   const slice = extractField(content, 'Slice') || '—';
-  const category = extractField(content, 'Category') || 'Unkategorisiert';
+  const category = extractField(content, 'Category') || 'Uncategorized';
 
   return { num, file, title, status, date, slice, category };
 }
@@ -80,7 +80,7 @@ function generateTable(adrs: AdrMeta[]): string {
   for (const adr of adrs) {
     const cat = CATEGORY_ORDER.includes(adr.category)
       ? adr.category
-      : 'Unkategorisiert';
+      : 'Uncategorized';
     byCategory.get(cat)!.push(adr);
   }
 

@@ -4,7 +4,7 @@
 **Date:** 2026-05-27
 **Slice:** Slice 4
 
-**Category:** Audio-Engine & iOS Memory
+**Category:** Audio engine & iOS memory
 
 ## Context
 
