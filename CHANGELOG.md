@@ -4,6 +4,10 @@
 
 All notable changes to Soundboard of Storytelling, newest first.
 
+## 3.0.84 — 2026-09-30
+
+- test: drag-and-drop flow unit tests (padDnd mutation score 30 % → 91.6 %); mutation runs guarded against timeout inflation (T11c)
+
 ## 3.0.83 — 2026-09-30
 
 - test: mutation testing with StrykerJS, weekly in CI with a break threshold (T11c, ADR-0059)

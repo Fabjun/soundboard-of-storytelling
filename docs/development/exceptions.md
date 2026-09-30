@@ -55,7 +55,7 @@ Procedure: `docs/development/testing.md`; reference enforced by `testGuards.test
 | `v3/tests/e2e/deck-crud.spec.ts:75`            | `fixme` | BACKLOG "Deck reorder"                  |
 | `v3/tests/e2e/mobile/overflow.spec.ts:31`      | `fixme` | BACKLOG "Re-enable mobile layout tests" |
 | `v3/tests/e2e/mobile/touch-targets.spec.ts:35` | `fixme` | BACKLOG "Re-enable mobile layout tests" |
-| `v3/tests/unit/audio/engine.test.ts:423`       | `fails` | BACKLOG "step stops the combo itself"   |
+| `v3/tests/unit/audio/engine.test.ts:424`       | `fails` | BACKLOG "step stops the combo itself"   |
 
 ## Modules without their own unit test (4)
 

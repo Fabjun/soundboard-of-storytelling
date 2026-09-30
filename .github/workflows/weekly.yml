@@ -109,14 +109,11 @@ jobs:
         working-directory: v3
         run: npm run test:mutation
 
-      - name: Mutation score (report)
+      # Score + timeout share; fails above 5 % timeouts (a starved runner inflates the score).
+      - name: Mutation score and timeout share
         if: always()
         working-directory: v3
-        run: |
-          {
-            echo '## Mutation score'
-            node -e "const r=require('./reports/mutation/mutation.json');let k=0,t=0;for(const f of Object.values(r.files))for(const m of f.mutants){if(['Killed','Timeout'].includes(m.status))k++;if(!['CompileError','RuntimeError','Ignored'].includes(m.status))t++;}console.log((100*k/t).toFixed(2)+' % ('+k+' of '+t+' mutants detected)')" || echo 'No report.'
-          } >> "$GITHUB_STEP_SUMMARY"
+        run: npm run mutation:report
 
       - uses: actions/upload-artifact@v7
         if: always()

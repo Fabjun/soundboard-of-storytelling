@@ -1,3 +1,4 @@
+// @vitest-environment jsdom
 // ─────────────────────────────────────────────────────────────────────────────
 // Audio engine — characterization tests (T4, before Slice 9d)
 //

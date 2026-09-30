@@ -10,7 +10,10 @@ import preact from '@preact/preset-vite';
 export default defineConfig({
   plugins: [preact()],
   test: {
-    environment: 'jsdom',
+    // Node by default: jsdom costs ~0.5 s per test file (81 % of a single-worker run), which
+    // multiplied by ~1,800 mutants made mutation testing time out (T11c). Test files that need a
+    // DOM opt in with a first-line docblock: // @vitest-environment jsdom
+    environment: 'node',
     globals: true,
     include: ['tests/unit/**/*.test.ts'],
     setupFiles: ['tests/unit/setup.ts'],

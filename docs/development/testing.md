@@ -66,8 +66,8 @@ number in brackets = test cases in the file (incl. quarantine)._
 | `pwa`             | Chromium (Desktop)             | Build only  | `pwa` (7)                                                                                                                                                                                  |
 | `visual`          | Chromium (Desktop), macOS only | Dev         | `board-list-empty` (1), `board-list-with-board` (1), `board-screen-game` (1), `board-screen-setup` (1), `deck-rail` (1), `library-empty` (1), `mode-toggle-states` (2), `start-screen` (1) |
 
-**Unit tests (Vitest):** 19 files, 237 test cases —
-`audio/engine.test.ts` (24), `audio/lru.property.test.ts` (0), `audio/lru.test.ts` (11), `codeGuards.test.ts` (13), `deckConflict.test.ts` (9), `docsGuards.test.ts` (22), `e2eProjects.test.ts` (6), `flameMath.property.test.ts` (0), `flameMath.test.ts` (22), `idb.test.ts` (15), `nanoid.test.ts` (2), `padDnd.property.test.ts` (0), `padDnd.test.ts` (11), `padUtils.property.test.ts` (0), `padUtils.test.ts` (43), `store.test.ts` (23), `testGuards.test.ts` (23), `upload.property.test.ts` (0), `upload.test.ts` (13)
+**Unit tests (Vitest):** 19 files, 258 test cases —
+`audio/engine.test.ts` (24), `audio/lru.property.test.ts` (0), `audio/lru.test.ts` (11), `codeGuards.test.ts` (13), `deckConflict.test.ts` (9), `docsGuards.test.ts` (22), `e2eProjects.test.ts` (6), `flameMath.property.test.ts` (0), `flameMath.test.ts` (22), `idb.test.ts` (15), `nanoid.test.ts` (2), `padDnd.property.test.ts` (0), `padDnd.test.ts` (32), `padUtils.property.test.ts` (0), `padUtils.test.ts` (43), `store.test.ts` (23), `testGuards.test.ts` (23), `upload.property.test.ts` (0), `upload.test.ts` (13)
 
 <!-- AUTO-GENERATED:test-inventory END -->
 
@@ -398,6 +398,10 @@ the project checklist (T11a). A test's name says which case it covers.
 
 ## Writing unit tests
 
+**Environment:** unit tests run in Node; a test file that needs a DOM starts with
+`// @vitest-environment jsdom` (jsdom costs about 0.5 s per file, which mutation testing pays for
+every mutant). Without it, DOM access fails loudly (`document is not defined`).
+
 **Time budget:** 500 ms per test locally, 5 s in CI (`v3/vitest.config.ts`). CI with coverage
 was measured more than 7x slower than a local run, so a test that is slow locally fails at
 commit time instead of only after the push.
@@ -462,6 +466,10 @@ tests against each; the **mutation score** is the share of detected mutants.
 - **When:** weekly in CI (`weekly.yml`, job `mutation`, ~30 min) and on demand:
   `cd v3 && npm run test:mutation` (report: v3/reports/mutation/index.html, not committed). Not in the hooks —
   too slow.
+- **Timeouts are not trusted:** Stryker counts a timed-out mutant as detected, so an overloaded
+  machine inflates the score. `npm run mutation:report` prints score and timeout share and fails
+  above 5 % timeouts (a clean run: below 1 %). Each mutant runs `vitest --maxWorkers=1` —
+  Stryker already runs one process per CPU.
 - **Threshold:** `thresholds.break` in `v3/stryker.config.mjs` = the measured score, rounded
   down; only ever raised (like the coverage floor). A run that silently tests nothing scores
   about 0 % and fails — counter-checked with a test command that always passes.

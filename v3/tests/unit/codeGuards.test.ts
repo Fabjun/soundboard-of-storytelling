@@ -197,11 +197,15 @@ describe('guard: inline style lengths carry a unit (Preact 11 upgrade)', () => {
     'animationIterationCount',
   ]);
   let program: ts.Program;
+  let found: string[];
+  // Building the type checker and scanning all components is one-off setup (~0.5 s, more
+  // under coverage), not the test itself.
   beforeAll(() => {
     const { config } = ts.readConfigFile(join(V3, 'tsconfig.app.json'), ts.sys.readFile);
     const parsed = ts.parseJsonConfigFileContent(config, ts.sys, V3);
     program = ts.createProgram(parsed.fileNames, parsed.options);
-  }, 30_000); // building the type checker is a one-off setup, not a test
+    found = numericStyles();
+  }, 30_000);
 
   const numericStyles = (): string[] => {
     const checker = program.getTypeChecker();
@@ -240,6 +244,6 @@ describe('guard: inline style lengths carry a unit (Preact 11 upgrade)', () => {
   });
 
   it('no numeric value for a length in style={…}', () => {
-    expect(numericStyles(), 'write the unit, e.g. `${n}px`').toEqual([]);
+    expect(found, 'write the unit, e.g. `${n}px`').toEqual([]);
   });
 });

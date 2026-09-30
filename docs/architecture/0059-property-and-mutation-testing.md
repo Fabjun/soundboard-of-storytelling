@@ -31,7 +31,11 @@ runs no test per mutant (stryker-js#6210); a hand-planted bug that failed 4 test
    weekly in CI (`weekly.yml`, job `mutation`) and `npm run test:mutation`; not in the hooks
    (about 30 minutes). `thresholds.break` = measured score rounded down, only raised — a run
    that tests nothing scores about 0 % and fails (counter-checked).
-4. **Command runner** instead of the Vitest runner until stryker-js#6210 is fixed in a release
+4. **Timeouts are not trusted** — Stryker counts a timed-out mutant as detected, so a starved
+   machine inflates the score (first CI run: 89 of 134 mutants timed out). Each mutant runs
+   `vitest --maxWorkers=1`, unit tests run in Node (jsdom only by opt-in), and
+   `npm run mutation:report` fails above 5 % timeouts.
+5. **Command runner** instead of the Vitest runner until stryker-js#6210 is fixed in a release
    (BACKLOG "T11c"): slower, but it runs the real test command against every mutant.
 
 Every new test, property and threshold is counter-checked (planted bug → red).

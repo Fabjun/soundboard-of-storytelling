@@ -7,9 +7,16 @@ export type ChangelogEntry = {
   items: string[];
 };
 
-export const APP_VERSION = '3.0.83';
+export const APP_VERSION = '3.0.84';
 
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.84',
+    date: '2026-09-30',
+    items: [
+      'test: drag-and-drop flow unit tests (padDnd mutation score 30 % → 91.6 %); mutation runs guarded against timeout inflation (T11c)',
+    ],
+  },
   {
     version: '3.0.83',
     date: '2026-09-30',

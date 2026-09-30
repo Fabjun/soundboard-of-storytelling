@@ -14,10 +14,12 @@
 export default {
   testRunner: 'command',
   commandRunner: {
-    // Guard tests only read files; --testTimeout: the 500 ms local budget would turn slow
-    // mutant runs into (counted-as-killed) timeouts.
+    // Guard tests only read files. --maxWorkers=1: Stryker already runs one test process per
+    // CPU; vitest workers on top overbooked the CI runner (4 vCPU) until mutants timed out —
+    // and timeouts count as detected, inflating the score (weekly run 36770237372).
+    // --testTimeout: the 500 ms local budget would turn slow runs into timeouts as well.
     command:
-      "npx vitest run --testTimeout=5000 --exclude 'tests/unit/*Guards.test.ts' --exclude 'tests/unit/e2eProjects.test.ts'",
+      "npx vitest run --maxWorkers=1 --testTimeout=5000 --exclude 'tests/unit/*Guards.test.ts' --exclude 'tests/unit/e2eProjects.test.ts'",
   },
   coverageAnalysis: 'off',
   // The coverage modules of vitest.config.ts, without the EXEMPT files of testGuards.test.ts
