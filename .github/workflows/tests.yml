@@ -54,6 +54,10 @@ jobs:
           git diff --exit-code -- ../docs/architecture/README.md ../docs/design/design-system.md ../docs/development/testing.md ../docs/development/exceptions.md ../CHANGELOG.md \
             || { echo "❌ Generated docs are stale — run npm run sync:docs locally and commit."; exit 1; }
 
+      - name: Vale — superseded terms in active docs (ADR-0056)
+        working-directory: v3
+        run: npm run lint:docs
+
       - name: Link integrity check
         working-directory: v3
         run: npm run link:check

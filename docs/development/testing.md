@@ -64,8 +64,8 @@ number in brackets = test cases in the file (incl. quarantine)._
 | `pwa` | Chromium (Desktop) | Build only | `pwa` (4) |
 | `visual` | Chromium (Desktop), macOS only | Dev | `board-list-empty` (1), `board-list-with-board` (1), `board-screen-game` (1), `board-screen-setup` (1), `deck-rail` (1), `library-empty` (1), `mode-toggle-states` (2), `start-screen` (1) |
 
-**Unit tests (Vitest):** 14 files, 212 test cases —
-`audio/engine.test.ts` (24), `audio/lru.test.ts` (11), `codeGuards.test.ts` (11), `deckConflict.test.ts` (9), `docsGuards.test.ts` (11), `e2eProjects.test.ts` (6), `flameMath.test.ts` (22), `idb.test.ts` (15), `nanoid.test.ts` (2), `padDnd.test.ts` (11), `padUtils.test.ts` (43), `store.test.ts` (23), `testGuards.test.ts` (11), `upload.test.ts` (13)
+**Unit tests (Vitest):** 14 files, 214 test cases —
+`audio/engine.test.ts` (24), `audio/lru.test.ts` (11), `codeGuards.test.ts` (11), `deckConflict.test.ts` (9), `docsGuards.test.ts` (13), `e2eProjects.test.ts` (6), `flameMath.test.ts` (22), `idb.test.ts` (15), `nanoid.test.ts` (2), `padDnd.test.ts` (11), `padUtils.test.ts` (43), `store.test.ts` (23), `testGuards.test.ts` (11), `upload.test.ts` (13)
 
 <!-- AUTO-GENERATED:test-inventory END -->
 
@@ -97,7 +97,7 @@ data-testid="<component>"                           root element, e.g. undo-toas
 
 ### Spec files
 
-kebab-case, no folder prefix (`mobile/touch-targets.spec.ts`), helper files `helpers.ts`.
+kebab-case, no folder prefix (`mobile/touch-targets.spec.ts`), helper files `<folder>/helpers.ts`.
 Existing test-ID locators that could use roles are migrated in Slice 13 (exception in ADR-0054,
 listed in [`exceptions.md`](exceptions.md)).
 
@@ -434,9 +434,10 @@ directives fail lint; to-do markers and `prettier-ignore` are checked by `testGu
 All exceptions are listed in the generated register
 [`exceptions.md`](exceptions.md) (`npm run sync:exceptions`).
 
-**Counter-check (mandatory for every new test):** break the code under test on purpose → the
-test must turn red; then restore the code from a copy and confirm with `git diff` that nothing
-is left behind.
+**Counter-check (mandatory for every new test, guard and rule):** 1. confirm the baseline is
+**green**; 2. break the code under test on purpose → the check must turn **red** for exactly
+that reason; 3. restore from a copy → **green** again, and confirm nothing is left behind.
+Without step 1 a red result proves nothing (seen 2026-09-30: the baseline was already red).
 
 ### Flaky tests (quarantine)
 
@@ -478,7 +479,7 @@ stored (mixed-case) string. Playwright assertions must use the stored string:
 
 ### 4. Visual regression: macOS vs. Ubuntu
 
-Screenshot baselines (`.png` files with the `-darwin.png` suffix) only match on macOS. Ubuntu
+Screenshot baselines (`.png` files with the `*-darwin.png` suffix) only match on macOS. Ubuntu
 CI renders fonts differently → visual tests are excluded from CI. Run them locally only. On
 UI changes: regenerate the baselines locally and commit them.
 

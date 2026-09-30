@@ -68,7 +68,7 @@ file. Format: `docs/architecture/_template.md`.
 | # | Title | Status | Slice | Date |
 |---|-------|--------|-------|------|
 | [ADR-0021](0021-css-naming.md) | CSS classes `sb-<block>` / `sb-<block>-<part>` / `is-<state>` | Accepted | cross-cutting | 2026-05-27 |
-| [ADR-0022](0022-design-tokens.md) | Design tokens in `tokens.css` — no colour literals | Accepted | cross-cutting | 2026-05-27 |
+| [ADR-0022](0022-design-tokens.md) | Design tokens in `v3/src/styles/tokens.css` — no colour literals | Accepted | cross-cutting | 2026-05-27 |
 | [ADR-0023](0023-surface-hierarchy.md) | Five-level surface hierarchy | Accepted | cross-cutting | 2026-05-27 |
 | [ADR-0024](0024-clip-path-frames.md) | `clip-path` for pixel frames — `filter: drop-shadow()` instead of `box-shadow` | Accepted | cross-cutting | 2026-05-27 |
 | [ADR-0025](0025-is-deep-opt-in.md) | `is-deep` as opt-in for the pad depth stack | Accepted | Slice 3 | 2026-05-27 |
@@ -103,6 +103,7 @@ file. Format: `docs/architecture/_template.md`.
 | [ADR-0053](0053-exception-management.md) | Exception management | Accepted | cross-cutting | 2026-09-29 |
 | [ADR-0054](0054-test-locators-and-ids.md) | Test locators and test IDs | Accepted | infrastructure | 2026-09-30 |
 | [ADR-0055](0055-typecheck-everything.md) | Every TypeScript file is type-checked | Accepted | infrastructure | 2026-09-30 |
+| [ADR-0056](0056-documentation-freshness.md) | Documentation freshness is checked automatically | Accepted | infrastructure | 2026-09-30 |
 
 ### Process & product decisions
 

@@ -60,6 +60,16 @@ jobs:
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
 
+      - name: Vale version (report; Vale is pinned outside npm — ADR-0056)
+        run: |
+          PINNED=$(grep -oE "VALE_VERSION = '[0-9.]+'" scripts/vale-install.ts | grep -oE "[0-9.]+")
+          LATEST=$(gh api repos/vale-cli/vale/releases/latest --jq .tag_name | sed 's/^v//')
+          {
+            echo "## Vale"
+            if [ "$PINNED" = "$LATEST" ]; then echo "Pinned $PINNED is current."
+            else echo "Pinned $PINNED, latest $LATEST — update VALE_VERSION and the SHA-256 table in scripts/vale-install.ts."; fi
+          } >> "$GITHUB_STEP_SUMMARY"
+
       - name: Dependabot PRs open longer than ${{ env.STALE_DAYS }} days (fails)
         run: |
           STALE=$(gh pr list --repo "$GITHUB_REPOSITORY" --author app/dependabot --state open \

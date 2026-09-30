@@ -41,7 +41,10 @@
    - inconsistency found → report it and plan the clean-up, never extend it;
    - guard schemes with tests where feasible (`testGuards`, `docsGuards`, `codeGuards`, lint rules);
    - exceptions follow one scheme (ADR-0053): rule + reason, temporary ones also
-     `BACKLOG "…"`; all are listed in the generated `docs/development/exceptions.md`.
+     `BACKLOG "…"`; all are listed in the generated `docs/development/exceptions.md`;
+   - documentation stays current by checks, not by memory (ADR-0056): links and anchors
+     (`link:check`), superseded terms in active docs (Vale, `lint:docs`), paths in code spans
+     must exist (full paths, no ambiguous short names; external/planned files as plain text).
 3. **Features** — only on top of 1 and 2.
 
 **Working principles (user decisions 2026-09-29):**
@@ -50,6 +53,9 @@
   in the plan; deviate only with a stated reason.
 - **Try to refute your own draft** — critically review every plan and result, including the
   counter-check itself (can it be vacuous or cause harm?), and improve it before presenting.
+- **A repeated error is a pattern** — when an error class occurs a second time, stop fixing
+  instances: find the root cause, search the whole project for further instances, remove the
+  source and add a systematic check (guard, lint rule, test) so it cannot recur.
 
 ---
 
@@ -101,8 +107,9 @@
   or auto-subscribing JSX binding. Mutations via exported setter
   functions (e.g. `addPlayingPad`, `removeLoopingPad`).
 - **Persistence**: IndexedDB. V1 `library` store preserved; `boards`
-  store added for Board documents (Scenes and Pads embedded as JSON).
-  Sets store deferred to Slice 6.
+  store added for Board documents (decks and pads embedded as JSON, ADR-0010).
+  Pad sets (`Board.sets`) exist in the model only; they are replaced by the
+  quick-access bar (ADR-0048).
 - **Preferences**: `localStorage` (small UI state, theme choice, etc.)
 - **PWA**: managed via `vite-plugin-pwa`. No manual `sw.js`. Auto-
   generated SHELL list, auto-bumped version on build.
@@ -136,7 +143,7 @@
 - **HTML5 Drag-and-Drop on iOS — always use Pointer Events instead.**
   `draggable`, `ondragstart`, `ondragover`, `ondrop` are not supported
   on iOS Safari/Brave. Any DnD interaction (pad-to-pad, library-to-grid,
-  future scene reorder etc.) MUST use Pointer Events.
+  future deck reorder etc.) MUST use Pointer Events.
   Pattern: see `src/lib/padDnd.ts` (pad DnD) and `src/lib/libDnd.ts` (library DnD).
 - Anything requiring iOS 17+ as a hard dependency
 
@@ -426,7 +433,7 @@ any non-doc file flagged ⚠ for approval. Routine additionally: `v3/src/lib/cha
     The pre-commit hook runs `sync:docs` and stages the results. To refresh manually:
     `cd v3 && npm run sync:docs`. Document new sb-* classes with
     `/* @inventory: description */` at the CSS selector. New tokens take their description
-    from the inline comment after the semicolon in `tokens.css`.
+    from the inline comment after the semicolon in `v3/src/styles/tokens.css`.
 14. **Open work items**: All deferred items and known limitations are tracked in
     `docs/backlog.md`. Slice plans should consult and update it. At each
     slice completion, before the final commit: mark completed items `✅ Done (commit SHA)`
@@ -626,6 +633,8 @@ boardDelete(id: string): Promise<void>
 
 ## Slice progress
 
+<!-- vale SoS.SupersededTerms = NO --><!-- reason: historical slice records keep the names valid at the time (Scene before Slice 9b) -->
+
 | # | Name | Status | Date | Notes |
 |---|------|--------|------|-------|
 | 1 | Project setup + StartScreen | ✅ Complete | 2026-05-27 | Vite + Preact + TS scaffold; tokens.css; PixelIcon; TopBar; StatusBar; StartScreen; Preact Signals store; PWA config |
@@ -670,3 +679,5 @@ comments) keeps meaning the May plan. Mapping old → new:
 - Phase 2: Visual regression baselines are macOS-only (`*-darwin.png`); excluded from CI (Ubuntu font rendering differs).
 - Phase 2: `no-unused-vars: 'off'` in eslint.config.js — handled by `noUnusedLocals: true` in tsconfig.app.json. Re-enable if tsconfig flag is ever disabled.
 - Phase 2: deploy-pages.yml uses `workflow_run` (not `needs`) for cross-workflow sequencing — `needs` only works within the same workflow file.
+
+<!-- vale SoS.SupersededTerms = YES -->

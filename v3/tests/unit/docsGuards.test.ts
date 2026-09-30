@@ -9,6 +9,10 @@
 // 3. README facts that drift silently: Node version (.nvmrc) and live URL (Vite base).
 // 4. ADR headers: Status, Date, Slice, Refines, [Refined by], Category — in this order, with a
 //    category from scripts/sync-adr.ts (CLAUDE.md rule 12).
+// 6. File paths in code spans of ACTIVE docs name files that exist in this repository
+//    (external or planned files are written as plain text). Historical docs are excluded
+//    via the same list Vale uses (.vale.ini), and passages marked historical with
+//    `<!-- vale SoS.SupersededTerms = NO -->` are skipped (ADR-0056).
 // 5. Project language is English (CLAUDE.md §Project identity): no file contains German
 //    function words — a heuristic, calibrated so English text never trips it.
 // ─────────────────────────────────────────────────────────────────────────────
@@ -192,5 +196,67 @@ describe('guard: project language is English (CLAUDE.md)', () => {
       .filter((x) => x.hits.length >= 1)
       .map((x) => `${x.f}: ${[...new Set(x.hits)].slice(0, 5).join(', ')}`);
     expect(bad, 'translate to English (chat with the user stays German)').toEqual([]);
+  });
+});
+
+describe('guard: file paths in active docs exist (ADR-0056)', () => {
+  const tracked = walkMd(ROOT).length > 0; // sanity: walkMd works
+  const valeIni = readFileSync(join(ROOT, '.vale.ini'), 'utf8');
+  // Historical docs = the section that switches Vale off (single source of truth).
+  const historical = (/^\[\{([^}]+)\}\]\s*\nBasedOnStyles =\s*$/m.exec(valeIni)?.[1] ?? '')
+    .split(',')
+    .map((g) => new RegExp('^' + g.trim().replace(/\./g, '\\.').replace(/\*/g, '[^/]*') + '$'));
+  const allFiles = (dir: string): string[] =>
+    readdirSync(dir, { withFileTypes: true }).flatMap((e) =>
+      ['node_modules', '.git', 'dist', 'coverage', 'playwright-report', 'test-results'].includes(
+        e.name,
+      )
+        ? []
+        : e.isDirectory()
+          ? allFiles(join(dir, e.name))
+          : [rel(join(dir, e.name))],
+    );
+  const repoFiles = allFiles(ROOT);
+  const repoDirs = new Set(
+    repoFiles.flatMap((f) =>
+      f
+        .split('/')
+        .slice(0, -1)
+        .map((_, i, a) => a.slice(0, i + 1).join('/')),
+    ),
+  );
+  const active = walkMd(ROOT)
+    .map(rel)
+    .filter((f) => !historical.some((re) => re.test(f)));
+  const PATH = /`([\w./-]+\.(?:md|ts|tsx|css|json|ya?ml|js|html|png|wav|sh))`/g;
+
+  it('reads the historical list from .vale.ini (sanity)', () => {
+    expect(tracked).toBe(true);
+    expect(historical.length).toBeGreaterThanOrEqual(5);
+    expect(active.length).toBeGreaterThan(10);
+  });
+
+  it('names only existing files in code spans', () => {
+    const exists = (from: string, p: string): boolean => {
+      const cands = [p, rel(join(ROOT, dirname(from), p)), `v3/${p}`, `v3/src/${p}`];
+      if (cands.some((c) => repoFiles.includes(c) || repoDirs.has(c))) return true;
+      return repoFiles.filter((f) => f.endsWith(`/${p}`)).length === 1; // unique short form
+    };
+    const bad: string[] = [];
+    for (const f of active) {
+      const text = readFileSync(join(ROOT, f), 'utf8')
+        .replace(/```[\s\S]*?```/g, '')
+        // link text: the link target itself is validated by remark-validate-links
+        .replace(/\[`[^`]+`\]\(/g, '[](')
+        .replace(
+          /<!-- vale SoS\.SupersededTerms = NO -->[\s\S]*?<!-- vale SoS\.SupersededTerms = YES -->/g,
+          '',
+        );
+      for (const m of text.matchAll(PATH)) {
+        const p = m[1];
+        if (p.startsWith('-') || !exists(f, p)) bad.push(`${f}: ${p}`);
+      }
+    }
+    expect(bad, 'fix the path, or write external/planned files as plain text').toEqual([]);
   });
 });

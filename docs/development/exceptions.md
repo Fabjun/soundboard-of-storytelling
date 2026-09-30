@@ -86,6 +86,27 @@ Paths excluded from formatting, linting or doc guards.
 | docsGuards SKIP | `design-sources` | Claude Design downloads, kept exactly as delivered (ADR-0050) |
 | docsGuards SKIP | `v1-reference` | frozen V1 reference copy, not maintained |
 
+## Prose lint exceptions (Vale) (14)
+
+Historical docs excluded in `.vale.ini`, and passages marked `<!-- vale … = NO --><!-- reason: … -->` (ADR-0056).
+
+| Where | Scope | Reason |
+|---|---|---|
+| `.vale.ini` | `docs/architecture/0*.md` | historical record — keeps the names valid at its time |
+| `.vale.ini` | `docs/backlog.md` | historical record — keeps the names valid at its time |
+| `.vale.ini` | `docs/design/design-notes.md` | historical record — keeps the names valid at its time |
+| `.vale.ini` | `docs/analysis/*.md` | historical record — keeps the names valid at its time |
+| `.vale.ini` | `docs/design/imports/*.md` | historical record — keeps the names valid at its time |
+| `.vale.ini` | `docs/product/v1-v2-inventory.md` | historical record — keeps the names valid at its time |
+| `.vale.ini` | `CHANGELOG.md` | historical record — keeps the names valid at its time |
+| `.vale.ini` | `docs/development/exceptions.md` | historical record — keeps the names valid at its time |
+| `CLAUDE.md:636` | `SoS.SupersededTerms` off | historical slice records keep the names valid at the time (Scene before Slice 9b) |
+| `docs/architecture/0056-documentation-freshness.md:32` | `SoS.SupersededTerms` off | … |
+| `docs/architecture/concept-brief.md:72` | `SoS.SupersededTerms` off | explains the rename |
+| `docs/product/README.md:108` | `SoS.SupersededTerms` off | records the rename decision |
+| `docs/product/README.md:271` | `SoS.SupersededTerms` off | records the rename |
+| `docs/product/README.md:288` | `SoS.SupersededTerms` off | records the rename decision (Q1) |
+
 ## To-do markers (0)
 
 Only with a `BACKLOG "…"` reference — enforced by `testGuards.test.ts`.

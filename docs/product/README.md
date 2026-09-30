@@ -103,8 +103,9 @@ _Pending — to be filled in dialogue._
 ### Board, decks & quick access
 
 _Filled 2026-09-28 in dialogue with the product owner ("model B"). Nothing below is built
-yet except deck CRUD (built under the name "scene"); it changes the data model (BACKLOG §3 "Board pad pool")._
+yet except deck CRUD (built in Slice 3, renamed to "deck" in Slice 9b); it changes the data model (BACKLOG §3 "Board pad pool")._
 
+<!-- vale SoS.SupersededTerms = NO --><!-- reason: records the rename decision -->
 | Statement | Status |
 |---|---|
 | A **board** is the top-level grouping (e.g. one per game or campaign). | **Decided** |
@@ -122,6 +123,7 @@ yet except deck CRUD (built under the name "scene"); it changes the data model (
 | Rule-based decks (e.g. "all pads tagged Night"). | **Parked** |
 | Where all of this sits on a phone screen. | **Open** — mobile layout |
 | Name: **Deck** (formerly "Scene"; Q1). | **Decided** |
+<!-- vale SoS.SupersededTerms = YES -->
 
 ### Library
 
@@ -266,22 +268,26 @@ _Pending — to be filled in dialogue._
 _First entries 2026-09-28 — only terms decided in this document. UI text uses these terms
 verbatim once built._
 
+<!-- vale SoS.SupersededTerms = NO --><!-- reason: records the rename -->
 | Term | Meaning | See |
 |---|---|---|
 | **Board** | Top-level grouping, e.g. one per game or campaign. Owns the pad pool, its decks and the quick-access bar. | §5 |
 | **Pad** | A trigger in the grid. Types: **Single**, **Loop**, **Combo**. | §5 Pads |
 | **Pad pool** | All pads of a board. | §5 |
 | **All pads** | The view showing the whole pad pool, not tied to a deck. | §5 |
-| **Deck** | A hand-picked selection of pads from the pool, with its own arrangement and its own keys. _UI and code still say "Scene" until renamed (BACKLOG §3)._ | §5, Q1 |
+| **Deck** | A hand-picked selection of pads from the pool, with its own arrangement and its own keys. Renamed from "Scene" in UI, code and stored data in Slice 9b. | §5, Q1 |
 | **Quick-access bar** | Board-wide bar of freely chosen pads, identical in every deck, with fixed board-wide keys. | §5, §6 K13 |
 | **Combo** | A pad that triggers other pads (and combos) in steps. | §5 Pads |
 | **GAME / SETUP** | The two app modes: playing vs. arranging. Code: `play` / `edit`. | §3 |
 | **Lock** | GAME-only toggle that blocks the mode switch. | §3 |
 | **Library** | File management for audio; not a mode, separate from boards. | §3, §5 |
+<!-- vale SoS.SupersededTerms = YES -->
 
 ## 10. Open questions
 
+<!-- vale SoS.SupersededTerms = NO --><!-- reason: records the rename decision (Q1) -->
 | # | Question | Status | Notes |
 |---|---|---|---|
 | Q1 | Is "Scene" the right user-facing term for the board-level pad arrangement? | **Decided** | **Resolved 2026-09-28: "Deck".** A hand-picked selection from the pad pool, like a deck built from a card collection — fits both tabletop games and sound (DJ decks). Rejected: Scene (too narrative), Bank (too technical), Category (taken by the Library filter), Page, Kit, Phase, Layer, Tab. UI, code and stored data still say `Scene`; renamed together with the pad-pool data-model change (BACKLOG §3). |
 | Q2 | Rename the "Playlist" pad type to "List"? Are three pad types (Single, Loop, Combo) enough, or does List stay as a fourth? | **Decided** | Raised 2026-09-28. Playlist is built (Slice 4). V2 already labelled it "LIST ☰". To be revisited once the product owner has re-familiarised with the project. **Resolved 2026-09-28:** three types — Single, Loop, Combo; Playlist merges into Loop (§5 Pads). |
+<!-- vale SoS.SupersededTerms = YES -->

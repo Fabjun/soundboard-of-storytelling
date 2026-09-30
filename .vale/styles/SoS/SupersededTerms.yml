@@ -1,0 +1,11 @@
+# Names that were renamed; active docs must use the current name (ADR-0056).
+extends: substitution
+message: "Superseded term: use '%s' instead of '%s'."
+level: error
+ignorecase: false
+swap:
+  SceneRail: DeckRail
+  TopBarV2: TopBar
+  StatusBarV2: StatusBar
+  BoardTopBarV3: BoardTopBar
+  '[Ss]cenes?': deck(s)

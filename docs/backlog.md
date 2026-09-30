@@ -1218,7 +1218,14 @@ Found 2026-09-30 during S5: stale facts and dead references were found only by c
 - ⬜ **`§` section references** in prose (`file.md §Heading`, ~365): not machine-checkable as
   written (140 cannot be matched unambiguously — short forms, bold pseudo-headings, tables;
   some really stale). Decision pending with the owner.
-- ⬜ **Superseded terms** — Vale (owner decision 2026-09-30), pinned + checksum-verified install.
+- ✅ **Superseded terms** — Vale on active docs (ADR-0056): pinned 3.23.0, SHA-256 verified install
+  (`scripts/vale-install.ts`), weekly version report; historical docs/passages excluded with reasons
+  (exception register). Found and fixed stale "Scene"/"Sets store"/`SceneRail.tsx` statements.
+- ✅ **Paths in code spans exist** (docsGuards) — ambiguous short names (`tokens.css` ×3,
+  `HANDOFF.md` ×3) replaced by full paths; a false "moved" claim about HANDOFF.md corrected.
+- ⬜ **Project-wide structure audit** (owner request 2026-09-30) after T13 — incl. the patterns
+  seen repeatedly: `scripts/*.ts` outside Prettier's config (5 of 7 files misformatted, not in
+  `format:check`); text edits that break Markdown structure; checks that pass vacuously.
 - ⬜ **Derivable facts from code** — hard-coded counts in active docs replaced by generated data.
 
 ### Role-based E2E locators

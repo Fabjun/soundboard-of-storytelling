@@ -4,6 +4,10 @@
 
 All notable changes to Soundboard of Storytelling, newest first.
 
+## 3.0.61 — 2026-09-30
+
+- docs: Vale checks active docs for superseded terms; paths in code spans must exist; stale statements fixed (T13, ADR-0056)
+
 ## 3.0.60 — 2026-09-30
 
 - docs: link check validates anchors across files (remark-validate-links replaces markdown-link-check); 9 broken anchors fixed (T13)

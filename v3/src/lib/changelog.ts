@@ -7,9 +7,16 @@ export type ChangelogEntry = {
   items: string[];
 };
 
-export const APP_VERSION = '3.0.60';
+export const APP_VERSION = '3.0.61';
 
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.61',
+    date: '2026-09-30',
+    items: [
+      'docs: Vale checks active docs for superseded terms; paths in code spans must exist; stale statements fixed (T13, ADR-0056)',
+    ],
+  },
   {
     version: '3.0.60',
     date: '2026-09-30',

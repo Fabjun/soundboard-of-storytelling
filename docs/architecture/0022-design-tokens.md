@@ -1,4 +1,4 @@
-# ADR-0022: Design tokens in `tokens.css` — no colour literals
+# ADR-0022: Design tokens in `v3/src/styles/tokens.css` — no colour literals
 
 **Status:** Accepted
 **Date:** 2026-05-27

@@ -3,8 +3,8 @@
 > **Orientation for Claude Code:**
 >
 > This is a **fresh implementation** in a new tech stack. It is not a
-> migration of V1 and not a continuation of the V1.5 plan. Both
-> `MIGRATION_PLAN.md` and `V1_5_CONCEPT_BRIEF.md` are **obsolete** for
+> migration of V1 and not a continuation of the V1.5 plan. The V1
+> repository's MIGRATION_PLAN.md and V1_5_CONCEPT_BRIEF.md are **obsolete** for
 > this work. Read them only as background on what V1 does and what
 > was learned about it.
 >
@@ -27,7 +27,7 @@
 
 A re-implementation of Soundboard of Storytelling with:
 
-- The design system (`tokens.css`, JSX components) as the visual and
+- The design system (`design-sources/2026-05-25/tokens.css`, JSX components) as the visual and
   structural foundation, used **directly** (no porting to vanilla)
 - A clean data model resolving V1's conceptual issues
   (Library/SETUP conflation)
@@ -46,11 +46,13 @@ V1 keeps running. V3.0 is built in parallel until ready.
 - Not to be modified
 
 **Design system (`design-sources/2026-05-25/`):**
-- `tokens.css` — canonical tokens, used directly
+- `design-sources/2026-05-25/tokens.css` — origin of the canonical tokens (copied to
+  `v3/src/styles/tokens.css`, which is the canonical file — see CLAUDE.md §Tokens)
 - JSX files (`v2-screens.jsx`, `foundations.jsx`, etc.) — **used as
   starting code**, not as reference. Lift them into V3.0, adapt to
   TypeScript and the V3.0 state model.
-- `HANDOFF.md` — moved to `v1-reference/HANDOFF.md`; originally written
+- `design-sources/2026-05-25/HANDOFF.md` — an identical copy lives in `v1-reference/HANDOFF.md`
+  (the one CLAUDE.md refers to); originally written
   for V1 migration context, still valuable for design intent and JSX-file
   index (see CLAUDE.md §Reference documents for usage guidance)
 - `dist/` — partial vanilla ports, ignore in V3.0 (we use JSX directly)
@@ -67,9 +69,11 @@ V1 keeps running. V3.0 is built in parallel until ready.
 > are in CLAUDE.md §Deviations. The TypeScript sketch that was here has been removed
 > to eliminate a second copy that could drift.
 
+<!-- vale SoS.SupersededTerms = NO --><!-- reason: explains the rename -->
 **Key concepts:** → moved to [../product/README.md §5](../product/README.md#5-core-concepts)
 (2026-09-28). Revised there: pads belong to a board-wide pool; decks (formerly "scenes") are hand-picked views;
 pad sets are dropped in favor of a board-wide quick-access bar.
+<!-- vale SoS.SupersededTerms = YES -->
 
 ### 4.2 · Component architecture
 
@@ -122,12 +126,12 @@ wrap, move on.
 
 ### 4.5 · IndexedDB
 
-V1's schema is preserved where it overlaps. Extended with new stores
-for Scenes and Sets. Existing field names and types compatible.
+V1's schema is preserved where it overlaps. Extended with a `boards` store (decks and pads
+embedded as one document, ADR-0010). Existing field names and types compatible.
 
 **Compatibility goal:** V1 boards (exported as templates) import
 cleanly into V3.0. A V1 board becomes a V3.0 board with one default
-Scene containing all pads.
+deck containing all pads.
 
 **Decision (Slice 2, ADR-0016): `idb`** (Jake Archibald's TypeScript
 wrapper, ~1.4 KB gzip). Raw IndexedDB and Dexie were considered and
@@ -145,9 +149,9 @@ Token language follows the design system canonically:
 - Fonts: `--font-display`, `--font-ui`, `--font-mono`
 - Mode colors: `--mode-setup`, `--mode-game`
 - Spacing: `--space-1` through `--space-16`
-- Colors, borders, shadows, glows per `tokens.css`
+- Colors, borders, shadows, glows per `v3/src/styles/tokens.css`
 
-`tokens.css` is imported directly into V3.0. No renames, no aliases
+`v3/src/styles/tokens.css` is imported directly into V3.0. No renames, no aliases
 to V1 names.
 
 ### 4.8 · Project structure

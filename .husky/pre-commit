@@ -44,6 +44,14 @@ npm run test:e2e:smoke || {
 }
 echo "✅ Smoke E2E passed."
 
+echo "📝 Pre-commit: Vale — superseded terms in active docs..."
+npm run lint:docs || {
+  printf '\n❌ Vale found superseded terms — commit aborted.\n'
+  printf '   Use the current name, or mark a historical passage (ADR-0056).\n\n'
+  exit 1
+}
+echo "✅ Vale passed."
+
 echo "🔗 Pre-commit: checking markdown link integrity..."
 npm run link:check || {
   printf '\n❌ Link check failed — commit aborted.\n'

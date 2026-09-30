@@ -102,7 +102,7 @@ because Playwright runs against a simulated environment:
 
 - [ ] **No horizontal scroll on any core screen**
   - Action: Open StartScreen, BoardListScreen, BoardScreen (with pad grid), LibraryScreen. Swipe horizontally on each.
-  - Expected: No unintended horizontal scroll. Only the Scene Rail should scroll horizontally.
+  - Expected: No unintended horizontal scroll. Only the deck rail should scroll horizontally.
   - Why manual: `document.body.scrollWidth` check in automated tests is coarse. Subtle overflow in sub-elements requires manual inspection.
 
 - [ ] **Keyboard does not cover rename input**

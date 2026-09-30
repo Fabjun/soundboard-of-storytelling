@@ -15,9 +15,9 @@ not yet filled and confirmed.
 | Area | Hub | Leaves | Template | State | Source(s) |
 |---|---|---|---|---|---|
 | Product | [`docs/product/README.md`](product/README.md) | [`features/data-backup.md`](product/features/data-backup.md), [`v1-v2-inventory.md`](product/v1-v2-inventory.md) | — | In progress (see below) | `docs/architecture/concept-brief.md` (product parts), `docs/backlog.md` (decisions) |
-| Design | `docs/design/README.md` | [`components/pad.md`](design/components/pad.md) (Draft) | [`_template.md`](design/components/_template.md) | First spec; hub pending | `docs/design/design-system.md`, `docs/design/design-system-cheatsheet.md`, `docs/design/design-notes.md`, `v1-reference/HANDOFF.md` §4 |
+| Design | docs/design/README.md _(planned)_ | [`components/pad.md`](design/components/pad.md) (Draft) | [`_template.md`](design/components/_template.md) | First spec; hub pending | `docs/design/design-system.md`, `docs/design/design-system-cheatsheet.md`, `docs/design/design-notes.md`, `v1-reference/HANDOFF.md` §4 |
 | Architecture | `docs/architecture/README.md` | ADRs in `docs/architecture/` | [`_template.md`](architecture/_template.md) | ADRs exist; hub pending | `docs/architecture/concept-brief.md` (technical parts) |
-| Development | `docs/development/README.md` | — | — | Pending | `docs/development/testing.md`, `CLAUDE.md` (workflow parts) |
+| Development | docs/development/README.md _(planned)_ | — | — | Pending | `docs/development/testing.md`, `CLAUDE.md` (workflow parts) |
 
 **Product progress (2026-09-28):**
 
@@ -36,7 +36,7 @@ not yet filled and confirmed.
 | Leaf `v1-v2-inventory.md` | Decisions filled for §1 Pads, §2 Controls, §3 Board (partly), §5 Data; §4 Library, §6–§8 open | — |
 
 **Slice plan:** re-planned 2026-09-28 — single source `CLAUDE.md §Slice progress` (Slices 9–14;
-5–8 superseded, numbers not reused). Design hub `docs/design/README.md` + component specs follow with
+5–8 superseded, numbers not reused). Design hub docs/design/README.md _(planned)_ + component specs follow with
 Slice 13 (adaptive layout).
 
 Full old-file → new-home mapping, including files that are only partially emptied
@@ -83,7 +83,8 @@ When the cheatsheet and the main document conflict, the main document wins.
 ### `design-sources/2026-05-25/`
 Frozen design handoff package from the original external design phase (2026-05-25).
 Contains: 30+ JSX reference files (`app.jsx`, `foundations.jsx`, `v1`–`v26` exploration
-files), `tokens.css` (design handoff origin — see note below), `HANDOFF.md`,
+files), `design-sources/2026-05-25/tokens.css` (design handoff origin — see note below),
+`design-sources/2026-05-25/HANDOFF.md`,
 `Design System.html`, `Responsive Strategy V3.html`.
 **Source of truth for:** Visual and interaction design intent; source material for V3
 component implementations; original component shapes and token values.
