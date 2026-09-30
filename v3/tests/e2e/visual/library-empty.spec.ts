@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { stableScreenshot } from './visual-setup';
+import { stableScreenshot } from './helpers';
 
 test('LibraryScreen — empty state', async ({ page }) => {
   await page.goto('/soundboard-of-storytelling/');

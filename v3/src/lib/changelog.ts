@@ -7,9 +7,17 @@ export type ChangelogEntry = {
   items: string[];
 };
 
-export const APP_VERSION = '3.0.56';
+export const APP_VERSION = '3.0.57';
 
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.57',
+    date: '2026-09-30',
+    items: [
+      'test: locators follow Playwright/Testing Library guidance (ADR-0054) — no CSS-class locators, state via aria-pressed, one test ID scheme, consistent spec names (S4)',
+      'a11y: pads announce "pressed" while playing; pad type buttons announce the selected type; the start-screen flame is exposed as an image',
+    ],
+  },
   {
     version: '3.0.56',
     date: '2026-09-29',

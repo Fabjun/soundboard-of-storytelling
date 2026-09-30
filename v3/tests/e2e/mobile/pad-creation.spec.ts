@@ -28,7 +28,7 @@ import {
   createDeck,
   enterSetupMode,
 } from '../helpers';
-import { mobileUploadTestAudio } from './mobile-helpers';
+import { mobileUploadTestAudio } from './helpers';
 
 test('A+B — empty cell tap opens popover; source + ADD PAD tap creates pad', async ({ page }) => {
   await page.goto('/soundboard-of-storytelling/');
@@ -44,20 +44,22 @@ test('A+B — empty cell tap opens popover; source + ADD PAD tap creates pad', a
   await enterSetupMode(page);
 
   // Tap empty cell → popover opens (tests touch hit-target on pad grid)
-  await page.getByTestId('pad-cell-empty-0-0').tap();
+  await page.getByTestId('pad-grid-cell-empty-slot-0-0').tap();
   const popover = page.getByTestId('pad-creation-popover');
   await expect(popover).toBeVisible();
 
   // Tap source item
-  const sourceItem = page.locator('[data-testid^="creation-source-item-"]').first();
+  const sourceItem = page.locator('[data-testid^="pad-creation-popover-source-item-"]').first();
   await sourceItem.waitFor({ timeout: 5_000 });
   await sourceItem.tap();
 
   // Tap ADD PAD
-  await page.getByTestId('creation-add-pad').tap();
+  await page.getByTestId('pad-creation-popover-add-button').tap();
 
   // Pad appeared — cell is no longer empty
   await expect(
-    page.locator('[data-testid^="pad-cell-"]:not([data-testid^="pad-cell-empty-"])').first(),
+    page
+      .locator('[data-testid^="pad-grid-cell-"]:not([data-testid^="pad-grid-cell-empty-slot-"])')
+      .first(),
   ).toBeVisible();
 });

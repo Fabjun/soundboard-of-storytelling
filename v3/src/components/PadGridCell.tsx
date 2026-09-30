@@ -49,7 +49,7 @@ export function PadGridCell({
         ref={cellRef as ((el: Element | null) => void) | undefined}
         class="sb-pad-grid-cell is-empty"
         data-pos={`${col},${row}`}
-        data-testid={`pad-cell-empty-${col}-${row}`}
+        data-testid={`pad-grid-cell-empty-slot-${col}-${row}`}
         onClick={(e) => onEmpty((e.currentTarget as HTMLElement).getBoundingClientRect())}
         role="button"
         aria-label="Add pad"
@@ -93,7 +93,7 @@ export function PadGridCell({
       ref={cellRef as ((el: Element | null) => void) | undefined}
       class="sb-pad-grid-cell"
       data-pos={`${col},${row}`}
-      data-testid={`pad-cell-${p.id}`}
+      data-testid={`pad-grid-cell-${p.id}`}
     >
       <div
         class={
@@ -116,6 +116,8 @@ export function PadGridCell({
         }
         role="button"
         aria-label={p.name}
+        // GAME: a pad is a play/stop toggle — screen readers announce "pressed" while it plays.
+        aria-pressed={isSetup ? undefined : isHot || isLooping}
         tabIndex={0}
         onKeyDown={(e) => {
           if (e.key === 'Enter' || e.key === ' ') handleTap();

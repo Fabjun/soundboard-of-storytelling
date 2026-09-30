@@ -194,7 +194,7 @@ export function DeckRail({
   // ── Render ────────────────────────────────────────────────────────────────
 
   return (
-    <div class="sb-deck-rail">
+    <div class="sb-deck-rail" data-testid="deck-rail">
       {decks.length === 0 ? (
         <div class="sb-panel-empty">
           No decks yet.
@@ -215,7 +215,7 @@ export function DeckRail({
                   (pendingDeleteId === deck.id ? ' is-danger' : '') +
                   (isConflict ? ' is-conflict' : '')
                 }
-                data-testid={`deck-tab-${deck.id}`}
+                data-testid={`deck-rail-deck-tab-${deck.id}`}
                 onClick={() => {
                   if (editingId !== deck.id) {
                     onDeckSelect(deck.id);
@@ -232,7 +232,7 @@ export function DeckRail({
                   <>
                     <input
                       ref={inputRef}
-                      data-testid="deck-name-input"
+                      data-testid="deck-rail-name-input"
                       value={editValue}
                       onInput={(e) => {
                         const v = (e.target as HTMLInputElement).value;
@@ -268,7 +268,7 @@ export function DeckRail({
                   <div class="sb-deck-tab-actions">
                     <button
                       class="sb-btn sb-btn-sm sb-btn-ghost sb-btn-icon"
-                      data-testid={`deck-rename-${deck.id}`}
+                      data-testid={`deck-rail-rename-button-${deck.id}`}
                       title="Rename deck"
                       onClick={(e) => {
                         e.stopPropagation();
@@ -279,7 +279,7 @@ export function DeckRail({
                     </button>
                     <button
                       class="sb-btn sb-btn-sm sb-btn-ghost sb-btn-icon"
-                      data-testid={`deck-copy-${deck.id}`}
+                      data-testid={`deck-rail-copy-button-${deck.id}`}
                       title="Duplicate deck"
                       onClick={(e) => {
                         e.stopPropagation();
@@ -290,7 +290,7 @@ export function DeckRail({
                     </button>
                     <button
                       class={`sb-btn sb-btn-sm sb-btn-icon ${pendingDeleteId === deck.id ? 'sb-btn-danger' : 'sb-btn-ghost'}`}
-                      data-testid={`deck-delete-${deck.id}`}
+                      data-testid={`deck-rail-delete-button-${deck.id}`}
                       title={
                         pendingDeleteId === deck.id
                           ? 'Click again to confirm delete'
@@ -320,7 +320,7 @@ export function DeckRail({
       {/* Add deck button */}
       <button
         class="sb-btn sb-btn-ghost sb-deck-add-btn"
-        data-testid="new-deck-button"
+        data-testid="deck-rail-new-button"
         onClick={addDeck}
       >
         <PixelIcon name="sparkle" size={12} />+ NEW DECK

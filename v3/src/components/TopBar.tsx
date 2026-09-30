@@ -20,7 +20,7 @@ interface TopBarProps {
 
 export function TopBar({ title, breadcrumb, mode, onModeSwap, right }: TopBarProps): JSX.Element {
   return (
-    <div class="sb-topbar">
+    <div class="sb-topbar" data-testid="top-bar">
       {/* Flame logo */}
       <div class="sb-topbar-logo">
         <PixelIcon name="flame" size={20} />

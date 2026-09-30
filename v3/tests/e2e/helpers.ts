@@ -28,7 +28,7 @@ export async function goToLibrary(page: Page): Promise<void> {
 /** Navigate to the BoardListScreen from StartScreen. */
 export async function goToBoardList(page: Page): Promise<void> {
   await page.getByRole('button', { name: 'BOARD' }).click();
-  await page.getByTestId('new-board-button').waitFor();
+  await page.getByTestId('board-list-screen-new-button').waitFor();
 }
 
 // ── Library helpers ───────────────────────────────────────────────────────────
@@ -41,7 +41,7 @@ export async function goToBoardList(page: Page): Promise<void> {
 export async function uploadTestAudio(page: Page): Promise<void> {
   // The file input is hidden (display: none). Playwright can set files on it
   // directly without interacting with the visible IMPORT button.
-  const fileInput = page.locator('input[type="file"]');
+  const fileInput = page.getByTestId('library-screen-file-input');
   await fileInput.setInputFiles(TEST_AUDIO_PATH);
   // Wait for the filename to appear in the library list (decode complete).
   await page.getByText(TEST_AUDIO_NAME, { exact: false }).waitFor({
@@ -116,12 +116,12 @@ export async function ensureTestAudio(page: Page): Promise<void> {
  * Caller must already be on the BoardListScreen.
  */
 export async function createBoardAndNavigate(page: Page): Promise<void> {
-  await page.getByTestId('new-board-button').click();
+  await page.getByTestId('board-list-screen-new-button').click();
   // Board row appears in the list
-  const boardRow = page.locator('[data-testid^="board-row-"]').first();
+  const boardRow = page.locator('[data-testid^="board-list-screen-row-"]').first();
   await boardRow.waitFor();
   // Click the row title to open the board (action buttons stop propagation)
-  await boardRow.locator('[data-testid^="board-row-title-"]').click();
+  await boardRow.locator('[data-testid^="board-list-screen-name-text-"]').click();
   // ModeToggle is always present in BoardScreen
   await page.getByTestId('mode-toggle').waitFor();
 }
@@ -133,31 +133,29 @@ export async function createBoardAndNavigate(page: Page): Promise<void> {
  * Returns the deck's data-testid ID part (e.g. "abc123").
  */
 export async function createDeck(page: Page): Promise<string> {
-  await page.getByTestId('new-deck-button').click();
-  const deckTab = page.locator('[data-testid^="deck-tab-"]').first();
+  await page.getByTestId('deck-rail-new-button').click();
+  const deckTab = page.locator('[data-testid^="deck-rail-deck-tab-"]').first();
   await deckTab.waitFor();
   const testid = await deckTab.getAttribute('data-testid');
-  return testid!.replace('deck-tab-', '');
+  return testid!.replace('deck-rail-deck-tab-', '');
 }
 
 // ── Mode helpers ──────────────────────────────────────────────────────────────
 
 /** Switch the ModeToggle to SETUP mode. No-op if already in SETUP. */
 export async function enterSetupMode(page: Page): Promise<void> {
-  const toggle = page.getByTestId('mode-toggle');
-  const cls = await toggle.getAttribute('class');
-  if (cls?.includes('is-setup')) return;
-  await page.getByTestId('mode-toggle-setup').click();
-  await page.locator('.sb-mode-toggle.is-setup').waitFor();
+  const setup = page.getByRole('button', { name: 'SETUP' });
+  if ((await setup.getAttribute('aria-pressed')) === 'true') return;
+  await setup.click();
+  await page.getByRole('button', { name: 'SETUP', pressed: true }).waitFor();
 }
 
 /** Switch the ModeToggle to GAME mode. No-op if already in GAME. */
 export async function enterGameMode(page: Page): Promise<void> {
-  const toggle = page.getByTestId('mode-toggle');
-  const cls = await toggle.getAttribute('class');
-  if (cls?.includes('is-game')) return;
-  await page.getByTestId('mode-toggle-game').click();
-  await page.locator('.sb-mode-toggle.is-game').waitFor();
+  const game = page.getByRole('button', { name: 'GAME' });
+  if ((await game.getAttribute('aria-pressed')) === 'true') return;
+  await game.click();
+  await page.getByRole('button', { name: 'GAME', pressed: true }).waitFor();
 }
 
 // ── Compound helpers ──────────────────────────────────────────────────────────
@@ -183,26 +181,26 @@ export async function setupBoardAndDeck(page: Page): Promise<void> {
  * After this call, a pad occupying cell 0,0 exists.
  */
 export async function createPadAtCell00(page: Page): Promise<string> {
-  await page.getByTestId('pad-cell-empty-0-0').click();
+  await page.getByTestId('pad-grid-cell-empty-slot-0-0').click();
   const popover = page.getByTestId('pad-creation-popover');
   await popover.waitFor();
   // Select the first source item in the RECENT tab
-  const sourceItem = page.locator('[data-testid^="creation-source-item-"]').first();
+  const sourceItem = page.locator('[data-testid^="pad-creation-popover-source-item-"]').first();
   await sourceItem.waitFor({ timeout: 5_000 });
   await sourceItem.click();
   // Add the pad
-  await page.getByTestId('creation-add-pad').click();
+  await page.getByTestId('pad-creation-popover-add-button').click();
   // Wait for the occupied cell (no longer pad-cell-empty-0-0)
   await page
-    .locator('[data-testid^="pad-cell-"]:not([data-testid^="pad-cell-empty-"])')
+    .locator('[data-testid^="pad-grid-cell-"]:not([data-testid^="pad-grid-cell-empty-slot-"])')
     .first()
     .waitFor();
   // Return the pad ID from the testid
   const padCell = page
-    .locator('[data-testid^="pad-cell-"]:not([data-testid^="pad-cell-empty-"])')
+    .locator('[data-testid^="pad-grid-cell-"]:not([data-testid^="pad-grid-cell-empty-slot-"])')
     .first();
   const testid = await padCell.getAttribute('data-testid');
-  return testid!.replace('pad-cell-', '');
+  return testid!.replace('pad-grid-cell-', '');
 }
 
 // ── Pointer drag (Pointer Events DnD — padDnd.ts / libDnd.ts) ─────────────────
@@ -244,13 +242,13 @@ export async function pointerDrag(
 
 /** Grid position ("col,row") of a pad, read from its cell's data-pos attribute. */
 export async function padPosition(page: Page, padId: string): Promise<string | null> {
-  return page.getByTestId(`pad-cell-${padId}`).getAttribute('data-pos');
+  return page.getByTestId(`pad-grid-cell-${padId}`).getAttribute('data-pos');
 }
 
 /** After a reload: StartScreen → board list → open the first board. */
 export async function reopenFirstBoard(page: Page): Promise<void> {
   await page.goto('/soundboard-of-storytelling/');
   await goToBoardList(page);
-  await page.locator('[data-testid^="board-row-title-"]').first().click();
+  await page.locator('[data-testid^="board-list-screen-name-text-"]').first().click();
   await page.getByTestId('mode-toggle').waitFor();
 }

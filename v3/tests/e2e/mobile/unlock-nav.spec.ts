@@ -22,7 +22,7 @@ test('A — TAP TO UNLOCK button tap navigates to board-list', async ({ page }) 
 
   await page.getByRole('button', { name: 'TAP TO UNLOCK' }).tap();
 
-  await expect(page.getByTestId('new-board-button')).toBeVisible();
+  await expect(page.getByTestId('board-list-screen-new-button')).toBeVisible();
 });
 
 test('B — LIBRARY button tap opens LibraryScreen', async ({ page }) => {
@@ -39,5 +39,5 @@ test('C — BOARD button tap opens BoardListScreen', async ({ page }) => {
 
   await page.getByRole('button', { name: 'BOARD' }).tap();
 
-  await expect(page.getByTestId('new-board-button')).toBeVisible();
+  await expect(page.getByTestId('board-list-screen-new-button')).toBeVisible();
 });

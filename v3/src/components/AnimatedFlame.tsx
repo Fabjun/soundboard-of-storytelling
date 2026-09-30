@@ -622,6 +622,8 @@ export function AnimatedFlame({ size = 120, interactive = true }: AnimatedFlameP
       <canvas
         ref={canvasRef}
         class="sb-animated-flame-canvas"
+        role="img"
+        aria-label="Animated flame"
         width={FIELD_W * CELL}
         height={FIELD_H * CELL}
         onPointerDown={handlePointerDown}

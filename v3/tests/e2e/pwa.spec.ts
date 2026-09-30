@@ -57,8 +57,8 @@ test('stored boards are still there offline', async ({ page, context }) => {
   await context.setOffline(true);
   await page.goto(APP);
   await goToBoardList(page);
-  // Count titles: '[data-testid^="board-row-"]' would also match board-row-title-*.
-  const titles = page.locator('[data-testid^="board-row-title-"]');
+  // Count titles: '[data-testid^="board-list-screen-row-"]' would also match board-row-title-*.
+  const titles = page.locator('[data-testid^="board-list-screen-name-text-"]');
   await expect(titles).toHaveCount(1);
   await expect(titles.first()).toHaveText('Board 1');
 });

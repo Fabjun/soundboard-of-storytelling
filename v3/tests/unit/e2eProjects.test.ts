@@ -4,7 +4,7 @@
 // Playwright projects select specs by name lists (tests/e2e/projects.ts).
 // A spec missing from the lists silently runs nowhere — this happened on
 // 2026-09-29 after scene-crud was renamed to deck-crud. This test fails the
-// commit instead. Helper files (helpers.ts, visual-setup.ts, projects.ts) are
+// commit instead. Helper files (helpers.ts, helpers.ts, projects.ts) are
 // not specs and are ignored.
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -96,6 +96,6 @@ describe('E2E project membership (tests/e2e/projects.ts)', () => {
   it('keeps only visual specs in the visual folder', () => {
     const visual = specs.filter((s) => s.startsWith(`${VISUAL_DIR}/`));
     expect(visual.length).toBeGreaterThan(0);
-    expect(visual.every((s) => /^visual\/visual-[\w-]+\.spec\.ts$/.test(s))).toBe(true);
+    expect(visual.every((s) => /^visual\/[a-z0-9]+(-[a-z0-9]+)*\.spec\.ts$/.test(s))).toBe(true);
   });
 });

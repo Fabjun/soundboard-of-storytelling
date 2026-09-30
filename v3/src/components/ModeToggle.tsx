@@ -117,7 +117,7 @@ export function ModeToggle({ mode, onSwitch, compact = false }: ModeToggleProps)
     >
       <div
         class="sb-mode-toggle-half"
-        data-testid="mode-toggle-setup"
+        data-testid="mode-toggle-setup-button"
         role="button"
         aria-pressed={mode === 'edit'}
         tabIndex={0}
@@ -131,7 +131,7 @@ export function ModeToggle({ mode, onSwitch, compact = false }: ModeToggleProps)
       <div class="sb-mode-toggle-sep" aria-hidden="true" />
       <div
         class="sb-mode-toggle-half"
-        data-testid="mode-toggle-game"
+        data-testid="mode-toggle-game-button"
         role="button"
         aria-pressed={mode === 'play'}
         tabIndex={0}

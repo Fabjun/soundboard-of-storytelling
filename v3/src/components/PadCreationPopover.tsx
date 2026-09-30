@@ -115,7 +115,7 @@ export function PadCreationPopover({
         {(['RECENT', 'BROWSE'] as SourceTab[]).map((tab) => (
           <button
             key={tab}
-            data-testid={`creation-tab-${tab.toLowerCase()}`}
+            data-testid={`pad-creation-popover-source-tab-${tab.toLowerCase()}`}
             onClick={() => setSourceTab(tab)}
             class={`sb-tab sb-tab-sm${sourceTab === tab ? ' is-active' : ''}`}
           >
@@ -180,7 +180,7 @@ export function PadCreationPopover({
       <div class="sb-creation-popover-section">
         <input
           type="text"
-          data-testid="creation-pad-name-input"
+          data-testid="pad-creation-popover-name-input"
           value={padName}
           placeholder={selectedItem?.name ?? 'Pad name…'}
           onInput={(e) => setPadName((e.target as HTMLInputElement).value)}
@@ -215,14 +215,14 @@ export function PadCreationPopover({
         <div class="sb-flex-1" />
         <button
           class="sb-btn sb-btn-sm sb-btn-ghost"
-          data-testid="creation-cancel"
+          data-testid="pad-creation-popover-cancel-button"
           onClick={() => onResult({ action: 'cancel' })}
         >
           CANCEL
         </button>
         <button
           class="sb-btn sb-btn-sm sb-btn-primary"
-          data-testid="creation-add-pad"
+          data-testid="pad-creation-popover-add-button"
           onClick={handleCreate}
           disabled={!selectedItemId}
         >
@@ -291,7 +291,7 @@ function SourceItem({
 
   return (
     <div
-      data-testid={`creation-source-item-${item.id}`}
+      data-testid={`pad-creation-popover-source-item-${item.id}`}
       onClick={onSelect}
       class="sb-source-item"
       style={{ background: selected ? 'var(--raised)' : 'none' }}

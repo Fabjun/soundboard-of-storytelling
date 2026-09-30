@@ -1,6 +1,6 @@
 # ADR-0038: `data-testid`-Konvention für E2E-Selektoren
 
-**Status:** Accepted
+**Status:** Superseded by ADR-0054
 **Date:** 2026-05-27
 **Slice:** infrastructure
 

@@ -22,21 +22,21 @@ test.beforeEach(async ({ page }) => {
 // ── Test 6: Create deck ──────────────────────────────────────────────────────
 
 test('6 — create deck → tab appears in DeckRail', async ({ page }) => {
-  await page.getByTestId('new-deck-button').click();
-  await expect(page.locator('[data-testid^="deck-tab-"]').first()).toBeVisible();
+  await page.getByTestId('deck-rail-new-button').click();
+  await expect(page.locator('[data-testid^="deck-rail-deck-tab-"]').first()).toBeVisible();
 });
 
 // ── Test 7: Rename via double-click ───────────────────────────────────────────
 
 test('7 — deck rename via double-click → tab label updates', async ({ page }) => {
   // Create a deck first
-  await page.getByTestId('new-deck-button').click();
-  const deckTab = page.locator('[data-testid^="deck-tab-"]').first();
+  await page.getByTestId('deck-rail-new-button').click();
+  const deckTab = page.locator('[data-testid^="deck-rail-deck-tab-"]').first();
   await deckTab.waitFor();
 
   // Double-click to enter rename mode
   await deckTab.dblclick();
-  const nameInput = page.getByTestId('deck-name-input');
+  const nameInput = page.getByTestId('deck-rail-name-input');
   await nameInput.waitFor();
   await nameInput.fill('My Renamed Deck');
   await nameInput.press('Enter');
@@ -50,19 +50,19 @@ test('7 — deck rename via double-click → tab label updates', async ({ page }
 // ── Test 8: Duplicate deck ───────────────────────────────────────────────────
 
 test('8 — duplicate deck → new tab appears with suffix', async ({ page }) => {
-  await page.getByTestId('new-deck-button').click();
-  const firstTab = page.locator('[data-testid^="deck-tab-"]').first();
+  await page.getByTestId('deck-rail-new-button').click();
+  const firstTab = page.locator('[data-testid^="deck-rail-deck-tab-"]').first();
   await firstTab.waitFor();
 
   // Hover to reveal action chips, then click COPY button
   await firstTab.hover();
-  const copyBtn = firstTab.locator('[data-testid^="deck-copy-"]');
+  const copyBtn = firstTab.locator('[data-testid^="deck-rail-copy-button-"]');
   await copyBtn.click();
 
   // A second tab should appear
-  await expect(page.locator('[data-testid^="deck-tab-"]')).toHaveCount(2);
+  await expect(page.locator('[data-testid^="deck-rail-deck-tab-"]')).toHaveCount(2);
   // Second tab should have the "· 2" suffix (copy indicator)
-  const secondTab = page.locator('[data-testid^="deck-tab-"]').nth(1);
+  const secondTab = page.locator('[data-testid^="deck-rail-deck-tab-"]').nth(1);
   await expect(secondTab).toContainText('· 2');
 });
 
@@ -76,9 +76,9 @@ test.fixme('9 — deck reorder via drag → order changes [FEATURE NOT BUILT —
   page,
 }) => {
   // Create two decks
-  await page.getByTestId('new-deck-button').click();
-  await page.getByTestId('new-deck-button').click();
-  await expect(page.locator('[data-testid^="deck-tab-"]')).toHaveCount(2);
+  await page.getByTestId('deck-rail-new-button').click();
+  await page.getByTestId('deck-rail-new-button').click();
+  await expect(page.locator('[data-testid^="deck-rail-deck-tab-"]')).toHaveCount(2);
 
   // To write together with the feature: pointerDrag(deck tab 2 → above deck tab 1),
   // then assert the tab order and its persistence after reopenFirstBoard().
@@ -87,13 +87,13 @@ test.fixme('9 — deck reorder via drag → order changes [FEATURE NOT BUILT —
 // ── Test 10: Delete deck ─────────────────────────────────────────────────────
 
 test('10 — delete deck → tab removed from DeckRail', async ({ page }) => {
-  await page.getByTestId('new-deck-button').click();
-  const deckTab = page.locator('[data-testid^="deck-tab-"]').first();
+  await page.getByTestId('deck-rail-new-button').click();
+  const deckTab = page.locator('[data-testid^="deck-rail-deck-tab-"]').first();
   await deckTab.waitFor();
 
   // Reveal action chips
   await deckTab.hover();
-  const deleteBtn = deckTab.locator('[data-testid^="deck-delete-"]');
+  const deleteBtn = deckTab.locator('[data-testid^="deck-rail-delete-button-"]');
 
   // Two-tap confirm
   await deleteBtn.click();
@@ -107,8 +107,8 @@ test('10 — delete deck → tab removed from DeckRail', async ({ page }) => {
 // ── Test 11: Undo delete deck ────────────────────────────────────────────────
 
 test('11 — undo deck delete → tab restored', async ({ page }) => {
-  await page.getByTestId('new-deck-button').click();
-  const deckTab = page.locator('[data-testid^="deck-tab-"]').first();
+  await page.getByTestId('deck-rail-new-button').click();
+  const deckTab = page.locator('[data-testid^="deck-rail-deck-tab-"]').first();
   await deckTab.waitFor();
 
   // Get the deck name before delete
@@ -116,21 +116,24 @@ test('11 — undo deck delete → tab restored', async ({ page }) => {
 
   // Delete it (two taps)
   await deckTab.hover();
-  const deleteBtn = deckTab.locator('[data-testid^="deck-delete-"]');
+  const deleteBtn = deckTab.locator('[data-testid^="deck-rail-delete-button-"]');
   await deleteBtn.click();
   await deleteBtn.click();
   await expect(deckTab).not.toBeVisible({ timeout: 3000 });
 
   // UndoToast should appear — click UNDO
-  const undoBtn = page.getByTestId('undo-toast-button');
+  const undoBtn = page.getByTestId('undo-toast-undo-button');
   await undoBtn.waitFor({ timeout: 3000 });
   await undoBtn.click();
 
   // Deck tab restored
-  await expect(page.locator('[data-testid^="deck-tab-"]').first()).toBeVisible({
+  await expect(page.locator('[data-testid^="deck-rail-deck-tab-"]').first()).toBeVisible({
     timeout: 3000,
   });
   // Original name preserved
-  const restoredText = await page.locator('[data-testid^="deck-tab-"]').first().textContent();
+  const restoredText = await page
+    .locator('[data-testid^="deck-rail-deck-tab-"]')
+    .first()
+    .textContent();
   expect(restoredText).toContain((deckText ?? '').replace(/\s+/g, ' ').trim().split(' ')[1] ?? '');
 });

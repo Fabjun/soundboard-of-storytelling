@@ -5,10 +5,14 @@
 //    suffix (V2, V3 …), and the file exports a function with exactly its own name.
 // 2. CSS class selectors in src/styles: `sb` / `sb-*` / `sb-theme-*`, states `is-*` / `has-*`.
 // 3. npm scripts that run `tsx ../scripts/<file>.ts`: file name = script name with ':' → '-'.
+// 4. Test IDs and locators (ADR-0054): every data-testid starts with the kebab-case name of
+//    its component file and ends with an element kind (root: the component name alone);
+//    E2E tests never locate by CSS class; spec files are kebab-case without a folder prefix,
+//    helper files are named helpers.ts.
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { readdirSync, readFileSync } from 'node:fs';
-import { join } from 'node:path';
+import { basename, join, relative } from 'node:path';
 
 const V3 = join(__dirname, '..', '..');
 const SRC = join(V3, 'src');
@@ -90,6 +94,85 @@ describe('guard: script files are named after their npm scripts (ADR-0052)', () 
     const bad = runs
       .filter((s) => s.file !== s.name.replace(/:/g, '-'))
       .map((s) => `${s.name} → ${s.file}.ts`);
+    expect(bad).toEqual([]);
+  });
+});
+
+// ── Test IDs and locators (ADR-0054) ─────────────────────────────────────────
+const kebab = (name: string): string => name.replace(/([a-z0-9])([A-Z])/g, '$1-$2').toLowerCase();
+/** Element kinds a non-root test ID may end with (before instance placeholders). */
+const KINDS = ['button', 'input', 'slider', 'tab', 'row', 'item', 'text', 'slot', 'region'];
+
+describe('guard: data-testid scheme (ADR-0054)', () => {
+  const ids: { file: string; id: string }[] = [];
+  for (const f of componentFiles) {
+    const src = readFileSync(join(SRC, f), 'utf8');
+    for (const m of src.matchAll(/data-testid=(?:"([^"]+)"|\{`([^`]+)`\})/g)) {
+      ids.push({ file: f, id: (m[1] ?? m[2]).replace(/\$\{[^}]+\}/g, '{}') });
+    }
+  }
+
+  it('finds test IDs (sanity)', () => {
+    expect(ids.length).toBeGreaterThan(30);
+  });
+
+  it('prefixes every test ID with its component name and ends with an element kind', () => {
+    const bad = ids.filter(({ file, id }) => {
+      const comp = kebab(basename(file, '.tsx'));
+      if (!/^[a-z0-9-{}]+$/.test(id) || !(id === comp || id.startsWith(`${comp}-`))) return true;
+      const rest = id.slice(comp.length).replace(/(-\{\})+$/, ''); // drop instance placeholders
+      if (rest === '') return false; // root element
+      const kind = rest.split('-').pop()!;
+      return !KINDS.includes(kind);
+    });
+    expect(
+      bad.map((b) => `${b.file}: ${b.id}`),
+      `use <component>-<element>-<${KINDS.join('|')}>`,
+    ).toEqual([]);
+  });
+});
+
+describe('guard: E2E locators and spec names (ADR-0054)', () => {
+  const E2E = join(V3, 'tests', 'e2e');
+  const walk = (dir: string): string[] =>
+    readdirSync(dir, { withFileTypes: true }).flatMap((e) =>
+      e.isDirectory()
+        ? e.name.endsWith('-snapshots')
+          ? []
+          : walk(join(dir, e.name))
+        : [join(dir, e.name)],
+    );
+  const files = walk(E2E).filter((f) => f.endsWith('.ts'));
+
+  it('never locates or asserts by CSS class', () => {
+    const bad: string[] = [];
+    for (const f of files) {
+      readFileSync(f, 'utf8')
+        .split('\n')
+        .forEach((line, i) => {
+          if (/locator\(\s*['"`]\.|toHaveClass\(|getAttribute\(\s*['"]class['"]/.test(line)) {
+            bad.push(`${relative(E2E, f)}:${i + 1}`);
+          }
+        });
+    }
+    expect(bad, 'use getByRole / getByText / getByTestId instead of CSS classes').toEqual([]);
+  });
+
+  it('names specs in kebab-case without a folder prefix, helpers as helpers.ts', () => {
+    const bad = files
+      .map((f) => relative(E2E, f).split('\\').join('/'))
+      .filter((rel) => {
+        const parts = rel.split('/');
+        const name = parts.pop()!;
+        const folder = parts.pop();
+        if (name.endsWith('.spec.ts')) {
+          const base = name.replace(/\.spec\.ts$/, '');
+          return (
+            !/^[a-z0-9]+(-[a-z0-9]+)*$/.test(base) || (folder && base.startsWith(`${folder}-`))
+          );
+        }
+        return !['helpers.ts', 'projects.ts'].includes(name);
+      });
     expect(bad).toEqual([]);
   });
 });

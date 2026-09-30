@@ -23,22 +23,22 @@ test('22 — GAME mode: CRUD controls hidden, ModeToggle shows is-game', async (
   await enterSetupMode(page);
   // DeckRail action buttons visible on hover in SETUP
   // NEW DECK button always visible
-  await expect(page.getByTestId('new-deck-button')).toBeVisible();
+  await expect(page.getByTestId('deck-rail-new-button')).toBeVisible();
 
   // Switch to GAME mode
   await enterGameMode(page);
 
   // ModeToggle shows game state
-  await expect(page.getByTestId('mode-toggle')).toHaveClass(/is-game/);
+  await expect(page.getByRole('button', { name: 'GAME' })).toHaveAttribute('aria-pressed', 'true');
 
   // GAME mode: pad editor should not be open
-  await expect(page.getByTestId('pad-editor')).not.toBeVisible();
+  await expect(page.getByTestId('pad-editor-panel')).not.toBeVisible();
 
   // GAME mode: NEW DECK button is still visible (it's part of the DeckRail
   // which is always rendered). The key GAME restriction is on pad CRUD:
   // empty cells have no + button affordance and clicking doesn't open the popover.
   // Verify: pad creation popover cannot be triggered
-  const emptyCell = page.getByTestId('pad-cell-empty-0-0');
+  const emptyCell = page.getByTestId('pad-grid-cell-empty-slot-0-0');
   if (await emptyCell.isVisible()) {
     await emptyCell.click();
     // Popover should NOT appear in GAME mode
@@ -47,7 +47,7 @@ test('22 — GAME mode: CRUD controls hidden, ModeToggle shows is-game', async (
     });
   }
 
-  // Verify switching back to SETUP restores the toggle class
+  // Verify switching back to SETUP restores the toggle state
   await enterSetupMode(page);
-  await expect(page.getByTestId('mode-toggle')).toHaveClass(/is-setup/);
+  await expect(page.getByRole('button', { name: 'SETUP' })).toHaveAttribute('aria-pressed', 'true');
 });

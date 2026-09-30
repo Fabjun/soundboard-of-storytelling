@@ -100,7 +100,7 @@ export function StartScreen(): JSX.Element {
       {showChangelog && <ChangelogOverlay onClose={() => setShowChangelog(false)} />}
 
       {/* ── Animated flame (tap to freeze) — v13-animated-flame.jsx ── */}
-      <div class="sb-flame-well">
+      <div class="sb-flame-well" data-testid="start-screen-flame-region">
         <AnimatedFlame size={120} />
       </div>
 

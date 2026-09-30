@@ -31,10 +31,10 @@ test.beforeEach(async ({ page }) => {
 
 test('16 — tap pad in SETUP mode → PadEditorPanel opens', async ({ page }) => {
   const padCell = page
-    .locator('[data-testid^="pad-cell-"]:not([data-testid^="pad-cell-empty-"])')
+    .locator('[data-testid^="pad-grid-cell-"]:not([data-testid^="pad-grid-cell-empty-slot-"])')
     .first();
   await padCell.click();
-  await expect(page.getByTestId('pad-editor')).toBeVisible();
+  await expect(page.getByTestId('pad-editor-panel')).toBeVisible();
 });
 
 // ── Test 17: Change pad name → auto-saved ────────────────────────────────────
@@ -42,13 +42,13 @@ test('16 — tap pad in SETUP mode → PadEditorPanel opens', async ({ page }) =
 test('17 — change pad name in editor → persists after page reload', async ({ page }) => {
   // Open editor
   const padCell = page
-    .locator('[data-testid^="pad-cell-"]:not([data-testid^="pad-cell-empty-"])')
+    .locator('[data-testid^="pad-grid-cell-"]:not([data-testid^="pad-grid-cell-empty-slot-"])')
     .first();
   await padCell.click();
-  await page.getByTestId('pad-editor').waitFor();
+  await page.getByTestId('pad-editor-panel').waitFor();
 
   // Change the name
-  const nameInput = page.getByTestId('editor-name-input');
+  const nameInput = page.getByTestId('pad-editor-panel-name-input');
   await nameInput.fill('Renamed Pad');
   // Wait for auto-save debounce (500ms) + some buffer
   await page.waitForTimeout(800);
@@ -57,16 +57,18 @@ test('17 — change pad name in editor → persists after page reload', async ({
   await page.reload();
   await page.getByRole('button', { name: 'BOARD' }).click();
   // Board should still exist
-  const boardRow = page.locator('[data-testid^="board-row-"]').first();
+  const boardRow = page.locator('[data-testid^="board-list-screen-row-"]').first();
   await boardRow.waitFor();
-  await boardRow.locator('[data-testid^="board-row-title-"]').click();
+  await boardRow.locator('[data-testid^="board-list-screen-name-text-"]').click();
   await page.getByTestId('mode-toggle').waitFor();
   // Re-enter setup mode
   await enterSetupMode(page);
 
   // The pad cell should show the new name (DOM text; textTransform is CSS-visual only)
   await expect(
-    page.locator('[data-testid^="pad-cell-"]:not([data-testid^="pad-cell-empty-"])').first(),
+    page
+      .locator('[data-testid^="pad-grid-cell-"]:not([data-testid^="pad-grid-cell-empty-slot-"])')
+      .first(),
   ).toContainText('Renamed Pad');
 });
 
@@ -75,20 +77,23 @@ test('17 — change pad name in editor → persists after page reload', async ({
 test('18 — trivial type change (single→loop) → no confirmation dialog', async ({ page }) => {
   // Open editor
   const padCell = page
-    .locator('[data-testid^="pad-cell-"]:not([data-testid^="pad-cell-empty-"])')
+    .locator('[data-testid^="pad-grid-cell-"]:not([data-testid^="pad-grid-cell-empty-slot-"])')
     .first();
   await padCell.click();
-  await page.getByTestId('pad-editor').waitFor();
+  await page.getByTestId('pad-editor-panel').waitFor();
 
   // Click LOOP type button (trivial from single)
-  await page.getByTestId('editor-type-loop').click();
+  await page.getByTestId('pad-editor-panel-type-button-loop').click();
 
   // No dialog should appear
-  await expect(page.getByTestId('type-confirm-dialog')).not.toBeVisible({
+  await expect(page.getByTestId('pad-type-confirm-dialog')).not.toBeVisible({
     timeout: 1000,
   });
-  // Type button should appear active (loop selected)
-  await expect(page.getByTestId('editor-type-loop')).toHaveClass(/sb-btn-primary/);
+  // Type button should be the selected one (loop)
+  await expect(page.getByTestId('pad-editor-panel-type-button-loop')).toHaveAttribute(
+    'aria-pressed',
+    'true',
+  );
 });
 
 // ── Test 19: Lossy type change → PadTypeConfirmDialog appears ────────────────
@@ -96,29 +101,29 @@ test('18 — trivial type change (single→loop) → no confirmation dialog', as
 test('19 — lossy type change → PadTypeConfirmDialog appears', async ({ page }) => {
   // First set the pad type to playlist (requires: open editor, click playlist)
   const padCell = page
-    .locator('[data-testid^="pad-cell-"]:not([data-testid^="pad-cell-empty-"])')
+    .locator('[data-testid^="pad-grid-cell-"]:not([data-testid^="pad-grid-cell-empty-slot-"])')
     .first();
   await padCell.click();
-  await page.getByTestId('pad-editor').waitFor();
+  await page.getByTestId('pad-editor-panel').waitFor();
 
   // Switch to PLAYLIST type (from SINGLE: this may trigger a dialog)
   // playlist→single is lossy; single→playlist may be an add (no dialog)
   // So first go single→playlist (no dialog expected), then playlist→single (lossy)
-  await page.getByTestId('editor-type-playlist').click();
+  await page.getByTestId('pad-editor-panel-type-button-playlist').click();
   // If a dialog appears, dismiss it first (single→playlist might be lossy too)
-  const maybeDialog = page.getByTestId('type-confirm-dialog');
+  const maybeDialog = page.getByTestId('pad-type-confirm-dialog');
   const dialogVisible = await maybeDialog.isVisible();
   if (dialogVisible) {
-    await page.getByTestId('type-confirm-switch').click();
+    await page.getByTestId('pad-type-confirm-dialog-switch-button').click();
     await expect(maybeDialog).not.toBeVisible({ timeout: 2000 });
   }
   // Now switch back: playlist→single (lossy: drops playlist sources)
-  await page.getByTestId('editor-type-single').click();
+  await page.getByTestId('pad-editor-panel-type-button-single').click();
   // Confirmation dialog should appear
-  await expect(page.getByTestId('type-confirm-dialog')).toBeVisible();
+  await expect(page.getByTestId('pad-type-confirm-dialog')).toBeVisible();
   // Cancel: type should NOT change
-  await page.getByTestId('type-confirm-cancel').click();
-  await expect(page.getByTestId('type-confirm-dialog')).not.toBeVisible({
+  await page.getByTestId('pad-type-confirm-dialog-cancel-button').click();
+  await expect(page.getByTestId('pad-type-confirm-dialog')).not.toBeVisible({
     timeout: 2000,
   });
 });

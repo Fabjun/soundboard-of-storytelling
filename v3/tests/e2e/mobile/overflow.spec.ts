@@ -50,7 +50,7 @@ test.describe.fixme(FIXME_REASON, () => {
     await createDeck(page);
 
     // TopBar (the board-topbar wrapper)
-    await assertNoOverflow(page, page.locator('.sb-board-topbar'), 'sb-board-topbar');
+    await assertNoOverflow(page, page.getByTestId('board-top-bar'), 'board-top-bar');
 
     // Pad grid container — the 4-column layout at 390px is the highest-risk element
     const padGrid = page.locator('[data-testid="pad-grid"]');
@@ -59,9 +59,9 @@ test.describe.fixme(FIXME_REASON, () => {
     }
 
     // First empty pad cell — representative for all cells
-    const firstCell = page.getByTestId('pad-cell-empty-0-0');
+    const firstCell = page.getByTestId('pad-grid-cell-empty-slot-0-0');
     if ((await firstCell.count()) > 0) {
-      await assertNoOverflow(page, firstCell, 'pad-cell-empty-0-0');
+      await assertNoOverflow(page, firstCell, 'pad-grid-cell-empty-slot-0-0');
     }
 
     // Deck rail (horizontal scroll container) — the rail itself must not overflow

@@ -33,7 +33,7 @@ import {
   enterSetupMode,
   enterGameMode,
 } from '../helpers';
-import { mobileUploadTestAudio } from './mobile-helpers';
+import { mobileUploadTestAudio } from './helpers';
 
 test.beforeEach(async ({ page }) => {
   await page.goto('/soundboard-of-storytelling/');
@@ -45,7 +45,7 @@ test.beforeEach(async ({ page }) => {
   // Return to start and tap TAP TO UNLOCK (initialises AudioContext)
   await page.goto('/soundboard-of-storytelling/');
   await page.getByRole('button', { name: 'TAP TO UNLOCK' }).tap();
-  await page.getByTestId('new-board-button').waitFor();
+  await page.getByTestId('board-list-screen-new-button').waitFor();
 
   await createBoardAndNavigate(page);
   await createDeck(page);
@@ -54,18 +54,18 @@ test.beforeEach(async ({ page }) => {
 
 test('B — SINGLE pad: tap → is-hot; tap again → is-hot removed', async ({ page }) => {
   // Create a SINGLE pad at cell (0,0) via tap on empty cell
-  await page.getByTestId('pad-cell-empty-0-0').tap();
+  await page.getByTestId('pad-grid-cell-empty-slot-0-0').tap();
   const popover = page.getByTestId('pad-creation-popover');
   await popover.waitFor();
 
-  const sourceItem = page.locator('[data-testid^="creation-source-item-"]').first();
+  const sourceItem = page.locator('[data-testid^="pad-creation-popover-source-item-"]').first();
   await sourceItem.waitFor({ timeout: 5_000 });
   await sourceItem.tap();
   // Default type for a 1-second clip is 'single' (< 10 s threshold)
-  await page.getByTestId('creation-add-pad').tap();
+  await page.getByTestId('pad-creation-popover-add-button').tap();
 
   const padCell = page
-    .locator('[data-testid^="pad-cell-"]:not([data-testid^="pad-cell-empty-"])')
+    .locator('[data-testid^="pad-grid-cell-"]:not([data-testid^="pad-grid-cell-empty-slot-"])')
     .first();
   await padCell.waitFor();
 
@@ -73,35 +73,35 @@ test('B — SINGLE pad: tap → is-hot; tap again → is-hot removed', async ({ 
 
   // Core assertion: tap triggers is-hot via the Pointer Events chain
   await padCell.tap();
-  await expect(padCell.locator('.sb-pad.is-hot')).toBeVisible({ timeout: 5_000 });
+  await expect(padCell.getByRole('button', { pressed: true })).toBeVisible({ timeout: 5_000 });
 
   await padCell.tap();
-  await expect(padCell.locator('.sb-pad.is-hot')).not.toBeVisible({ timeout: 3_000 });
+  await expect(padCell.getByRole('button', { pressed: true })).not.toBeVisible({ timeout: 3_000 });
 });
 
 test('C — LOOP pad: tap → is-looping; tap again → is-looping removed', async ({ page }) => {
-  await page.getByTestId('pad-cell-empty-0-0').tap();
+  await page.getByTestId('pad-grid-cell-empty-slot-0-0').tap();
   const popover = page.getByTestId('pad-creation-popover');
   await popover.waitFor();
 
-  const sourceItem = page.locator('[data-testid^="creation-source-item-"]').first();
+  const sourceItem = page.locator('[data-testid^="pad-creation-popover-source-item-"]').first();
   await sourceItem.waitFor({ timeout: 5_000 });
   await sourceItem.tap();
 
   // Select the LOOP type pill
   await page.getByRole('button', { name: 'LOOP' }).tap();
-  await page.getByTestId('creation-add-pad').tap();
+  await page.getByTestId('pad-creation-popover-add-button').tap();
 
   const padCell = page
-    .locator('[data-testid^="pad-cell-"]:not([data-testid^="pad-cell-empty-"])')
+    .locator('[data-testid^="pad-grid-cell-"]:not([data-testid^="pad-grid-cell-empty-slot-"])')
     .first();
   await padCell.waitFor();
 
   await enterGameMode(page);
 
   await padCell.tap();
-  await expect(padCell.locator('.sb-pad.is-looping')).toBeVisible({ timeout: 5_000 });
+  await expect(padCell.getByRole('button', { pressed: true })).toBeVisible({ timeout: 5_000 });
 
   await padCell.tap();
-  await expect(padCell.locator('.sb-pad.is-looping')).not.toBeVisible({ timeout: 3_000 });
+  await expect(padCell.getByRole('button', { pressed: true })).not.toBeVisible({ timeout: 3_000 });
 });

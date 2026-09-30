@@ -13,22 +13,21 @@ test('ModeToggle switches from GAME to SETUP and back', async ({ page }) => {
   // Navigate to a board (create one first)
   await page.getByRole('button', { name: 'BOARD' }).click();
   await page.getByRole('button', { name: /NEW BOARD/ }).click();
-  await page.locator('.sb-menu-row').first().click();
+  await page.locator('[data-testid^="board-list-screen-row-"]').first().click();
 
-  // Initial state: toggle shows GAME mode (.is-game)
-  const toggle = page.locator('.sb-mode-toggle');
-  await expect(toggle).toBeVisible();
-  await expect(toggle).toHaveClass(/is-game/);
+  // Initial state: GAME is the pressed half (aria-pressed — user-facing state)
+  const setup = page.getByRole('button', { name: 'SETUP' });
+  const game = page.getByRole('button', { name: 'GAME' });
+  await expect(page.getByTestId('mode-toggle')).toBeVisible();
+  await expect(game).toHaveAttribute('aria-pressed', 'true');
 
-  // Click the SETUP half
-  await page.getByRole('button', { name: 'SETUP' }).click();
-
-  // After toggle: .is-setup class appears, .is-game disappears
-  await expect(toggle).toHaveClass(/is-setup/);
-  await expect(toggle).not.toHaveClass(/is-game/);
+  // Click the SETUP half → SETUP pressed, GAME released
+  await setup.click();
+  await expect(setup).toHaveAttribute('aria-pressed', 'true');
+  await expect(game).toHaveAttribute('aria-pressed', 'false');
 
   // Click back to GAME
-  await page.getByRole('button', { name: 'GAME' }).click();
-  await expect(toggle).toHaveClass(/is-game/);
-  await expect(toggle).not.toHaveClass(/is-setup/);
+  await game.click();
+  await expect(game).toHaveAttribute('aria-pressed', 'true');
+  await expect(setup).toHaveAttribute('aria-pressed', 'false');
 });

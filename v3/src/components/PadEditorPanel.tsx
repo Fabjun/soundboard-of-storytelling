@@ -205,7 +205,7 @@ export function PadEditorPanel({
   const typeColor = padTypeColor(type);
 
   return (
-    <div class="sb-pad-editor" data-testid="pad-editor">
+    <div class="sb-pad-editor" data-testid="pad-editor-panel">
       {/* Header */}
       <div class="sb-panel-header is-active" style={{ borderBottom: `2px solid ${typeColor}` }}>
         <span class="sb-type-indicator" style={{ background: typeColor }} />
@@ -221,7 +221,7 @@ export function PadEditorPanel({
         <input
           class="sb-text-input"
           type="text"
-          data-testid="editor-name-input"
+          data-testid="pad-editor-panel-name-input"
           value={name}
           placeholder="Pad name…"
           onInput={(e) => handleNameChange((e.target as HTMLInputElement).value)}
@@ -236,7 +236,8 @@ export function PadEditorPanel({
             <button
               key={t}
               class={`sb-btn sb-type-btn ${type === t ? 'sb-btn-primary' : 'sb-btn-ghost'}`}
-              data-testid={`editor-type-${t}`}
+              data-testid={`pad-editor-panel-type-button-${t}`}
+              aria-pressed={type === t}
               style={{
                 color: type === t ? padTypeColor(t) : 'var(--text-mute)',
                 borderColor: type === t ? padTypeColor(t) : undefined,
@@ -311,7 +312,7 @@ export function PadEditorPanel({
           step={1}
           format={(v) => `${v}%`}
           onChange={handleVolumeChange}
-          testid="editor-volume-slider"
+          testid="pad-editor-panel-volume-slider"
         />
       </div>
 
@@ -325,7 +326,7 @@ export function PadEditorPanel({
           step={0.1}
           format={(v) => `${v.toFixed(1)}s`}
           onChange={handleFadeInChange}
-          testid="editor-fade-in-slider"
+          testid="pad-editor-panel-fade-in-slider"
         />
       </div>
 
@@ -339,7 +340,7 @@ export function PadEditorPanel({
           step={0.1}
           format={(v) => `${v.toFixed(1)}s`}
           onChange={handleFadeOutChange}
-          testid="editor-fade-out-slider"
+          testid="pad-editor-panel-fade-out-slider"
         />
       </div>
 
@@ -365,7 +366,7 @@ export function PadEditorPanel({
       <div class="sb-inspector-section">
         <button
           class="sb-btn sb-btn-danger sb-btn-block"
-          data-testid="editor-delete-button"
+          data-testid="pad-editor-panel-delete-button"
           onClick={handleDelete}
           onBlur={() => setDeleteConfirm(false)}
         >

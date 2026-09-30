@@ -29,7 +29,7 @@ test('A — TAP TO UNLOCK navigates to board-list and initialises audio', async 
   // Click TAP TO UNLOCK — should navigate to board-list
   await page.getByRole('button', { name: 'TAP TO UNLOCK' }).click();
   // Board-list is now shown (AudioContext initialised synchronously in handler)
-  await expect(page.getByTestId('new-board-button')).toBeVisible();
+  await expect(page.getByTestId('board-list-screen-new-button')).toBeVisible();
 });
 
 // ── Shared setup (Tests B + C) ────────────────────────────────────────────────
@@ -45,7 +45,7 @@ test.beforeEach(async ({ page }, testInfo) => {
   // Return to start and click TAP TO UNLOCK (initialises AudioContext)
   await page.goto('/soundboard-of-storytelling/');
   await page.getByRole('button', { name: 'TAP TO UNLOCK' }).click();
-  await page.getByTestId('new-board-button').waitFor();
+  await page.getByTestId('board-list-screen-new-button').waitFor();
   await createBoardAndNavigate(page);
   await createDeck(page);
   await enterSetupMode(page);
@@ -55,19 +55,19 @@ test.beforeEach(async ({ page }, testInfo) => {
 
 test('B — SINGLE pad: tap → is-hot; tap again → is-hot removed', async ({ page }) => {
   // Create a SINGLE pad at cell (0,0) via Path A
-  await page.getByTestId('pad-cell-empty-0-0').click();
+  await page.getByTestId('pad-grid-cell-empty-slot-0-0').click();
   const popover = page.getByTestId('pad-creation-popover');
   await popover.waitFor();
   // Select the first source item (audio was uploaded in beforeEach)
-  const sourceItem = page.locator('[data-testid^="creation-source-item-"]').first();
+  const sourceItem = page.locator('[data-testid^="pad-creation-popover-source-item-"]').first();
   await sourceItem.waitFor({ timeout: 5_000 });
   await sourceItem.click();
   // Default type for a 1-second clip is 'single' (< 10 s threshold)
-  await page.getByTestId('creation-add-pad').click();
+  await page.getByTestId('pad-creation-popover-add-button').click();
 
   // Wait for pad cell to appear (occupied, not empty)
   const padCell = page
-    .locator('[data-testid^="pad-cell-"]:not([data-testid^="pad-cell-empty-"])')
+    .locator('[data-testid^="pad-grid-cell-"]:not([data-testid^="pad-grid-cell-empty-slot-"])')
     .first();
   await padCell.waitFor();
 
@@ -76,29 +76,29 @@ test('B — SINGLE pad: tap → is-hot; tap again → is-hot removed', async ({ 
 
   // Tap the pad — audio loads and starts; is-hot class should appear
   await padCell.click();
-  await expect(padCell.locator('.sb-pad.is-hot')).toBeVisible({ timeout: 5_000 });
+  await expect(padCell.getByRole('button', { pressed: true })).toBeVisible({ timeout: 5_000 });
 
   // Tap again — stop; is-hot should disappear
   await padCell.click();
-  await expect(padCell.locator('.sb-pad.is-hot')).not.toBeVisible({ timeout: 3_000 });
+  await expect(padCell.getByRole('button', { pressed: true })).not.toBeVisible({ timeout: 3_000 });
 });
 
 // ── Test C: LOOP pad play / stop ──────────────────────────────────────────────
 
 test('C — LOOP pad: tap → is-looping; tap again → is-looping removed', async ({ page }) => {
   // Create a LOOP pad at cell (0,0): same flow as SINGLE but switch type pill
-  await page.getByTestId('pad-cell-empty-0-0').click();
+  await page.getByTestId('pad-grid-cell-empty-slot-0-0').click();
   const popover = page.getByTestId('pad-creation-popover');
   await popover.waitFor();
-  const sourceItem = page.locator('[data-testid^="creation-source-item-"]').first();
+  const sourceItem = page.locator('[data-testid^="pad-creation-popover-source-item-"]').first();
   await sourceItem.waitFor({ timeout: 5_000 });
   await sourceItem.click();
   // Select the LOOP type pill (label "LOOP")
   await page.getByRole('button', { name: 'LOOP' }).click();
-  await page.getByTestId('creation-add-pad').click();
+  await page.getByTestId('pad-creation-popover-add-button').click();
 
   const padCell = page
-    .locator('[data-testid^="pad-cell-"]:not([data-testid^="pad-cell-empty-"])')
+    .locator('[data-testid^="pad-grid-cell-"]:not([data-testid^="pad-grid-cell-empty-slot-"])')
     .first();
   await padCell.waitFor();
 
@@ -106,9 +106,9 @@ test('C — LOOP pad: tap → is-looping; tap again → is-looping removed', asy
 
   // Tap the pad — loop starts; is-hot and is-looping appear
   await padCell.click();
-  await expect(padCell.locator('.sb-pad.is-looping')).toBeVisible({ timeout: 5_000 });
+  await expect(padCell.getByRole('button', { pressed: true })).toBeVisible({ timeout: 5_000 });
 
   // Tap again — stop; is-looping should disappear
   await padCell.click();
-  await expect(padCell.locator('.sb-pad.is-looping')).not.toBeVisible({ timeout: 3_000 });
+  await expect(padCell.getByRole('button', { pressed: true })).not.toBeVisible({ timeout: 3_000 });
 });

@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { stableScreenshot } from './visual-setup';
+import { stableScreenshot } from './helpers';
 import { goToBoardList, createBoardAndNavigate, createDeck, enterSetupMode } from '../helpers';
 
 test('BoardScreen — SETUP mode with one deck', async ({ page }) => {
@@ -9,7 +9,7 @@ test('BoardScreen — SETUP mode with one deck', async ({ page }) => {
   await createDeck(page);
   await enterSetupMode(page);
   await stableScreenshot(page);
-  await expect(page).toHaveScreenshot('boardscreen-setup.png', {
+  await expect(page).toHaveScreenshot('board-screen-setup.png', {
     fullPage: false,
   });
 });

@@ -4,6 +4,11 @@
 
 All notable changes to Soundboard of Storytelling, newest first.
 
+## 3.0.57 — 2026-09-30
+
+- test: locators follow Playwright/Testing Library guidance (ADR-0054) — no CSS-class locators, state via aria-pressed, one test ID scheme, consistent spec names (S4)
+- a11y: pads announce "pressed" while playing; pad type buttons announce the selected type; the start-screen flame is exposed as an image
+
 ## 3.0.56 — 2026-09-29
 
 - chore: one exception scheme (ADR-0053) — every suppression with reason, temporary ones with BACKLOG reference, generated exception register; config files now linted (S3)

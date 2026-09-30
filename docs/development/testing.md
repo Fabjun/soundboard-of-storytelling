@@ -59,46 +59,47 @@ Zahl in Klammern = Testfälle in der Datei (inkl. Quarantäne)._
 | `smoke-webkit` | WebKit (Desktop) | Dev | `app-loads` (1), `library-empty` (1), `board-list-empty` (1), `board-create` (1), `mode-toggle` (1) |
 | `full` | Chromium (Desktop) | Dev + Build | `board-crud` (5), `deck-crud` (6), `pad-creation` (4), `pad-editing` (4), `pad-dnd` (2), `game-mode` (1), `audio` (3) |
 | `full-webkit` | WebKit (Desktop) | Dev | `board-crud` (5), `deck-crud` (6), `pad-creation` (4), `pad-editing` (4), `pad-dnd` (2) |
-| `mobile` | WebKit (iPhone 13 Pro) | Dev | `mobile-unlock-nav` (3), `mobile-board-flow` (2), `mobile-mode-toggle` (2), `mobile-touch-targets` (5), `mobile-overflow` (2) |
-| `mobile-chromium` | Chromium (iPhone 13 Pro) | Dev | `mobile-pad-interaction` (2), `mobile-pad-creation` (1) |
+| `mobile` | WebKit (iPhone 13 Pro) | Dev | `unlock-nav` (3), `board-flow` (2), `mode-toggle` (2), `touch-targets` (5), `overflow` (2) |
+| `mobile-chromium` | Chromium (iPhone 13 Pro) | Dev | `pad-interaction` (2), `pad-creation` (1) |
 | `pwa` | Chromium (Desktop) | nur Build | `pwa` (4) |
-| `visual` | Chromium (Desktop), nur macOS | Dev | `visual-boardlist-empty` (1), `visual-boardlist-with-board` (1), `visual-boardscreen-game` (1), `visual-boardscreen-setup` (1), `visual-deck-rail` (1), `visual-library-empty` (1), `visual-modetoggle-states` (2), `visual-startscreen` (1) |
+| `visual` | Chromium (Desktop), nur macOS | Dev | `board-list-empty` (1), `board-list-with-board` (1), `board-screen-game` (1), `board-screen-setup` (1), `deck-rail` (1), `library-empty` (1), `mode-toggle-states` (2), `start-screen` (1) |
 
-**Unit-Tests (Vitest):** 14 Dateien, 202 Testfälle —
-`audio/engine.test.ts` (24), `audio/lru.test.ts` (11), `codeGuards.test.ts` (7), `deckConflict.test.ts` (9), `docsGuards.test.ts` (7), `e2eProjects.test.ts` (6), `flameMath.test.ts` (22), `idb.test.ts` (15), `nanoid.test.ts` (2), `padDnd.test.ts` (11), `padUtils.test.ts` (43), `store.test.ts` (23), `testGuards.test.ts` (9), `upload.test.ts` (13)
+**Unit-Tests (Vitest):** 14 Dateien, 206 Testfälle —
+`audio/engine.test.ts` (24), `audio/lru.test.ts` (11), `codeGuards.test.ts` (11), `deckConflict.test.ts` (9), `docsGuards.test.ts` (7), `e2eProjects.test.ts` (6), `flameMath.test.ts` (22), `idb.test.ts` (15), `nanoid.test.ts` (2), `padDnd.test.ts` (11), `padUtils.test.ts` (43), `store.test.ts` (23), `testGuards.test.ts` (9), `upload.test.ts` (13)
 
 <!-- AUTO-GENERATED:test-inventory END -->
 
 ---
 
-## Test-Selector-Konvention
+## Test locators (ADR-0054)
 
-Alle E2E-Tests verwenden `data-testid`-Attribute für stabile Selektoren.
-**Keine CSS-Klassen als primäre Selektoren** (brechen bei Refactoring/Slice 8).
+Priority, following Playwright and Testing Library guidance:
 
-### Namensgebung
+1. `getByRole` with accessible name and state — e.g. `getByRole('button', { name: 'SETUP', pressed: true })`
+2. `getByLabel` / `getByText`
+3. `getByTestId` — fallback when no role or text identifies the element
+4. **Never CSS classes** — neither `locator('.sb-…')` nor `toHaveClass(…)` (guarded by `codeGuards.test.ts`)
+
+State is asserted through ARIA (`aria-pressed` on mode toggle, pad type buttons and — in GAME —
+pads), not through classes.
+
+### Test ID scheme
 
 ```
-data-testid="<component>-<element>"
-data-testid="<component>-<element>-<instance-id>"
+data-testid="<component>-<element>-<kind>"          e.g. pad-editor-panel-delete-button
+data-testid="<component>-<element>-<kind>-${id}"    list instance, e.g. deck-rail-deck-tab-${id}
+data-testid="<component>"                           root element, e.g. undo-toast
 ```
 
-**Beispiele:**
-```
-new-board-button           ← eindeutig, kein Suffix nötig
-board-row-{board.id}       ← Instanz-ID für Listen-Elemente
-deck-tab-{deck.id}
-deck-delete-{deck.id}
-mode-toggle                ← Container
-mode-toggle-setup          ← Unter-Element
-pad-cell-empty-{col}-{row} ← Koordinaten als Suffix
-```
+`<component>` = kebab-case name of the component file; `<kind>` ∈ `button`, `input`, `slider`,
+`tab`, `row`, `item`, `text`, `slot`, `region`. Prefix matches for lists:
+`page.locator('[data-testid^="deck-rail-deck-tab-"]')`.
 
-### Regeln
+### Spec files
 
-- Nur test-kritische Elemente bekommen `data-testid` (kein vollständiges DOM-Coverage)
-- IDs werden nur wo nötig angefügt (Listen-Items, mehrfach vorkommende Typen)
-- In Playwright verwenden: `page.getByTestId('...')` oder `page.locator('[data-testid^="..."]')` für Prefix-Matches
+kebab-case, no folder prefix (`mobile/touch-targets.spec.ts`), helper files `helpers.ts`.
+Existing test-ID locators that could use roles are migrated in Slice 13 (exception in ADR-0054,
+listed in [`exceptions.md`](exceptions.md)).
 
 ---
 
@@ -123,13 +124,13 @@ iPhone 13 Pro device settings (viewport, hasTouch, isMobile, UA) applied.
 
 | Spec | Project | What it tests |
 |------|---------|--------------|
-| `mobile-unlock-nav` | `mobile` (WebKit) | TAP TO UNLOCK + BOARD/LIBRARY navigation buttons respond to `tap()` |
-| `mobile-board-flow` | `mobile` (WebKit) | NEW BOARD, board-row-title, back button respond to `tap()` |
-| `mobile-mode-toggle` | `mobile` (WebKit) | SETUP ↔ GAME toggle switches in both directions via `tap()` |
-| `mobile-touch-targets` | `mobile` (WebKit) | ⬜ Deferred (Slice 8): `test.describe.fixme` — alle Tests übersprungen bis mobile layout adaptation implementiert |
-| `mobile-overflow` | `mobile` (WebKit) | ⬜ Deferred (Slice 8): `test.describe.fixme` — alle Tests übersprungen bis mobile layout adaptation implementiert |
-| `mobile-pad-interaction` | `mobile-chromium` | **Core:** pad `tap()` → `.sb-pad.is-hot` / `.sb-pad.is-looping` DOM state |
-| `mobile-pad-creation` | `mobile-chromium` | Empty cell `tap()` → popover → `tap()` through to pad creation |
+| `unlock-nav` | `mobile` (WebKit) | TAP TO UNLOCK + BOARD/LIBRARY navigation buttons respond to `tap()` |
+| `board-flow` | `mobile` (WebKit) | NEW BOARD, board-row-title, back button respond to `tap()` |
+| `mode-toggle` | `mobile` (WebKit) | SETUP ↔ GAME toggle switches in both directions via `tap()` |
+| `touch-targets` | `mobile` (WebKit) | ⬜ Deferred (Slice 8): `test.describe.fixme` — alle Tests übersprungen bis mobile layout adaptation implementiert |
+| `overflow` | `mobile` (WebKit) | ⬜ Deferred (Slice 8): `test.describe.fixme` — alle Tests übersprungen bis mobile layout adaptation implementiert |
+| `pad-interaction` | `mobile-chromium` | **Core:** pad `tap()` → `.sb-pad.is-hot` / `.sb-pad.is-looping` DOM state |
+| `pad-creation` | `mobile-chromium` | Empty cell `tap()` → popover → `tap()` through to pad creation |
 
 ### What is deliberately NOT automated (manual only)
 
@@ -501,14 +502,14 @@ in the UI will time out.
 Additionally, `setInputFiles()` on a `display:none` input does **not** dispatch the
 `change` event in Playwright WebKit, so the upload pipeline never starts.
 
-**Fix (mobile tests):** Audio-dependent mobile specs (`mobile-pad-interaction`,
-`mobile-pad-creation`) run under the `mobile-chromium` project (Chromium + iPhone 13
+**Fix (mobile tests):** Audio-dependent mobile specs (`pad-interaction`,
+`pad-creation`) run under the `mobile-chromium` project (Chromium + iPhone 13
 Pro device settings). Chromium decodes WAV correctly, and `setInputFiles` works on
-hidden inputs. Audio-free specs (`mobile-unlock-nav`, etc.) continue running under
+hidden inputs. Audio-free specs (`unlock-nav`, etc.) continue running under
 the `mobile` (WebKit) project to exercise the real Safari engine path.
 
 **Fix (file upload in WebKit):** In WebKit specs that need uploads, use
-`mobileUploadTestAudio(page)` from `tests/e2e/mobile/mobile-helpers.ts`. This uses
+`mobileUploadTestAudio(page)` from `tests/e2e/mobile/helpers.ts`. This uses
 `page.waitForEvent('filechooser')` + `tap()` on the IMPORT button, which triggers
 a real filechooser event that Playwright can intercept and satisfy with the test file.
 

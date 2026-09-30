@@ -1202,7 +1202,7 @@ approval per stage; guard tests keep each scheme from drifting back.
 | S1 | Remove unused Vite scaffold files (`src/app.css`, `src/index.css`, `src/assets/*`, `public/icons.svg`); one version number — package renamed `soundboard-of-storytelling`, `version` field removed (`APP_VERSION` is the only version) | ✅ Done (see git log: "…(S1)") |
 | S2 | Code names (ADR-0052, sources cited): `TopBarV2`/`StatusBarV2`/`BoardTopBarV3` → `TopBar`/`StatusBar`/`BoardTopBar`, `src/chrome/` dissolved into `components/`, `app.tsx` → `App.tsx`; unused CSS removed (`.touch-target`, `.pixel-icon`, `@keyframes sb-flicker`), `.theme-*` → `.sb-theme-*`, `has-*` allowed; generator scripts named after their npm scripts; guard `codeGuards.test.ts` | ✅ Done (see git log: "…(S2)") |
 | S3 | Exception scheme (ADR-0053, sources cited): permanent = rule + reason, temporary = + `BACKLOG "…"`; ESLint `require-description` / `no-unlimited-disable` / unused directives = error; prettier-ignore and to-do markers guarded in `testGuards`; config files linted, unnecessary `*.config` Prettier exclusion removed; ADR `## Exceptions` tables; generated register `docs/development/exceptions.md` (35 entries) | ✅ Done (see git log: "…(S3)") |
-| S4 | Tests: one test-ID scheme (update ADR-0038) applied everywhere; consistent spec/helper file names incl. moving visual baselines; guard tests | open |
+| S4 | Test locators and IDs (ADR-0054, sources cited; supersedes ADR-0038): role/label/text first, test IDs as fallback, never CSS classes (≈30 class locators/assertions replaced); state via `aria-pressed` (pads in GAME, pad type buttons); test ID scheme `<component>-<element>-<kind>` applied to all 35+ IDs; spec files without folder prefix, `helpers.ts`, visual baselines moved (not regenerated); guards in `codeGuards` / `e2eProjects` | ✅ Done (see git log: "…(S4)") |
 | S5 | English only: active docs, hook/CI messages, ADR template + categories + labels; then translate ADR-0001–0045; uniform ADR headers + guard test | open |
 | S6 | Commit message convention in CLAUDE.md + `commit-msg` hook | open |
 
@@ -1210,8 +1210,21 @@ approval per stage; guard tests keep each scheme from drifting back.
 Library/Board list, `BoardTopBar` on Board — deliberately separate per ADR-0026) and merge them
 into one component with variants if the mobile layout allows; both are rebuilt there anyway.
 
+### Role-based E2E locators
+Temporary exception from ADR-0054: many E2E tests still locate controls by test ID although a
+role + accessible name is the standard. Most icon-only controls have no accessible name yet.
+**When:** Slice 13 — give every control an accessible name while rebuilding the layout, then
+switch those locators to `getByRole` and drop the exception from ADR-0054.
+
+### Type-check E2E tests (T12)
+Found 2026-09-30 during S4: `tsconfig.e2e.json` is never type-checked — ESLint only parses with
+it, Playwright transpiles without type checking. Running it fails already on `main`
+(`src/main.tsx`: side-effect import of `./styles/global.css` has no type declaration), so type
+errors in E2E tests go unnoticed. **Fix:** make `tsc -p tsconfig.e2e.json --noEmit` pass and add
+it to pre-commit and CI (test infrastructure first, CLAUDE.md rule 15). **Status:** open.
+
 ### Re-enable mobile layout tests
-`mobile-touch-targets.spec.ts` and `mobile-overflow.spec.ts` have FIXME markers because the
+`touch-targets.spec.ts` and `overflow.spec.ts` have FIXME markers because the
 desktop-first layout fails them at 390 px (layout geometry is broken by design until Slice 8).
 Re-enable once the Slice 8 mobile adaptation is in place.
 **When:** Slice 8 completion.

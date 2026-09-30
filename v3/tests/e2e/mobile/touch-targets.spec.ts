@@ -58,7 +58,7 @@ test.describe.fixme(FIXME_REASON, () => {
   test('BoardListScreen: NEW BOARD button is >= 44×44px', async ({ page }) => {
     await page.goto('/soundboard-of-storytelling/');
     await goToBoardList(page);
-    await assertTarget(page.getByTestId('new-board-button'), 'NEW BOARD button');
+    await assertTarget(page.getByTestId('board-list-screen-new-button'), 'NEW BOARD button');
   });
 
   // ── BoardScreen ──────────────────────────────────────────────────────────────
@@ -69,12 +69,12 @@ test.describe.fixme(FIXME_REASON, () => {
     await createBoardAndNavigate(page);
     await createDeck(page);
 
-    await assertTarget(page.getByTestId('board-back-button'), 'board-back-button');
+    await assertTarget(page.getByTestId('board-top-bar-back-button'), 'board-top-bar-back-button');
 
     // Mode-toggle halves — width may be < 44px on very narrow viewports but
     // height must always be >= 44px (they fill the topbar height).
-    const setupHalf = page.getByTestId('mode-toggle-setup');
-    const gameHalf = page.getByTestId('mode-toggle-game');
+    const setupHalf = page.getByTestId('mode-toggle-setup-button');
+    const gameHalf = page.getByTestId('mode-toggle-game-button');
 
     const setupBox = await setupHalf.boundingBox();
     expect(setupBox, 'mode-toggle-setup: boundingBox() null').not.toBeNull();
@@ -98,6 +98,9 @@ test.describe.fixme(FIXME_REASON, () => {
     await createDeck(page);
 
     // Cell (0,0) — first cell in the grid; representative for all cells
-    await assertTarget(page.getByTestId('pad-cell-empty-0-0'), 'pad-cell-empty-0-0');
+    await assertTarget(
+      page.getByTestId('pad-grid-cell-empty-slot-0-0'),
+      'pad-grid-cell-empty-slot-0-0',
+    );
   });
 });

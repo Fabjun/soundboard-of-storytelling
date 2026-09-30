@@ -66,7 +66,7 @@ Not imported from Hearth: `hearthTexture` / `hearthAccent` (defined but unused i
 
 - `v3/tests/unit/flameMath.test.ts` — shape data, colours and glow, freeze front, phase
   automaton, particles, core flicker.
-- `visual-startscreen.spec.ts` — the flame well **and** the larger canvas field are masked
+- `start-screen.spec.ts` — the flame well **and** the larger canvas field are masked
   (continuous animation); the rest of the StartScreen stays pixel-compared.
 
 ## Parked

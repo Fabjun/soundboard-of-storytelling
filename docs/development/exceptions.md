@@ -7,13 +7,15 @@ Permanent exceptions carry a reason; temporary ones also a `BACKLOG "…"` refer
 when they are reviewed. To add or remove one, change it at its source and run
 `npm run sync:docs`.
 
-## Design and rule exceptions — ADRs (1)
+## Design and rule exceptions — ADRs (3)
 
 From the `## Exceptions` section of each ADR.
 
 | ADR | Exception | Reason | Reference | Review |
 |---|---|---|---|---|
 | [ADR-0028](../architecture/0028-single-component-variants.md) | `BoardTopBar` is a separate component next to `TopBar` | The Board screen has fundamentally different header needs (mode toggle as headline) | ADR-0026 | Slice 13 (mobile layout rebuilds both) |
+| [ADR-0054](../architecture/0054-test-locators-and-ids.md) | Existing E2E tests locate many controls by test ID although a role + accessible name would work | Most icon-only controls have no accessible name yet; the UI is rebuilt for the mobile layout in Slice 13, where accessible names are designed in — migrating now would be done twice | BACKLOG "Role-based E2E locators" | Slice 13 |
+| [ADR-0054](../architecture/0054-test-locators-and-ids.md) | `pwa.spec.ts` reads `link[rel="manifest"]` with an attribute selector | Document metadata in `<head>`, no user-facing element exists | — | permanent |
 
 ## ESLint rule suppressions (6)
 
@@ -25,8 +27,8 @@ Format: `// eslint-disable-next-line <rule> -- <reason>` — enforced by `requir
 | `v3/src/screens/BoardScreen.tsx:60` | `react-hooks/exhaustive-deps` | auto-select only on board identity change, never override the user's deck choice |
 | `v3/src/screens/BoardScreen.tsx:117` | `react-hooks/exhaustive-deps` | handleAddPad is a new ref each render; its real deps (mode, deck, board) are listed |
 | `v3/tests/e2e/deck-crud.spec.ts:74` | `playwright/no-skipped-test` | quarantine: feature not built (BACKLOG "Deck reorder") |
-| `v3/tests/e2e/mobile/mobile-overflow.spec.ts:30` | `playwright/no-skipped-test` | quarantine: mobile layout not built until Slice 13 (BACKLOG "Re-enable mobile layout tests") |
-| `v3/tests/e2e/mobile/mobile-touch-targets.spec.ts:34` | `playwright/no-skipped-test` | quarantine: mobile layout not built until Slice 13 (BACKLOG "Re-enable mobile layout tests") |
+| `v3/tests/e2e/mobile/overflow.spec.ts:30` | `playwright/no-skipped-test` | quarantine: mobile layout not built until Slice 13 (BACKLOG "Re-enable mobile layout tests") |
+| `v3/tests/e2e/mobile/touch-targets.spec.ts:34` | `playwright/no-skipped-test` | quarantine: mobile layout not built until Slice 13 (BACKLOG "Re-enable mobile layout tests") |
 
 ## Formatting exceptions (prettier-ignore) (5)
 
@@ -47,8 +49,8 @@ Procedure: `docs/development/testing.md`; reference enforced by `testGuards.test
 | Location | Marker | Reference |
 |---|---|---|
 | `v3/tests/e2e/deck-crud.spec.ts:75` | `fixme` | BACKLOG "Deck reorder" |
-| `v3/tests/e2e/mobile/mobile-overflow.spec.ts:31` | `fixme` | BACKLOG "Re-enable mobile layout tests" |
-| `v3/tests/e2e/mobile/mobile-touch-targets.spec.ts:35` | `fixme` | BACKLOG "Re-enable mobile layout tests" |
+| `v3/tests/e2e/mobile/overflow.spec.ts:31` | `fixme` | BACKLOG "Re-enable mobile layout tests" |
+| `v3/tests/e2e/mobile/touch-targets.spec.ts:35` | `fixme` | BACKLOG "Re-enable mobile layout tests" |
 | `v3/tests/unit/audio/engine.test.ts:423` | `fails` | BACKLOG "step stops the combo itself" |
 
 ## Modules without their own unit test (4)

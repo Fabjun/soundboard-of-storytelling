@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { stableScreenshot } from './visual-setup';
+import { stableScreenshot } from './helpers';
 import { goToBoardList, createBoardAndNavigate, enterSetupMode, enterGameMode } from '../helpers';
 
 test('ModeToggle — GAME state (default)', async ({ page }) => {
@@ -9,7 +9,7 @@ test('ModeToggle — GAME state (default)', async ({ page }) => {
   await enterGameMode(page);
   await stableScreenshot(page);
   const toggle = page.getByTestId('mode-toggle');
-  await expect(toggle).toHaveScreenshot('modetoggle-game.png');
+  await expect(toggle).toHaveScreenshot('mode-toggle-game.png');
 });
 
 test('ModeToggle — SETUP state', async ({ page }) => {
@@ -19,5 +19,5 @@ test('ModeToggle — SETUP state', async ({ page }) => {
   await enterSetupMode(page);
   await stableScreenshot(page);
   const toggle = page.getByTestId('mode-toggle');
-  await expect(toggle).toHaveScreenshot('modetoggle-setup.png');
+  await expect(toggle).toHaveScreenshot('mode-toggle-setup.png');
 });

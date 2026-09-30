@@ -134,6 +134,7 @@ function LibraryPanelRow({ item, onLibDrop, onLongPress }: LibraryPanelRowProps)
     <div
       // Pointer Events drag (NOT HTML5 DnD — see file header)
       class="sb-lib-panel-row"
+      data-testid={`library-panel-row-${item.id}`}
       onPointerDown={(e) => {
         const rowEl = e.currentTarget as HTMLElement;
 

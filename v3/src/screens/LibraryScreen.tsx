@@ -175,6 +175,7 @@ export function LibraryScreen(): JSX.Element {
       <input
         ref={fileInputRef}
         type="file"
+        data-testid="library-screen-file-input"
         multiple
         accept="audio/mpeg,audio/wav,audio/mp4,audio/aac,audio/x-m4a,audio/flac,audio/ogg,audio/opus,.mp3,.wav,.m4a,.aac,.flac,.ogg,.opus"
         class="sb-hidden"

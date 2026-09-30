@@ -585,7 +585,7 @@ once the app sees real use, likely with Claude Design.
 - Make inspector panels (PadEditorPanel, LibraryPanel) slide over the pad grid
   rather than pushing it, or use a tab-based layout
 - Revisit the empty-SETUP affordance question (see placeholder note above)
-- Re-enable `mobile-touch-targets.spec.ts` and `mobile-overflow.spec.ts` once
+- Re-enable `touch-targets.spec.ts` and `overflow.spec.ts` once
   the responsive layout is in place
 - Minimum viable threshold: pad grid center area ≥ 44px in all three SETUP states
   at 390px

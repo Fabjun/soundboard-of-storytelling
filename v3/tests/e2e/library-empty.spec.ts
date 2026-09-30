@@ -10,6 +10,6 @@ test('LIBRARY button navigates to LibraryScreen', async ({ page }) => {
   // IMPORT button is unique to LibraryScreen (not present on Start or BoardList)
   // Note: the actual button text is "IMPORT" — CLAUDE.md says "UPLOAD" which is wrong.
   await expect(page.getByRole('button', { name: /IMPORT/ })).toBeVisible();
-  // Library heading in the TopBar (sb-display-vt, filtered to avoid StatusBar match)
-  await expect(page.locator('.sb-display-vt').filter({ hasText: 'Library' })).toBeVisible();
+  // Library title in the TopBar (scoped to the TopBar to avoid other "Library" text)
+  await expect(page.getByTestId('top-bar').getByText('Library', { exact: true })).toBeVisible();
 });

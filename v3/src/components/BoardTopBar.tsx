@@ -35,12 +35,12 @@ export function BoardTopBar({
   const compact = typeof window !== 'undefined' && window.innerWidth < 480;
 
   return (
-    <div class="sb-board-topbar">
+    <div class="sb-board-topbar" data-testid="board-top-bar">
       {/* Left: back button + breadcrumb */}
       <div class="sb-board-topbar-left">
         <button
           class="sb-btn sb-btn-sm sb-btn-ghost sb-topbar-icon-btn"
-          data-testid="board-back-button"
+          data-testid="board-top-bar-back-button"
           onClick={onBack}
           title="Back to board list"
         >

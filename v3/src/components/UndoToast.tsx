@@ -48,7 +48,7 @@ export function UndoToast({
       <span class="sb-undo-message">{message}</span>
       <button
         class="sb-btn sb-btn-sm sb-btn-primary sb-undo-btn"
-        data-testid="undo-toast-button"
+        data-testid="undo-toast-undo-button"
         onClick={handleUndo}
       >
         UNDO

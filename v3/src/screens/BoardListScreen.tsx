@@ -59,7 +59,7 @@ export function BoardListScreen(): JSX.Element {
           <div class="sb-row">
             <button
               class="sb-btn sb-btn-sm sb-btn-primary"
-              data-testid="new-board-button"
+              data-testid="board-list-screen-new-button"
               onClick={handleCreate}
             >
               <PixelIcon name="sparkle" size={11} />
@@ -140,7 +140,7 @@ function BoardRow({ board, onOpen }: { board: Board; onOpen: () => void }): JSX.
   return (
     <div
       class="sb-menu-row sb-board-row"
-      data-testid={`board-row-${board.id}`}
+      data-testid={`board-list-screen-row-${board.id}`}
       onClick={() => {
         if (!editing) onOpen();
       }}
@@ -173,7 +173,7 @@ function BoardRow({ board, onOpen }: { board: Board; onOpen: () => void }): JSX.
             autoFocus
           />
         ) : (
-          <div class="sb-row-title" data-testid={`board-row-title-${board.id}`}>
+          <div class="sb-row-title" data-testid={`board-list-screen-name-text-${board.id}`}>
             {board.name}
           </div>
         )}
@@ -190,7 +190,7 @@ function BoardRow({ board, onOpen }: { board: Board; onOpen: () => void }): JSX.
         <div class="sb-row-actions" onClick={(e) => e.stopPropagation()}>
           <button
             class="sb-btn sb-btn-sm sb-btn-ghost sb-btn-icon-sm"
-            data-testid={`board-edit-${board.id}`}
+            data-testid={`board-list-screen-edit-button-${board.id}`}
             title="Rename board"
             onClick={() => {
               setEditValue(board.name);
@@ -201,7 +201,7 @@ function BoardRow({ board, onOpen }: { board: Board; onOpen: () => void }): JSX.
           </button>
           <button
             class={`sb-btn sb-btn-sm sb-btn-icon-sm ${deleteConfirm ? 'sb-btn-danger' : 'sb-btn-ghost'}`}
-            data-testid={`board-delete-${board.id}`}
+            data-testid={`board-list-screen-delete-button-${board.id}`}
             title={deleteConfirm ? 'Click again to confirm' : 'Delete board'}
             onClick={handleDelete}
             onBlur={() => setDeleteConfirm(false)}
@@ -226,7 +226,7 @@ function EmptyBoardsState({ onCreate }: { onCreate: () => void }): JSX.Element {
       </div>
       <button
         class="sb-btn sb-btn-primary sb-btn-cta"
-        data-testid="create-first-board-button"
+        data-testid="board-list-screen-create-first-button"
         onClick={onCreate}
       >
         <PixelIcon name="sparkle" size={14} />+ CREATE FIRST BOARD

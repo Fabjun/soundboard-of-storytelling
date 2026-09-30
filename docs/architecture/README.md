@@ -96,11 +96,12 @@ Jede Entscheidung bekommt eine eigene Datei. Format: `docs/architecture/_templat
 | [ADR-0035](0035-playwright.md) | Playwright für E2E-Tests | Accepted | infrastructure | 2026-05-27 |
 | [ADR-0036](0036-visual-regression-macos.md) | Visual Regression Tests lokal-only (macOS-Baselines) | Accepted | infrastructure | 2026-05-27 |
 | [ADR-0037](0037-husky-precommit.md) | Husky Pre-Commit-Hook: Build + Unit + Smoke E2E | Accepted | infrastructure | 2026-05-27 |
-| [ADR-0038](0038-data-testid-convention.md) | `data-testid`-Konvention für E2E-Selektoren | Accepted | infrastructure | 2026-05-27 |
+| [ADR-0038](0038-data-testid-convention.md) | `data-testid`-Konvention für E2E-Selektoren | Superseded by ADR-0054 | infrastructure | 2026-05-27 |
 | [ADR-0040](0040-github-pages-deployment.md) | GitHub Pages Deployment gated auf CI (`workflow_run`) | Accepted — refined by ADR-0049 (deploy the tested artifact, push-only guard) | infrastructure | 2026-05-27 |
 | [ADR-0049](0049-deploy-tested-artifact.md) | Deploy the tested build artifact | Accepted | infrastructure | 2026-09-29 |
 | [ADR-0051](0051-repository-security-settings.md) | Repository security settings | Accepted | infrastructure | 2026-09-29 |
 | [ADR-0053](0053-exception-management.md) | Exception management | Accepted | cross-cutting | 2026-09-29 |
+| [ADR-0054](0054-test-locators-and-ids.md) | Test locators and test IDs | Accepted | infrastructure | 2026-09-30 |
 
 ### Prozess- & Produktentscheidungen
 

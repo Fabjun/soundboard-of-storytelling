@@ -19,30 +19,30 @@ test.beforeEach(async ({ page }) => {
 
 test('1 — create board → appears in list', async ({ page }) => {
   await goToBoardList(page);
-  await page.getByTestId('new-board-button').click();
-  await expect(page.locator('[data-testid^="board-row-"]').first()).toBeVisible();
+  await page.getByTestId('board-list-screen-new-button').click();
+  await expect(page.locator('[data-testid^="board-list-screen-row-"]').first()).toBeVisible();
 });
 
 // ── Test 2: Rename board ──────────────────────────────────────────────────────
 
 test('2 — rename board inline → title updates', async ({ page }) => {
   await goToBoardList(page);
-  await page.getByTestId('new-board-button').click();
-  const boardRow = page.locator('[data-testid^="board-row-"]').first();
+  await page.getByTestId('board-list-screen-new-button').click();
+  const boardRow = page.locator('[data-testid^="board-list-screen-row-"]').first();
   await boardRow.waitFor();
 
   // Click the edit (pencil) button
-  const editBtn = boardRow.locator('[data-testid^="board-edit-"]');
+  const editBtn = boardRow.locator('[data-testid^="board-list-screen-edit-button-"]');
   await editBtn.click();
 
   // Find the inline input (rendered inside the row, replacing the title span)
-  const input = boardRow.locator('input[type="text"]');
+  const input = boardRow.getByRole('textbox');
   await input.waitFor();
   await input.fill('My Renamed Board');
   await input.press('Enter');
 
   // Title should update (DOM text is stored as-typed; CSS textTransform is visual-only)
-  await expect(boardRow.locator('[data-testid^="board-row-title-"]')).toHaveText(
+  await expect(boardRow.locator('[data-testid^="board-list-screen-name-text-"]')).toHaveText(
     'My Renamed Board',
   );
 });
@@ -51,30 +51,30 @@ test('2 — rename board inline → title updates', async ({ page }) => {
 
 test('3 — renamed board persists after page reload', async ({ page }) => {
   await goToBoardList(page);
-  await page.getByTestId('new-board-button').click();
-  const boardRow = page.locator('[data-testid^="board-row-"]').first();
+  await page.getByTestId('board-list-screen-new-button').click();
+  const boardRow = page.locator('[data-testid^="board-list-screen-row-"]').first();
   await boardRow.waitFor();
 
   // Rename the board
-  const editBtn = boardRow.locator('[data-testid^="board-edit-"]');
+  const editBtn = boardRow.locator('[data-testid^="board-list-screen-edit-button-"]');
   await editBtn.click();
-  const input = boardRow.locator('input[type="text"]');
+  const input = boardRow.getByRole('textbox');
   await input.waitFor();
   await input.fill('Persistent Board');
   await input.press('Enter');
 
   // Wait for title to update (confirms IDB save has happened)
-  await expect(boardRow.locator('[data-testid^="board-row-title-"]')).toHaveText(
+  await expect(boardRow.locator('[data-testid^="board-list-screen-name-text-"]')).toHaveText(
     'Persistent Board',
   );
 
   // Reload the page
   await page.reload();
   await page.getByRole('button', { name: 'BOARD' }).click();
-  await page.getByTestId('new-board-button').waitFor();
+  await page.getByTestId('board-list-screen-new-button').waitFor();
 
   // Board should still exist with the renamed title
-  await expect(page.locator('[data-testid^="board-row-title-"]').first()).toHaveText(
+  await expect(page.locator('[data-testid^="board-list-screen-name-text-"]').first()).toHaveText(
     'Persistent Board',
   );
 });
@@ -83,11 +83,11 @@ test('3 — renamed board persists after page reload', async ({ page }) => {
 
 test('4 — delete board: first tap shows confirm state (!! label)', async ({ page }) => {
   await goToBoardList(page);
-  await page.getByTestId('new-board-button').click();
-  const boardRow = page.locator('[data-testid^="board-row-"]').first();
+  await page.getByTestId('board-list-screen-new-button').click();
+  const boardRow = page.locator('[data-testid^="board-list-screen-row-"]').first();
   await boardRow.waitFor();
 
-  const deleteBtn = boardRow.locator('[data-testid^="board-delete-"]');
+  const deleteBtn = boardRow.locator('[data-testid^="board-list-screen-delete-button-"]');
   // Initial state: "×" character
   await expect(deleteBtn).toHaveText('×');
 
@@ -102,11 +102,11 @@ test('4 — delete board: first tap shows confirm state (!! label)', async ({ pa
 
 test('5 — delete board: second tap removes it from list', async ({ page }) => {
   await goToBoardList(page);
-  await page.getByTestId('new-board-button').click();
-  const boardRow = page.locator('[data-testid^="board-row-"]').first();
+  await page.getByTestId('board-list-screen-new-button').click();
+  const boardRow = page.locator('[data-testid^="board-list-screen-row-"]').first();
   await boardRow.waitFor();
 
-  const deleteBtn = boardRow.locator('[data-testid^="board-delete-"]');
+  const deleteBtn = boardRow.locator('[data-testid^="board-list-screen-delete-button-"]');
   // Two taps
   await deleteBtn.click();
   await expect(deleteBtn).toHaveText('!!');
