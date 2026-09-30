@@ -545,7 +545,8 @@ Before committing a slice, also:
    `src/state`, `src/db`, `src/audio` needs `tests/unit/**/<name>.test.ts` or a
    justified entry in the EXEMPT list of `tests/unit/testGuards.test.ts` (enforced).
    No coverage required for UI components or event handlers.
-   3a. **Test review** (rule 15): new user flows are covered by E2E tests (Chromium,
+   3a. **Test review** (rule 15): test cases are chosen with the
+   [edge-case checklist](docs/development/testing.md#test-design-edge-case-checklist); new user flows are covered by E2E tests (Chromium,
    and `full-webkit` where no playback is needed); every new test was counter-checked
    (break the code → red); guards are green; no quarantine without a BACKLOG entry;
    raise the coverage floor in `vitest.config.ts` to the new measured values (rounded down).

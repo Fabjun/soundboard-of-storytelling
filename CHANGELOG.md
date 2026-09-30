@@ -4,6 +4,10 @@
 
 All notable changes to Soundboard of Storytelling, newest first.
 
+## 3.0.81 — 2026-09-30
+
+- docs(test): edge-case checklist for choosing test cases (T11a)
+
 ## 3.0.80 — 2026-09-30
 
 - chore(deps): Preact 11 (major)

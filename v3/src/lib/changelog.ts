@@ -7,9 +7,14 @@ export type ChangelogEntry = {
   items: string[];
 };
 
-export const APP_VERSION = '3.0.80';
+export const APP_VERSION = '3.0.81';
 
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.81',
+    date: '2026-09-30',
+    items: ['docs(test): edge-case checklist for choosing test cases (T11a)'],
+  },
   {
     version: '3.0.80',
     date: '2026-09-30',

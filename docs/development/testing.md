@@ -370,6 +370,31 @@ cd v3 && npm run build && npm run size  # build + size check
 
 ---
 
+## Test design: edge-case checklist
+
+Choose test cases with the black-box techniques of the ISTQB Foundation syllabus, then go through
+the project checklist (T11a). A test's name says which case it covers.
+
+- **Equivalence partitioning** — split the inputs into classes that are processed the same way
+  (valid and invalid); one test per class is enough.
+- **Boundary value analysis** — defects cluster at the edges of ordered classes: test the
+  boundary and the value on each side (grid index 0, the last index, one past the last).
+
+**Project checklist** — which of these apply to the code under test?
+
+| Area                 | Cases                                                                                                               |
+| -------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| Quantity             | nothing (empty library, board without decks or pads) · exactly one · many · full (grid full, quick-access bar full) |
+| Grid                 | first cell, last cell, one past the last; 1 row or 1 column; positions of removed pads                              |
+| References           | a pad pointing to a deleted library file; a deck entry for a removed pad; a missing board                           |
+| Duplicates           | the same name twice; the same audio file uploaded twice (same hash); the same pad in two decks                      |
+| Text                 | empty, whitespace only, very long, leading/trailing spaces, non-ASCII (umlauts, CJK, emoji in user data)            |
+| Order and repetition | double tap; start while playing; stop while stopped; fast mode switches; undo after delete                          |
+| Persistence          | reload; data stored by an older schema (migration); IndexedDB errors and quota                                      |
+| Lifecycle            | offline start; tab hidden and shown again (iOS); audio still locked (before TAP TO UNLOCK)                          |
+| iOS memory rules     | large files, many files (serial decode), buffers released after playback (CLAUDE.md)                                |
+| Platform             | WebKit and Chromium; touch and mouse; narrow and wide viewport                                                      |
+
 ## Writing unit tests
 
 **Time budget:** 500 ms per test locally, 5 s in CI (`v3/vitest.config.ts`). CI with coverage
