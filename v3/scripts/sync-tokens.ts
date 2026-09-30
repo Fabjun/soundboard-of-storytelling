@@ -14,12 +14,14 @@
  * Run: npm run sync:tokens  (from v3/)
  */
 
-import { readFileSync, writeFileSync } from 'fs';
+import { readFileSync } from 'fs';
 import { dirname, join, resolve } from 'path';
 import { fileURLToPath } from 'url';
+import { writeGenerated } from './lib/write-generated';
+import { tableRow } from './lib/markdown';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const ROOT = resolve(__dirname, '..');
+const ROOT = resolve(__dirname, '..', '..');
 const TOKENS_CSS = join(ROOT, 'v3', 'src', 'styles', 'tokens.css');
 const DESIGN_SYSTEM = join(ROOT, 'docs/design/design-system.md');
 
@@ -119,8 +121,7 @@ function parseTokens(css: string): TokenEntry[] {
     }
 
     // Shorten very long values (e.g. drop-shadow chains)
-    const displayValue =
-      rawValue.length > 60 ? rawValue.slice(0, 57) + '…' : rawValue;
+    const displayValue = rawValue.length > 60 ? rawValue.slice(0, 57) + '…' : rawValue;
 
     entries.push({
       name,
@@ -149,7 +150,7 @@ function generateTable(entries: TokenEntry[]): string {
     lines.push('|-------|------|-------------|');
     for (const t of tokens) {
       const desc = t.description || '—';
-      lines.push(`| \`${t.name}\` | \`${t.value}\` | ${desc} |`);
+      lines.push(tableRow([`\`${t.name}\``, `\`${t.value}\``, desc]));
     }
     lines.push('');
   }
@@ -157,7 +158,7 @@ function generateTable(entries: TokenEntry[]): string {
   return lines.join('\n').trimEnd();
 }
 
-function run(): void {
+async function run(): Promise<void> {
   const css = readFileSync(TOKENS_CSS, 'utf8');
   const entries = parseTokens(css);
   const table = generateTable(entries);
@@ -174,13 +175,15 @@ function run(): void {
   const after = doc.slice(endIdx);
 
   doc = `${before}\n${table}\n${after}`;
-  writeFileSync(DESIGN_SYSTEM, doc, 'utf8');
+  await writeGenerated(DESIGN_SYSTEM, doc);
 
-  console.log(`sync-tokens: wrote ${entries.length} tokens in ${countGroups(entries)} groups → docs/design/design-system.md`);
+  console.log(
+    `sync-tokens: wrote ${entries.length} tokens in ${countGroups(entries)} groups → docs/design/design-system.md`,
+  );
 }
 
 function countGroups(entries: TokenEntry[]): number {
   return new Set(entries.map((e) => e.group)).size;
 }
 
-run();
+await run();

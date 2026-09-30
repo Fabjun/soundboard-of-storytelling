@@ -54,6 +54,7 @@
 3. **Features** — only on top of 1 and 2.
 
 ### Working principles (user decisions 2026-09-29)
+
 - **Research first** — before any plan, decision, scheme or tooling choice, research the
   current industry standard / official guidance (web, not memory alone) and cite the sources
   in the plan; deviate only with a stated reason.
@@ -134,11 +135,13 @@
 **Primary target:** iPhone 13 Pro (iOS 17/18) with Brave browser.
 
 **Minimum supported versions:**
+
 - iOS Safari 15+ (iPhone 6s, 2015, and newer)
 - Android Chrome 100+ (~2022 and newer)
 - Desktop: current Chromium, Firefox, Safari (last 2 major versions)
 
 **Available modern features (all supported on minimum):**
+
 - Pointer Events API (iOS 13+)
 - IndexedDB
 - Web Audio API (with user-gesture unlock)
@@ -147,10 +150,12 @@
 - IntersectionObserver, ResizeObserver
 
 **Features requiring graceful degradation:**
+
 - Container Queries (iOS 16+) — fall back to Media Queries on iOS 15
 - View Transitions API (iOS 18+) — optional polish only; never a hard dep
 
 **Features explicitly avoided (not supported on minimum):**
+
 - **HTML5 Drag-and-Drop on iOS — always use Pointer Events instead.**
   `draggable`, `ondragstart`, `ondragover`, `ondrop` are not supported
   on iOS Safari/Brave. Any DnD interaction (pad-to-pad, library-to-grid,
@@ -208,13 +213,13 @@ if the names change. When porting any V1 audio/IDB code:
 
 ### Banned patterns (regardless of name)
 
-| Pattern | Why | Replacement principle |
-|---------|-----|----------------------|
-| Loading all library buffers for any non-playback purpose | 150–240 MB into RAM | Metadata-only cursor |
-| Parallel `decodeAudioData` over N files | N × 50–100 MB PCM = OOM at N > 10 | Serial decode, release between |
-| Storing raw audio in working state arrays | Holds compressed + decoded copies | Store `{name, hash, size}`, lazy-load |
-| Loading full library JSON for export | 150–300 MB string in RAM | Stream entries one at a time |
-| `FileReader` loop in parallel for N files | N parallel reads + N parallel decodes | Serial file processing |
+| Pattern                                                  | Why                                   | Replacement principle                 |
+| -------------------------------------------------------- | ------------------------------------- | ------------------------------------- |
+| Loading all library buffers for any non-playback purpose | 150–240 MB into RAM                   | Metadata-only cursor                  |
+| Parallel `decodeAudioData` over N files                  | N × 50–100 MB PCM = OOM at N > 10     | Serial decode, release between        |
+| Storing raw audio in working state arrays                | Holds compressed + decoded copies     | Store `{name, hash, size}`, lazy-load |
+| Loading full library JSON for export                     | 150–300 MB string in RAM              | Stream entries one at a time          |
+| `FileReader` loop in parallel for N files                | N parallel reads + N parallel decodes | Serial file processing                |
 
 ### When adding any new code that touches audio or IDB
 
@@ -312,6 +317,7 @@ and has diverged). Never hardcode colors, fonts, or spacing.
       Path D; there is no loophole of attaching a structural property to a layout one.
 
   **Canonical example** (`sb-creation-popover-section` drift case):
+
   ```tsx
   // Bad — Path D: static structural values; sb-creation-popover-section already exists
   <div style={{ padding: '8px', borderTop: '1px solid var(--border-soft)' }}>
@@ -328,6 +334,7 @@ and has diverged). Never hardcode colors, fonts, or spacing.
   // Good — Path C: value is computed at runtime
   <div style={{ transform: `translateX(${dragOffset}px)` }}>
   ```
+
 - **Inline-style audit:** `npm run audit:inline-styles` reports all `style={}` blocks
   classified against the four-path rule (pure-layout / structural / mixed / dynamic /
   custom-setter / unclassified). Non-blocking; runs in CI as informational. Use it to
@@ -391,8 +398,8 @@ any non-doc file flagged ⚠ for approval. Routine additionally: `v3/src/lib/cha
    context, wait for confirmation.
 3. **"Kannst du X?" is a question** — answer first, wait for go-ahead
    before implementing.
-4. **Vertical slices**: build complete vertical features (UI + state
-   + persistence), not horizontal layers. Slice plan: "Slice progress"
+4. **Vertical slices**: build complete vertical features (UI + state +
+   persistence), not horizontal layers. Slice plan: "Slice progress"
    table in this file (single source).
 5. **After every feature or fix**: verify manually, then
    `git add . && git commit -m "..." && git push`
@@ -422,9 +429,11 @@ any non-doc file flagged ⚠ for approval. Routine additionally: `v3/src/lib/cha
     Check for unexpected diffs. If change is intentional: update baselines
     with `npm run test:e2e:update-snapshots` and commit the new `.png` files.
     Visual tests are macOS-only (Ubuntu CI excluded — font rendering differs).
-11. **Lint + Format**: ESLint and Prettier are configured. Before committing
-    any TypeScript/TSX: `npm run lint` must exit 0. Format with
-    `npm run format` if needed. CI enforces both.
+11. **Lint + Format** (ADR-0058): one Prettier config for the whole repository
+    (`.prettierrc.json` at the root); ESLint covers `v3/` including `v3/scripts/`. Markdown is
+    formatted by `npm run format:md`, which fails instead of changing content — fix the source
+    (escape a bare `*`/`_`, a `|` in a table cell). Before committing any TypeScript/TSX:
+    `npm run lint` must exit 0. Format with `npm run format` if needed. CI enforces both.
 12. **Architecture Decision Records**: for every substantial architecture decision (data
     model, persistence, cross-cutting pattern, platform assumptions, new infrastructure)
     create an ADR in `docs/architecture/`, following `docs/architecture/_template.md`; the
@@ -436,15 +445,15 @@ any non-doc file flagged ⚠ for approval. Routine additionally: `v3/src/lib/cha
     missing category shows up as "Uncategorized" in the generated index.
 13. **Generated inventories**: six places are filled by generators — never edit them by hand:
     - [docs/architecture/README.md §Index](docs/architecture/README.md#index) — via `npm run sync:adr`
-    - [docs/design/design-system.md §6](docs/design/design-system.md#6-component-inventory) (sb-* classes) — via `npm run sync:classes`
+    - [docs/design/design-system.md §6](docs/design/design-system.md#6-component-inventory) (`sb-*` classes) — via `npm run sync:classes`
     - [docs/design/design-system.md §A](docs/design/design-system.md#a-token-inventory) (Tokens) — via `npm run sync:tokens`
     - [docs/development/testing.md §Test inventory](docs/development/testing.md#test-inventory) (specs per project, unit tests) — via `npm run sync:tests`
     - `CHANGELOG.md` (whole file, from `v3/src/lib/changelog.ts`) — via `npm run sync:changelog`
     - `docs/development/exceptions.md` (exception register, whole file) — via `npm run sync:exceptions`
-    The pre-commit hook runs `sync:docs` and stages the results. To refresh manually:
-    `cd v3 && npm run sync:docs`. Document new sb-* classes with
-    `/* @inventory: description */` at the CSS selector. New tokens take their description
-    from the inline comment after the semicolon in `v3/src/styles/tokens.css`.
+      The pre-commit hook runs `sync:docs` and stages the results. To refresh manually:
+      `cd v3 && npm run sync:docs`. Document new `sb-*` classes with
+      `/* @inventory: description */` at the CSS selector. New tokens take their description
+      from the inline comment after the semicolon in `v3/src/styles/tokens.css`.
 14. **Open work items**: All deferred items and known limitations are tracked in
     `docs/backlog.md`. Slice plans should consult and update it. At each
     slice completion, before the final commit: mark completed items `✅ Done (commit SHA)`
@@ -462,9 +471,10 @@ without exception:
 
 > **Enforced automatically:** the Husky pre-commit hook (`.husky/pre-commit`, the source of
 > truth for this list) runs these gates in sequence and blocks on failure:
+>
 > 1. `npm run sync:docs` + `git add` (~1s) — generated docs; the result is staged automatically
-> 2. `npm run build` (`tsc -b` + vite, ~6s) — type-checks **every** TypeScript file: app, unit + E2E tests, tool configs, `scripts/` (ADR-0055)
-> 3. `npx lint-staged` — Prettier + ESLint on staged files only; auto-fix + re-stage
+> 2. `npm run build` (`tsc -b` + vite, ~6s) — type-checks **every** TypeScript file: app, unit + E2E tests, tool configs, `v3/scripts/` (ADR-0055)
+> 3. `npx lint-staged` (config: `.lintstagedrc.json`, whole repository) — Prettier + ESLint on staged files only; Markdown via `format:md`, which fails instead of changing content; auto-fix + re-stage
 > 4. `npm run test` (vitest, ~1s)
 > 5. `npm run test:e2e:smoke` (Chromium + WebKit, ~6s)
 > 6. `npm run lint:docs` (Vale, ~1s) — superseded terms in active docs (ADR-0056)
@@ -478,13 +488,14 @@ without exception:
 ### Pre-push gate (mandatory before every push)
 
 > **Enforced automatically:** the Husky pre-push hook runs on `git push` and blocks on failure:
+>
 > 1. **Version-Bump-Check** (~0s) — `APP_VERSION` in `v3/src/lib/changelog.ts` must differ from `origin/main` (one push = one version bump); skipped if `origin/main` is unreachable (first push)
-> 2. `npm audit --audit-level=high` (~2s) — high/critical vulnerabilities block
-> 2a. only if install files changed: `npm ci` in a fresh worktree with its own cache (~10s) — the CI install path
-> 3. `npm run size` (~2s) — Bundle-Size-Limit (200 kB JS / 50 kB CSS gzip)
-> 4. `npm run test:e2e:all` (~3 min) — all six dev-server projects: smoke + smoke-webkit + full + full-webkit + mobile + mobile-chromium
-> 5. `npm run test:e2e:prod` — build, then smoke + full + pwa against the finished build (`vite preview`, service worker)
-> 6. **macOS only:** `npm run test:e2e:visual` (~15s) — visual regression
+> 2. Only if install files changed: `npm ci` in a fresh worktree with its own cache (~10s) — the CI install path
+> 3. `npm audit --audit-level=high` (~2s) — high/critical vulnerabilities block
+> 4. `npm run size` (~2s) — Bundle-Size-Limit (200 kB JS / 50 kB CSS gzip)
+> 5. `npm run test:e2e:all` (~3 min) — all six dev-server projects: smoke + smoke-webkit + full + full-webkit + mobile + mobile-chromium
+> 6. `npm run test:e2e:prod` — build, then smoke + full + pwa against the finished build (`vite preview`, service worker)
+> 7. **macOS only:** `npm run test:e2e:visual` (~15s) — visual regression
 >
 > If a step fails: **read the error output / report first, then re-run** (a new run overwrites the report).
 >
@@ -542,18 +553,18 @@ Before committing a slice, also:
    `src/state`, `src/db`, `src/audio` needs `tests/unit/**/<name>.test.ts` or a
    justified entry in the EXEMPT list of `tests/unit/testGuards.test.ts` (enforced).
    No coverage required for UI components or event handlers.
-3a. **Test review** (rule 15): new user flows are covered by E2E tests (Chromium,
+   3a. **Test review** (rule 15): new user flows are covered by E2E tests (Chromium,
    and `full-webkit` where no playback is needed); every new test was counter-checked
    (break the code → red); guards are green; no quarantine without a BACKLOG entry;
    raise the coverage floor in `vitest.config.ts` to the new measured values (rounded down).
 4. Update CLAUDE.md "Slice progress" table with completion date
-4a. **Update `README.md`** (public, read by clients and colleagues): move finished features
+   4a. **Update `README.md`** (public, read by clients and colleagues): move finished features
    from "Planned next" to "Available now", adjust "Planned next". English, professional,
    no concrete game names, only built features under "Available now". Node version and
    live URL are guarded by `tests/unit/docsGuards.test.ts`.
 5. **Update docs/backlog.md**: mark completed items `✅ Done (commit SHA)`, add any
    new deferred items surfaced during the slice.
-5a. **Structure review (~15 min, user decision 2026-09-30)** — a short retrospective on
+   5a. **Structure review (~15 min, user decision 2026-09-30)** — a short retrospective on
    structure, not a full audit. Goal: every finding that can be automated becomes a check
    (guard, lint rule, generator), so the next review has less to find.
    - Read the generated `docs/development/exceptions.md`: is every new exception justified;
@@ -567,6 +578,7 @@ Before committing a slice, also:
 
    A **full structure audit** runs only on occasion: before a new phase (e.g. first live use),
    after large upgrades, or when the review finds a pattern it cannot settle in 15 minutes.
+
 6. **For slices touching audio (`src/audio/`), IDB (`src/db/`), or file-handling
    (import/export):** run through `docs/development/manual-iphone-checklist.md` before the final
    commit. These checks cannot be automated in Playwright and have caught iOS-only bugs
@@ -662,35 +674,36 @@ boardDelete(id: string): Promise<void>
 
 <!-- vale SoS.SupersededTerms = NO --><!-- reason: historical slice records keep the names valid at the time (Scene before Slice 9b) -->
 
-| # | Name | Status | Date | Notes |
-|---|------|--------|------|-------|
-| 1 | Project setup + StartScreen | ✅ Complete | 2026-05-27 | Vite + Preact + TS scaffold; tokens.css; PixelIcon; TopBar; StatusBar; StartScreen; Preact Signals store; PWA config |
-| 2 | Library + LibraryItem CRUD | ✅ Complete | 2026-05-27 | idb + @noble/hashes; LibraryItemMeta/LibraryItem split; serial upload pipeline; AudioRow; Waveform; 2-tap delete; rename via <input>; 2-column layout; 4 tabs |
-| 3 | Board + Scene + Pad CRUD | ✅ Complete | 2026-05-27 | Board CRUD (BoardListScreen), Scene CRUD (SceneRail, inline rename, duplicate, reorder, delete+undo), Pad CRUD (3 paths: tap-slot popover, library drag, ADD PAD), Pad DnD (SWAP+INSERT), PadTypeConfirmDialog (v23 Option C), ModeToggle with sparks, SETUP/GAME modes, empty states **Correction 2026-09-29:** scene/deck reorder was never built (listed here by mistake); see BACKLOG "Deck reorder". |
-| 4 | Audio playback | ✅ Complete | 2026-05-28 | Discriminated union (ADR-0042), engine.ts/index.ts/types.ts (ADR-0044), iOS hacks + LRU 150 MB (ADR-0043), all 4 pad types, Signal bridge, TAP TO UNLOCK wired, is-hot/is-looping CSS classes |
-| 5 | Scene switching | ↷ Superseded | 2026-09-28 | May plan — replaced by 9 + 13 (see mapping below) |
-| 6 | Sets + Quick Access | ↷ Superseded | 2026-09-28 | May plan — sets dropped; quick-access bar → 9 + 13 |
-| 7 | Template export/import | ↷ Superseded | 2026-09-28 | May plan — replaced by 10 |
-| 8 | Settings, themes, polish | ↷ Superseded | 2026-09-28 | May plan — replaced by 14 (layout items → 13) |
-| 9 | Data model | ⬜ Pending (next) | — | Pad pool + decks, rename Scene → Deck (UI, code, stored data), Playlist → Loop, multi-file Single/Loop ([docs/product/README.md §5](docs/product/README.md#5-core-concepts)). ADR required. V3 data may be wiped (only test data): delete **only** the `sos-v3` database — never origin-wide storage (V1's `botc` DB shares the origin `fabjun.github.io`). |
-| 10 | Data backup & import | ⬜ Pending | — | Single-file export/import, V1 import incl. all library audio, piecewise reading, persistent storage, last-backup indicator (`docs/product/features/data-backup.md`) |
-| 11 | Combo editor | ⬜ Pending | — | Minimal first version, then towards V1 scope and beyond ([docs/product/README.md §5 Pads](docs/product/README.md#pads)) |
-| 12 | Live control | ⬜ Pending | — | Numpad K1–K14, STOP ALL, pause, Wake Lock, mode switch stops sounds, Lock ([docs/product/README.md §3](docs/product/README.md#3-app-modes-game-and-setup), [§6](docs/product/README.md#6-platforms--input)). Goal: first real game night with V3 (laptop / tablet) |
-| 13 | Adaptive layout | ⬜ Pending | — | Smartphones in general (not only iPhone): deck switcher, All pads, quick-access bar, search/sort bar, PAD card format + zoom (`docs/design/components/pad.md`) |
-| 14 | Settings & polish | ⬜ Pending | — | Settings screen, Settings options from docs/product/README.md P2, themes |
+| #   | Name                        | Status            | Date       | Notes                                                                                                                                                                                                                                                                                                                                                                                                     |
+| --- | --------------------------- | ----------------- | ---------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | Project setup + StartScreen | ✅ Complete       | 2026-05-27 | Vite + Preact + TS scaffold; tokens.css; PixelIcon; TopBar; StatusBar; StartScreen; Preact Signals store; PWA config                                                                                                                                                                                                                                                                                      |
+| 2   | Library + LibraryItem CRUD  | ✅ Complete       | 2026-05-27 | idb + @noble/hashes; LibraryItemMeta/LibraryItem split; serial upload pipeline; AudioRow; Waveform; 2-tap delete; rename via <input>; 2-column layout; 4 tabs                                                                                                                                                                                                                                             |
+| 3   | Board + Scene + Pad CRUD    | ✅ Complete       | 2026-05-27 | Board CRUD (BoardListScreen), Scene CRUD (SceneRail, inline rename, duplicate, reorder, delete+undo), Pad CRUD (3 paths: tap-slot popover, library drag, ADD PAD), Pad DnD (SWAP+INSERT), PadTypeConfirmDialog (v23 Option C), ModeToggle with sparks, SETUP/GAME modes, empty states **Correction 2026-09-29:** scene/deck reorder was never built (listed here by mistake); see BACKLOG "Deck reorder". |
+| 4   | Audio playback              | ✅ Complete       | 2026-05-28 | Discriminated union (ADR-0042), engine.ts/index.ts/types.ts (ADR-0044), iOS hacks + LRU 150 MB (ADR-0043), all 4 pad types, Signal bridge, TAP TO UNLOCK wired, is-hot/is-looping CSS classes                                                                                                                                                                                                             |
+| 5   | Scene switching             | ↷ Superseded      | 2026-09-28 | May plan — replaced by 9 + 13 (see mapping below)                                                                                                                                                                                                                                                                                                                                                         |
+| 6   | Sets + Quick Access         | ↷ Superseded      | 2026-09-28 | May plan — sets dropped; quick-access bar → 9 + 13                                                                                                                                                                                                                                                                                                                                                        |
+| 7   | Template export/import      | ↷ Superseded      | 2026-09-28 | May plan — replaced by 10                                                                                                                                                                                                                                                                                                                                                                                 |
+| 8   | Settings, themes, polish    | ↷ Superseded      | 2026-09-28 | May plan — replaced by 14 (layout items → 13)                                                                                                                                                                                                                                                                                                                                                             |
+| 9   | Data model                  | ⬜ Pending (next) | —          | Pad pool + decks, rename Scene → Deck (UI, code, stored data), Playlist → Loop, multi-file Single/Loop ([docs/product/README.md §5](docs/product/README.md#5-core-concepts)). ADR required. V3 data may be wiped (only test data): delete **only** the `sos-v3` database — never origin-wide storage (V1's `botc` DB shares the origin `fabjun.github.io`).                                               |
+| 10  | Data backup & import        | ⬜ Pending        | —          | Single-file export/import, V1 import incl. all library audio, piecewise reading, persistent storage, last-backup indicator (`docs/product/features/data-backup.md`)                                                                                                                                                                                                                                       |
+| 11  | Combo editor                | ⬜ Pending        | —          | Minimal first version, then towards V1 scope and beyond ([docs/product/README.md §5 Pads](docs/product/README.md#pads))                                                                                                                                                                                                                                                                                   |
+| 12  | Live control                | ⬜ Pending        | —          | Numpad K1–K14, STOP ALL, pause, Wake Lock, mode switch stops sounds, Lock ([docs/product/README.md §3](docs/product/README.md#3-app-modes-game-and-setup), [§6](docs/product/README.md#6-platforms--input)). Goal: first real game night with V3 (laptop / tablet)                                                                                                                                        |
+| 13  | Adaptive layout             | ⬜ Pending        | —          | Smartphones in general (not only iPhone): deck switcher, All pads, quick-access bar, search/sort bar, PAD card format + zoom (`docs/design/components/pad.md`)                                                                                                                                                                                                                                            |
+| 14  | Settings & polish           | ⬜ Pending        | —          | Settings screen, Settings options from docs/product/README.md P2, themes                                                                                                                                                                                                                                                                                                                                  |
 
 **Re-plan 2026-09-28 (numbering rule):** Slices 5–8 of the May plan are superseded; their numbers
 are **never reused**. Every existing reference to "Slice 5–8" (BACKLOG, ADRs, DESIGN_NOTES, code
 comments) keeps meaning the May plan. Mapping old → new:
 
-| Old (May plan) | New |
-|---|---|
-| 5 Scene switching | 9 (model) + 13 (deck switcher UI) |
-| 6 Sets + Quick Access | sets dropped; quick-access bar → 9 (model) + 13 (UI) |
-| 7 Template export/import | 10 |
-| 8 Settings, themes, polish | 14; layout-related items → 13 |
+| Old (May plan)             | New                                                  |
+| -------------------------- | ---------------------------------------------------- |
+| 5 Scene switching          | 9 (model) + 13 (deck switcher UI)                    |
+| 6 Sets + Quick Access      | sets dropped; quick-access bar → 9 (model) + 13 (UI) |
+| 7 Template export/import   | 10                                                   |
+| 8 Settings, themes, polish | 14; layout-related items → 13                        |
 
 ### Deviations from plan
+
 - State manager chosen: Preact Signals (confirmed by user, Slice 1).
 - Root component file renamed `app.tsx` (Preact scaffold default) → `App.tsx` on 2026-09-29 to match the PascalCase component files (ADR-0052).
 - `LibraryItem.blob` never stored in Signals: type split into `LibraryItemMeta` (in state) + `LibraryItem` (IDB only).

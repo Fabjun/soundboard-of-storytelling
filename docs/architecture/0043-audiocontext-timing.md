@@ -12,7 +12,7 @@
 
 ADR-0020 decided that the AudioContext is created via a "TAP TO UNLOCK"
 gesture screen rather than eagerly at app boot. It does not specify
-*where exactly* in the click handler `new AudioContext()` must appear.
+_where exactly_ in the click handler `new AudioContext()` must appear.
 
 iOS Safari (and Brave on iOS) enforces a strict user-gesture requirement:
 `new AudioContext()` must be called **synchronously** within the same
@@ -33,9 +33,9 @@ as the first statement** in the TAP TO UNLOCK click handler, before any
 
 ```typescript
 function handleUnlock() {
-  initAudio();                      // ← FIRST, synchronous, no await before this
-  setAudioContextState('running');  // Signal update
-  navigate('/boards');              // Then navigation
+  initAudio(); // ← FIRST, synchronous, no await before this
+  setAudioContextState('running'); // Signal update
+  navigate('/boards'); // Then navigation
 }
 ```
 
@@ -64,27 +64,31 @@ synchronous placement.
 ## Consequences
 
 **Positive:**
+
 - AudioContext created in running state on iOS — no `ctx.resume()` needed
   at the TAP TO UNLOCK point itself
 - AVAudioSession category correctly upgraded → ringer switch doesn't mute
 - Straightforward: a single idempotent call, one location
 
 **Negative / Trade-offs:**
+
 - The StartScreen must call `initAudio()` before any `await`. Every future
   refactor of the unlock handler must preserve this ordering. A comment in
   the code documents this invariant.
 
 **Not affected:**
+
 - Individual pad taps still call `ctx.resume()` defensively (in case the
   context was suspended by tab backgrounding). This is belt-and-suspenders,
   not a substitute for synchronous `initAudio()` on unlock.
 
 **Rejected alternatives:**
-- *Eager init at app boot*: iOS rejects `new AudioContext()` without a
+
+- _Eager init at app boot_: iOS rejects `new AudioContext()` without a
   gesture; context would be permanently suspended.
-- *Lazy on first pad tap*: The pad tap handler is async (awaits `ensureLibBuf`).
+- _Lazy on first pad tap_: The pad tap handler is async (awaits `ensureLibBuf`).
   By the time `new AudioContext()` is reached, the gesture window has closed.
-- *Calling `initAudio()` after a routing `await`*: Same problem — gesture
+- _Calling `initAudio()` after a routing `await`_: Same problem — gesture
   window closed.
 
 ADR-0020 remains **Accepted** — ADR-0043 is a refinement specifying

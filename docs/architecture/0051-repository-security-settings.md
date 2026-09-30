@@ -20,15 +20,15 @@ environment deploying only from `main`.
 
 Enabled on the repository (set via `gh api`, 2026-09-29):
 
-| Setting | Value |
-|---|---|
-| Dependabot alerts | on |
-| Dependabot security updates | on — fix PRs run through the Tests workflow; stale ones turn the weekly check red (ADR-0049 / `weekly.yml`) |
-| Secret scanning + push protection | on |
-| Private vulnerability reporting | on — policy in `.github/SECURITY.md` |
-| Ruleset `protect-main` | `main`: no force-push (`non_fast_forward`), no deletion; **no bypass**, also not for admins. Pull requests are *not* required — direct pushes stay the workflow |
-| Allowed actions | GitHub-owned only (`actions/*`, `github/*`); third-party actions need an explicit decision |
-| Fork PR workflows | approval required for all external contributors |
+| Setting                           | Value                                                                                                                                                           |
+| --------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Dependabot alerts                 | on                                                                                                                                                              |
+| Dependabot security updates       | on — fix PRs run through the Tests workflow; stale ones turn the weekly check red (ADR-0049 / `weekly.yml`)                                                     |
+| Secret scanning + push protection | on                                                                                                                                                              |
+| Private vulnerability reporting   | on — policy in `.github/SECURITY.md`                                                                                                                            |
+| Ruleset `protect-main`            | `main`: no force-push (`non_fast_forward`), no deletion; **no bypass**, also not for admins. Pull requests are _not_ required — direct pushes stay the workflow |
+| Allowed actions                   | GitHub-owned only (`actions/*`, `github/*`); third-party actions need an explicit decision                                                                      |
+| Fork PR workflows                 | approval required for all external contributors                                                                                                                 |
 
 Owner-only (account level, not readable with the CLI token): two-factor authentication;
 e-mail notification for failed workflow runs (needed for the weekly check).
@@ -44,12 +44,14 @@ files (ADR-0050); GitHub recognises both locations.
 ## Consequences
 
 **Positive:**
+
 - Leaked tokens are blocked before they reach the public history.
 - Known vulnerabilities surface as alerts and fix PRs without waiting for the weekly audit.
 - `main` history cannot be rewritten or deleted — also not by an agent mistake.
 - A compromised third-party action cannot run in CI without a deliberate change.
 
 **Negative / Trade-offs:**
+
 - A genuinely needed history rewrite on `main` requires disabling the ruleset first.
 - Adopting a third-party action requires changing the allowed-actions setting.
 - Settings live outside the repository; drift is only caught by re-running the verify

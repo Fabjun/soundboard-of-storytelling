@@ -29,7 +29,7 @@ import { dirname, join, relative, resolve } from 'path';
 import { fileURLToPath } from 'url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const ROOT = resolve(__dirname, '..');
+const ROOT = resolve(__dirname, '..', '..');
 const SRC_DIR = join(ROOT, 'v3', 'src');
 
 // --- Layout property whitelist (from CLAUDE.md#permanent-coding-standards, four-path rule) ---
@@ -121,7 +121,9 @@ function unwrap(expr: ts.Expression): ts.Expression {
 
 // ─── Block-level classification ─────────────────────────────────────────────
 
-function classifyObjectLiteral(obj: ts.ObjectLiteralExpression): Omit<BlockRecord, 'file' | 'line'> {
+function classifyObjectLiteral(
+  obj: ts.ObjectLiteralExpression,
+): Omit<BlockRecord, 'file' | 'line'> {
   const props: PropInfo[] = [];
   let hasSpread = false;
 
@@ -395,7 +397,9 @@ function run(): void {
   }
   console.log('');
   console.log(`  Total Path D blocks:  ${violations.length}`);
-  console.log(`  (+ ${extraStaticViolations} static-violation props inside dynamic-with-static blocks)`);
+  console.log(
+    `  (+ ${extraStaticViolations} static-violation props inside dynamic-with-static blocks)`,
+  );
   console.log('');
 
   // ── Pure-layout patterns ───────────────────────────────────────────────────
@@ -429,9 +433,7 @@ function run(): void {
     .sort((a, b) => b.violations - a.violations);
 
   console.log('  PER-FILE BREAKDOWN (files with Path D violations)');
-  console.log(
-    '    ' + 'file'.padEnd(52) + ' total  violations',
-  );
+  console.log('    ' + 'file'.padEnd(52) + ' total  violations');
   for (const { file, total: t, violations: v } of filesWithViolations) {
     const name = file.replace('v3/src/', '');
     console.log(`    ${name.padEnd(52)} ${String(t).padStart(5)}  ${String(v).padStart(10)}`);
@@ -515,12 +517,22 @@ function run(): void {
     return `Δ ${d > 0 ? '+' : ''}${d}  ⚠ INVESTIGATE — exceeds expected variance`;
   }
 
-  console.log('  SANITY CHECK vs. manual count (Session 1 A/B decision, style={{ grep, 198 blocks)');
+  console.log(
+    '  SANITY CHECK vs. manual count (Session 1 A/B decision, style={{ grep, 198 blocks)',
+  );
   console.log(`    Total:          manual 198,  script ${total}  ${delta(total, 198)}`);
-  console.log(`    pure-layout:    manual ${MANUAL_LAYOUT},   script ${scriptLayout}  ${delta(scriptLayout, MANUAL_LAYOUT)}`);
-  console.log(`    mixed:          manual ${MANUAL_MIXED},   script ${scriptMixed}  ${delta(scriptMixed, MANUAL_MIXED)}`);
-  console.log(`    pure-structural: manual ${MANUAL_STRUCTURAL},  script ${scriptStructural}  ${delta(scriptStructural, MANUAL_STRUCTURAL)}`);
-  console.log(`    dynamic (all):  manual ${MANUAL_DYNAMIC},   script ${scriptDynamic}  ${delta(scriptDynamic, MANUAL_DYNAMIC)}`);
+  console.log(
+    `    pure-layout:    manual ${MANUAL_LAYOUT},   script ${scriptLayout}  ${delta(scriptLayout, MANUAL_LAYOUT)}`,
+  );
+  console.log(
+    `    mixed:          manual ${MANUAL_MIXED},   script ${scriptMixed}  ${delta(scriptMixed, MANUAL_MIXED)}`,
+  );
+  console.log(
+    `    pure-structural: manual ${MANUAL_STRUCTURAL},  script ${scriptStructural}  ${delta(scriptStructural, MANUAL_STRUCTURAL)}`,
+  );
+  console.log(
+    `    dynamic (all):  manual ${MANUAL_DYNAMIC},   script ${scriptDynamic}  ${delta(scriptDynamic, MANUAL_DYNAMIC)}`,
+  );
   console.log(
     '    Note: expected ~+5 total (4 type-casted blocks + 1 ternary invisible to style={{ grep)',
   );
@@ -528,7 +540,7 @@ function run(): void {
     '    Note: "dynamic" delta may exceed +5 — the manual Python regex was narrow and missed',
   );
   console.log(
-    '          (a) ternaries returning numbers (opacity: dim ? 0.45 : 1 — Python requires ? \')',
+    "          (a) ternaries returning numbers (opacity: dim ? 0.45 : 1 — Python requires ? ')",
   );
   console.log(
     '          (b) plain identifier values (color: typeColor) — Python matched only keywords.',

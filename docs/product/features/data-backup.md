@@ -12,14 +12,14 @@ and restore is the only safety net.
 
 ## Decided — not yet built
 
-| # | Statement | Status |
-|---|---|---|
-| D1 | **Export everything** — boards, decks, pads, library audio — into **one file**. On iPhone the file is handed to the share sheet (e.g. save to Files). | **Decided** |
-| D2 | **Import** restores from such a file. | **Decided** |
-| D3 | The app shows **when the last backup was made** ("last backup N days ago") and reminds the user when it is old. | **Decided** |
-| D4 | The app asks the browser for **persistent storage** so iOS is less likely to evict the data. Invisible to the user. | **Decided** |
-| D5 | **V1 backups can be imported.** A V1 board becomes a V3 board with one deck containing all its pads. | **Decided** |
-| D6 | Large files must import on the iPhone without crashing — the file is read piece by piece, never held in memory as a whole. (How: Slice 10 planning; see BACKLOG "Stream-based export/import".) | **Decided** |
+| #   | Statement                                                                                                                                                                                      | Status      |
+| --- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------- |
+| D1  | **Export everything** — boards, decks, pads, library audio — into **one file**. On iPhone the file is handed to the share sheet (e.g. save to Files).                                          | **Decided** |
+| D2  | **Import** restores from such a file.                                                                                                                                                          | **Decided** |
+| D3  | The app shows **when the last backup was made** ("last backup N days ago") and reminds the user when it is old.                                                                                | **Decided** |
+| D4  | The app asks the browser for **persistent storage** so iOS is less likely to evict the data. Invisible to the user.                                                                            | **Decided** |
+| D5  | **V1 backups can be imported.** A V1 board becomes a V3 board with one deck containing all its pads.                                                                                           | **Decided** |
+| D6  | Large files must import on the iPhone without crashing — the file is read piece by piece, never held in memory as a whole. (How: Slice 10 planning; see BACKLOG "Stream-based export/import".) | **Decided** |
 
 ### Import rules — **Decided**
 
@@ -39,7 +39,7 @@ and restore is the only safety net.
 
 - **Exporting in a format V1 can read** (previously [concept-brief.md §4.6](../../architecture/concept-brief.md#46--template-exportimport)). V3 replaces
   V1; the way back has no use and would constrain the V3 format (decks, piecewise reading).
-  Importing *from* V1 stays (D5).
+  Importing _from_ V1 stays (D5).
 
 ## Parked
 

@@ -38,7 +38,7 @@ const SHA256: Record<string, string> = {
 };
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const BIN_DIR = resolve(__dirname, '..', 'v3', 'node_modules', '.bin');
+const BIN_DIR = resolve(__dirname, '..', 'node_modules', '.bin');
 const TARGET = join(BIN_DIR, 'vale');
 
 function platformAsset(): string {

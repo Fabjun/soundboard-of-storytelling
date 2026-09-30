@@ -10,6 +10,7 @@
 
 V3 is a local-first PWA without a backend. All data has to be persisted on the client.
 Available:
+
 - **IndexedDB:** for large structured data incl. Blobs; asynchronous API; unlimited capacity
   (managed by quota)
 - **localStorage:** synchronous, strings only, ~5 MB limit
@@ -17,9 +18,9 @@ Available:
 The data model (boards with scenes and pads, library with audio Blobs) is clearly IDB
 territory. `docs/architecture/concept-brief.md §1` sets IndexedDB explicitly.
 
-> *The separation (IDB for content, localStorage for UI prefs) was not documented explicitly
+> _The separation (IDB for content, localStorage for UI prefs) was not documented explicitly
 > as a rule of its own; it was derived as a consistent pattern from the code state and the
-> concept brief.*
+> concept brief._
 
 ## Decision
 
@@ -34,12 +35,14 @@ standards).
 ## Consequences
 
 **Positive:**
+
 - Audio Blobs of up to several GB can be stored (IDB quota depending on available storage).
 - A clear boundary: `src/db/idb.ts` is the only place where IDB transactions are opened. Type
   safety and memory-safety rules are centralised.
 - localStorage writes are synchronous and simple for small preferences.
 
 **Negative / Trade-offs:**
+
 - The IDB API is asynchronous: every interaction is async/await. No problem for the app
   architecture, but more boilerplate than `localStorage.setItem`.
 - Debugging IDB in DevTools is more effort than inspecting localStorage.

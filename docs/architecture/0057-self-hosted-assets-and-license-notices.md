@@ -45,10 +45,12 @@ None.
 ## Consequences
 
 **Positive:**
+
 - The app looks the same offline; no visitor data goes to Google; license obligations are met
   and stay met as dependencies change.
 
 **Negative / Trade-offs:**
+
 - About 110 KB of font files (9 woff2 files) are precached on first visit (all unicode subsets of the three
   fonts).
 - The notices file is not yet linked from the UI (BACKLOG, Slice 14 settings).

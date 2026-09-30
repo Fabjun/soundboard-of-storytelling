@@ -11,7 +11,7 @@
 // 3. Exception scheme (ADR-0053) for markers ESLint cannot check:
 //    to-do markers (TODO, FIXME, XXX) carry a BACKLOG reference; every `// prettier-ignore`
 //    is preceded by a comment line giving the reason.
-// 4. Every TypeScript file in v3/ and scripts/ belongs to a project that `tsc -b` checks
+// 4. Every TypeScript file in v3/ (incl. v3/scripts/) belongs to a project that `tsc -b` checks
 //    (T12, ADR-0055) — Vitest and Playwright run tests without type checking, so an
 //    unchecked file hides type errors (found: 6 in unit tests, 1 in E2E, 2026-09-30).
 // ─────────────────────────────────────────────────────────────────────────────
@@ -120,7 +120,7 @@ describe('guard: exception markers follow the scheme (ADR-0053)', () => {
   const files = [
     ...walk(join(V3, 'src'), (f) => /\.(ts|tsx|css)$/.test(f)),
     ...walk(join(V3, 'tests'), (f) => /\.ts$/.test(f)),
-    ...walk(join(ROOT, 'scripts'), (f) => /\.ts$/.test(f)),
+    ...walk(join(V3, 'scripts'), (f) => /\.ts$/.test(f)),
   ];
   const TODO = /(?:\/\/|\/\*|^\s*\*)\s*(?:TODO|FIXME|XXX)\b/;
   const REF = /BACKLOG "([^"]+)"/;
@@ -170,14 +170,11 @@ describe('guard: every TypeScript file is type-checked (ADR-0055)', () => {
       checked.add(rel(f));
     }
   }
-  // All of v3/ (walk skips node_modules and snapshot folders) plus scripts/.
-  const tsFiles = [
-    ...walk(V3, (f) => /\.tsx?$/.test(f)),
-    ...walk(join(ROOT, 'scripts'), (f) => /\.ts$/.test(f)),
-  ].map(rel);
+  // All of v3/ incl. v3/scripts/ (walk skips node_modules and snapshot folders).
+  const tsFiles = walk(V3, (f) => /\.tsx?$/.test(f)).map(rel);
 
   it('reads the referenced projects (sanity)', () => {
-    expect(rootConfig.references.length).toBeGreaterThanOrEqual(5);
+    expect(rootConfig.references.length).toBeGreaterThanOrEqual(4);
     expect(tsFiles.length).toBeGreaterThan(60);
   });
 

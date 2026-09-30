@@ -31,14 +31,15 @@ take <5 ms on modern devices.
 The trade-off is deliberate and documented in `v3/src/db/idb.ts` (comment block at the top)
 and in `docs/design/design-notes.md`:
 
-> *BOARD PERSISTENCE TRADE-OFF: Boards are stored as complete JSON documents.
+> _BOARD PERSISTENCE TRADE-OFF: Boards are stored as complete JSON documents.
 > Any pad edit rewrites the full ~50KB document. Acceptable at 5×16 pads;
 > see docs/design/design-notes.md "Slice 8 / Performance" for optimisation path if
-> measured to be a bottleneck.*
+> measured to be a bottleneck._
 
 ## Consequences
 
 **Positive:**
+
 - Simple transactions: no join code, no referential integrity management.
 - Auto-save (ADR-0030): a single `boardPut(board)` after every mutation. No tracking of which
   sub-entity changed.
@@ -48,6 +49,7 @@ and in `docs/design/design-notes.md`:
   queries).
 
 **Negative / Trade-offs:**
+
 - Write amplification: a pad rename writes the complete 50 KB document. Acceptable at 5 scenes
   × 16 pads; with 20+ scenes it could become measurable.
 - No partial update in IDB (IDB has no UPDATE operator). The document always has to be fully

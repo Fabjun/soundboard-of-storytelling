@@ -72,7 +72,6 @@ export default [
     rules: {
       ...tsPlugin.configs.recommended.rules,
       '@typescript-eslint/no-unused-vars': 'off',
-      '@typescript-eslint/no-explicit-any': 'off',
       '@typescript-eslint/consistent-type-imports': 'error',
       // Test traps (T10, 2026-09-29): tests that pass for the wrong reason.
       'vitest/expect-expect': 'error', // a test without an assertion always passes
@@ -99,7 +98,6 @@ export default [
     rules: {
       ...tsPlugin.configs.recommended.rules,
       '@typescript-eslint/no-unused-vars': 'off',
-      '@typescript-eslint/no-explicit-any': 'off',
       '@typescript-eslint/consistent-type-imports': 'error',
       // Test traps (T10, 2026-09-29): tests that pass for the wrong reason.
       // A test without an assertion always passes. Helpers that assert internally are listed.
@@ -114,10 +112,11 @@ export default [
     },
   },
 
-  // ── Tool config files (vite, vitest, playwright, eslint) ────────────────────
-  // Linted without type information: they are not part of any tsconfig project.
+  // ── Tool config files and repository scripts (v3/scripts/) ──────────────────
+  // The recommended rules need no type information; types are checked by `tsc -b`
+  // (tsconfig.node.json covers the .ts configs and scripts/, ADR-0055).
   {
-    files: ['*.config.{js,ts}'],
+    files: ['*.config.{js,ts}', 'scripts/**/*.ts'],
     languageOptions: { parser: tsParser },
     plugins: { '@typescript-eslint': tsPlugin },
     rules: {

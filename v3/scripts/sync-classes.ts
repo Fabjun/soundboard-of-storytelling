@@ -18,21 +18,22 @@
  * Run: npm run sync:classes  (from v3/)
  */
 
-import { readFileSync, readdirSync, statSync, writeFileSync } from "fs";
-import { dirname, join, relative, resolve } from "path";
-import { fileURLToPath } from "url";
+import { readFileSync, readdirSync, statSync } from 'fs';
+import { dirname, join, relative, resolve } from 'path';
+import { fileURLToPath } from 'url';
+import { writeGenerated } from './lib/write-generated';
+import { tableRow } from './lib/markdown';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const ROOT = resolve(__dirname, "..");
-const SRC_DIR = join(ROOT, "v3", "src");
-const DESIGN_SYSTEM = join(ROOT, "docs/design/design-system.md");
+const ROOT = resolve(__dirname, '..', '..');
+const SRC_DIR = join(ROOT, 'v3', 'src');
+const DESIGN_SYSTEM = join(ROOT, 'docs/design/design-system.md');
 
-const MARKER_START =
-  "<!-- AUTO-GENERATED:sb-classes START — do not edit by hand -->";
-const MARKER_END = "<!-- AUTO-GENERATED:sb-classes END -->";
+const MARKER_START = '<!-- AUTO-GENERATED:sb-classes START — do not edit by hand -->';
+const MARKER_END = '<!-- AUTO-GENERATED:sb-classes END -->';
 
 // Only classes with this prefix are tracked
-const PREFIX = "sb-";
+const PREFIX = 'sb-';
 
 interface ClassInfo {
   name: string; // e.g. "sb-pad"
@@ -84,7 +85,7 @@ function extractFromCss(content: string): Set<string> {
   const re = /^\s*(\.sb-[a-z][a-z0-9-]*)/gm;
   let m: RegExpExecArray | null;
   while ((m = re.exec(content)) !== null) {
-    const cls = m[1].replace(".", "");
+    const cls = m[1].replace('.', '');
     if (cls.startsWith(PREFIX)) classes.add(cls);
   }
   return classes;
@@ -98,8 +99,7 @@ function extractFromCss(content: string): Set<string> {
 function extractInventory(content: string): Map<string, string> {
   const map = new Map<string, string>();
   // One regex: class selector followed (within a few lines) by @inventory
-  const re =
-    /\.sb-([a-z][a-z0-9-]*)\s*\{[^}]*?\/\*\s*@inventory:\s*([^*]+?)\s*\*\//gs;
+  const re = /\.sb-([a-z][a-z0-9-]*)\s*\{[^}]*?\/\*\s*@inventory:\s*([^*]+?)\s*\*\//gs;
   let m: RegExpExecArray | null;
   while ((m = re.exec(content)) !== null) {
     const cls = `sb-${m[1]}`;
@@ -110,9 +110,9 @@ function extractInventory(content: string): Map<string, string> {
   return map;
 }
 
-function run(): void {
-  const tsxFiles = walkDir(SRC_DIR, [".tsx", ".ts"]);
-  const cssFiles = walkDir(SRC_DIR, [".css"]);
+async function run(): Promise<void> {
+  const tsxFiles = walkDir(SRC_DIR, ['.tsx', '.ts']);
+  const cssFiles = walkDir(SRC_DIR, ['.css']);
 
   const allClasses = new Set<string>();
   const usedIn = new Map<string, string[]>();
@@ -121,7 +121,7 @@ function run(): void {
 
   // --- Scan TSX/TS files for className usage ---
   for (const file of tsxFiles) {
-    const content = readFileSync(file, "utf8");
+    const content = readFileSync(file, 'utf8');
     const found = extractFromTsx(content);
     for (const cls of found) {
       allClasses.add(cls);
@@ -132,7 +132,7 @@ function run(): void {
 
   // --- Scan CSS files for definitions + @inventory ---
   for (const file of cssFiles) {
-    const content = readFileSync(file, "utf8");
+    const content = readFileSync(file, 'utf8');
     const defined = extractFromCss(content);
     for (const cls of defined) {
       allClasses.add(cls);
@@ -151,17 +151,15 @@ function run(): void {
   for (const cls of [...allClasses].sort()) {
     entries.push({
       name: cls,
-      description: inventory.get(cls) ?? "",
-      definedIn: definedIn.get(cls) ?? "",
+      description: inventory.get(cls) ?? '',
+      definedIn: definedIn.get(cls) ?? '',
       usedIn: usedIn.get(cls) ?? [],
     });
   }
 
   // Warn on CSS-defined classes that lack an @inventory description.
   // [unused-css] / [verify] markers count as descriptions — warning is for genuinely blank entries.
-  const missingInventory = entries.filter(
-    (e) => e.description === "" && e.definedIn !== "",
-  );
+  const missingInventory = entries.filter((e) => e.description === '' && e.definedIn !== '');
   if (missingInventory.length > 0) {
     console.warn(
       `sync-classes: WARN — ${missingInventory.length} sb-* class(es) missing @inventory description:`,
@@ -169,28 +167,26 @@ function run(): void {
     for (const e of missingInventory) {
       console.warn(`  ${e.name}  (${e.definedIn})`);
     }
-    console.warn(
-      "  Add /* @inventory: description */ at the CSS selector definition.",
-    );
+    console.warn('  Add /* @inventory: description */ at the CSS selector definition.');
   }
 
   // Generate table
   const lines: string[] = [];
-  lines.push("| Class | Description | Defined in |");
-  lines.push("|--------|-------------|-------------|");
+  lines.push('| Class | Description | Defined in |');
+  lines.push('|--------|-------------|-------------|');
   for (const e of entries) {
-    const desc = e.description || "";
+    const desc = e.description || '';
     const def = e.definedIn
       ? `\`${e.definedIn}\``
       : e.usedIn[0]
         ? `\`${e.usedIn[0]}\` (no CSS definition)`
-        : "—";
-    lines.push(`| \`${e.name}\` | ${desc} | ${def} |`);
+        : '—';
+    lines.push(tableRow([`\`${e.name}\``, desc, def]));
   }
 
-  const table = lines.join("\n");
+  const table = lines.join('\n');
 
-  let doc = readFileSync(DESIGN_SYSTEM, "utf8");
+  let doc = readFileSync(DESIGN_SYSTEM, 'utf8');
   const startIdx = doc.indexOf(MARKER_START);
   const endIdx = doc.indexOf(MARKER_END);
 
@@ -202,7 +198,7 @@ function run(): void {
   const after = doc.slice(endIdx);
 
   doc = `${before}\n${table}\n${after}`;
-  writeFileSync(DESIGN_SYSTEM, doc, "utf8");
+  await writeGenerated(DESIGN_SYSTEM, doc);
 
   const withDesc = entries.filter((e) => e.description).length;
   console.log(
@@ -210,4 +206,4 @@ function run(): void {
   );
 }
 
-run();
+await run();

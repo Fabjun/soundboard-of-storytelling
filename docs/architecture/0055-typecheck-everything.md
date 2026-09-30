@@ -4,6 +4,7 @@
 **Date:** 2026-09-30
 **Slice:** infrastructure
 **Refines:** —
+**Refined by:** ADR-0058 (scripts moved into `v3/scripts/`, checked via `tsconfig.node.json`)
 **Category:** Test infrastructure & workflow
 
 ## Context
@@ -46,11 +47,13 @@ TypeScript 6 enables it by default; no config stated it.
 ## Consequences
 
 **Positive:**
+
 - A type error anywhere — app, tests, tool configs, doc generators — blocks the commit, CI and
   the deploy.
 - New files outside any project are caught by the guard.
 
 **Negative / Trade-offs:**
+
 - `npm run build` checks more files (a few seconds).
 
 ## Alternatives considered

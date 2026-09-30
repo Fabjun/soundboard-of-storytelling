@@ -30,6 +30,7 @@ outside the button).
 ## Consequences
 
 **Positive:**
+
 - No accidental deletion from a single tap.
 - No modal interruption (interrupts the flow less than a dialog).
 - Works without a separate overlay component.
@@ -37,6 +38,7 @@ outside the button).
   the confirm state.
 
 **Negative / Trade-offs:**
+
 - Two taps instead of one for every delete operation. Slightly more effort for power users.
 - Stateful: the confirm state has to be held in the component (`useState` or similar). No
   global state needed.

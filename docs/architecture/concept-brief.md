@@ -41,12 +41,14 @@ V1 keeps running. V3.0 is built in parallel until ready.
 
 **V1 (index.html and sw.js in the local archive `~/dev/archive/botc-soundboard/` — not in this
 public repo since 2026-09-30):**
+
 - Reference for behavior — read when porting features
 - Source of the audio engine (copy into V3.0, wrap behind clean API)
 - Source of IndexedDB schema and template export/import format
 - Not to be modified
 
 **Design system (`design-sources/2026-05-25/`):**
+
 - `design-sources/2026-05-25/tokens.css` — origin of the canonical tokens (copied to
   `v3/src/styles/tokens.css`, which is the canonical file — see [CLAUDE.md §Tokens](../../CLAUDE.md#tokens))
 - JSX files (`v2-screens.jsx`, `foundations.jsx`, etc.) — **used as
@@ -58,6 +60,7 @@ public repo since 2026-09-30):**
 - `dist/` — partial vanilla ports, ignore in V3.0 (we use JSX directly)
 
 **V1.5 prototypes:**
+
 - Obsolete; removed from repo. Not used in V3.0.
 
 ## 4 · Architectural decisions (binding)
@@ -70,9 +73,11 @@ public repo since 2026-09-30):**
 > to eliminate a second copy that could drift.
 
 <!-- vale SoS.SupersededTerms = NO --><!-- reason: explains the rename -->
+
 **Key concepts:** → moved to [../product/README.md §5](../product/README.md#5-core-concepts)
 (2026-09-28). Revised there: pads belong to a board-wide pool; decks (formerly "scenes") are hand-picked views;
 pad sets are dropped in favor of a board-wide quick-access bar.
+
 <!-- vale SoS.SupersededTerms = YES -->
 
 ### 4.2 · Component architecture
@@ -146,6 +151,7 @@ transactions outside that layer are forbidden.
 ### 4.7 · Tokens
 
 Token language follows the design system canonically:
+
 - Fonts: `--font-display`, `--font-ui`, `--font-mono`
 - Mode colors: `--mode-setup`, `--mode-game`
 - Spacing: `--space-1` through `--space-16`
@@ -191,6 +197,7 @@ v3/
 
 Use **`vite-plugin-pwa`** for service-worker generation. Auto-handles
 cache invalidation, asset listing, version bumps. Configure for:
+
 - Cache-first for app shell
 - Network-first for dynamic content (none yet, but ready)
 - Skip-waiting + clients-claim on update
@@ -222,6 +229,7 @@ a11y pass.
 **Primary target:** iPhone 13 Pro (iOS 17/18) + Brave browser.
 
 **Minimum supported:**
+
 - iOS Safari 15+ (iPhone 6s and newer)
 - Android Chrome 100+ (~2022)
 - Desktop: current Chromium, Firefox, Safari (last 2 major versions)
@@ -232,6 +240,7 @@ Service Worker / PWA, CSS clamp()/prefers-reduced-motion, IntersectionObserver.
 **Graceful degradation only:** Container Queries (iOS 16+), View Transitions (iOS 18+).
 
 **Explicitly avoided:**
+
 - HTML5 Drag-and-Drop (`draggable`, `ondragstart`, `ondrop`) — not supported
   on iOS Safari/Brave. **All DnD must use Pointer Events.**
   See `src/lib/padDnd.ts` and `src/lib/libDnd.ts` as canonical patterns.
@@ -266,6 +275,7 @@ both import it from the same file.
 
 For any feature whose behavior isn't obvious from the design, read
 V1's code. V1 is the reference for:
+
 - Audio engine internals
 - Drag-and-drop behavior
 - Hotkey wiring
@@ -281,6 +291,7 @@ then implement.
 ### 5.4 · When to ask
 
 Ask the user — don't assume — when:
+
 - A V1 behavior is ambiguous
 - The data model needs extension beyond [§4.1](#41--data-model)
 - A component variant tempts parallel implementation
@@ -331,4 +342,4 @@ under-explain when understanding is asked.
 
 ---
 
-*End of brief. Begin with [§7](#7--how-to-start) step 5.*
+_End of brief. Begin with [§7](#7--how-to-start) step 5._

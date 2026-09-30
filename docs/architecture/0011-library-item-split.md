@@ -9,6 +9,7 @@
 ## Context
 
 The library contains audio files. An audio file has two aspects:
+
 - **Metadata:** name, hash, size, duration, peaks (small, serialisable values)
 - **Blob:** the raw audio bytes (50 KB – 10 MB per file)
 
@@ -26,14 +27,14 @@ The `LibraryItem` type is split into two separate types:
 ```typescript
 // Working-memory type — safe to store in Signals
 type LibraryItemMeta = {
-  id: string;        // SHA-256 hash (IS the identity)
+  id: string; // SHA-256 hash (IS the identity)
   type: LibraryItemType;
   name: string;
   size: number;
   tags: string[];
   addedAt: number;
   duration: number;
-  peaks: number[];   // 30 peak values, computed at upload, stored in IDB
+  peaks: number[]; // 30 peak values, computed at upload, stored in IDB
 };
 
 // Full IDB entry — NEVER in component state
@@ -52,6 +53,7 @@ collectable by the GC (ADR-0019).
 ## Consequences
 
 **Positive:**
+
 - The library UI (browse, filter, rename, delete) never loads Blobs into RAM. 100 entries ×
   10 B metadata = 1 KB — vs. 100 × 5 MB audio = 500 MB.
 - TypeScript strict (ADR-0004) makes the split unambiguous: code that stores `LibraryItem`
@@ -60,6 +62,7 @@ collectable by the GC (ADR-0019).
   can render waveform thumbnails without Blob access.
 
 **Negative / Trade-offs:**
+
 - `libRename()` has to load the full `LibraryItem` briefly (IDB has no partial update). The
   Blob is in RAM only for the duration of the call — the pattern is deliberate and documented
   in `idb.ts`.

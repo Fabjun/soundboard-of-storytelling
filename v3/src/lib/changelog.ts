@@ -7,9 +7,16 @@ export type ChangelogEntry = {
   items: string[];
 };
 
-export const APP_VERSION = '3.0.66';
+export const APP_VERSION = '3.0.67';
 
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.67',
+    date: '2026-09-30',
+    items: [
+      'chore: one formatter and linter setup for the whole repository; scripts moved to v3/scripts; Markdown formatting refuses content changes; table cells escaped (ADR-0058)',
+    ],
+  },
   {
     version: '3.0.66',
     date: '2026-09-30',

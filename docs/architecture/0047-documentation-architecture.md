@@ -65,22 +65,22 @@ Consequences observed:
 
 6. **Source-to-target mapping.**
 
-   | Old file | Content → | Fate |
-   |---|---|---|
-   | `docs/architecture/concept-brief.md` | product parts → docs/product/README.md; technical parts → docs/architecture/README.md; workflow parts → docs/development/README.md | fully archived |
-   | `docs/design/design-system.md` | rules → docs/design/README.md; generated §6/§A → `design/reference/` | fully archived |
-   | `docs/design/design-system-cheatsheet.md` | absorbed into docs/design/README.md | fully archived |
-   | `docs/design/design-notes.md` | settled decisions → docs/design/README.md / component specs; open items → docs/backlog.md | fully archived |
-   | `v1-reference/HANDOFF.md` §4 | design principles → docs/design/README.md | stays (V1 reference) |
-   | `docs/development/testing.md` | → docs/development/README.md | fully archived |
-   | `CLAUDE.md` | details → docs/development/README.md + docs/architecture/README.md | stays, slimmed |
-   | `docs/README.md` | becomes the sole index (`docs/README.md`) | replaced |
-   | `docs/analysis/foundation-analysis.md`, import-gate protocols (`docs/design/imports/`) | — | fully archived |
-   | `docs/backlog.md` | decisions → docs/product/README.md + docs/design/README.md | **partially emptied, stays** (open work only) |
-   | `CHANGELOG.md` (root) | — | **open question**: keep vs. drop in favor of `v3/src/lib/changelog.ts` |
+   | Old file                                                                               | Content →                                                                                                                          | Fate                                                                   |
+   | -------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------- |
+   | `docs/architecture/concept-brief.md`                                                   | product parts → docs/product/README.md; technical parts → docs/architecture/README.md; workflow parts → docs/development/README.md | fully archived                                                         |
+   | `docs/design/design-system.md`                                                         | rules → docs/design/README.md; generated §6/§A → `design/reference/`                                                               | fully archived                                                         |
+   | `docs/design/design-system-cheatsheet.md`                                              | absorbed into docs/design/README.md                                                                                                | fully archived                                                         |
+   | `docs/design/design-notes.md`                                                          | settled decisions → docs/design/README.md / component specs; open items → docs/backlog.md                                          | fully archived                                                         |
+   | `v1-reference/HANDOFF.md` §4                                                           | design principles → docs/design/README.md                                                                                          | stays (V1 reference)                                                   |
+   | `docs/development/testing.md`                                                          | → docs/development/README.md                                                                                                       | fully archived                                                         |
+   | `CLAUDE.md`                                                                            | details → docs/development/README.md + docs/architecture/README.md                                                                 | stays, slimmed                                                         |
+   | `docs/README.md`                                                                       | becomes the sole index (`docs/README.md`)                                                                                          | replaced                                                               |
+   | `docs/analysis/foundation-analysis.md`, import-gate protocols (`docs/design/imports/`) | —                                                                                                                                  | fully archived                                                         |
+   | `docs/backlog.md`                                                                      | decisions → docs/product/README.md + docs/design/README.md                                                                         | **partially emptied, stays** (open work only)                          |
+   | `CHANGELOG.md` (root)                                                                  | —                                                                                                                                  | **open question**: keep vs. drop in favor of `v3/src/lib/changelog.ts` |
 
 7. **Transfer unit is the section, not the file.** When content moves into a new
-   document, it is removed from the old source in the *same commit* and replaced there
+   document, it is removed from the old source in the _same commit_ and replaced there
    with a one-line pointer (`→ moved to docs/product/README.md §3`). This happens per section, not
    per file — a hub section is transferred and its source pointer left behind before the
    next section is touched. Keeps commits small and reviewable (per the Evidence
@@ -97,6 +97,7 @@ Consequences observed:
 ## Consequences
 
 **Positive:**
+
 - One authoritative place per question: what the product is (PRODUCT), how an element
   looks and behaves (component spec), why the system is built this way (ADR).
 - Modular growth: new elements, features and decisions add files instead of lengthening
@@ -106,6 +107,7 @@ Consequences observed:
 - Explicit status prevents provisional ideas from being treated as binding.
 
 **Negative / Trade-offs:**
+
 - More files than a single-document approach; navigation depends on the hub indexes
   staying current (candidate for a generator, like the ADR index).
 - During migration, old and new documents coexist. Old documents carry a

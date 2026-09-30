@@ -8,7 +8,7 @@
 //    after the push (seen while renaming the docs on 2026-09-29).
 // 3. README facts that drift silently: Node version (.nvmrc) and live URL (Vite base).
 // 4. ADR headers: Status, Date, Slice, Refines, [Refined by], Category — in this order, with a
-//    category from scripts/sync-adr.ts (CLAUDE.md rule 12).
+//    category from v3/scripts/sync-adr.ts (CLAUDE.md rule 12).
 // 5. Project language is English (CLAUDE.md#project-identity): no file contains German
 //    function words — a heuristic, calibrated so English text never trips it.
 // 6. File paths in code spans of ACTIVE docs name files that exist in this repository
@@ -20,11 +20,16 @@
 //    (repository-relative) and never the section sign. Every `path.md#anchor` outside a
 //    Markdown link target is resolved here with GitHub's slug algorithm (github-slugger) —
 //    Markdown link targets are checked by remark-validate-links.
+// 8. Every GFM table row has as many cells as its header — GitHub drops extra cells silently.
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { readdirSync, readFileSync, statSync } from 'node:fs';
 import { dirname, join, normalize, relative, sep } from 'node:path';
 import GithubSlugger from 'github-slugger';
+import type { Nodes, Table } from 'mdast';
+import { fromMarkdown } from 'mdast-util-from-markdown';
+import { gfmFromMarkdown } from 'mdast-util-gfm';
+import { gfm } from 'micromark-extension-gfm';
 
 const ROOT = join(__dirname, '..', '..', '..');
 const ROOT_MD = ['CHANGELOG.md', 'CLAUDE.md', 'README.md'];
@@ -132,7 +137,7 @@ describe('guard: ADR headers (CLAUDE.md rule 12)', () => {
   const categories = [
     ...(
       /CATEGORY_ORDER = \[([\s\S]*?)\]/.exec(
-        readFileSync(join(ROOT, 'scripts', 'sync-adr.ts'), 'utf8'),
+        readFileSync(join(ROOT, 'v3', 'scripts', 'sync-adr.ts'), 'utf8'),
       )?.[1] ?? ''
     ).matchAll(/'([^']+)'/g),
   ]
@@ -290,7 +295,7 @@ describe('guard: section references are links (ADR-0056)', () => {
   const code = [
     ...codeFiles('v3/src'),
     ...codeFiles('v3/tests'),
-    ...codeFiles('scripts'),
+    ...codeFiles('v3/scripts'),
     ...readdirSync(join(ROOT, 'v3'))
       .filter((f) => /\.(?:ts|js|mjs)$/.test(f))
       .map((f) => `v3/${f}`),
@@ -362,5 +367,47 @@ describe('guard: section references are links (ADR-0056)', () => {
       checkAnchors(f, readFileSync(join(ROOT, f), 'utf8').replace(/\]\([^)]*\)/g, ']'), bad);
     }
     expect(bad).toEqual([]);
+  });
+});
+
+describe('guard: table rows have as many cells as the header (audit A3)', () => {
+  // GitHub silently drops the extra cells of a row, so an unescaped | inside a cell (also
+  // inside a code span) loses content without any visible error.
+  const cells = (line: string): number => {
+    const body = line.trim().replace(/^\||\|$/g, '');
+    return body.split(/(?<!\\)\|/).length;
+  };
+
+  it('finds tables (sanity)', () => {
+    const text = readFileSync(join(ROOT, 'docs', 'development', 'testing.md'), 'utf8');
+    const tree = fromMarkdown(text, { extensions: [gfm()], mdastExtensions: [gfmFromMarkdown()] });
+    expect(tree.children.some((n) => n.type === 'table')).toBe(true);
+  });
+
+  it('every row of every table in the repository', () => {
+    const bad: string[] = [];
+    for (const f of walkMd(ROOT)) {
+      const text = readFileSync(f, 'utf8');
+      const lines = text.split('\n');
+      const tree = fromMarkdown(text, {
+        extensions: [gfm()],
+        mdastExtensions: [gfmFromMarkdown()],
+      });
+      const tables: Table[] = [];
+      const collect = (node: Nodes): void => {
+        if (node.type === 'table') tables.push(node);
+        else if ('children' in node) node.children.forEach(collect);
+      };
+      collect(tree);
+      for (const table of tables) {
+        const rows = table.children.map((r) => r.position?.start.line ?? 0);
+        const want = cells(lines[rows[0] - 1]);
+        for (const line of rows.slice(1)) {
+          const got = cells(lines[line - 1]);
+          if (got !== want) bad.push(`${rel(f)}:${line}: ${got} cells, header has ${want}`);
+        }
+      }
+    }
+    expect(bad, 'escape | inside cells as \\|').toEqual([]);
   });
 });

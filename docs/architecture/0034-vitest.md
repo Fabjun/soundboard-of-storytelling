@@ -11,8 +11,8 @@
 Unit tests in a Vite/Preact/TypeScript project need a test runner. The natural choice in the
 Vite ecosystem is Vitest — it uses the same Vite configuration and therefore needs no setup.
 
-> *Vitest was chosen without an explicit evaluation of alternatives. It is the de facto
-> standard for Vite projects and needed no separate weighing.*
+> _Vitest was chosen without an explicit evaluation of alternatives. It is the de facto
+> standard for Vite projects and needed no separate weighing._
 
 ## Decision
 
@@ -35,11 +35,13 @@ reset every signal they touch in `beforeEach`.
 ## Consequences
 
 **Positive:**
+
 - ~1s runtime for 102 unit tests (as of v3.0.18). The fastest feedback loop.
 - No separate webpack/Babel configuration — Vitest uses Vite natively.
 - `fake-indexeddb` enables real IDB API tests without a browser.
 
 **Negative / Trade-offs:**
+
 - `fake-indexeddb` is a simulation — there can be edge cases where it behaves differently from
   real browser IDB. For the tested patterns (get/put/delete/cursor) it is reliable enough.
 - Signals as module singletons: every test that touches signals needs explicit resets.

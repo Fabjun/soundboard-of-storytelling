@@ -23,24 +23,24 @@ What the element is for, and when it is used (and when not).
 The named parts of the element.
 
 | Part | Description | Status |
-|---|---|---|
-| … | … | … |
+| ---- | ----------- | ------ |
+| …    | …           | …      |
 
 ## Variants
 
 Configurations selected via props.
 
 | Variant | When | Status |
-|---|---|---|
-| … | … | … |
+| ------- | ---- | ------ |
+| …       | …    | …      |
 
 ## States
 
 State classes from the closed `is-*` vocabulary ([design-system.md §3](../design-system.md#3-state-vocabulary-closed-set)).
 
 | State | Trigger | Appearance | Status |
-|---|---|---|---|
-| … | … | … | … |
+| ----- | ------- | ---------- | ------ |
+| …     | …       | …          | …      |
 
 ## Behavior
 
@@ -77,9 +77,9 @@ Touch target (min. 44 px), contrast, color-independent cues, keyboard access.
 
 ## Open questions
 
-| # | Question | Status |
-|---|---|---|
-| … | … | **Open** |
+| #   | Question | Status   |
+| --- | -------- | -------- |
+| …   | …        | **Open** |
 
 ## Sources
 

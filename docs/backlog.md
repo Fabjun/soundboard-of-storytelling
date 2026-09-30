@@ -20,7 +20,9 @@ during the slice. This is the only defence against backlog drift.
    - [PAD Editor (Polish)](#pad-editor-polish)
    - [Audio Engine (Deferred from Slice 4)](#audio-engine-deferred-from-slice-4)
    - [Library (Deferred from Slice 2/3)](#library-deferred-from-slice-23)
+
 - [Design & Feature Clarification Session — 2026-06-04](#design--feature-clarification-session--2026-06-04)
+
 2. [Documentation Debt](#2-documentation-debt)
 3. [Deferred Design Decisions](#3-deferred-design-decisions)
 4. [Deferred Infrastructure](#4-deferred-infrastructure)
@@ -33,6 +35,7 @@ during the slice. This is the only defence against backlog drift.
 ## 1. Features (Slice-bound)
 
 ### Deck reorder (drag & drop) — feature not built
+
 Found 2026-09-29 (T3): DeckRail has no reorder at all, although Slice 3 docs and the V1/V2
 inventory claimed it. **Decided** by the product owner: decks are reordered by **drag & drop,
 with mouse and touch** (Pointer Events, never HTML5 DnD); alternatives remain open. E2E test 9 in
@@ -46,6 +49,7 @@ with mouse and touch** (Pointer Events, never HTML5 DnD); alternatives remain op
 ### Slice 5 — Scene Switching
 
 ### Scene navigation
+
 Switch between multiple scenes on a board during play. The primary GAME-time interaction
 after Slice 4 audio playback is live.
 **Why deferred:** Slice 5 in the plan; scene data model and CRUD are complete (Slice 3).
@@ -59,10 +63,15 @@ code change needed. → [Design Session 2026-06-04](#design--feature-clarificati
 ### Slice 6 — Sets + Quick Access
 
 ### PadSet model + Quick-Access strip
+
 ### Set CRUD (create / rename / duplicate / delete)
+
 ### Set composition and layout
+
 ### Set reorder DnD
+
 ### Open UX question: Quick Access strip scope
+
 → all five entries moved to [product/README.md §5 Board, decks & quick access](product/README.md#board-decks--quick-access) (2026-09-28). Revised there: **pad sets are dropped**; the quick-access bar is board-wide, freely assignable, with fixed board-wide keys. Remaining work: see §3 "Board pad pool (data model)".
 
 ---
@@ -70,9 +79,11 @@ code change needed. → [Design Session 2026-06-04](#design--feature-clarificati
 ### Slice 7 — Template Export/Import
 
 ### V1-compatible template export/import
+
 → moved to [docs/product/features/data-backup.md](product/features/data-backup.md) (2026-09-28), D5 + import rules. Revised there: the V1-readable export is **dropped**. **When:** Slice 10 (new plan).
 
 ### Stream-based export/import (V1 lessons warning)
+
 Must stream one library entry at a time — never JSON-load the entire library at once (iOS
 memory safety; 150–300 MB string would OOM older iPhones). **V1 had memory-related crashes
 on import/export that were solved by streaming.** V3 must port the V1 streaming pattern, not
@@ -80,7 +91,7 @@ re-invent it. Read `v1-reference/index.html` export/import code before designing
 same discipline as reading the V1 audio engine before Slice 4.
 **Why deferred:** Same as above.
 **When:** Slice 7.
-**Correction (2026-09-28):** only V1's *export* streamed. V1's *import* reads the whole file and parses it at once (`v1-reference/index.html:5795` `decompressData(...)`, `:5799` `JSON.parse(jsonStr)`) — V3 needs a genuinely piecewise import (data-backup.md D6); there is no V1 pattern to port for it.
+**Correction (2026-09-28):** only V1's _export_ streamed. V1's _import_ reads the whole file and parses it at once (`v1-reference/index.html:5795` `decompressData(...)`, `:5799` `JSON.parse(jsonStr)`) — V3 needs a genuinely piecewise import (data-backup.md D6); there is no V1 pattern to port for it.
 **Source:** CLAUDE.md §iPhone/iOS memory rules, banned pattern #4; docs/development/manual-iphone-checklist.md §Section 2.
 
 ---
@@ -94,6 +105,7 @@ same discipline as reading the V1 audio engine before Slice 4.
 #### UI / Appearance
 
 ### Theme switcher (Crimson, Verdant, Neon)
+
 CSS-class on root element (trivial per ADR-0022); legacy-alias scope bug already fixed in
 Slice 1+2 audit.
 **Why deferred:** Polish; base functionality comes first.
@@ -101,23 +113,27 @@ Slice 1+2 audit.
 **Source:** docs/architecture/concept-brief.md §5.1, ADR-0022, ADR-0023.
 
 ### Per-theme pad color overrides
+
 Crimson gets a COMBO color override (rose-magenta sits next to `--blood` red — not a hard
 conflict, but a missed opportunity). Verdant COMBO holds — the fairy-tale tone fits.
 **When:** Slice 8 (after themes land).
 **Source:** docs/design/design-notes.md §Theme integration.
 
 ### Theme-conditional clock variants
+
 Verdant Mushroom Clock is designed; Crimson candle-clock + Neon CRT-burn display are design
 explorations (~30 min each). Worth shipping if themes get a real release pass.
 **When:** Slice 8 (after themes land).
 **Source:** docs/design/design-notes.md §Theme integration.
 
 ### `is-deep` as user-configurable setting
+
 Settings → Display → "High quality pad visuals" toggle. Currently always-on for the DepthPad.
 **When:** Slice 8.
 **Source:** ADR-0025, docs/design/design-notes.md §DepthPad/pad rendering.
 
 ### Mode-awareness cues
+
 One of four alternatives to reinforce SETUP/GAME distinction beyond the current toggle and
 is-setup pad treatment. Evaluation order: (1) Atmosphere — SETUP shows grid; GAME adds
 AmbientEmbers + hearth-glow (highest impact, reuses v8 infrastructure). (2) Status chip —
@@ -129,23 +145,27 @@ Ship one, optionally two if they hit different screen regions and don't compete.
 **Source:** docs/design/design-notes.md §Slice 8 — Mode-awareness cues.
 
 ### Pad Appearance settings persistence
+
 "APPLY TO ALL PADS" writes to project state system-wide, not per-pad. Per-pad override is
 a separate future feature.
 **When:** Slice 8.
 **Source:** docs/design/design-notes.md §Settings & system polish.
 
 ### Settings search across submenus
+
 Typing filters all rows across all submenus, jumps to first match, highlights the term.
 **When:** Slice 8.
 **Source:** docs/design/design-notes.md §Settings & system polish.
 
 ### Mode-toggle SFX preview
+
 Settings → Controls "Mode toggle SFX" file slot: preview the chosen sound at current MASTER
 volume. Reuse the pad PREVIEW button code path — no separate "test sound" feature.
 **When:** Slice 8.
 **Source:** docs/design/design-notes.md §Settings & system polish.
 
 ### View Transitions API (optional polish)
+
 iOS 18+ only; never a hard dependency. Progressively enhance scene/screen transitions if
 available.
 **When:** Slice 8 (only if iOS 18+ has reached the minimum-supported threshold by then).
@@ -169,6 +189,7 @@ not yet implemented. CSS animation + new `is-*` classes. On top of this design: 
 #### Grid / Layout
 
 ### Grid configurability (gridConfig popover)
+
 Expose cols × rows in a popover. Mobile hard cap: 5×4 (no 6×4 or 6×6 in the mobile popover
 — avoids "tooltip warning the user not to do the thing the UI offers").
 **Why deferred:** Grid is currently hardcoded 4×4. Slice 3 decision to defer.
@@ -176,24 +197,28 @@ Expose cols × rows in a popover. Mobile hard cap: 5×4 (no 6×4 or 6×6 in the 
 **Source:** ADR-0032, docs/design/design-notes.md §Slice 8 — A4 Mobile preset ceiling.
 
 ### Cell-size setting
+
 Global preference in Settings → Display (compact / normal / spacious). Per-scene cell-size
 multiplies the variation space without much real benefit.
 **When:** Slice 8.
 **Source:** docs/design/design-notes.md §Slice 8 — A4 Cell-size.
 
 ### Default new-scene grid as user preference
+
 Currently hardcoded 4×4 for every new scene. Expose an override in Settings → Display.
 Then 4×4 becomes "default until you change it once."
 **When:** Slice 8.
 **Source:** docs/design/design-notes.md §Slice 8 — A4 Default new-scene grid.
 
 ### Unplaced pads remember desired position
+
 When shrinking a grid pushes pads off, they retain their wanted (col, row). Enlarging the
 grid re-places them automatically if the slot is still free.
 **When:** Slice 8.
 **Source:** ADR-0009, docs/design/design-notes.md §Slice 8 — A4 Unplaced pads.
 
 ### Mobile layout adaptation
+
 Make SceneRail collapsible or overlay at narrow viewports (≤ 390 px). Make inspector panels
 (PadEditorPanel, LibraryPanel) slide over the pad grid rather than pushing it, or use a
 tab-based layout. Minimum viable target: pad grid center area ≥ 44 px in all three SETUP
@@ -203,6 +228,7 @@ states at 390 px.
 **Source:** docs/design/design-notes.md §Known limitation: SETUP layout.
 
 ### Empty-SETUP affordance / placeholder
+
 The empty-SETUP inspector placeholder ("Select a pad to edit or open the Library") was
 removed in commit 402b4c2 as a side-effect of a test fix. What the empty SETUP state
 should show — guidance text, a wider bare grid, or something else — is an open UX question.
@@ -218,49 +244,59 @@ Items below are PAD Editor interaction details deferred from Slice 3/4. All targ
 or a dedicated editor polish pass.
 
 ### Key Capture flow
+
 KEY / MIDI / GAMEPAD fields enter a "listening" state (pulsing teal border, "press any key…")
 on click. Escape cancels. Visual: reuse SETUP-mode hatch during the listening window.
 **Source:** docs/design/design-notes.md §PAD Editor — Key Capture flow.
 
 ### Inline conflict feedback
+
 Live ✓/⚠ hint under KEY field as a binding is chosen — don't wait for save.
 **Scope:** conflicts are checked **per deck** (formerly "scene"), not per board — keys apply per deck ([docs/product/README.md §6](product/README.md#input-keyboard--numpad) K2, 2026-09-28). Quick-access keys are board-wide (K13) and conflict with every deck.
 **Source:** docs/design/design-notes.md §PAD Editor — Inline conflict feedback.
 
 ### Snap-to-zero-crossing on waveform drag
+
 Trim and loop markers snap to the nearest audio zero-crossing while dragging. Without it,
 hard cuts produce audible clicks.
 **Source:** docs/design/design-notes.md §PAD Editor — Snap-to-zero-crossing.
 
 ### Numeric scrubbing on M:SS labels
+
 TRIM START / TRIM END / LOOP POINT readouts: Premiere-style click-drag to nudge ±0.1 s
 per pixel; hold ⇧ for ±0.01 s.
 **Source:** docs/design/design-notes.md §PAD Editor — Numeric scrubbing.
 
 ### Live preview that respects fades + trim
+
 PREVIEW starts at trimStart with fades + loop applied. Playhead restarts at loopPoint for
 LOOP-type pads so the user can hear the loop seam.
 **Source:** docs/design/design-notes.md §PAD Editor — Live preview.
 
 ### Crossfade duration as inline control
+
 Mini-slider (60–600 ms) or numeric scrubber. Gate visibility on loop mode = CROSSFADE.
 **Source:** docs/design/design-notes.md §PAD Editor — Crossfade duration.
 
 ### Waveform zoom for long files
+
 Zoom level (scroll wheel or ±/0 keys) + minimap strip; only relevant if files ≥ 60 s are
 common in real use.
 **Source:** docs/design/design-notes.md §PAD Editor — Waveform zoom.
 
 ### Pad-type change confirmation
+
 Switching LOOP→SINGLE invalidates loop-point and crossfade. Show inline confirm before
 discarding; don't silently wipe settings.
 **Source:** docs/design/design-notes.md §PAD Editor — Pad-type change confirmation.
 
 ### Output bus inheritance hint
+
 Faded one-line hint below OUTPUT BUS pills showing where the level baseline comes from.
 **Source:** docs/design/design-notes.md §PAD Editor — Output bus inheritance hint.
 
 ### Hotkey conflict on duplicate
+
 ⌘D conflicts with the browser "Bookmark this page" in non-standalone PWA mode. Options:
 use ⌘⇧D, or accept that duplicate is right-click / long-press only when running outside
 standalone mode.
@@ -271,6 +307,7 @@ standalone mode.
 ### Audio Engine (Deferred from Slice 4)
 
 ### Finite Loop Count (loopCount > 0)
+
 Currently only infinite loops are supported. Add support for a fixed repeat count when
 the need surfaces in real play sessions.
 **Why deferred:** Infinite loops cover all known real-game use cases so far.
@@ -278,11 +315,13 @@ the need surfaces in real play sessions.
 **Source:** CLAUDE.md Slice 4 deviations.
 
 ### Real crossfade
+
 Currently a stub: `stop(from)` + `play(to)`. Implement proper crossfade in Slice 8.
 **When:** Slice 8.
 **Source:** CLAUDE.md Slice 4 deviations.
 
 ### `is-scheduled` pad state (combo + ducking)
+
 A third visual state for pads that will fire on the next downbeat (combo scheduling, ducking
 release). Softer outline in pad-type colour, no inset fill — distinct from idle and `is-hot`.
 Hold until combo timing is real in the UI.
@@ -290,12 +329,14 @@ Hold until combo timing is real in the UI.
 **Source:** docs/design/design-notes.md §Slice 4 — C1.
 
 ### `--pad-soft-outline` token family
+
 Colour values for the `is-scheduled` visual. Hold until `is-scheduled` is approved — adding
 tokens before the state has a use makes the §A cheat-sheet noisier without solving anything.
 **When:** Same as `is-scheduled`.
 **Source:** docs/design/design-notes.md §Slice 4 — C2.
 
 ### Per-pad level metering
+
 The audio engine has analyser node infrastructure, but per-pad metering UI is deferred.
 Adds CSS animation complexity and is a polish concern, not functional.
 **When:** Slice 8 (Polish).
@@ -306,18 +347,21 @@ Adds CSS animation complexity and is a polish concern, not functional.
 ### Library (Deferred from Slice 2/3)
 
 ### Multi-file playlist UX
+
 FileRow supports multiple files for playlist pads: drag to reorder, click to select primary,
 ⌘-click for bulk remove. The currently-selected file's waveform shows in the big canvas.
 **When:** When playlist pads are in real use (Slice 4+).
 **Source:** docs/design/design-notes.md §Audio file management.
 
 ### Per-file fade and trim for playlist pads
+
 Each playlist entry gets its own fade-in / trim. Either per-file state or per-file JSON in
 the project file. Decision deferred until playlist UX is built.
 **When:** Same as multi-file playlist UX.
 **Source:** docs/design/design-notes.md §Audio file management.
 
 ### Tag autocomplete with keyboard
+
 Typing in the tag field surfaces matching tags from the project pool (case-insensitive, fuzzy
 on substring). ↵ commits, ⌫ on empty input removes last chip. Chips render in pad-type colour
 family if a semantic mapping exists.
@@ -325,6 +369,7 @@ family if a semantic mapping exists.
 **Source:** docs/design/design-notes.md §Tags & folders.
 
 ### Folder picker as a tree
+
 The FOLDER field opens a narrow tree column inside the inspector, not a separate dialog. New
 folder via a `+ NEW` row at the bottom.
 **When:** Slice 8 or library polish pass.
@@ -355,7 +400,7 @@ The app is built on a deliberately chosen modular foundation — multi-level set
 
 **Corollary on communication:** Complexity that is deliberately built in must stay visible — foreseeable downstream costs are named in advance. Complexity that only reveals itself later is flagged explicitly as a new realization, never quietly absorbed.
 
-**Relationship to the tinkerer principle:** These are complementary, not competing. The tinkerer principle governs *what* to build (user control, predictable mechanics); this motto governs *how* to build it (forward-thinking architecture, incrementally, with explicit trade-offs named).
+**Relationship to the tinkerer principle:** These are complementary, not competing. The tinkerer principle governs _what_ to build (user control, predictable mechanics); this motto governs _how_ to build it (forward-thinking architecture, incrementally, with explicit trade-offs named).
 **Cross-references:** → [Guiding principle — technically-minded tinkerers](#guiding-principle--technically-minded-tinkerers) · [2d — Sidebar as reusable building block](#2d--sidebar-as-reusable-building-block) · [2e — Multi-level settings hierarchy](#2e--multi-level-settings-hierarchy).
 
 ---
@@ -442,14 +487,15 @@ over the active theme.
 
 Quick Access in any form is deferred until Slice 5 scene use reveals whether the need is
 genuine and what shape fits. Four candidate shapes remain open:
+
 - **Quick Access Strip** (v9 §2) — persistent pinned individual pads, always visible.
 - **Cue Stack** (v9 §3) — sequential TAB-queue; pads fire in order.
 - **Set-Switches** (Slice 6 concept) — switch entire Sets at once.
 - **Cue Tray** — 2–3 armed pads, non-sequential fire-at-will.
-If any form is built: must be disableable.
-**→ Slice 6:** [PadSet model + Quick-Access strip](#padset-model--quick-access-strip) ·
-[Open UX question: Quick Access strip scope](#open-ux-question-quick-access-strip-scope) —
-deferral reason updated: "requires real scene experience" extends "requires Slice 5 in place."
+  If any form is built: must be disableable.
+  **→ Slice 6:** [PadSet model + Quick-Access strip](#padset-model--quick-access-strip) ·
+  [Open UX question: Quick Access strip scope](#open-ux-question-quick-access-strip-scope) —
+  deferral reason updated: "requires real scene experience" extends "requires Slice 5 in place."
 
 ### Summonable overlay contract _(pending; not yet finalized — refined after panel-fit check)_
 
@@ -490,13 +536,13 @@ origin-disambiguated). Applies to all summon-driven surfaces.
 
 #### Per-surface assignment (from panel-fit check)
 
-| Surface | Layer 1 Resize | Layer 2 Summon | Spring-loaded | Notes |
-|---------|:--------------:|:--------------:|:-------------:|-------|
-| Quick-Pads _(planned)_ | ✅ | ✅ | ✅ | The design-canonical case of the full contract. |
-| LibraryPanel | ✅ | ✅ | — | Coexists with existing place-mode auto-close (long-press on library row sets panel to `'empty'`). |
-| Mixer _(planned, v8-atmosphere.jsx)_ | ✅ | ✅ | — | Same model as LibraryPanel. |
-| PadEditorPanel | ✅ | — | — | **Resize only.** Selection-driven (opens on pad select, closes on deselect) — not summon-driven. A summon handle would have no coherent state here. Editor retains its existing selection-driven open/close logic. |
-| SceneRail | — | — | — | **No layer today** — permanently present; no toggle state in the code. Contract applies only if SceneRail becomes collapsible on mobile (see [Mobile layout adaptation](#mobile-layout-adaptation)). At that point Layer 2 becomes a candidate. |
+| Surface                              | Layer 1 Resize | Layer 2 Summon | Spring-loaded | Notes                                                                                                                                                                                                                                           |
+| ------------------------------------ | :------------: | :------------: | :-----------: | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Quick-Pads _(planned)_               |       ✅       |       ✅       |      ✅       | The design-canonical case of the full contract.                                                                                                                                                                                                 |
+| LibraryPanel                         |       ✅       |       ✅       |       —       | Coexists with existing place-mode auto-close (long-press on library row sets panel to `'empty'`).                                                                                                                                               |
+| Mixer _(planned, v8-atmosphere.jsx)_ |       ✅       |       ✅       |       —       | Same model as LibraryPanel.                                                                                                                                                                                                                     |
+| PadEditorPanel                       |       ✅       |       —        |       —       | **Resize only.** Selection-driven (opens on pad select, closes on deselect) — not summon-driven. A summon handle would have no coherent state here. Editor retains its existing selection-driven open/close logic.                              |
+| SceneRail                            |       —        |       —        |       —       | **No layer today** — permanently present; no toggle state in the code. Contract applies only if SceneRail becomes collapsible on mobile (see [Mobile layout adaptation](#mobile-layout-adaptation)). At that point Layer 2 becomes a candidate. |
 
 #### Visual requirement _(for later elaboration)_
 
@@ -597,6 +643,7 @@ selection-driven; → [Summonable overlay contract](#summonable-overlay-contract
 Claude Design's five flagged gaps were classified:
 
 **Three confirmations of known points (not new):**
+
 - **Cross-scene active sounds** = the Slice 5 audio control problem. Claude Design's concrete
   form: a top band with quick-stop chips (≈ earlier option B).
   → [Audio continues during scene switch](#audio-continues-during-scene-switch-confirmed-correct--slice-5).
@@ -607,6 +654,7 @@ Claude Design's five flagged gaps were classified:
   → [Stage Lock](#stage-lock).
 
 **Two genuinely new candidates (added to the candidate pool):**
+
 - **Audition vs. live output:** previewing a sound must not be audible in the room — needs
   separate audio routing plus a visual distinction (headphone icon or similar). New; no design,
   no implementation yet.
@@ -682,20 +730,20 @@ _Verified finding — code-check 2026-06-04_
 
 **Finding:** The Library is structurally **different** from the pad grid — categorically, not by degree. Same kind of difference as PadEditorPanel vs. the main grid in the grip-contract analysis.
 
-| Surface | Structure | CSS layout |
-|---------|-----------|------------|
-| Pad grid | 2D tile matrix — `cols × rows` cells, each `1fr × 1fr`, position-addressed via `{col, row}` | `display:grid; grid-template-columns: repeat(var(--grid-cols), 1fr)` driven by `Scene.gridConfig` |
-| Library today | Single-column list of horizontal table rows | `.sb-item-list`: `flex-direction:column`. `.sb-audio-row`: `display:grid; grid-template-columns: 160px 1fr 70px 90px 44px` (name \| waveform \| duration \| size \| delete) |
-| Library panel | Single-column item list with row-separator border-bottom | `.sb-lib-panel-row`: `flex-direction:column`, name + waveform per row |
+| Surface       | Structure                                                                                   | CSS layout                                                                                                                                                                  |
+| ------------- | ------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Pad grid      | 2D tile matrix — `cols × rows` cells, each `1fr × 1fr`, position-addressed via `{col, row}` | `display:grid; grid-template-columns: repeat(var(--grid-cols), 1fr)` driven by `Scene.gridConfig`                                                                           |
+| Library today | Single-column list of horizontal table rows                                                 | `.sb-item-list`: `flex-direction:column`. `.sb-audio-row`: `display:grid; grid-template-columns: 160px 1fr 70px 90px 44px` (name \| waveform \| duration \| size \| delete) |
+| Library panel | Single-column item list with row-separator border-bottom                                    | `.sb-lib-panel-row`: `flex-direction:column`, name + waveform per row                                                                                                       |
 
 **Of the four configurable display settings, only font/label size is genuinely generic across both surfaces:**
 
-| Setting | Pad grid | Library applicability |
-|---------|----------|-----------------------|
-| Column count / mode | Number of tile columns in the 2D grid — core structural parameter | Meaningless — Library has one content column; no tile matrix |
-| Pad size | Per-tile dimensions | No equivalent — Library rows have `min-height: 44px`, not tile size |
-| Gap | Space between tiles | Different concept — Library uses row spacing (`gap: var(--space-1)`, hardcoded); "row density" would be plausible but is a distinct setting |
-| Font/label size | Text size inside pad tiles | **Genuinely generic** — text appears in both surfaces; both benefit equally |
+| Setting             | Pad grid                                                          | Library applicability                                                                                                                       |
+| ------------------- | ----------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| Column count / mode | Number of tile columns in the 2D grid — core structural parameter | Meaningless — Library has one content column; no tile matrix                                                                                |
+| Pad size            | Per-tile dimensions                                               | No equivalent — Library rows have `min-height: 44px`, not tile size                                                                         |
+| Gap                 | Space between tiles                                               | Different concept — Library uses row spacing (`gap: var(--space-1)`, hardcoded); "row density" would be plausible but is a distinct setting |
+| Font/label size     | Text size inside pad tiles                                        | **Genuinely generic** — text appears in both surfaces; both benefit equally                                                                 |
 
 **Shared today:** `Waveform` component and design tokens (`--space-*`, `--font-*`) only. No shared layout class or sizing primitive between the two surfaces.
 
@@ -766,6 +814,7 @@ Each is a **separate element** — Pad Editor ≠ Combo Editor. Pad Editor on Bo
 **Cross-cutting separation rule (applies at every level):** Individual elements on the same level are separate from one another. This is the generalization of C10's "the same setting option must NOT appear on both levels" — extended to: options within a level do not cross-contaminate between elements (Board settings and Library settings are distinct even though both are Level 2).
 
 **Default model — Lesart B (live binding):**
+
 - Each element type has one shared default (all Pad Editor instances share one Pad Editor default; the Library has its own; each Board type has its own).
 - Per instance: follow the type-default (live binding — changes to the default propagate immediately to all instances set to "follow") or override with an instance-specific value.
 - "Follows default" = live binding, not a frozen copy. Consistent with the scene default/individual checkbox pattern already decided in C10 point 8.
@@ -833,12 +882,13 @@ Only missing: a UI button alongside the hard STOP. Pure UI work; no audio change
 ### Glanceable loop state _(see also Slice 8)_
 
 Designed in `design-sources/2026-05-25/` (v8 §5–§6), not yet implemented:
+
 - **Now-Playing breathing aura** — pad glows and breathes while looping (distinct from
   static `is-hot`).
 - **Idle-Loop Breathing Spine** — type-color spine breathes continuously in loop state.
-Implementation: CSS animation + one new `is-*` class per state.
-New on top of this design: [One-Shot-Spark](#one-shot-spark) (not yet designed; truly new).
-**→ Slice 8:** [Glanceable loop state (Slice 8)](#glanceable-loop-state).
+  Implementation: CSS animation + one new `is-*` class per state.
+  New on top of this design: [One-Shot-Spark](#one-shot-spark) (not yet designed; truly new).
+  **→ Slice 8:** [Glanceable loop state (Slice 8)](#glanceable-loop-state).
 
 ---
 
@@ -953,25 +1003,29 @@ Claude Design will show THREE treatments side-by-side: **A** (protrude+color), *
 ## 2. Documentation Debt
 
 ### Documentation consolidation (ADR-0047) ⬜ In progress (started 2026-09-28)
+
 Consolidate the scattered documentation into hub / leaf / template per area —
 see [ADR-0047](architecture/0047-documentation-architecture.md). Incremental; old
 documents stay authoritative until their content is transferred and confirmed.
 **Phases:**
+
 1. ⬜ `product/README.md` — skeleton ✅ (2026-09-28); fill sections in dialogue with the user.
 2. ⬜ `docs/design/README.md` hub + component specs for the elements the mobile Board layout needs.
 3. ⬜ Build the mobile Board layout (product work — not documentation).
 4. ⬜ Further component specs as elements are touched; `docs/architecture/README.md` + `docs/development/README.md` hubs.
 5. ⬜ Slim `CLAUDE.md`, re-point `sync:classes` / `sync:tokens` generators (scripts, hook, CI),
    move superseded documents to `docs/archive/`, reduce `docs/backlog.md` to open work.
-**Source:** Session 2026-09-28.
+   **Source:** Session 2026-09-28.
 
 ### docs/design/design-system.md §1–§5 write out
+
 Sections §1–§5 currently exist but are stubs or placeholder content. Need to be filled with
 actual system documentation.
 **When:** As design documentation catch-up, likely before Slice 8.
 **Source:** Referenced in multiple sessions as "not yet written."
 
 ### docs/design/design-system.md §5 — inset box-shadow exception undocumented
+
 `§5 Token usage rules` (forbidden patterns) says `box-shadow` on clip-path elements (use `filter: drop-shadow()` instead).
 This covers outer box-shadow only. Inset `box-shadow` renders inside the padding box, within the
 clip region, and therefore remains visible on clip-path elements — it is explicitly allowed. See
@@ -1007,16 +1061,17 @@ the pre-migration baseline.
 **3. ✅ 1-use class consolidation review — 2 actions executed, 24 confirmed-justified**
 Group A (7 FINALLY-LOST): all 7 confirmed-justified — no consolidation actions.
 Group B (19 1-use from 3h): 17 confirmed-justified + 2 consolidation actions:
+
 - **sb-topbar-board-name → sb-topbar-title.is-board** (three-step diagnosis: same function
   "truncating topbar title span" + intentional scale variation → Modifikator. Base: truncation
   only. `.is-app` = 22px/0.08em. `.is-board` = 16px/0.06em.)
 - **sb-topbar-badge-wrap absorbed into sb-mode-badge** (single-property utility anti-pattern:
   `flex-shrink:0` only, same as eliminated sb-text-mute. flex-shrink:0 moved to sb-mode-badge.
   Wrapper div removed from TopBar.tsx.)
-Principles applied: (a) button variants use sb-btn-{variant} pattern (sb-btn-muted stays);
-(b) size modifiers use -sm suffix (sb-tab-sm stays); (c) §6 scanned for partners on all
-consolidation candidates — no additional partners found.
-**Final §6 count: 186 → 184** (commit SHA: see consolidation-pass commit).
+  Principles applied: (a) button variants use sb-btn-{variant} pattern (sb-btn-muted stays);
+  (b) size modifiers use -sm suffix (sb-tab-sm stays); (c) §6 scanned for partners on all
+  consolidation candidates — no additional partners found.
+  **Final §6 count: 186 → 184** (commit SHA: see consolidation-pass commit).
 
 **4. ✅ Sorte-2 bet resolution — confirmed correct, already closed at 994d2eb**
 25 entries: 7 WON + 8 LOST-justified + 7 FINALLY-LOST + 3 SPECULATIVE = 25 ✓.
@@ -1028,6 +1083,7 @@ Token-drift normalizations (3e/3f/3g/3h sub-token literals) correctly reflected 
 comments with "sub-token: deliberate" justification notes.
 
 **Outstanding (separate sessions):**
+
 - ~~sb-menu-row pre-flat family restructuring~~ → ✅ Done (see consolidation-pass-part-2 commit)
 - Slice 8 items: CLAUDE.md phrasing (tasks 2), sub-token tokenisation, sb-overlay family (#18–20)
 
@@ -1038,18 +1094,22 @@ comments with "sub-token: deliberate" justification notes.
 ## 3. Deferred Design Decisions
 
 ### Playlist → Loop merge (data model)
+
 Decided 2026-09-28 ([docs/product/README.md §5 Pads](product/README.md#pads)): three pad types — Single, Loop, Combo. Loop and Single accept several files (Loop: in order / shuffle; Single: random / in turn). Requires an ADR superseding the `PadType` part of ADR-0042, a migration of stored `playlist` pads, and engine/editor changes (engine change needs explicit approval).
 **When:** Slice 9 (data model), together with the board pad pool below.
 
 ### Theme flames: Verdant, Neon, Crimson
+
 Parked 2026-09-29. `design-sources/2026-09-28/Design_Soundboard_of_Storytelling/Flammen.html` designs four flame personalities (Hearth, Verdant, Neon, Crimson) on one canvas engine. Hearth's freeze/thaw is in the StartScreen flame (hybrid, `docs/design/imports/animated-flame.md`); the other three belong to the themes.
 **When:** Slice 14 (settings & polish, themes).
 
 ### Settings: reduce motion (animated flame and other animations)
+
 Parked 2026-09-29. The StartScreen flame animates continuously on purpose — users are meant to tap it and freeze it for fun; it does not honour `prefers-reduced-motion`. A Settings option to reduce or stop animations comes with the Settings screen. Record: `docs/design/imports/animated-flame.md`.
 **When:** Slice 14 (settings & polish).
 
 ### Board pad pool (data model)
+
 Decided 2026-09-28 ([docs/product/README.md §5](product/README.md#board-decks--quick-access)): pads belong to the board; decks (formerly "scenes") and the quick-access bar reference pads with their own position and key; "All pads" view; `PadSet` dropped. Today `Scene.pads: Pad[]` owns pads and `position` / `hotkey` sit on the pad (`types.ts`).
 Requires an ADR (superseding the ownership parts of the current model) and a data migration. **Same change: rename Scene → Deck** in UI, code (`Scene`, `Board.scenes`, `SceneRail`, …) and stored data (docs/product/README.md Q1, 2026-09-28). **Do together with the Playlist → Loop merge above** — both reshape `types.ts` and stored boards.
 **When:** Slice 9 (data model) — see `CLAUDE.md §Slice progress`.
@@ -1064,6 +1124,7 @@ The two-axis adaptive model (→ [Stable directions](#two-axis-adaptive-model)) 
 **→ Source:** Part 4 of the two-axis model revision, 2026-06-04.
 
 ### Axis-1 breakpoint thresholds — narrow↔wide layout switch ⬜ TBD (ADR-0045)
+
 Exact breakpoint values at which the SceneRail dock moves from bottom-bar to side-rail are
 explicitly not yet defined — empirical calibration on real devices is required (ref ADR-0045
 §Consequences). Record here so this open decision is not lost.
@@ -1071,57 +1132,66 @@ explicitly not yet defined — empirical calibration on real devices is required
 **Source:** ADR-0045.
 
 ### Empty-SETUP affordance
+
 See Features → Slice 8 above. Duplicated here as a reminder that it is a design decision,
 not just a feature.
 
 ### Delete-last-scene behaviour ✅ SETTLED (Slice 3)
+
 Deleting the last scene leaves the board in zero-scenes (empty-board) state — the intended
 behavior. Blocking was considered and rejected. Implemented unconditionally in
 `SceneRail.tsx` `requestDelete()`: no guard on `scenes.length`; empty-board UI is live.
 **Source:** docs/design/design-notes.md §A3 Scene CRUD; SceneRail.tsx.
 
 ### Scene rename: duplicate names ✅ Done (f69cba6, 1dda987)
+
 **Decision:** Duplicate scene names should be prevented. The name-is-display-only argument was
 considered; uniqueness was chosen to avoid user confusion.
 **Code state:** Implemented. `findConflictingScene()` (`src/lib/sceneConflict.ts`; trimmed,
 case-insensitive, self-excluding; 9 unit tests) drives a live conflict check on input in
 `SceneRail.tsx`. `commitRename()` blocks on conflict: Enter keeps the editor open, blur
 discards the edit. Conflict display via `is-conflict` + "Name already used by …" hint.
-*(Entry updated 2026-09-28: previously listed as code task pending.)*
+_(Entry updated 2026-09-28: previously listed as code task pending.)_
 **Source:** docs/design/design-notes.md §A3 Scene CRUD; user decision 2026-06-06.
 
 ### Scene mobile reorder: stepwise vs. handle-based
+
 No scene reorder mechanism exists in the code — `SceneRail.tsx` has no stepwise Move up/Down
 and no drag handle, and no reorder setter exists in `state/store.ts`. The file-header comment
 "Reorder (drag handle, pointer-events based)" is a planned-feature note, not shipped code.
 Implement stepwise Move up/Down first (recommended); evaluate a handle-based reorder mode for
 power users (≥6 scenes) later, based on real use once it exists.
 **Source:** docs/design/design-notes.md §A3 Scene CRUD.
-*(Entry corrected 2026-06-10: previously claimed stepwise reorder shipped in Slice 3.)*
+_(Entry corrected 2026-06-10: previously claimed stepwise reorder shipped in Slice 3.)_
 
 ### Long-press threshold (350 ms)
+
 Fixed-with-accessibility-override is the cleanest. Or expose in Settings → Controls. Decide
 in Slice 8 based on real-use feedback.
 **Source:** docs/design/design-notes.md §A3 Scene CRUD.
 
 ### `--success` green: keep teal alias or migrate to real green?
+
 `--success: #6DB5B8` is aliased to loop teal. `--fade: #6FA85F` introduced a real green for
 the first time. If the palette warms up to greens, reconsider `--success`. Hold until one or
 two design sessions with `--fade` in context.
 **Source:** docs/design/design-notes.md §Open token/palette questions.
 
 ### A2 Path B: 5–10 s audio zone
+
 Pad-type inference defaults to SINGLE in the ambiguous 5–10 s band. Re-evaluate if real audio
 sets show many sub-loops in this zone.
 **Source:** docs/design/design-notes.md §Slice 3 — A2 Path B.
 
 ### ModeToggle sparks — design-implementation divergence
+
 The CSS class `sb-mode-toggle-sparks` was designed as a contained overflow element to hold
 spark particles during mode-toggle animation. However, `ModeToggle.tsx` appends spark elements
 directly to `document.body` instead of using this container.
 
 **Open question:** Is the body-direct approach deliberate (e.g., for z-index isolation above
 all overlays) or an oversight?
+
 - If **deliberate:** document the rationale (ADR or DESIGN_NOTES) and remove the unused
   `.sb-mode-toggle-sparks` CSS.
 - If **oversight:** wire sparks through the contained element to match the design intent.
@@ -1146,6 +1216,7 @@ movement) would need a clear coexistence contract. First-pass recommendation: GA
 ## 4. Deferred Infrastructure
 
 ### Bug: combo "stop all" step stops the combo itself
+
 Found 2026-09-29 by the T4 characterization tests. A combo step with `stopAll` calls
 `stopAllInternal()` (`v3/src/audio/engine.ts:600-603`), which also stops the running combo
 (`engine.ts:370-372`) — the next step never runs. V1 excluded the running combo (V1 changelog
@@ -1156,12 +1227,14 @@ Pinned by `tests/unit/audio/engine.test.ts` (`test.fails` + a precise current-be
 V1 import (Slice 10) makes real combos usable.
 
 ### Major dependency updates (one at a time)
+
 Pending since 2026-08 (Dependabot PR #15, which failed CI because they were bundled):
 TypeScript 6.0.3 → 7.0.2 (largest — own plan), jsdom 29 → 30, size-limit / @size-limit/file 12 → 13,
 @types/node 24 → 26. Each gets its own step with plan, approval and the full pipeline;
 with the new Dependabot grouping each arrives as a separate PR.
 
 ### Library audio as Blob — Safari Private Browsing (open question)
+
 Found 2026-09-29 (T6): WebKit in an ephemeral context (Playwright; technically like Safari
 Private Browsing) cannot store **Blobs** in IndexedDB — ArrayBuffers work. V3 stores library
 audio as a Blob (`LibraryItem.blob`); V1 stored an ArrayBuffer (`entry.buf`). Likely effect: in
@@ -1172,45 +1245,49 @@ which touches the iOS memory rules. **Open** — verify on a real iPhone (normal
 first (development/manual-iphone-checklist.md), then decide with the product owner.
 
 ### Test infrastructure — before Slice 9c (CLAUDE.md rule 15)
+
 Decided 2026-09-29 after a test-setup analysis. Order is binding; Slice 9c/9d wait for it.
 
-| Step | Content | Status |
-|---|---|---|
-| T1 | Guard test for E2E project membership, test port 5199, Node 24 (`.nvmrc`), visual tests in pre-push, flaky tests fail CI, docs/development/testing.md updated | ✅ Done (60a0f0c) |
-| T2 | Unit tests for the serial upload pipeline (`upload.ts`, iOS memory rule) | ✅ Done (see git log: "test: upload pipeline unit tests (T2)") |
-| T3 | Skipped drag-and-drop E2E tests: found to be never-written TODO stubs, not flaky. Pad swap/insert + library drag written, counter-checked, 20× stable; deck reorder quarantined — feature not built | ✅ Done (see git log: "test: drag-and-drop E2E tests written…(T3)") |
-| T4 | Characterization tests for the audio engine (dispatch, single/loop/playlist, stop/fade, combo, decode dedupe, bridge); `src/audio` in coverage (engine 75 %). Found a real engine bug (below) | ✅ Done (see git log: "test: audio engine characterization tests (T4)") |
-| T10 | Lint rules against test traps (expect-expect, no-focused, no-skipped incl. fixme, valid-expect) for Vitest + Playwright; Playwright `forbidOnly`; counter-checked (10 lint errors + forbidOnly abort on planted traps) | ✅ Done (see git log: "test: lock test traps…(T10)") |
-| T5 | E2E against the production build (vite preview): smoke + full + new PWA tests (service worker, manifest, offline start, offline data) — in CI (job e2e-prod) and in pre-push; counter-checked (no SW registration → 3 PWA tests red) | ✅ Done (see git log: "test: E2E against the production build…(T5)") |
-| T6 | full-webkit project (board/deck/pad CRUD + drag & drop in the Safari engine; library seeded, playback stays Chromium); coverage floor in CI (69/71/61/67) — both counter-checked | ✅ Done (see git log: "test: full E2E subset in WebKit + coverage floor (T6)") |
-| T7 | Guards in `testGuards.test.ts`: every logic module has a test file (4 justified exemptions; nanoid got a real test); every skip/fixme/todo/fails marker references an existing BACKLOG heading (found and fixed 3 missing/wrong references). docs/development/testing.md test inventory generated (`sync:tests`, part of `sync:docs`, pre-commit + CI). Slice-completion checklist: test review. All counter-checked | ✅ Done (see git log: "test: guards for module tests…(T7)") |
-| T8a | Security: `npm audit` 15 findings (9 high, 5 moderate, 1 low — all dev tooling incl. vite/rolldown, which build the shipped bundle) → 0 via `npm audit fix` + vitest trio 4.1.7 → 4.1.11 (GHSA-82fw-gwwq-j7x9); no major jumps, no runtime deps changed; full pipeline green, no visual change. Dependabot: minor/patch grouped, majors as separate PRs | ✅ Done (a349d79) |
-| T8b | `npm audit --audit-level=high` blocking in CI (unit-build-lint) and pre-push; `scripts/*.ts` type-checked (`scripts/tsconfig.json`, `npm run typecheck:scripts`) in pre-commit and CI. Both counter-checked: planted `lodash@4.17.20` → audit exit 1; planted type error in a generator → exit 2. Linting `scripts/` is not included (the ESLint config covers `v3/` only) — later, together with T11 | ✅ Done (see git log: "…(T8b)") |
-| T8c | Weekly scheduled CI run (`weekly.yml`, Monday 06:00 UTC + manual): reuses `tests.yml` via `workflow_call` (full suite, cannot drift); `npm audit` (all levels) + `npm outdated` as run summary; Dependabot PRs open > 14 days fail the run (red = mail). Counter-checked: stale check finds #2/#3/#6 at 14 days, nothing at 100000 days | ✅ Done (see git log: "…(T8c)") |
-| T8d | Deploy the **tested** build: `e2e-prod` keeps its tested `v3/dist` as artifact `pages-dist`; `deploy-pages.yml` downloads and publishes it, no rebuild (ADR-0049). Found and closed a gap: the deploy also fired after `pull_request` runs whose branch is named `main` (e.g. from a fork) and would have published that code — now push-only + same-repo guard; ADR-0040's contrary claim corrected (never exploited: 0 PR runs on a `main` branch). GitHub Actions to current majors (checkout/setup-node/upload-artifact v7, download-artifact v8, upload-pages-artifact v5, deploy-pages v5, configure-pages v6); superseded Dependabot PRs #2, #3, #6, #17, #18 closed | ✅ Done (see git log: "…(T8d)") |
-| T8e | Close the stale Dependabot PRs #15 (failing since 2026-08-03) and #16 — owner's go-ahead given; Dependabot recreated them with the new grouping (#19 dev-minor-patch, #20 prod-minor-patch ✅ green, #21–#28 majors). **Follow-up:** #19 is red only in `format:check` — Prettier 3.9.9 reformats `src/lib/libDnd.ts`; merge #19 together with that one-file reformat | ✅ Done (closed 2026-09-29) |
-| — | Documentation file naming (ADR-0050): docs moved into `docs/` in lowercase-kebab, hubs = `README.md`, design downloads in `design-sources/<YYYY-MM-DD>/`, `CHANGELOG.md` generated from `changelog.ts`, README update rule in the slice checklist; enforced by `docsGuards.test.ts` (all six rules counter-checked). Still open: renaming the local project folder (outside the repo) | ✅ Done (see git log: "(1/3)"–"(3/3)", 2026-09-29) |
-| T9 | GitHub security settings (ADR-0051), set via `gh api` and read back: Dependabot alerts + security updates, secret scanning + push protection, private vulnerability reporting (`.github/SECURITY.md`), ruleset `protect-main` (no force-push, no deletion, no bypass — counter-checked on a temporary probe ruleset/branch: both rejected with GH013, probe removed), GitHub-owned actions only, fork PR workflows need approval. Owner items (account level) done 2026-09-29, confirmed by the owner: two-factor authentication; e-mail for failed workflow runs | ✅ Done (see git log: "…(T9)") |
+| Step | Content                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     | Status                                                                         |
+| ---- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
+| T1   | Guard test for E2E project membership, test port 5199, Node 24 (`.nvmrc`), visual tests in pre-push, flaky tests fail CI, docs/development/testing.md updated                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               | ✅ Done (60a0f0c)                                                              |
+| T2   | Unit tests for the serial upload pipeline (`upload.ts`, iOS memory rule)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    | ✅ Done (see git log: "test: upload pipeline unit tests (T2)")                 |
+| T3   | Skipped drag-and-drop E2E tests: found to be never-written TODO stubs, not flaky. Pad swap/insert + library drag written, counter-checked, 20× stable; deck reorder quarantined — feature not built                                                                                                                                                                                                                                                                                                                                                                                                                                                                         | ✅ Done (see git log: "test: drag-and-drop E2E tests written…(T3)")            |
+| T4   | Characterization tests for the audio engine (dispatch, single/loop/playlist, stop/fade, combo, decode dedupe, bridge); `src/audio` in coverage (engine 75 %). Found a real engine bug (below)                                                                                                                                                                                                                                                                                                                                                                                                                                                                               | ✅ Done (see git log: "test: audio engine characterization tests (T4)")        |
+| T10  | Lint rules against test traps (expect-expect, no-focused, no-skipped incl. fixme, valid-expect) for Vitest + Playwright; Playwright `forbidOnly`; counter-checked (10 lint errors + forbidOnly abort on planted traps)                                                                                                                                                                                                                                                                                                                                                                                                                                                      | ✅ Done (see git log: "test: lock test traps…(T10)")                           |
+| T5   | E2E against the production build (vite preview): smoke + full + new PWA tests (service worker, manifest, offline start, offline data) — in CI (job e2e-prod) and in pre-push; counter-checked (no SW registration → 3 PWA tests red)                                                                                                                                                                                                                                                                                                                                                                                                                                        | ✅ Done (see git log: "test: E2E against the production build…(T5)")           |
+| T6   | full-webkit project (board/deck/pad CRUD + drag & drop in the Safari engine; library seeded, playback stays Chromium); coverage floor in CI (69/71/61/67) — both counter-checked                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            | ✅ Done (see git log: "test: full E2E subset in WebKit + coverage floor (T6)") |
+| T7   | Guards in `testGuards.test.ts`: every logic module has a test file (4 justified exemptions; nanoid got a real test); every skip/fixme/todo/fails marker references an existing BACKLOG heading (found and fixed 3 missing/wrong references). docs/development/testing.md test inventory generated (`sync:tests`, part of `sync:docs`, pre-commit + CI). Slice-completion checklist: test review. All counter-checked                                                                                                                                                                                                                                                        | ✅ Done (see git log: "test: guards for module tests…(T7)")                    |
+| T8a  | Security: `npm audit` 15 findings (9 high, 5 moderate, 1 low — all dev tooling incl. vite/rolldown, which build the shipped bundle) → 0 via `npm audit fix` + vitest trio 4.1.7 → 4.1.11 (GHSA-82fw-gwwq-j7x9); no major jumps, no runtime deps changed; full pipeline green, no visual change. Dependabot: minor/patch grouped, majors as separate PRs                                                                                                                                                                                                                                                                                                                     | ✅ Done (a349d79)                                                              |
+| T8b  | `npm audit --audit-level=high` blocking in CI (unit-build-lint) and pre-push; `scripts/*.ts` type-checked (`scripts/tsconfig.json`, `npm run typecheck:scripts`) in pre-commit and CI. Both counter-checked: planted `lodash@4.17.20` → audit exit 1; planted type error in a generator → exit 2. Linting `scripts/` is not included (the ESLint config covers `v3/` only) — later, together with T11                                                                                                                                                                                                                                                                       | ✅ Done (see git log: "…(T8b)")                                                |
+| T8c  | Weekly scheduled CI run (`weekly.yml`, Monday 06:00 UTC + manual): reuses `tests.yml` via `workflow_call` (full suite, cannot drift); `npm audit` (all levels) + `npm outdated` as run summary; Dependabot PRs open > 14 days fail the run (red = mail). Counter-checked: stale check finds #2/#3/#6 at 14 days, nothing at 100000 days                                                                                                                                                                                                                                                                                                                                     | ✅ Done (see git log: "…(T8c)")                                                |
+| T8d  | Deploy the **tested** build: `e2e-prod` keeps its tested `v3/dist` as artifact `pages-dist`; `deploy-pages.yml` downloads and publishes it, no rebuild (ADR-0049). Found and closed a gap: the deploy also fired after `pull_request` runs whose branch is named `main` (e.g. from a fork) and would have published that code — now push-only + same-repo guard; ADR-0040's contrary claim corrected (never exploited: 0 PR runs on a `main` branch). GitHub Actions to current majors (checkout/setup-node/upload-artifact v7, download-artifact v8, upload-pages-artifact v5, deploy-pages v5, configure-pages v6); superseded Dependabot PRs #2, #3, #6, #17, #18 closed | ✅ Done (see git log: "…(T8d)")                                                |
+| T8e  | Close the stale Dependabot PRs #15 (failing since 2026-08-03) and #16 — owner's go-ahead given; Dependabot recreated them with the new grouping (#19 dev-minor-patch, #20 prod-minor-patch ✅ green, #21–#28 majors). **Follow-up:** #19 is red only in `format:check` — Prettier 3.9.9 reformats `src/lib/libDnd.ts`; merge #19 together with that one-file reformat                                                                                                                                                                                                                                                                                                       | ✅ Done (closed 2026-09-29)                                                    |
+| —    | Documentation file naming (ADR-0050): docs moved into `docs/` in lowercase-kebab, hubs = `README.md`, design downloads in `design-sources/<YYYY-MM-DD>/`, `CHANGELOG.md` generated from `changelog.ts`, README update rule in the slice checklist; enforced by `docsGuards.test.ts` (all six rules counter-checked). Still open: renaming the local project folder (outside the repo)                                                                                                                                                                                                                                                                                       | ✅ Done (see git log: "(1/3)"–"(3/3)", 2026-09-29)                             |
+| T9   | GitHub security settings (ADR-0051), set via `gh api` and read back: Dependabot alerts + security updates, secret scanning + push protection, private vulnerability reporting (`.github/SECURITY.md`), ruleset `protect-main` (no force-push, no deletion, no bypass — counter-checked on a temporary probe ruleset/branch: both rejected with GH013, probe removed), GitHub-owned actions only, fork PR workflows need approval. Owner items (account level) done 2026-09-29, confirmed by the owner: two-factor authentication; e-mail for failed workflow runs                                                                                                           | ✅ Done (see git log: "…(T9)")                                                 |
 
 ### Structure clean-up — before Slice 9c (CLAUDE.md §Guiding priorities)
+
 Decided 2026-09-29 after a structure audit (priority 2: structure and clarity). One plan and
 approval per stage; guard tests keep each scheme from drifting back.
 
-| Stage | Content | Status |
-|---|---|---|
-| S1 | Remove unused Vite scaffold files (`src/app.css`, `src/index.css`, `src/assets/*`, `public/icons.svg`); one version number — package renamed `soundboard-of-storytelling`, `version` field removed (`APP_VERSION` is the only version) | ✅ Done (see git log: "…(S1)") |
-| S2 | Code names (ADR-0052, sources cited): `TopBarV2`/`StatusBarV2`/`BoardTopBarV3` → `TopBar`/`StatusBar`/`BoardTopBar`, `src/chrome/` dissolved into `components/`, `app.tsx` → `App.tsx`; unused CSS removed (`.touch-target`, `.pixel-icon`, `@keyframes sb-flicker`), `.theme-*` → `.sb-theme-*`, `has-*` allowed; generator scripts named after their npm scripts; guard `codeGuards.test.ts` | ✅ Done (see git log: "…(S2)") |
-| S3 | Exception scheme (ADR-0053, sources cited): permanent = rule + reason, temporary = + `BACKLOG "…"`; ESLint `require-description` / `no-unlimited-disable` / unused directives = error; prettier-ignore and to-do markers guarded in `testGuards`; config files linted, unnecessary `*.config` Prettier exclusion removed; ADR `## Exceptions` tables; generated register `docs/development/exceptions.md` (35 entries) | ✅ Done (see git log: "…(S3)") |
-| S4 | Test locators and IDs (ADR-0054, sources cited; supersedes ADR-0038): role/label/text first, test IDs as fallback, never CSS classes (≈30 class locators/assertions replaced); state via `aria-pressed` (pads in GAME, pad type buttons); test ID scheme `<component>-<element>-<kind>` applied to all 35+ IDs; spec files without folder prefix, `helpers.ts`, visual baselines moved (not regenerated); guards in `codeGuards` / `e2eProjects` | ✅ Done (see git log: "…(S4)") |
-| S5 | English only: tool/hook/CI messages, generator texts, ADR categories and template, `testing.md` (stale facts corrected), CLAUDE.md, backlog/design/analysis passages, all ADRs 0001–0045 translated faithfully (fidelity check: code spans, links, headings identical except renamed section references); uniform ADR headers; guards in `docsGuards` (ADR header order + category, no German words — threshold calibrated to 1) | ✅ Done (see git log: "…(S5 1/4)"–"(S5 4/4)") |
-| S6 | Commit message convention in CLAUDE.md + `commit-msg` hook | open |
+| Stage | Content                                                                                                                                                                                                                                                                                                                                                                                                                                          | Status                                        |
+| ----- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------- |
+| S1    | Remove unused Vite scaffold files (`src/app.css`, `src/index.css`, `src/assets/*`, `public/icons.svg`); one version number — package renamed `soundboard-of-storytelling`, `version` field removed (`APP_VERSION` is the only version)                                                                                                                                                                                                           | ✅ Done (see git log: "…(S1)")                |
+| S2    | Code names (ADR-0052, sources cited): `TopBarV2`/`StatusBarV2`/`BoardTopBarV3` → `TopBar`/`StatusBar`/`BoardTopBar`, `src/chrome/` dissolved into `components/`, `app.tsx` → `App.tsx`; unused CSS removed (`.touch-target`, `.pixel-icon`, `@keyframes sb-flicker`), `.theme-*` → `.sb-theme-*`, `has-*` allowed; generator scripts named after their npm scripts; guard `codeGuards.test.ts`                                                   | ✅ Done (see git log: "…(S2)")                |
+| S3    | Exception scheme (ADR-0053, sources cited): permanent = rule + reason, temporary = + `BACKLOG "…"`; ESLint `require-description` / `no-unlimited-disable` / unused directives = error; prettier-ignore and to-do markers guarded in `testGuards`; config files linted, unnecessary `*.config` Prettier exclusion removed; ADR `## Exceptions` tables; generated register `docs/development/exceptions.md` (35 entries)                           | ✅ Done (see git log: "…(S3)")                |
+| S4    | Test locators and IDs (ADR-0054, sources cited; supersedes ADR-0038): role/label/text first, test IDs as fallback, never CSS classes (≈30 class locators/assertions replaced); state via `aria-pressed` (pads in GAME, pad type buttons); test ID scheme `<component>-<element>-<kind>` applied to all 35+ IDs; spec files without folder prefix, `helpers.ts`, visual baselines moved (not regenerated); guards in `codeGuards` / `e2eProjects` | ✅ Done (see git log: "…(S4)")                |
+| S5    | English only: tool/hook/CI messages, generator texts, ADR categories and template, `testing.md` (stale facts corrected), CLAUDE.md, backlog/design/analysis passages, all ADRs 0001–0045 translated faithfully (fidelity check: code spans, links, headings identical except renamed section references); uniform ADR headers; guards in `docsGuards` (ADR header order + category, no German words — threshold calibrated to 1)                 | ✅ Done (see git log: "…(S5 1/4)"–"(S5 4/4)") |
+| S6    | Commit message convention in CLAUDE.md + `commit-msg` hook                                                                                                                                                                                                                                                                                                                                                                                       | open                                          |
 
 **Deferred to Slice 13:** re-evaluate the ADR-0028 exception for the two top bars (`TopBar` on
 Library/Board list, `BoardTopBar` on Board — deliberately separate per ADR-0026) and merge them
 into one component with variants if the mobile layout allows; both are rebuilt there anyway.
 
 ### Documentation freshness automation (T13)
+
 Found 2026-09-30 during S5: stale facts and dead references were found only by chance.
+
 - ✅ **Links and anchors across files** — `link:check` now runs `remark-validate-links` instead of
   `markdown-link-check`, which validated anchors only within the same file and slugged the raw
   heading text. The switch found 9 real broken anchors at once (headings with `_(…)_` get
@@ -1239,7 +1316,9 @@ Found 2026-09-30 during S5: stale facts and dead references were found only by c
   still hand-maintained copies of `.husky/*` and `tests.yml` — candidate for generation.
 
 ### Structure audit 2026-09-30
+
 Owner decisions 2026-09-30: A1–A3 as recommended.
+
 - ✅ **A1 Public third-party assets** — `v1-reference/` (V1 source, a composed 1-bit icon set
   of 2,971 files, 5 font files, no license or credits file) removed from the public repo; a
   complete snapshot is in the local archive (`~/dev/archive/v1-reference/`), V1 itself in
@@ -1253,33 +1332,39 @@ Owner decisions 2026-09-30: A1–A3 as recommended.
   self-host (OFL) with license notices. Done: `@fontsource/*`, woff2 precached,
   `third-party-licenses.txt` generated per build, three pwa-spec tests (counter-checked). Follow-up:
   link the license notices from the app (Slice 14 settings / about).
-- ⬜ **A3 Formatter and linter cover only `v3/`** — 86 of 87 Markdown files, 4 of 7 scripts and
-  2 YAML files never formatted; `scripts/` never linted. Decision: one root config for the whole
-  repository, Markdown included (one-time reformat).
+- ✅ **A3 Formatter and linter cover only `v3/`** (ADR-0058) — scripts moved to `v3/scripts/`
+  (linted, type-checked, no `paths`/`NODE_PATH` workarounds); Prettier and lint-staged config at
+  the root; the whole repository formatted. The first plain Prettier run changed the content of
+  seven Markdown files (bare `*`, `|` in table cells, indented continuation lines) — so Markdown
+  is now formatted only through `format:md`, which fails on any content change, generators escape
+  table cells, and a docs guard checks every table row. Follow-up: move to npm workspaces with a
+  root `package.json` when a second package appears.
 - ⬜ **A4 Hook step lists typed three times** (CLAUDE.md rule 8, CLAUDE.md pre-commit section,
   `testing.md`) — drifted again (Vale missing twice; ADR-0037 once said "three gates" for six).
   Generate from `.husky/*`, reference elsewhere.
 - ⬜ **A5 Exception register misses config-level rule switches** — `eslint.config.js` turns
-  rules off (`no-unused-vars`, `no-explicit-any`) without a register entry; `no-explicit-any`
-  off for tests is unused (no `any` in tests).
+  rules off (`no-unused-vars`) without a register entry. Done: the unused `no-explicit-any` off
+  for unit and E2E tests removed (probe: an `any` in a test is reported again).
 - ⬜ **A6 Dependabot splits package families** — the vitest 5 PR fails `npm ci` because
   `@vitest/coverage-v8` stays on 4.x (peer conflict); group families incl. majors.
 - ⬜ **A7 Vale skips code blocks** — superseded "Scenes" in CLAUDE.md's API block, a `SceneCard`
   sample in the concept brief; the API list in CLAUDE.md is a hand copy of the `idb.ts` /
   `upload.ts` exports (guard the names against the code).
-- ⬜ **A8 Small drift** — stale ESLint comment (config files are type-checked since ADR-0055);
-  duplicate entries in the two `.gitignore` files.
+- ⬜ **A8 Small drift** — duplicate entries in the two `.gitignore` files. Done: the stale ESLint
+  comment about untyped config files.
 - ✅ **A9 Own measurement errors (pattern)** — twice a zsh quirk made a measurement vacuous
   (option+value in one variable; unquoted `--include=*.ts`). Rule for the agent: measurements
   run via bash with quoted globs; "0 hits" counts only after a positive probe.
 
 ### Role-based E2E locators
+
 Temporary exception from ADR-0054: many E2E tests still locate controls by test ID although a
 role + accessible name is the standard. Most icon-only controls have no accessible name yet.
 **When:** Slice 13 — give every control an accessible name while rebuilding the layout, then
 switch those locators to `getByRole` and drop the exception from ADR-0054.
 
 ### Type-check every TypeScript file (T12)
+
 Found 2026-09-30 during S4: unit tests, E2E tests and two tool configs were never type-checked
 (Vitest and Playwright do not check types) — 7 hidden errors (6 unit-test fixtures not matching
 the `Pad` union, 1 E2E config). **Done:** `v3/tsconfig.json` references every project, so `tsc -b`
@@ -1287,6 +1372,7 @@ in `npm run build` checks everything; `strict` explicit; fixtures typed; guard t
 `.ts`/`.tsx` file belongs to a checked project (ADR-0055). **Status:** ✅ Done (see git log: "…(T12)").
 
 ### Re-enable mobile layout tests
+
 `touch-targets.spec.ts` and `overflow.spec.ts` have FIXME markers because the
 desktop-first layout fails them at 390 px (layout geometry is broken by design until Slice 8).
 Re-enable once the Slice 8 mobile adaptation is in place.
@@ -1294,12 +1380,14 @@ Re-enable once the Slice 8 mobile adaptation is in place.
 **Source:** CLAUDE.md commit notes a37dd26, docs/design/design-notes.md §Known limitation.
 
 ### Re-enable DnD E2E tests
+
 Tests 9, 14, 20, 21 in `pad-dnd.spec.ts` are `test.skip` (Scene reorder, Library drag Path B,
 Pad SWAP, Pad INSERT). Need a stable Pointer Events drag sequence in Playwright.
 **When:** When a reliable `dragByPointer()` helper is established in Playwright (Phase 3).
 **Source:** docs/development/testing.md §Known pitfalls #5.
 
 ### Board persistence optimisation
+
 `boardPut()` rewrites the full ~50 KB Board document on every pad/scene edit. Acceptable at
 5×16 pads; may be a bottleneck at larger board sizes. If profiling shows it's slow: split
 scenes into a separate IDB store.
@@ -1307,6 +1395,7 @@ scenes into a separate IDB store.
 **Source:** ADR-0010, idb.ts inline comment.
 
 ### Pre-commit hook runtime watch
+
 Pre-commit hook currently runs in ~16 s (sync:docs + build + lint-staged + 102 unit tests +
 10 smoke E2E + link:check). Below the 20 s pain threshold. If runtime grows uncomfortable:
 smoke E2E is the first candidate to move to CI-only (it's the most expensive gate, and CI
@@ -1315,6 +1404,7 @@ runs it anyway; removing it from the pre-commit saves ~6 s locally with no CI co
 **Source:** docs/development/testing.md §CI integration; empirical measure.
 
 ### Cheatsheet state-vocab quick-ref: consider generating from §3 (drift risk)
+
 `docs/design/design-system-cheatsheet.md` §state vocab is a hand-maintained 13-entry subset of the
 authoritative §3 table in `docs/design/design-system.md`. Every general-purpose `is-*` addition must
 be manually synced to the Cheatsheet (as done for `is-conflict`). Consider generating this
@@ -1323,12 +1413,14 @@ quick-ref from §3 instead — eliminates the drift risk entirely.
 **Source:** docs/analysis/foundation-analysis.md §6 coupling map; observed during `is-conflict` registration (2026-06-15).
 
 ### I18n infrastructure
+
 Structure code so a future i18n pass is feasible (texts in named constants, not hardcoded in
 JSX). Currently English-only; no timeline.
 **When:** Only if a localisation need is confirmed.
 **Source:** docs/architecture/concept-brief.md §4.11, ADR-0041.
 
 ### Reduced-motion fallback for ModeToggle — resolved, cleanup pending
+
 The `sb-mode-toggle-flash` class is CSS-defined as a brightness-flash fallback for users
 with `prefers-reduced-motion: reduce`, but `ModeToggle.tsx` skips the animation entirely
 rather than applying the fallback class. Behavior is correct (no animation = honoring
@@ -1340,6 +1432,7 @@ touching that file (e.g., during Slice 8 polish).
 **Source:** Truth-check commit `e207a0b`; class marked `[unused-css]` in docs/design/design-system.md §6.
 
 ### ✅ Dead CSS: `sb-creation-popover-section` — Resolved (4210405)
+
 ~~The class was designed as a padded, bordered section divider inside the creation popover.
 `PadCreationPopover.tsx` was implemented using direct inline styles for every section instead.~~
 
@@ -1349,6 +1442,7 @@ the name+type section. The [unused-css] marker was removed. See cross-reference 
 §5 CSS Class Discipline sub-session plan.
 
 ### Verify `--pix-bg-layer` removal in `.sb-pix` / `.sb-pad.is-deep`
+
 The token `--pix-bg-layer` was removed from `v3/src/styles/tokens.css` during V3 development.
 The `.sb-pix` rule uses it with a CSS fallback:
 `var(--pix-bg-layer, linear-gradient(var(--pix-bg), var(--pix-bg)) padding-box)`.
@@ -1367,6 +1461,7 @@ exactly this class of bug and would have flagged both at write time — an Ebene
 "make the error impossible" measure rather than relying on review.
 
 **Evaluate before adopting — do NOT just add it:**
+
 - Does it meaningfully slow the pre-commit hook? (The hook is already ~16s, near the
   ~20s comfort threshold. Measure shellcheck's runtime on `.husky/*` before adding.)
 - Is the hook the right place, or should it be CI-only / an editor integration? A blocking
@@ -1385,6 +1480,7 @@ During Session 1, most overlooked issues were caught by recurring review questio
 by a mechanism. Codifying those questions as a short checklist would make the catching
 less dependent on in-the-moment attentiveness. The recurring questions that actually
 caught bugs:
+
 - Was this number/claim measured, or estimated? (caught the 60–80 miscount)
 - Which file/source does this actually read? (caught sync:tokens wrong-file)
 - What happens in the error / edge case? (caught the set -e traps)
@@ -1392,6 +1488,7 @@ caught bugs:
 - Does this only sound plausible, or is it backed by evidence? (the underlying pattern)
 
 **Evaluate before adopting — and keep it SHORT:**
+
 - A checklist only helps if it's used. A long one gets skipped. Five questions max; if it
   grows, it has failed.
 - It must NOT become "always plan / always test everything" — selective vigilance is what
@@ -1426,6 +1523,7 @@ removals. Until implemented, §5a process note + manual update are the guard.
 ---
 
 ## 5. CSS Class Discipline (complete)
+
 _Plan authored: 2026-05-29_
 
 Four sequential sessions to establish and enforce stronger discipline around CSS class usage
@@ -1435,11 +1533,13 @@ used for static structural values (e.g., `sb-creation-popover-section` bypassed 
 creating drift that the `sync:classes` audit cannot detect.
 
 ### Session 0 — Documentation organization ✅ Done (5298705)
+
 _Purpose:_ Clarify the roles and hierarchy of all design-related documentation loci before
 any new convention rules are written. Without this, new rules risk landing in the wrong file
 and going unread.
 
 **Deliverables:**
+
 - Define the role of every design doc locus: `docs/design/design-system.md`, `docs/design/design-system-cheatsheet.md`,
   `design-sources/2026-05-25/` (jsx files + tokens.css), `Responsive_Strategy_V3.html`,
   `docs/design/design-notes.md`. Each must have a one-sentence "this is for X, source of truth for Y"
@@ -1466,6 +1566,7 @@ multi-session plan.
 ---
 
 ### Session 1 — Workflow rule + audit tooling + sync:classes warning ✅ Done (3b1ae06)
+
 _Purpose:_ Establish the rule that prevents inline-style drift, build the tooling that
 measures it, and tighten the existing `sync:classes` generator to warn on undocumented
 new classes.
@@ -1538,6 +1639,7 @@ cross-reference sentence, but ensure both documents say the same thing.
 ---
 
 ### Session 2 — Stage-3 plan, scoped by Session 1 baseline measurement ✅ Done (eda7458)
+
 _Purpose:_ Decide the shape of the migration work based on actual measurement, not estimation.
 
 **Delivered (2026-05-29):** Concrete 3a–3h migration roadmap from the verified baseline.
@@ -1562,13 +1664,13 @@ discipline throughout.
 
 #### Layout Primitives (Session 3a creates these in `v3/src/styles/tokens.css`)
 
-| Class | CSS | Purpose |
-|-------|-----|---------|
-| `sb-row` | `display: flex; align-items: center; gap: var(--space-2)` | horizontal flex row, 8px gap |
-| `sb-row-sm` | `display: flex; align-items: center; gap: var(--space-1)` | horizontal flex row, 4px gap |
-| `sb-flex-1` | `flex: 1` | flex-fill spacer |
-| `sb-row-wrap` | `display: flex; flex-wrap: wrap; gap: var(--space-1)` | wrapping flex row |
-| `sb-row-fill` | `display: flex; flex: 1; align-items: center; justify-content: center` | fill + centered row |
+| Class         | CSS                                                                    | Purpose                      |
+| ------------- | ---------------------------------------------------------------------- | ---------------------------- |
+| `sb-row`      | `display: flex; align-items: center; gap: var(--space-2)`              | horizontal flex row, 8px gap |
+| `sb-row-sm`   | `display: flex; align-items: center; gap: var(--space-1)`              | horizontal flex row, 4px gap |
+| `sb-flex-1`   | `flex: 1`                                                              | flex-fill spacer             |
+| `sb-row-wrap` | `display: flex; flex-wrap: wrap; gap: var(--space-1)`                  | wrapping flex row            |
+| `sb-row-fill` | `display: flex; flex: 1; align-items: center; justify-content: center` | fill + centered row          |
 
 **Gap normalization:** `gap: 6` (5 blocks across the codebase) → `var(--space-2)` (8px).
 The token scale is deliberately coarse; 2px difference is visually imperceptible.
@@ -1581,39 +1683,43 @@ If any block renders noticeably wrong after normalization, report before committ
 Violation counts are **post-3a** (after 3a removes the 13 pure-layout blocks).  
 DoD for each file session: `audit:inline-styles` → 0 violations for that file.
 
-| Session | Files | violations (post-3a) | d-w-s | unclassified | DoD |
-|---------|-------|----------------------|-------|--------------|-----|
-| **3a** ✅ Done | All files — pure-layout only; create 5 primitives (+sb-hidden) | 12 of 13 fully resolved; 1 residual (see note) | 0 | 0 | audit → 1 pure-layout (BoardListScreen:237 `flexShrink:0` residual, assigned to 3f — roadmap prediction of "reclassify as d-w-s" was wrong, it stays pure-layout); 6 new classes (+5 primitives +sb-hidden); 63 total in §6 |
-| **3b** ✅ Done (172c695) | `PadEditorPanel.tsx` | 23 | 4 | 0 | 0 violations, 0 d-w-s. 22 new classes (§6: 63→85). 11 flagged for 3d Path A. 3 Sorte-2 bets (see note below). sb-range-input: native `<input type="range">`, distinct from sb-slider custom div-track, 3 DOM renders — confirmed ≥2 uses. |
-| **3c** ✅ Done (24b6977) | `LibraryScreen.tsx` | 20 | 3 | 0 | 0 violations, 0 d-w-s. 19 new classes + 2 existing-class fixes (sb-tab button resets, sb-search-input 11px→var(--fs-xs) drift). §6: 85→104. Path A rate 5% (expected: LibraryScreen structurally distinct from PadEditorPanel). 0 Sorte-2 bets from 3b resolved. 8 Sorte-2 bets created for 3g/3e (see note below). sb-col added as new layout primitive. |
-| **3d** ✅ Done (4210405) | `PadCreationPopover.tsx` | 15 | 6 | 0 | 0 violations, 0 d-w-s. 8 new classes (sb-source-tabs, sb-tab-sm, sb-scroll-fill, sb-creation-popover-actions, sb-btn-muted, sb-sheet-header, sb-creation-popover-backdrop, sb-source-item). §6: 104→112. Resolution: 3 delete / 1 compose / 3 path-A unchanged / 4 path-A updated / 1 modifier / 9 new-class entries = 8 unique new classes. Reuse rate 45% (5/11 of 3b's flagged classes; leaf-level classes generalize, container-structure classes are component-specific — no re-planning of 3e–3h). 3b bet sb-type-btn WON. Plan deviation: planned sb-btn-sm min-height:36px rejected at spot-check — sb-btn-sm is used across 9 files including navigation buttons; 44px iOS touch-target floor via global rule is correct there. §4 Dead CSS sb-creation-popover-section resolved. |
-| **3e** ✅ Done (96ae78d) | `StartScreen.tsx` | 19 | 0 | 0 | 0 violations, 0 d-w-s. 18 new classes (sb-overlay family, sb-changelog family, sb-flame-icon, sb-start-* family, sb-btn-unlock, sb-version-link). §6: 112→130. Resolution: 1 Path A / 1 A+B / 1 0+B / 1 Primitiv+B / 15 new-class = 19. Reuse rate 10.5% — StartScreen is a centered splash with no tab bar and no empty state; all 3c bets (sb-screen, sb-screen-empty, sb-tab-bar) FAILED (inapplicable — not promoted, not cleaned up — each is still in active use on its own screen). Token normalization: 10 off-token values aligned (all ≤4px drift). New Sorte-2 bets for 3e (Verfallsbedingung: Slice 8): sb-overlay, sb-overlay-header, sb-overlay-body flagged for promotion if settings/future overlays appear. Changelog-family classes (sb-changelog-*) to demote if changelog component is removed. Opportunistic 3b-bet test: sb-panel-title evaluated against ChangelogOverlay's "CHANGELOG" heading — rejected (sb-panel-title is font-mono/fs-xs/flex:1; overlay title needs font-ui/fs-lg). Does not change sb-panel-title's bet status: its declared target is 3g (LibraryPanel), not 3e; this was a side test only — status remains PENDING. |
-| **3f** ✅ Done (b46fb44) | `BoardScreen.tsx` + `BoardListScreen.tsx` | 31 (BS: 17, BLS: 14) | 1 (BLS:161 d-w-s → sb-board-row) | 0 | 0 violations, 0 d-w-s. §6: 130→145 (+15 new sb-* classes). Audit total: 88→57. Resolution breakdown: DELETE 1 / Path A §6 7 / intra-session 1 / cross-file intra-session 3 / CSS extension 1 / new modifier 3 / new class 15 = 31. Reuse rate 35% (11/31). 3a residual (BLS:238 flexShrink:0) resolved via flat sb-row-actions class applied at element level — flat model maintained throughout. sb-screen: **WON** (3 uses: BS×2 + BLS×1). sb-tab-bar: still PARTIALLY-FAILED (3g pending). sb-section-header-row: not found in 3f files, moves to 3g. New 3f bets: sb-row-rename-input, sb-row-actions, sb-btn-icon-sm (all pending 3g — AudioRow scope). Token normalizations: 13px→--fs-xs (1px drift), fontSize:22px=--fs-xl exact, 11px sb-hint-text→10px (1px drift), padding 10px/14px→8px/12px (2px drift each). Off-token literals: 6px×3 (sb-place-banner, sb-setup-toolbar, sb-btn-icon-sm), 56px×1 (sb-board-row minHeight), 60px×1 (is-loose padding) — see §5 BACKLOG note below. Architecture: flat model invariant formally stated; sb-menu-row pre-flat legacy noted and left for dedicated consolidation pass. |
-| **3g** ✅ Done (12fbbc0) | `SceneRail.tsx` + `LibraryPanel.tsx` + `AudioRow.tsx` | 9 + 11 + 8 = 28 | 0+0+2 = 2 | 0 | 0 violations, 0 d-w-s. §6: 145→159 (+14 new classes). Audit total: 57→29. Resolution: 1 DELETE / 14 Path-A §6 / 2 intra-session / 13 new class = 30 resolutions for 28 violations (+2 from d-w-s dual split). Reuse rate 57% overall (73% LibraryPanel — thesis confirmed for screen→panel siblings; 50% AudioRow). 0 new literal 11px values — SR-2 and AR-9 normalized to var(--fs-xs). 4 existing class updates: sb-row (min-width:0), sb-scroll-fill (overscroll-behavior:contain), sb-count-text (flex-shrink:0), sb-hint-text (truncation triplet). Bet outcomes: #3 WON (sb-panel-title on Library span), #5 WON (sb-search-field LP-3), #6 WON (sb-btn-clear LP-5), #12 WON (sb-scroll-fill LP-7); #4 PARTIAL (sb-search-bar → sb-lib-panel-search-bar sibling); #7 FAILED (sb-item-list wrong structure), #10 FINAL-FAILED→screen-local (sb-tab-bar, LibraryPanel has no tab bar), #11 FAILED (sb-filter-rail), #21 FAILED (sb-row-rename-input: wrong font scale for filenames), #22 FAILED (sb-row-actions: AudioRow uses grid, not flex+actions), #23 FAILED (sb-btn-icon-sm: 36px fits neither 28px SceneRail nor 44px AudioRow). |
-| **3h** ✅ Done (994d2eb) | `PadTypeConfirmDialog.tsx` + `TopBar.tsx` + `BoardTopBar.tsx` + `PadGridCell.tsx` + `UndoToast.tsx` + `StatusBar.tsx` + `Waveform.tsx` + `PixelIcon.tsx` | 13+5+4+4+2+1+0+0 = 29 | 1+1+1+0+0+0+2+0 = 5 | 1(PTD ternary)+1(Pix spread) = 2 | 0 violations, 0 d-w-s. §6: 159→186 (+27 new sb-* classes). Audit total: 29→0 (project-wide Total=0 confirmed — Session 3 migration COMPLETE). Resolution breakdown: 1 DELETE / 4 pre-flat-family extensions (.sb-pad family: is-deep height+touch-action, pad-title fs unify, new pad-type-label + pad-drag-handle descendants) / 5 d-w-s splits (TopBar:85 cursor, BoardTopBar:59 maxWidth, PadTypeConfirmDialog:117 verdict-pill bg, Waveform:23 height+opacity, Waveform:37 height+background) / 19 Path B new classes. Near-miss merge: sb-topbar-breadcrumb(V2) + sb-topbar-scene-name(V3) → sb-topbar-secondary (cross-topbar 2-use, same function, 1px size normalization, color intrinsic). Anti-utility ruling: sb-text-dim/sb-text-mute rejected as standalone utilities; colors absorbed into semantic element classes (sb-type-change-from/-arrow, sb-undo-message, sb-topbar-secondary). PixelIcon: sb-pixel-icon hardcoded as base class in component; DOM-verified all 4 SVGs hasBase=true. Visual: TopBar + BoardTopBar (sb-topbar-secondary font-mono/12px/text-mute confirmed), StatusBar, PixelIcon verified headlessly. PadGridCell/PadTypeConfirmDialog/UndoToast/Waveform: CSS audit (0 Path-D) + build confirm migration; NOT laufzeit-verifiziert headlessly (ADD PAD disabled without audio fixture — pre-existing constraint). Confirm at the next use with loaded audio files: PadTypeConfirmDialog (FROM/ARROW/TO colours, verdict pill background, field label colour), waveform bars, PadGridCell (type badge / drag handle), UndoToast (message dim + UNDO + progress bar). Bet settlement: all 8 open bets closed (see §5 Sorte-2 Bet Index below); final scorecard: WON 7 / LOST-justified 8 / FINALLY-LOST-consolidation 7 / SPECULATIVE-Slice8 3. |
+| Session                  | Files                                                                                                                                                    | violations (post-3a)                           | d-w-s                            | unclassified                     | DoD                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| ------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------- | -------------------------------- | -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **3a** ✅ Done           | All files — pure-layout only; create 5 primitives (+sb-hidden)                                                                                           | 12 of 13 fully resolved; 1 residual (see note) | 0                                | 0                                | audit → 1 pure-layout (BoardListScreen:237 `flexShrink:0` residual, assigned to 3f — roadmap prediction of "reclassify as d-w-s" was wrong, it stays pure-layout); 6 new classes (+5 primitives +sb-hidden); 63 total in §6                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| **3b** ✅ Done (172c695) | `PadEditorPanel.tsx`                                                                                                                                     | 23                                             | 4                                | 0                                | 0 violations, 0 d-w-s. 22 new classes (§6: 63→85). 11 flagged for 3d Path A. 3 Sorte-2 bets (see note below). sb-range-input: native `<input type="range">`, distinct from sb-slider custom div-track, 3 DOM renders — confirmed ≥2 uses.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| **3c** ✅ Done (24b6977) | `LibraryScreen.tsx`                                                                                                                                      | 20                                             | 3                                | 0                                | 0 violations, 0 d-w-s. 19 new classes + 2 existing-class fixes (sb-tab button resets, sb-search-input 11px→var(--fs-xs) drift). §6: 85→104. Path A rate 5% (expected: LibraryScreen structurally distinct from PadEditorPanel). 0 Sorte-2 bets from 3b resolved. 8 Sorte-2 bets created for 3g/3e (see note below). sb-col added as new layout primitive.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| **3d** ✅ Done (4210405) | `PadCreationPopover.tsx`                                                                                                                                 | 15                                             | 6                                | 0                                | 0 violations, 0 d-w-s. 8 new classes (sb-source-tabs, sb-tab-sm, sb-scroll-fill, sb-creation-popover-actions, sb-btn-muted, sb-sheet-header, sb-creation-popover-backdrop, sb-source-item). §6: 104→112. Resolution: 3 delete / 1 compose / 3 path-A unchanged / 4 path-A updated / 1 modifier / 9 new-class entries = 8 unique new classes. Reuse rate 45% (5/11 of 3b's flagged classes; leaf-level classes generalize, container-structure classes are component-specific — no re-planning of 3e–3h). 3b bet sb-type-btn WON. Plan deviation: planned sb-btn-sm min-height:36px rejected at spot-check — sb-btn-sm is used across 9 files including navigation buttons; 44px iOS touch-target floor via global rule is correct there. §4 Dead CSS sb-creation-popover-section resolved.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| **3e** ✅ Done (96ae78d) | `StartScreen.tsx`                                                                                                                                        | 19                                             | 0                                | 0                                | 0 violations, 0 d-w-s. 18 new classes (sb-overlay family, sb-changelog family, sb-flame-icon, `sb-start-*` family, sb-btn-unlock, sb-version-link). §6: 112→130. Resolution: 1 Path A / 1 A+B / 1 0+B / 1 Primitiv+B / 15 new-class = 19. Reuse rate 10.5% — StartScreen is a centered splash with no tab bar and no empty state; all 3c bets (sb-screen, sb-screen-empty, sb-tab-bar) FAILED (inapplicable — not promoted, not cleaned up — each is still in active use on its own screen). Token normalization: 10 off-token values aligned (all ≤4px drift). New Sorte-2 bets for 3e (Verfallsbedingung: Slice 8): sb-overlay, sb-overlay-header, sb-overlay-body flagged for promotion if settings/future overlays appear. Changelog-family classes (`sb-changelog-*`) to demote if changelog component is removed. Opportunistic 3b-bet test: sb-panel-title evaluated against ChangelogOverlay's "CHANGELOG" heading — rejected (sb-panel-title is font-mono/fs-xs/flex:1; overlay title needs font-ui/fs-lg). Does not change sb-panel-title's bet status: its declared target is 3g (LibraryPanel), not 3e; this was a side test only — status remains PENDING.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| **3f** ✅ Done (b46fb44) | `BoardScreen.tsx` + `BoardListScreen.tsx`                                                                                                                | 31 (BS: 17, BLS: 14)                           | 1 (BLS:161 d-w-s → sb-board-row) | 0                                | 0 violations, 0 d-w-s. §6: 130→145 (+15 new sb-\* classes). Audit total: 88→57. Resolution breakdown: DELETE 1 / Path A §6 7 / intra-session 1 / cross-file intra-session 3 / CSS extension 1 / new modifier 3 / new class 15 = 31. Reuse rate 35% (11/31). 3a residual (BLS:238 flexShrink:0) resolved via flat sb-row-actions class applied at element level — flat model maintained throughout. sb-screen: **WON** (3 uses: BS×2 + BLS×1). sb-tab-bar: still PARTIALLY-FAILED (3g pending). sb-section-header-row: not found in 3f files, moves to 3g. New 3f bets: sb-row-rename-input, sb-row-actions, sb-btn-icon-sm (all pending 3g — AudioRow scope). Token normalizations: 13px→--fs-xs (1px drift), fontSize:22px=--fs-xl exact, 11px sb-hint-text→10px (1px drift), padding 10px/14px→8px/12px (2px drift each). Off-token literals: 6px×3 (sb-place-banner, sb-setup-toolbar, sb-btn-icon-sm), 56px×1 (sb-board-row minHeight), 60px×1 (is-loose padding) — see §5 BACKLOG note below. Architecture: flat model invariant formally stated; sb-menu-row pre-flat legacy noted and left for dedicated consolidation pass.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| **3g** ✅ Done (12fbbc0) | `SceneRail.tsx` + `LibraryPanel.tsx` + `AudioRow.tsx`                                                                                                    | 9 + 11 + 8 = 28                                | 0+0+2 = 2                        | 0                                | 0 violations, 0 d-w-s. §6: 145→159 (+14 new classes). Audit total: 57→29. Resolution: 1 DELETE / 14 Path-A §6 / 2 intra-session / 13 new class = 30 resolutions for 28 violations (+2 from d-w-s dual split). Reuse rate 57% overall (73% LibraryPanel — thesis confirmed for screen→panel siblings; 50% AudioRow). 0 new literal 11px values — SR-2 and AR-9 normalized to var(--fs-xs). 4 existing class updates: sb-row (min-width:0), sb-scroll-fill (overscroll-behavior:contain), sb-count-text (flex-shrink:0), sb-hint-text (truncation triplet). Bet outcomes: #3 WON (sb-panel-title on Library span), #5 WON (sb-search-field LP-3), #6 WON (sb-btn-clear LP-5), #12 WON (sb-scroll-fill LP-7); #4 PARTIAL (sb-search-bar → sb-lib-panel-search-bar sibling); #7 FAILED (sb-item-list wrong structure), #10 FINAL-FAILED→screen-local (sb-tab-bar, LibraryPanel has no tab bar), #11 FAILED (sb-filter-rail), #21 FAILED (sb-row-rename-input: wrong font scale for filenames), #22 FAILED (sb-row-actions: AudioRow uses grid, not flex+actions), #23 FAILED (sb-btn-icon-sm: 36px fits neither 28px SceneRail nor 44px AudioRow).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| **3h** ✅ Done (994d2eb) | `PadTypeConfirmDialog.tsx` + `TopBar.tsx` + `BoardTopBar.tsx` + `PadGridCell.tsx` + `UndoToast.tsx` + `StatusBar.tsx` + `Waveform.tsx` + `PixelIcon.tsx` | 13+5+4+4+2+1+0+0 = 29                          | 1+1+1+0+0+0+2+0 = 5              | 1(PTD ternary)+1(Pix spread) = 2 | 0 violations, 0 d-w-s. §6: 159→186 (+27 new sb-\* classes). Audit total: 29→0 (project-wide Total=0 confirmed — Session 3 migration COMPLETE). Resolution breakdown: 1 DELETE / 4 pre-flat-family extensions (.sb-pad family: is-deep height+touch-action, pad-title fs unify, new pad-type-label + pad-drag-handle descendants) / 5 d-w-s splits (TopBar:85 cursor, BoardTopBar:59 maxWidth, PadTypeConfirmDialog:117 verdict-pill bg, Waveform:23 height+opacity, Waveform:37 height+background) / 19 Path B new classes. Near-miss merge: sb-topbar-breadcrumb(V2) + sb-topbar-scene-name(V3) → sb-topbar-secondary (cross-topbar 2-use, same function, 1px size normalization, color intrinsic). Anti-utility ruling: sb-text-dim/sb-text-mute rejected as standalone utilities; colors absorbed into semantic element classes (sb-type-change-from/-arrow, sb-undo-message, sb-topbar-secondary). PixelIcon: sb-pixel-icon hardcoded as base class in component; DOM-verified all 4 SVGs hasBase=true. Visual: TopBar + BoardTopBar (sb-topbar-secondary font-mono/12px/text-mute confirmed), StatusBar, PixelIcon verified headlessly. PadGridCell/PadTypeConfirmDialog/UndoToast/Waveform: CSS audit (0 Path-D) + build confirm migration; NOT laufzeit-verifiziert headlessly (ADD PAD disabled without audio fixture — pre-existing constraint). Confirm at the next use with loaded audio files: PadTypeConfirmDialog (FROM/ARROW/TO colours, verdict pill background, field label colour), waveform bars, PadGridCell (type badge / drag handle), UndoToast (message dim + UNDO + progress bar). Bet settlement: all 8 open bets closed (see §5 Sorte-2 Bet Index below); final scorecard: WON 7 / LOST-justified 8 / FINALLY-LOST-consolidation 7 / SPECULATIVE-Slice8 3. |
 
 **Arithmetic verification:** 12+23+20+15+19+31+28+29 = 177 ✓ | d-w-s: 4+3+6+0+0+2+5 = 20 ✓ | unclassified: 2 ✓
 _(3a resolves 12 fully + 1 residual deferred to 3f; 3f scope is 31 = 17+14. Total closes to 177.)_
 
 **3b Sorte-2 bets** (created on expectation of 3d/3c reuse; cleanup candidates if not used as Path A):
+
 - `sb-type-btn` — **WON (3d)**: PadCreationPopover type pills use it directly. Class updated (added fontFamily, textTransform, cursor, minHeight:28px).
 - `sb-section-header-row` — **FINALLY LOST → screen-local (3h)**: Not found in 3d, 3f, 3g, or 3h. Stays on PadEditorPanel. Consolidation-pass candidate.
 - `sb-panel-title` — **WON (3g)**: Applied to `<span>Library</span>` in LibraryPanel header. flex:1 pushes close button right without marginLeft:auto. 2 uses: PadEditorPanel "Pad Editor" + LibraryPanel "Library". Bet fully resolved.
 
 **3c Sorte-2 bets** (1-use in 3c, created on expectation of 3g/3e reuse; cleanup candidates if not used as Path A):
 High-confidence (3g is LibraryPanel — same library surface):
+
 - `sb-search-bar` — **PARTIAL (3g)**: LibraryPanel has a search bar but the values differ (padding 6/8 vs 10/14, border-soft vs border). Created `sb-lib-panel-search-bar` as a sibling class (NOT a modifier of sb-search-bar — standalone, named for component context). The structural concept is confirmed; exact reuse was not possible.
 - `sb-search-field` — **WON (3g)**: LibraryPanel uses it as Path A (LP-3). 2px gap drift (6→8) within tolerance. 2 uses: LibraryScreen + LibraryPanel. Bet fully resolved.
 - `sb-btn-clear` — **WON (3g)**: LibraryPanel uses it as Path A (LP-5). 1px padding drift within tolerance. 2 uses: LibraryScreen + LibraryPanel. Bet fully resolved.
 - `sb-item-list` — **FAILED (3g)**: sb-item-list uses padding + flex-column + gap (card-style list). LibraryPanel uses border-bottom separators without inner padding/gap. LibraryPanel list uses sb-scroll-fill instead. Class stays — in active use on LibraryScreen. Downgrade to screen-local.
 
 Moderate-confidence:
+
 - `sb-screen` — **WON (3f)**: BoardScreen root×2 + BoardListScreen root — all full-height column-layout app screen roots. 3 confirmed uses across 3 screens (LibraryScreen + BoardScreen + BoardListScreen). Bet fully resolved.
 - `sb-screen-empty` — **FAILED (3e)**: StartScreen has no empty state; inapplicable. Class stays — in active use on LibraryScreen. ⚠️ Retroactively registered: this bet was implicit at 3c close (LibraryScreen empty-state class, expected that other screens might inherit the centered-empty-state pattern) but was not formally listed at the time; the omission was identified when the 3e entry referenced it as a 3c bet. Corrected here to make the 3c count accurate (7→8).
 - `sb-tab-bar` — **FINAL FAILED → screen-local**: 3e failed (StartScreen no tab bar), 3f failed (BoardScreen/BLS no tab bar), 3g final test failed (LibraryPanel has no tab bar). Class stays — in active use on LibraryScreen. Downgraded from expected multi-screen to screen-local.
 - `sb-filter-rail` — **FAILED (3g)**: LibraryPanel has no filter rail (it is a panel, not a 2-col screen layout). Class stays — in active use on LibraryScreen. Downgrade to screen-local.
 
 **3d Sorte-2 bets** (created on expectation of 3e–3h reuse; cleanup candidates if not confirmed):
+
 - `sb-scroll-fill` — **WON (3g)**: LibraryPanel item list uses it as Path A (LP-7). Updated with overscroll-behavior:contain. 2+ uses: PadCreationPopover + LibraryPanel. Bet resolved.
 - `sb-sheet-header` — **FINALLY LOST → screen-local (3h)**: Structurally incompatible with PadTypeConfirmDialog (split header) + letterSpacing drift. Stays on PadCreationPopover. Consolidation-pass candidate.
 - `sb-creation-popover-actions` — **FINALLY LOST → screen-local (3h)**: PadTypeConfirmDialog needs 3× larger padding + justify-content:flex-end. Stays on PadCreationPopover. Consolidation-pass candidate.
@@ -1628,6 +1734,7 @@ Moderate-confidence:
 > **Canonical status source.** Future sessions (3f–3h, Slice 8) update this table — not their individual session entries. Session entries remain as historical context; when a bet is won or lost, mark it here first. If a session entry says "PENDING" and this table says "OPEN-pending-3g", they mean the same thing — the table wording is authoritative. Do not create new per-session bet sections; extend this index instead.
 
 **Six status categories:**
+
 - **WON** — target session used the class as Path A; confirmed ≥2-use. No further action.
 - **LOST — cleanup candidate** — target session did not use it; no other justification. Merge or remove the class.
 - **LOST — but class justified** — cross-session bet failed; class is legitimately used on its origin screen. No cleanup; downgrade expectation from "multi-screen" to "screen-local."
@@ -1635,33 +1742,33 @@ Moderate-confidence:
 - **OPEN — pending session X** — target session has not run; bet stands.
 - **SPECULATIVE — far** — target is a distant or unplanned slice (e.g. Slice 8); accepted 1-use class with a vague future hope, not a near-term testable bet.
 
-| # | Class | Origin | Remaining target | Status | Verfallsbedingung |
-|---|-------|--------|------------------|--------|--------------------|
-| 1 | `sb-type-btn` | 3b | — | **WON (3d)** | Confirmed ≥2-use. No action. |
-| 2 | `sb-section-header-row` | 3b | 3h | **FINALLY LOST → screen-local** | No 3h file has a space-between section header row. Stays on PadEditorPanel. Consolidation-pass candidate. |
-| 3 | `sb-panel-title` | 3b | — | **WON (3g)** | Applied to LibraryPanel "Library" span. 2 uses: PadEditorPanel + LibraryPanel. Bet resolved. |
-| 4 | `sb-search-bar` | 3c | — | **LOST — but class justified** | LibraryPanel needs sb-lib-panel-search-bar (different padding/border for 280px panel). sb-search-bar stays in use on LibraryScreen. Concept confirmed, exact reuse not possible. |
-| 5 | `sb-search-field` | 3c | — | **WON (3g)** | LibraryPanel LP-3 uses it as Path A. 2 uses: LibraryScreen + LibraryPanel. |
-| 6 | `sb-btn-clear` | 3c | — | **WON (3g)** | LibraryPanel LP-5 uses it as Path A. 2 uses: LibraryScreen + LibraryPanel. |
-| 7 | `sb-item-list` | 3c | — | **LOST — but class justified** | LibraryPanel uses sb-scroll-fill (row-based list, not card-style). sb-item-list stays in use on LibraryScreen. |
-| 8 | `sb-screen` | 3c | 3f | **WON (3f)** | Used on BS root×2 + BLS root×1 — all full-height column-layout app screen roots. Confirmed ≥3-use. No action. |
-| 9 | `sb-screen-empty` | 3c | 3e | **LOST — but class justified** | Failed in 3e (StartScreen has no empty state). In active use on LibraryScreen. No cleanup. |
-| 10 | `sb-tab-bar` | 3c | — | **FINAL FAILED → screen-local** | 3e, 3f, 3g all failed (none have a tab bar). In active use on LibraryScreen — no cleanup. Downgraded to screen-local. |
-| 11 | `sb-filter-rail` | 3c | — | **LOST — but class justified** | LibraryPanel has no filter rail. In active use on LibraryScreen. Downgrade to screen-local. |
-| 12 | `sb-scroll-fill` | 3d | — | **WON (3g)** | LibraryPanel LP-7 uses it as Path A. Updated with overscroll-behavior:contain. ≥2 uses. |
-| 13 | `sb-sheet-header` | 3d | 3h | **FINALLY LOST → screen-local** | PadTypeConfirmDialog structurally incompatible: header is split (container div + title div + arrow row); applying sb-sheet-header to the container would bleed its typography to all children. Also letterSpacing differs (0.10em vs 0.08em). Stays on PadCreationPopover. Consolidation-pass candidate. |
-| 14 | `sb-creation-popover-actions` | 3d | 3h | **FINALLY LOST → screen-local** | PadTypeConfirmDialog footer needs padding 3× larger (space-3/space-4 vs space-1/space-2) + justify-content:flex-end (absent). New class sb-dialog-actions created. Stays on PadCreationPopover. Consolidation-pass candidate. |
-| 15 | `sb-btn-muted` | 3d | 3h | **FINALLY LOST → screen-local** | No 3h file has a visually recessive de-emphasized button. Stays on PadCreationPopover. Consolidation-pass candidate. |
-| 16 | `sb-tab-sm` | 3d | 3h | **FINALLY LOST → screen-local** | No 3h file has tabs. Stays on PadCreationPopover. Consolidation-pass candidate. |
-| 17 | `sb-source-tabs` | 3d | 3h | **FINALLY LOST → screen-local** | No 3h file has a source tab row. Stays on PadCreationPopover. Consolidation-pass candidate. |
-| 18 | `sb-overlay` | 3e | Slice 8 | **SPECULATIVE — far** | Promote to confirmed multi-use if settings screen or future overlays appear in Slice 8. |
-| 19 | `sb-overlay-header` | 3e | Slice 8 | **SPECULATIVE — far** | Same as `sb-overlay`. |
-| 20 | `sb-overlay-body` | 3e | Slice 8 | **SPECULATIVE — far** | Same as `sb-overlay`. |
-| 21 | `sb-row-rename-input` | 3f | — | **LOST — but class justified** | AudioRow rename uses font-ui fs-sm/14px, no uppercase — fundamentally different typography from board names (fs-lg/18px, 0.08em, uppercase). Created sb-audio-row-rename. sb-row-rename-input stays in use on BLS BoardRow. |
-| 22 | `sb-row-actions` | 3f | — | **LOST — but class justified** | AudioRow uses 5-column CSS Grid (not flex with trailing action group). No trailing action group wrapper. sb-row-actions stays in BLS BoardRow. |
-| 23 | `sb-btn-icon-sm` | 3f | — | **LOST — but class justified** | SceneRail action buttons = 28px (uses sb-btn-icon). AudioRow delete = 44px (iOS touch target). 36px fits neither. sb-btn-icon-sm stays in BLS BoardRow (2-use). |
-| 24 | `sb-flex-trunc` | 3g | 3h | **FINALLY LOST → screen-local** | BoardTopBar board name is in a column flex context (not row fill) with a dynamic maxWidth constraint — flex:1/min-width:0 don't apply. Stays on SceneRail (1-use). Consolidation-pass candidate (1-use class). |
-| 25 | `sb-panel-empty` | 3g | 3h | **WON (3g, 2-use)** | 2-use intra-session (SceneRail + LibraryPanel). No 3h file has panel empty states; WON confirmed in 3g. |
+| #   | Class                         | Origin | Remaining target | Status                          | Verfallsbedingung                                                                                                                                                                                                                                                                                        |
+| --- | ----------------------------- | ------ | ---------------- | ------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | `sb-type-btn`                 | 3b     | —                | **WON (3d)**                    | Confirmed ≥2-use. No action.                                                                                                                                                                                                                                                                             |
+| 2   | `sb-section-header-row`       | 3b     | 3h               | **FINALLY LOST → screen-local** | No 3h file has a space-between section header row. Stays on PadEditorPanel. Consolidation-pass candidate.                                                                                                                                                                                                |
+| 3   | `sb-panel-title`              | 3b     | —                | **WON (3g)**                    | Applied to LibraryPanel "Library" span. 2 uses: PadEditorPanel + LibraryPanel. Bet resolved.                                                                                                                                                                                                             |
+| 4   | `sb-search-bar`               | 3c     | —                | **LOST — but class justified**  | LibraryPanel needs sb-lib-panel-search-bar (different padding/border for 280px panel). sb-search-bar stays in use on LibraryScreen. Concept confirmed, exact reuse not possible.                                                                                                                         |
+| 5   | `sb-search-field`             | 3c     | —                | **WON (3g)**                    | LibraryPanel LP-3 uses it as Path A. 2 uses: LibraryScreen + LibraryPanel.                                                                                                                                                                                                                               |
+| 6   | `sb-btn-clear`                | 3c     | —                | **WON (3g)**                    | LibraryPanel LP-5 uses it as Path A. 2 uses: LibraryScreen + LibraryPanel.                                                                                                                                                                                                                               |
+| 7   | `sb-item-list`                | 3c     | —                | **LOST — but class justified**  | LibraryPanel uses sb-scroll-fill (row-based list, not card-style). sb-item-list stays in use on LibraryScreen.                                                                                                                                                                                           |
+| 8   | `sb-screen`                   | 3c     | 3f               | **WON (3f)**                    | Used on BS root×2 + BLS root×1 — all full-height column-layout app screen roots. Confirmed ≥3-use. No action.                                                                                                                                                                                            |
+| 9   | `sb-screen-empty`             | 3c     | 3e               | **LOST — but class justified**  | Failed in 3e (StartScreen has no empty state). In active use on LibraryScreen. No cleanup.                                                                                                                                                                                                               |
+| 10  | `sb-tab-bar`                  | 3c     | —                | **FINAL FAILED → screen-local** | 3e, 3f, 3g all failed (none have a tab bar). In active use on LibraryScreen — no cleanup. Downgraded to screen-local.                                                                                                                                                                                    |
+| 11  | `sb-filter-rail`              | 3c     | —                | **LOST — but class justified**  | LibraryPanel has no filter rail. In active use on LibraryScreen. Downgrade to screen-local.                                                                                                                                                                                                              |
+| 12  | `sb-scroll-fill`              | 3d     | —                | **WON (3g)**                    | LibraryPanel LP-7 uses it as Path A. Updated with overscroll-behavior:contain. ≥2 uses.                                                                                                                                                                                                                  |
+| 13  | `sb-sheet-header`             | 3d     | 3h               | **FINALLY LOST → screen-local** | PadTypeConfirmDialog structurally incompatible: header is split (container div + title div + arrow row); applying sb-sheet-header to the container would bleed its typography to all children. Also letterSpacing differs (0.10em vs 0.08em). Stays on PadCreationPopover. Consolidation-pass candidate. |
+| 14  | `sb-creation-popover-actions` | 3d     | 3h               | **FINALLY LOST → screen-local** | PadTypeConfirmDialog footer needs padding 3× larger (space-3/space-4 vs space-1/space-2) + justify-content:flex-end (absent). New class sb-dialog-actions created. Stays on PadCreationPopover. Consolidation-pass candidate.                                                                            |
+| 15  | `sb-btn-muted`                | 3d     | 3h               | **FINALLY LOST → screen-local** | No 3h file has a visually recessive de-emphasized button. Stays on PadCreationPopover. Consolidation-pass candidate.                                                                                                                                                                                     |
+| 16  | `sb-tab-sm`                   | 3d     | 3h               | **FINALLY LOST → screen-local** | No 3h file has tabs. Stays on PadCreationPopover. Consolidation-pass candidate.                                                                                                                                                                                                                          |
+| 17  | `sb-source-tabs`              | 3d     | 3h               | **FINALLY LOST → screen-local** | No 3h file has a source tab row. Stays on PadCreationPopover. Consolidation-pass candidate.                                                                                                                                                                                                              |
+| 18  | `sb-overlay`                  | 3e     | Slice 8          | **SPECULATIVE — far**           | Promote to confirmed multi-use if settings screen or future overlays appear in Slice 8.                                                                                                                                                                                                                  |
+| 19  | `sb-overlay-header`           | 3e     | Slice 8          | **SPECULATIVE — far**           | Same as `sb-overlay`.                                                                                                                                                                                                                                                                                    |
+| 20  | `sb-overlay-body`             | 3e     | Slice 8          | **SPECULATIVE — far**           | Same as `sb-overlay`.                                                                                                                                                                                                                                                                                    |
+| 21  | `sb-row-rename-input`         | 3f     | —                | **LOST — but class justified**  | AudioRow rename uses font-ui fs-sm/14px, no uppercase — fundamentally different typography from board names (fs-lg/18px, 0.08em, uppercase). Created sb-audio-row-rename. sb-row-rename-input stays in use on BLS BoardRow.                                                                              |
+| 22  | `sb-row-actions`              | 3f     | —                | **LOST — but class justified**  | AudioRow uses 5-column CSS Grid (not flex with trailing action group). No trailing action group wrapper. sb-row-actions stays in BLS BoardRow.                                                                                                                                                           |
+| 23  | `sb-btn-icon-sm`              | 3f     | —                | **LOST — but class justified**  | SceneRail action buttons = 28px (uses sb-btn-icon). AudioRow delete = 44px (iOS touch target). 36px fits neither. sb-btn-icon-sm stays in BLS BoardRow (2-use).                                                                                                                                          |
+| 24  | `sb-flex-trunc`               | 3g     | 3h               | **FINALLY LOST → screen-local** | BoardTopBar board name is in a column flex context (not row fill) with a dynamic maxWidth constraint — flex:1/min-width:0 don't apply. Stays on SceneRail (1-use). Consolidation-pass candidate (1-use class).                                                                                           |
+| 25  | `sb-panel-empty`              | 3g     | 3h               | **WON (3g, 2-use)**             | 2-use intra-session (SceneRail + LibraryPanel). No 3h file has panel empty states; WON confirmed in 3g.                                                                                                                                                                                                  |
 
 **Count check (final — all 25 closed):** WON: 7 (#1,3,5,6,8,12,25) · LOST-justified: 8 (#4,7,9,10,11,21,22,23) · FINALLY-LOST→consolidation: 7 (#2,13,14,15,16,17,24) · SPECULATIVE-Slice8: 3 (#18,19,20) = 7+8+7+3 = 25 ✓. No OPEN or PARTIALLY-FAILED bets remain. Index closed (2026-05-31, 994d2eb).
 
@@ -1671,21 +1778,21 @@ Moderate-confidence:
 
 3g covered `SceneRail.tsx` + `LibraryPanel.tsx` + `AudioRow.tsx`. All 13 bets resolved:
 
-| Bet | Class | Result | Key finding |
-|-----|-------|--------|-------------|
-| #3 | sb-panel-title | **WON** | Library span in LibraryPanel — exact same function as PadEditorPanel "Pad Editor" |
-| #4 | sb-search-bar | **PARTIAL → new sibling** | LibraryPanel has the structural role but needs sb-lib-panel-search-bar (6/8 vs 10/14 padding; panel context) |
-| #5 | sb-search-field | **WON** | LP-3 Path A; 2px gap drift acceptable |
-| #6 | sb-btn-clear | **WON** | LP-5 Path A; 1px padding drift acceptable |
-| #7 | sb-item-list | **FAILED** | Card-style list (padding+gap) ≠ row-separator list (border-bottom) |
-| #10 | sb-tab-bar | **FINAL FAILED** | LibraryPanel has no tab bar; downgraded to screen-local |
-| #11 | sb-filter-rail | **FAILED** | LibraryPanel is a panel, not a 2-col screen with a filter sidebar |
-| #12 | sb-scroll-fill | **WON** | LP-7 Path A; updated with overscroll-behavior:contain |
-| #16 | sb-tab-sm | **NOT FOUND** | No compact tabs in 3g files; passes to 3h |
-| #2 | sb-section-header-row | **NOT FOUND** | No space-between section headers in 3g files; passes to 3h |
-| #21 | sb-row-rename-input | **FAILED** | AudioRow uses fs-sm/14px/normal-case; class is fs-lg/18px/uppercase — different typographic scale for filenames vs board names |
-| #22 | sb-row-actions | **FAILED** | AudioRow uses 5-column CSS Grid, not flex with trailing action group |
-| #23 | sb-btn-icon-sm | **FAILED** | 36px fits neither SceneRail (28px) nor AudioRow (44px iOS touch target) |
+| Bet | Class                 | Result                    | Key finding                                                                                                                    |
+| --- | --------------------- | ------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| #3  | sb-panel-title        | **WON**                   | Library span in LibraryPanel — exact same function as PadEditorPanel "Pad Editor"                                              |
+| #4  | sb-search-bar         | **PARTIAL → new sibling** | LibraryPanel has the structural role but needs sb-lib-panel-search-bar (6/8 vs 10/14 padding; panel context)                   |
+| #5  | sb-search-field       | **WON**                   | LP-3 Path A; 2px gap drift acceptable                                                                                          |
+| #6  | sb-btn-clear          | **WON**                   | LP-5 Path A; 1px padding drift acceptable                                                                                      |
+| #7  | sb-item-list          | **FAILED**                | Card-style list (padding+gap) ≠ row-separator list (border-bottom)                                                             |
+| #10 | sb-tab-bar            | **FINAL FAILED**          | LibraryPanel has no tab bar; downgraded to screen-local                                                                        |
+| #11 | sb-filter-rail        | **FAILED**                | LibraryPanel is a panel, not a 2-col screen with a filter sidebar                                                              |
+| #12 | sb-scroll-fill        | **WON**                   | LP-7 Path A; updated with overscroll-behavior:contain                                                                          |
+| #16 | sb-tab-sm             | **NOT FOUND**             | No compact tabs in 3g files; passes to 3h                                                                                      |
+| #2  | sb-section-header-row | **NOT FOUND**             | No space-between section headers in 3g files; passes to 3h                                                                     |
+| #21 | sb-row-rename-input   | **FAILED**                | AudioRow uses fs-sm/14px/normal-case; class is fs-lg/18px/uppercase — different typographic scale for filenames vs board names |
+| #22 | sb-row-actions        | **FAILED**                | AudioRow uses 5-column CSS Grid, not flex with trailing action group                                                           |
+| #23 | sb-btn-icon-sm        | **FAILED**                | 36px fits neither SceneRail (28px) nor AudioRow (44px iOS touch target)                                                        |
 
 **Strategic finding:** The thesis holds for screen→panel siblings (LibraryPanel 73% reuse — 3c's classes snapped in). It fails for component→component predictions (AudioRow 50%, 3f bets all failed) when the components have structurally different layouts (grid vs. flex+actions). Honest failed bets are real results; they map the boundary of the strategy.
 
@@ -1693,22 +1800,23 @@ Moderate-confidence:
 
 3h covered `PadTypeConfirmDialog.tsx` + `TopBar.tsx` + `BoardTopBar.tsx` + `PadGridCell.tsx` + `UndoToast.tsx` + `StatusBar.tsx` + `Waveform.tsx` + `PixelIcon.tsx`. All 8 open bets closed:
 
-| Bet | Class | Result | Key finding |
-|-----|-------|--------|-------------|
-| #2 | sb-section-header-row | **FINALLY LOST → screen-local** | No 3h file has a space-between section header row. Consolidation-pass candidate. |
-| #13 | sb-sheet-header | **FINALLY LOST → screen-local** | PadTypeConfirmDialog header is split into 3 nested elements (container + title + arrow-row); applying sb-sheet-header to container would inherit typography to all children. Additionally letterSpacing 0.10em vs 0.08em. |
-| #14 | sb-creation-popover-actions | **FINALLY LOST → screen-local** | PadTypeConfirmDialog footer: padding 3× larger (space-3/space-4 vs space-1/space-2) + justify-content:flex-end absent. New class sb-dialog-actions created. |
-| #15 | sb-btn-muted | **FINALLY LOST → screen-local** | No de-emphasized recessive button in any 3h file. |
-| #16 | sb-tab-sm | **FINALLY LOST → screen-local** | No tabs in any 3h file. |
-| #17 | sb-source-tabs | **FINALLY LOST → screen-local** | No source tab row in any 3h file. |
-| #24 | sb-flex-trunc | **FINALLY LOST → screen-local** | BoardTopBar board name is in a column flex (not row fill) with dynamic maxWidth — flex:1/min-width:0 don't apply. Column context makes the class inapplicable. |
-| #25 | sb-panel-empty | **WON (3g, confirmed)** | Already WON at 2-use intra-session in 3g; no 3h file has panel empty states. Status closes as WON. |
+| Bet | Class                       | Result                          | Key finding                                                                                                                                                                                                               |
+| --- | --------------------------- | ------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| #2  | sb-section-header-row       | **FINALLY LOST → screen-local** | No 3h file has a space-between section header row. Consolidation-pass candidate.                                                                                                                                          |
+| #13 | sb-sheet-header             | **FINALLY LOST → screen-local** | PadTypeConfirmDialog header is split into 3 nested elements (container + title + arrow-row); applying sb-sheet-header to container would inherit typography to all children. Additionally letterSpacing 0.10em vs 0.08em. |
+| #14 | sb-creation-popover-actions | **FINALLY LOST → screen-local** | PadTypeConfirmDialog footer: padding 3× larger (space-3/space-4 vs space-1/space-2) + justify-content:flex-end absent. New class sb-dialog-actions created.                                                               |
+| #15 | sb-btn-muted                | **FINALLY LOST → screen-local** | No de-emphasized recessive button in any 3h file.                                                                                                                                                                         |
+| #16 | sb-tab-sm                   | **FINALLY LOST → screen-local** | No tabs in any 3h file.                                                                                                                                                                                                   |
+| #17 | sb-source-tabs              | **FINALLY LOST → screen-local** | No source tab row in any 3h file.                                                                                                                                                                                         |
+| #24 | sb-flex-trunc               | **FINALLY LOST → screen-local** | BoardTopBar board name is in a column flex (not row fill) with dynamic maxWidth — flex:1/min-width:0 don't apply. Column context makes the class inapplicable.                                                            |
+| #25 | sb-panel-empty              | **WON (3g, confirmed)**         | Already WON at 2-use intra-session in 3g; no 3h file has panel empty states. Status closes as WON.                                                                                                                        |
 
 **Near-miss finding (3h):** sb-topbar-breadcrumb (V2, mono/12px/text-mute/nowrap) and sb-topbar-scene-name (V3, mono/11px/text-mute/truncating) share the same function ("secondary muted mono text in topbar context"). Merged into sb-topbar-secondary (cross-topbar 2-use). 1px size normalization (11→12px, both off-ladder), truncation added to V2 breadcrumb (improvement — parent has min-width:0, was overflowing without it). Color is intrinsic to the class (anti-utility ruling: separate sb-text-mute class rejected).
 
 **Anti-utility ruling (3h):** sb-text-dim and sb-text-mute as standalone color utilities were rejected — same anti-pattern as the sb-truncate rejection in 3g. Colors absorbed into semantic element classes where they belong semantically. No standalone color utility classes exist in §6.
 
 **Ordering rationale (load-bearing):**
+
 - 3a first — layout primitives are a dependency for all subsequent sessions
 - 3b (PadEditorPanel) **before** 3d (PadCreationPopover) — both have form-section patterns;
   3b establishes shared classes, 3d uses them as Path A. **Swapping this order risks duplicate classes.**
@@ -1734,6 +1842,7 @@ At the start of each file session, **before touching any code:**
    need appears multiple times in the file, create ONE class used N times.
 
 **At sub-session end:**
+
 - Add `/* @inventory: … */` to all new classes → run `npm run sync:classes` → verify §6 updated
 - Report: Path A vs Path B split, new-class count
 - Commit before starting the next sub-session (so the next session inherits an up-to-date §6)
@@ -1747,6 +1856,7 @@ serves a specialized function. The metric that matters is not "how many classes"
 
 **Rule 1 — No duplication (the near-miss test):**
 When a proposed new class has similar CSS to an existing class, decide:
+
 - Is the difference a genuine semantic role? → both classes are correct, keep both.
   (Example from 3c: sb-search-field "active search entry" vs sb-readonly-field
   "read-only display" — same structure, different function, both kept.)
@@ -1755,8 +1865,8 @@ When a proposed new class has similar CSS to an existing class, decide:
   (Example from 3c: sb-search-input 11px vs sb-search-input-lg 13px — neither value
   on the token ladder (--fs-xs=12, --fs-sm=14), so both were ±1px drift from the same
   target. Unified to var(--fs-xs); the second class eliminated.)
-The decisive check: do the two classes' differences land on token-ladder values? If
-not, it's drift to unify, not a distinction to preserve.
+  The decisive check: do the two classes' differences land on token-ladder values? If
+  not, it's drift to unify, not a distinction to preserve.
 
 **Rule 2 — No over-splitting (modifier before full class):**
 When a proposed class overlaps ~80%+ with an existing class and the rest is a variation,
@@ -1781,6 +1891,7 @@ duplication check: did 3d reuse 3b's classes as Path A, or duplicate them?
 ---
 
 **Cross-references:**
+
 - `sb-creation-popover-section` (§4 Deferred Infrastructure — canonical example of
   inline-style drift)
 - `sb-mode-toggle-sparks` (§3 Deferred Design Decisions — design-implementation divergence)
@@ -1815,6 +1926,7 @@ Sessions 1–3) takes priority. Color-token discipline appears largely followed 
 ### Sub-token font-size pattern: off-ladder sizes below `--fs-xs`
 
 Two classes now deliberately use font-sizes below `--fs-xs` (12px):
+
 - `sb-hint-text`: `10px` — added in Session 3b; annotated "consider --fs-xxs in Session 8"
 - `sb-btn-muted`: `11px` — added in Session 3d (recessive secondary-action button)
 
@@ -1838,6 +1950,7 @@ The deliberate 11px literals remain only in `sb-count-text` and `sb-btn-muted`.
 ### Sub-token padding `6px`: off-ladder size between `--space-1` (4px) and `--space-2` (8px)
 
 Three classes from Session 3f use `6px` as a padding literal:
+
 - `sb-place-banner`: `padding: 6px var(--space-3)` — notification banner vertical padding
 - `sb-setup-toolbar`: `padding: 6px var(--space-3)` — SETUP toolbar vertical padding
 - `sb-btn-icon-sm`: `padding: 0 6px` — compact icon button horizontal padding
@@ -1859,25 +1972,30 @@ Session 3h introduced several deliberate off-ladder literals in new classes. All
 retained as named literals (same rationale as 3f/3d precedents). Session 8 consolidates.
 
 **Font sizes below --fs-xs (12px):**
+
 - `sb-pad-type-label`: `9px` — deliberately tiny type badge inside a pad cell
 - `sb-pad-drag-handle`: `10px` — small drag indicator (also: `bottom: 4px; right: 6px` pixel literals for corner positioning)
 - `sb-undo-message`: `13px` — between --fs-xs (12) and --fs-sm (14); toast message context
 - `sb-topbar-secondary`: `12px` — normalized from 11px (BoardTopBar scene name) and 12px (TopBar breadcrumb); now consistently 12px = --fs-xs but kept as literal since it's also the token value
 
 **Sub-token padding:**
+
 - `sb-verdict-pill`: `padding: 2px 10px` — tight pill sizing (2px top/bottom, 10px sides)
 - `sb-field-chip`: `padding: 1px 6px` — compact tag chip (1px top/bottom, 6px sides — adds to the 6px note above)
 - `sb-undo-btn`: `padding: 2px var(--space-3)` — tight button vertical (2px top/bottom)
 
 **Pixel literals (absolute positioning):**
+
 - `sb-pad-drag-handle`: `bottom: 4px; right: 6px` — no token for these corner values; same tight-corner pattern as `sb-pad-key` (top: 6px, right: 6px established in Session 3a/legacy)
 
 **TopBar fixed dimensions (no tokens):**
+
 - `sb-topbar`: `padding: 10px 16px; height: 48px` — 10px is between space-2 (8px) and space-3 (12px); 48px topbar height matches BoardTopBar but no --topbar-height token exists
 
 **Font sizes above --fs-xs used as literals:**
-- `sb-topbar-title`: `22px` — display title, no fs-* token at this size
-- `sb-topbar-board-name`: `16px` — compact board title, no fs-* token at this size
+
+- `sb-topbar-title`: `22px` — display title, no fs-\* token at this size
+- `sb-topbar-board-name`: `16px` — compact board title, no fs-\* token at this size
 
 All these literals are documented in the @inventory comments in tokens.css.
 **Action:** Session 8 (typography/polish pass) decides which earn tokens.
@@ -1890,7 +2008,7 @@ All these literals are documented in the @inventory comments in tokens.css.
 All 177 inline-style Path D violations across all app files have been migrated.
 Project-wide audit Total Path D = 0 (confirmed headlessly, 994d2eb).
 
-**Final §6 class count after consolidation pass: 184 sb-* classes** (186 post-migration → 184
+**Final §6 class count after consolidation pass: 184 `sb-*` classes** (186 post-migration → 184
 after consolidation pass; 2 merged: sb-topbar-board-name → sb-topbar-title.is-board,
 sb-topbar-badge-wrap absorbed into sb-mode-badge).
 
@@ -1909,7 +2027,7 @@ session after consolidation pass, structural work mode.
 
 ### Flat CSS model invariant (established Session 3f, completed Session 3 consolidation pass)
 
-All sb-* classes follow a **flat model**: one class per element, composition via multiple
+All sb-\* classes follow a **flat model**: one class per element, composition via multiple
 classes on the same element. No descendant selectors inside any class.
 
 **Exception resolved:** `sb-menu-row` pre-flat legacy descendant rules (`.sb-menu-row .sb-icon`,
@@ -1942,6 +2060,7 @@ Session 3g faithfully migrated the values to `sb-audio-row` without changing the
 behavior. Not a regression from 3g; the commit that introduced the grid was in Slice 2.
 
 **Action:** Slice 8 Responsive pass — AudioRow needs a narrow-viewport layout:
+
 - Option A: Replace fixed columns with fractional or smaller fixed values that fit 170px
 - Option B: Different layout structure on narrow viewports (stack rows instead of grid)
 - Option C: The LibraryScreen 2-column layout itself may need to collapse on mobile
@@ -2015,6 +2134,7 @@ TBD) so the global `button { min-height }` and the CLAUDE.md guideline reference
 single source and cannot silently diverge.
 
 Guardrail — do not tokenize everything:
+
 - One-offs (e.g. `sb-source-item gap: 2px` — single consumer, no general concept) stay
   as literals. The test is "does this number mean a concept used in more than one place?"
 - Only values that carry a recurring concept warrant a token.
@@ -2023,6 +2143,7 @@ Guardrail — do not tokenize everything:
 
 Classify each design-related statement: does it DESCRIBE a class value ("sb-btn-sm is
 36px") or PRESCRIBE a criterion ("primary touch targets ≥44px")?
+
 - Descriptive repetitions of class values → remove (single source of truth is the
   class/token; generated view is §6)
 - Prescriptive rules → keep (they live nowhere else)
@@ -2062,6 +2183,7 @@ Documented, accepted constraints. Will not be fixed until the triggering platfor
 changes.
 
 ### Ringer Switch (physical mute)
+
 When the iOS physical Ringer Switch is set to silent, the app produces no sound — same
 behaviour as V1. This is an iOS platform limit: the AVAudioSession silent-WAV trick cannot
 override the hardware switch. The silent-WAV still serves its purpose (consistent
@@ -2069,24 +2191,28 @@ override the hardware switch. The silent-WAV still serves its purpose (consisten
 **Source:** docs/design/design-notes.md §iOS Plattform-Grenzen.
 
 ### Populated-SETUP layout at 390 px viewport
+
 SceneRail (220 px fixed) + open inspector panel (280 px fixed) = 500 px combined minimum,
 which exceeds a 390 px viewport. The center pad grid is pushed to 0 px. Expected for the
 current desktop-first layout. Fix deferred to Slice 8 mobile adaptation.
 **Source:** docs/design/design-notes.md §Known limitation: SETUP layout.
 
 ### HTML5 DnD silently broken on iOS
+
 `draggable` / `ondragstart` / `ondrop` are not supported on iOS Safari/Brave. All DnD must
 use Pointer Events. Canonical patterns: `src/lib/padDnd.ts` (pad-to-pad) and
 `src/lib/libDnd.ts` (library-to-grid). Any future DnD interaction must follow these patterns.
 **Source:** CLAUDE.md §Supported Platforms, docs/design/design-notes.md §Slice 3/Lessons.
 
 ### WebKit headless: no audio codec support
+
 Playwright's headless WebKit build cannot decode audio (`decodeAudioData()` fails). As a
 workaround, audio-dependent mobile tests run on Chromium with the iPhone 13 Pro device
 profile. Audio-free mobile specs continue on WebKit.
 **Source:** docs/development/testing.md §Known pitfalls #7.
 
 ### `boardPut()` full-document rewrite
+
 Any pad or scene edit rewrites the entire ~50 KB Board document. Acceptable at current board
 sizes. See the infrastructure item above for the optimisation path.
 **Source:** ADR-0010.
@@ -2098,6 +2224,7 @@ sizes. See the infrastructure item above for the optimisation path.
 `development/manual-iphone-checklist.md` must be run before every release and after any commit
 that touches audio code (`src/audio/`), the IDB layer (`src/db/`), or file-handling
 (import/export). It covers items that cannot be automated in Playwright:
+
 - File upload via iOS native picker (bypassed by `setInputFiles()`)
 - Actual audio output
 - Ringer Switch behaviour

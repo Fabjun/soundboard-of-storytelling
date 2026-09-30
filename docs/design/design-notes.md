@@ -30,35 +30,39 @@
 > Slice-3 plan is concrete and the build context is fresh.
 
 ### A2 · Path B audio-duration → pad-type inference
+
 Audio dropped from Library auto-creates a pad with type inferred from
 duration: `<5 s → SINGLE`, `≥10 s → LOOP`, multi-file drop → `PLAYLIST`.
 The 5–10 s zone is ambiguous.
 **Pre-disposition · SINGLE default in the 5–10 s zone, type-flip allowed.**
 Clean and predictable; rare enough that an explicit flip on the pad costs
 nothing. Re-evaluate if real audio sets show many sub-loops in this band.
-*(Implemented: threshold as recommended — SINGLE below 10 s, `padUtils.ts:57–59`. Type-flip:
+_(Implemented: threshold as recommended — SINGLE below 10 s, `padUtils.ts:57–59`. Type-flip:
 in-flow only in Path A via type pills (`PadCreationPopover.tsx:193`); Path B creates
 immediately with no in-flow override; post-creation change always available via Pad Editor
 (`PadEditorPanel.tsx:379` + `PadTypeConfirmDialog.tsx`). Whether Path B needs an in-flow
-flip is a future UX question — not re-opened here.)*
+flip is a future UX question — not re-opened here.)_
 
 ### A2 · Path C "next available slot" scan order
-+ ADD PAD on save lands the new pad on a free slot. Row-major top-left
-vs. near-focused-slot.
-**Pre-disposition · row-major top-left.** Predictable beats smart for an
-operation the user rarely triggers consciously. Smart-near-focus is the
-kind of thing that mysteriously breaks one in twenty workflows.
-**RESOLVED** — `padUtils.ts:22–26`: outer loop = row, inner = col → row-major top-left.
+
+- ADD PAD on save lands the new pad on a free slot. Row-major top-left
+  vs. near-focused-slot.
+  **Pre-disposition · row-major top-left.** Predictable beats smart for an
+  operation the user rarely triggers consciously. Smart-near-focus is the
+  kind of thing that mysteriously breaks one in twenty workflows.
+  **RESOLVED** — `padUtils.ts:22–26`: outer loop = row, inner = col → row-major top-left.
 
 ### A2 · Path A audio-source picker shape
+
 Inline popover for slot-tap creation needs an audio source picker.
 **Pre-disposition · 3-way segmented inside the popover: RECENT LIBRARY ·
 BROWSE · DROP HERE.** Keeps the popover small, covers the three real
 ways audio arrives. If RECENT LIBRARY's row count overflows the popover
 height in real data, segment the popover differently — but only then.
-*(RECENT LIBRARY and BROWSE live (`PadCreationPopover.tsx:7–9`); DROP HERE deferred to Slice 8 — placeholder shown.)*
+_(RECENT LIBRARY and BROWSE live (`PadCreationPopover.tsx:7–9`); DROP HERE deferred to Slice 8 — placeholder shown.)_
 
 ### A2 · Path A → Path C handoff link
+
 Inline popover should offer a "graduate to full editor" path so users
 don't retype when they hit the popover's ceiling.
 **Pre-disposition · "More options →" link bottom-right of the popover.**
@@ -67,19 +71,21 @@ in-progress data. No data loss, no surprise.
 **RESOLVED** — `PadCreationPopover.tsx:213`: "More options →" exists.
 
 ### A4 · grid stays 4-col on every viewport (no portrait reflow)
+
 Mobile-portrait at the Slice-3 default 4×4 keeps **4 columns**, with
 cells ~78 px wide at 360 px viewport — above the 44 px touch minimum.
 **Decision: no reflow to 3-col on portrait.** Reasons:
+
 - pad `position.col` must mean the same thing on every viewport (data
   model integrity);
 - the F1-F4 / F5-F8 / F9-F12 / Q-W-E-R hotkey row mapping depends on
   4-col rows;
 - visual layout-sprung between desktop and phone is learning cost for
   zero functional benefit.
-v19 Empty-Scene mobile updated from a teaching 3×4 hint to the real
-4×4 grid so the design pack is consistent.
-*(Per ADR-0032: 4-col is the default; the ban is on AUTO-reflow of the column count. Manual
-display-dependent column choice (Slice 8 `gridConfig`) is compatible — no contradiction.)*
+  v19 Empty-Scene mobile updated from a teaching 3×4 hint to the real
+  4×4 grid so the design pack is consistent.
+  _(Per ADR-0032: 4-col is the default; the ban is on AUTO-reflow of the column count. Manual
+  display-dependent column choice (Slice 8 `gridConfig`) is compatible — no contradiction.)_
 
 ---
 
@@ -98,6 +104,7 @@ Pointer Events. Two canonical reference implementations exist:
 - `v3/src/lib/libDnd.ts` — Library-to-grid drag (drop only, ghost, elementFromPoint)
 
 Key patterns:
+
 1. `element.setPointerCapture(e.pointerId)` on `pointerdown`
 2. `document.addEventListener('pointermove', ...)` for tracking
 3. `document.addEventListener('pointerup', ...)` for drop detection
@@ -127,6 +134,7 @@ use the patterns above, build a new isolated module if needed.
 > the table.
 
 ### A4 · Cell-size · global vs per-scene
+
 The gridConfig popover currently exposes only (cols × rows). Cell size
 (compact / normal / spacious) is a second axis.
 **Pre-disposition · global preference in Settings → Display.** Per-scene
@@ -134,6 +142,7 @@ cell-size multiplies the variation space without much real benefit. One
 setting, every board.
 
 ### A4 · "Default new-scene grid" as user preference
+
 Slice-3 hardcodes 4×4 for every new scene. In Slice 8, a Settings
 → Display option lets the user change this default.
 **Pre-disposition · yes, expose the override.** Then 4×4 becomes
@@ -141,6 +150,7 @@ Slice-3 hardcodes 4×4 for every new scene. In Slice 8, a Settings
 session styles (always 6×4 wide-screen) shouldn't have to retype.
 
 ### A4 · Unplaced pads remember their desired position
+
 When shrinking unplaces N pads, the unplaced pads can either lose their
 (col, row) entirely (clean slate on re-place) or remember it for
 snap-back when the grid is enlarged.
@@ -149,12 +159,14 @@ while unplaced. Enlarging the grid re-places them automatically if
 the slot is still free.
 
 ### A4 · Mobile preset ceiling
+
 Touch targets get tight past 5 cols on a 360 px viewport.
 **Pre-disposition · hard cap at 5×4 on mobile.** No 6×4, no 6×6 in the
 mobile popover. Desktop keeps the full range. Avoids the "tooltip
 warning the user not to do the thing the UI offers" anti-pattern.
 
 ### Mode-awareness cues — pick one at build time
+
 Four optional peripheral cues explored in `v25-mode-awareness.jsx` for
 reinforcing the SETUP / GAME distinction beyond what the v24 toggle and
 the existing `is-setup` pad treatment already carry. Slice-3 ships
@@ -201,11 +213,12 @@ shipping vs. what's still in exploration.
 > Audio-state vocabulary surfaces when the audio engine is real.
 > Speculative tokens / states would be cruft until then.
 >
-> *(Slice 4 complete 2026-05-28. C1 and C2 were NOT implemented — the scheduling
+> _(Slice 4 complete 2026-05-28. C1 and C2 were NOT implemented — the scheduling
 > lifecycle was not exposed in Slice 4, confirming the "speculative cruft" concern.
-> Both remain open.)*
+> Both remain open.)_
 
 ### C1 · `is-scheduled` pad state (combo + ducking)
+
 A pad that will fire on the next downbeat (combo scheduling, ducking
 release window) needs a third visual state distinct from idle and
 `is-hot`. Today `hot` is a single boolean.
@@ -216,6 +229,7 @@ UI.** Speculative tokens are cruft; revisit when the audio engine
 surfaces the scheduling lifecycle for real.
 
 ### C2 · `--pad-soft-outline` token family (depends on C1)
+
 The `is-scheduled` visual needs a colour value that's softer than the
 existing `--pad-*-glow` family — outline only, no fill. Would land as
 `--pad-single-soft-outline`, `--pad-loop-soft-outline`, etc. **Hold
@@ -227,6 +241,7 @@ makes the §A cheat-sheet noisier without solving a real problem.
 ## Slice 6 — capacity questions
 
 ### Sets management UI — does Quick Access suffice?
+
 v9-functional-ideas.jsx has a "Quick Access strip" sketch for sets
 — a horizontal row of one-tap set switches above the board. Sufficient
 for set-switching at GAME-time, but Slice 6 also needs Set CRUD
@@ -239,19 +254,21 @@ implemented and we can see real cross-scene set usage.
 
 ---
 
-### A3 · Scene CRUD — open questions *(Slice-3 content — misplaced under Slice 6, left in place)*
+### A3 · Scene CRUD — open questions _(Slice-3 content — misplaced under Slice 6, left in place)_
+
 Surface during A3; final calls happen at implementation:
+
 - **Delete-last-scene behaviour** — drop back to Empty Board (recommended)
   vs. block. Recommendation argues from the data-model angle: zero scenes
   is a legal Board state, and Empty Board UX is already good.
-  *(SETTLED — recommendation implemented: `SceneRail.tsx` `requestDelete()` has no guard on
-  `scenes.length`. See docs/backlog.md: Delete-last-scene behaviour ✅ SETTLED (Slice 3).)*
+  _(SETTLED — recommendation implemented: `SceneRail.tsx` `requestDelete()` has no guard on
+  `scenes.length`. See docs/backlog.md: Delete-last-scene behaviour ✅ SETTLED (Slice 3).)_
 - **Rename name conflicts** — allow duplicates (scenes are ID-referenced,
   name is display-only) vs. enforce unique. Strict-unique adds friction
   without benefit.
-  *(BACKLOG user decision 2026-06-06 supersedes this recommendation: duplicate names are to
+  _(BACKLOG user decision 2026-06-06 supersedes this recommendation: duplicate names are to
   be prevented. `SceneRail.tsx` `commitRename()` currently allows duplicates — code task
-  pending. See docs/backlog.md: Scene rename: duplicate names ⬜ DECIDED.)*
+  pending. See docs/backlog.md: Scene rename: duplicate names ⬜ DECIDED.)_
 - **Hotkey conflicts on duplicate** — duplicated pads carry their hotkeys,
   creating intra-board collisions. Resolve via the planned inline-
   conflict-feedback UI (already in DESIGN_NOTES, "PAD Editor"). Open:
@@ -264,18 +281,19 @@ Surface during A3; final calls happen at implementation:
   vs. dedicated reorder-mode with handles on every tab. Stepwise is the
   reliable touch-friendly default; reorder-mode is for power users with
   ≥6 scenes.
-  *(No reorder mechanism in code — `SceneRail.tsx` has no Move up/Down and no drag handle;
-  `state/store.ts` has no reorder setter. Deferred; see docs/backlog.md §3 Scene mobile reorder.)*
+  _(No reorder mechanism in code — `SceneRail.tsx` has no Move up/Down and no drag handle;
+  `state/store.ts` has no reorder setter. Deferred; see docs/backlog.md §3 Scene mobile reorder.)_
 - **Long-press threshold** — 350 ms default. Settings-configurable, or
   fixed? Fixed-with-accessibility-override is the cleanest.
-  *(Deferred per BACKLOG (Slice 8). 350 ms is established as the project long-press constant in
-  `LibraryPanel.tsx:145`. Scene-context question is open until scene reorder exists.)*
+  _(Deferred per BACKLOG (Slice 8). 350 ms is established as the project long-press constant in
+  `LibraryPanel.tsx:145`. Scene-context question is open until scene reorder exists.)_
 
 ---
 
 ## PAD Editor — interaction polish
 
 ### Key Capture flow
+
 The `KEY` / `MIDI` / `GAMEPAD` fields in both editors show static values
 right now. Real interaction: click `CAPTURE`, the field enters a "listening"
 state (pulsing teal border, label "press any key…"), the next key/MIDI/pad
@@ -283,12 +301,14 @@ press fills the slot, Escape cancels. Visual: re-use the SETUP-mode hatch
 during the listening window so it reads as a transient edit.
 
 ### Inline conflict feedback
+
 Under the `KEY` field, show `✓ no conflicts on this board` in
 `--success` (teal) or `⚠ F2 already bound to Wolf Howl` in `--blood-bright`
 the moment a binding is chosen. Don't wait for save. The check is fast and
 the consequence (silent overwrite) is high enough to warrant inline hint.
 
 ### Snap-to-zero-crossing on waveform drag
+
 Trim and loop markers should snap to the nearest audio zero-crossing while
 dragging — without it, hard cuts produce audible clicks. Visual hint:
 during drag, the marker line is a hair brighter when snapped. Implementation:
@@ -296,12 +316,14 @@ the audio engine exposes zero-crossings as a sparse array; the drag handler
 quantises within ±20 px.
 
 ### Numeric scrubbing on M:SS labels
+
 The `TRIM START` / `TRIM END` / `LOOP POINT` numeric readouts (`sb-num`)
 should be Premiere-style scrubbers: click-and-drag on the number to nudge
 ±0.1 s per pixel, hold ⇧ for ±0.01 s. Lets the user place markers with
 frame-level precision without leaving the inspector.
 
 ### Live preview that respects fades + trim
+
 The `PREVIEW` button should start playback at `trimStart` with fades + loop
 applied — what the user would actually hear in GAME mode. Currently the
 button is a placeholder. The playhead at `trimEnd` should automatically
@@ -309,11 +331,13 @@ restart at `loopPoint` (for LOOP-type pads) so the user can hear the loop
 seam.
 
 ### Crossfade duration as inline control
+
 `KvRow label="CROSSFADE" right="200ms"` is hardcoded. Should be either a
 mini-slider (60–600 ms range) or a numeric scrubber. Only relevant when
 loop mode is `CROSSFADE` — gate visibility on that.
 
 ### Waveform zoom for long files
+
 For files longer than ~2 minutes, setting precise trim/loop points at the
 current resolution is hard. A zoom level (scroll wheel on waveform, or
 ±/0 keys) with a small minimap strip above showing the full file + viewport
@@ -321,12 +345,14 @@ window. Out of scope for the editor mockups; in scope for V3 if files
 ≥ 60 s are common.
 
 ### Pad-type change confirmation
+
 Switching from `LOOP` to `SINGLE` invalidates `LOOP POINT`, `LOOP MODE`,
 `CROSSFADE`. Should show an inline confirm: "Changing to SINGLE removes:
 loop-point, crossfade. Continue?" Either undo or apply. Don't silently
 discard.
 
 ### Output bus inheritance hint
+
 Below the `OUTPUT BUS` pills, show a one-line hint like
 `AMB · default 45 % from Settings`. Tells the user where the level baseline
 comes from. Faded `--text-mute` mono.
@@ -336,6 +362,7 @@ comes from. Faded `--text-mute` mono.
 ## Tags & folders
 
 ### Tag autocomplete with keyboard
+
 Typing in the tag field surfaces matching existing tags from the project's
 tag pool (case-insensitive, fuzzy on substring). `↵` commits, `⌫` on empty
 input removes the last chip. Chips render as `sb-pill` in the pad type's
@@ -343,6 +370,7 @@ colour family if a known semantic mapping exists (`rain` → loop teal etc.),
 otherwise default pill grey.
 
 ### Folder picker is a tree
+
 The `FOLDER` dropdown is shown as `Ambient ▾` placeholder. Real UX: opens a
 narrow tree column inside the inspector, not a separate dialog — keeps the
 edit context visible. Single-select. New folder via a `+ NEW` row at the
@@ -353,12 +381,14 @@ bottom of the tree.
 ## Audio file management
 
 ### Multi-file playlist UX
+
 `FileRow` (v2 PAD editor) supports multiple files for playlist pads. Drag
 to reorder, click to select primary, `⌘`-click to multi-select for bulk
 remove. The currently-selected file's waveform shows in the big canvas.
 Mockup is single-file only.
 
 ### Per-file fade and trim
+
 For playlist pads, each entry might want its own fade-in / trim. The
 inspector should follow the selected `FileRow`. Either: per-file state
 (complex), or: per-file persistent JSON in the project file (simpler,
@@ -369,6 +399,7 @@ single source of truth).
 ## Theme integration
 
 ### Crimson theme COMBO override
+
 Default `--pad-combo` is rose-magenta. In the Crimson theme that sits next
 to dominant `--blood` red — not a hard conflict, but a missed opportunity.
 A theme-specific override (`.sb-theme-crimson { --pad-combo: <something
@@ -377,11 +408,13 @@ desaturated cyan (#5A9FB0) for an icy "spell" feel; or violet (closer to
 playlist, risky). Decide when Crimson reaches sign-off.
 
 ### Verdant theme COMBO override
+
 Same situation: rose-magenta inherits from root. In the moss/gold Verdant
 palette this reads as fairy-tale "wild magic" — actually fits the
 storytelling tone. Hold; revisit only if a real conflict surfaces.
 
 ### Theme-conditional clock variants
+
 v16 added the Mushroom Clock for Verdant. Same hook for the other themes:
 Crimson could get a candle-clock with dripping wax, Neon a CRT-burn
 seven-segment display. Each is a 30-min visual design exercise. Worth
@@ -398,20 +431,21 @@ four small system changes, all on the same commit as the state:
 
 - `--pix-bg-layer` escape hatch on the `sb-pix`-family background (allows
   multi-layer gradients without breaking the solid-colour `--pix-bg`
-  contract — fully backwards-compatible) *(token subsequently removed from tokens.css)*
+  contract — fully backwards-compatible) _(token subsequently removed from tokens.css)_
 - `--pad-filter-base` plumbing on `sb-pad` so `is-hot`'s glow stacks
   onto whatever base filter `is-deep` (or any future treatment) sets,
   instead of clobbering it
 - new tokens `--pad-edge-light`, `--pad-edge-dark` (inset relief +
   bevel gradient stops), `--shadow-pad-lift` (chunky pixel drop-shadow)
-- docs/design/design-system.md §3 (new `is-deep` state), ~~§8.8~~ *(§8.8 was never written;
-  escape-hatch content is moot — `--pix-bg-layer` removed; box-shadow rule lives in §5)*,
+- docs/design/design-system.md §3 (new `is-deep` state), ~~§8.8~~ _(§8.8 was never written;
+  escape-hatch content is moot — `--pix-bg-layer` removed; box-shadow rule lives in §5)_,
   §A (Pad surface row + Elevation token added)
 
 v18-pad-depth-migration.jsx is kept as the design-history artefact
 showing what the contract carried and what it didn't.
 
 ### Glow tokens for "currently scheduled" vs "currently playing"
+
 Right now `hot` is a single boolean. In real use there's a third state:
 "this pad will fire on the next downbeat" (combo scheduling, ducking
 release). Suggests a second softer glow — say a 2-pixel outline in
@@ -423,6 +457,7 @@ lands.
 ## Settings & system polish
 
 ### Pad Appearance settings persistence
+
 v17 settings work locally inside the artboard; in V3 the `APPLY TO ALL
 PADS` button should write to project state (one place, applies system-wide)
 rather than per-pad. Per-pad override is a different feature ("custom
@@ -430,12 +465,14 @@ look for this pad only") — separate UX, separate inspector row, decide
 later if needed.
 
 ### Settings search across submenus
+
 The "Search settings…" field in v5-settings is a placeholder. Real UX:
 typing filters all rows across all submenus, jumps to the first match,
 highlights the term in label + description. Matches Settings UX from
 macOS Sequoia / iOS, which the user is already familiar with.
 
 ### Mode-toggle SFX preview
+
 Settings → Controls has a "Mode toggle SFX" file slot. Should preview the
 chosen sound at the current MASTER volume — same code path as the pad
 PREVIEW button. Don't add a separate "test sound" feature.
@@ -445,17 +482,20 @@ PREVIEW button. Don't add a separate "test sound" feature.
 ## Open token / palette questions
 
 ### `--success` is teal because the dark-fantasy palette refused greens
+
 `--success: #6DB5B8` aliased to loop teal. Newly added `--fade: #6FA85F`
 introduces a real green for the first time at root level. If the system
 warms up to greens, we could reconsider:
+
 - `--success` back to a real moss-green (would tighten semantic reading)
 - A second green tier for the "scheduled / pending" pad state
-Hold for one or two design sessions before deciding; the experiment with
-`--fade` will tell us how green sits next to the rest.
+  Hold for one or two design sessions before deciding; the experiment with
+  `--fade` will tell us how green sits next to the rest.
 
 ### Drop-shadow vs Inset shadow on `sb-pix`-family — RESOLVED
-*(§8.8 was never written. The outer box-shadow rule lives in docs/design/design-system.md §5.
-The inset-is-allowed nuance is a documented gap — see docs/backlog.md §2 Documentation Debt.)*  
+
+_(§8.8 was never written. The outer box-shadow rule lives in docs/design/design-system.md §5.
+The inset-is-allowed nuance is a documented gap — see docs/backlog.md §2 Documentation Debt.)_  
 `docs/design/design-system.md` ~~§8.8~~ has been refined: the rule is now about **outer**
 `box-shadow` only — that's what `clip-path` fails to follow (the shadow
 hugs the bounding box, not the stepped silhouette), so the workaround is
@@ -510,9 +550,9 @@ animations, and the two `-flash` reduced-motion fallbacks).
 
 ---
 
-*Maintenance: when an item here lands in V3 code, delete it. When a
+_Maintenance: when an item here lands in V3 code, delete it. When a
 design session generates a new "noted but not built" idea, add it. Keep
-entries short — one paragraph max, link out for longer rationale.*
+entries short — one paragraph max, link out for longer rationale._
 
 ---
 
@@ -522,6 +562,7 @@ Token drift between `v3/src/styles/tokens.css` and `design-sources/2026-05-25/to
 fully removed. Affected files:
 
 **`v3/src/styles/tokens.css`**
+
 - New tokens: `--pad-edge-light`, `--pad-edge-dark` (v18 depth stack),
   `--shadow-pad-lift` (v18), `--mode-setup-glow`, `--mode-game-glow` (v24
   mode toggle), `--fade`, `--fade-soft`, `--flame-soft`, `--flame-aura`
@@ -536,10 +577,12 @@ fully removed. Affected files:
   `.sb-theme-crimson` (pad-single, pad-combo)
 
 **`v3/src/screens/StartScreen.tsx`**
+
 - FlameLogo filter →`var(--glow-flame)` (was hard-coded rgba)
 - background gradient →`var(--flame-soft)`, glow ring →`var(--flame-aura)`
 
 **`v3/src/components/TopBar.tsx`**
+
 - title span: inline styling →`class="sb-display-vt"` + fontSize 22px
   (was 16px + var(--text); design reference: VT323 22px gold-bright with glow)
 
@@ -560,11 +603,11 @@ interruptions / tab switches. Deliberately accepted, not dead code.
 
 Measured geometry at 390px viewport (Playwright diagnostic, 2026-05-28):
 
-| SETUP state | SceneRail | Right panel | Center `<main>` (pad grid) |
-|---|---|---|---|
-| No panel open | 220px (fixed) | — | 170px ✓ |
-| Pad selected (PadEditorPanel) | 220px (fixed) | 280px (fixed) | 0px ✗ |
-| Library open (LibraryPanel) | 220px (fixed) | 280px (fixed) | 0px ✗ |
+| SETUP state                   | SceneRail     | Right panel   | Center `<main>` (pad grid) |
+| ----------------------------- | ------------- | ------------- | -------------------------- |
+| No panel open                 | 220px (fixed) | —             | 170px ✓                    |
+| Pad selected (PadEditorPanel) | 220px (fixed) | 280px (fixed) | 0px ✗                      |
+| Library open (LibraryPanel)   | 220px (fixed) | 280px (fixed) | 0px ✗                      |
 
 Both SceneRail and the inspector panels use `flex-shrink: 0` with fixed widths.
 At 390px their combined minimum (220 + 280 = 500px) exceeds the viewport, pushing
@@ -580,6 +623,7 @@ has only been developed, not yet used in real sessions. To be decided deliberate
 once the app sees real use, likely with Claude Design.
 
 **Backlog for Slice 8 / mobile adaptation phase:**
+
 - Make SceneRail collapsible or overlay at narrow viewports
 - Make inspector panels (PadEditorPanel, LibraryPanel) slide over the pad grid
   rather than pushing it, or use a tab-based layout

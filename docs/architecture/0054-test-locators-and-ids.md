@@ -21,7 +21,7 @@ spelling (`boardlist`, `modetoggle`, `startscreen`). The app had 40 buttons but 
 
 ## Decision
 
-1. **Locator priority** (Playwright *Best Practices*: "Prefer user-facing attributes to XPath
+1. **Locator priority** (Playwright _Best Practices_: "Prefer user-facing attributes to XPath
    or CSS selectors"; Testing Library query priority: role / label / text first, test IDs
    "only … for cases where you can't match by role or text"):
    `getByRole` (with accessible name and state, e.g. `pressed: true`) → `getByLabel` /
@@ -44,19 +44,21 @@ spelling (`boardlist`, `modetoggle`, `startscreen`). The app had 40 buttons but 
 
 ## Exceptions
 
-| Exception | Reason | Reference | Review |
-|---|---|---|---|
-| Existing E2E tests locate many controls by test ID although a role + accessible name would work | Most icon-only controls have no accessible name yet; the UI is rebuilt for the mobile layout in Slice 13, where accessible names are designed in — migrating now would be done twice | BACKLOG "Role-based E2E locators" | Slice 13 |
-| `pwa.spec.ts` reads `link[rel="manifest"]` with an attribute selector | Document metadata in `<head>`, no user-facing element exists | — | permanent |
+| Exception                                                                                       | Reason                                                                                                                                                                               | Reference                         | Review    |
+| ----------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | --------------------------------- | --------- |
+| Existing E2E tests locate many controls by test ID although a role + accessible name would work | Most icon-only controls have no accessible name yet; the UI is rebuilt for the mobile layout in Slice 13, where accessible names are designed in — migrating now would be done twice | BACKLOG "Role-based E2E locators" | Slice 13  |
+| `pwa.spec.ts` reads `link[rel="manifest"]` with an attribute selector                           | Document metadata in `<head>`, no user-facing element exists                                                                                                                         | —                                 | permanent |
 
 ## Consequences
 
 **Positive:**
+
 - Tests describe what a user perceives; class or markup refactors no longer break them.
 - Screen readers get real state (`aria-pressed`) and, over time, names for every control.
 - One mechanically checkable test ID scheme.
 
 **Negative / Trade-offs:**
+
 - Longer test IDs (`board-list-screen-delete-button-${id}`).
 - Single and loop pads are both asserted as "pressed" while playing; the visual difference
   (hot vs looping glow) is not asserted by E2E.

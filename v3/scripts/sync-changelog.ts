@@ -9,13 +9,13 @@
  * Run: npm run sync:changelog  (from v3/) — part of npm run sync:docs.
  */
 
-import { readFileSync, writeFileSync } from 'fs';
 import { dirname, join, resolve } from 'path';
 import { fileURLToPath } from 'url';
-import { APP_VERSION, CHANGELOG } from '../v3/src/lib/changelog';
+import { APP_VERSION, CHANGELOG } from '../src/lib/changelog';
+import { writeGenerated } from './lib/write-generated';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const TARGET = join(resolve(__dirname, '..'), 'CHANGELOG.md');
+const TARGET = join(resolve(__dirname, '..', '..'), 'CHANGELOG.md');
 
 if (CHANGELOG[0]?.version !== APP_VERSION) {
   console.error(
@@ -39,14 +39,7 @@ for (const entry of CHANGELOG) {
 }
 const next = lines.join('\n');
 
-let current = '';
-try {
-  current = readFileSync(TARGET, 'utf8');
-} catch {
-  // first run
-}
-if (next !== current) {
-  writeFileSync(TARGET, next);
+if (await writeGenerated(TARGET, next)) {
   console.log(`✅ CHANGELOG.md regenerated (${CHANGELOG.length} releases).`);
 } else {
   console.log('✅ CHANGELOG.md already up to date.');

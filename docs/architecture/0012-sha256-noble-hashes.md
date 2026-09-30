@@ -38,11 +38,13 @@ browser context.
 ## Consequences
 
 **Positive:**
+
 - Hash computation works over HTTP (LAN dev server) and HTTPS (production).
 - `@noble/hashes` is audited and widely used in the web crypto community.
 - No conditional polyfill logic needed.
 
 **Negative / Trade-offs:**
+
 - An additional dependency (~14 KB gzip). Acceptable for a one-off upload step.
 - Somewhat slower than the native Web Crypto API (pure JS vs. native). Not measurable for a
   single-file upload (5 MB audio file: <10 ms for SHA-256).

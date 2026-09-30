@@ -20,7 +20,7 @@ npm run build || {
 echo "✅ Build passed."
 
 echo "🎨 Pre-commit: running lint-staged (format + lint on staged files)..."
-npx lint-staged || {
+npx lint-staged --config ../.lintstagedrc.json --cwd .. || {
   printf '\n❌ lint-staged failed — commit aborted.\n'
   printf '   Fix the errors above, stage the files again, then git commit.\n\n'
   exit 1

@@ -35,18 +35,20 @@ parallel component.
 
 ## Exceptions
 
-| Exception | Reason | Reference | Review |
-|---|---|---|---|
-| `BoardTopBar` is a separate component next to `TopBar` | The Board screen has fundamentally different header needs (mode toggle as headline) | ADR-0026 | Slice 13 (mobile layout rebuilds both) |
+| Exception                                              | Reason                                                                              | Reference | Review                                 |
+| ------------------------------------------------------ | ----------------------------------------------------------------------------------- | --------- | -------------------------------------- |
+| `BoardTopBar` is a separate component next to `TopBar` | The Board screen has fundamentally different header needs (mode toggle as headline) | ADR-0026  | Slice 13 (mobile layout rebuilds both) |
 
 ## Consequences
 
 **Positive:**
+
 - Bug fixes and styling updates apply automatically to all variants.
 - Fewer components: easier navigation in the project.
 - A uniform API pattern across all components.
 
 **Negative / Trade-offs:**
+
 - Props can become complex when many variants accumulate. Countermeasure: refactor early once
   a component has >5 variants.
 - "If tempted, ask the user" requires discipline — creating a new component is always faster
@@ -63,5 +65,5 @@ several pad variants that grew apart.
 ## Related
 
 - **Files:** `v3/src/components/*.tsx` (all current ones: PixelIcon, AudioRow, Waveform, PadGridCell, PadGrid, etc.)
-- **ADRs:** ADR-0021 (CSS naming — variants via is-* or sb-block-variant)
+- **ADRs:** ADR-0021 (CSS naming — variants via is-\* or sb-block-variant)
 - **Source documents:** `docs/architecture/concept-brief.md §4.2`, `CLAUDE.md §Permanent coding standards`

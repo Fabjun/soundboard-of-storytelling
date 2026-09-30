@@ -13,6 +13,7 @@ V3 is a PWA: it needs a service worker for offline capability and a web app mani
 to Home Screen" on iOS/Android. V1 had a manual `sw.js` — a proven source of errors.
 
 V1 experience (from `v1-reference/CLAUDE.md`): the manual `sw.js` required disciplined care:
+
 1. **SHELL list:** every new file had to be added to the cache list by hand. Forgotten →
    cache errors after an update.
 2. **VERSION bump:** the version had to be incremented on every change. Forgotten → the
@@ -29,18 +30,21 @@ list (precache manifest) is generated from the build output. The version is bump
 automatically. Configuration in `v3/vite.config.ts`.
 
 Strategy: `generateSW` (standard mode). Configured for:
+
 - cache-first for the app shell
 - auto-update via `skipWaiting + clientsClaim`
 
 ## Consequences
 
 **Positive:**
+
 - No manual SHELL list management. New files in the build are picked up automatically.
 - No manual VERSION bumping. The build hash in the output invalidates the cache.
 - PWA validation in `npm run build` — precache entries are printed (the count varies with the
   build output; printed to the console on every build).
 
 **Negative / Trade-offs:**
+
 - Less control over the service worker compared with hand-written code. No problem for V3 —
   there are no dynamic requests that would need special cache strategies.
 - The generated service worker cannot be edited directly. Custom logic requires

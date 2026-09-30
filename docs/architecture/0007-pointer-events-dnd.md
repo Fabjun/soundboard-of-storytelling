@@ -9,6 +9,7 @@
 ## Context
 
 Slice 3 (board + scene + pad CRUD) required two DnD interactions:
+
 - pad-to-pad drag: SWAP / INSERT within the grid
 - library-to-grid drag: drag an audio file from the library onto a pad slot
 
@@ -31,10 +32,12 @@ written down as a formal rule: HTML5 DnD is forbidden.
 in new V3 code.
 
 **Canonical reference implementations:**
+
 - `v3/src/lib/padDnd.ts` — pad to pad (SWAP + INSERT, ghost, cellRef registry)
 - `v3/src/lib/libDnd.ts` — library to grid (drop only, ghost, elementFromPoint)
 
 **Pattern (from both implementations):**
+
 1. `element.setPointerCapture(e.pointerId)` on `pointerdown`
 2. `pointermove` on `document` for tracking
 3. `pointerup` on `document` for drop detection
@@ -46,10 +49,12 @@ in new V3 code.
 ## Consequences
 
 **Positive:**
+
 - One DnD implementation works on iOS, Android and desktop.
 - Pointer events are guaranteed on all supported platforms (ADR-0006).
 
 **Negative / Trade-offs:**
+
 - More code than HTML5 DnD: pointer events require manual ghost element handling, manual
   drop-zone detection via `elementFromPoint`, manual capture release. HTML5 DnD does this
   implicitly (but only on desktop).

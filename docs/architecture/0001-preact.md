@@ -26,12 +26,14 @@ Preact is used as the UI runtime. React is not installed; all imports use `preac
 ## Consequences
 
 **Positive:**
+
 - The bundle stays small: JS currently ~100 KB gzip (incl. app code), Preact's share ~3 KB.
 - Preact Signals are a first-party addition: no impedance mismatch with the state
   management (ADR-0002).
 - JSX compatibility: the design-system JSX did not have to be rewritten for Slice 1.
 
 **Negative / Trade-offs:**
+
 - Preact's ecosystem is smaller than React's. Some React libraries are not directly
   compatible (React-only hooks, React Testing Library). In practice not a blocker so far.
 - Vitest + Playwright test the code directly, without jsdom/React Testing Library — that was

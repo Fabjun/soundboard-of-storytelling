@@ -30,19 +30,21 @@ composition point, the new tokens `--pad-edge-light`, `--pad-edge-dark`, `--shad
 
 Without `is-deep`: a standard pad without depth rendering overhead.
 
-> *This decision was implemented in the Slice 1+2 audit pass (2026-05-27), when the design
+> _This decision was implemented in the Slice 1+2 audit pass (2026-05-27), when the design
 > system alignment was checked. Documented in docs/design/design-notes.md §RESOLVED — Slice
-> 1+2 audit pass.*
+> 1+2 audit pass._
 
 ## Consequences
 
 **Positive:**
+
 - Performance budget: pads without `is-deep` are cheap to render.
 - Slice 8 can expose `is-deep` as a settings option ("High quality pad visuals") or switch it
   on as the global default once performance is verified.
 - Existing code paths (pad rendering without depth) stay unchanged.
 
 **Negative / Trade-offs:**
+
 - Two visual states: pads with and without `is-deep`. During development one has to decide
   which state is the default.
 
@@ -57,6 +59,6 @@ the iPhone, not to drop it.
 ## Related
 
 - **Files:** `v3/src/styles/tokens.css` (--pad-edge-light, --pad-edge-dark, --shadow-pad-lift), `v3/src/components/PadGridCell.tsx`
-- **ADRs:** ADR-0021 (CSS naming / is-* states), ADR-0024 (clip-path + filter:drop-shadow)
+- **ADRs:** ADR-0021 (CSS naming / is-\* states), ADR-0024 (clip-path + filter:drop-shadow)
 - **Source documents:** `docs/design/design-notes.md §RESOLVED — DepthPad migration`, `design-sources/2026-05-25/v15-pad-depth.jsx`
 - **Commits:** `eac8690` — refactor: align slice 1+2 with current design system

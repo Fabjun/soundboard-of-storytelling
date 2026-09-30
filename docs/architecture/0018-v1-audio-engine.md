@@ -39,6 +39,7 @@ code itself stays unchanged.
 ## Consequences
 
 **Positive:**
+
 - Zero risk for audio behaviour: the engine is proven in production (V1).
 - No time spent on a rebuild. Audio engines with correct crossfade, ducking and loop-seam
   handling are more complex than they look.
@@ -46,6 +47,7 @@ code itself stays unchanged.
   in V1.
 
 **Negative / Trade-offs:**
+
 - The engine code is untyped JavaScript. The TypeScript facade abstracts that, but the
   internal code stays `any` territory.
 - Bugs in V1's engine are carried over 1:1 into V3. Before copying: read the V1 engine

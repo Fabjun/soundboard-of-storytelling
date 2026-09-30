@@ -29,9 +29,9 @@ would lead to a name collision and confusing code — especially because `store.
 export const playingPads = signal<ReadonlySet<string>>(new globalThis.Set<string>());
 ```
 
-> *This decision was not documented explicitly beforehand; it was derived as a necessary
+> _This decision was not documented explicitly beforehand; it was derived as a necessary
 > consequence while implementing Slice 3 and solved directly in code. The deviation is
-> recorded in CLAUDE.md.*
+> recorded in CLAUDE.md._
 
 ## Decision
 
@@ -42,11 +42,13 @@ simply `Set<string>` can be used in a non-colliding context.
 ## Consequences
 
 **Positive:**
+
 - No naming conflict. Compiler errors would otherwise be hard to debug.
 - `PadSet` is also more precise semantically: it is explicitly a set of pads, not a generic
   set.
 
 **Negative / Trade-offs:**
+
 - Deviates from the concept brief. `docs/architecture/concept-brief.md §4.1` calls the type
   `Set`. Anyone reading the brief and looking for the code has to know: `Set` in the brief =
   `PadSet` in the code.

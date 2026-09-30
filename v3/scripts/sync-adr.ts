@@ -9,12 +9,14 @@
  * Run: npm run sync:adr  (from v3/)
  */
 
-import { readFileSync, readdirSync, writeFileSync } from 'fs';
+import { readFileSync, readdirSync } from 'fs';
 import { dirname, join, resolve } from 'path';
 import { fileURLToPath } from 'url';
+import { writeGenerated } from './lib/write-generated';
+import { tableRow } from './lib/markdown';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const ROOT = resolve(__dirname, '..');
+const ROOT = resolve(__dirname, '..', '..');
 const ADR_DIR = join(ROOT, 'docs', 'architecture');
 const README = join(ADR_DIR, 'README.md');
 
@@ -78,9 +80,7 @@ function generateTable(adrs: AdrMeta[]): string {
   for (const cat of CATEGORY_ORDER) byCategory.set(cat, []);
 
   for (const adr of adrs) {
-    const cat = CATEGORY_ORDER.includes(adr.category)
-      ? adr.category
-      : 'Uncategorized';
+    const cat = CATEGORY_ORDER.includes(adr.category) ? adr.category : 'Uncategorized';
     byCategory.get(cat)!.push(adr);
   }
 
@@ -94,7 +94,7 @@ function generateTable(adrs: AdrMeta[]): string {
     lines.push('|---|-------|--------|-------|------|');
     for (const a of group.sort((x, y) => x.num.localeCompare(y.num))) {
       const link = `[ADR-${a.num}](${a.file})`;
-      lines.push(`| ${link} | ${a.title} | ${a.status} | ${a.slice} | ${a.date} |`);
+      lines.push(tableRow([link, a.title, a.status, a.slice, a.date]));
     }
     lines.push('');
   }
@@ -102,7 +102,7 @@ function generateTable(adrs: AdrMeta[]): string {
   return lines.join('\n').trimEnd();
 }
 
-function run(): void {
+async function run(): Promise<void> {
   const files = readdirSync(ADR_DIR)
     .filter((f) => /^\d{4}-.+\.md$/.test(f))
     .sort();
@@ -127,11 +127,13 @@ function run(): void {
   const after = readme.slice(endIdx);
 
   readme = `${before}\n${table}\n${after}`;
-  writeFileSync(README, readme, 'utf8');
+  await writeGenerated(README, readme);
 
-  console.log(`sync-adr: wrote ${adrs.length} ADRs across ${
-    [...new Set(adrs.map((a) => a.category))].length
-  } categories → ${README}`);
+  console.log(
+    `sync-adr: wrote ${adrs.length} ADRs across ${
+      [...new Set(adrs.map((a) => a.category))].length
+    } categories → ${README}`,
+  );
 }
 
-run();
+await run();

@@ -15,9 +15,9 @@ German or English; the app UI is in English.
 `docs/architecture/concept-brief.md §4.11` states: "English only. No i18n infrastructure yet,
 but structure code so a future i18n pass is feasible."
 
-> *This decision was documented explicitly in the concept brief and is formalised here as an
+> _This decision was documented explicitly in the concept brief and is formalised here as an
 > ADR because "English" + "no i18n infrastructure" are both — a scope restriction and an
-> architecture constraint.*
+> architecture constraint._
 
 ## Decision
 
@@ -29,11 +29,13 @@ but structure code so a future i18n pass is feasible."
 ## Consequences
 
 **Positive:**
+
 - No i18n overhead in bundle size or runtime.
 - No translation management effort.
 - Not relevant for the current use case (single user, GM tool).
 
 **Negative / Trade-offs:**
+
 - A future localisation requires introducing i18n retroactively. The "named constants"
   structure reduces the effort but does not remove it.
 - If the tool ever becomes commercial (CLAUDE.md: "A potential commercial product in the long

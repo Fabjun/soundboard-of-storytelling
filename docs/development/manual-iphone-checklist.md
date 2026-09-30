@@ -5,6 +5,7 @@
 ## When to use this checklist
 
 Run this checklist:
+
 - Before any release or deploy
 - After any commit that touches audio code (`src/audio/`), the IDB layer (`src/db/`), or file-handling (import/export)
 - After UI changes to the pad grid, TopBar, or library screens

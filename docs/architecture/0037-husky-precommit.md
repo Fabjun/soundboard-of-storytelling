@@ -33,12 +33,14 @@ The Husky pre-commit hook (`v3/.husky/pre-commit`) runs six gates in sequence:
 ## Consequences
 
 **Positive:**
+
 - Eliminates an error class: "broke in CI but worked locally" — because it was never tested
   locally.
 - Forces short feedback loops: 11s is fast enough never to be skipped.
 - Smoke tests cover Chromium + WebKit — early warning of Safari incompatibilities.
 
 **Negative / Trade-offs:**
+
 - 11s overhead per commit. With frequent WIP commits that can be annoying. Workaround:
   `git commit --no-verify` for genuine WIP commits (not recommended).
 - Requires Node.js and all dependencies in the `v3/` directory. After `git clone`:

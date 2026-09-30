@@ -16,9 +16,9 @@ of all containers (pads, cards, buttons, pills). This is the central visual iden
 on a `clip-path` element does not appear outside the polygon boundary — the shadow is simply
 cut away.
 
-> *This decision comes directly from HANDOFF.md §4.1 and is fundamental for every UI
+> _This decision comes directly from HANDOFF.md §4.1 and is fundamental for every UI
 > implementation. Without knowing this rule, every attempt to set an external shadow on
-> `sb-pix`-family elements fails silently.*
+> `sb-pix`-family elements fails silently._
 
 ## Decision
 
@@ -31,16 +31,19 @@ cut away.
 
 **Practical consequence for `sb-pad is-deep`:**
 the pad depth treatment (ADR-0025) combines:
+
 - an inset box-shadow for the bevel effect (allowed)
 - `filter: drop-shadow(...)` for the outer elevation shadow (required)
 
 ## Consequences
 
 **Positive:**
+
 - A correct shadow follows the stepped pixel silhouette — it looks like a real pixel-art
   element with depth.
 
 **Negative / Trade-offs:**
+
 - `filter: drop-shadow` cannot be combined with other `filter` values (e.g. `filter: blur`)
   without conflicts. Solution: the `--pad-filter-base` custom property as a composition point
   (documented in docs/design/design-notes.md).

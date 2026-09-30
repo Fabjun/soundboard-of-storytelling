@@ -53,11 +53,13 @@ Mapping applied on 2026-09-29: `BACKLOG.md` → `docs/backlog.md`, `TESTING.md` 
 ## Consequences
 
 **Positive:**
+
 - One recognisable scheme; GitHub shows each area's hub when the folder is opened.
 - Case-mismatch links can no longer slip through on macOS.
 - The public changelog is always current.
 
 **Negative / Trade-offs:**
+
 - Several files named `README.md` — editors disambiguate by folder.
 - Plain-text references are longer (`docs/design/design-system.md §6` instead of
   `DESIGN_SYSTEM.md §6`).

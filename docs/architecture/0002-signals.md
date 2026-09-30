@@ -27,6 +27,7 @@ The user confirmed the choice in Slice 1.
 ## Consequences
 
 **Positive:**
+
 - No provider wrapping needed — signals are globally accessible.
 - Computed signals (`computed()`) replace selector logic: `currentBoard` and `currentScene`
   are derived signals, no extra state.
@@ -36,6 +37,7 @@ The user confirmed the choice in Slice 1.
   between tests). Solved via `beforeEach` resets in unit tests.
 
 **Negative / Trade-offs:**
+
 - Signals are module singletons: tests cannot simply provision a "fresh store". Workaround:
   an explicit `beforeEach` reset (documented in `docs/development/testing.md §Known pitfalls`).
 - No time-travel debugging (Redux DevTools etc.). No loss for this project.

@@ -24,6 +24,7 @@ platform awareness had occurred in Slice 3 (HTML5 drag and drop — see ADR-0007
 **Minimum:** iOS Safari 15+ (iPhone 6s, 2015, and newer).
 
 **Guaranteed APIs (no polyfill needed):**
+
 - Pointer Events API (iOS 13+)
 - IndexedDB
 - Web Audio API (with user-gesture unlock)
@@ -32,10 +33,12 @@ platform awareness had occurred in Slice 3 (HTML5 drag and drop — see ADR-0007
 - IntersectionObserver, ResizeObserver
 
 **Graceful degradation:**
+
 - Container queries (iOS 16+) — fall back to media queries on iOS 15
 - View Transitions API (iOS 18+) — optional polish, never a hard dependency
 
 **Explicitly excluded:**
+
 - HTML5 drag and drop (`draggable`, `ondragstart`, `ondrop`) — not on iOS Safari/Brave. Every
   DnD interaction must use pointer events.
 - Any API that requires iOS 17+ as a hard dependency.
@@ -43,11 +46,13 @@ platform awareness had occurred in Slice 3 (HTML5 drag and drop — see ADR-0007
 ## Consequences
 
 **Positive:**
+
 - A clear feature set: development can rely on guaranteed APIs without checking every
   feature.
 - The DnD ban is documented explicitly → prevents a repeat of the Slice 3 bug.
 
 **Negative / Trade-offs:**
+
 - Container queries cannot be the only layout strategy; media-query fallbacks have to ship as
   well.
 - Some modern CSS features (e.g. `:has()`, `@layer`) are risky on iOS 15 and have to be

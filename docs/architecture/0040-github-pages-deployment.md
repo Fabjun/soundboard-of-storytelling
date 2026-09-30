@@ -41,10 +41,12 @@ Only when `tests.yml` succeeds on `main` is there a deploy.
 ## Consequences
 
 **Positive:**
+
 - Deploying a broken build is excluded structurally (not only by convention).
 - A clear separation: `tests.yml` for CI quality gates, `deploy-pages.yml` for deployment.
 
 **Negative / Trade-offs:**
+
 - ~~`workflow_run` has a special property: it does not trigger for pull requests from forks
   (a GitHub security restriction). No problem for a single-developer project.~~
   **Correction 2026-09-29: wrong.** `workflow_run` also fires after `pull_request` runs, and a

@@ -34,27 +34,30 @@ live gaming use.
 7. **LRU cache cap: 150 MB.** V1's proven limit. Do not raise without measuring.
 
 **Implementation consequences:**
+
 - `libGetAllMeta()` uses a cursor and never references `cursor.value.blob` (ADR-0011).
 - `processFilesSerial()` in `upload.ts` decodes one file at a time.
 - The `libraryItems` signal only holds `LibraryItemMeta[]`, never `LibraryItem[]` (ADR-0011).
 
 **Forbidden patterns in new code (CLAUDE.md §Banned patterns):**
 
-| Pattern | Why | Alternative |
-|---------|-------|-------------|
-| Loading all library buffers for non-playback | 150–240 MB RAM | Metadata-only cursor |
-| Parallel `decodeAudioData` for N files | N × 50–100 MB PCM = OOM | Serial, release the buffer in between |
-| Raw audio in state arrays | Compressed + decoded in RAM | `{name, hash, size}`, lazy load |
-| Complete library JSON for export | 150–300 MB string | Stream entry by entry |
-| `FileReader` loop in parallel | N reads + N decodes | Serial |
+| Pattern                                      | Why                         | Alternative                           |
+| -------------------------------------------- | --------------------------- | ------------------------------------- |
+| Loading all library buffers for non-playback | 150–240 MB RAM              | Metadata-only cursor                  |
+| Parallel `decodeAudioData` for N files       | N × 50–100 MB PCM = OOM     | Serial, release the buffer in between |
+| Raw audio in state arrays                    | Compressed + decoded in RAM | `{name, hash, size}`, lazy load       |
+| Complete library JSON for export             | 150–300 MB string           | Stream entry by entry                 |
+| `FileReader` loop in parallel                | N reads + N decodes         | Serial                                |
 
 ## Consequences
 
 **Positive:**
+
 - Tab kills in live use are prevented.
 - The rules are defensive enough for older iPhones (600 MB limit).
 
 **Negative / Trade-offs:**
+
 - Code that would intuitively "load all files at once" has to be restructured as streaming.
   That is more development effort.
 - Debugging is harder: memory leaks on iOS are not directly visible (no memory profiler in

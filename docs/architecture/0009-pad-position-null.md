@@ -13,6 +13,7 @@ to 3×3, the pads from slots (3,3), (0,3), (1,3), (2,3) no longer fit into the g
 happens to these pads?
 
 Options:
+
 1. Delete them — data loss, bad
 2. Store them in a separate array — data model complexity
 3. Set `position: null` (UNPLACED state) — the pad is kept, but without a visible slot
@@ -38,12 +39,14 @@ The type system forces every call site to handle `null` (TypeScript strict, ADR-
 ## Consequences
 
 **Positive:**
+
 - No data loss when the grid shrinks (Slice 8).
 - Pads remember their desired position (docs/design/design-notes.md §A4 · "Unplaced pads
   remember their desired position"): when the grid grows they are re-placed automatically.
 - The type system enforces null handling everywhere.
 
 **Negative / Trade-offs:**
+
 - Every code path that uses `position.col/row` has to check for `null`. That is some
   boilerplate, but it prevents accidental crashes.
 

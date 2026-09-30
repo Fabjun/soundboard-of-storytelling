@@ -85,4 +85,4 @@ layout-primitives list = [§5a](design-system.md#5a-layout-primitives), inventor
 
 ---
 
-*One page. If you needed more, you needed `docs/design/design-system.md`.*
+_One page. If you needed more, you needed `docs/design/design-system.md`._

@@ -20,16 +20,16 @@ screenshot-verifiable result."
 
 Development in **8 vertical slices**:
 
-| # | Feature | Status |
-|---|---------|--------|
-| 1 | Project setup + StartScreen | ✅ |
-| 2 | Library + LibraryItem CRUD | ✅ |
-| 3 | Board + Scene + Pad CRUD | ✅ |
-| 4 | Audio playback (V1 engine) | ✅ |
-| 5 | Scene switching | ⬜ |
-| 6 | Sets + Quick Access | ⬜ |
-| 7 | Template export/import | ⬜ |
-| 8 | Settings, themes, polish | ⬜ |
+| #   | Feature                     | Status |
+| --- | --------------------------- | ------ |
+| 1   | Project setup + StartScreen | ✅     |
+| 2   | Library + LibraryItem CRUD  | ✅     |
+| 3   | Board + Scene + Pad CRUD    | ✅     |
+| 4   | Audio playback (V1 engine)  | ✅     |
+| 5   | Scene switching             | ⬜     |
+| 6   | Sets + Quick Access         | ⬜     |
+| 7   | Template export/import      | ⬜     |
+| 8   | Settings, themes, polish    | ⬜     |
 
 Every slice delivers: UI + state + persistence + manual verification + tests.
 
@@ -38,12 +38,14 @@ Every slice delivers: UI + state + persistence + manual verification + tests.
 ## Consequences
 
 **Positive:**
+
 - After every slice the app runs and can be shown. No monolithic "big bang" release.
 - Early feedback loops: after Slice 1 the visual design is visible, after Slice 2 the IDB
   layer is validated.
 - Every slice decision can inform the next slice.
 
 **Negative / Trade-offs:**
+
 - Some architecture decisions (e.g. the audio engine facade) have to be made before the
   actual slice (ADR-0018 is documented in advance, even though Slice 4 is still pending).
 - "Vertical slice" often requires anticipating IDB schemas and types, even if certain features

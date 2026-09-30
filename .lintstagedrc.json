@@ -1,0 +1,8 @@
+{
+  "*.{ts,tsx,js,mjs}": [
+    "prettier --write",
+    "eslint --fix --no-warn-ignored --config v3/eslint.config.js"
+  ],
+  "*.{css,json,yml,yaml}": "prettier --write",
+  "*.md": "tsx v3/scripts/format-md.ts"
+}

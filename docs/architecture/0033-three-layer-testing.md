@@ -20,12 +20,12 @@ it became clear that further slice development without automated tests would be 
 
 **Four test layers:**
 
-| Layer | Tool | Purpose | Runtime | CI |
-|---------|------|-------|----------|----|
-| Unit | Vitest | Logic correctness (pure functions, signals, IDB) | ~1s | ✓ |
-| E2E smoke | Playwright Chromium+WebKit | Critical paths | ~6s | ✓ |
-| E2E full | Playwright Chromium | Full verification (slices 3–4): board/scene/pad CRUD, audio engine | ~90s | ✓ |
-| Visual regression | Playwright screenshots | Pixel comparison | ~30s | ✗ (local only) |
+| Layer             | Tool                       | Purpose                                                            | Runtime | CI             |
+| ----------------- | -------------------------- | ------------------------------------------------------------------ | ------- | -------------- |
+| Unit              | Vitest                     | Logic correctness (pure functions, signals, IDB)                   | ~1s     | ✓              |
+| E2E smoke         | Playwright Chromium+WebKit | Critical paths                                                     | ~6s     | ✓              |
+| E2E full          | Playwright Chromium        | Full verification (slices 3–4): board/scene/pad CRUD, audio engine | ~90s    | ✓              |
+| Visual regression | Playwright screenshots     | Pixel comparison                                                   | ~30s    | ✗ (local only) |
 
 **Gate order:** unit → E2E smoke → E2E full (CI); pre-commit: sync:docs → build → lint-staged → unit → E2E smoke → link:check (ADR-0037); pre-push: version bump + size → E2E all (ADR-0037).
 
@@ -38,11 +38,13 @@ dependency — sufficient.
 ## Consequences
 
 **Positive:**
+
 - Unit tests cover logic correctness (pure functions in `src/lib/`, signals in `src/state/`).
 - Smoke tests run in ~6s and cover the five most critical paths.
 - Visual regression prevents unintended UI changes (locally before UI-relevant commits).
 
 **Negative / Trade-offs:**
+
 - E2E full at ~90s is too long for pre-commit (runs only in CI).
 - Visual regression fails on Ubuntu CI (font rendering difference, ADR-0036) — excluded from
   CI.

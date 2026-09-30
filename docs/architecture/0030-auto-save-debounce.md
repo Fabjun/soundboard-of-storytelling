@@ -17,9 +17,9 @@ debounced auto-save.
 V1 had explicit saving in some areas — that led to data loss when users forgot to save. V3 is
 meant to avoid that.
 
-> *This decision was not documented explicitly as a rule; it was derived from the consistent
+> _This decision was not documented explicitly as a rule; it was derived from the consistent
 > code pattern (every mutation calls boardPut with a debounce) and is documented implicitly
-> as a deviation in CLAUDE.md ("auto-save with 500 ms debounce, no explicit save button").*
+> as a deviation in CLAUDE.md ("auto-save with 500 ms debounce, no explicit save button")._
 
 ## Decision
 
@@ -27,6 +27,7 @@ Every board/scene/pad mutation triggers a **500 ms debounced write** to IDB via
 `boardPut(board)`. There is no explicit "Save" button in SETUP mode.
 
 **Technical pattern:**
+
 1. A user action changes the board state in signals
 2. `useEffect`/`useSignalEffect` or an event handler calls `boardPut(board)`
 3. Debounce: if further changes arrive within 500 ms, only the last write is executed
@@ -34,11 +35,13 @@ Every board/scene/pad mutation triggers a **500 ms debounced write** to IDB via
 ## Consequences
 
 **Positive:**
+
 - No data loss from forgotten saving.
 - Simpler UX: no "unsaved changes" dialog when closing the tab.
 - Compatible with PWA offline-first: the data in IDB is always current.
 
 **Negative / Trade-offs:**
+
 - Write amplification together with ADR-0010 (board as a document): every pad move writes the
   complete ~50 KB document. The debounce limits the frequency (max. 2 writes/s during
   continuous activity).

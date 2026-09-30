@@ -4,7 +4,7 @@
 // 1. Component files (src/components, src/screens, src/App.tsx): PascalCase, no version
 //    suffix (V2, V3 …), and the file exports a function with exactly its own name.
 // 2. CSS class selectors in src/styles: `sb` / `sb-*` / `sb-theme-*`, states `is-*` / `has-*`.
-// 3. npm scripts that run `tsx ../scripts/<file>.ts`: file name = script name with ':' → '-'.
+// 3. npm scripts that run `tsx scripts/<file>.ts`: file name = script name with ':' → '-'.
 // 4. Test IDs and locators (ADR-0054): every data-testid starts with the kebab-case name of
 //    its component file and ends with an element kind (root: the component name alone);
 //    E2E tests never locate by CSS class; spec files are kebab-case without a folder prefix,
@@ -83,7 +83,7 @@ describe('guard: script files are named after their npm scripts (ADR-0052)', () 
     readFileSync(join(V3, 'package.json'), 'utf8'),
   ).scripts;
   const runs = Object.entries(scripts)
-    .map(([name, cmd]) => ({ name, file: /tsx \.\.\/scripts\/([\w-]+)\.ts/.exec(cmd)?.[1] }))
+    .map(([name, cmd]) => ({ name, file: /tsx scripts\/([\w-]+)\.ts/.exec(cmd)?.[1] }))
     .filter((s): s is { name: string; file: string } => s.file !== undefined);
 
   it('finds script-backed npm scripts (sanity)', () => {

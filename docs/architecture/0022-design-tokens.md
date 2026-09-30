@@ -43,6 +43,7 @@ Theme overrides (`.sb-theme-verdant`, `.sb-theme-neon`, `.sb-theme-crimson`) are
 `tokens.css`.
 
 **Forbidden in new V3 code (from docs/design/design-system-cheatsheet.md):**
+
 - new colour literals
 - `--sb-*` legacy aliases (only for backward-compatible references)
 - `border-radius` on the `sb-pix` family (clip-path, ADR-0024)
@@ -51,12 +52,14 @@ Theme overrides (`.sb-theme-verdant`, `.sb-theme-neon`, `.sb-theme-crimson`) are
 ## Consequences
 
 **Positive:**
+
 - Theme switching (Slice 8) is trivial: a different CSS class on the root element, token
   overrides apply automatically everywhere.
 - Consistency: 50+ components use the same token names.
 - The token documentation in `CLAUDE.md §Design language` is canonical.
 
 **Negative / Trade-offs:**
+
 - Token names have to be known (`--gold` instead of `#F5D57A`). A one-off learning effort when
   reading the cheat sheet.
 - No TypeScript support for token names (CSS custom properties are strings). Typos only

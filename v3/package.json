@@ -23,21 +23,22 @@
     "test:e2e:debug": "playwright test --debug",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "format": "prettier --write .",
-    "format:check": "prettier --check .",
+    "format": "cd .. && prettier --write .",
+    "format:check": "cd .. && prettier --check .",
+    "format:md": "tsx scripts/format-md.ts",
     "size": "size-limit",
-    "sync:adr": "tsx ../scripts/sync-adr.ts",
-    "sync:classes": "tsx ../scripts/sync-classes.ts",
-    "sync:tokens": "tsx ../scripts/sync-tokens.ts",
-    "sync:tests": "tsx ../scripts/sync-tests.ts",
-    "sync:changelog": "tsx ../scripts/sync-changelog.ts",
-    "sync:exceptions": "tsx ../scripts/sync-exceptions.ts",
-    "vale:install": "tsx ../scripts/vale-install.ts",
+    "sync:adr": "tsx scripts/sync-adr.ts",
+    "sync:classes": "tsx scripts/sync-classes.ts",
+    "sync:tokens": "tsx scripts/sync-tokens.ts",
+    "sync:tests": "tsx scripts/sync-tests.ts",
+    "sync:changelog": "tsx scripts/sync-changelog.ts",
+    "sync:exceptions": "tsx scripts/sync-exceptions.ts",
+    "vale:install": "tsx scripts/vale-install.ts",
     "typecheck": "tsc -b",
     "sync:docs": "npm run sync:adr && npm run sync:classes && npm run sync:tokens && npm run sync:tests && npm run sync:changelog && npm run sync:exceptions",
     "link:check": "remark --no-stdout --quiet --frail --use remark-validate-links ..",
     "lint:docs": "cd .. && vale README.md CLAUDE.md docs",
-    "audit:inline-styles": "NODE_PATH=./node_modules tsx ../scripts/audit-inline-styles.ts"
+    "audit:inline-styles": "tsx scripts/audit-inline-styles.ts"
   },
   "dependencies": {
     "@fontsource/press-start-2p": "^5.3.0",
@@ -48,20 +49,12 @@
     "idb": "^8.0.3",
     "preact": "^10.29.1"
   },
-  "lint-staged": {
-    "*.{ts,tsx}": [
-      "prettier --write",
-      "eslint --fix"
-    ],
-    "*.{css,json,md}": [
-      "prettier --write"
-    ]
-  },
   "devDependencies": {
     "@eslint-community/eslint-plugin-eslint-comments": "^4.8.1",
     "@playwright/test": "^1.60.0",
     "@preact/preset-vite": "^2.10.5",
     "@size-limit/file": "^12.1.0",
+    "@types/mdast": "^4.0.4",
     "@types/node": "^24.12.3",
     "@typescript-eslint/eslint-plugin": "^8.60.0",
     "@typescript-eslint/parser": "^8.60.0",
@@ -77,6 +70,9 @@
     "husky": "^9.1.7",
     "jsdom": "^29.1.1",
     "lint-staged": "^17.0.5",
+    "mdast-util-from-markdown": "^2.0.3",
+    "mdast-util-gfm": "^3.1.0",
+    "micromark-extension-gfm": "^3.0.0",
     "prettier": "^3.8.3",
     "remark-cli": "^12.0.1",
     "remark-validate-links": "^13.1.0",

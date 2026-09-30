@@ -15,6 +15,7 @@ block. In parallel a question came up: how should the app switch between the mob
 desktop view, and how is the device detected?
 
 This framing showed weaknesses:
+
 - Modern devices blur the old mobile/desktop boundary (touch laptops, phones operated with a
   mouse, tablets with keyboards).
 - The detection and version-switching problem is hard to solve in principle — there is no
@@ -77,6 +78,7 @@ denser layouts are ever wanted, they belong to axis 1, large screen — not buil
 ## Consequences
 
 **Positive:**
+
 - The detection and version-switch problem dissolves: no exclusive versions → nothing to
   switch, nothing to detect wrongly.
 - Hybrid devices (touch laptop, mouse on a tablet) are handled correctly: axis 1 adapts the
@@ -87,6 +89,7 @@ denser layouts are ever wanted, they belong to axis 1, large screen — not buil
   action added?" → axis 2.
 
 **Negative / Trade-offs:**
+
 - The exact breakpoint thresholds (from which point the sidebar moves from the bottom to the
   left) are not fixed yet — empirical calibration on real devices is needed.
 - Existing code and design artefacts that imply the old split have to be adapted step by step

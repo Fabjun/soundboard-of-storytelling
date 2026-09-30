@@ -32,16 +32,19 @@ tests/e2e/visual/__snapshots__/
 These files are committed and belong to the repository.
 
 **Workflow:**
+
 - before UI-relevant commits: run `npm run test:e2e:visual` locally
 - for intended UI changes: `npm run test:e2e:update-snapshots` + commit the new baselines
 
 ## Consequences
 
 **Positive:**
+
 - Visual regression protection for macOS developers without CI flakiness.
 - Baselines are committed — traceable in history.
 
 **Negative / Trade-offs:**
+
 - Visual regression does not work on Linux/Windows. Other developers on other platforms have
   no visual regression protection. No problem for a single-developer project.
 - CI gives no visual regression warning. Only manual runs before UI commits protect.

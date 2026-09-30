@@ -9,6 +9,7 @@
 ## Context
 
 E2E tests need stable selectors for DOM elements. Alternatives:
+
 - CSS classes (`sb-btn`, `.sb-scene-tab`)
 - texts (`getByText('Delete')`)
 - roles (`getByRole('button', { name: 'Delete' })`)
@@ -29,12 +30,14 @@ await page.getByTestId(`scene-tab-${scene.id}`);
 ```
 
 **Naming convention:**
+
 ```
 data-testid="<component>-<element>"           // unique
 data-testid="<component>-<element>-<id>"      // instance in a list
 ```
 
 **Examples:**
+
 ```
 new-board-button
 board-row-{board.id}
@@ -53,11 +56,13 @@ Only test-critical elements get a `data-testid` (no complete DOM coverage).
 ## Consequences
 
 **Positive:**
+
 - Stable under refactoring: CSS renames and design-system updates do not break tests.
 - Unique: instance IDs prevent "strict mode violation" for elements that occur several times.
 - Self-documenting: `data-testid` makes testable elements recognisable in the markup.
 
 **Negative / Trade-offs:**
+
 - Markup pollution: `data-testid` attributes are visible in the production HTML. No semantic
   value for users, but no functional harm.
 - Maintenance effort: adding a `data-testid` is an extra step during development.

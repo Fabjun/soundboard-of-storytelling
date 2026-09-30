@@ -71,15 +71,15 @@ type FileOrder = 'sequential' | 'shuffle';
 The product owner decided to build the behavior in its final form now; only look and phone
 layout follow in Slice 13.
 
-| Behavior | Decision |
-|---|---|
-| Editing a pad | changes it everywhere it appears |
-| **Duplicate deck** | the copy references the **same pads** (new placements, same pad ids). An independent "duplicate pad" action may come later. |
-| **All pads** | its own view, first entry in the deck rail; shows the whole pool (incl. pads in no deck), sorted by name; no saved arrangement |
-| **Remove from deck** | removes the placement; the pad stays in the pool (visible in All pads). Two-tap confirm. |
-| **Delete pad** | removes the pad from the pool, all placements, the quick-access bar and combo steps. Two-tap confirm, shows "used in N decks". |
-| **Add a pad to other decks** | PAD editor section "Decks": a checklist of all decks; checking places the pad on the next free slot of that deck, unchecking removes the placement |
-| Choosing several files in the PAD editor | model ready in Slice 9; editing UI in Slice 11 |
+| Behavior                                 | Decision                                                                                                                                           |
+| ---------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Editing a pad                            | changes it everywhere it appears                                                                                                                   |
+| **Duplicate deck**                       | the copy references the **same pads** (new placements, same pad ids). An independent "duplicate pad" action may come later.                        |
+| **All pads**                             | its own view, first entry in the deck rail; shows the whole pool (incl. pads in no deck), sorted by name; no saved arrangement                     |
+| **Remove from deck**                     | removes the placement; the pad stays in the pool (visible in All pads). Two-tap confirm.                                                           |
+| **Delete pad**                           | removes the pad from the pool, all placements, the quick-access bar and combo steps. Two-tap confirm, shows "used in N decks".                     |
+| **Add a pad to other decks**             | PAD editor section "Decks": a checklist of all decks; checking places the pad on the next free slot of that deck, unchecking removes the placement |
+| Choosing several files in the PAD editor | model ready in Slice 9; editing UI in Slice 11                                                                                                     |
 
 ### 3. Persistence
 
@@ -101,23 +101,25 @@ to the play dispatch in `v3/src/audio/`. Rule agreed with the product owner:
 
 ### 5. Implementation steps (Slice 9)
 
-| Step | Content |
-|---|---|
-| 9a | this ADR |
-| 9b | rename Scene → Deck (code, UI text, CSS classes, tests) — names only, no behavior change |
-| 9c | pad pool, placements, quick-access model, DB v3, store and all consumers |
-| 9d | three pad types with files + order; engine dispatch (rule §4) |
-| 9e | All pads view, remove-from-deck vs delete-pad, deck checklist in the PAD editor |
+| Step | Content                                                                                  |
+| ---- | ---------------------------------------------------------------------------------------- |
+| 9a   | this ADR                                                                                 |
+| 9b   | rename Scene → Deck (code, UI text, CSS classes, tests) — names only, no behavior change |
+| 9c   | pad pool, placements, quick-access model, DB v3, store and all consumers                 |
+| 9d   | three pad types with files + order; engine dispatch (rule §4)                            |
+| 9e   | All pads view, remove-from-deck vs delete-pad, deck checklist in the PAD editor          |
 
 ## Consequences
 
 **Positive:**
+
 - The model matches the product concept (docs/product/README.md §5) — no provisional behavior to unlearn.
 - One pad, many decks: no copies to keep in sync; combos reference one pool.
 - Fewer concepts: sets dropped, three pad types, one `order` field.
 - Deck = arrangement + key layer, which is exactly what the numpad control needs (§6 K2, K14).
 
 **Negative / Trade-offs:**
+
 - Existing V3 test boards are wiped once (DB v3); library audio is kept.
 - Two kinds of removal must be clearly distinguishable in the UI.
 - A shared pad edited in one deck changes in all decks — intended, but must be understood.

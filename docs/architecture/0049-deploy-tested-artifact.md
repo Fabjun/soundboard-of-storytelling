@@ -15,7 +15,7 @@ Two gaps remained (found in the test-setup analysis, BACKLOG T8d):
    `npm ci` + `npm run build` after the tests. Usually identical, but not guaranteed:
    package downloads, runner image and environment can differ between the two runs.
 2. **The gate trusted the branch name only.** The trigger filter `branches: [main]` matches
-   the head branch of *any* completed Tests run — including `pull_request` runs, and a fork
+   the head branch of _any_ completed Tests run — including `pull_request` runs, and a fork
    can name its branch `main`. The deploy then checked out
    `github.event.workflow_run.head_sha`, i.e. it could have built and published fork code.
    ADR-0040 stated the opposite ("it does not trigger for pull requests from forks"); that
@@ -41,6 +41,7 @@ Two gaps remained (found in the test-setup analysis, BACKLOG T8d):
 ## Consequences
 
 **Positive:**
+
 - What users get is byte-for-byte what passed the production-build E2E tests.
 - Fork or pull-request code can no longer reach the live site through this workflow.
 - Smaller attack surface in the job holding `pages: write` / `id-token: write`
@@ -48,6 +49,7 @@ Two gaps remained (found in the test-setup analysis, BACKLOG T8d):
 - A failed deploy leaves the previous version live — no downtime.
 
 **Negative / Trade-offs:**
+
 - Deploy depends on an artifact with limited lifetime (30 days) — manual re-deploys of old
   states need a Tests re-run.
 - Coupling: the deploy relies on the artifact name `pages-dist` and on `e2e-prod` building

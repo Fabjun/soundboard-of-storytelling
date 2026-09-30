@@ -10,7 +10,7 @@
  * Run: npm run sync:tests  (from v3/) — part of npm run sync:docs.
  */
 
-import { readFileSync, readdirSync, statSync, writeFileSync } from 'fs';
+import { readFileSync, readdirSync, statSync } from 'fs';
 import { basename, dirname, join, relative, resolve } from 'path';
 import { fileURLToPath } from 'url';
 import {
@@ -21,10 +21,12 @@ import {
   PWA_TESTS,
   SMOKE_TESTS,
   VISUAL_DIR,
-} from '../v3/tests/e2e/projects';
+} from '../tests/e2e/projects';
+import { writeGenerated } from './lib/write-generated';
+import { tableRow } from './lib/markdown';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const ROOT = resolve(__dirname, '..');
+const ROOT = resolve(__dirname, '..', '..');
 const V3 = join(ROOT, 'v3');
 const E2E = join(V3, 'tests', 'e2e');
 const UNIT = join(V3, 'tests', 'unit');
@@ -87,7 +89,7 @@ const block = [
   '',
   '| Project | Browser / device | Against | Specs (tests) |',
   '|---|---|---|---|',
-  ...rows.map((r) => `| \`${r[0]}\` | ${r[1]} | ${r[2]} | ${r[3]} |`),
+  ...rows.map((r) => tableRow([`\`${r[0]}\``, r[1], r[2], r[3]])),
   '',
   `**Unit tests (Vitest):** ${unitFiles.length} files, ${unitTotal} test cases —`,
   unitFiles
@@ -105,8 +107,7 @@ if (a < 0 || b < 0 || b < a) {
   process.exit(1);
 }
 const next = doc.slice(0, a) + block + doc.slice(b + MARKER_END.length);
-if (next !== doc) {
-  writeFileSync(TESTING, next);
+if (await writeGenerated(TESTING, next)) {
   console.log('✅ docs/development/testing.md test inventory updated.');
 } else {
   console.log('✅ docs/development/testing.md test inventory already up to date.');

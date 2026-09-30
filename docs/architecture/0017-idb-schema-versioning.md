@@ -12,8 +12,8 @@ IndexedDB schemas have to be versioned. When a user opens V3 after an update and
 structure has changed (new store, new index), IDB has to run an upgrade callback. Without
 correct versioning, a schema mismatch leads to a `VersionError` and the app is unusable.
 
-> *The versioning pattern was not documented explicitly as a rule; it is a mandatory
-> technical requirement of IDB and was established with the first schema (Slice 2).*
+> _The versioning pattern was not documented explicitly as a rule; it is a mandatory
+> technical requirement of IDB and was established with the first schema (Slice 2)._
 
 ## Decision
 
@@ -38,6 +38,7 @@ Every new version adds an `if (oldVersion < N)` block. Existing data is kept. Sc
 is not supported (IDB limitation).
 
 **Rules:**
+
 - increase `DB_VERSION` on every schema change
 - always add new stores with `if (oldVersion < N)`, never replace them
 - never delete existing data in the upgrade callback without telling the user
@@ -45,11 +46,13 @@ is not supported (IDB limitation).
 ## Consequences
 
 **Positive:**
+
 - Users can fill V3 with data over months and do not lose it after app updates.
 - The `oldVersion` guard makes the upgrade path auditable: every DB version is documented in
   code.
 
 **Negative / Trade-offs:**
+
 - The schema cannot simply be simplified (removing stores would be a breaking change for user
   data). Technical debt accumulates if old stores are never used.
 - Schema downgrade is impossible: once `DB_VERSION` has been increased, there is no way back

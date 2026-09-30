@@ -1,32 +1,32 @@
 version: 2
 updates:
-  - package-ecosystem: "npm"
-    directory: "/v3"
+  - package-ecosystem: 'npm'
+    directory: '/v3'
     schedule:
-      interval: "weekly"
-      day: "monday"
+      interval: 'weekly'
+      day: 'monday'
     open-pull-requests-limit: 10
     labels:
-      - "dependencies"
+      - 'dependencies'
     # Minor/patch updates are bundled per dependency type; MAJOR updates are NOT grouped,
     # so each arrives as its own PR and can be reviewed on its own. (Until 2026-09-29 one
     # group held everything: a single failing major — TypeScript 7 — blocked 14 safe
     # updates incl. security fixes for two months, unnoticed.)
     groups:
       dev-minor-patch:
-        dependency-type: "development"
+        dependency-type: 'development'
         update-types:
-          - "minor"
-          - "patch"
+          - 'minor'
+          - 'patch'
       prod-minor-patch:
-        dependency-type: "production"
+        dependency-type: 'production'
         update-types:
-          - "minor"
-          - "patch"
+          - 'minor'
+          - 'patch'
 
-  - package-ecosystem: "github-actions"
-    directory: "/"
+  - package-ecosystem: 'github-actions'
+    directory: '/'
     schedule:
-      interval: "monthly"
+      interval: 'monthly'
     labels:
-      - "ci"
+      - 'ci'

@@ -15,19 +15,19 @@ highlight, icon colour. That makes the colour the primary semantic signal for th
 `design-sources/2026-05-25/HANDOFF.md §4.3` is explicit: "Don't reuse these colors for
 anything else."
 
-> *The reservation is not recorded as an explicit prohibition in a separate document, but is
-> implied consistently in the design system and in CLAUDE.md. This ADR makes it explicit.*
+> _The reservation is not recorded as an explicit prohibition in a separate document, but is
+> implied consistently in the design system and in CLAUDE.md. This ADR makes it explicit._
 
 ## Decision
 
 The four pad type colours are reserved **exclusively** for their type:
 
-| Type | Token | Colour |
-|-----|-------|-------|
-| SINGLE | `--pad-single` | Warm gold |
-| LOOP | `--pad-loop` | Teal |
-| PLAYLIST | `--pad-playlist` | Violet |
-| COMBO | `--pad-combo` | Rose magenta (#C9529D) |
+| Type     | Token            | Colour                 |
+| -------- | ---------------- | ---------------------- |
+| SINGLE   | `--pad-single`   | Warm gold              |
+| LOOP     | `--pad-loop`     | Teal                   |
+| PLAYLIST | `--pad-playlist` | Violet                 |
+| COMBO    | `--pad-combo`    | Rose magenta (#C9529D) |
 
 These colours and their variants (`--pad-*-soft`, `--pad-*-glow`) must not be used for other
 semantic purposes (e.g. "success" or "warning").
@@ -37,12 +37,14 @@ For other semantics: `--success` (teal alias), `--danger`, `--blood-bright`, `--
 ## Consequences
 
 **Positive:**
+
 - Users learn the colour → type mapping once; afterwards the UI parses at a glance. This is a
   proven design principle from V1.
 - Theme adjustments (Slice 8) can override pad type colours per theme without breaking the
   semantics (e.g. `.sb-theme-crimson { --pad-single: ... }`).
 
 **Negative / Trade-offs:**
+
 - `--pad-combo` (rose magenta) is unusual after a colour change (copper → rose magenta). That
   was a deliberate decision to separate COMBO clearly from SINGLE (gold/warm) and from
   LOOP/SETUP (teal).

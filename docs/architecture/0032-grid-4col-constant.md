@@ -34,12 +34,14 @@ is 4×4 and reflow is not an automatic mechanism.
 ## Consequences
 
 **Positive:**
+
 - `position.col` is semantically stable: column 3 on the phone is the same column as column 3
   on the desktop.
 - The hotkey mapping is viewport-independent.
 - Simpler code: no viewport-specific grid logic.
 
 **Negative / Trade-offs:**
+
 - 4×4 cells are ~78 px on a 360 px portrait viewport — tight but acceptable. With a 5-column
   default they would be ~62 px — borderline.
 - Users with large fingers on small phones could have difficulties. A deliberate trade-off in

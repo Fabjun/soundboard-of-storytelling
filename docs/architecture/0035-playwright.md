@@ -12,8 +12,8 @@ E2E tests have to test the app in a real browser (not jsdom): routing, IDB persi
 Preact signal updates in the DOM, CSS layout. The primary target is iOS/Safari (ADR-0006) —
 which makes WebKit test coverage particularly valuable.
 
-> *Playwright was chosen without a detailed evaluation — it is the standard for modern web E2E
-> tests with multi-browser support.*
+> _Playwright was chosen without a detailed evaluation — it is the standard for modern web E2E
+> tests with multi-browser support._
 
 ## Decision
 
@@ -33,11 +33,13 @@ self-contained (every test starts with an empty IDB via a fresh browser context)
 ## Consequences
 
 **Positive:**
+
 - WebKit tests (smoke) give early warning of Safari/iOS incompatibilities.
 - The dev server starts automatically: no manual `npm run dev` before tests.
 - Browser context isolation: every test has its own IDB.
 
 **Negative / Trade-offs:**
+
 - Pointer events drag in Playwright is hard to stabilise. Tests 9, 14, 20, 21 are marked
   `test.skip` — to be activated in phase 3 (after the drag sequence is stabilised).
 - E2E full (~90s) is too slow for the pre-commit hook (runs only in CI).

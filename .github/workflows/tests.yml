@@ -30,7 +30,6 @@ jobs:
         working-directory: v3
         run: npm run build
 
-
       - name: Unit tests + coverage floor
         working-directory: v3
         run: npm run test:coverage

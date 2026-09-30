@@ -17,6 +17,7 @@ iOS Safari suspends the AudioContext. On return it has to be resumed with resume
 problem known from V1.
 
 V1 implements:
+
 1. "TAP TO UNLOCK" — an overlay that creates the AudioContext on the first tap
 2. a `visibilitychange` handler that suspends on `document.hidden` and resumes the context on
    `visible`
@@ -43,11 +44,13 @@ The AudioContext lifecycle follows V1's pattern:
 ## Consequences
 
 **Positive:**
+
 - Works on iOS Safari / Brave (user-gesture requirement met).
 - A tab switch during live use interrupts audio correctly and resumes on return.
 - The UI can react to the state (e.g. an "Audio paused" indicator).
 
 **Negative / Trade-offs:**
+
 - TAP TO UNLOCK is an extra user step at every app start. Unavoidable because of the iOS
   requirement.
 - `visibilitychange` is not 100% reliable in every iOS version. Workarounds from V1 are

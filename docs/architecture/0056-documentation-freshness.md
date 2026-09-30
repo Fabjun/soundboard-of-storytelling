@@ -40,7 +40,7 @@ unified), prose terminology is linted (Vale, the de facto prose linter with `sub
    (`` `docs/…/x.md` ``, `` `v3/src/…/x.ts` ``) names a file in this repository; ambiguous short
    names are written as full paths; external or planned files are plain text. Guarded by
    `docsGuards.test.ts`, which reads the historical list from `.vale.ini` (single source).
-6. **Section references are links** — a reference to a section is a link to its anchor:
+5. **Section references are links** — a reference to a section is a link to its anchor:
    a Markdown link whose text names file and section, e.g.
    [testing.md §Flaky tests](../development/testing.md#flaky-tests-quarantine) (validated by `link:check`),
    `path.md#anchor` (repository-relative, without the section sign) in code comments and
@@ -49,20 +49,22 @@ unified), prose terminology is linted (Vale, the de facto prose linter with `sub
    code, and resolves every `path.md#anchor` with GitHub's slug algorithm (`github-slugger`,
    the library GitHub-compatible tools use). A referenced bold pseudo-heading becomes a real
    heading. Historical docs keep their free-text references (they record what was true then).
-7. **Derivable facts are not typed** — counts and lists that the code determines (tests per
+6. **Derivable facts are not typed** — counts and lists that the code determines (tests per
    project, hook steps) live in generated sections or are referenced; prose names the
    source instead of repeating the number.
-8. **Counter-check procedure** for every new check: baseline green → break → red for exactly
+7. **Counter-check procedure** for every new check: baseline green → break → red for exactly
    that reason → restore → green (`docs/development/testing.md`).
 
 ## Consequences
 
 **Positive:**
+
 - A renamed file, heading or concept fails the commit where the old name is still used in
   active docs.
 - Nine real broken anchors and several stale statements were found and fixed on introduction.
 
 **Negative / Trade-offs:**
+
 - Vale needs network access on install (GitHub release) and a manual version bump.
 - Historical passages in active docs need an explicit marker with a reason.
 

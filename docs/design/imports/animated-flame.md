@@ -9,9 +9,9 @@ StartScreen are unchanged.
 
 ## Sources
 
-| Part | Artifact | Why |
-|---|---|---|
-| **Idle animation** | `design-sources/2026-05-25/v13-animated-flame.jsx` `<AnimatedFlame />` (lines 76–407) | Product owner: livelier idle than Hearth |
+| Part                                                     | Artifact                                                                                                                       | Why                                                                                  |
+| -------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------ |
+| **Idle animation**                                       | `design-sources/2026-05-25/v13-animated-flame.jsx` `<AnimatedFlame />` (lines 76–407)                                          | Product owner: livelier idle than Hearth                                             |
 | **Freeze / hold / thaw, particles, glow, canvas engine** | `design-sources/2026-09-28/Design_Soundboard_of_Storytelling/flame-engine.jsx` + `flame-themes.jsx` → **Hearth** (lines 6–211) | Product owner: better ice transformation — no box or circle, better sparks and steam |
 
 The 2026-09-28 v13-only import (SVG) is superseded by this hybrid. Hearth's siblings
@@ -48,14 +48,14 @@ particle physics and fades, ~45 fps ticker cap (22 ms).
 
 ## Deviations and additions
 
-| # | Item | Reason | Date |
-|---|---|---|---|
-| X1 | Hybrid: v13 idle + Hearth freeze on one canvas | Product owner choice (best of both) | 2026-09-29 |
-| X2 | Body motion is v13's whole-body sway + breath (not Hearth's per-row sway) and v13's tip flicker (not Hearth's noise tip / tip-dance) | Part of the v13 idle | 2026-09-29 |
-| X3 | Core-ring glow: core pixels glide towards heart / mid colour (3 targets/s, max 22 %) | Product owner request | 2026-09-29 |
-| X4 | Heart as four pixels: 5 fps jitter (±15 %), occasional lit neighbour, one random corner at 65 % | Product owner request | 2026-09-29 |
-| X5 | Canvas `touch-action: manipulation` (Hearth: `none`), root without tap highlight | Page stays scrollable on phones; no iOS tap flash / double-tap zoom | 2026-09-29 |
-| X6 | Facets drawn with the body offset (sway/shiver) | Keeps glints aligned with the pixels | 2026-09-29 |
+| #   | Item                                                                                                                                 | Reason                                                              | Date       |
+| --- | ------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------- | ---------- |
+| X1  | Hybrid: v13 idle + Hearth freeze on one canvas                                                                                       | Product owner choice (best of both)                                 | 2026-09-29 |
+| X2  | Body motion is v13's whole-body sway + breath (not Hearth's per-row sway) and v13's tip flicker (not Hearth's noise tip / tip-dance) | Part of the v13 idle                                                | 2026-09-29 |
+| X3  | Core-ring glow: core pixels glide towards heart / mid colour (3 targets/s, max 22 %)                                                 | Product owner request                                               | 2026-09-29 |
+| X4  | Heart as four pixels: 5 fps jitter (±15 %), occasional lit neighbour, one random corner at 65 %                                      | Product owner request                                               | 2026-09-29 |
+| X5  | Canvas `touch-action: manipulation` (Hearth: `none`), root without tap highlight                                                     | Page stays scrollable on phones; no iOS tap flash / double-tap zoom | 2026-09-29 |
+| X6  | Facets drawn with the body offset (sway/shiver)                                                                                      | Keeps glints aligned with the pixels                                | 2026-09-29 |
 
 Dropped from the v13-only import: frost vignette (box → ring), radial halo, spark→smoke,
 v13 ice facets/icicles/chips — replaced by Hearth.

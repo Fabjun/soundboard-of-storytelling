@@ -11,9 +11,9 @@
 Raw IndexedDB has a verbose, callback-based API. For TypeScript code a promise-based API with
 type safety is considerably more ergonomic.
 
-> *This decision was not justified explicitly in the source documents. It was derived as a
+> _This decision was not justified explicitly in the source documents. It was derived as a
 > consistent choice from `v3/package.json` and `v3/src/db/idb.ts`. `idb` is the standard
-> recommendation in the web ecosystem for typed IDB access.*
+> recommendation in the web ecosystem for typed IDB access._
 
 ## Decision
 
@@ -30,12 +30,14 @@ code base outside `src/db/idb.ts`.
 ## Consequences
 
 **Positive:**
+
 - Promise-based API: `await db.get('library', id)` instead of callback chains.
 - TypeScript generics for store access.
 - `openDB` with the `upgrade` callback keeps schema migration clean (ADR-0017).
 - Small bundle: ~1.4 KB gzip.
 
 **Negative / Trade-offs:**
+
 - An external dependency for IDB access. If `idb` were no longer maintained, we would have to
   migrate. Risk: low (well maintained, widely used).
 

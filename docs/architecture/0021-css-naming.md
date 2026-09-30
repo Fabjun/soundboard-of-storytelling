@@ -13,24 +13,27 @@ The design system from `design-sources/2026-05-25/` defines a CSS naming convent
 adopts directly. The convention is described in `docs/design/design-system-cheatsheet.md`
 ("The 60-second contract").
 
-The question when porting: should BEM (Block__Element--Modifier) be used, or a simplified
+The question when porting: should BEM (`Block__Element--Modifier`) be used, or a simplified
 variant? The design system had already answered this for us: BEM-like, but without `__` and
 `--`.
 
 ## Decision
 
 **Class structure:**
+
 - Block: `sb-<block>` (e.g. `sb-pad`, `sb-btn`, `sb-card`)
 - Part: `sb-<block>-<part>` (e.g. `sb-pad-spine`, `sb-btn-label`)
 - State: `is-<state>` (e.g. `is-hot`, `is-setup`, `is-danger`, `is-deep`)
 
 **Rules (from docs/design/design-system-cheatsheet.md §60-second contract):**
+
 - No BEM `__` (no `sb-pad__spine`) — only a single `-`
 - No BEM `--` for modifiers (no `sb-btn--primary`) — states are `is-*`
 - States are never block-namespaced (`is-hot`, not `pad--hot`)
 - New `sb-*` classes: register them in `docs/design/design-system.md §6` in the same commit
 
 **Pixel frame customisation:**
+
 - Never new clip-path / border CSS for variants
 - Customisation via CSS custom properties: `--pix-bg`, `--pix-border`, `--pix-step`
 
@@ -40,11 +43,13 @@ classes there, not here):**
 ## Consequences
 
 **Positive:**
+
 - Design-system JSX can be used directly as starting code (ADR-0001).
 - Consistency across the ~20 components in `v3/src/components/`.
 - A clear state vocabulary prevents redundant classes.
 
 **Negative / Trade-offs:**
+
 - Not classic BEM: developers with a BEM background have to learn the difference.
   Documented in the cheat sheet.
 - Closed state vocabulary: new states need explicit registration in

@@ -28,6 +28,7 @@ A position is an explicit 2D coordinate pair. Array indices are not used interna
 ## Consequences
 
 **Positive:**
+
 - Viewport-stable: `position.col` means the same on every device and in every grid
   configuration. With array-index encoding, a grid resize would require recalculating the
   index.
@@ -39,6 +40,7 @@ A position is an explicit 2D coordinate pair. Array indices are not used interna
   drop-zone detection.
 
 **Negative / Trade-offs:**
+
 - IDB serialisation writes `{col, row}` instead of a number. No runtime problem (IndexedDB
   serialises objects natively), but minimally more storage.
 

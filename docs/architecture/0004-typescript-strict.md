@@ -25,6 +25,7 @@ tsconfig) — documented as a deviation in CLAUDE.md.
 ## Consequences
 
 **Positive:**
+
 - Null checks are enforced: `position: PadPosition | null` has to be handled at the call
   site, no accidental `undefined` dereferences.
 - Unused variables are revealed at compile time.
@@ -32,6 +33,7 @@ tsconfig) — documented as a deviation in CLAUDE.md.
   (ADR-0011): code that wrongly stores a Blob in signals does not compile.
 
 **Negative / Trade-offs:**
+
 - More upfront effort when typing V1 audio engine code (originally written in untyped JS).
   Solved with explicit type assertions at the facade boundary.
 

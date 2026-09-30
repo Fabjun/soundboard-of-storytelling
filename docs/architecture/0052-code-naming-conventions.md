@@ -27,13 +27,13 @@ Based on current industry guidance:
 2. **No version numbers in names.** Names describe the role; history lives in git. Design
    prototype names (`v2-screens.jsx TopBarV2`) are cited only in `Source:` comments.
 3. **Folders by kind:** `components/`, `screens/`, `lib/`, `state/`, `db/`, `audio/`,
-   `styles/` — add a folder only when a kind needs it (Robin Wieruch, *React Folder
-   Structure*, 2026). `src/chrome/` is dissolved into `components/`.
+   `styles/` — add a folder only when a kind needs it (Robin Wieruch, _React Folder
+   Structure_, 2026). `src/chrome/` is dissolved into `components/`.
 4. **CSS namespaces** (refines ADR-0021): every project class starts with `sb-`
    (block `sb-<block>`, part `sb-<block>-<part>`, themes `sb-theme-<name>`); state classes
    `is-<state>` / `has-<thing>` without project prefix. `is-` follows SMACSS state rules;
    `is-`/`has-` as the state namespace and the rationale "clarity and confidence" follow
-   CSS Wizardry, *More Transparent UI Code with Namespaces*. No other namespaces.
+   CSS Wizardry, _More Transparent UI Code with Namespaces_. No other namespaces.
 5. **Scripts:** a script invoked as npm script `<group>:<name>` lives in
    `scripts/<group>-<name>.ts` (`sync:classes` → `sync-classes.ts`).
 6. **ADR-0028 exception kept:** `BoardTopBar` stays a board-specific component next to
@@ -51,10 +51,12 @@ Renamed on 2026-09-29: `chrome/TopBarV2.tsx` → `components/TopBar.tsx`,
 ## Consequences
 
 **Positive:**
+
 - A name tells the kind of thing (component, class, state, script) at a glance.
 - Guard tests stop new drift at commit time.
 
 **Negative / Trade-offs:**
+
 - Older docs and commit messages mention the former names (history is not rewritten).
 
 ## Alternatives considered

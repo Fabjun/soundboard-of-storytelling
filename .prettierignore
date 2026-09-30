@@ -1,0 +1,12 @@
+# Prettier ignore list for the whole repository (ADR-0053: every entry has a reason).
+# Build output (vite build)
+v3/dist/
+# Installed dependencies
+node_modules/
+# Generated coverage report
+v3/coverage/
+# Generated E2E report and artefacts
+v3/playwright-report/
+v3/test-results/
+# Claude Design downloads, kept exactly as delivered (ADR-0050)
+design-sources/

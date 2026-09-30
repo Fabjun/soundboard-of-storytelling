@@ -12,6 +12,7 @@ Pad-to-pad drag in the grid (SETUP mode) needs defined semantics: what happens w
 dragged onto slot B?
 
 Options:
+
 1. **SWAP:** A takes B's position, B takes A's position
 2. **MOVE:** A takes B's position, B and all other pads stay where they are (but B's slot is
    now empty — unless B is moved)
@@ -35,11 +36,13 @@ which is checked against the registry.
 ## Consequences
 
 **Positive:**
+
 - Both common reorder operations are supported naturally.
 - Clear visual feedback: SWAP shows a direct position exchange, INSERT shows an "insertion
   gap".
 
 **Negative / Trade-offs:**
+
 - A more complex implementation than SWAP alone. `padDnd.ts` is the most elaborate single
   module in Slice 3.
 - Playwright tests for this interaction are marked `test.skip` (tests 20, 21) — pointer
