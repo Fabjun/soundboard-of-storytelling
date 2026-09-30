@@ -18,6 +18,7 @@
 // 6. Guard files (this one included) number their header rules 1..n in order.
 // 7. ESLint config rule switches name their reason inline; the tsc flags behind them stay on.
 // 8. Dependabot ignore rules carry a reason; @types/node matches the Node major in .nvmrc.
+// 9. npm overrides carry a reason; files excluded from mutation testing are EXEMPT files.
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
@@ -294,5 +295,25 @@ describe('guard: deliberately ignored dependency updates stay justified', () => 
     };
     const major = /\d+/.exec(pkg.devDependencies['@types/node'])?.[0];
     expect(major, 'raise @types/node together with .nvmrc').toBe(nvmrc);
+  });
+});
+
+describe('guard: mutation testing and overrides stay justified (T11c)', () => {
+  it('every npm override has a reason in the "//overrides" key', () => {
+    const pkg = JSON.parse(readFileSync(join(V3, 'package.json'), 'utf8')) as {
+      overrides?: Record<string, Record<string, string> | string>;
+      '//overrides'?: Record<string, string>;
+    };
+    const keys = Object.entries(pkg.overrides ?? {}).flatMap(([parent, value]) =>
+      typeof value === 'string' ? [parent] : Object.keys(value).map((dep) => `${parent} > ${dep}`),
+    );
+    expect(keys.filter((k) => !pkg['//overrides']?.[k]?.trim())).toEqual([]);
+  });
+
+  it('files excluded from mutation are exactly the EXEMPT files without unit tests', () => {
+    const config = readFileSync(join(V3, 'stryker.config.mjs'), 'utf8');
+    const excluded = [...config.matchAll(/'!(src\/[^']+)'/g)].map((m) => m[1]);
+    expect(excluded.length).toBeGreaterThanOrEqual(1);
+    expect(excluded.filter((f) => !(f in EXEMPT))).toEqual([]);
   });
 });

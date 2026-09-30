@@ -9,6 +9,8 @@ v3/.vite/
 
 # Test artefacts (the visual snapshot baselines are committed, these are not)
 v3/coverage/
+v3/reports/
+v3/.stryker-tmp/
 v3/playwright-report/
 v3/test-results/
 

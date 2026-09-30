@@ -549,7 +549,8 @@ Before committing a slice, also:
    [edge-case checklist](docs/development/testing.md#test-design-edge-case-checklist); new user flows are covered by E2E tests (Chromium,
    and `full-webkit` where no playback is needed); every new test was counter-checked
    (break the code → red); guards are green; no quarantine without a BACKLOG entry;
-   raise the coverage floor in `vitest.config.ts` to the new measured values (rounded down).
+   raise the coverage floor in `vitest.config.ts` to the new measured values (rounded down), and
+   the mutation threshold (`thresholds.break` in `v3/stryker.config.mjs`) when the weekly score rose.
 4. Update CLAUDE.md "Slice progress" table with completion date
    4a. **Update `README.md`** (public, read by clients and colleagues): move finished features
    from "Planned next" to "Available now", adjust "Planned next". English, professional,

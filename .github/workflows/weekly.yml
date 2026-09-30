@@ -85,3 +85,42 @@ jobs:
             echo "$STALE"
             exit 1
           fi
+
+  # Mutation testing (T11c, ADR-0059): how many planted bugs the unit tests detect. Too slow for
+  # every push (~30 min); fails below the break threshold in v3/stryker.config.mjs — a run that
+  # silently tests nothing (stryker-js#6210) scores ~0 and turns this red.
+  mutation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 150
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+          cache-dependency-path: v3/package-lock.json
+
+      - name: Install dependencies
+        working-directory: v3
+        run: npm ci
+
+      - name: Mutation testing (StrykerJS)
+        working-directory: v3
+        run: npm run test:mutation
+
+      - name: Mutation score (report)
+        if: always()
+        working-directory: v3
+        run: |
+          {
+            echo '## Mutation score'
+            node -e "const r=require('./reports/mutation/mutation.json');let k=0,t=0;for(const f of Object.values(r.files))for(const m of f.mutants){if(['Killed','Timeout'].includes(m.status))k++;if(!['CompileError','RuntimeError','Ignored'].includes(m.status))t++;}console.log((100*k/t).toFixed(2)+' % ('+k+' of '+t+' mutants detected)')" || echo 'No report.'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: mutation-report
+          path: v3/reports/mutation/
+          retention-days: 30

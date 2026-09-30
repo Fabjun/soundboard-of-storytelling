@@ -4,6 +4,7 @@
 **Date:** 2026-05-27
 **Slice:** infrastructure
 **Refines:** —
+**Refined by:** ADR-0059 (property-based and mutation testing on top of the unit layer)
 **Category:** Test infrastructure & workflow
 
 ## Context

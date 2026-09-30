@@ -66,8 +66,8 @@ number in brackets = test cases in the file (incl. quarantine)._
 | `pwa`             | Chromium (Desktop)             | Build only  | `pwa` (7)                                                                                                                                                                                  |
 | `visual`          | Chromium (Desktop), macOS only | Dev         | `board-list-empty` (1), `board-list-with-board` (1), `board-screen-game` (1), `board-screen-setup` (1), `deck-rail` (1), `library-empty` (1), `mode-toggle-states` (2), `start-screen` (1) |
 
-**Unit tests (Vitest):** 19 files, 235 test cases —
-`audio/engine.test.ts` (24), `audio/lru.property.test.ts` (0), `audio/lru.test.ts` (11), `codeGuards.test.ts` (13), `deckConflict.test.ts` (9), `docsGuards.test.ts` (22), `e2eProjects.test.ts` (6), `flameMath.property.test.ts` (0), `flameMath.test.ts` (22), `idb.test.ts` (15), `nanoid.test.ts` (2), `padDnd.property.test.ts` (0), `padDnd.test.ts` (11), `padUtils.property.test.ts` (0), `padUtils.test.ts` (43), `store.test.ts` (23), `testGuards.test.ts` (21), `upload.property.test.ts` (0), `upload.test.ts` (13)
+**Unit tests (Vitest):** 19 files, 237 test cases —
+`audio/engine.test.ts` (24), `audio/lru.property.test.ts` (0), `audio/lru.test.ts` (11), `codeGuards.test.ts` (13), `deckConflict.test.ts` (9), `docsGuards.test.ts` (22), `e2eProjects.test.ts` (6), `flameMath.property.test.ts` (0), `flameMath.test.ts` (22), `idb.test.ts` (15), `nanoid.test.ts` (2), `padDnd.property.test.ts` (0), `padDnd.test.ts` (11), `padUtils.property.test.ts` (0), `padUtils.test.ts` (43), `store.test.ts` (23), `testGuards.test.ts` (23), `upload.property.test.ts` (0), `upload.test.ts` (13)
 
 <!-- AUTO-GENERATED:test-inventory END -->
 
@@ -346,6 +346,7 @@ overwrites `playwright-report/`).
 cd v3 && npm run test              # run once
 cd v3 && npm run test:watch        # watch mode (while developing)
 cd v3 && npm run test:coverage     # with coverage report (v3/coverage/)
+cd v3 && npm run test:mutation     # mutation testing, ~30 min (v3/reports/mutation/)
 cd v3 && npm run test:ui           # browser interface
 
 # ── E2E ───────────────────────────────────────────────────────────────────
@@ -450,6 +451,27 @@ Example tests check chosen cases; property tests check a rule for **every** inpu
 - **Reproduce a failure:** the run prints the seed and the shrunk counterexample; pass
   `{ seed, path }` as fc options to replay exactly that case.
 - **Counter-check** like any test: plant a bug, the property must fail.
+
+## Mutation testing
+
+Coverage says which lines ran; mutation testing says whether the tests would **notice a bug**
+there (T11c, ADR-0059). [StrykerJS](https://stryker-mutator.io/) plants small bugs ("mutants")
+in the logic modules — `<` for `<=`, an emptied function, a flipped condition — and runs the unit
+tests against each; the **mutation score** is the share of detected mutants.
+
+- **When:** weekly in CI (`weekly.yml`, job `mutation`, ~30 min) and on demand:
+  `cd v3 && npm run test:mutation` (report: v3/reports/mutation/index.html, not committed). Not in the hooks —
+  too slow.
+- **Threshold:** `thresholds.break` in `v3/stryker.config.mjs` = the measured score, rounded
+  down; only ever raised (like the coverage floor). A run that silently tests nothing scores
+  about 0 % and fails — counter-checked with a test command that always passes.
+- **Scope:** the coverage modules without the EXEMPT files that have no unit tests by design
+  (`testGuards.test.ts` keeps both lists in step).
+- **Command runner:** `@stryker-mutator/vitest-runner` 10 runs no test per mutant on Vitest 5
+  (stryker-js#6210) and reports everything as survived; the command runner runs `vitest run` per
+  mutant — slower, but correct (BACKLOG "T11c").
+- **Surviving mutants** show where a test is missing: write a test that fails for that mutant,
+  then raise the threshold.
 
 ## Writing E2E tests
 

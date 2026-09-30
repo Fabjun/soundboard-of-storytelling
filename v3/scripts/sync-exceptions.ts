@@ -131,6 +131,24 @@ for (const [file, label] of [
   }
 }
 
+// ── npm overrides (reason in the "//overrides" key of package.json, enforced by testGuards) ──
+{
+  const pkg = JSON.parse(readFileSync(join(V3, 'package.json'), 'utf8')) as {
+    overrides?: Record<string, Record<string, string> | string>;
+    '//overrides'?: Record<string, string>;
+  };
+  for (const [parent, value] of Object.entries(pkg.overrides ?? {})) {
+    for (const [dep, version] of Object.entries(
+      typeof value === 'string' ? { '': value } : value,
+    )) {
+      const key = dep ? `${parent} > ${dep}` : parent;
+      toolRows.push(
+        `| npm override | \`${esc(key)}\` → \`${esc(version)}\` | ${esc(pkg['//overrides']?.[key] ?? '')} |`,
+      );
+    }
+  }
+}
+
 // ── Dependabot: deliberately ignored updates (reason = comment line directly above) ──
 {
   const lines = readFileSync(join(ROOT, '.github', 'dependabot.yml'), 'utf8').split('\n');

@@ -4,6 +4,10 @@
 
 All notable changes to Soundboard of Storytelling, newest first.
 
+## 3.0.83 — 2026-09-30
+
+- test: mutation testing with StrykerJS, weekly in CI with a break threshold (T11c, ADR-0059)
+
 ## 3.0.82 — 2026-09-30
 
 - test: property-based tests with fast-check (T11b)
