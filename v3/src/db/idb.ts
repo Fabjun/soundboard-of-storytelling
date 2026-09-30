@@ -6,7 +6,7 @@
 //   'library'  (keyPath: 'id')  — LibraryItem entries (includes blob) [since v1]
 //   'boards'   (keyPath: 'id')  — Board documents (JSON, no blobs)    [since v2]
 //
-// MEMORY SAFETY RULES (carried over from V1 — see CLAUDE.md §iPhone rules):
+// MEMORY SAFETY RULES (carried over from V1 — see CLAUDE.md#iphone--ios-safari--memory--stability-rules-critical):
 //   - libGetAllMeta() uses a cursor and NEVER references cursor.value.blob.
 //     At most one full record is in RAM at a time during enumeration.
 //   - libGet() loads one full entry (with blob) — only call for playback.

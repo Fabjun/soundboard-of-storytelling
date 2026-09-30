@@ -9,16 +9,22 @@
 // 3. README facts that drift silently: Node version (.nvmrc) and live URL (Vite base).
 // 4. ADR headers: Status, Date, Slice, Refines, [Refined by], Category — in this order, with a
 //    category from scripts/sync-adr.ts (CLAUDE.md rule 12).
+// 5. Project language is English (CLAUDE.md#project-identity): no file contains German
+//    function words — a heuristic, calibrated so English text never trips it.
 // 6. File paths in code spans of ACTIVE docs name files that exist in this repository
 //    (external or planned files are written as plain text). Historical docs are excluded
 //    via the same list Vale uses (.vale.ini), and passages marked historical with
 //    `<!-- vale SoS.SupersededTerms = NO -->` are skipped (ADR-0056).
-// 5. Project language is English (CLAUDE.md §Project identity): no file contains German
-//    function words — a heuristic, calibrated so English text never trips it.
+// 7. Section references are links (ADR-0056): in active docs the section sign appears only
+//    in headings and in the text of a link with an anchor; code uses `path.md#anchor`
+//    (repository-relative) and never the section sign. Every `path.md#anchor` outside a
+//    Markdown link target is resolved here with GitHub's slug algorithm (github-slugger) —
+//    Markdown link targets are checked by remark-validate-links.
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { readdirSync, readFileSync, statSync } from 'node:fs';
 import { dirname, join, normalize, relative, sep } from 'node:path';
+import GithubSlugger from 'github-slugger';
 
 const ROOT = join(__dirname, '..', '..', '..');
 const ROOT_MD = ['CHANGELOG.md', 'CLAUDE.md', 'README.md'];
@@ -199,13 +205,21 @@ describe('guard: project language is English (CLAUDE.md)', () => {
   });
 });
 
+// Historical docs = the .vale.ini section that switches Vale off (single source of truth).
+const HISTORICAL = (
+  /^\[\{([^}]+)\}\]\s*\nBasedOnStyles =\s*$/m.exec(
+    readFileSync(join(ROOT, '.vale.ini'), 'utf8'),
+  )?.[1] ?? ''
+)
+  .split(',')
+  .map((g) => new RegExp('^' + g.trim().replace(/\./g, '\\.').replace(/\*/g, '[^/]*') + '$'));
+const ACTIVE_DOCS = walkMd(ROOT)
+  .map(rel)
+  .filter((f) => !HISTORICAL.some((re) => re.test(f)));
+
 describe('guard: file paths in active docs exist (ADR-0056)', () => {
   const tracked = walkMd(ROOT).length > 0; // sanity: walkMd works
-  const valeIni = readFileSync(join(ROOT, '.vale.ini'), 'utf8');
-  // Historical docs = the section that switches Vale off (single source of truth).
-  const historical = (/^\[\{([^}]+)\}\]\s*\nBasedOnStyles =\s*$/m.exec(valeIni)?.[1] ?? '')
-    .split(',')
-    .map((g) => new RegExp('^' + g.trim().replace(/\./g, '\\.').replace(/\*/g, '[^/]*') + '$'));
+  const historical = HISTORICAL;
   const allFiles = (dir: string): string[] =>
     readdirSync(dir, { withFileTypes: true }).flatMap((e) =>
       ['node_modules', '.git', 'dist', 'coverage', 'playwright-report', 'test-results'].includes(
@@ -225,9 +239,7 @@ describe('guard: file paths in active docs exist (ADR-0056)', () => {
         .map((_, i, a) => a.slice(0, i + 1).join('/')),
     ),
   );
-  const active = walkMd(ROOT)
-    .map(rel)
-    .filter((f) => !historical.some((re) => re.test(f)));
+  const active = ACTIVE_DOCS;
   const PATH = /`([\w./-]+\.(?:md|ts|tsx|css|json|ya?ml|js|html|png|wav|sh))`/g;
 
   it('reads the historical list from .vale.ini (sanity)', () => {
@@ -258,5 +270,99 @@ describe('guard: file paths in active docs exist (ADR-0056)', () => {
       }
     }
     expect(bad, 'fix the path, or write external/planned files as plain text').toEqual([]);
+  });
+});
+
+describe('guard: section references are links (ADR-0056)', () => {
+  const SECTION = '\u00a7'; // the section sign, written escaped so this file obeys its own rule
+  const codeFiles = (dir: string): string[] =>
+    readdirSync(join(ROOT, dir), { withFileTypes: true }).flatMap((e) =>
+      ['node_modules', 'dist', 'coverage', 'playwright-report', 'test-results'].includes(e.name)
+        ? []
+        : e.isDirectory()
+          ? codeFiles(`${dir}/${e.name}`)
+          : /\.(?:ts|tsx|css|js|mjs)$/.test(e.name)
+            ? [`${dir}/${e.name}`]
+            : [],
+    );
+  // Exceptions (ADR-0053: each with a reason).
+  const CODE_EXEMPT = new Set([
+    'v3/src/lib/changelog.ts', // release notes are a historical record, like CHANGELOG.md
+  ]);
+  const code = [
+    ...codeFiles('v3/src'),
+    ...codeFiles('v3/tests'),
+    ...codeFiles('scripts'),
+    ...readdirSync(join(ROOT, 'v3'))
+      .filter((f) => /\.(?:ts|js|mjs)$/.test(f))
+      .map((f) => `v3/${f}`),
+  ].filter((f) => !CODE_EXEMPT.has(f));
+
+  /** Anchors of a Markdown file, as GitHub (and remark-validate-links) generate them. */
+  const anchorCache = new Map<string, Set<string>>();
+  const anchorsOf = (file: string): Set<string> => {
+    const cached = anchorCache.get(file);
+    if (cached) return cached;
+    const slugger = new GithubSlugger();
+    const anchors = new Set<string>();
+    let fence = false;
+    for (const line of readFileSync(join(ROOT, file), 'utf8').split('\n')) {
+      if (line.startsWith('```')) fence = !fence;
+      const m = fence ? null : /^#{1,6}\s+(.*?)\s*#*\s*$/.exec(line);
+      if (!m) continue;
+      const text = m[1]
+        .replace(/\[([^\]]*)\]\([^)]*\)/g, '$1') // link -> its text
+        .replace(/[`*]/g, '') // code and strong/emphasis markers
+        .replace(/(^|\W)_+|_+(?=\W|$)/g, '$1'); // _emphasis_ markers, not snake_case
+      anchors.add(slugger.slug(text));
+    }
+    anchorCache.set(file, anchors);
+    return anchors;
+  };
+  const ANCHOR_REF = /([\w./-]+\.md)#([\w-]+)/g;
+  const checkAnchors = (f: string, text: string, bad: string[]): void => {
+    for (const [, path, anchor] of text.matchAll(ANCHOR_REF)) {
+      if (path === 'path.md') continue; // the placeholder that describes the scheme
+      if (!existsExact(join(ROOT, path))) bad.push(`${f}: ${path} does not exist`);
+      else if (!anchorsOf(path).has(anchor))
+        bad.push(`${f}: ${path}#${anchor} has no such heading`);
+    }
+  };
+
+  it('scans docs and code (sanity)', () => {
+    expect(ACTIVE_DOCS.length).toBeGreaterThan(10);
+    expect(code.length).toBeGreaterThan(50);
+    expect(anchorsOf('CLAUDE.md').has('slice-progress')).toBe(true);
+    expect(anchorsOf('docs/design/design-system.md').has('6-component-inventory')).toBe(true);
+  });
+
+  it('active docs use the section sign only in headings and anchored link text', () => {
+    const bad: string[] = [];
+    for (const f of ACTIVE_DOCS) {
+      readFileSync(join(ROOT, f), 'utf8')
+        .split('\n')
+        .forEach((line, i) => {
+          if (/^#{1,6}\s/.test(line)) return;
+          const rest = line.replace(/\[[^\]]*\]\([^)#]*#[^)]+\)/g, '');
+          if (rest.includes(SECTION)) bad.push(`${f}:${i + 1}: ${line.trim().slice(0, 90)}`);
+        });
+    }
+    expect(bad, 'write section references as [file.md SECTION-SIGN Heading](path#anchor)').toEqual(
+      [],
+    );
+  });
+
+  it('references outside Markdown links point to existing headings', () => {
+    const bad: string[] = [];
+    for (const f of code) {
+      const text = readFileSync(join(ROOT, f), 'utf8');
+      if (text.includes(SECTION)) bad.push(`${f}: uses the section sign — write path.md#anchor`);
+      checkAnchors(f, text, bad);
+    }
+    for (const f of ACTIVE_DOCS) {
+      // Markdown link targets are relative to the file and checked by remark-validate-links.
+      checkAnchors(f, readFileSync(join(ROOT, f), 'utf8').replace(/\]\([^)]*\)/g, ']'), bad);
+    }
+    expect(bad).toEqual([]);
   });
 });

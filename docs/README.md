@@ -15,7 +15,7 @@ not yet filled and confirmed.
 | Area | Hub | Leaves | Template | State | Source(s) |
 |---|---|---|---|---|---|
 | Product | [`docs/product/README.md`](product/README.md) | [`features/data-backup.md`](product/features/data-backup.md), [`v1-v2-inventory.md`](product/v1-v2-inventory.md) | — | In progress (see below) | `docs/architecture/concept-brief.md` (product parts), `docs/backlog.md` (decisions) |
-| Design | docs/design/README.md _(planned)_ | [`components/pad.md`](design/components/pad.md) (Draft) | [`_template.md`](design/components/_template.md) | First spec; hub pending | `docs/design/design-system.md`, `docs/design/design-system-cheatsheet.md`, `docs/design/design-notes.md`, `v1-reference/HANDOFF.md` §4 |
+| Design | docs/design/README.md _(planned)_ | [`components/pad.md`](design/components/pad.md) (Draft) | [`_template.md`](design/components/_template.md) | First spec; hub pending | `docs/design/design-system.md`, `docs/design/design-system-cheatsheet.md`, `docs/design/design-notes.md`, [`v1-reference/HANDOFF.md` §4](../v1-reference/HANDOFF.md#4--key-design-decisions--why-it-is-this-way) |
 | Architecture | `docs/architecture/README.md` | ADRs in `docs/architecture/` | [`_template.md`](architecture/_template.md) | ADRs exist; hub pending | `docs/architecture/concept-brief.md` (technical parts) |
 | Development | docs/development/README.md _(planned)_ | — | — | Pending | `docs/development/testing.md`, `CLAUDE.md` (workflow parts) |
 
@@ -23,19 +23,19 @@ not yet filled and confirmed.
 
 | docs/product/README.md section | State | Transferred from (source now holds a pointer) |
 |---|---|---|
-| §1 Purpose & audience | Pending — discussed, not yet written | — |
-| §2 A game session | Pending | — |
-| §3 App modes | Filled | BACKLOG B8, D2, Performance Lock; Stage Lock superseded |
-| §4 Screens & navigation | Pending | — |
-| §5 Core concepts — Board, decks & quick access / Pads / Library | Filled (Library: one line) | V3_CONCEPT_BRIEF §4.1 key concepts; BACKLOG Slice 6 set entries |
-| §6 Platforms & input — Input | Filled (Platforms pending) | — |
-| §7 Design principles | Filled | BACKLOG tinkerer principle, overarching principle |
-| §8 Out of scope · §9 Glossary | Pending | — |
-| §10 Open questions | Q1 and Q2 decided | — |
-| Leaf `features/data-backup.md` | Filled | V3_CONCEPT_BRIEF §4.6; BACKLOG V1-compatible template entry |
-| Leaf `v1-v2-inventory.md` | Decisions filled for §1 Pads, §2 Controls, §3 Board (partly), §5 Data; §4 Library, §6–§8 open | — |
+| [§1 Purpose & audience](product/README.md#1-purpose--audience) | Pending — discussed, not yet written | — |
+| [§2 A game session](product/README.md#2-a-game-session) | Pending | — |
+| [§3 App modes](product/README.md#3-app-modes-game-and-setup) | Filled | BACKLOG B8, D2, Performance Lock; Stage Lock superseded |
+| [§4 Screens & navigation](product/README.md#4-screens--navigation) | Pending | — |
+| [§5 Core concepts](product/README.md#5-core-concepts) — Board, decks & quick access / Pads / Library | Filled (Library: one line) | [concept-brief.md §4.1](architecture/concept-brief.md#41--data-model) key concepts; BACKLOG Slice 6 set entries |
+| [§6 Platforms & input](product/README.md#6-platforms--input) — Input | Filled (Platforms pending) | — |
+| [§7 Design principles](product/README.md#7-design-principles) | Filled | BACKLOG tinkerer principle, overarching principle |
+| [§8 Out of scope](product/README.md#8-out-of-scope) · [§9 Glossary](product/README.md#9-glossary) | Pending | — |
+| [§10 Open questions](product/README.md#10-open-questions) | Q1 and Q2 decided | — |
+| Leaf `features/data-backup.md` | Filled | [concept-brief.md §4.6](architecture/concept-brief.md#46--template-exportimport); BACKLOG V1-compatible template entry |
+| Leaf `v1-v2-inventory.md` | Decisions filled for [§1 Pads](product/v1-v2-inventory.md#1-pads--playback), [§2 Controls](product/v1-v2-inventory.md#2-controls--numpad), [§3 Board](product/v1-v2-inventory.md#3-board-decks--quick-access) (partly), [§5 Data](product/v1-v2-inventory.md#5-data--backup); [§4 Library](product/v1-v2-inventory.md#4-library), [§6](product/v1-v2-inventory.md#6-settings)–[§8](product/v1-v2-inventory.md#8-help--onboarding) open | — |
 
-**Slice plan:** re-planned 2026-09-28 — single source `CLAUDE.md §Slice progress` (Slices 9–14;
+**Slice plan:** re-planned 2026-09-28 — single source [CLAUDE.md §Slice progress](../CLAUDE.md#slice-progress) (Slices 9–14;
 5–8 superseded, numbers not reused). Design hub docs/design/README.md _(planned)_ + component specs follow with
 Slice 13 (adaptive layout).
 
@@ -55,7 +55,7 @@ old documents move to `docs/archive/` once transferred and confirmed — nothing
 ### `docs/architecture/concept-brief.md`
 The **mandatory session-start document**. Binding architecture for V3.0: stack decisions,
 state management, audio engine and session start protocol. (Product concepts incl. the data model's
-key concepts → `docs/product/README.md`; slice plan → `CLAUDE.md §Slice progress`.)
+key concepts → `docs/product/README.md`; slice plan → [CLAUDE.md §Slice progress](../CLAUDE.md#slice-progress).)
 Read before any other document at the start of every Claude Code session.
 **Source of truth for:** Architectural decisions binding V3.0 development; starting point
 for every session. Kept up to date by Claude Code as slices complete and decisions harden.
@@ -66,10 +66,10 @@ for every session. Kept up to date by Claude Code as slices complete and decisio
 
 ### `docs/design/design-system.md`
 Full design system specification. This is the **source of truth** for all design rules.
-Auto-generated sections §6 (CSS class inventory) and §A (token inventory) are maintained
+Auto-generated sections [§6 (CSS class inventory)](design/design-system.md#6-component-inventory) and [§A (token inventory)](design/design-system.md#a-token-inventory) are maintained
 by `npm run sync:docs` — do not edit them manually.
 **Source of truth for:** CSS class rules, state vocabulary (`is-*`), token usage rules,
-component anatomy, pixel-frame patterns, and all project-wide naming conventions (§1).
+component anatomy, pixel-frame patterns, and all project-wide naming conventions ([§1](design/design-system.md#1-naming-conventions-project-wide)).
 
 ### `docs/design/design-system-cheatsheet.md`
 Single-page quick reference for daily use. Short form of `docs/design/design-system.md`.
@@ -155,7 +155,7 @@ Updated at each slice completion (per CLAUDE.md Workflow Rule 14).
 ### `docs/analysis/foundation-analysis.md`
 Foundation audit of the documentation set (2026-06-05). Inventories all project documents,
 records drift findings (critical / important / cosmetic), and maintains the **Document
-Coupling Map** (§6) — the authoritative record of which concepts must stay in sync across
+Coupling Map** ([§6](analysis/foundation-analysis.md#6-document-coupling-map)) — the authoritative record of which concepts must stay in sync across
 documents when a source of truth changes.
 **Source of truth for:** Cross-document consistency findings; the Document Coupling Map.
 

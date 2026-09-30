@@ -1215,9 +1215,12 @@ Found 2026-09-30 during S5: stale facts and dead references were found only by c
   `markdown-link-check`, which validated anchors only within the same file and slugged the raw
   heading text. The switch found 9 real broken anchors at once (headings with `_(…)_` get
   GitHub anchors without underscores) — fixed. See git log "…(T13 1/2)".
-- ⬜ **`§` section references** in prose (`file.md §Heading`, ~365): not machine-checkable as
-  written (140 cannot be matched unambiguously — short forms, bold pseudo-headings, tables;
-  some really stale). Decision pending with the owner.
+- ✅ **Section references are links** (ADR-0056 decision 6) — all active references (~100 incl.
+  in-file ones and code comments) converted to anchored links / `path.md#anchor`; docsGuards
+  bans free-text references and resolves anchors with `github-slugger`. Found on the way: a
+  reference to a non-existent cheatsheet §3, `v3/src/types.ts` naming the brief as source of truth
+  (the brief names types.ts), two pseudo-headings in CLAUDE.md (now real headings). Historical
+  docs (~310 references) keep free text by design.
 - ✅ **Superseded terms** — Vale on active docs (ADR-0056): pinned 3.23.0, SHA-256 verified install
   (`scripts/vale-install.ts`), weekly version report; historical docs/passages excluded with reasons
   (exception register). Found and fixed stale "Scene"/"Sets store"/`SceneRail.tsx` statements.
@@ -1231,7 +1234,11 @@ Found 2026-09-30 during S5: stale facts and dead references were found only by c
   locally → CI red on a0c1962) → pre-push now runs `npm ci` in a fresh worktree whenever install
   files change. Owner action: 11 root-owned entries in `~/.npm` (from an old `sudo npm`) —
   `sudo chown -R $(id -u):$(id -g) ~/.npm`.
-- ⬜ **Derivable facts from code** — hard-coded counts in active docs replaced by generated data.
+- ✅ **Derivable facts from code** — hard-coded test counts in `testing.md` / CLAUDE.md removed
+  (the generated inventory is the only place); CLAUDE.md's pre-commit list said "six gates" but
+  the hook has seven (Vale was missing), CI tree in testing.md lacked Vale and the inline-style
+  audit — fixed. Remaining pattern for the structure audit: hook/CI step lists in the docs are
+  still hand-maintained copies of `.husky/*` and `tests.yml` — candidate for generation.
 
 ### Role-based E2E locators
 Temporary exception from ADR-0054: many E2E tests still locate controls by test ID although a

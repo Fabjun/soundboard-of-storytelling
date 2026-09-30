@@ -32,7 +32,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(__dirname, '..');
 const SRC_DIR = join(ROOT, 'v3', 'src');
 
-// --- Layout property whitelist (from CLAUDE.md §Permanent coding standards, four-path rule) ---
+// --- Layout property whitelist (from CLAUDE.md#permanent-coding-standards, four-path rule) ---
 const LAYOUT_PROPS = new Set([
   'display',
   'flex',

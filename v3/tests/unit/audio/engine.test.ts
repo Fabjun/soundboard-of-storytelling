@@ -3,7 +3,7 @@
 //
 // Pins down TODAY's behaviour of src/audio/engine.ts + the facade in
 // src/audio/index.ts, so that the Slice-9d change to the play dispatch
-// (ADR-0048 §4, under product-owner control) shows every behavioural
+// (docs/architecture/0048-pad-pool-decks.md#4-audio-engine--change-under-product-owner-control) shows every behavioural
 // difference as a red test. The engine itself is NOT modified here.
 //
 // Runs against a fake Web Audio API that records what the engine does (sources,

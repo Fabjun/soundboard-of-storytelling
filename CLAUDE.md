@@ -44,10 +44,16 @@
      `BACKLOG "…"`; all are listed in the generated `docs/development/exceptions.md`;
    - documentation stays current by checks, not by memory (ADR-0056): links and anchors
      (`link:check`), superseded terms in active docs (Vale, `lint:docs`), paths in code spans
-     must exist (full paths, no ambiguous short names; external/planned files as plain text).
+     must exist (full paths, no ambiguous short names; external/planned files as plain text);
+   - section references are links to an anchor — in Markdown
+     [testing.md §Flaky tests](docs/development/testing.md#flaky-tests-quarantine), in code
+     comments `path.md#anchor` (repository-relative, no section sign); a pseudo-heading that is
+     referenced becomes a real heading (docsGuards);
+   - derivable facts (counts, lists of specs/steps) are generated or referenced, never typed —
+     e.g. test counts live only in the generated test inventory.
 3. **Features** — only on top of 1 and 2.
 
-**Working principles (user decisions 2026-09-29):**
+### Working principles (user decisions 2026-09-29)
 - **Research first** — before any plan, decision, scheme or tooling choice, research the
   current industry standard / official guidance (web, not memory alone) and cite the sources
   in the plan; deviate only with a stated reason.
@@ -68,8 +74,9 @@
   hub / leaf / template per area (`docs/product/`, `docs/design/`,
   `docs/architecture/`, `docs/development/`). New docs: English, status on
   every decision (**Decided / Open / Parked**), token names only — never
-  copied values. Migration is incremental; see `docs/README.md`
-  §Target structure for what is already authoritative.
+  copied values. Migration is incremental; see
+  [docs/README.md §Target structure](docs/README.md#target-structure-migration-in-progress--adr-0047)
+  for what is already authoritative.
 - **`docs/product/README.md`** — product concept hub (in progress; filled in
   dialogue with the user). Once a section is filled, it is authoritative for
   that topic and must be read at session start. Never fill a section with
@@ -82,7 +89,7 @@
   V2 (`v1_5/` in the V1 repo, versions v1.5.x → v2.0.12; available in the local
   archive, see "Origin repo") is a short interim rewrite. **V1 and V2 are prototypes: explore
   them for behavior and ideas, never copy UI/CSS/markup 1:1** — re-implement
-  in V3 idiom (`docs/product/README.md §7` P7). Only exception: the audio engine.
+  in V3 idiom ([docs/product/README.md §7](docs/product/README.md#7-design-principles) P7). Only exception: the audio engine.
 - **`design-sources/2026-05-25/`** — design system: tokens, JSX components.
   **Design folders (`design-sources/<YYYY-MM-DD>/`, ISO date — ADR-0050):** every Claude
   Design download goes into its own new dated folder; existing folders are never
@@ -275,18 +282,18 @@ and has diverged). Never hardcode colors, fonts, or spacing.
   legacy entries.
 - **Library entries**: always `{name, hash, size, peaks?}` shape in
   working memory. Never raw audio in working state.
-- **CSS class vs. inline style — four paths** (see also `docs/design/design-system-cheatsheet.md §Decision tree`):
+- **CSS class vs. inline style — four paths** (see also [design-system-cheatsheet.md §Decision tree](docs/design/design-system-cheatsheet.md#decision-tree)):
   Before adding `style={}` or a new `class=`, pick the right path:
-  - **Path A — use existing class:** Consult `docs/design/design-system.md §6` first. If an `sb-*` or
-    `is-*` class fits, use it. Checking §6 before creating any new class is mandatory — not
+  - **Path A — use existing class:** Consult [design-system.md §6](docs/design/design-system.md#6-component-inventory) first. If an `sb-*` or
+    `is-*` class fits, use it. Checking the inventory before creating any new class is mandatory — not
     optional.
   - **Path B — create new class:** No existing class fits **and** the value is structural or
     reusable. Create a new `sb-*` class: follow naming conventions (ADR-0021), use design
-    tokens (ADR-0022), add `/* @inventory: … */`, register in §6 in the same commit. Check
-    §6 first for a class with similar function — extend (e.g., `is-*` variant) rather than
+    tokens (ADR-0022), add `/* @inventory: … */`, register it in the inventory in the same commit. Check
+    the inventory first for a class with similar function — extend (e.g., `is-*` variant) rather than
     duplicate. If duplication risk is unclear, raise the question. Layout-only structures
     (flex/gap/align-only wrappers) belong in named layout primitives — see
-    `docs/design/design-system.md §5a` for the canonical list (`sb-row`, `sb-col`, `sb-flex-1`,
+    [design-system.md §5a](docs/design/design-system.md#5a-layout-primitives) for the canonical list (`sb-row`, `sb-col`, `sb-flex-1`,
     and variants) — not inline exceptions.
   - **Path C — inline = dynamic only:** `style={}` is legitimate only for values computed at
     runtime: animation coordinates, drag positions, data-driven dimensions, state-dependent
@@ -348,7 +355,7 @@ BACKLOG ✅, DESIGN_NOTES, and commit messages are claims to verify, never code 
 plan's **Files touched** list: STOP, report file + reason, wait for go-ahead. No
 "trivially correct" exceptions.
 
-**E5 — Section citations:** Citing a §-number or specific text requires quoting the
+**E5 — Section citations:** Citing a section or specific text requires quoting the
 actual text verbatim from a fresh Read — no paraphrase from memory.
 
 **E6 — Approval integrity:** Execution requires explicit approval of the specific
@@ -424,10 +431,10 @@ any non-doc file flagged ⚠ for approval. Routine additionally: `v3/src/lib/cha
     (`—` if none), `**Category:**` — one of the 9 canonical values listed in the template; a
     missing category shows up as "Uncategorized" in the generated index.
 13. **Generated inventories**: six places are filled by generators — never edit them by hand:
-    - `docs/architecture/README.md §Index` — via `npm run sync:adr`
-    - `docs/design/design-system.md §6` (sb-* classes) — via `npm run sync:classes`
-    - `docs/design/design-system.md §A` (Tokens) — via `npm run sync:tokens`
-    - `docs/development/testing.md §Test inventory` (specs per project, unit tests) — via `npm run sync:tests`
+    - [docs/architecture/README.md §Index](docs/architecture/README.md#index) — via `npm run sync:adr`
+    - [docs/design/design-system.md §6](docs/design/design-system.md#6-component-inventory) (sb-* classes) — via `npm run sync:classes`
+    - [docs/design/design-system.md §A](docs/design/design-system.md#a-token-inventory) (Tokens) — via `npm run sync:tokens`
+    - [docs/development/testing.md §Test inventory](docs/development/testing.md#test-inventory) (specs per project, unit tests) — via `npm run sync:tests`
     - `CHANGELOG.md` (whole file, from `v3/src/lib/changelog.ts`) — via `npm run sync:changelog`
     - `docs/development/exceptions.md` (exception register, whole file) — via `npm run sync:exceptions`
     The pre-commit hook runs `sync:docs` and stages the results. To refresh manually:
@@ -449,16 +456,17 @@ any non-doc file flagged ⚠ for approval. Routine additionally: `v3/src/lib/cha
 Applies to slices, refactors, audit passes, bugfixes — every commit
 without exception:
 
-> **Enforced automatically:** the Husky pre-commit hook runs six gates in sequence and
-> blocks on failure:
+> **Enforced automatically:** the Husky pre-commit hook (`.husky/pre-commit`, the source of
+> truth for this list) runs these gates in sequence and blocks on failure:
 > 1. `npm run sync:docs` + `git add` (~1s) — generated docs; the result is staged automatically
 > 2. `npm run build` (`tsc -b` + vite, ~6s) — type-checks **every** TypeScript file: app, unit + E2E tests, tool configs, `scripts/` (ADR-0055)
 > 3. `npx lint-staged` — Prettier + ESLint on staged files only; auto-fix + re-stage
 > 4. `npm run test` (vitest, ~1s)
 > 5. `npm run test:e2e:smoke` (Chromium + WebKit, ~6s)
-> 6. `npm run link:check` (remark-validate-links, ~1s) — dead internal links and anchors, also across files
+> 6. `npm run lint:docs` (Vale, ~1s) — superseded terms in active docs (ADR-0056)
+> 7. `npm run link:check` (remark-validate-links, ~1s) — dead internal links and anchors, also across files
 >
-> CI additionally runs `npm audit --audit-level=high` (blocking), `test:coverage` (coverage floor), `format:check`, `lint`, `sync:docs` (+ `git diff --exit-code`) and `link:check`.
+> CI additionally runs `npm audit --audit-level=high` (blocking), `test:coverage` (coverage floor), `format:check`, `lint`, `sync:docs` (+ `git diff --exit-code`), `lint:docs` and `link:check`.
 >
 > The manual procedure below stays documented as the baseline.
 > After `git clone`: `cd v3 && npm install` activates the hook automatically.
@@ -484,7 +492,7 @@ without exception:
 1. `cd v3 && npm run build` — must exit 0 with zero TypeScript errors
 2. `git add` the relevant files, then `git commit` — lint-staged auto-formats + lints staged files
 3. `cd v3 && npm run test` — all unit tests must pass (exit 0)
-4. `cd v3 && npm run test:e2e:smoke` — 10 smoke tests must pass
+4. `cd v3 && npm run test:e2e:smoke` — all smoke tests must pass
 5. `cd v3 && npm run dev` — must start without errors (verify briefly)
 6. Only then: `git push`
 
@@ -646,10 +654,10 @@ boardDelete(id: string): Promise<void>
 | 6 | Sets + Quick Access | ↷ Superseded | 2026-09-28 | May plan — sets dropped; quick-access bar → 9 + 13 |
 | 7 | Template export/import | ↷ Superseded | 2026-09-28 | May plan — replaced by 10 |
 | 8 | Settings, themes, polish | ↷ Superseded | 2026-09-28 | May plan — replaced by 14 (layout items → 13) |
-| 9 | Data model | ⬜ Pending (next) | — | Pad pool + decks, rename Scene → Deck (UI, code, stored data), Playlist → Loop, multi-file Single/Loop (docs/product/README.md §5). ADR required. V3 data may be wiped (only test data): delete **only** the `sos-v3` database — never origin-wide storage (V1's `botc` DB shares the origin `fabjun.github.io`). |
+| 9 | Data model | ⬜ Pending (next) | — | Pad pool + decks, rename Scene → Deck (UI, code, stored data), Playlist → Loop, multi-file Single/Loop ([docs/product/README.md §5](docs/product/README.md#5-core-concepts)). ADR required. V3 data may be wiped (only test data): delete **only** the `sos-v3` database — never origin-wide storage (V1's `botc` DB shares the origin `fabjun.github.io`). |
 | 10 | Data backup & import | ⬜ Pending | — | Single-file export/import, V1 import incl. all library audio, piecewise reading, persistent storage, last-backup indicator (`docs/product/features/data-backup.md`) |
-| 11 | Combo editor | ⬜ Pending | — | Minimal first version, then towards V1 scope and beyond (docs/product/README.md §5 Combos) |
-| 12 | Live control | ⬜ Pending | — | Numpad K1–K14, STOP ALL, pause, Wake Lock, mode switch stops sounds, Lock (docs/product/README.md §3, §6). Goal: first real game night with V3 (laptop / tablet) |
+| 11 | Combo editor | ⬜ Pending | — | Minimal first version, then towards V1 scope and beyond ([docs/product/README.md §5 Pads](docs/product/README.md#pads)) |
+| 12 | Live control | ⬜ Pending | — | Numpad K1–K14, STOP ALL, pause, Wake Lock, mode switch stops sounds, Lock ([docs/product/README.md §3](docs/product/README.md#3-app-modes-game-and-setup), [§6](docs/product/README.md#6-platforms--input)). Goal: first real game night with V3 (laptop / tablet) |
 | 13 | Adaptive layout | ⬜ Pending | — | Smartphones in general (not only iPhone): deck switcher, All pads, quick-access bar, search/sort bar, PAD card format + zoom (`docs/design/components/pad.md`) |
 | 14 | Settings & polish | ⬜ Pending | — | Settings screen, Settings options from docs/product/README.md P2, themes |
 
@@ -664,7 +672,7 @@ comments) keeps meaning the May plan. Mapping old → new:
 | 7 Template export/import | 10 |
 | 8 Settings, themes, polish | 14; layout-related items → 13 |
 
-**Deviations from plan:**
+### Deviations from plan
 - State manager chosen: Preact Signals (confirmed by user, Slice 1).
 - Root component file renamed `app.tsx` (Preact scaffold default) → `App.tsx` on 2026-09-29 to match the PascalCase component files (ADR-0052).
 - `LibraryItem.blob` never stored in Signals: type split into `LibraryItemMeta` (in state) + `LibraryItem` (IDB only).

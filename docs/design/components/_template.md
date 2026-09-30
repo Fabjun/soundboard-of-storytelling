@@ -36,7 +36,7 @@ Configurations selected via props.
 
 ## States
 
-State classes from the closed `is-*` vocabulary (`docs/design/design-system.md §3`).
+State classes from the closed `is-*` vocabulary ([design-system.md §3](../design-system.md#3-state-vocabulary-closed-set)).
 
 | State | Trigger | Appearance | Status |
 |---|---|---|---|

@@ -37,7 +37,7 @@ and restore is the only safety net.
 
 ## Dropped
 
-- **Exporting in a format V1 can read** (previously `docs/architecture/concept-brief.md §4.6`). V3 replaces
+- **Exporting in a format V1 can read** (previously [concept-brief.md §4.6](../../architecture/concept-brief.md#46--template-exportimport)). V3 replaces
   V1; the way back has no use and would constrain the V3 format (decks, piecewise reading).
   Importing *from* V1 stays (D5).
 

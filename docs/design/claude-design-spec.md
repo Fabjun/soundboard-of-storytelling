@@ -8,7 +8,9 @@
 
 ---
 
-## Layout primitives (closed set — `docs/design/design-system.md §5a`)
+## Layout primitives (closed set)
+
+Source: [design-system.md §5a](design-system.md#5a-layout-primitives).
 
 | Class | Behaviour | Use for |
 |-------|-----------|---------|
@@ -24,7 +26,9 @@
 
 ---
 
-## State classes (closed vocabulary — `docs/design/design-system.md §3`)
+## State classes (closed vocabulary)
+
+Source: [design-system.md §3](design-system.md#3-state-vocabulary-closed-set).
 
 | Class | Meaning |
 |-------|---------|
@@ -51,7 +55,7 @@
 
 ## Core tokens
 
-Full list: `docs/design/design-system.md §A`. Core subset:
+Full list: [design-system.md §A](design-system.md#a-token-inventory). Core subset:
 
 **Surfaces**
 `--night` `--deep` `--surface` `--raised` `--top` `--sunk`
@@ -71,7 +75,7 @@ Full list: `docs/design/design-system.md §A`. Core subset:
 **Pad type colors**
 `--pad-single` `--pad-loop` `--pad-playlist` `--pad-combo`
 
-**Spacing** (4 / 8 / 12 / 16 / 20 / 24px — larger values in §A)
+**Spacing** (4 / 8 / 12 / 16 / 20 / 24px — larger values in [design-system.md §A](design-system.md#a-token-inventory))
 `--space-1` `--space-2` `--space-3` `--space-4` `--space-5` `--space-6`
 
 **Radius**
@@ -93,6 +97,6 @@ resolved (translated or registered) at import time before production merge.
 
 ## Maintenance
 
-This file mirrors `docs/design/design-system.md §5a` (layout primitives), `§3` (is-* vocabulary),
+This file mirrors [design-system.md §5a](design-system.md#5a-layout-primitives) (layout primitives), [§3](design-system.md#3-state-vocabulary-closed-set) (is-* vocabulary),
 and the core subset of `v3/src/styles/tokens.css`. Update in the same commit when any of
-those change. Coupling tracked in `docs/analysis/foundation-analysis.md §6`.
+those change. Coupling tracked in [foundation-analysis.md §6](../analysis/foundation-analysis.md#6-document-coupling-map).

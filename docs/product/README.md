@@ -103,7 +103,7 @@ _Pending — to be filled in dialogue._
 ### Board, decks & quick access
 
 _Filled 2026-09-28 in dialogue with the product owner ("model B"). Nothing below is built
-yet except deck CRUD (built in Slice 3, renamed to "deck" in Slice 9b); it changes the data model (BACKLOG §3 "Board pad pool")._
+yet except deck CRUD (built in Slice 3, renamed to "deck" in Slice 9b); it changes the data model ([backlog: Board pad pool](../backlog.md#board-pad-pool-data-model))._
 
 <!-- vale SoS.SupersededTerms = NO --><!-- reason: records the rename decision -->
 | Statement | Status |
@@ -111,14 +111,14 @@ yet except deck CRUD (built in Slice 3, renamed to "deck" in Slice 9b); it chang
 | A **board** is the top-level grouping (e.g. one per game or campaign). | **Decided** |
 | **Pad pool:** all pads belong to the board, not to a deck. | **Decided** |
 | **All pads** is a view of the whole pool, not tied to any deck. Building-block pads (used only inside combos) live here without being in a deck. | **Decided** |
-| A **deck** is a hand-picked, fixed selection of pads from the pool with its own grid arrangement and its own keys (§6 K2). The same pad can appear in several decks, at different positions. | **Decided** |
+| A **deck** is a hand-picked, fixed selection of pads from the pool with its own grid arrangement and its own keys ([§6 K2](#input-keyboard--numpad)). The same pad can appear in several decks, at different positions. | **Decided** |
 | Editing a pad changes it everywhere it appears. | **Decided** |
 | Two different removals: **remove from this deck** and **delete the pad** (from the pool, everywhere). | **Decided** |
 | **Search and sort** are always available and apply to the current view only (All pads or the current deck). Sort by name or by last edited, ascending or descending; search and sort combine. | **Decided** |
 | Search or sort rearrange a deck only temporarily; with the search field empty and no sort active, the deck returns to its saved arrangement. | **Decided** |
 | Pads can be moved (SETUP) only while no search or sort is active. | **Decided** |
-| **Quick-access bar:** board-wide, identical in every deck, freely assignable with pads from the pool (e.g. DAY, NIGHT). Its pads have fixed board-wide keys (§6 K13). | **Decided** |
-| **STOP ALL** (§6 K9) and **Play/Pause** are fixed GAME controls, separate from the quick-access bar — they can never be removed or moved by accident. | **Decided** |
+| **Quick-access bar:** board-wide, identical in every deck, freely assignable with pads from the pool (e.g. DAY, NIGHT). Its pads have fixed board-wide keys ([§6 K13](#input-keyboard--numpad)). | **Decided** |
+| **STOP ALL** ([§6 K9](#input-keyboard--numpad)) and **Play/Pause** are fixed GAME controls, separate from the quick-access bar — they can never be removed or moved by accident. | **Decided** |
 | **Pad sets** (earlier concept) are dropped: decks and the quick-access bar cover them. | **Decided** |
 | Rule-based decks (e.g. "all pads tagged Night"). | **Parked** |
 | Where all of this sits on a phone screen. | **Open** — mobile layout |
@@ -128,7 +128,7 @@ yet except deck CRUD (built in Slice 3, renamed to "deck" in Slice 9b); it chang
 ### Library
 
 The **Library** is file management (audio import, rename, delete), separate from board
-organization and not a mode (§3). **Decided.** Further content: _pending_.
+organization and not a mode ([§3](#3-app-modes-game-and-setup)). **Decided.** Further content: _pending_.
 
 ### Pads
 
@@ -145,7 +145,7 @@ _Filled 2026-09-28 in dialogue with the product owner, informed by the V1 backup
 
 The former **Playlist** type merges into Loop (resolves Q2). This changes the data model
 (`PadType`, ADR-0042): a superseding ADR and a migration of existing playlist pads are
-required before implementation (BACKLOG §3).
+required before implementation ([backlog: Playlist → Loop merge](../backlog.md#playlist--loop-merge-data-model)).
 
 #### Playing pads
 
@@ -159,7 +159,7 @@ required before implementation (BACKLOG §3).
 - Combos are **building blocks**: a combo can use pads and other combos from **any deck of
   the board**, and combos can be nested inside longer combos. Nesting needs protection
   against cycles.
-- The **combo editor** is a central control. It may become complex and extensive (§7 P1).
+- The **combo editor** is a central control. It may become complex and extensive ([§7 P1](#principles)).
   - First version (minimal): a list of steps; per step the pads that start together, the
     wait until the next step, and "stop everything first".
   - Target: at least everything V1 could, and more — drag & drop of pads between steps and
@@ -171,7 +171,7 @@ required before implementation (BACKLOG §3).
 | Statement | Status |
 |---|---|
 | Per-pad volume, fade in, fade out. | **Decided** (built) |
-| PREVIEW in the PAD editor. | **Decided** (§3) — _not yet built_ |
+| PREVIEW in the PAD editor. | **Decided** ([§3](#3-app-modes-game-and-setup)) — _not yet built_ |
 | Trim start / end in the PAD editor (engine support exists). | **Decided** — low priority, _not yet built_ |
 | Audio ducking, master volume, crossfade between pads, level meter, quick volume via long-press. | **Parked** |
 
@@ -190,7 +190,7 @@ required before implementation (BACKLOG §3).
 
 | Statement | Status |
 |---|---|
-| The app must work well on **smartphones in general** (iOS and Android), on tablets and on desktop — not only on the iPhone. The iPhone is the owner's device and the strictest constraint (memory, iOS specifics). Minimum versions: `CLAUDE.md §Supported Platforms`. | **Decided** |
+| The app must work well on **smartphones in general** (iOS and Android), on tablets and on desktop — not only on the iPhone. The iPhone is the owner's device and the strictest constraint (memory, iOS specifics). Minimum versions: [CLAUDE.md §Supported Platforms](../../CLAUDE.md#supported-platforms-minimum). | **Decided** |
 | Until the adaptive layout exists (Slice 13), real game nights run on laptop or tablet. | **Decided** |
 
 ### Input: keyboard & numpad
@@ -253,7 +253,7 @@ finished experience.
 | P3 | **Well designed for its purpose, depth for those who want it.** The basics work without explanation; the mechanics underneath are predictable and can be combined and configured. Comfort and automation features are opt-in and can be disabled. | **Decided** |
 | P4 | **The pad grid is the instrument.** In GAME the pad grid has priority; anything competing for its space must justify itself. | **Decided** |
 | P5 | **Emergence over features.** Few, well-defined building blocks (pad types, decks, the two modes) that combine into rich results. The GAME / SETUP split is itself an example: simple, yet it makes complexity manageable. For a new feature, ask first: does it emerge from existing blocks? Does it need a new *general* block? Only then consider a special case. | **Decided** |
-| P6 | **Safe in live use.** During a running session nothing may surprise the game master or break irreversibly (e.g. the Lock, §3; two-tap delete). Depth belongs in SETUP, not in the heat of play. | **Decided** |
+| P6 | **Safe in live use.** During a running session nothing may surprise the game master or break irreversibly (e.g. the [Lock](#lock); two-tap delete). Depth belongs in SETUP, not in the heat of play. | **Decided** |
 | P7 | **Learn from the prototypes, don't copy them.** V1 and V2 are sources for behavior, features and lessons. V3 re-implements in its own idiom (class system, tokens, components). Exception: the audio engine, ported unchanged by design. | **Decided** |
 
 Engineering approach ("Think big, but don't rush") is not a product principle — it stays
@@ -271,16 +271,16 @@ verbatim once built._
 <!-- vale SoS.SupersededTerms = NO --><!-- reason: records the rename -->
 | Term | Meaning | See |
 |---|---|---|
-| **Board** | Top-level grouping, e.g. one per game or campaign. Owns the pad pool, its decks and the quick-access bar. | §5 |
-| **Pad** | A trigger in the grid. Types: **Single**, **Loop**, **Combo**. | §5 Pads |
-| **Pad pool** | All pads of a board. | §5 |
-| **All pads** | The view showing the whole pad pool, not tied to a deck. | §5 |
-| **Deck** | A hand-picked selection of pads from the pool, with its own arrangement and its own keys. Renamed from "Scene" in UI, code and stored data in Slice 9b. | §5, Q1 |
-| **Quick-access bar** | Board-wide bar of freely chosen pads, identical in every deck, with fixed board-wide keys. | §5, §6 K13 |
-| **Combo** | A pad that triggers other pads (and combos) in steps. | §5 Pads |
-| **GAME / SETUP** | The two app modes: playing vs. arranging. Code: `play` / `edit`. | §3 |
-| **Lock** | GAME-only toggle that blocks the mode switch. | §3 |
-| **Library** | File management for audio; not a mode, separate from boards. | §3, §5 |
+| **Board** | Top-level grouping, e.g. one per game or campaign. Owns the pad pool, its decks and the quick-access bar. | [§5](#board-decks--quick-access) |
+| **Pad** | A trigger in the grid. Types: **Single**, **Loop**, **Combo**. | [§5 Pads](#pads) |
+| **Pad pool** | All pads of a board. | [§5](#board-decks--quick-access) |
+| **All pads** | The view showing the whole pad pool, not tied to a deck. | [§5](#board-decks--quick-access) |
+| **Deck** | A hand-picked selection of pads from the pool, with its own arrangement and its own keys. Renamed from "Scene" in UI, code and stored data in Slice 9b. | [§5](#board-decks--quick-access), Q1 |
+| **Quick-access bar** | Board-wide bar of freely chosen pads, identical in every deck, with fixed board-wide keys. | [§5](#board-decks--quick-access), [§6 K13](#input-keyboard--numpad) |
+| **Combo** | A pad that triggers other pads (and combos) in steps. | [§5 Pads](#pads) |
+| **GAME / SETUP** | The two app modes: playing vs. arranging. Code: `play` / `edit`. | [§3](#3-app-modes-game-and-setup) |
+| **Lock** | GAME-only toggle that blocks the mode switch. | [§3](#lock) |
+| **Library** | File management for audio; not a mode, separate from boards. | [§3](#3-app-modes-game-and-setup), [§5](#library) |
 <!-- vale SoS.SupersededTerms = YES -->
 
 ## 10. Open questions
@@ -288,6 +288,6 @@ verbatim once built._
 <!-- vale SoS.SupersededTerms = NO --><!-- reason: records the rename decision (Q1) -->
 | # | Question | Status | Notes |
 |---|---|---|---|
-| Q1 | Is "Scene" the right user-facing term for the board-level pad arrangement? | **Decided** | **Resolved 2026-09-28: "Deck".** A hand-picked selection from the pad pool, like a deck built from a card collection — fits both tabletop games and sound (DJ decks). Rejected: Scene (too narrative), Bank (too technical), Category (taken by the Library filter), Page, Kit, Phase, Layer, Tab. UI, code and stored data still say `Scene`; renamed together with the pad-pool data-model change (BACKLOG §3). |
-| Q2 | Rename the "Playlist" pad type to "List"? Are three pad types (Single, Loop, Combo) enough, or does List stay as a fourth? | **Decided** | Raised 2026-09-28. Playlist is built (Slice 4). V2 already labelled it "LIST ☰". To be revisited once the product owner has re-familiarised with the project. **Resolved 2026-09-28:** three types — Single, Loop, Combo; Playlist merges into Loop (§5 Pads). |
+| Q1 | Is "Scene" the right user-facing term for the board-level pad arrangement? | **Decided** | **Resolved 2026-09-28: "Deck".** A hand-picked selection from the pad pool, like a deck built from a card collection — fits both tabletop games and sound (DJ decks). Rejected: Scene (too narrative), Bank (too technical), Category (taken by the Library filter), Page, Kit, Phase, Layer, Tab. UI, code and stored data still say `Scene`; renamed together with the pad-pool data-model change ([backlog: Board pad pool](../backlog.md#board-pad-pool-data-model)). |
+| Q2 | Rename the "Playlist" pad type to "List"? Are three pad types (Single, Loop, Combo) enough, or does List stay as a fourth? | **Decided** | Raised 2026-09-28. Playlist is built (Slice 4). V2 already labelled it "LIST ☰". To be revisited once the product owner has re-familiarised with the project. **Resolved 2026-09-28:** three types — Single, Loop, Combo; Playlist merges into Loop ([§5 Pads](#pads)). |
 <!-- vale SoS.SupersededTerms = YES -->

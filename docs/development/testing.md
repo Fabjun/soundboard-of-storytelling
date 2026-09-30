@@ -64,8 +64,8 @@ number in brackets = test cases in the file (incl. quarantine)._
 | `pwa` | Chromium (Desktop) | Build only | `pwa` (4) |
 | `visual` | Chromium (Desktop), macOS only | Dev | `board-list-empty` (1), `board-list-with-board` (1), `board-screen-game` (1), `board-screen-setup` (1), `deck-rail` (1), `library-empty` (1), `mode-toggle-states` (2), `start-screen` (1) |
 
-**Unit tests (Vitest):** 14 files, 214 test cases —
-`audio/engine.test.ts` (24), `audio/lru.test.ts` (11), `codeGuards.test.ts` (11), `deckConflict.test.ts` (9), `docsGuards.test.ts` (13), `e2eProjects.test.ts` (6), `flameMath.test.ts` (22), `idb.test.ts` (15), `nanoid.test.ts` (2), `padDnd.test.ts` (11), `padUtils.test.ts` (43), `store.test.ts` (23), `testGuards.test.ts` (11), `upload.test.ts` (13)
+**Unit tests (Vitest):** 14 files, 217 test cases —
+`audio/engine.test.ts` (24), `audio/lru.test.ts` (11), `codeGuards.test.ts` (11), `deckConflict.test.ts` (9), `docsGuards.test.ts` (16), `e2eProjects.test.ts` (6), `flameMath.test.ts` (22), `idb.test.ts` (15), `nanoid.test.ts` (2), `padDnd.test.ts` (11), `padUtils.test.ts` (43), `store.test.ts` (23), `testGuards.test.ts` (11), `upload.test.ts` (13)
 
 <!-- AUTO-GENERATED:test-inventory END -->
 
@@ -108,10 +108,10 @@ listed in [`exceptions.md`](exceptions.md)).
 Mobile tests are split across two Playwright projects, both using the **iPhone 13 Pro**
 device profile (viewport 390×844, `hasTouch: true`, `isMobile: true`):
 
-| Project | Browser | Tests |
+| Project | Browser | Covers |
 |---------|---------|-------|
-| `mobile` | WebKit | 5 spec files: 3 active (navigation, mode toggle, unlock-nav), 2 deferred/fixme'd (touch-targets, overflow — pending the Slice 13 mobile layout) |
-| `mobile-chromium` | Chromium | 2 audio-dependent specs (pad interaction, pad creation) |
+| `mobile` | WebKit | Navigation, mode toggle, unlock; touch-targets and overflow are `test.fixme` until the Slice 13 mobile layout |
+| `mobile-chromium` | Chromium | Audio-dependent specs (pad interaction, pad creation) |
 
 All tested interactions use `tap()` to send real touch events (pointerType: 'touch').
 
@@ -150,7 +150,7 @@ These items are covered by the manual checklist at
 ### Running mobile tests
 
 ```bash
-cd v3 && npm run test:e2e:mobile   # both projects: 5 WebKit spec files (2 fixme'd) + 2 Chromium spec files
+cd v3 && npm run test:e2e:mobile   # mobile + mobile-chromium
 ```
 
 Mobile tests run in CI as a separate `e2e-mobile` job (parallel to `e2e-smoke` and
@@ -217,13 +217,15 @@ unit-build-lint
   ├── npm run format:check   (prettier)
   ├── npm run size           (size-limit)
   ├── npm run sync:docs      (+ git diff --exit-code)  ← Docs sync check
-  └── npm run link:check     (remark-validate-links)   ← Links + anchors across files
+  ├── npm run lint:docs      (Vale)                    ← Superseded terms in active docs
+  ├── npm run link:check     (remark-validate-links)   ← Links + anchors across files
+  └── npm run audit:inline-styles                      ← informational, never blocks
 
 e2e-smoke (needs: unit-build-lint)
-  └── npm run test:e2e:smoke   (10 tests: 5 × Chromium + 5 × WebKit)
+  └── npm run test:e2e:smoke   (smoke + smoke-webkit)
 
 e2e-mobile (needs: unit-build-lint)
-  └── npm run test:e2e:mobile  (7 spec files: 5 WebKit + 2 Chromium — iPhone 13 Pro profile; 2 WebKit specs fixme'd/deferred until Slice 13)
+  └── npm run test:e2e:mobile  (mobile + mobile-chromium — iPhone 13 Pro profile)
 
 e2e-prod (needs: unit-build-lint)
   └── npm run test:e2e:prod    (build → smoke + full + PWA against vite preview; service worker, manifest, offline)
@@ -295,9 +297,9 @@ cd v3 && npm run test:coverage     # with coverage report (v3/coverage/)
 cd v3 && npm run test:ui           # browser interface
 
 # ── E2E ───────────────────────────────────────────────────────────────────
-cd v3 && npm run test:e2e:smoke    # 10 smoke tests (Chromium + WebKit)
+cd v3 && npm run test:e2e:smoke    # smoke + smoke-webkit (Chromium + WebKit)
 cd v3 && npm run test:e2e:full     # full (Chromium) + full-webkit: CRUD, drag & drop, audio engine
-cd v3 && npm run test:e2e:mobile   # both projects: 5 WebKit spec files (2 fixme'd) + 2 Chromium spec files
+cd v3 && npm run test:e2e:mobile   # mobile + mobile-chromium
 cd v3 && npm run test:e2e          # smoke + full combined
 
 # ── Visual regression (local only) ────────────────────────────────────────

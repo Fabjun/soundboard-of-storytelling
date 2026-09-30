@@ -47,14 +47,14 @@ V1 keeps running. V3.0 is built in parallel until ready.
 
 **Design system (`design-sources/2026-05-25/`):**
 - `design-sources/2026-05-25/tokens.css` — origin of the canonical tokens (copied to
-  `v3/src/styles/tokens.css`, which is the canonical file — see CLAUDE.md §Tokens)
+  `v3/src/styles/tokens.css`, which is the canonical file — see [CLAUDE.md §Tokens](../../CLAUDE.md#tokens))
 - JSX files (`v2-screens.jsx`, `foundations.jsx`, etc.) — **used as
   starting code**, not as reference. Lift them into V3.0, adapt to
   TypeScript and the V3.0 state model.
 - `design-sources/2026-05-25/HANDOFF.md` — an identical copy lives in `v1-reference/HANDOFF.md`
   (the one CLAUDE.md refers to); originally written
   for V1 migration context, still valuable for design intent and JSX-file
-  index (see CLAUDE.md §Reference documents for usage guidance)
+  index (see [CLAUDE.md §Reference documents](../../CLAUDE.md#reference-documents) for usage guidance)
 - `dist/` — partial vanilla ports, ignore in V3.0 (we use JSX directly)
 
 **V1.5 prototypes:**
@@ -66,7 +66,7 @@ V1 keeps running. V3.0 is built in parallel until ready.
 
 > **Canonical types:** `v3/src/types.ts` — source of truth for the current schema.
 > The model diverged from the original sketch during Slices 1–4; specific changes
-> are in CLAUDE.md §Deviations. The TypeScript sketch that was here has been removed
+> are in [CLAUDE.md §Deviations from plan](../../CLAUDE.md#deviations-from-plan). The TypeScript sketch that was here has been removed
 > to eliminate a second copy that could drift.
 
 <!-- vale SoS.SupersededTerms = NO --><!-- reason: explains the rename -->
@@ -244,7 +244,7 @@ Service Worker / PWA, CSS clamp()/prefers-reduced-motion, IntersectionObserver.
 Build in working slices, not horizontal layers. Each slice ends with
 a committable, testable, screenshot-verifiable result.
 
-Slice list and status → moved to `CLAUDE.md §Slice progress` (single source, 2026-09-28).
+Slice list and status → moved to [CLAUDE.md §Slice progress](../../CLAUDE.md#slice-progress) (single source, 2026-09-28).
 Re-planned there: Slices 5–8 superseded (numbers not reused); new plan Slices 9–14.
 
 ### 5.2 · Using design-system JSX
@@ -282,7 +282,7 @@ then implement.
 
 Ask the user — don't assume — when:
 - A V1 behavior is ambiguous
-- The data model needs extension beyond §4.1
+- The data model needs extension beyond [§4.1](#41--data-model)
 - A component variant tempts parallel implementation
 - A V1↔V3 incompatibility appears
 - A new third-party library is being considered
@@ -312,7 +312,7 @@ Ask the user — don't assume — when:
 4. Slices 1–4 are already implemented — check `v3/src/screens/` to orient on what
    exists. For future slices, relevant design-system JSX files are in
    `design-sources/2026-05-25/` (versioned v2–v26 exploration files).
-5. Ask the user which slice to start with. Current next: see `CLAUDE.md §Slice progress`.
+5. Ask the user which slice to start with. Current next: see [CLAUDE.md §Slice progress](../../CLAUDE.md#slice-progress).
 6. Before writing code, summarize back:
    - Scope of the slice
    - Files to create
@@ -331,4 +331,4 @@ under-explain when understanding is asked.
 
 ---
 
-*End of brief. Begin with §7 step 5.*
+*End of brief. Begin with [§7](#7--how-to-start) step 5.*

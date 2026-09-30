@@ -4,7 +4,7 @@
  *
  * Reads v3/src/styles/tokens.css (canonical — what the app loads), extracts all
  * CSS custom properties from exclusive :root { } blocks, grouped by section, and
- * writes a table between AUTO-GENERATED markers in docs/design/design-system.md §A.
+ * writes a table between AUTO-GENERATED markers in docs/design/design-system.md#a-token-inventory.
  *
  * Only tokens inside an exclusive `:root { }` selector are included.
  * Multi-selector blocks (`:root, .sb-theme-verdant, ...`) and theme-override blocks
@@ -176,7 +176,7 @@ function run(): void {
   doc = `${before}\n${table}\n${after}`;
   writeFileSync(DESIGN_SYSTEM, doc, 'utf8');
 
-  console.log(`sync-tokens: wrote ${entries.length} tokens in ${countGroups(entries)} groups → §A`);
+  console.log(`sync-tokens: wrote ${entries.length} tokens in ${countGroups(entries)} groups → docs/design/design-system.md`);
 }
 
 function countGroups(entries: TokenEntry[]): number {

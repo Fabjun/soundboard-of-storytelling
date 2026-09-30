@@ -13,7 +13,7 @@
 3. Pixel-frame variants are made by overriding `--pix-bg` / `--pix-border` /
    `--pix-step` — **not** by writing new clip-path / border CSS.
 4. Spacing tokens (`var(--space-*)`) are mandatory for layout gaps ≥ 12 px.
-5. New `sb-*` classes are registered in §6 of `docs/design/design-system.md` **in the
+5. New `sb-*` classes are registered in [design-system.md §6](design-system.md#6-component-inventory) **in the
    same commit** that introduces them. No exceptions.
 
 ---
@@ -33,7 +33,7 @@ Need to style something.
 │     NO  → continue
 │
 ├── Is it a runtime / contextual condition?
-│     YES → is-* state class (must be in §3 vocabulary)
+│     YES → is-* state class (must be in the state vocabulary)
 │     NO  → continue
 │
 ├── Is it a closed set of named flavors (≤ 5)?
@@ -41,29 +41,33 @@ Need to style something.
 │     NO  → continue
 │
 ├── Is it pure layout (flex/gap/align) on a wrapper with no semantic name?
-│     YES → Path B: layout primitive class → see docs/design/design-system.md §5a for canonical list
+│     YES → Path B: layout primitive class → see the layout-primitives list for the canonical set
 │           Never inline for static layout. See Path D in CLAUDE.md.
 │     NO  → continue
 │
 └── Structural or reusable value?
-      YES → Does an existing sb-*/is-* class fit (check §6)?
+      YES → Does an existing sb-*/is-* class fit (check the inventory)?
               YES → Path A: use it.
               NO  → Path B: new sb-* class; extend a similar one if found;
-                    register in §6 same-commit. No occurrence threshold.
+                    register in the inventory same-commit. No occurrence threshold.
 ```
 
-> **Binding rule:** `CLAUDE.md §Permanent coding standards — CSS class vs. inline style (four paths)`.
+References in the tree: state vocabulary = [design-system.md §3](design-system.md#3-state-vocabulary-closed-set),
+layout-primitives list = [§5a](design-system.md#5a-layout-primitives), inventory =
+[§6](design-system.md#6-component-inventory).
+
+> **Binding rule:** [CLAUDE.md §Permanent coding standards](../../CLAUDE.md#permanent-coding-standards) — CSS class vs. inline style (four paths).
 > When this tree and that rule disagree, CLAUDE.md wins.
 
 ---
 
 ## Quick reminders
 
-- **State vocabulary** (closed set — see §3 for full table):
+- **State vocabulary** (closed set — see [design-system.md §3](design-system.md#3-state-vocabulary-closed-set) for full table):
   `is-active` · `is-on` · `is-hot` · `is-setup` · `is-game` · `is-danger`
   · `is-conflict` · `is-raised` · `is-italic` · `is-loop` · `is-playlist` · `is-combo`
   · `is-deep` · `is-compact`.
-  New state? Add it to §3 first.
+  New state? Add it to the state vocabulary first.
 
 - **Porting from old JSX:** `is-playing` on `sb-pad` → `is-hot`.
   `is-loop` on `sb-pad` → drop, set `--pad-color: var(--pad-loop)`.
@@ -75,7 +79,9 @@ Need to style something.
   (`sb-mt-4` etc.) · theme overrides of spacing / radius / type.
 
 - **Three inventories to keep in sync** (same-commit rule):
-  §3 state vocabulary · §6 component inventory · §A token cheat-sheet.
+  [§3 state vocabulary](design-system.md#3-state-vocabulary-closed-set) ·
+  [§6 component inventory](design-system.md#6-component-inventory) ·
+  [§A token inventory](design-system.md#a-token-inventory).
 
 ---
 

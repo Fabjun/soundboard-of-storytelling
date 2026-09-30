@@ -40,7 +40,19 @@ unified), prose terminology is linted (Vale, the de facto prose linter with `sub
    (`` `docs/…/x.md` ``, `` `v3/src/…/x.ts` ``) names a file in this repository; ambiguous short
    names are written as full paths; external or planned files are plain text. Guarded by
    `docsGuards.test.ts`, which reads the historical list from `.vale.ini` (single source).
-5. **Counter-check procedure** for every new check: baseline green → break → red for exactly
+6. **Section references are links** — a reference to a section is a link to its anchor:
+   a Markdown link whose text names file and section, e.g.
+   [testing.md §Flaky tests](../development/testing.md#flaky-tests-quarantine) (validated by `link:check`),
+   `path.md#anchor` (repository-relative, without the section sign) in code comments and
+   wherever Markdown links cannot render (HTML comments, fenced blocks). `docsGuards.test.ts`
+   allows the section sign in active docs only in headings and anchored link text, bans it in
+   code, and resolves every `path.md#anchor` with GitHub's slug algorithm (`github-slugger`,
+   the library GitHub-compatible tools use). A referenced bold pseudo-heading becomes a real
+   heading. Historical docs keep their free-text references (they record what was true then).
+7. **Derivable facts are not typed** — counts and lists that the code determines (tests per
+   project, hook steps) live in generated sections or are referenced; prose names the
+   source instead of repeating the number.
+8. **Counter-check procedure** for every new check: baseline green → break → red for exactly
    that reason → restore → green (`docs/development/testing.md`).
 
 ## Consequences
@@ -61,11 +73,11 @@ tables) and would have to be replaced as the project grows; the owner chose the 
 
 **Fuzzy checker for free-text `file.md §Section` references:** measured on 365 references —
 140 could not be matched unambiguously (short forms, bold pseudo-headings, tables). Not
-reliable; the reference format itself is being made uniform instead (BACKLOG T13).
+reliable; the reference format itself was made uniform instead (decision 6).
 
 ## Related
 
-- **Files:** `.vale.ini`, `.vale/styles/SoS/SupersededTerms.yml`, `scripts/vale-install.ts`,
+- **Files:** `v3/package.json` (`github-slugger`), `.vale.ini`, `.vale/styles/SoS/SupersededTerms.yml`, `scripts/vale-install.ts`,
   `v3/package.json` (`link:check`, `lint:docs`, `vale:install`), `v3/tests/unit/docsGuards.test.ts`
 - **ADRs:** ADR-0047 (documentation architecture), ADR-0053 (exceptions)
 - **Sources:** https://github.com/remarkjs/remark-validate-links · https://vale.sh/docs ·

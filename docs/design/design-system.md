@@ -15,7 +15,7 @@
      Block: sb-<block> (e.g. sb-pad, sb-btn)
      Part:  sb-<block>-<part> (e.g. sb-pad-title, sb-btn-sm)
      State: is-<state> (e.g. is-hot, is-setup) — never block-scoped
-     Per ADR-0021. Short form in docs/design/design-system-cheatsheet.md §60-second contract. -->
+     Per ADR-0021. Short form in docs/design/design-system-cheatsheet.md#the-60-second-contract. -->
 
 ### Token naming
 <!-- TODO: Write up fully. --<name> conventions; grouping by section; when to use
@@ -61,7 +61,8 @@ Base classes of the pixel frame family: `sb-pix`, `sb-card`, `sb-pad`, `sb-btn`,
 
 ## §3 State vocabulary (closed set)
 
-Currently registered state classes (from docs/design/design-system-cheatsheet.md §3):
+Currently registered state classes (short list also in
+[design-system-cheatsheet.md §Quick reminders](design-system-cheatsheet.md#quick-reminders)):
 
 | Class | Meaning |
 |--------|-----------|
@@ -111,8 +112,8 @@ Forbidden patterns in new V3 code:
 ## §5a Layout Primitives
 
 Layout-only structure classes — flex/gap/align wrappers with no visual styling. Use these
-instead of inline `style={{ display: 'flex', ... }}` (Path B in `CLAUDE.md §CSS class rule`).
-Defined in `v3/src/styles/tokens.css`; all appear in the generated §6 inventory below.
+instead of inline `style={{ display: 'flex', ... }}` (Path B in [CLAUDE.md §Permanent coding standards](../../CLAUDE.md#permanent-coding-standards)).
+Defined in `v3/src/styles/tokens.css`; all appear in the generated [§6 inventory](#6-component-inventory) below.
 
 > **Maintenance:** When adding, renaming, or removing a layout-primitive class in
 > `v3/src/styles/tokens.css`, update this table in the same commit.
@@ -132,7 +133,7 @@ Defined in `v3/src/styles/tokens.css`; all appear in the generated §6 inventory
 | `sb-flex-1` | `flex:1` | Takes all remaining space in a flex parent. Use as spacer or to push siblings apart. |
 
 **Related flex utilities** (not pure layout primitives — extend flex with additional behaviour;
-also in §6):
+also in [§6](#6-component-inventory)):
 
 | Class | Extends with | Use case |
 |-------|-------------|----------|

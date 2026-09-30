@@ -1,6 +1,7 @@
 // ─────────────────────────────────────────────────────────────────────────────
 // V3.0 Shared TypeScript Types
-// Source of truth: docs/architecture/concept-brief.md §4.1
+// This file is the source of truth for the schema (docs/architecture/concept-brief.md#41--data-model);
+// decisions: docs/architecture/0048-pad-pool-decks.md#1-data-model
 // ─────────────────────────────────────────────────────────────────────────────
 
 // ---------------------------------------------------------------------------

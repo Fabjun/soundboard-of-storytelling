@@ -30,7 +30,7 @@ and behavior: [docs/product/README.md §5 Pads](../../product/README.md#pads).
 |---|---|---|
 | Shape | **Card format:** a slightly portrait rectangle. | **Decided** — _not yet built_ |
 | Picture area (top) | Shows the pad's icon(s). A pad without its own icon shows a **placeholder icon**, so all pads look uniform. | **Decided** — _not yet built_ |
-| Info area (bottom) | **Name** (always visible) and the **assigned key** (§6 K10). | **Decided** — _not yet built_ |
+| Info area (bottom) | **Name** (always visible) and the **assigned key** ([product §6 K10](../../product/README.md#input-keyboard--numpad)). | **Decided** — _not yet built_ |
 | Type spine | Coloured bar on the left edge showing the pad type (current code, ADR-0027). | **Open** — current code, review pending |
 
 ## Variants
@@ -41,7 +41,7 @@ and behavior: [docs/product/README.md §5 Pads](../../product/README.md#pads).
 
 ## States
 
-Current code (closed `is-*` vocabulary, `docs/design/design-system.md §3`) — listed for reference, not yet
+Current code (closed `is-*` vocabulary, [design-system.md §3](../design-system.md#3-state-vocabulary-closed-set)) — listed for reference, not yet
 reviewed as part of this spec.
 
 | State | Trigger | Appearance (current code) | Status |
@@ -54,13 +54,13 @@ reviewed as part of this spec.
 
 ### In GAME mode
 
-Single tap starts / stops the pad; keys per deck (docs/product/README.md §3, §5, §6). No further
+Single tap starts / stops the pad; keys per deck ([product §3](../../product/README.md#3-app-modes-game-and-setup), [§5](../../product/README.md#5-core-concepts), [§6](../../product/README.md#6-platforms--input)). No further
 PAD-specific behavior decided yet.
 
 ### In SETUP mode
 
-Tap opens the PAD editor; pads can be dragged while no search or sort is active (docs/product/README.md
-§3, §5).
+Tap opens the PAD editor; pads can be dragged while no search or sort is active ([product §3](../../product/README.md#3-app-modes-game-and-setup),
+[§5](../../product/README.md#5-core-concepts)).
 
 ## Adaptive behavior
 
@@ -74,7 +74,7 @@ Per [ADR-0045](../../architecture/0045-two-axis-adaptive-model.md).
 | Zoom applies **per deck**. Whether it applies per deck or app-wide becomes a Settings option. | **Decided** — _not yet built_ |
 | Zoom controls: small **+ / − buttons**, and **Ctrl/Cmd + mouse wheel** (plain wheel keeps scrolling the grid). | **Decided** — _not yet built_ |
 | Zoom by gesture (pinch / swipe). | **Parked** |
-| Zoom by key press. | **Parked** — keys to be chosen with the key settings (docs/product/README.md §6 K12) |
+| Zoom by key press. | **Parked** — keys to be chosen with the key settings ([product §6 K12](../../product/README.md#input-keyboard--numpad)) |
 
 ### Axis 1 — Screen format (narrow / wide)
 
@@ -90,7 +90,7 @@ Names only — no values.
 
 - Tokens: `--pad-single`, `--pad-loop`, `--pad-playlist`, `--pad-combo` (and `-soft` / `-glow`
   variants) — current code; `--pad-playlist` is affected by the Playlist → Loop merge
-  (docs/product/README.md §5, BACKLOG §3).
+  ([product §5](../../product/README.md#5-core-concepts), [backlog: Playlist → Loop merge](../../backlog.md#playlist--loop-merge-data-model)).
 - Classes: `sb-pad`, `sb-pad-grid`, `sb-pad-grid-cell` — current code.
 
 ## Accessibility
@@ -111,7 +111,8 @@ without colour (current: spine position; to be reviewed). _Further details pendi
 
 - Decisions: product owner dialogue 2026-09-28 (card format, placeholder icon, zoom per deck,
   zoom controls, detail levels).
-- Product context: [docs/product/README.md §3, §5, §6](../../product/README.md).
+- Product context: [docs/product/README.md §3](../../product/README.md#3-app-modes-game-and-setup),
+  [§5](../../product/README.md#5-core-concepts), [§6](../../product/README.md#6-platforms--input).
 - ADRs: ADR-0027 (pad type colours), ADR-0045 (two-axis adaptive model).
 - Earlier related idea: docs/backlog.md "2b — Library form" (tiles stack details by display size).
 - Design explorations (proposals, not binding): `design-sources/2026-05-25/v15-pad-depth.jsx` (depth

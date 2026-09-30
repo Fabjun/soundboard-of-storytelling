@@ -24,7 +24,7 @@ explicitly but derived from a consistent code state, say so:
 ## Decision
 
 What was decided? Concrete and unambiguous. Name the industry standard / sources the
-decision is based on (CLAUDE.md §Working principles).
+decision is based on ([CLAUDE.md §Working principles](../../CLAUDE.md#working-principles-user-decisions-2026-09-29)).
 
 ## Exceptions
 
@@ -54,6 +54,7 @@ considered" is a valid answer if true.
 
 - **Files:** `v3/src/...`
 - **ADRs:** ADR-XXXX, ADR-YYYY
-- **Source documents:** `docs/architecture/concept-brief.md §X.Y`, `CLAUDE.md §Y`
+- **Source documents:** links to the sections the decision rests on, e.g.
+  [concept-brief.md §4.1](concept-brief.md#41--data-model)
 - **Sources:** https://… (external standards the decision relies on)
 - **Commits:** `abc1234` — short description

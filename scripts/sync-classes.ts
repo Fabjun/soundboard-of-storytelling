@@ -3,7 +3,7 @@
  * sync-classes.ts
  *
  * Extracts all sb-* CSS class names used in v3/src and writes a table
- * between AUTO-GENERATED markers in docs/design/design-system.md §6.
+ * between AUTO-GENERATED markers in docs/design/design-system.md#6-component-inventory.
  *
  * Class names are extracted from:
  *   - TSX: className="..." attribute values (static strings)
@@ -206,7 +206,7 @@ function run(): void {
 
   const withDesc = entries.filter((e) => e.description).length;
   console.log(
-    `sync-classes: wrote ${entries.length} sb-* classes (${withDesc} with @inventory) → §6`,
+    `sync-classes: wrote ${entries.length} sb-* classes (${withDesc} with @inventory) → docs/design/design-system.md`,
   );
 }
 

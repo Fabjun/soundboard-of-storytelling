@@ -4,6 +4,10 @@
 
 All notable changes to Soundboard of Storytelling, newest first.
 
+## 3.0.63 — 2026-09-30
+
+- docs: section references are anchored links, checked by docsGuards; hard-coded test counts removed; hook step list corrected (T13, ADR-0056)
+
 ## 3.0.62 — 2026-09-30
 
 - fix(ci): prepare script installs Vale from v3/ (CI npm ci failed); pre-push runs npm ci in a fresh worktree when install files change

@@ -1,7 +1,7 @@
 // ─────────────────────────────────────────────────────────────────────────────
 // Upload pipeline — file processing, peak computation, IDB persistence
 //
-// MEMORY SAFETY RULES (see CLAUDE.md §iPhone rules):
+// MEMORY SAFETY RULES (see CLAUDE.md#iphone--ios-safari--memory--stability-rules-critical):
 //   - Files are processed SERIALLY. Never Promise.all over multiple files.
 //   - Each AudioBuffer is explicitly null'd after peak extraction, before
 //     AudioContext.close(). This ensures the GC can reclaim PCM memory

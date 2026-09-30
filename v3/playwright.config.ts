@@ -69,7 +69,7 @@ export default defineConfig({
   // html: full report in playwright-report/ (overwritten by the next run).
   reporter: [['list'], ['html', { open: 'never' }]],
   // CI: a test that only passes on retry fails the run (and blocks deploy).
-  // Quarantine procedure: docs/development/testing.md §Flaky tests.
+  // Quarantine procedure: docs/development/testing.md#flaky-tests-quarantine.
   failOnFlakyTests: !!process.env.CI,
   // A committed test.only would silently drop every other test — always forbidden.
   forbidOnly: true,
