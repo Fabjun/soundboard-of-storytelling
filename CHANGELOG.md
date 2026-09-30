@@ -4,6 +4,10 @@
 
 All notable changes to Soundboard of Storytelling, newest first.
 
+## 3.0.60 — 2026-09-30
+
+- docs: link check validates anchors across files (remark-validate-links replaces markdown-link-check); 9 broken anchors fixed (T13)
+
 ## 3.0.59 — 2026-09-30
 
 - docs: project language English only — all docs, ADRs, tool and hook messages translated; guards for ADR headers and German text (S5)

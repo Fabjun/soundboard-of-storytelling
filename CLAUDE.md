@@ -449,7 +449,7 @@ without exception:
 > 3. `npx lint-staged` — Prettier + ESLint on staged files only; auto-fix + re-stage
 > 4. `npm run test` (vitest, ~1s)
 > 5. `npm run test:e2e:smoke` (Chromium + WebKit, ~6s)
-> 6. `npm run link:check` (markdown-link-check, ~1s) — dead internal links
+> 6. `npm run link:check` (remark-validate-links, ~1s) — dead internal links and anchors, also across files
 >
 > CI additionally runs `npm audit --audit-level=high` (blocking), `test:coverage` (coverage floor), `format:check`, `lint`, `sync:docs` (+ `git diff --exit-code`) and `link:check`.
 >

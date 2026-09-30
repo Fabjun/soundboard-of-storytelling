@@ -545,7 +545,7 @@ summon grips). Not yet laid out or implemented; a proposal for the visual design
 ### A3 — Grip vocabulary: rail vs. pull tab _(concerns the summonable overlay contract)_
 
 Proposal for visually distinguishing the layers of the summonable overlay contract
-(→ [Summonable overlay contract](#summonable-overlay-contract-_pending-not-yet-finalized--refined-after-panel-fit-check_)):
+(→ [Summonable overlay contract](#summonable-overlay-contract-pending-not-yet-finalized--refined-after-panel-fit-check)):
 **Rail** ("slide me") = resize base layer; **pull tab** ("I open") = summon layer. The question
 "does it have a tab?" would then be the visual distinguishing feature between the layers. The
 concrete design is the job of the visual design work, not decided here.
@@ -586,7 +586,7 @@ These points were decided by the user, not only proposed.
 gesture. Requirement: the close button is reachable in every resize state (a visible minimum
 panel size exists).
 This decision is consistent with the summonable overlay contract (PadEditor = layer 1 only,
-selection-driven; → [Summonable overlay contract](#summonable-overlay-contract-_pending-not-yet-finalized--refined-after-panel-fit-check_)).
+selection-driven; → [Summonable overlay contract](#summonable-overlay-contract-pending-not-yet-finalized--refined-after-panel-fit-check)).
 
 ### B8 — Scene switching mechanism: tap switcher primary, swipe optional and GAME only
 
@@ -599,7 +599,7 @@ Claude Design's five flagged gaps were classified:
 **Three confirmations of known points (not new):**
 - **Cross-scene active sounds** = the Slice 5 audio control problem. Claude Design's concrete
   form: a top band with quick-stop chips (≈ earlier option B).
-  → [Audio continues during scene switch](#audio-continues-during-scene-switch-_confirmed-correct--slice-5_).
+  → [Audio continues during scene switch](#audio-continues-during-scene-switch-confirmed-correct--slice-5).
 - **Panic/fade-all** = existing quick win (`fadeOutAll()` done). New addition: guard the
   trigger against accidental activation ("guarded").
   → [PANIC / fade-all button](#panic--fade-all-button).
@@ -666,7 +666,7 @@ Both are exceptions for users who want it differently — consistent with the gu
 Before building: check interaction expectations for existing saved boards. The new gesture model (point 7) changes the current SETUP reorder, which starts immediately on `pointerdown` (new: long hold instead of immediate drag). A migration/compatibility question to keep in mind when building.
 
 **→ Slice 8:** [Mobile layout adaptation](#mobile-layout-adaptation) · [Grid configurability](#grid-configurability-gridconfig-popover) · [Cell-size setting](#cell-size-setting).
-**Cross-references:** Settings architecture (point 8) → full model in [2e — Multi-level settings hierarchy](#2e--multi-level-settings-hierarchy); display setting scope per surface → [2c — Modular display controls](#2c--modular-display-controls); quick-access/quick-menu display consistency → [Quick-Access content deferred](#quick-access-content-deferred-_pending-real-scene-experience_) and [B9](#b9--gap-classification-three-confirmations-two-new-candidates).
+**Cross-references:** Settings architecture (point 8) → full model in [2e — Multi-level settings hierarchy](#2e--multi-level-settings-hierarchy); display setting scope per surface → [2c — Modular display controls](#2c--modular-display-controls); quick-access/quick-menu display consistency → [Quick-Access content deferred](#quick-access-content-deferred-pending-real-scene-experience) and [B9](#b9--gap-classification-three-confirmations-two-new-candidates).
 
 ---
 
@@ -738,7 +738,7 @@ _Settled — deliberate forward-looking exception per the [architecture motto](#
 
 **Beschluss:** The sidebar is a reusable building block: a generic **shell + behavior** (a container docked to a window edge, openable/closable with a grip) that receives its **content** from the window it serves. The shell does not know its content — each window supplies its own context-specific options.
 
-The sidebar IS a summonable panel from the overlay contract: bottom-sheet on narrow/portrait-format screens, side-rail on wide/landscape-format screens (Axis-1, screen-format-driven — not device-type or input-type driven; → [ADR-0045](architecture/0045-two-axis-adaptive-model.md)). Every sidebar instance has Layer 2 (Summon + Resize). **→ Cross-reference:** [Summonable overlay contract](#summonable-overlay-contract-_pending-not-yet-finalized--refined-after-panel-fit-check_) — the sidebar and the overlay contract describe the same mechanism from two angles: behavior (contract: layers, gestures, grip types) vs. structural reusability (this entry: generic shell, content injection per window).
+The sidebar IS a summonable panel from the overlay contract: bottom-sheet on narrow/portrait-format screens, side-rail on wide/landscape-format screens (Axis-1, screen-format-driven — not device-type or input-type driven; → [ADR-0045](architecture/0045-two-axis-adaptive-model.md)). Every sidebar instance has Layer 2 (Summon + Resize). **→ Cross-reference:** [Summonable overlay contract](#summonable-overlay-contract-pending-not-yet-finalized--refined-after-panel-fit-check) — the sidebar and the overlay contract describe the same mechanism from two angles: behavior (contract: layers, gestures, grip types) vs. structural reusability (this entry: generic shell, content injection per window).
 
 **Deliberately chosen as a forward-looking exception to the continuous-refactoring principle** (per the [architecture motto](#architecture-motto--think-big-but-dont-rush)): multiple sidebar instances are known to be likely (Board SETUP sidebar, Library sidebar, potentially more). Building the generic shell up front is consciously justified — not spec-building, but preventing the obvious duplication that would otherwise be certain.
 
@@ -915,7 +915,7 @@ These are ideas, each with a stated relation to already-decided things and a con
 A distinct buzz on pickup-engage (fill-ring completes) and on fire; expresses "make gesture states feel natural" through touch.
 **CRITICAL CAVEAT:** The web Vibration API is historically **NOT** supported on iOS Safari — since the primary target is iPhone + Brave, verify availability on the real device before considering this further (measure, don't guess). May be technically unavailable on the target.
 **Build when:** iOS/Brave Vibration API availability confirmed on the real device AND a friction point in real use supports it.
-**→ [Parked candidates](#parked-candidates-_not-committed-each-has-a-stated-problem-it-would-solve_).**
+**→ [Parked candidates](#parked-candidates-not-committed-each-has-a-stated-problem-it-would-solve).**
 
 ### Hold-to-audition in SETUP _(dropped idea — explicitly excluded for now)_
 
@@ -936,7 +936,7 @@ A recallable saved combo of size/gap/columns/font. **Reframed:** this is an EXTE
 ### Atmosphere stays provisional _(confirmed)_
 
 Hearth-glow/embers atmosphere is architected as a toggleable layer the mode distinction does NOT depend on; evaluated separately (incl. performance). The settled mode cues (gold↔teal, pad-face, bottom-band swap) carry mode on their own. Removing atmosphere must cost nothing on legibility.
-**→ Cross-reference:** [Mode-awareness cues (Slice 8)](#mode-awareness-cues) · [Color-independent mode legibility](#color-independent-mode-legibility-_settled-refinement_) above.
+**→ Cross-reference:** [Mode-awareness cues (Slice 8)](#mode-awareness-cues) · [Color-independent mode legibility](#color-independent-mode-legibility-settled-refinement) above.
 
 ### Fill-ring: scroll always wins _(confirmed)_
 
@@ -946,7 +946,7 @@ Fill-ring on long-hold is kept. Any movement past the scroll threshold cancels t
 
 Claude Design will show THREE treatments side-by-side: **A** (protrude+color), **B** (pictographic flush), **C** (raised vs. recessed) — each on phone bottom-seam AND tablet vertical-seam, in active AND dimmed states (dimmed is the real test). Winner propagates everywhere.
 **Status:** No decision yet — options to be reviewed.
-**→ Cross-reference:** [Summonable overlay contract](#summonable-overlay-contract-_pending-not-yet-finalized--refined-after-panel-fit-check_) (the grip is the visual face of the contract's seam handle) · [A3 — Grip-Vokabular: Rail vs. Pull-Tab](#a3--grip-vocabulary-rail-vs-pull-tab-_concerns-the-summonable-overlay-contract_).
+**→ Cross-reference:** [Summonable overlay contract](#summonable-overlay-contract-pending-not-yet-finalized--refined-after-panel-fit-check) (the grip is the visual face of the contract's seam handle) · [A3 — Grip-Vokabular: Rail vs. Pull-Tab](#a3--grip-vocabulary-rail-vs-pull-tab-concerns-the-summonable-overlay-contract).
 
 ---
 
@@ -1210,13 +1210,16 @@ Library/Board list, `BoardTopBar` on Board — deliberately separate per ADR-002
 into one component with variants if the mobile layout allows; both are rebuilt there anyway.
 
 ### Documentation freshness automation (T13)
-Found 2026-09-30 during S5: stale facts and dead references were found only by chance (testing.md
-recommended CSS-class locators and "test.skip" for tests written long ago; a cross-file anchor
-to a renamed backlog heading passed `link:check` — markdown-link-check validates anchors only
-within the same file; `docsGuards` checks files, not anchors). **Goal:** keep docs current
-automatically — research first (docs-as-code practice), then e.g. validate cross-file anchors
-and `file.md §Section` references against real headings, flag superseded terms, derive more
-facts from code via generators. Test infrastructure first (CLAUDE.md rule 15). **Status:** open.
+Found 2026-09-30 during S5: stale facts and dead references were found only by chance.
+- ✅ **Links and anchors across files** — `link:check` now runs `remark-validate-links` instead of
+  `markdown-link-check`, which validated anchors only within the same file and slugged the raw
+  heading text. The switch found 9 real broken anchors at once (headings with `_(…)_` get
+  GitHub anchors without underscores) — fixed. See git log "…(T13 1/2)".
+- ⬜ **`§` section references** in prose (`file.md §Heading`, ~365): not machine-checkable as
+  written (140 cannot be matched unambiguously — short forms, bold pseudo-headings, tables;
+  some really stale). Decision pending with the owner.
+- ⬜ **Superseded terms** — Vale (owner decision 2026-09-30), pinned + checksum-verified install.
+- ⬜ **Derivable facts from code** — hard-coded counts in active docs replaced by generated data.
 
 ### Role-based E2E locators
 Temporary exception from ADR-0054: many E2E tests still locate controls by test ID although a

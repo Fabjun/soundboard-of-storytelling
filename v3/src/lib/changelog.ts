@@ -7,9 +7,16 @@ export type ChangelogEntry = {
   items: string[];
 };
 
-export const APP_VERSION = '3.0.59';
+export const APP_VERSION = '3.0.60';
 
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.60',
+    date: '2026-09-30',
+    items: [
+      'docs: link check validates anchors across files (remark-validate-links replaces markdown-link-check); 9 broken anchors fixed (T13)',
+    ],
+  },
   {
     version: '3.0.59',
     date: '2026-09-30',

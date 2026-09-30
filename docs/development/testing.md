@@ -217,7 +217,7 @@ unit-build-lint
   ├── npm run format:check   (prettier)
   ├── npm run size           (size-limit)
   ├── npm run sync:docs      (+ git diff --exit-code)  ← Docs sync check
-  └── npm run link:check     (markdown-link-check)     ← Link integrity
+  └── npm run link:check     (remark-validate-links)   ← Links + anchors across files
 
 e2e-smoke (needs: unit-build-lint)
   └── npm run test:e2e:smoke   (10 tests: 5 × Chromium + 5 × WebKit)
@@ -266,7 +266,7 @@ The Husky hook runs before every local commit (in this order):
 3. lint-staged: Prettier + ESLint on the staged files
 4. `npm run test` (~2s) — incl. the guard tests `e2eProjects.test.ts`, `testGuards.test.ts`, `docsGuards.test.ts` and `codeGuards.test.ts` (file names per ADR-0050/0052, links with exact case — macOS ignores case, CI does not —, README facts, test IDs, exception markers)
 5. `npm run test:e2e:smoke` (~6s, own server on port 5199)
-6. `npm run link:check` (~1s) — detects dead internal Markdown links
+6. `npm run link:check` (~1s) — detects dead internal Markdown links and anchors, also into other files (`remark-validate-links`)
 
 About 20s in total. If any step fails → the commit is aborted.
 
