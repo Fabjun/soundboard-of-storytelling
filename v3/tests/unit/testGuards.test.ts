@@ -11,10 +11,14 @@
 // 3. Exception scheme (ADR-0053) for markers ESLint cannot check:
 //    to-do markers (TODO, FIXME, XXX) carry a BACKLOG reference; every `// prettier-ignore`
 //    is preceded by a comment line giving the reason.
+// 4. Every TypeScript file in v3/ and scripts/ belongs to a project that `tsc -b` checks
+//    (T12, ADR-0055) — Vitest and Playwright run tests without type checking, so an
+//    unchecked file hides type errors (found: 6 in unit tests, 1 in E2E, 2026-09-30).
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
-import { basename, join, relative } from 'node:path';
+import { basename, dirname, join, relative } from 'node:path';
+import ts from 'typescript';
 
 const V3 = join(__dirname, '..', '..');
 const BACKLOG = join(V3, '..', 'docs/backlog.md');
@@ -150,5 +154,35 @@ describe('guard: exception markers follow the scheme (ADR-0053)', () => {
       });
     }
     expect(bad, 'add a comment line with the reason directly above').toEqual([]);
+  });
+});
+
+describe('guard: every TypeScript file is type-checked (ADR-0055)', () => {
+  const ROOT = join(V3, '..');
+  const rootConfig = ts.readConfigFile(join(V3, 'tsconfig.json'), ts.sys.readFile).config as {
+    references: { path: string }[];
+  };
+  const checked = new Set<string>();
+  for (const ref of rootConfig.references) {
+    const path = join(V3, ref.path);
+    const { config } = ts.readConfigFile(path, ts.sys.readFile);
+    for (const f of ts.parseJsonConfigFileContent(config, ts.sys, dirname(path)).fileNames) {
+      checked.add(rel(f));
+    }
+  }
+  // All of v3/ (walk skips node_modules and snapshot folders) plus scripts/.
+  const tsFiles = [
+    ...walk(V3, (f) => /\.tsx?$/.test(f)),
+    ...walk(join(ROOT, 'scripts'), (f) => /\.ts$/.test(f)),
+  ].map(rel);
+
+  it('reads the referenced projects (sanity)', () => {
+    expect(rootConfig.references.length).toBeGreaterThanOrEqual(5);
+    expect(tsFiles.length).toBeGreaterThan(60);
+  });
+
+  it('covers every .ts/.tsx file with a project referenced from v3/tsconfig.json', () => {
+    const unchecked = tsFiles.filter((f) => !checked.has(f));
+    expect(unchecked, 'add the file (or its folder) to a referenced tsconfig').toEqual([]);
   });
 });

@@ -4,6 +4,10 @@
 
 All notable changes to Soundboard of Storytelling, newest first.
 
+## 3.0.58 — 2026-09-30
+
+- test: every TypeScript file is type-checked — unit and E2E tests, tool configs, scripts (ADR-0055); 7 hidden type errors fixed (T12)
+
 ## 3.0.57 — 2026-09-30
 
 - test: locators follow Playwright/Testing Library guidance (ADR-0054) — no CSS-class locators, state via aria-pressed, one test ID scheme, consistent spec names (S4)

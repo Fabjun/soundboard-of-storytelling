@@ -26,13 +26,10 @@ jobs:
         working-directory: v3
         run: npm audit --audit-level=high
 
-      - name: Build
+      - name: Build (tsc -b type-checks app, tests, configs, scripts — ADR-0055)
         working-directory: v3
         run: npm run build
 
-      - name: Type-check scripts/ (doc generators, audits)
-        working-directory: v3
-        run: npm run typecheck:scripts
 
       - name: Unit tests + coverage floor
         working-directory: v3

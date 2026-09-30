@@ -1,9 +1,10 @@
 {
   "extends": "./tsconfig.app.json",
   "compilerOptions": {
+    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.e2e.tsbuildinfo",
     "noUnusedLocals": false,
     "noUnusedParameters": false,
-    "types": ["node"]
+    "types": ["node", "vite/client"]
   },
   "include": ["src", "tests/e2e"]
 }

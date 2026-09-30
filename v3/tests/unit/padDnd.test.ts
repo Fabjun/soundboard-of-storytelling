@@ -6,12 +6,16 @@
 // browser and is covered by E2E tests in Phase 2.
 // ─────────────────────────────────────────────────────────────────────────────
 
-import type { Pad, PadPosition } from '../../src/types';
+import type { Pad, PadPosition, SinglePad } from '../../src/types';
 import { applySwap, applyInsert } from '../../src/lib/padDnd';
 
 // ── Test factory ──────────────────────────────────────────────────────────────
 
-function makePad(id: string, pos: PadPosition, overrides?: Partial<Pad>): Pad {
+function makePad(
+  id: string,
+  pos: PadPosition,
+  overrides?: Partial<Omit<SinglePad, 'type'>>,
+): SinglePad {
   return {
     id,
     type: 'single',

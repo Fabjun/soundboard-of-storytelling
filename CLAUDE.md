@@ -446,10 +446,9 @@ Applies to slices, refactors, audit passes, bugfixes — every commit
 without exception:
 
 > **Automatisch erzwungen** (Phase 2 + Doku-Sync): Husky-Pre-Commit-Hook führt
-> sieben Gates in Folge aus und blockt bei Fehler:
+> sechs Gates in Folge aus und blockt bei Fehler:
 > 1. `npm run sync:docs` + `git add` (~1s) — Auto-generierte Docs; Ergebnis wird automatisch gestaged
-> 2. `npm run build` (tsc + vite, ~4s)
-> 2a. `npm run typecheck:scripts` (~1s) — Typprüfung von `scripts/*.ts` (Generatoren/Audits außerhalb von `v3/`)
+> 2. `npm run build` (`tsc -b` + vite, ~6s) — type-checks **every** TypeScript file: app, unit + E2E tests, tool configs, `scripts/` (ADR-0055)
 > 3. `npx lint-staged` — Prettier + ESLint nur auf gestageten Dateien; auto-fix + re-stage
 > 4. `npm run test` (vitest, ~1s)
 > 5. `npm run test:e2e:smoke` (Chromium + WebKit, ~6s)

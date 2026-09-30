@@ -102,6 +102,7 @@ Jede Entscheidung bekommt eine eigene Datei. Format: `docs/architecture/_templat
 | [ADR-0051](0051-repository-security-settings.md) | Repository security settings | Accepted | infrastructure | 2026-09-29 |
 | [ADR-0053](0053-exception-management.md) | Exception management | Accepted | cross-cutting | 2026-09-29 |
 | [ADR-0054](0054-test-locators-and-ids.md) | Test locators and test IDs | Accepted | infrastructure | 2026-09-30 |
+| [ADR-0055](0055-typecheck-everything.md) | Every TypeScript file is type-checked | Accepted | infrastructure | 2026-09-30 |
 
 ### Prozess- & Produktentscheidungen
 

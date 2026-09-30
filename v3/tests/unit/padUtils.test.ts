@@ -4,7 +4,7 @@
 // All functions are pure: no IDB, no signals, no DOM. No mocks needed.
 // ─────────────────────────────────────────────────────────────────────────────
 
-import type { Pad, PadPosition } from '../../src/types';
+import type { Pad, PadPosition, SinglePad } from '../../src/types';
 import {
   nextFreeSlot,
   posToIndex,
@@ -19,7 +19,11 @@ import {
 
 // ── Test factory ──────────────────────────────────────────────────────────────
 
-function makePad(id: string, pos: PadPosition | null, overrides?: Partial<Pad>): Pad {
+function makePad(
+  id: string,
+  pos: PadPosition | null,
+  overrides?: Partial<Omit<SinglePad, 'type'>>,
+): SinglePad {
   return {
     id,
     type: 'single',
@@ -235,13 +239,12 @@ describe('applyTypeChange', () => {
       'p1',
       { col: 0, row: 0 },
       {
-        type: 'single',
         libraryItemRef: 'abc123',
       },
     );
     const result = applyTypeChange(pad, 'combo'); // single→combo = reset
     expect(result.type).toBe('combo');
-    expect(result.libraryItemRef).toBeUndefined();
+    expect(result).not.toHaveProperty('libraryItemRef');
   });
 
   test('non-RESET case (ADD): preserves libraryItemRef', () => {
@@ -249,13 +252,12 @@ describe('applyTypeChange', () => {
       'p1',
       { col: 0, row: 0 },
       {
-        type: 'single',
         libraryItemRef: 'abc123',
       },
     );
     const result = applyTypeChange(pad, 'loop'); // single→loop = add
     expect(result.type).toBe('loop');
-    expect(result.libraryItemRef).toBe('abc123');
+    expect(result).toHaveProperty('libraryItemRef', 'abc123');
   });
 
   test('LOSSY case: preserves libraryItemRef (item 1 survives)', () => {
@@ -272,7 +274,7 @@ describe('applyTypeChange', () => {
     };
     const result = applyTypeChange(pad, 'single'); // playlist→single = lossy
     expect(result.type).toBe('single');
-    expect(result.libraryItemRef).toBe('xyz789');
+    expect(result).toHaveProperty('libraryItemRef', 'xyz789');
   });
 
   test('immutable: original pad is unchanged', () => {
@@ -280,7 +282,6 @@ describe('applyTypeChange', () => {
       'p1',
       { col: 0, row: 0 },
       {
-        type: 'single',
         libraryItemRef: 'abc123',
       },
     );

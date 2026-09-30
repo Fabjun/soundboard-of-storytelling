@@ -64,8 +64,8 @@ Zahl in Klammern = Testfälle in der Datei (inkl. Quarantäne)._
 | `pwa` | Chromium (Desktop) | nur Build | `pwa` (4) |
 | `visual` | Chromium (Desktop), nur macOS | Dev | `board-list-empty` (1), `board-list-with-board` (1), `board-screen-game` (1), `board-screen-setup` (1), `deck-rail` (1), `library-empty` (1), `mode-toggle-states` (2), `start-screen` (1) |
 
-**Unit-Tests (Vitest):** 14 Dateien, 206 Testfälle —
-`audio/engine.test.ts` (24), `audio/lru.test.ts` (11), `codeGuards.test.ts` (11), `deckConflict.test.ts` (9), `docsGuards.test.ts` (7), `e2eProjects.test.ts` (6), `flameMath.test.ts` (22), `idb.test.ts` (15), `nanoid.test.ts` (2), `padDnd.test.ts` (11), `padUtils.test.ts` (43), `store.test.ts` (23), `testGuards.test.ts` (9), `upload.test.ts` (13)
+**Unit-Tests (Vitest):** 14 Dateien, 208 Testfälle —
+`audio/engine.test.ts` (24), `audio/lru.test.ts` (11), `codeGuards.test.ts` (11), `deckConflict.test.ts` (9), `docsGuards.test.ts` (7), `e2eProjects.test.ts` (6), `flameMath.test.ts` (22), `idb.test.ts` (15), `nanoid.test.ts` (2), `padDnd.test.ts` (11), `padUtils.test.ts` (43), `store.test.ts` (23), `testGuards.test.ts` (11), `upload.test.ts` (13)
 
 <!-- AUTO-GENERATED:test-inventory END -->
 
@@ -210,8 +210,7 @@ GitHub Actions unter [`.github/workflows/tests.yml`](../../.github/workflows/tes
 ```
 unit-build-lint
   ├── npm audit --audit-level=high   (high/critical blockiert)
-  ├── npm run build          (tsc + vite)
-  ├── npm run typecheck:scripts   (scripts/*.ts)
+  ├── npm run build          (tsc -b: app, unit + E2E tests, tool configs, scripts/ — then vite)
   ├── npm run test:coverage  (vitest inkl. Wächter-Tests + Coverage-Untergrenze)
   ├── npm run lint           (eslint)
   ├── npm run format:check   (prettier)
@@ -263,8 +262,7 @@ unveränderten Paketen, geänderte Runner/Browser, liegengebliebene Dependabot-P
 
 Husky-Hook führt vor jedem lokalen Commit aus (in dieser Reihenfolge):
 1. `npm run sync:docs` + `git add` (~1s) — Auto-generierte Docs aktualisieren und stagen (ADR-Index, Klassen, Tokens, Test-Inventar, `CHANGELOG.md`)
-2. `npm run build` (~4s)
-2a. `npm run typecheck:scripts` (~1s) — Typprüfung der Generatoren/Audits in `scripts/` (`scripts/tsconfig.json`; liegen außerhalb von `v3/`, `npm run build` erfasst sie nicht)
+2. `npm run build` (~6s) — `tsc -b` type-checks every TypeScript file (app, unit + E2E tests, tool configs, `scripts/`; ADR-0055) — Vitest and Playwright do not check types themselves
 3. lint-staged: Prettier + ESLint auf gestageten Dateien
 4. `npm run test` (~2s) — inkl. Wächter-Tests `e2eProjects.test.ts`, `testGuards.test.ts` und `docsGuards.test.ts` (Dateinamen nach ADR-0050, Links mit exakter Groß-/Kleinschreibung — der Mac ignoriert sie, CI nicht —, README-Fakten)
 5. `npm run test:e2e:smoke` (~6s, eigener Server auf Port 5199)

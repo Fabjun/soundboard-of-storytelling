@@ -1216,12 +1216,12 @@ role + accessible name is the standard. Most icon-only controls have no accessib
 **When:** Slice 13 — give every control an accessible name while rebuilding the layout, then
 switch those locators to `getByRole` and drop the exception from ADR-0054.
 
-### Type-check E2E tests (T12)
-Found 2026-09-30 during S4: `tsconfig.e2e.json` is never type-checked — ESLint only parses with
-it, Playwright transpiles without type checking. Running it fails already on `main`
-(`src/main.tsx`: side-effect import of `./styles/global.css` has no type declaration), so type
-errors in E2E tests go unnoticed. **Fix:** make `tsc -p tsconfig.e2e.json --noEmit` pass and add
-it to pre-commit and CI (test infrastructure first, CLAUDE.md rule 15). **Status:** open.
+### Type-check every TypeScript file (T12)
+Found 2026-09-30 during S4: unit tests, E2E tests and two tool configs were never type-checked
+(Vitest and Playwright do not check types) — 7 hidden errors (6 unit-test fixtures not matching
+the `Pad` union, 1 E2E config). **Done:** `v3/tsconfig.json` references every project, so `tsc -b`
+in `npm run build` checks everything; `strict` explicit; fixtures typed; guard that every
+`.ts`/`.tsx` file belongs to a checked project (ADR-0055). **Status:** ✅ Done (see git log: "…(T12)").
 
 ### Re-enable mobile layout tests
 `touch-targets.spec.ts` and `overflow.spec.ts` have FIXME markers because the

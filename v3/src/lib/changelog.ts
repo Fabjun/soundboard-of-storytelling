@@ -7,9 +7,16 @@ export type ChangelogEntry = {
   items: string[];
 };
 
-export const APP_VERSION = '3.0.57';
+export const APP_VERSION = '3.0.58';
 
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.58',
+    date: '2026-09-30',
+    items: [
+      'test: every TypeScript file is type-checked — unit and E2E tests, tool configs, scripts (ADR-0055); 7 hidden type errors fixed (T12)',
+    ],
+  },
   {
     version: '3.0.57',
     date: '2026-09-30',
