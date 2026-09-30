@@ -66,8 +66,8 @@ number in brackets = test cases in the file (incl. quarantine)._
 | `pwa`             | Chromium (Desktop)             | Build only  | `pwa` (7)                                                                                                                                                                                  |
 | `visual`          | Chromium (Desktop), macOS only | Dev         | `board-list-empty` (1), `board-list-with-board` (1), `board-screen-game` (1), `board-screen-setup` (1), `deck-rail` (1), `library-empty` (1), `mode-toggle-states` (2), `start-screen` (1) |
 
-**Unit tests (Vitest):** 14 files, 235 test cases —
-`audio/engine.test.ts` (24), `audio/lru.test.ts` (11), `codeGuards.test.ts` (13), `deckConflict.test.ts` (9), `docsGuards.test.ts` (22), `e2eProjects.test.ts` (6), `flameMath.test.ts` (22), `idb.test.ts` (15), `nanoid.test.ts` (2), `padDnd.test.ts` (11), `padUtils.test.ts` (43), `store.test.ts` (23), `testGuards.test.ts` (21), `upload.test.ts` (13)
+**Unit tests (Vitest):** 19 files, 235 test cases —
+`audio/engine.test.ts` (24), `audio/lru.property.test.ts` (0), `audio/lru.test.ts` (11), `codeGuards.test.ts` (13), `deckConflict.test.ts` (9), `docsGuards.test.ts` (22), `e2eProjects.test.ts` (6), `flameMath.property.test.ts` (0), `flameMath.test.ts` (22), `idb.test.ts` (15), `nanoid.test.ts` (2), `padDnd.property.test.ts` (0), `padDnd.test.ts` (11), `padUtils.property.test.ts` (0), `padUtils.test.ts` (43), `store.test.ts` (23), `testGuards.test.ts` (21), `upload.property.test.ts` (0), `upload.test.ts` (13)
 
 <!-- AUTO-GENERATED:test-inventory END -->
 
@@ -431,6 +431,25 @@ describe('myFunction', () => {
 - Test fixtures have the concrete type they build (e.g. `SinglePad`, not `Partial<Pad>`) — every test file is type-checked (ADR-0055)
 
 ---
+
+## Property-based tests
+
+Example tests check chosen cases; property tests check a rule for **every** input, with
+[fast-check](https://fast-check.dev/) generating a hundred inputs per run (T11b).
+
+- **Files:** `tests/unit/<module>.property.test.ts` next to the example tests of the same module;
+  shared generators ("arbitraries") in `tests/unit/arbitraries.ts`.
+- **Write** `test.prop([generators])('rule', (inputs) => { … })` from `@fast-check/vitest`.
+  Good rules: round trips (`posToIndex(indexToPos(i)) === i`), invariants (a swap keeps every pad
+  and every cell unique), bounds (a mixed colour lies between both colours), symmetry (an
+  inverted signal has the same peaks).
+- **Boundaries still need boundary value analysis:** uniform random values almost never hit the
+  few inputs where behaviour switches. Bias the generator towards the edges — `formatBytes`
+  showed "1024 KB" for 1,048,064–1,048,575 bytes, which a plain `fc.nat()` did not find in
+  thousands of runs and a boundary-biased generator found at once.
+- **Reproduce a failure:** the run prints the seed and the shrunk counterexample; pass
+  `{ seed, path }` as fc options to replay exactly that case.
+- **Counter-check** like any test: plant a bug, the property must fail.
 
 ## Writing E2E tests
 

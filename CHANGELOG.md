@@ -4,6 +4,11 @@
 
 All notable changes to Soundboard of Storytelling, newest first.
 
+## 3.0.82 — 2026-09-30
+
+- test: property-based tests with fast-check (T11b)
+- fix: file sizes just below 1 MB showed "1024 KB" instead of "1.0 MB"
+
 ## 3.0.81 — 2026-09-30
 
 - docs(test): edge-case checklist for choosing test cases (T11a)

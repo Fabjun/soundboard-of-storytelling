@@ -163,7 +163,8 @@ export async function processFilesSerial(files: File[]): Promise<void> {
 /** Format bytes as human-readable string (e.g. "1.4 MB", "240 KB"). */
 export function formatBytes(bytes: number): string {
   if (bytes < 1024) return `${bytes} B`;
-  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(0)} KB`;
+  // Switch to MB where the KB value would round up to 1024 (boundary found by T11b).
+  if (Math.round(bytes / 1024) < 1024) return `${(bytes / 1024).toFixed(0)} KB`;
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }
 

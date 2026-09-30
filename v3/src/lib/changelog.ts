@@ -7,9 +7,17 @@ export type ChangelogEntry = {
   items: string[];
 };
 
-export const APP_VERSION = '3.0.81';
+export const APP_VERSION = '3.0.82';
 
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.82',
+    date: '2026-09-30',
+    items: [
+      'test: property-based tests with fast-check (T11b)',
+      'fix: file sizes just below 1 MB showed "1024 KB" instead of "1.0 MB"',
+    ],
+  },
   {
     version: '3.0.81',
     date: '2026-09-30',
