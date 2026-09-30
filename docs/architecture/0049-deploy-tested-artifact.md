@@ -4,7 +4,6 @@
 **Date:** 2026-09-29
 **Slice:** infrastructure
 **Refines:** ADR-0040
-
 **Category:** Test infrastructure & workflow
 
 ## Context
@@ -19,7 +18,7 @@ Two gaps remained (found in the test-setup analysis, BACKLOG T8d):
    the head branch of *any* completed Tests run — including `pull_request` runs, and a fork
    can name its branch `main`. The deploy then checked out
    `github.event.workflow_run.head_sha`, i.e. it could have built and published fork code.
-   ADR-0040 stated the opposite ("es triggert nicht auf Pull Requests von Forks"); that
+   ADR-0040 stated the opposite ("it does not trigger for pull requests from forks"); that
    statement was wrong. No sign that it was ever exploited.
 
 ## Decision
@@ -41,21 +40,21 @@ Two gaps remained (found in the test-setup analysis, BACKLOG T8d):
 
 ## Consequences
 
-**Positiv:**
+**Positive:**
 - What users get is byte-for-byte what passed the production-build E2E tests.
 - Fork or pull-request code can no longer reach the live site through this workflow.
 - Smaller attack surface in the job holding `pages: write` / `id-token: write`
   (no package installation there).
 - A failed deploy leaves the previous version live — no downtime.
 
-**Negativ / Trade-offs:**
+**Negative / Trade-offs:**
 - Deploy depends on an artifact with limited lifetime (30 days) — manual re-deploys of old
   states need a Tests re-run.
 - Coupling: the deploy relies on the artifact name `pages-dist` and on `e2e-prod` building
   the same `dist` that is deployed. Renaming one side breaks the deploy visibly (download
   fails), not silently.
 
-## Alternatives Considered
+## Alternatives considered
 
 **Deploy job inside `tests.yml` (`needs: e2e-prod`):** shares the artifact trivially and
 avoids `workflow_run`. Rejected for now to keep the separation of ADR-0040; also the weekly
@@ -66,8 +65,8 @@ but still deploys an untested build. Rejected.
 
 ## Related
 
-- **Dateien:** `.github/workflows/tests.yml`, `.github/workflows/deploy-pages.yml`,
+- **Files:** `.github/workflows/tests.yml`, `.github/workflows/deploy-pages.yml`,
   `.github/workflows/weekly.yml`
 - **ADRs:** ADR-0040 (CI-gated deployment, refined here)
-- **Quelldokumente:** `docs/development/testing.md §CI integration`, `docs/backlog.md` T8d
+- **Source documents:** `docs/development/testing.md §CI integration`, `docs/backlog.md` T8d
 - **Commits:** see git log "…(T8d)"

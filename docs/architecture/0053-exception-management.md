@@ -59,7 +59,7 @@ suppressions (`no-unlimited-disable`); temporary exceptions carry an expiry cond
 - One more dev dependency (`@eslint-community/eslint-plugin-eslint-comments`).
 - Tool ignore lists and ADR exception tables are checked by review, not by a rule.
 
-## Alternatives Considered
+## Alternatives considered
 
 **eslint-plugin-unicorn `expiring-todo-comments`:** supports dates and versions, not our
 review triggers (slices); a `BACKLOG "…"` reference plus the BACKLOG entry covers it

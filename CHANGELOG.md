@@ -4,6 +4,10 @@
 
 All notable changes to Soundboard of Storytelling, newest first.
 
+## 3.0.59 — 2026-09-30
+
+- docs: project language English only — all docs, ADRs, tool and hook messages translated; guards for ADR headers and German text (S5)
+
 ## 3.0.58 — 2026-09-30
 
 - test: every TypeScript file is type-checked — unit and E2E tests, tool configs, scripts (ADR-0055); 7 hidden type errors fixed (T12)
@@ -220,25 +224,25 @@ All notable changes to Soundboard of Storytelling, newest first.
 
 ## 3.0.9 — 2026-06-04
 
-- Infra: Pre-push-Hook blockt jetzt bei fehlendem APP_VERSION-Bump (one push = one version); CLAUDE.md pre-commit-Checkliste ergänzt
+- Infra: pre-push hook now blocks when the APP_VERSION bump is missing (one push = one version); CLAUDE.md pre-commit checklist extended
 
 ## 3.0.8 — 2026-06-04
 
 - Docs: Library-as-tile-grid working assumption, modular sidebar building block, multi-level settings hierarchy — BACKLOG Design Session 2026-06-04
 - Docs: C10 assumption verified (Library structurally different from pad grid), C10 Punkt 8 als Sonderfall des allgemeinen Hierarchie-Modells ausgewiesen
-- Docs: Architektur-Motto "Think big, but don't rush" ergänzt
+- Docs: architecture motto "Think big, but don't rush" added
 
 ## 3.0.7 — 2026-05-28
 
-- Fix: mehrere Loop-PADs gleichzeitig spielbar — ctx.resume() nicht mehr awaited in Playback-Funktionen (iOS WebKit cancelld sonst laufende Sources)
+- Fix: several loop pads can play at the same time — ctx.resume() no longer awaited in playback functions (otherwise iOS WebKit cancels running sources)
 
 ## 3.0.6 — 2026-05-28
 
-- Fix: AudioContext auf iOS zuverlässig gestartet — ctx.resume() direkt in initAudio() im TAP-TO-UNLOCK-Gesture-Tick
+- Fix: AudioContext starts reliably on iOS — ctx.resume() directly in initAudio() within the TAP TO UNLOCK gesture tick
 
 ## 3.0.5 — 2026-05-28
 
-- Fix: iOS Datei-Picker zeigt MP3-Dateien — explizite MIME-Typen statt audio/* (Brave/Safari erfordert beide: MIME + Extension)
+- Fix: iOS file picker shows MP3 files — explicit MIME types instead of audio/* (Brave/Safari need both: MIME + extension)
 
 ## 3.0.4 — 2026-05-28
 

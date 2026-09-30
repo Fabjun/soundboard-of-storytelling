@@ -1,56 +1,54 @@
-# ADR-0041: Englisch als App-Sprache — keine i18n-Infrastruktur
+# ADR-0041: English as the app language — no i18n infrastructure
 
 **Status:** Accepted
 **Date:** 2026-05-27
 **Slice:** cross-cutting
-
+**Refines:** —
 **Category:** Process & product decisions
 
 ## Context
 
-V3 wird primär von einer Person genutzt — dem Entwickler selbst — für
-TTRPG-Sessions. Die Spieler sprechen ggf. Deutsch, aber das Soundboard ist
-ein "backstage"-Tool (GM-only). Der User kommuniziert mit Claude Code auf
-Deutsch oder Englisch; die App-UI ist auf Englisch.
+V3 is used primarily by one person — the developer — for TTRPG sessions. The players may speak
+German, but the soundboard is a "backstage" tool (GM only). The user talks to Claude Code in
+German or English; the app UI is in English.
 
-`docs/architecture/concept-brief.md §4.11` legt fest: "English only. No i18n infrastructure
-yet, but structure code so a future i18n pass is feasible."
+`docs/architecture/concept-brief.md §4.11` states: "English only. No i18n infrastructure yet,
+but structure code so a future i18n pass is feasible."
 
-> *Diese Entscheidung war explizit im Concept Brief dokumentiert und wird hier
-> als ADR formalisiert weil "Englisch" + "keine i18n-Infrastruktur" beides
-> sind — eine Scope-Einschränkung und ein Architektur-Constraint.*
+> *This decision was documented explicitly in the concept brief and is formalised here as an
+> ADR because "English" + "no i18n infrastructure" are both — a scope restriction and an
+> architecture constraint.*
 
 ## Decision
 
-- Alle UI-Texte sind auf Englisch (hardcoded).
-- Keine i18n-Bibliothek (react-intl, i18next, etc.) ist installiert.
-- Code-Struktur: UI-Texte in named constants statt direkt in JSX, soweit
-  praktisch. Das ermöglicht einen zukünftigen i18n-Pass ohne JSX-Durchsuchen.
+- All UI texts are in English (hard-coded).
+- No i18n library (react-intl, i18next, etc.) is installed.
+- Code structure: UI texts in named constants instead of directly in JSX, where practical.
+  That enables a future i18n pass without searching through JSX.
 
 ## Consequences
 
-**Positiv:**
-- Kein i18n-Overhead in Bundle-Größe oder Laufzeit.
-- Kein Translations-Management-Aufwand.
-- Für den aktuellen Use-Case (Single-User, GM-Tool) nicht relevant.
+**Positive:**
+- No i18n overhead in bundle size or runtime.
+- No translation management effort.
+- Not relevant for the current use case (single user, GM tool).
 
-**Negativ / Trade-offs:**
-- Eine zukünftige Lokalisierung erfordert retroaktives Einführen von i18n.
-  Die "named constants"-Struktur mildert den Aufwand, eliminiert ihn nicht.
-- Wenn das Tool jemals kommerziell wird (CLAUDE.md: "Langfristig potentielles
-  kommerzielles Produkt"), ist eine i18n-Nachtrags-Arbeit absehbar.
+**Negative / Trade-offs:**
+- A future localisation requires introducing i18n retroactively. The "named constants"
+  structure reduces the effort but does not remove it.
+- If the tool ever becomes commercial (CLAUDE.md: "A potential commercial product in the long
+  term"), i18n follow-up work is foreseeable.
 
-## Alternatives Considered
+## Alternatives considered
 
-**i18n-Infrastruktur von Anfang an:** Sauberere Architektur für zukünftige
-Lokalisierung. Aber Overhead für einen Use-Case, der derzeit nicht existiert.
-YAGNI-Prinzip: nicht jetzt.
+**i18n infrastructure from the start:** a cleaner architecture for future localisation. But
+overhead for a use case that does not exist at the moment. YAGNI: not now.
 
-**Deutsch:** App-Sprache Deutsch. User verwendet primär Englisch für
-Code und Tool-UI; das Design-System ist auf Englisch. Englisch ist konsistenter.
+**German:** German as the app language. The user uses English primarily for code and tool UI;
+the design system is in English. English is more consistent.
 
 ## Related
 
-- **Dateien:** `v3/src/screens/*.tsx`, `v3/src/components/*.tsx` (UI-Texte)
-- **ADRs:** ADR-0006 (Plattform-Targets), ADR-0039 (Slice-Plan: i18n nicht im Scope)
-- **Quelldokumente:** `docs/architecture/concept-brief.md §4.11`, `CLAUDE.md §Project identity §App UI language`
+- **Files:** `v3/src/screens/*.tsx`, `v3/src/components/*.tsx` (UI texts)
+- **ADRs:** ADR-0006 (platform targets), ADR-0039 (slice plan: i18n not in scope)
+- **Source documents:** `docs/architecture/concept-brief.md §4.11`, `CLAUDE.md §Project identity §Project language`

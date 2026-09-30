@@ -1,61 +1,60 @@
-# ADR-0037: Husky Pre-Commit-Hook: Build + Unit + Smoke E2E
+# ADR-0037: Husky pre-commit hook: build + unit + smoke E2E
 
 **Status:** Accepted
 **Date:** 2026-05-27
 **Slice:** infrastructure
-
+**Refines:** —
 **Category:** Test infrastructure & workflow
 
 ## Context
 
-Manuelles Ausführen von Build + Tests vor jedem Commit erfordert Disziplin.
-In der Praxis wird ein Schritt vergessen — besonders in schnellen Fix-Sessions.
-Das `CLAUDE.md §Pre-commit checklist` war ursprünglich ein manueller Prozess.
+Running build + tests manually before every commit requires discipline. In practice a step
+gets forgotten — especially in quick fix sessions. `CLAUDE.md §Pre-commit checklist` was
+originally a manual process.
 
-Nach Phase 2 ist der Pre-Commit-Hook automatisiert via Husky.
+After phase 2 the pre-commit hook is automated via Husky.
 
 ## Decision
 
-Husky-Pre-Commit-Hook (`v3/.husky/pre-commit`) führt sechs Gates sequenziell aus:
+The Husky pre-commit hook (`v3/.husky/pre-commit`) runs six gates in sequence:
 
-1. `npm run sync:docs` + `git add` (~1s) — Auto-generierte Docs (ADR-Index, Klassen, Tokens)
+1. `npm run sync:docs` + `git add` (~1s) — generated docs (ADR index, classes, tokens)
 2. `npm run build` (tsc + vite, ~4s)
-3. `npx lint-staged` (~1s) — Prettier + ESLint auf gestageten Dateien; auto-fix + re-stage
+3. `npx lint-staged` (~1s) — Prettier + ESLint on staged files; auto-fix + re-stage
 4. `npm run test` (vitest, ~1s)
 5. `npm run test:e2e:smoke` (Chromium + WebKit, ~6s)
-6. `npm run link:check` (~1s) — markdown-link-check auf alle .md-Dateien
+6. `npm run link:check` (~1s) — markdown-link-check on all .md files
 
-**Gesamt: ~15s.** Schlägt ein Gate fehl → Commit wird abgebrochen.
+**Total: ~15s.** If a gate fails → the commit is aborted.
 
-**Aktivierung:** `cd v3 && npm install` aktiviert den Hook automatisch
-(via Husky's `prepare`-Script in `package.json`).
+**Activation:** `cd v3 && npm install` activates the hook automatically (via Husky's
+`prepare` script in `package.json`).
 
 ## Consequences
 
-**Positiv:**
-- Eliminiert eine Fehlerklasse: "Broke in CI but worked locally" — weil
-  lokal nie getestet wurde.
-- Zwingt zu kurzen Feedback-Schleifen: 11s ist schnell genug um nie
-  übersprungen zu werden.
-- Smoke-Tests decken Chromium + WebKit ab — frühe Warnung bei Safari-Inkompatibilitäten.
+**Positive:**
+- Eliminates an error class: "broke in CI but worked locally" — because it was never tested
+  locally.
+- Forces short feedback loops: 11s is fast enough never to be skipped.
+- Smoke tests cover Chromium + WebKit — early warning of Safari incompatibilities.
 
-**Negativ / Trade-offs:**
-- 11s Overhead pro Commit. Bei häufigen WIP-Commits kann das nervig sein.
-  Workaround: `git commit --no-verify` für echte WIP-Commits (nicht empfohlen).
-- Erfordert Node.js und alle Dependencies im `v3/`-Verzeichnis.
-  Nach `git clone`: `cd v3 && npm install` ist Pflicht.
+**Negative / Trade-offs:**
+- 11s overhead per commit. With frequent WIP commits that can be annoying. Workaround:
+  `git commit --no-verify` for genuine WIP commits (not recommended).
+- Requires Node.js and all dependencies in the `v3/` directory. After `git clone`:
+  `cd v3 && npm install` is mandatory.
 
-## Alternatives Considered
+## Alternatives considered
 
-**Nur Build im Pre-Commit:** Schneller (~4s). Aber Unit-Test- und Smoke-E2E-
-Fehler werden erst in CI entdeckt — zu spätes Feedback.
+**Build only in pre-commit:** faster (~4s). But unit test and smoke E2E failures are only found
+in CI — feedback too late.
 
-**CI-only Gates:** Kein lokaler Hook. Warten auf CI (Minutes statt Seconds)
-verlangsamt den Development-Rhythmus.
+**CI-only gates:** no local hook. Waiting for CI (minutes instead of seconds) slows the
+development rhythm.
 
 ## Related
 
-- **Dateien:** `v3/.husky/pre-commit`, `v3/package.json` (prepare script)
-- **ADRs:** ADR-0033 (Test-Strategie), ADR-0040 (CI-Deploy gated auf Tests)
-- **Quelldokumente:** `CLAUDE.md §Pre-commit checklist`, `docs/development/testing.md §Pre-Commit-Hook`
+- **Files:** `v3/.husky/pre-commit`, `v3/package.json` (prepare script)
+- **ADRs:** ADR-0033 (test strategy), ADR-0040 (CI deploy gated on tests)
+- **Source documents:** `CLAUDE.md §Pre-commit checklist`, `docs/development/testing.md §Pre-commit hook`
 - **Commits:** `4296648` — chore: add husky pre-commit hook; `9839fdb` — chore: extend pre-commit hook with smoke e2e tests

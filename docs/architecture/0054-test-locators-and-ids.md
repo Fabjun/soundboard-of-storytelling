@@ -61,7 +61,7 @@ spelling (`boardlist`, `modetoggle`, `startscreen`). The app had 40 buttons but 
 - Single and loop pads are both asserted as "pressed" while playing; the visual difference
   (hot vs looping glow) is not asserted by E2E.
 
-## Alternatives Considered
+## Alternatives considered
 
 **Keep test IDs first** (ADR-0038): stable across label changes, but contrary to current
 guidance and leaves accessibility gaps. Rejected.

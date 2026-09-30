@@ -1,65 +1,60 @@
-# ADR-0030: Auto-Save mit 500 ms Debounce — kein expliziter Save-Button
+# ADR-0030: Auto-save with 500 ms debounce — no explicit save button
 
 **Status:** Accepted
 **Date:** 2026-05-27
 **Slice:** Slice 3
-
+**Refines:** —
 **Category:** Interaction
 
 ## Context
 
-PWA-Apps ohne Backend haben keinen "Server speichert beim Schließen"-Pfad.
-Wenn der User das Tab schließt ohne gespeichert zu haben, gehen Änderungen verloren.
+PWAs without a backend have no "the server saves on close" path. If the user closes the tab
+without saving, changes are lost.
 
-Optionen: Expliziter Save-Button (wie in Desktop-Software), Auto-Save bei jeder
-Änderung, oder debounced Auto-Save.
+Options: an explicit save button (as in desktop software), auto-save on every change, or
+debounced auto-save.
 
-V1 hatte explizites Speichern in manchen Bereichen — das führte zu Datenverlust
-wenn User vergaßen zu speichern. V3 soll das vermeiden.
+V1 had explicit saving in some areas — that led to data loss when users forgot to save. V3 is
+meant to avoid that.
 
-> *Diese Entscheidung war nicht explizit als Regel dokumentiert; sie wurde aus
-> dem konsistenten Code-Muster (jede Mutation ruft boardPut mit Debounce auf)
-> abgeleitet und ist als Deviation in CLAUDE.md implizit dokumentiert
-> ("Auto-Save mit 500ms Debounce, kein expliziter Save-Button").*
+> *This decision was not documented explicitly as a rule; it was derived from the consistent
+> code pattern (every mutation calls boardPut with a debounce) and is documented implicitly
+> as a deviation in CLAUDE.md ("auto-save with 500 ms debounce, no explicit save button").*
 
 ## Decision
 
-Jede Board/Scene/Pad-Mutation triggert einen **500 ms debounced Write** in IDB
-via `boardPut(board)`. Es gibt keinen expliziten "Save"-Button im SETUP-Modus.
+Every board/scene/pad mutation triggers a **500 ms debounced write** to IDB via
+`boardPut(board)`. There is no explicit "Save" button in SETUP mode.
 
-**Technisches Muster:**
-1. User-Aktion ändert den Board-State in Signals
-2. `useEffect`/`useSignalEffect` oder Event-Handler ruft `boardPut(board)` auf
-3. Debounce: wenn innerhalb von 500 ms weitere Änderungen kommen, wird nur
-   der letzte Write ausgeführt
+**Technical pattern:**
+1. A user action changes the board state in signals
+2. `useEffect`/`useSignalEffect` or an event handler calls `boardPut(board)`
+3. Debounce: if further changes arrive within 500 ms, only the last write is executed
 
 ## Consequences
 
-**Positiv:**
-- Kein Datenverlust durch vergessenes Speichern.
-- Einfachere UX: kein "Unsaved changes"-Dialog beim Tab-Schließen.
-- Kompatibel mit PWA offline-first: Daten sind immer in IDB aktuell.
+**Positive:**
+- No data loss from forgotten saving.
+- Simpler UX: no "unsaved changes" dialog when closing the tab.
+- Compatible with PWA offline-first: the data in IDB is always current.
 
-**Negativ / Trade-offs:**
-- Write-Amplification zusammen mit ADR-0010 (Board als Dokument): jede
-  Pad-Bewegung schreibt das komplette ~50 KB-Dokument. Debounce begrenzt
-  die Frequenz (max. 2 Writes/s bei kontinuierlicher Aktivität).
-- Kein Undo bei unbeabsichtigten Änderungen — es sei denn die App
-  implementiert explizites Undo. Slice 3 hat Undo für Scene-Delete als
-  spezifischen Fall (UndoToast-Komponente).
+**Negative / Trade-offs:**
+- Write amplification together with ADR-0010 (board as a document): every pad move writes the
+  complete ~50 KB document. The debounce limits the frequency (max. 2 writes/s during
+  continuous activity).
+- No undo for unintended changes — unless the app implements explicit undo. Slice 3 has undo
+  for scene delete as a specific case (UndoToast component).
 
-## Alternatives Considered
+## Alternatives considered
 
-**Expliziter Save-Button:** Bekannte UX für Desktop-Software. Für eine mobile
-PWA an einem Spieltisch unpassend: User ist mental beschäftigt, wird Speichern
-vergessen.
+**Explicit save button:** familiar UX for desktop software. Unsuitable for a mobile PWA at a
+gaming table: the user is mentally busy and will forget to save.
 
-**Kein Debounce (sofort bei jeder Änderung):** Maximale Datensicherheit.
-Bei schnellen DnD-Moves wären das 10+ Writes in 500 ms. Messbar schlechtere
-Performance.
+**No debounce (immediately on every change):** maximum data safety. Fast DnD moves would mean
+10+ writes in 500 ms. Measurably worse performance.
 
 ## Related
 
-- **Dateien:** `v3/src/db/idb.ts` (boardPut), `v3/src/screens/BoardScreen.tsx`
-- **ADRs:** ADR-0010 (Board als JSON-Dokument — Write-Amplification), ADR-0014 (IDB Persistenz)
-- **Quelldokumente:** `CLAUDE.md §Deviations from plan`
+- **Files:** `v3/src/db/idb.ts` (boardPut), `v3/src/screens/BoardScreen.tsx`
+- **ADRs:** ADR-0010 (board as JSON document — write amplification), ADR-0014 (IDB persistence)
+- **Source documents:** `CLAUDE.md §Deviations from plan`

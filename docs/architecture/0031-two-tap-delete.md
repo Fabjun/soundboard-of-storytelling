@@ -1,60 +1,57 @@
-# ADR-0031: 2-Tap-Delete als Standard-Confirm-Pattern
+# ADR-0031: 2-tap delete as the standard confirm pattern
 
 **Status:** Accepted
 **Date:** 2026-05-27
 **Slice:** cross-cutting
-
+**Refines:** —
 **Category:** Interaction
 
 ## Context
 
-Delete-Operationen (Pad löschen, Library-Eintrag löschen, Scene löschen,
-Board löschen) sind destruktiv und schwer rückgängig zu machen (Auto-Save
-schreibt sofort, ADR-0030). Ein versehentliches Tap auf einem iPhone mit
-kleinen Targets führt ohne Bestätigung zu Datenverlust.
+Delete operations (delete a pad, a library entry, a scene, a board) are destructive and hard
+to undo (auto-save writes immediately, ADR-0030). An accidental tap on an iPhone with small
+targets leads to data loss without confirmation.
 
-Standard-Alternativen: Modal/Dialog ("Are you sure?"), Undo-Toast, oder
-2-Tap-Confirm direkt am Delete-Button.
+Standard alternatives: a modal/dialog ("Are you sure?"), an undo toast, or a 2-tap confirm
+directly on the delete button.
 
-`CLAUDE.md §Permanent coding standards` und `CLAUDE.md §UI rules` legen explizit
-fest: "Every delete button: 2-tap confirmation."
+`CLAUDE.md §Permanent coding standards` and `CLAUDE.md §UI rules` state explicitly: "Every
+delete button: 2-tap confirmation."
 
 ## Decision
 
-Jeder Delete-Button verwendet **2-Tap-Confirm**: Erstes Tap zeigt den Confirm-State
-des Buttons (visuell hervorgehoben, Label "CONFIRM" oder mit `is-danger`-State),
-zweites Tap führt die Operation aus. Kein Modal, kein separater Dialog.
+Every delete button uses a **2-tap confirm**: the first tap shows the button's confirm state
+(visually highlighted, label "CONFIRM" or with the `is-danger` state), the second tap
+executes the operation. No modal, no separate dialog.
 
-Der Confirm-State setzt sich automatisch zurück nach ~3 Sekunden ohne zweiten
-Tap (oder bei Tap außerhalb des Buttons).
+The confirm state resets automatically after ~3 seconds without a second tap (or on a tap
+outside the button).
 
 ## Consequences
 
-**Positiv:**
-- Kein versehentliches Löschen durch einen Einzeltap.
-- Kein Modal-Interrupt (unterbricht den Flow weniger als ein Dialog).
-- Funktioniert ohne separate Overlay-Komponente.
-- Mindest-Touch-Target 44 px (iOS guideline, CLAUDE.md §UI rules) wird
-  eingehalten — auch im Confirm-State.
+**Positive:**
+- No accidental deletion from a single tap.
+- No modal interruption (interrupts the flow less than a dialog).
+- Works without a separate overlay component.
+- The minimum touch target of 44 px (iOS guideline, CLAUDE.md §UI rules) is kept — also in
+  the confirm state.
 
-**Negativ / Trade-offs:**
-- Zwei Taps statt einer für jede Delete-Operation. Leicht erhöhter Aufwand
-  für Power-User.
-- Stateful: der Confirm-State muss in der Komponente gehalten werden
-  (`useState` oder ähnlich). Kein globaler State nötig.
+**Negative / Trade-offs:**
+- Two taps instead of one for every delete operation. Slightly more effort for power users.
+- Stateful: the confirm state has to be held in the component (`useState` or similar). No
+  global state needed.
 
-## Alternatives Considered
+## Alternatives considered
 
-**Modal/Dialog:** Standard in Desktop-Apps. Auf Mobile mit kleinem Screen
-ist ein Modal mehr visueller Interrupt als nötig.
+**Modal/dialog:** standard in desktop apps. On mobile with a small screen a modal is more of a
+visual interruption than necessary.
 
-**Undo-Toast:** Sofort löschen, dann 5s Undo-Möglichkeit zeigen. Eleganter
-UX, aber technisch aufwändiger (IDB-Rollback). Slice 3 nutzt Undo-Toast
-spezifisch für Scene-Delete (wo Datenverlust besonders groß sein kann).
-Als Standard-Pattern nicht gewählt.
+**Undo toast:** delete immediately, then show a 5 s undo option. More elegant UX, but more
+technical effort (IDB rollback). Slice 3 uses the undo toast specifically for scene delete
+(where data loss can be especially large). Not chosen as the standard pattern.
 
 ## Related
 
-- **Dateien:** `v3/src/components/AudioRow.tsx` (2-tap delete für Library), `v3/src/components/SceneRail.tsx`, `v3/src/screens/BoardListScreen.tsx`
-- **ADRs:** ADR-0030 (Auto-Save macht Undo ohne explizites Pattern schwierig)
-- **Quelldokumente:** `CLAUDE.md §Permanent coding standards`, `CLAUDE.md §UI rules`
+- **Files:** `v3/src/components/AudioRow.tsx` (2-tap delete for the library), `v3/src/components/SceneRail.tsx`, `v3/src/screens/BoardListScreen.tsx`
+- **ADRs:** ADR-0030 (auto-save makes undo hard without an explicit pattern)
+- **Source documents:** `CLAUDE.md §Permanent coding standards`, `CLAUDE.md §UI rules`

@@ -1,26 +1,27 @@
-# ADR-0040: GitHub Pages Deployment gated auf CI (`workflow_run`)
+# ADR-0040: GitHub Pages deployment gated on CI (`workflow_run`)
 
-**Status:** Accepted — refined by ADR-0049 (deploy the tested artifact, push-only guard)
+**Status:** Accepted
 **Date:** 2026-05-27
 **Slice:** infrastructure
-
+**Refines:** —
+**Refined by:** ADR-0049 (deploy the tested artifact, push-only guard)
 **Category:** Test infrastructure & workflow
 
 ## Context
 
-V3 wird auf GitHub Pages deployed. Das Deployment soll nur stattfinden, wenn
-alle Tests grün sind — sonst wird ein kaputtes Build auf der Live-URL deployed.
+V3 is deployed to GitHub Pages. The deployment should only happen when all tests are green —
+otherwise a broken build is deployed to the live URL.
 
-Das technische Problem: GitHub Actions hat `needs` für intra-Workflow-Sequenzierung
-und `workflow_run` für cross-Workflow-Sequenzierung. `needs` funktioniert nur
-wenn beide Jobs in derselben Workflow-Datei sind.
+The technical problem: GitHub Actions has `needs` for intra-workflow sequencing and
+`workflow_run` for cross-workflow sequencing. `needs` only works if both jobs are in the same
+workflow file.
 
-`deploy-pages.yml` und `tests.yml` sind separate Workflow-Dateien (saubere
-Trennung von Concerns). Das erfordert `workflow_run`.
+`deploy-pages.yml` and `tests.yml` are separate workflow files (clean separation of
+concerns). That requires `workflow_run`.
 
 ## Decision
 
-`deploy-pages.yml` triggert via `workflow_run`:
+`deploy-pages.yml` triggers via `workflow_run`:
 
 ```yaml
 on:
@@ -28,43 +29,41 @@ on:
     workflows: ["Tests"]
     types: [completed]
     branches: [main]
-  workflow_dispatch:  # manuelle Auslösung erlaubt
+  workflow_dispatch:  # manual trigger allowed
 ```
 
-Zusätzlicher Guard im Job: `if: github.event.workflow_run.conclusion == 'success'`.
+An additional guard in the job: `if: github.event.workflow_run.conclusion == 'success'`.
 
-Nur bei Erfolg von `tests.yml` auf `main` wird deployed.
+Only when `tests.yml` succeeds on `main` is there a deploy.
 
-`workflow_dispatch` ermöglicht manuelles Re-Deploy (z.B. nach Branch-Push
-ohne Code-Änderung).
+`workflow_dispatch` allows a manual re-deploy (e.g. after a branch push without code change).
 
 ## Consequences
 
-**Positiv:**
-- Broken-Build-Deployment ist strukturell ausgeschlossen (nicht nur durch Konvention).
-- Klare Trennung: `tests.yml` für CI-Quality-Gates, `deploy-pages.yml` für Deployment.
+**Positive:**
+- Deploying a broken build is excluded structurally (not only by convention).
+- A clear separation: `tests.yml` for CI quality gates, `deploy-pages.yml` for deployment.
 
-**Negativ / Trade-offs:**
-- ~~`workflow_run` hat eine Besonderheit: es triggert nicht auf Pull Requests
-  von Forks (Security-Einschränkung von GitHub). Für ein Single-Developer-
-  Projekt kein Problem.~~ **Korrektur 2026-09-29: falsch.** `workflow_run` feuert auch
-  nach `pull_request`-Läufen, und ein Fork kann seinen Branch `main` nennen. Seit
-  ADR-0049 prüft der Deploy Ereignis (`push`) und Herkunfts-Repo.
-- Deployment-Latenz: `workflow_run` startet nach Abschluss von `tests.yml`
-  (nicht parallel). Gesamtlatenz: Tests (~3 min) + Deploy (~1 min).
+**Negative / Trade-offs:**
+- ~~`workflow_run` has a special property: it does not trigger for pull requests from forks
+  (a GitHub security restriction). No problem for a single-developer project.~~
+  **Correction 2026-09-29: wrong.** `workflow_run` also fires after `pull_request` runs, and a
+  fork can name its branch `main`. Since ADR-0049 the deploy checks the event (`push`) and the
+  source repository.
+- Deployment latency: `workflow_run` starts after `tests.yml` has finished (not in parallel).
+  Total latency: tests (~3 min) + deploy (~1 min).
 
-## Alternatives Considered
+## Alternatives considered
 
-**Beide Workflows in einer Datei:** Würde `needs` ermöglichen. Nachteil:
-weniger klare Separation of Concerns (Test-Definition und Deploy-Definition
-vermischt).
+**Both workflows in one file:** would allow `needs`. Drawback: less clear separation of
+concerns (test definition and deploy definition mixed).
 
-**Direktes Push-Trigger für Deploy ohne Test-Gate:** Einfacher, aber riskiert
-Broken-Build-Deployments.
+**A direct push trigger for the deploy without a test gate:** simpler, but risks deploying
+broken builds.
 
 ## Related
 
-- **Dateien:** `.github/workflows/tests.yml`, `.github/workflows/deploy-pages.yml`
-- **ADRs:** ADR-0033 (Test-Strategie), ADR-0037 (Husky Pre-Commit)
-- **Quelldokumente:** `docs/development/testing.md §CI-Integration`, `CLAUDE.md §Deviations from plan`
+- **Files:** `.github/workflows/tests.yml`, `.github/workflows/deploy-pages.yml`
+- **ADRs:** ADR-0033 (test strategy), ADR-0037 (Husky pre-commit)
+- **Source documents:** `docs/development/testing.md §CI integration`, `CLAUDE.md §Deviations from plan`
 - **Commits:** `0fcb4e9` — ci: add github actions test workflow; `9de5c19` — chore: add github pages deployment workflow

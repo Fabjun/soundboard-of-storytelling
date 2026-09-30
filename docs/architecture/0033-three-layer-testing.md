@@ -1,65 +1,63 @@
-# ADR-0033: Vier-Schichten-Test-Strategie (Unit / E2E Smoke / E2E Full / Visual)
+# ADR-0033: Four-layer test strategy (unit / E2E smoke / E2E full / visual)
 
 **Status:** Accepted
 **Date:** 2026-05-27
 **Slice:** infrastructure
-
+**Refines:** —
 **Category:** Test infrastructure & workflow
 
 ## Context
 
-Testing-Infrastruktur wurde in Phase 1 (Slice 3.5) nach Abschluss von Slice 3
-eingeführt. Zu diesem Zeitpunkt existierten 3 Feature-Slices mit substantiellem
-Code. Die Frage: Welche Test-Typen, welche Tools, welche Abdeckungsziele?
+The testing infrastructure was introduced in phase 1 (Slice 3.5) after Slice 3 was complete.
+At that point 3 feature slices with substantial code existed. The question: which test types,
+which tools, which coverage goals?
 
-`docs/architecture/concept-brief.md §6` hatte Tests ursprünglich als "deferred" markiert. Nach
-Slice 3 wurde klar, dass ohne automatisierte Tests das weitere Slice-Development
-riskant würde (Regressionen nicht erkennbar).
+`docs/architecture/concept-brief.md §6` had originally marked tests as "deferred". After Slice 3
+it became clear that further slice development without automated tests would be risky
+(regressions not detectable).
 
 ## Decision
 
-**Vier Test-Schichten:**
+**Four test layers:**
 
-| Schicht | Tool | Zweck | Laufzeit | CI |
+| Layer | Tool | Purpose | Runtime | CI |
 |---------|------|-------|----------|----|
-| Unit | Vitest | Logik-Korrektheit (pure functions, signals, IDB) | ~1s | ✓ |
-| E2E Smoke | Playwright Chromium+WebKit | Kritische Pfade | ~6s | ✓ |
-| E2E Full | Playwright Chromium | Vollständige Verifikation (Slices 3–4): Board/Scene/Pad CRUD, Audio-Engine | ~90s | ✓ |
-| Visual Regression | Playwright Screenshots | Pixel-Vergleich | ~30s | ✗ (lokal only) |
+| Unit | Vitest | Logic correctness (pure functions, signals, IDB) | ~1s | ✓ |
+| E2E smoke | Playwright Chromium+WebKit | Critical paths | ~6s | ✓ |
+| E2E full | Playwright Chromium | Full verification (slices 3–4): board/scene/pad CRUD, audio engine | ~90s | ✓ |
+| Visual regression | Playwright screenshots | Pixel comparison | ~30s | ✗ (local only) |
 
-**Gate-Reihenfolge:** Unit → E2E Smoke → E2E Full (CI); Pre-Commit: sync:docs → Build → lint-staged → Unit → E2E Smoke → link:check (ADR-0037); Pre-Push: Version-Bump + Size → E2E All (ADR-0037).
+**Gate order:** unit → E2E smoke → E2E full (CI); pre-commit: sync:docs → build → lint-staged → unit → E2E smoke → link:check (ADR-0037); pre-push: version bump + size → E2E all (ADR-0037).
 
-**Bundle-Size-Monitoring:** `@size-limit/file` misst gzip-Größen nach Build.
-Limits: JS 200 KB, CSS 50 KB. In CI integriert. Hinweis: `@size-limit/preset-app`
-wurde verworfen, weil es Chrome für Timing-Messungen via `estimo` verwendet
-und auf ARM-Mac (M-Chip) wegen Chromium-Binary-Inkompatibilität crashed.
-`@size-limit/file` misst gzip-Größe ohne Chrome-Dependency — ausreichend.
+**Bundle size monitoring:** `@size-limit/file` measures gzip sizes after the build. Limits: JS
+200 KB, CSS 50 KB. Integrated in CI. Note: `@size-limit/preset-app` was rejected because it
+uses Chrome for timing measurements via `estimo` and crashes on ARM Macs (M chip) due to a
+Chromium binary incompatibility. `@size-limit/file` measures gzip size without a Chrome
+dependency — sufficient.
 
 ## Consequences
 
-**Positiv:**
-- Unit-Tests decken Logik-Korrektheit ab (pure functions in `src/lib/`, Signals in `src/state/`).
-- Smoke-Tests laufen in ~6s und decken die fünf kritischsten Pfade ab.
-- Visual Regression verhindert unbeabsichtigte UI-Änderungen (lokal vor
-  UI-relevanten Commits).
+**Positive:**
+- Unit tests cover logic correctness (pure functions in `src/lib/`, signals in `src/state/`).
+- Smoke tests run in ~6s and cover the five most critical paths.
+- Visual regression prevents unintended UI changes (locally before UI-relevant commits).
 
-**Negativ / Trade-offs:**
-- E2E Full mit ~90s ist zu lang für Pre-Commit (läuft nur in CI).
-- Visual Regression schlägt auf Ubuntu-CI fehl (Font-Rendering-Unterschied,
-  ADR-0036) — wird aus CI ausgeschlossen.
+**Negative / Trade-offs:**
+- E2E full at ~90s is too long for pre-commit (runs only in CI).
+- Visual regression fails on Ubuntu CI (font rendering difference, ADR-0036) — excluded from
+  CI.
 
-## Alternatives Considered
+## Alternatives considered
 
-**Nur Unit-Tests:** Schnell, aber deckt keine Browser-Kompatibilität, keine
-Routing-Logik, keine IDB-Round-trips ab. Reicht nicht für eine App mit komplexem
-UI-State.
+**Unit tests only:** fast, but covers no browser compatibility, no routing logic, no IDB
+round trips. Not enough for an app with complex UI state.
 
-**Nur E2E:** Langsam, schwer zu debuggen. Unit-Tests für pure functions sind
-die schnellste Feedback-Schleife.
+**E2E only:** slow, hard to debug. Unit tests for pure functions are the fastest feedback
+loop.
 
 ## Related
 
-- **Dateien:** `v3/vitest.config.ts`, `v3/playwright.config.ts`, `v3/.size-limit.json`, `docs/development/testing.md`
-- **ADRs:** ADR-0034 (Vitest), ADR-0035 (Playwright), ADR-0036 (Visual Regression macOS), ADR-0037 (Husky Pre-Commit)
-- **Quelldokumente:** `docs/development/testing.md §Überblick`
+- **Files:** `v3/vitest.config.ts`, `v3/playwright.config.ts`, `v3/.size-limit.json`, `docs/development/testing.md`
+- **ADRs:** ADR-0034 (Vitest), ADR-0035 (Playwright), ADR-0036 (visual regression macOS), ADR-0037 (Husky pre-commit)
+- **Source documents:** `docs/development/testing.md §Overview`
 - **Commits:** `47ff8b0` — chore: add vitest setup; `4e1152f` — chore: add playwright e2e setup

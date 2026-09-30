@@ -52,18 +52,18 @@ Mapping applied on 2026-09-29: `BACKLOG.md` → `docs/backlog.md`, `TESTING.md` 
 
 ## Consequences
 
-**Positiv:**
+**Positive:**
 - One recognisable scheme; GitHub shows each area's hub when the folder is opened.
 - Case-mismatch links can no longer slip through on macOS.
 - The public changelog is always current.
 
-**Negativ / Trade-offs:**
+**Negative / Trade-offs:**
 - Several files named `README.md` — editors disambiguate by folder.
 - Plain-text references are longer (`docs/design/design-system.md §6` instead of
   `DESIGN_SYSTEM.md §6`).
 - Historic commit messages and changelog entries keep the old names.
 
-## Alternatives Considered
+## Alternatives considered
 
 **`index.md` as hub name:** common for documentation site generators, but GitHub does not
 render it automatically when a folder is opened. Rejected while GitHub is the reading
@@ -74,8 +74,8 @@ lowercase ADRs and component specs. Rejected.
 
 ## Related
 
-- **Dateien:** `v3/tests/unit/docsGuards.test.ts`, `scripts/sync-changelog.ts`,
+- **Files:** `v3/tests/unit/docsGuards.test.ts`, `scripts/sync-changelog.ts`,
   `docs/README.md`
 - **ADRs:** ADR-0047 (documentation architecture, refined here)
-- **Quelldokumente:** `docs/README.md`, `CLAUDE.md` §Reference documents
+- **Source documents:** `docs/README.md`, `CLAUDE.md` §Reference documents
 - **Commits:** see git log "(1/3)", "(2/3)", "(3/3)" on 2026-09-29

@@ -1,59 +1,57 @@
-# ADR-0023: Fünf-Ebenen-Surface-Hierarchie
+# ADR-0023: Five-level surface hierarchy
 
 **Status:** Accepted
 **Date:** 2026-05-27
 **Slice:** cross-cutting
-
+**Refines:** —
 **Category:** UI architecture
 
 ## Context
 
-Das Design-System definiert eine explizite Tiefenhierarchie für alle Flächen
-der App. Das schafft visuelle Ordnung und macht es für den User intuitiv, welche
-Elemente "näher" oder "weiter" sind (Canvas, Panels, Cards, Hover-States).
+The design system defines an explicit depth hierarchy for every surface of the app. This
+creates visual order and makes it intuitive for the user which elements are "nearer" or
+"further away" (canvas, panels, cards, hover states).
 
-> *Diese Entscheidung war nicht als separater ADR dokumentiert; sie stammt direkt
-> aus dem Design-System (HANDOFF.md §4.2) und wird hier als Architektur-Regel
-> festgehalten, weil Verstöße (falsches Token für eine Ebene) zu visuellem
-> Chaos führen.*
+> *This decision was not documented as a separate ADR; it comes directly from the design
+> system (HANDOFF.md §4.2) and is recorded here as an architecture rule because violations
+> (the wrong token for a level) lead to visual chaos.*
 
 ## Decision
 
-Fünf Ebenen, in Reihenfolge von dunkelster zur hellsten:
+Five levels, ordered from darkest to lightest:
 
-| Ebene | Token | Verwendung |
+| Level | Token | Use |
 |-------|-------|------------|
-| 1 | `--night` | Canvas hinter allem |
-| 2 | `--deep` | Persistentes Chrome (TopBar, StatusBar) |
-| 3 | `--surface` | Seiten-Hintergrund innerhalb des Fensters |
-| 4 | `--raised` | Inhalte innerhalb `--surface` (Cards, Inputs) |
-| 5 | `--top` | Transiente States (Hover, Selected Row) |
+| 1 | `--night` | Canvas behind everything |
+| 2 | `--deep` | Persistent chrome (TopBar, StatusBar) |
+| 3 | `--surface` | Page background inside the window |
+| 4 | `--raised` | Content inside `--surface` (cards, inputs) |
+| 5 | `--top` | Transient states (hover, selected row) |
 
-**Regeln:**
-- Keine 6. Ebene
-- Keine übersprungenen Ebenen (z.B. nie `--night` direkt unter einem `--raised`-Element)
-- Jede Ebene ist auf allen Themes visuell unterscheidbar
+**Rules:**
+- No sixth level
+- No skipped levels (e.g. never `--night` directly under a `--raised` element)
+- Every level is visually distinguishable in all themes
 
 ## Consequences
 
-**Positiv:**
-- User erkennt intuitiv "was sitzt über was" ohne explizite Erklärung.
-- Theme-Switching (Slice 8) ist konsistent: alle fünf Ebenen werden im Theme
-  überschrieben.
-- Neue Komponenten folgen einem klaren Schema.
+**Positive:**
+- The user intuitively sees "what sits on top of what" without explanation.
+- Theme switching (Slice 8) is consistent: all five levels are overridden in the theme.
+- New components follow a clear scheme.
 
-**Negativ / Trade-offs:**
-- Constraint: manchmal ist man versucht, eine 6. Ebene einzuführen (z.B. Tooltip
-  oder Modal). Tooltip und Modal sollten auf `--top` + `box-shadow` oder
-  `filter: drop-shadow` liegen (ADR-0024), nicht auf einer 6. Ebene.
+**Negative / Trade-offs:**
+- Constraint: one is sometimes tempted to introduce a sixth level (e.g. tooltip or modal).
+  Tooltip and modal should sit on `--top` + `box-shadow` or `filter: drop-shadow`
+  (ADR-0024), not on a sixth level.
 
-## Alternatives Considered
+## Alternatives considered
 
-**Beliebige Tiefenschritte:** Mehr Flexibilität. Nachteil: inkonsistente visuelle
-Sprache zwischen Screens und Komponenten.
+**Arbitrary depth steps:** more flexibility. Drawback: an inconsistent visual language across
+screens and components.
 
 ## Related
 
-- **Dateien:** `v3/src/styles/tokens.css` (--night, --deep, --surface, --raised, --top)
-- **ADRs:** ADR-0022 (Design Tokens), ADR-0024 (clip-path + drop-shadow)
-- **Quelldokumente:** `design-sources/2026-05-25/HANDOFF.md §4.2`, `CLAUDE.md §Design language §Color palette`
+- **Files:** `v3/src/styles/tokens.css` (--night, --deep, --surface, --raised, --top)
+- **ADRs:** ADR-0022 (design tokens), ADR-0024 (clip-path + drop-shadow)
+- **Source documents:** `design-sources/2026-05-25/HANDOFF.md §4.2`, `CLAUDE.md §Design language §Color palette`

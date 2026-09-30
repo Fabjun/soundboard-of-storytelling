@@ -43,19 +43,19 @@ files (ADR-0050); GitHub recognises both locations.
 
 ## Consequences
 
-**Positiv:**
+**Positive:**
 - Leaked tokens are blocked before they reach the public history.
 - Known vulnerabilities surface as alerts and fix PRs without waiting for the weekly audit.
 - `main` history cannot be rewritten or deleted — also not by an agent mistake.
 - A compromised third-party action cannot run in CI without a deliberate change.
 
-**Negativ / Trade-offs:**
+**Negative / Trade-offs:**
 - A genuinely needed history rewrite on `main` requires disabling the ruleset first.
 - Adopting a third-party action requires changing the allowed-actions setting.
 - Settings live outside the repository; drift is only caught by re-running the verify
   commands (not automated — the workflow token cannot read admin settings).
 
-## Alternatives Considered
+## Alternatives considered
 
 **Require pull requests with status checks for `main`:** strongest gate, but changes the
 solo workflow (direct pushes, pre-push hook as local gate). Not now.
@@ -65,7 +65,7 @@ actions only, Dependabot keeps versions current.
 
 ## Related
 
-- **Dateien:** `.github/SECURITY.md`, `.github/dependabot.yml`, `.github/workflows/`
+- **Files:** `.github/SECURITY.md`, `.github/dependabot.yml`, `.github/workflows/`
 - **ADRs:** ADR-0040, ADR-0049 (deployment), ADR-0050 (root file allowlist)
-- **Quelldokumente:** `docs/backlog.md` T9
+- **Source documents:** `docs/backlog.md` T9
 - **Commits:** see git log "…(T9)"

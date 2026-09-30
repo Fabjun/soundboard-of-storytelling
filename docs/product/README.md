@@ -88,7 +88,7 @@ exist yet).
 ### Open
 
 - Previewing a sound must not be audible in the room (separate audio routing). See
-  [BACKLOG B9](../backlog.md#b9--gap-einordnung-drei-bestätigungen-zwei-neue-kandidaten)
+  [BACKLOG B9](../backlog.md#b9--gap-classification-three-confirmations-two-new-candidates)
   ("Audition vs. live output").
 
 **Not covered here:** visual mode cues (colors, pad borders, backgrounds) → docs/design/README.md;

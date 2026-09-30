@@ -1,112 +1,111 @@
-# ADR-0045: Zwei-Achsen-Adaptives Modell — eine App, keine getrennten Systeme
+# ADR-0045: Two-axis adaptive model — one app, no separate systems
 
 **Status:** Accepted
 **Date:** 2026-06-04
 **Slice:** cross-cutting
+**Refines:** —
 **Category:** UI architecture
 
 ## Context
 
-Das Projekt hielt ursprünglich (docs/backlog.md, Stable Directions) die Richtungsentscheidung
-"Desktop after mobile; two separate interaction systems": Mobile und Desktop als zwei
-getrennte Systeme, getrennt nach **Eingabetyp** (Touch vs. Mouse/Keyboard), Desktop als
-nachgelagerter separater Block. Parallel entstand eine Frage: Wie soll die App zwischen
-mobiler und Desktop-Ansicht wechseln, und wie wird das Gerät detektiert?
+The project originally held (docs/backlog.md, stable directions) the directional decision
+"Desktop after mobile; two separate interaction systems": mobile and desktop as two separate
+systems, split by **input type** (touch vs. mouse/keyboard), with desktop as a later separate
+block. In parallel a question came up: how should the app switch between the mobile and the
+desktop view, and how is the device detected?
 
-Diese Framing-Entscheidung zeigte Schwächen:
-- Moderne Geräte verwischen die alte Mobile/Desktop-Grenze (Touch-Laptops, mausbetriebene
-  Phones, Tablets mit Tastatur).
-- Das Detektierungs- und Versionswechsel-Problem ist prinzipiell schwer lösbar — es gibt
-  keinen zuverlässigen automatischen Mechanismus, der alle Hybridgeräte korrekt klassifiziert.
-- "Request Desktop Site" auf iOS ändert nur den User-Agent-String, nicht den physischen
-  Viewport und nicht die `pointer`-Media-Query — ein UA-basierter Switch wäre unzuverlässig.
+This framing showed weaknesses:
+- Modern devices blur the old mobile/desktop boundary (touch laptops, phones operated with a
+  mouse, tablets with keyboards).
+- The detection and version-switching problem is hard to solve in principle — there is no
+  reliable automatic mechanism that classifies every hybrid device correctly.
+- "Request Desktop Site" on iOS only changes the user-agent string, not the physical viewport
+  and not the `pointer` media query — a UA-based switch would be unreliable.
 
 ## Decision
 
-Die App ist **EINE adaptive Anwendung** — keine getrennten Versionen, kein Versions-Switch.
-Die Präsentation adaptiert sich entlang **zwei unabhängiger Achsen**:
+The app is **ONE adaptive application** — no separate versions, no version switch. The
+presentation adapts along **two independent axes**:
 
-### Axis 1 — Screen Format (räumliches Layout)
+### Axis 1 — screen format (spatial layout)
 
-Bestimmt, **wo** Elemente sitzen. Schmal/Hochformat → Dock-Leiste unten, Daumenzone.
-Breit/Querformat → Side-Rail, mehr Gleichzeitigkeit, weniger "Reach"-basiertes Layout.
-Dies ist die responsive Achse (CSS-Breakpoints).
+Determines **where** elements sit. Narrow/portrait → dock bar at the bottom, thumb zone.
+Wide/landscape → side rail, more simultaneity, less "reach"-based layout. This is the
+responsive axis (CSS breakpoints).
 
-**Wichtig:** Die Dock-Kanten-Position (Bottom-Bar vs. Side-Rail) hängt vom **Screen-Format**
-ab, NICHT vom Eingabetyp. Ein Phone, das per Maus bedient wird, behält seine Bar unten —
-weil eine Side-Rail im schmalen Hochformat ungeeignet ist, nicht weil es Touch ist.
+**Important:** the docking edge (bottom bar vs. side rail) depends on the **screen format**,
+NOT on the input type. A phone operated with a mouse keeps its bar at the bottom — because a
+side rail is unsuitable in narrow portrait, not because it is touch.
 
-### Axis 2 — Input Type (additive Fähigkeiten)
+### Axis 2 — input type (additive capabilities)
 
-Bestimmt, **was** man tun kann, ohne das räumliche Layout zu verändern. Touch ist immer die
-Basis (funktioniert überall): Gesten (Swipe, Long-Hold), große Targets. Wenn Maus/Tastatur
-vorhanden ist, kommen **ZUSÄTZLICHE** Fähigkeiten hinzu: Hover-Tooltips, Rechtsklick-Menüs,
-Tastaturkürzel. Progressive Enhancement, keine separate Version.
+Determines **what** one can do, without changing the spatial layout. Touch is always the base
+(works everywhere): gestures (swipe, long hold), large targets. When a mouse/keyboard is
+present, **ADDITIONAL** capabilities come on top: hover tooltips, right-click menus, keyboard
+shortcuts. Progressive enhancement, not a separate version.
 
-### Unabhängigkeit der Achsen
+### Independence of the axes
 
-Alle vier Kombinationen ergeben Sinn: schmal+Touch, schmal+Maus, breit+Touch, breit+Maus.
-Der aktuelle Mobile-Prototyp ist die "schmal + Touch"-Region; der bestehende App-Code ist
-die "breit + Maus"-Region. Beide sind Regionen EINER adaptiven App.
+All four combinations make sense: narrow + touch, narrow + mouse, wide + touch, wide + mouse.
+The current mobile prototype is the "narrow + touch" region; the existing app code is the
+"wide + mouse" region. Both are regions of ONE adaptive app.
 
-### Boundary zu ADR-0032
+### Boundary to ADR-0032
 
-Axis-1-Frame-Layout-Adaptation (wo Sidebar/Bands sitzen, abhängig vom Screen-Format) ≠
-das Pad-Grid-Column-Reflow, das ADR-0032 adressiert. ADR-0032 verbietet automatisches
-Reflow der **Pad-Grid-Spaltenanzahl** (die Pads selbst). Axis 1 betrifft das **umgebende
-Frame-Layout**. Beide sind unabhängig; kein Widerspruch.
+Axis-1 frame layout adaptation (where sidebar/bands sit, depending on the screen format) ≠ the
+pad grid column reflow that ADR-0032 addresses. ADR-0032 forbids automatic reflow of the
+**pad grid column count** (the pads themselves). Axis 1 concerns the **surrounding frame
+layout**. Both are independent; no contradiction.
 
-### Dichte / Target-Größe
+### Density / target size
 
-"Dichtere Targets" gehört zu Axis 1 (Screen-Größe → größere Screens ermöglichen dichtere
-Layouts), NICHT zu Axis 2 (Eingabetyp). Die Touch-Mindestgröße (~44 px) gilt als Basis
-für alle Inputs. Eine Maus trifft große Targets problemlos; keine eingabetyp-getriebene
-Dichte-Änderung ist angenommen. Wenn dichtere Layouts je gewünscht werden, gehören sie
-in Axis 1, Large-Screen — nicht hier eingebaut.
+"Denser targets" belongs to axis 1 (screen size → larger screens allow denser layouts), NOT
+to axis 2 (input type). The touch minimum size (~44 px) applies as the base for all inputs. A
+mouse hits large targets without problems; no input-type-driven density change is assumed. If
+denser layouts are ever wanted, they belong to axis 1, large screen — not built in here.
 
-### Detektierung
+### Detection
 
-- **Screen-Format (Axis 1):** Standard-CSS-Breakpoints. Exakte Schwellenwerte werden
-  empirisch auf echten Geräten bestimmt — noch nicht festgelegt.
-- **Eingabetyp (Axis 2):** `pointer: coarse/fine` und `hover`-Media-Queries / Pointer
-  Events API. Das ist der etablierte, zuverlässige Web-Standard.
-- **Nicht verwendbar:** Browser-UA-basierter Switch ("Request Desktop Site" auf iOS
-  ändert nur den UA, Viewport und `pointer`-Query bleiben unverändert — unzuverlässig
-  und unnötig unter dem adaptiven Modell).
+- **Screen format (axis 1):** standard CSS breakpoints. The exact thresholds are determined
+  empirically on real devices — not fixed yet.
+- **Input type (axis 2):** `pointer: coarse/fine` and `hover` media queries / Pointer Events
+  API. That is the established, reliable web standard.
+- **Not usable:** a browser UA-based switch ("Request Desktop Site" on iOS only changes the
+  UA; viewport and the `pointer` query stay unchanged — unreliable and unnecessary under the
+  adaptive model).
 
 ## Consequences
 
-**Positiv:**
-- Das Detektierungs- und Versions-Switch-Problem löst sich auf: keine exklusiven Versionen
-  → nichts zu wechseln, nichts falsch zu detektieren.
-- Hybridgeräte (Touch-Laptop, Maus am Tablet) werden korrekt behandelt: Achse 1 adaptiert
-  das Layout, Achse 2 schaltet Extras dazu — kein falsches Einordnen in eine Kategorie.
-- Bestehender Desktop-App-Code und der Mobile-Prototyp sind bereits zwei Regionen der
-  ONE App; keine Parallelentwicklung zweier Systeme.
-- Klares Verantwortungsprinzip: "Ändert sich wo etwas sitzt?" → Axis 1. "Kommt eine
-  Aktion hinzu?" → Axis 2.
+**Positive:**
+- The detection and version-switch problem dissolves: no exclusive versions → nothing to
+  switch, nothing to detect wrongly.
+- Hybrid devices (touch laptop, mouse on a tablet) are handled correctly: axis 1 adapts the
+  layout, axis 2 adds extras — no wrong classification into one category.
+- The existing desktop app code and the mobile prototype are already two regions of the ONE
+  app; no parallel development of two systems.
+- A clear principle of responsibility: "Does where something sits change?" → axis 1. "Is an
+  action added?" → axis 2.
 
-**Negativ / Trade-offs:**
-- Die exakten Breakpoint-Schwellenwerte (ab wann die Sidebar von unten nach links wandert)
-  sind noch nicht festgelegt — empirische Kalibrierung auf echten Geräten nötig.
-- Bestehende Code- und Design-Artefakte, die die alte Zweiteilung implizieren, müssen
-  sukzessive angepasst werden (eine Arbeit, die mit dem Einwachsen des Mobile-Prototyps
-  in die App einsetzt).
+**Negative / Trade-offs:**
+- The exact breakpoint thresholds (from which point the sidebar moves from the bottom to the
+  left) are not fixed yet — empirical calibration on real devices is needed.
+- Existing code and design artefacts that imply the old split have to be adapted step by step
+  (work that starts when the mobile prototype grows into the app).
 
-## Alternatives Considered
+## Alternatives considered
 
-**Zwei separate Systeme (verworfen):** Ursprüngliche Richtung — Mobile und Desktop als
-getrennte Systeme, getrennt nach Eingabetyp. Verworfen, weil Hybridgeräte keiner Kategorie
-sauber zugeordnet werden können und das Detektierungs-/Switch-Problem prinzipiell unlösbar
-ist.
+**Two separate systems (rejected):** the original direction — mobile and desktop as separate
+systems, split by input type. Rejected because hybrid devices cannot be assigned cleanly to
+either category and the detection/switch problem is unsolvable in principle.
 
-**UA-basierter Switch:** "Request Desktop Site" als Auslöser. Verworfen: iOS ändert nur den
-UA-String, nicht Viewport und `pointer`-Query — falsch positiv auf dem häufigsten Anwendungsfall.
+**UA-based switch:** "Request Desktop Site" as the trigger. Rejected: iOS only changes the UA
+string, not the viewport and the `pointer` query — a false positive on the most common use
+case.
 
 ## Related
 
-- **ADRs:** ADR-0006 (Plattform-Targets, API-Verfügbarkeit), ADR-0032 (Pad-Grid 4 Spalten
-  konstant — grenzabgrenzung zu Axis 1, siehe oben)
-- **BACKLOG:** §Stable Directions → "Two-axis adaptive model" (ersetzt "Desktop after mobile;
+- **ADRs:** ADR-0006 (platform targets, API availability), ADR-0032 (pad grid 4 columns
+  constant — boundary to axis 1, see above)
+- **BACKLOG:** §Stable Directions → "Two-axis adaptive model" (replaces "Desktop after mobile;
   two separate interaction systems")
-- **Dokumente:** `docs/backlog.md §Stable Directions`
+- **Source documents:** `docs/backlog.md §Stable Directions`

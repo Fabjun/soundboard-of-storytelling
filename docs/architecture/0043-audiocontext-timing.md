@@ -69,7 +69,7 @@ synchronous placement.
 - AVAudioSession category correctly upgraded → ringer switch doesn't mute
 - Straightforward: a single idempotent call, one location
 
-**Negative:**
+**Negative / Trade-offs:**
 - The StartScreen must call `initAudio()` before any `await`. Every future
   refactor of the unlock handler must preserve this ordering. A comment in
   the code documents this invariant.
@@ -92,7 +92,7 @@ implementation-level placement, not a change in strategy.
 
 ## Related
 
-- **Dateien:** `v3/src/screens/StartScreen.tsx` (handleUnlock — Aufrufstelle), `v3/src/audio/engine.ts` (initAudio — Implementierung)
-- **ADRs:** ADR-0020 (AudioContext-Lifecycle — TAP TO UNLOCK), ADR-0044 (Audio Engine Module Structure)
-- **Quelldokumente:** `CLAUDE.md §iPhone / iOS Safari — memory & stability rules`, `v1-reference/CLAUDE.md §iPhone / iOS Safari`
+- **Files:** `v3/src/screens/StartScreen.tsx` (handleUnlock — call site), `v3/src/audio/engine.ts` (initAudio — implementation)
+- **ADRs:** ADR-0020 (AudioContext lifecycle — TAP TO UNLOCK), ADR-0044 (Audio Engine Module Structure)
+- **Source documents:** `CLAUDE.md §iPhone / iOS Safari — memory & stability rules`, `v1-reference/CLAUDE.md §iPhone / iOS Safari`
 - **Commits:** Slice 4 (2026-05-28)

@@ -1,26 +1,26 @@
-# ADR-0036: Visual Regression Tests lokal-only (macOS-Baselines)
+# ADR-0036: Visual regression tests local only (macOS baselines)
 
 **Status:** Accepted
 **Date:** 2026-05-27
 **Slice:** infrastructure
-
+**Refines:** —
 **Category:** Test infrastructure & workflow
 
 ## Context
 
-Visual Regression Tests (Screenshot-Vergleiche) wurden in Phase 2 eingeführt.
-Das Problem: macOS und Linux (Ubuntu CI) rendern Fonts unterschiedlich.
-Gleicher HTML/CSS-Code → pixelweise unterschiedliche Screenshots.
+Visual regression tests (screenshot comparisons) were introduced in phase 2. The problem:
+macOS and Linux (Ubuntu CI) render fonts differently. The same HTML/CSS code → screenshots
+that differ pixel by pixel.
 
-Wenn Baselines auf macOS generiert werden und CI auf Ubuntu läuft, schlagen
-Visual-Tests in CI immer fehl — selbst wenn keine visuelle Regression vorliegt.
+If baselines are generated on macOS and CI runs on Ubuntu, visual tests always fail in CI —
+even when there is no visual regression.
 
 ## Decision
 
-Visual Regression Tests laufen **nur lokal auf macOS**. CI (GitHub Actions,
-Ubuntu) schließt Visual-Tests aus.
+Visual regression tests run **only locally on macOS**. CI (GitHub Actions, Ubuntu) excludes
+visual tests.
 
-Baselines werden auf macOS generiert mit Dateinamen-Suffix `-darwin.png`:
+Baselines are generated on macOS with the file name suffix `-darwin.png`:
 
 ```
 tests/e2e/visual/__snapshots__/
@@ -29,39 +29,37 @@ tests/e2e/visual/__snapshots__/
   ...
 ```
 
-Diese Dateien werden committed und gehören zum Repo.
+These files are committed and belong to the repository.
 
 **Workflow:**
-- Vor UI-relevanten Commits: `npm run test:e2e:visual` lokal ausführen
-- Bei absichtlichen UI-Änderungen: `npm run test:e2e:update-snapshots` + neue Baselines committen
+- before UI-relevant commits: run `npm run test:e2e:visual` locally
+- for intended UI changes: `npm run test:e2e:update-snapshots` + commit the new baselines
 
 ## Consequences
 
-**Positiv:**
-- Visual Regression Schutz für macOS-Entwickler ohne CI-Flakiness.
-- Baselines sind committet — historisch nachvollziehbar.
+**Positive:**
+- Visual regression protection for macOS developers without CI flakiness.
+- Baselines are committed — traceable in history.
 
-**Negativ / Trade-offs:**
-- Visual Regression funktioniert nicht auf Linux/Windows.
-  Andere Entwickler auf anderen Plattformen haben keinen Visual-Regression-Schutz.
-  Für ein Single-Developer-Projekt kein Problem.
-- CI gibt keine Visual-Regression-Warnung. Nur manuelle Ausführung vor
-  UI-Commits liefert Schutz.
+**Negative / Trade-offs:**
+- Visual regression does not work on Linux/Windows. Other developers on other platforms have
+  no visual regression protection. No problem for a single-developer project.
+- CI gives no visual regression warning. Only manual runs before UI commits protect.
 
-## Alternatives Considered
+## Alternatives considered
 
-**Separate Ubuntu-Baselines:** Doppelter Satz von Baselines (darwin + ubuntu).
-Erheblicher Verwaltungsaufwand.
+**Separate Ubuntu baselines:** a double set of baselines (darwin + ubuntu). Considerable
+maintenance effort.
 
-**Pixelmatch-Threshold erhöhen:** Akzeptiert mehr Pixel-Unterschiede. Macht
-die Tests unzuverlässig — würden echte Regressionen übersehen.
+**Raise the pixelmatch threshold:** accepts more pixel differences. Makes the tests unreliable
+— they would miss real regressions.
 
-**Percy / Chromatic:** Cloudbasierte Visual Regression Services. Externe
-Dependency, Kosten. Für ein privates Projekt nicht gerechtfertigt.
+**Percy / Chromatic:** cloud-based visual regression services. External dependency, costs.
+Not justified for a private project.
 
 ## Related
 
-- **Dateien:** `v3/tests/e2e/visual/`, `v3/playwright.config.ts` (visual project config)
-- **ADRs:** ADR-0033 (Test-Strategie), ADR-0035 (Playwright)
-- **Quelldokumente:** `docs/development/testing.md §Visual Regression (lokal-only)`, `CLAUDE.md §Deviations from plan`
+- **Files:** `v3/tests/e2e/visual/`, `v3/playwright.config.ts` (visual project config)
+- **ADRs:** ADR-0033 (test strategy), ADR-0035 (Playwright)
+- **Source documents:** `docs/development/testing.md §Visual regression (local only)`, `CLAUDE.md §Deviations from plan`
 - **Commits:** `37bfada` — test: add visual regression tests with screenshot baseline

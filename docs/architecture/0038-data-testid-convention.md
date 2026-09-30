@@ -1,27 +1,26 @@
-# ADR-0038: `data-testid`-Konvention für E2E-Selektoren
+# ADR-0038: `data-testid` convention for E2E selectors
 
 **Status:** Superseded by ADR-0054
 **Date:** 2026-05-27
 **Slice:** infrastructure
-
+**Refines:** —
 **Category:** Test infrastructure & workflow
 
 ## Context
 
-E2E-Tests brauchen stabile Selektoren für DOM-Elemente. Alternativen:
-- CSS-Klassen (`sb-btn`, `.sb-scene-tab`)
-- Texte (`getByText('Delete')`)
-- Roles (`getByRole('button', { name: 'Delete' })`)
-- `data-testid`-Attribute
+E2E tests need stable selectors for DOM elements. Alternatives:
+- CSS classes (`sb-btn`, `.sb-scene-tab`)
+- texts (`getByText('Delete')`)
+- roles (`getByRole('button', { name: 'Delete' })`)
+- `data-testid` attributes
 
-CSS-Klassen brechen bei Refactoring oder wenn Design-System-Klassen umbenannt
-werden (geplant für Slice 8). Text-Selektoren sind sprachabhängig und brechen
-bei Copy-Änderungen. Role-Selektoren sind semantic, aber nicht eindeutig bei
-mehreren gleichartigen Elementen.
+CSS classes break on refactoring or when design-system classes are renamed (planned for
+Slice 8). Text selectors depend on language and break on copy changes. Role selectors are
+semantic, but not unique when there are several elements of the same kind.
 
 ## Decision
 
-E2E-Tests verwenden primär `data-testid`-Attribute:
+E2E tests primarily use `data-testid` attributes:
 
 ```typescript
 await page.getByTestId('new-board-button');
@@ -29,13 +28,13 @@ await page.getByTestId(`board-row-${board.id}`);
 await page.getByTestId(`scene-tab-${scene.id}`);
 ```
 
-**Naming-Konvention:**
+**Naming convention:**
 ```
-data-testid="<component>-<element>"           // eindeutig
-data-testid="<component>-<element>-<id>"      // Instanz in einer Liste
+data-testid="<component>-<element>"           // unique
+data-testid="<component>-<element>-<id>"      // instance in a list
 ```
 
-**Beispiele:**
+**Examples:**
 ```
 new-board-button
 board-row-{board.id}
@@ -46,35 +45,33 @@ mode-toggle-setup
 pad-cell-empty-{col}-{row}
 ```
 
-**Selector-Priorität in Playwright:**
-`getByTestId` > `getByRole` > `.filter({ hasText })` > CSS-Klasse
+**Selector priority in Playwright:**
+`getByTestId` > `getByRole` > `.filter({ hasText })` > CSS class
 
-Nur test-kritische Elemente bekommen `data-testid` (kein vollständiges DOM-Coverage).
+Only test-critical elements get a `data-testid` (no complete DOM coverage).
 
 ## Consequences
 
-**Positiv:**
-- Refactoring-stabil: CSS-Umbenennungen, Design-System-Updates brechen keine Tests.
-- Eindeutig: Instanz-IDs verhindern "strict mode violation" bei mehrfach vorkommenden Elementen.
-- Dokumentierend: `data-testid` macht testbare Elemente im Markup erkennbar.
+**Positive:**
+- Stable under refactoring: CSS renames and design-system updates do not break tests.
+- Unique: instance IDs prevent "strict mode violation" for elements that occur several times.
+- Self-documenting: `data-testid` makes testable elements recognisable in the markup.
 
-**Negativ / Trade-offs:**
-- Markup-Pollution: `data-testid`-Attribute sind im Production-HTML sichtbar.
-  Kein semantischer Wert für User, aber kein funktionaler Schaden.
-- Wartungsaufwand: Wenn `data-testid` hinzugefügt werden muss, ist das ein
-  Extra-Schritt beim Entwickeln.
+**Negative / Trade-offs:**
+- Markup pollution: `data-testid` attributes are visible in the production HTML. No semantic
+  value for users, but no functional harm.
+- Maintenance effort: adding a `data-testid` is an extra step during development.
 
-## Alternatives Considered
+## Alternatives considered
 
-**CSS-Klassen als Selektoren:** Brechen bei Slice-8-Refactoring. Nicht geeignet.
+**CSS classes as selectors:** break with the Slice 8 refactoring. Not suitable.
 
-**Aria-Labels als Selektoren:** Semantic, aber erfordert vollständiges
-Accessibility-Markup. V3 hat nur baseline A11y; Aria-Labels
-sind nicht für jeden Button vorhanden.
+**ARIA labels as selectors:** semantic, but require complete accessibility markup. V3 has only
+baseline a11y; ARIA labels are not present on every button.
 
 ## Related
 
-- **Dateien:** `v3/src/components/*.tsx` (data-testid Attribute), `v3/tests/e2e/helpers.ts`, `v3/tests/e2e/*.spec.ts`
-- **ADRs:** ADR-0033 (Test-Strategie), ADR-0035 (Playwright)
-- **Quelldokumente:** `docs/development/testing.md §Test-Selector-Konvention`
+- **Files:** `v3/src/components/*.tsx` (data-testid attributes), `v3/tests/e2e/helpers.ts`, `v3/tests/e2e/*.spec.ts`
+- **ADRs:** ADR-0033 (test strategy), ADR-0035 (Playwright)
+- **Source documents:** `docs/development/testing.md §Test locators (ADR-0054)` (formerly §Test-Selector-Konvention)
 - **Commits:** `cb633ab` — refactor: add data-testid attributes for test stability

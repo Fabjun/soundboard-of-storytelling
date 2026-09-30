@@ -1,24 +1,24 @@
-# ADR-0039: Vertikale Slices als Entwicklungsmodell (8 Slices)
+# ADR-0039: Vertical slices as the development model (8 slices)
 
 **Status:** Accepted
 **Date:** 2026-05-27
 **Slice:** cross-cutting
-
+**Refines:** —
 **Category:** Process & product decisions
 
 ## Context
 
-V3 ist ein Rewrite mit klar definiertem Feature-Set. Die Frage: Wie wird die
-Arbeit organisiert? Horizontal (Layer: UI-Basis zuerst, dann State, dann
-Persistenz) oder vertikal (Features: jeder Slice ist ein vollständiges Feature)?
+V3 is a rewrite with a clearly defined feature set. The question: how is the work organised?
+Horizontally (layers: UI base first, then state, then persistence) or vertically (features:
+every slice is a complete feature)?
 
-`docs/architecture/concept-brief.md §5.1` legt vertikale Slices explizit fest: "Build in
-working slices, not horizontal layers. Each slice ends with a committable,
-testable, screenshot-verifiable result."
+`docs/architecture/concept-brief.md §5.1` sets vertical slices explicitly: "Build in working
+slices, not horizontal layers. Each slice ends with a committable, testable,
+screenshot-verifiable result."
 
 ## Decision
 
-Entwicklung in **8 vertikalen Slices**:
+Development in **8 vertical slices**:
 
 | # | Feature | Status |
 |---|---------|--------|
@@ -31,38 +31,36 @@ Entwicklung in **8 vertikalen Slices**:
 | 7 | Template export/import | ⬜ |
 | 8 | Settings, themes, polish | ⬜ |
 
-Jeder Slice liefert: UI + State + Persistenz + manuelle Verifikation + Tests.
+Every slice delivers: UI + state + persistence + manual verification + tests.
 
-**Plan-Abweichungen** müssen explizit deklariert werden (CLAUDE.md §Deviations).
+**Plan deviations** have to be declared explicitly (CLAUDE.md §Deviations).
 
 ## Consequences
 
-**Positiv:**
-- Nach jedem Slice ist die App lauffähig und zeigbar. Kein monolithisches
-  "Big Bang"-Release.
-- Frühe Feedback-Schleifen: nach Slice 1 ist das visuelle Design sichtbar,
-  nach Slice 2 ist IDB-Layer validated.
-- Jede Slice-Entscheidung kann die nächste Slice informieren.
+**Positive:**
+- After every slice the app runs and can be shown. No monolithic "big bang" release.
+- Early feedback loops: after Slice 1 the visual design is visible, after Slice 2 the IDB
+  layer is validated.
+- Every slice decision can inform the next slice.
 
-**Negativ / Trade-offs:**
-- Einige Architektur-Entscheidungen (z.B. Audio-Engine-Facade) müssen vor dem
-  eigentlichen Slice getroffen werden (ADR-0018 ist vorab documented, auch wenn
-  Slice 4 noch aussteht).
-- "Vertikale Slice" erfordert oft das Vorwegnehmen von IDB-Schemas und Types,
-  auch wenn bestimmte Features erst später benötigt werden.
+**Negative / Trade-offs:**
+- Some architecture decisions (e.g. the audio engine facade) have to be made before the
+  actual slice (ADR-0018 is documented in advance, even though Slice 4 is still pending).
+- "Vertical slice" often requires anticipating IDB schemas and types, even if certain features
+  are only needed later.
 
-## Alternatives Considered
+## Alternatives considered
 
-**Horizontale Layers:** UI-Komponenten zuerst (ohne IDB), dann IDB, dann Audio.
-Nachteil: kein lauffähiges Produkt bis alle Layers fertig sind; Annahmen über
-die Layer-Grenzen werden erst spät validiert.
+**Horizontal layers:** UI components first (without IDB), then IDB, then audio. Drawback: no
+runnable product until all layers are done; assumptions about the layer boundaries are
+validated only late.
 
-**Feature-by-Feature ohne Slice-Plan:** Flexibler, aber riskanter für ein
-Rewrite-Projekt mit festem Feature-Set. Slice-Plan hält den Scope kontrolliert.
+**Feature by feature without a slice plan:** more flexible, but riskier for a rewrite project
+with a fixed feature set. The slice plan keeps the scope under control.
 
 ## Related
 
-- **Dateien:** `CLAUDE.md §Slice progress`, `docs/architecture/concept-brief.md §5.1`
-- **ADRs:** ADR-0039 ist der Meta-ADR für alle Slice-spezifischen ADRs
-- **Quelldokumente:** `docs/architecture/concept-brief.md §5.1`, `CLAUDE.md §Workflow rules §4`
+- **Files:** `CLAUDE.md §Slice progress`, `docs/architecture/concept-brief.md §5.1`
+- **ADRs:** ADR-0039 is the meta ADR for all slice-specific ADRs
+- **Source documents:** `docs/architecture/concept-brief.md §5.1`, `CLAUDE.md §Workflow rules §4`
 - **Commits:** `8be64d4` (Slice 1), `c81992e` (Slice 2), `9eeceeb` (Slice 3)

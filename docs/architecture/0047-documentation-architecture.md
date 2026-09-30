@@ -96,7 +96,7 @@ Consequences observed:
 
 ## Consequences
 
-**Positiv:**
+**Positive:**
 - One authoritative place per question: what the product is (PRODUCT), how an element
   looks and behaves (component spec), why the system is built this way (ADR).
 - Modular growth: new elements, features and decisions add files instead of lengthening
@@ -105,7 +105,7 @@ Consequences observed:
   (progressive disclosure), keeping context small.
 - Explicit status prevents provisional ideas from being treated as binding.
 
-**Negativ / Trade-offs:**
+**Negative / Trade-offs:**
 - More files than a single-document approach; navigation depends on the hub indexes
   staying current (candidate for a generator, like the ADR index).
 - During migration, old and new documents coexist. Old documents carry a
@@ -114,7 +114,7 @@ Consequences observed:
   currently write into `docs/design/design-system.md`; moving their output requires a separate,
   planned change to scripts, pre-commit hook and CI.
 
-## Alternatives Considered
+## Alternatives considered
 
 - **One large `docs/design/README.md`** holding all element specs — rejected: 15–20 elements × full
   spec schema exceeds ~1,500 lines, recreating the BACKLOG problem.
@@ -129,9 +129,9 @@ Consequences observed:
 
 ## Related
 
-- **Dateien:** `docs/product/README.md`, `docs/design/components/_template.md`,
+- **Files:** `docs/product/README.md`, `docs/design/components/_template.md`,
   `docs/README.md`
 - **ADRs:** ADR-0045 (two-axis adaptive model — referenced by the component template),
   ADR-0046 (design→code import gate)
-- **Quelldokumente:** `CLAUDE.md` Workflow rule 9, `docs/backlog.md` §Documentation consolidation
+- **Source documents:** `CLAUDE.md` Workflow rule 9, `docs/backlog.md` §Documentation consolidation
 - **Commits:** —

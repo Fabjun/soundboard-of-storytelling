@@ -1,42 +1,40 @@
-# ADR-0042: Pad als Discriminated Union
+# ADR-0042: Pad as a discriminated union
 
 **Status:** Superseded by ADR-0048
 **Date:** 2026-05-28
 **Slice:** Slice 4
-
+**Refines:** —
 **Category:** Data model
 
 ## Context
 
-docs/architecture/concept-brief.md §4.1 definierte `Pad` als flachen Typ mit `type: PadType`
-und optionalen typ-spezifischen Feldern (`libraryItemRef?: string`). Slice 3
-implementierte Board/Scene/Pad-CRUD auf Basis dieses flachen Typs.
+docs/architecture/concept-brief.md §4.1 defined `Pad` as a flat type with `type: PadType` and
+optional type-specific fields (`libraryItemRef?: string`). Slice 3 implemented board/scene/pad
+CRUD on this flat type.
 
-Slice 4 führt die Audio-Engine ein. Diese dispatcht je nach `pad.type` auf einen
-anderen Playback-Pfad. Jeder Pfad braucht andere typ-spezifische Felder:
+Slice 4 introduces the audio engine. It dispatches to a different playback path depending on
+`pad.type`. Every path needs different type-specific fields:
 
-- `single`/`loop`: `libraryItemRef?: string` (ein Audio-File)
-- `playlist`: `files: string[]` (geordnete Liste von Hashes), `shuffle?: boolean`
-- `combo`: `steps: ComboStep[]` (Sequenz von Schritten)
+- `single`/`loop`: `libraryItemRef?: string` (one audio file)
+- `playlist`: `files: string[]` (ordered list of hashes), `shuffle?: boolean`
+- `combo`: `steps: ComboStep[]` (sequence of steps)
 
-Mit dem alten flachen Typ sind alle Felder optional. TypeScript verhindert
-nicht, dass auf `pad.files` bei einem `SinglePad` zugegriffen wird — nur
-ein Runtime-Fehler (undefined) signalisiert das Problem. Das macht die
-Engine-Dispatch-Logik fehleranfällig.
+With the old flat type all fields are optional. TypeScript does not prevent accessing
+`pad.files` on a `SinglePad` — only a runtime error (undefined) signals the problem. That makes
+the engine dispatch logic error-prone.
 
 ## Decision
 
-Der flache `Pad`-Typ wird durch eine Discriminated Union ersetzt:
+The flat `Pad` type is replaced by a discriminated union:
 
 ```typescript
 type Pad = SinglePad | LoopPad | PlaylistPad | ComboPad;
 ```
 
-Gemeinsame Felder (id, name, position, volume, fadeIn, fadeOut, hotkey,
-color, iconRef) leben in `PadBase`. Typ-spezifische Felder sind auf den
-jeweiligen Variant-Typ beschränkt.
+Shared fields (id, name, position, volume, fadeIn, fadeOut, hotkey, color, iconRef) live in
+`PadBase`. Type-specific fields are restricted to the respective variant type.
 
-Typ-Guards werden neben den Typen exportiert:
+Type guards are exported next to the types:
 ```typescript
 export const isSinglePad   = (p: Pad): p is SinglePad   => p.type === 'single';
 export const isLoopPad     = (p: Pad): p is LoopPad     => p.type === 'loop';
@@ -44,41 +42,40 @@ export const isPlaylistPad = (p: Pad): p is PlaylistPad => p.type === 'playlist'
 export const isComboPad    = (p: Pad): p is ComboPad    => p.type === 'combo';
 ```
 
-Eine Backward-Compat-Migration läuft in `boardGetAll()` / `boardGet()` in
-`idb.ts`, um alte Slice-3-Pads zu konvertieren:
-- `playlist`-Pads ohne `files`: `files = [libraryItemRef ?? ''].filter(Boolean)`
-- `combo`-Pads ohne `steps`: `steps = []`
+A backward-compatibility migration runs in `boardGetAll()` / `boardGet()` in `idb.ts` to
+convert old Slice 3 pads:
+- `playlist` pads without `files`: `files = [libraryItemRef ?? ''].filter(Boolean)`
+- `combo` pads without `steps`: `steps = []`
 
 ## Consequences
 
-**Positiv:**
-- TypeScript verhindert `pad.files`-Zugriff auf einem `SinglePad` zur Compile-Zeit.
-- Audio-Engine-Dispatch ist eindeutig: `switch (pad.type)` narrowed vollständig.
-- Slice-4-Code ist selbst-dokumentierend — jeder Playback-Pfad erhält einen
-  typisierten Variant.
+**Positive:**
+- TypeScript prevents `pad.files` access on a `SinglePad` at compile time.
+- The audio engine dispatch is unambiguous: `switch (pad.type)` narrows completely.
+- Slice 4 code is self-documenting — every playback path receives a typed variant.
 
-**Negativ / Trade-offs:**
-- Slice-3-Code, der `{ ...pad, type: newType }` gespreizt hat (z.B. `applyTypeChange`
-  in padUtils.ts), muss umgeschrieben werden, um explizite Union-Varianten zu konstruieren.
-- `applyTypeChange()` ist ausführlicher.
-- IDB-Deserialisierung braucht einen Runtime-Migrations-Schritt für Legacy-Daten.
+**Negative / Trade-offs:**
+- Slice 3 code that spread `{ ...pad, type: newType }` (e.g. `applyTypeChange` in padUtils.ts)
+  has to be rewritten to construct explicit union variants.
+- `applyTypeChange()` is more verbose.
+- IDB deserialisation needs a runtime migration step for legacy data.
 
-## Alternatives Considered
+## Alternatives considered
 
-**Flacher Typ mit optionalen Feldern (Status Quo):** TypeScript fängt
-Cross-Variant-Feldzugriffe nicht ab. Abgelehnt: Die Engine braucht Garantien.
+**Flat type with optional fields (status quo):** TypeScript does not catch cross-variant field
+access. Rejected: the engine needs guarantees.
 
-**Flacher Typ + nur Runtime-Guards:** Gleicher Typ, aber Guards die Feld-Existenz
-prüfen. Abgelehnt: TypeScript-Fehler an Call-Sites wo `Pad` an Funktionen übergeben
-wird, die `SinglePad` erwarten.
+**Flat type + runtime guards only:** the same type, but guards that check field existence.
+Rejected: TypeScript errors at call sites where `Pad` is passed to functions that expect
+`SinglePad`.
 
-**`PadType`-Union ohne Basis-Interface:** Alle Felder auf allen Varianten.
-Abgelehnt: Zu viel redundanter Code; verschleiert welche Felder relevant sind.
+**`PadType` union without a base interface:** all fields on all variants. Rejected: too much
+redundant code; obscures which fields are relevant.
 
 ## Related
 
-- **Dateien:** `v3/src/types.ts`, `v3/src/lib/padUtils.ts`, `v3/src/db/idb.ts`,
+- **Files:** `v3/src/types.ts`, `v3/src/lib/padUtils.ts`, `v3/src/db/idb.ts`,
   `v3/src/components/PadCreationPopover.tsx`, `v3/src/components/PadEditorPanel.tsx`,
   `v3/src/screens/BoardScreen.tsx`
-- **ADRs:** ADR-0008 (Pad-Position-Struct), ADR-0010 (Board JSON Document)
-- **Quelldokumente:** `docs/architecture/concept-brief.md §4.1`, Slice-4-Planentscheidung 2026-05-28
+- **ADRs:** ADR-0008 (pad position struct), ADR-0010 (board JSON document)
+- **Source documents:** `docs/architecture/concept-brief.md §4.1`, Slice 4 plan decision 2026-05-28

@@ -98,20 +98,19 @@ supersession. The strategy (V1 algorithms, no redesign) is unchanged.
 - Module-scope state is trivially testable (import, call, inspect)
 - Three-file structure is easy to audit and extend
 
-**Negative:**
+**Negative / Trade-offs:**
 - Manual porting effort vs. copy-paste (~300–400 LOC engine.ts)
 - Any deviation from V1 semantics must be caught by test or iPhone
   manual verification (Slice 4 Phase 5 / verification checklist)
 
-## Alternatives Considered
+## Alternatives considered
 
-**V1 JS als `<script>`-Tag oder nicht-typisierte `.js`-Datei:** Keine Type-Safety,
-keine Möglichkeit V3's `Pad`-Discriminated-Union zu übergeben, globale Namespace-Pollution.
-Verworfen.
+**V1 JS as a `<script>` tag or an untyped `.js` file:** no type safety, no way to pass V3's
+`Pad` discriminated union, global namespace pollution. Rejected.
 
 ## Related
 
-- **Dateien:** `v3/src/audio/engine.ts`, `v3/src/audio/index.ts`, `v3/src/audio/types.ts`
-- **ADRs:** ADR-0018 (V1 Audio-Engine 1:1 kopiert — kein Neubau), ADR-0019 (iOS Memory Safety), ADR-0042 (Pad als Discriminated Union), ADR-0043 (AudioContext Timing)
-- **Quelldokumente:** `CLAUDE.md §V3 audio/IDB API`, `v1-reference/CLAUDE.md §iPhone / iOS Safari`
+- **Files:** `v3/src/audio/engine.ts`, `v3/src/audio/index.ts`, `v3/src/audio/types.ts`
+- **ADRs:** ADR-0018 (V1 audio engine copied 1:1 — no rebuild), ADR-0019 (iOS memory safety), ADR-0042 (pad as a discriminated union), ADR-0043 (AudioContext Timing)
+- **Source documents:** `CLAUDE.md §V3 audio/IDB API`, `v1-reference/CLAUDE.md §iPhone / iOS Safari`
 - **Commits:** Slice 4 (2026-05-28)

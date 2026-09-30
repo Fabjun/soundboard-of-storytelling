@@ -7,9 +7,16 @@ export type ChangelogEntry = {
   items: string[];
 };
 
-export const APP_VERSION = '3.0.58';
+export const APP_VERSION = '3.0.59';
 
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.59',
+    date: '2026-09-30',
+    items: [
+      'docs: project language English only — all docs, ADRs, tool and hook messages translated; guards for ADR headers and German text (S5)',
+    ],
+  },
   {
     version: '3.0.58',
     date: '2026-09-30',
@@ -361,7 +368,7 @@ export const CHANGELOG: ChangelogEntry[] = [
     version: '3.0.9',
     date: '2026-06-04',
     items: [
-      'Infra: Pre-push-Hook blockt jetzt bei fehlendem APP_VERSION-Bump (one push = one version); CLAUDE.md pre-commit-Checkliste ergänzt',
+      'Infra: pre-push hook now blocks when the APP_VERSION bump is missing (one push = one version); CLAUDE.md pre-commit checklist extended',
     ],
   },
   {
@@ -370,28 +377,28 @@ export const CHANGELOG: ChangelogEntry[] = [
     items: [
       'Docs: Library-as-tile-grid working assumption, modular sidebar building block, multi-level settings hierarchy — BACKLOG Design Session 2026-06-04',
       'Docs: C10 assumption verified (Library structurally different from pad grid), C10 Punkt 8 als Sonderfall des allgemeinen Hierarchie-Modells ausgewiesen',
-      'Docs: Architektur-Motto "Think big, but don\'t rush" ergänzt',
+      'Docs: architecture motto "Think big, but don\'t rush" added',
     ],
   },
   {
     version: '3.0.7',
     date: '2026-05-28',
     items: [
-      'Fix: mehrere Loop-PADs gleichzeitig spielbar — ctx.resume() nicht mehr awaited in Playback-Funktionen (iOS WebKit cancelld sonst laufende Sources)',
+      'Fix: several loop pads can play at the same time — ctx.resume() no longer awaited in playback functions (otherwise iOS WebKit cancels running sources)',
     ],
   },
   {
     version: '3.0.6',
     date: '2026-05-28',
     items: [
-      'Fix: AudioContext auf iOS zuverlässig gestartet — ctx.resume() direkt in initAudio() im TAP-TO-UNLOCK-Gesture-Tick',
+      'Fix: AudioContext starts reliably on iOS — ctx.resume() directly in initAudio() within the TAP TO UNLOCK gesture tick',
     ],
   },
   {
     version: '3.0.5',
     date: '2026-05-28',
     items: [
-      'Fix: iOS Datei-Picker zeigt MP3-Dateien — explizite MIME-Typen statt audio/* (Brave/Safari erfordert beide: MIME + Extension)',
+      'Fix: iOS file picker shows MP3 files — explicit MIME types instead of audio/* (Brave/Safari need both: MIME + extension)',
     ],
   },
   {

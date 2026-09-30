@@ -1,68 +1,66 @@
-# ADR-0032: 4-Spalten-Grid konstant über alle Viewports
+# ADR-0032: 4-column grid constant across all viewports
 
 **Status:** Accepted
 **Date:** 2026-05-27
 **Slice:** Slice 3
-
+**Refines:** —
 **Category:** Interaction
 
 ## Context
 
-Das Standard-Grid ist 4×4. Auf einem 360 px Portrait-Viewport wären die Cells
-~78 px breit — über dem 44 px Touch-Minimum. Die Frage: Soll das Grid bei
-Portrait-Mobile auf 3 Spalten umbrechen?
+The standard grid is 4×4. On a 360 px portrait viewport the cells would be ~78 px wide — above
+the 44 px touch minimum. The question: should the grid wrap to 3 columns on portrait mobile?
 
-`docs/design/design-notes.md §A4 · grid stays 4-col on every viewport` dokumentiert die
-Entscheidung mit drei Begründungen:
+`docs/design/design-notes.md §A4 · grid stays 4-col on every viewport` documents the decision
+with three reasons:
 
-1. `position.col` muss viewport-stabil sein (Datenmodell-Integrität, ADR-0008)
-2. Hotkey-Mapping (F1-F4 = Zeile 1 Spalten 1-4) hängt an Spaltenanzahl
-3. Layout-Sprünge zwischen Desktop und Phone haben Lernkosten ohne Mehrwert
+1. `position.col` must be viewport-stable (data model integrity, ADR-0008)
+2. The hotkey mapping (F1–F4 = row 1, columns 1–4) depends on the column count
+3. Layout jumps between desktop and phone have a learning cost without added value
 
 ## Decision
 
-Das Pad-Grid verwendet **immer 4 Spalten** (auf dem Standard 4×4-Grid).
-Bei Portrait-Mobile: Cells sind ~78 px breit bei 360 px Viewport — über dem
-44 px Minimum, akzeptabel.
+The pad grid **always** uses 4 columns (on the standard 4×4 grid). On portrait mobile: cells
+are ~78 px wide at a 360 px viewport — above the 44 px minimum, acceptable.
 
-Kein automatisches Reflow auf 3 Spalten bei Portrait-Viewport.
+No automatic reflow to 3 columns on a portrait viewport.
 
-Das Grid kann in Zukunft konfigurierbar sein (Slice 8 `gridConfig`-Popover),
-aber der Default ist 4×4 und der Reflow ist kein automatischer Mechanismus.
+The grid may become configurable in the future (Slice 8 `gridConfig` popover), but the default
+is 4×4 and reflow is not an automatic mechanism.
 
-> docs/design/design-notes.md empfiehlt für Mobile einen Hard-Cap bei 5 cols max
-> (Slice 8: 5×4 ist das Mobile-Maximum).
+> docs/design/design-notes.md recommends a hard cap of 5 cols max for mobile (Slice 8: 5×4 is
+> the mobile maximum).
 
 ## Consequences
 
-**Positiv:**
-- `position.col` ist semantisch stabil: Spalte 3 auf dem Phone ist dieselbe
-  Spalte wie Spalte 3 auf dem Desktop.
-- Hotkey-Mapping ist viewport-unabhängig.
-- Einfacherer Code: keine Viewport-spezifische Grid-Logik.
+**Positive:**
+- `position.col` is semantically stable: column 3 on the phone is the same column as column 3
+  on the desktop.
+- The hotkey mapping is viewport-independent.
+- Simpler code: no viewport-specific grid logic.
 
-**Negativ / Trade-offs:**
-- 4×4-Cells sind ~78 px auf 360 px Portrait — eng aber akzeptabel.
-  Bei 5-col-Default wären es ~62 px — grenzwertig.
-- Nutzer mit großen Fingern auf kleinen Phones könnten Schwierigkeiten haben.
-  Bewusster Trade-off zugunsten Datenmodell-Stabilität.
+**Negative / Trade-offs:**
+- 4×4 cells are ~78 px on a 360 px portrait viewport — tight but acceptable. With a 5-column
+  default they would be ~62 px — borderline.
+- Users with large fingers on small phones could have difficulties. A deliberate trade-off in
+  favour of data model stability.
 
-## Alternatives Considered
+## Alternatives considered
 
-**Portrait-Reflow auf 3 Spalten:** Würde Datenmodell-Instabilität einführen:
-`position.col` wäre viewport-abhängig. Breaks hotkey-mapping.
+**Portrait reflow to 3 columns:** would introduce data model instability: `position.col` would
+depend on the viewport. Breaks the hotkey mapping.
 
-**Kein Grid-Reflow, aber andere Col-Counts per gridConfig:** Korrekt —
-das ist der Slice-8-Weg. Default bleibt 4×4.
+**No grid reflow, but other column counts via gridConfig:** correct — that is the Slice 8 way.
+The default stays 4×4.
 
 ## Related
 
-- **Dateien:** `v3/src/components/PadGrid.tsx`, `v3/src/types.ts` (Scene.gridConfig)
-- **ADRs:** ADR-0008 (Pad-Position als {col,row} — viewport-stabile Koordinaten), ADR-0006 (Platform Targets), ADR-0045 (Zwei-Achsen-Adaptives Modell)
-- **Grenzziehung (Axis 1 vs. ADR-0032):** Axis-1-Frame-Layout-Adaptation (wo Sidebar/Bands
-  sitzen, abhängig vom Screen-Format — Bottom-Bar bei schmal/Hochformat, Side-Rail bei
-  breit/Querformat) ≠ das Pad-Grid-Column-Reflow, das dieses ADR adressiert. ADR-0032
-  verbietet automatisches Reflow der **Pad-Grid-Spaltenanzahl** (die Pads selbst bleiben
-  immer in der konfigurierten Spaltenanzahl). Axis 1 betrifft das **umgebende Frame-Layout**
-  (Sidebar-Position, Band-Anordnung). Beide Konzepte sind unabhängig; kein Widerspruch.
-- **Quelldokumente:** `docs/design/design-notes.md §A4 · grid stays 4-col on every viewport`
+- **Files:** `v3/src/components/PadGrid.tsx`, `v3/src/types.ts` (Scene.gridConfig)
+- **ADRs:** ADR-0008 (pad position as {col,row} — viewport-stable coordinates), ADR-0006 (platform targets), ADR-0045 (two-axis adaptive model)
+- **Boundary (axis 1 vs. ADR-0032):** axis-1 frame layout adaptation (where sidebar/bands sit,
+  depending on the screen format — bottom bar on narrow/portrait, side rail on wide/landscape)
+  ≠ the pad grid column reflow this ADR addresses. ADR-0032 forbids automatic reflow of the
+  **pad grid column count** (the pads themselves always stay in the configured column count).
+  Axis 1 concerns the **surrounding frame layout** (sidebar position, band arrangement). Both
+  concepts are independent; no contradiction.
+- **Source documents:** `docs/design/design-notes.md §A4 · grid stays 4-col on every viewport`

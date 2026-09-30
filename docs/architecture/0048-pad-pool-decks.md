@@ -3,6 +3,7 @@
 **Status:** Accepted
 **Date:** 2026-09-29
 **Slice:** Slice 9
+**Refines:** —
 **Category:** Data model
 
 ## Context
@@ -110,13 +111,13 @@ to the play dispatch in `v3/src/audio/`. Rule agreed with the product owner:
 
 ## Consequences
 
-**Positiv:**
+**Positive:**
 - The model matches the product concept (docs/product/README.md §5) — no provisional behavior to unlearn.
 - One pad, many decks: no copies to keep in sync; combos reference one pool.
 - Fewer concepts: sets dropped, three pad types, one `order` field.
 - Deck = arrangement + key layer, which is exactly what the numpad control needs (§6 K2, K14).
 
-**Negativ / Trade-offs:**
+**Negative / Trade-offs:**
 - Existing V3 test boards are wiped once (DB v3); library audio is kept.
 - Two kinds of removal must be clearly distinguishable in the UI.
 - A shared pad edited in one deck changes in all decks — intended, but must be understood.
@@ -125,7 +126,7 @@ to the play dispatch in `v3/src/audio/`. Rule agreed with the product owner:
 - Trim with several files: `trimStart/trimEnd` apply per pad; behaviour with several files is
   decided when trim gets its UI (low priority, docs/product/README.md §5).
 
-## Alternatives Considered
+## Alternatives considered
 
 - **Pads owned by decks plus a "building block" flag (model A)** — rejected by the product
   owner: copies per deck, no real building-block system.
@@ -137,9 +138,9 @@ to the play dispatch in `v3/src/audio/`. Rule agreed with the product owner:
 
 ## Related
 
-- **Dateien:** `v3/src/types.ts`, `v3/src/db/idb.ts`, `v3/src/state/store.ts`, `v3/src/audio/`
+- **Files:** `v3/src/types.ts`, `v3/src/db/idb.ts`, `v3/src/state/store.ts`, `v3/src/audio/`
 - **ADRs:** supersedes ADR-0042 (four-type union), ADR-0009 (position on the pad),
   ADR-0013 (`PadSet`); keeps ADR-0010 (board as one JSON document)
-- **Quelldokumente:** `docs/product/README.md §5` (board concept, pads, combos), §6 (keys),
+- **Source documents:** `docs/product/README.md §5` (board concept, pads, combos), §6 (keys),
   Q1 (Deck), Q2 (three types); `docs/backlog.md §3` "Board pad pool", "Playlist → Loop merge"
 - **Commits:** —

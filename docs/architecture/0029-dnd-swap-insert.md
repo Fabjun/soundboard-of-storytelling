@@ -1,63 +1,59 @@
-# ADR-0029: SWAP + INSERT als duale DnD-Semantik
+# ADR-0029: SWAP + INSERT as dual DnD semantics
 
 **Status:** Accepted
 **Date:** 2026-05-27
 **Slice:** Slice 3
-
+**Refines:** —
 **Category:** Interaction
 
 ## Context
 
-Pad-zu-Pad-Drag im Grid (SETUP-Modus) braucht eine definierte Semantik:
-Was passiert, wenn Pad A auf Slot B gezogen wird?
+Pad-to-pad drag in the grid (SETUP mode) needs defined semantics: what happens when pad A is
+dragged onto slot B?
 
-Optionen:
-1. **SWAP:** A nimmt die Position von B, B nimmt die Position von A
-2. **MOVE:** A nimmt die Position von B, B und alle anderen Pads bleiben wo sie sind
-   (aber B's Slot ist jetzt leer — außer B wird verschoben)
-3. **INSERT:** A nimmt die Position zwischen anderen Pads ein (wie in einer Liste),
-   andere Pads schieben sich weg
+Options:
+1. **SWAP:** A takes B's position, B takes A's position
+2. **MOVE:** A takes B's position, B and all other pads stay where they are (but B's slot is
+   now empty — unless B is moved)
+3. **INSERT:** A takes a position between other pads (as in a list), the other pads move aside
 
-Eine App mit einem fixen Grid (4×4) braucht eine andere Semantik als eine
-lineare Liste. SWAP ist für Grid intuitiver; INSERT ist für Reorder-Operationen
-sinnvoll (z.B. wenn man Pad #1 zwischen Pad #3 und #4 schiebt).
+An app with a fixed grid (4×4) needs different semantics than a linear list. SWAP is more
+intuitive for a grid; INSERT makes sense for reorder operations (e.g. moving pad #1 between
+pad #3 and #4).
 
 ## Decision
 
-**Beide Semantiken werden unterstützt**, gesteuert durch die Drop-Zone-Position:
+**Both semantics are supported**, controlled by the drop-zone position:
 
-- **SWAP:** Drop direkt auf einem belegten Slot → Positionen tauschen
-- **INSERT:** Drop auf einer Drop-Zone zwischen Slots → Pads schieben sich weg
+- **SWAP:** drop directly on an occupied slot → the positions are swapped
+- **INSERT:** drop on a drop zone between slots → the pads move aside
 
-Die Erkennung läuft über eine `cellRef`-Registry in `padDnd.ts`:
-jedes Grid-Cell registriert sich mit seinem `{col, row}`. Beim `pointerup`
-wird per `document.elementFromPoint` der Drop-Target bestimmt und gegen
-die Registry gecheckt.
+Detection runs through a `cellRef` registry in `padDnd.ts`: every grid cell registers itself
+with its `{col, row}`. On `pointerup`, `document.elementFromPoint` determines the drop target,
+which is checked against the registry.
 
 ## Consequences
 
-**Positiv:**
-- Beide häufigen Reorder-Operationen sind natürlich unterstützt.
-- Klare visuelle Feedback: SWAP zeigt einen direkten Position-Tausch,
-  INSERT zeigt eine "Einfüge-Lücke".
+**Positive:**
+- Both common reorder operations are supported naturally.
+- Clear visual feedback: SWAP shows a direct position exchange, INSERT shows an "insertion
+  gap".
 
-**Negativ / Trade-offs:**
-- Komplexere Implementierung als nur SWAP. `padDnd.ts` ist das aufwändigste
-  einzelne Modul in Slice 3.
-- Playwright-Tests für diese Interaktion sind als `test.skip` markiert
-  (Tests 20, 21) — Pointer-Events-Drag in Playwright ist aufwändig zu
-  stabilisieren.
+**Negative / Trade-offs:**
+- A more complex implementation than SWAP alone. `padDnd.ts` is the most elaborate single
+  module in Slice 3.
+- Playwright tests for this interaction are marked `test.skip` (tests 20, 21) — pointer
+  events drag in Playwright is hard to stabilise.
 
-## Alternatives Considered
+## Alternatives considered
 
-**Nur SWAP:** Einfacher. Nachteil: Reordering in größeren Grids erfordert
-mehrere aufeinanderfolgende SWAPs.
+**SWAP only:** simpler. Drawback: reordering in larger grids needs several consecutive SWAPs.
 
-**Nur INSERT:** Natürlich für lineare Listen; für 2D-Grids intuitiv schwieriger.
+**INSERT only:** natural for linear lists; less intuitive for 2D grids.
 
 ## Related
 
-- **Dateien:** `v3/src/lib/padDnd.ts` (SWAP + INSERT Implementierung), `v3/tests/unit/padDnd.test.ts` (applySwap, applyInsert pure function tests)
-- **ADRs:** ADR-0007 (Pointer Events für DnD), ADR-0008 (Pad-Position als {col,row})
-- **Quelldokumente:** `docs/design/design-notes.md §Slice 3 / Lessons — DnD pattern`, `docs/development/testing.md §Bekannte Fallstricke §5`
+- **Files:** `v3/src/lib/padDnd.ts` (SWAP + INSERT implementation), `v3/tests/unit/padDnd.test.ts` (applySwap, applyInsert pure function tests)
+- **ADRs:** ADR-0007 (pointer events for DnD), ADR-0008 (pad position as {col,row})
+- **Source documents:** `docs/design/design-notes.md §Slice 3 / Lessons — DnD pattern`, `docs/development/testing.md §Known pitfalls §5`
 - **Commits:** `9eeceeb` — feat(slice-3)

@@ -72,7 +72,7 @@ artifact directly.
 
 ## Consequences
 
-**Positiv:**
+**Positive:**
 - Prevents parallel class universe from accumulating in production.
 - Checks 4+5 are zero-hit mechanical — any surviving hit is a violation. Checks 1–3 are
   mechanical screens whose hits require case-by-case judgment (a check-1 hit may be a
@@ -80,14 +80,14 @@ artifact directly.
 - Per-session dial preserves design-session freedom; cost is borne at import, not design time.
 - TODO-CLASS markers make spec gaps visible and explicit rather than silently invented.
 
-**Negativ / Trade-offs:**
+**Negative / Trade-offs:**
 - Import gate adds friction to the design→production flow.
 - Gate requires manual execution until a script formalizes the greps (candidate code task
   tracked in docs/backlog.md §4).
 - Spec currency: `docs/design/claude-design-spec.md` must be kept in sync with §5a, §3,
   and tokens.css (coupling row added to docs/analysis/foundation-analysis.md §6).
 
-## Alternatives Considered
+## Alternatives considered
 
 **Pure binding-spec model without gate:** Rejected. Interview demonstrated immediate
 violations at spec gaps (inline styles where no component class existed). A spec can
@@ -100,5 +100,5 @@ violation behavior makes unchecked import an accumulating technical debt source.
 
 - **Files:** `docs/design/claude-design-spec.md` (session spec artifact)
 - **ADRs:** ADR-0021 (closed is-* vocabulary), ADR-0022 (design tokens)
-- **Quelldokumente:** `CLAUDE.md §Evidence Requirements`, `docs/design/design-system.md §5a`, `§3`, `§6`
+- **Source documents:** `CLAUDE.md §Evidence Requirements`, `docs/design/design-system.md §5a`, `§3`, `§6`
 - **Commits:** 2026-06-11 (introduction)

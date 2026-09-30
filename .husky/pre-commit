@@ -50,7 +50,7 @@ npm run link:check || {
   printf '   Fix the dead internal links above, then run git commit again.\n\n'
   exit 1
 }
-echo "✅ Link check passed — Commit wird fortgesetzt."
+echo "✅ Link check passed — commit continues."
 
 # ── Non-blocking BACKLOG drift reminder ──────────────────────────────────────
 BACKLOG_STAGED=$(git -C "$ROOT" diff --cached --name-only 2>/dev/null | grep "^docs/backlog.md$" || true)

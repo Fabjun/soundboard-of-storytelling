@@ -53,7 +53,7 @@ TypeScript 6 enables it by default; no config stated it.
 **Negative / Trade-offs:**
 - `npm run build` checks more files (a few seconds).
 
-## Alternatives Considered
+## Alternatives considered
 
 **Separate `typecheck` steps per config in hooks and CI:** works, but several commands to keep
 in sync; one `tsc -b` over project references is the TypeScript-native way. Rejected.

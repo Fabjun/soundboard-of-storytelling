@@ -7,6 +7,10 @@
 //    Linux CI does not — a link to TESTING.md for testing.md passes locally and fails
 //    after the push (seen while renaming the docs on 2026-09-29).
 // 3. README facts that drift silently: Node version (.nvmrc) and live URL (Vite base).
+// 4. ADR headers: Status, Date, Slice, Refines, [Refined by], Category — in this order, with a
+//    category from scripts/sync-adr.ts (CLAUDE.md rule 12).
+// 5. Project language is English (CLAUDE.md §Project identity): no file contains German
+//    function words — a heuristic, calibrated so English text never trips it.
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { readdirSync, readFileSync, statSync } from 'node:fs';
@@ -111,5 +115,82 @@ describe('guard: README facts match the code', () => {
     const base = /base:\s*'([^']+)'/.exec(vite)?.[1];
     expect(base).toBeTruthy();
     expect(readme).toContain(`https://fabjun.github.io${base}`);
+  });
+});
+
+describe('guard: ADR headers (CLAUDE.md rule 12)', () => {
+  const dir = join(ROOT, 'docs', 'architecture');
+  const categories = [
+    ...(
+      /CATEGORY_ORDER = \[([\s\S]*?)\]/.exec(
+        readFileSync(join(ROOT, 'scripts', 'sync-adr.ts'), 'utf8'),
+      )?.[1] ?? ''
+    ).matchAll(/'([^']+)'/g),
+  ]
+    .map((m) => m[1])
+    .filter((c) => c !== 'Uncategorized');
+  const adrs = readdirSync(dir).filter((f) => /^\d{4}-.*\.md$/.test(f));
+
+  it('finds ADRs and categories (sanity)', () => {
+    expect(adrs.length).toBeGreaterThan(50);
+    expect(categories.length).toBe(9);
+  });
+
+  it('starts every ADR with the header fields in the canonical order', () => {
+    const bad: string[] = [];
+    for (const f of adrs) {
+      const lines = readFileSync(join(dir, f), 'utf8').split('\n');
+      const fields = lines
+        .slice(2, 9)
+        .filter((l) => l.startsWith('**'))
+        .map((l) => /^\*\*([^:*]+):\*\*/.exec(l)?.[1] ?? '?');
+      const expected = fields.includes('Refined by')
+        ? ['Status', 'Date', 'Slice', 'Refines', 'Refined by', 'Category']
+        : ['Status', 'Date', 'Slice', 'Refines', 'Category'];
+      const category = /^\*\*Category:\*\* (.+)$/m.exec(lines.join('\n'))?.[1];
+      if (fields.join('|') !== expected.join('|') || !categories.includes(category ?? '')) {
+        bad.push(`${f}: ${fields.join(', ')} / ${category}`);
+      }
+    }
+    expect(bad).toEqual([]);
+  });
+});
+
+describe('guard: project language is English (CLAUDE.md)', () => {
+  // German function words and typical tool-message words — none of them is an English word.
+  // Threshold 1: calibrated on 2026-09-30 (with 2, two real German remnants slipped through).
+  const GERMAN =
+    /\b(?:und|nicht|wird|werden|für|oder|sind|muss|eine|einen|einer|ist|wenn|bei|nach|dass|über|zum|zur|kein|keine|auch|noch|wurde|sollte|kann|diese|dieser|ohne|zwischen|siehe|bereits|sowie|Fehler|Datei|Dateien|Beschreibung|erneut|prüfen|abgebrochen|fortgesetzt|Hinweis|Ergebnis|Änderung|Änderungen)\b/g;
+  const SKIP_DIRS = new Set([
+    'node_modules', // installed dependencies
+    '.git', // repository internals
+    'dist', // build output
+    'coverage', // generated coverage report
+    'playwright-report', // generated E2E report
+    'test-results', // generated E2E artefacts
+    'design-sources', // Claude Design downloads, kept exactly as delivered (ADR-0050)
+    'v1-reference', // frozen V1 reference copy, not maintained
+  ]);
+  const walkText = (dir: string): string[] =>
+    readdirSync(dir, { withFileTypes: true }).flatMap((e) => {
+      if (SKIP_DIRS.has(e.name)) return [];
+      const full = join(dir, e.name);
+      if (e.isDirectory()) return walkText(full);
+      return /\.(md|ts|tsx|css|yml|yaml|html)$/.test(e.name) || dirname(full).endsWith('.husky')
+        ? [full]
+        : [];
+    });
+  const files = walkText(ROOT).filter((f) => !f.endsWith('docsGuards.test.ts'));
+
+  it('scans the project text files (sanity)', () => {
+    expect(files.length).toBeGreaterThan(150);
+  });
+
+  it('contains no German prose', () => {
+    const bad = files
+      .map((f) => ({ f: rel(f), hits: readFileSync(f, 'utf8').match(GERMAN) ?? [] }))
+      .filter((x) => x.hits.length >= 1)
+      .map((x) => `${x.f}: ${[...new Set(x.hits)].slice(0, 5).join(', ')}`);
+    expect(bad, 'translate to English (chat with the user stays German)').toEqual([]);
   });
 });

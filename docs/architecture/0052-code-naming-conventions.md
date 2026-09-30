@@ -57,7 +57,7 @@ Renamed on 2026-09-29: `chrome/TopBarV2.tsx` → `components/TopBar.tsx`,
 **Negative / Trade-offs:**
 - Older docs and commit messages mention the former names (history is not rewritten).
 
-## Alternatives Considered
+## Alternatives considered
 
 **Separate theme namespace `t-`** (CSS Wizardry): rejected — one project prefix `sb-` keeps
 the rule simpler; themes are ordinary project classes.

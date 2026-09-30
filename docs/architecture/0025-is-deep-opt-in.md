@@ -1,63 +1,62 @@
-# ADR-0025: `is-deep` als Opt-In für Pad-Depth-Stack
+# ADR-0025: `is-deep` as opt-in for the pad depth stack
 
 **Status:** Accepted
 **Date:** 2026-05-27
 **Slice:** Slice 3
-
+**Refines:** —
 **Category:** UI architecture
 
 ## Context
 
-Das Design-System `v15-pad-depth.jsx` exploriert sechs Depth-Treatments für Pads.
-Die empfohlene "Full-Stack"-Variante kombiniert: helleres Pad-Face, Bevel-Gradient,
-Edge-Relief, chunky Pixel-Drop-Shadow. Das sieht gut aus, ist aber rendering-
-intensiv (mehrere CSS-Layers, filter: drop-shadow).
+The design system's `v15-pad-depth.jsx` explores six depth treatments for pads. The
+recommended "full stack" variant combines: a lighter pad face, a bevel gradient, edge relief
+and a chunky pixel drop shadow. It looks good but is rendering-intensive (several CSS layers,
+filter: drop-shadow).
 
-Bei einem 4×4-Grid mit 16 Pads, oder gar 6×4 mit 24 Pads, wird das Rendering
-spürbar. Auf dem iPhone 13 Pro ist das akzeptabel, auf iPhone 8 (ADR-0006: Plattform-Targets) könnte es einen Frame-Drop geben.
+With a 4×4 grid of 16 pads, or even 6×4 with 24 pads, rendering becomes noticeable. On the
+iPhone 13 Pro that is acceptable; on an iPhone 8 (ADR-0006: platform targets) it could drop
+frames.
 
 ## Decision
 
-Der Pad-Depth-Stack ist standardmäßig **aus**. Opt-In via CSS-State-Klasse:
+The pad depth stack is **off** by default. Opt-in via a CSS state class:
 
 ```html
 <div class="sb-pad is-deep"> ... </div>
 ```
 
-`is-deep` aktiviert: `--pix-bg-layer` Multi-Layer-Gradient, `--pad-filter-base`
-Composition-Punkt, neue Tokens `--pad-edge-light`, `--pad-edge-dark`,
-`--shadow-pad-lift`.
+`is-deep` enables: the `--pix-bg-layer` multi-layer gradient, the `--pad-filter-base`
+composition point, the new tokens `--pad-edge-light`, `--pad-edge-dark`, `--shadow-pad-lift`.
 
-Ohne `is-deep`: Standard-Pad ohne Depth-Rendering-Overhead.
+Without `is-deep`: a standard pad without depth rendering overhead.
 
-> *Diese Entscheidung wurde beim Slice 1+2 Audit-Pass (2026-05-27) umgesetzt,
-> als das Design-System alignment-geprüft wurde. Dokumentiert in docs/design/design-notes.md
-> §RESOLVED — Slice 1+2 Audit-Pass.*
+> *This decision was implemented in the Slice 1+2 audit pass (2026-05-27), when the design
+> system alignment was checked. Documented in docs/design/design-notes.md §RESOLVED — Slice
+> 1+2 audit pass.*
 
 ## Consequences
 
-**Positiv:**
-- Performance-Budget: Pads ohne `is-deep` sind rendering-günstig.
-- Slice 8 kann `is-deep` als Settings-Option exponieren ("High quality pad visuals")
-  oder als globales Default einschalten, sobald Performance verifiziert ist.
-- Bestehende Code-Paths (Pad-Rendering ohne Depth) bleiben unverändert.
+**Positive:**
+- Performance budget: pads without `is-deep` are cheap to render.
+- Slice 8 can expose `is-deep` as a settings option ("High quality pad visuals") or switch it
+  on as the global default once performance is verified.
+- Existing code paths (pad rendering without depth) stay unchanged.
 
-**Negativ / Trade-offs:**
-- Zwei visuelle Zustände: Pads mit und ohne `is-deep`. Während der Entwicklung
-  muss man sich entscheiden, welcher State als Default gilt.
+**Negative / Trade-offs:**
+- Two visual states: pads with and without `is-deep`. During development one has to decide
+  which state is the default.
 
-## Alternatives Considered
+## Alternatives considered
 
-**Depth-Stack immer an:** Vollständige visuelle Qualität für alle Pads.
-Risiko: Rendering-Performance auf iOS 15-Geräten. Ohne Messung nicht
-rechtfertigbar.
+**Depth stack always on:** full visual quality for every pad. Risk: rendering performance on
+iOS 15 devices. Not justifiable without measurement.
 
-**Depth-Stack immer aus:** Kein visueller Mehrwert. Das Ziel ist, `is-deep`
-auf dem iPhone performant zu machen, nicht es wegzulassen.
+**Depth stack always off:** no visual added value. The goal is to make `is-deep` perform on
+the iPhone, not to drop it.
 
 ## Related
 
-- **Dateien:** `v3/src/styles/tokens.css` (--pad-edge-light, --pad-edge-dark, --shadow-pad-lift), `v3/src/components/PadGridCell.tsx`
-- **ADRs:** ADR-0021 (CSS-Naming / is-* States), ADR-0024 (clip-path + filter:drop-shadow)
-- **Quelldokumente:** `docs/design/design-notes.md §RESOLVED — DepthPad migration`, `design-sources/2026-05-25/v15-pad-depth.jsx`
+- **Files:** `v3/src/styles/tokens.css` (--pad-edge-light, --pad-edge-dark, --shadow-pad-lift), `v3/src/components/PadGridCell.tsx`
+- **ADRs:** ADR-0021 (CSS naming / is-* states), ADR-0024 (clip-path + filter:drop-shadow)
+- **Source documents:** `docs/design/design-notes.md §RESOLVED — DepthPad migration`, `design-sources/2026-05-25/v15-pad-depth.jsx`
 - **Commits:** `eac8690` — refactor: align slice 1+2 with current design system

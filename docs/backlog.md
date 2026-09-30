@@ -1202,12 +1202,21 @@ approval per stage; guard tests keep each scheme from drifting back.
 | S2 | Code names (ADR-0052, sources cited): `TopBarV2`/`StatusBarV2`/`BoardTopBarV3` → `TopBar`/`StatusBar`/`BoardTopBar`, `src/chrome/` dissolved into `components/`, `app.tsx` → `App.tsx`; unused CSS removed (`.touch-target`, `.pixel-icon`, `@keyframes sb-flicker`), `.theme-*` → `.sb-theme-*`, `has-*` allowed; generator scripts named after their npm scripts; guard `codeGuards.test.ts` | ✅ Done (see git log: "…(S2)") |
 | S3 | Exception scheme (ADR-0053, sources cited): permanent = rule + reason, temporary = + `BACKLOG "…"`; ESLint `require-description` / `no-unlimited-disable` / unused directives = error; prettier-ignore and to-do markers guarded in `testGuards`; config files linted, unnecessary `*.config` Prettier exclusion removed; ADR `## Exceptions` tables; generated register `docs/development/exceptions.md` (35 entries) | ✅ Done (see git log: "…(S3)") |
 | S4 | Test locators and IDs (ADR-0054, sources cited; supersedes ADR-0038): role/label/text first, test IDs as fallback, never CSS classes (≈30 class locators/assertions replaced); state via `aria-pressed` (pads in GAME, pad type buttons); test ID scheme `<component>-<element>-<kind>` applied to all 35+ IDs; spec files without folder prefix, `helpers.ts`, visual baselines moved (not regenerated); guards in `codeGuards` / `e2eProjects` | ✅ Done (see git log: "…(S4)") |
-| S5 | English only: active docs, hook/CI messages, ADR template + categories + labels; then translate ADR-0001–0045; uniform ADR headers + guard test | open |
+| S5 | English only: tool/hook/CI messages, generator texts, ADR categories and template, `testing.md` (stale facts corrected), CLAUDE.md, backlog/design/analysis passages, all ADRs 0001–0045 translated faithfully (fidelity check: code spans, links, headings identical except renamed section references); uniform ADR headers; guards in `docsGuards` (ADR header order + category, no German words — threshold calibrated to 1) | ✅ Done (see git log: "…(S5 1/4)"–"(S5 4/4)") |
 | S6 | Commit message convention in CLAUDE.md + `commit-msg` hook | open |
 
 **Deferred to Slice 13:** re-evaluate the ADR-0028 exception for the two top bars (`TopBar` on
 Library/Board list, `BoardTopBar` on Board — deliberately separate per ADR-0026) and merge them
 into one component with variants if the mobile layout allows; both are rebuilt there anyway.
+
+### Documentation freshness automation (T13)
+Found 2026-09-30 during S5: stale facts and dead references were found only by chance (testing.md
+recommended CSS-class locators and "test.skip" for tests written long ago; a cross-file anchor
+to a renamed backlog heading passed `link:check` — markdown-link-check validates anchors only
+within the same file; `docsGuards` checks files, not anchors). **Goal:** keep docs current
+automatically — research first (docs-as-code practice), then e.g. validate cross-file anchors
+and `file.md §Section` references against real headings, flag superseded terms, derive more
+facts from code via generators. Test infrastructure first (CLAUDE.md rule 15). **Status:** open.
 
 ### Role-based E2E locators
 Temporary exception from ADR-0054: many E2E tests still locate controls by test ID although a
