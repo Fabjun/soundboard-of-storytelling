@@ -14,6 +14,11 @@ export default defineConfig({
     globals: true,
     include: ['tests/unit/**/*.test.ts'],
     setupFiles: ['tests/unit/setup.ts'],
+    // Time budget per test. CI (coverage, slower runners) was measured more than 7x slower
+    // than a local run without coverage (docsGuards table guard: 0.7 s local → >5 s in CI,
+    // run 36755104559). A local budget of 1/10 of CI's makes a slow test fail at commit time,
+    // not only after the push. Slowest test on 2026-09-30: 157 ms under coverage.
+    testTimeout: process.env.CI ? 5000 : 500,
     coverage: {
       provider: 'v8',
       reporter: ['text', 'html', 'json-summary'],

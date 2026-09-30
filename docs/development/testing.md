@@ -328,6 +328,10 @@ cd v3 && npm run build && npm run size  # build + size check
 
 ## Writing unit tests
 
+**Time budget:** 500 ms per test locally, 5 s in CI (`v3/vitest.config.ts`). CI with coverage
+was measured more than 7x slower than a local run, so a test that is slow locally fails at
+commit time instead of only after the push.
+
 For every new logic function in `src/lib/` or `src/state/`:
 
 ```typescript

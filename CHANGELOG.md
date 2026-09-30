@@ -4,6 +4,10 @@
 
 All notable changes to Soundboard of Storytelling, newest first.
 
+## 3.0.69 — 2026-09-30
+
+- test: unit tests have a 500 ms local time budget (5 s in CI), so slow tests fail before the push
+
 ## 3.0.68 — 2026-09-30
 
 - fix(test): table guard scans lines instead of parsing (CI timeout); a table GitHub showed as plain text repaired

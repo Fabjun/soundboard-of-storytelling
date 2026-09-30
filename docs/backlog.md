@@ -1354,6 +1354,9 @@ Owner decisions 2026-09-30: A1–A3 as recommended.
   `upload.ts` exports (guard the names against the code).
 - ⬜ **A8 Small drift** — duplicate entries in the two `.gitignore` files. Done: the stale ESLint
   comment about untyped config files.
+- ✅ **A10 Local run ≠ CI run (pattern, again)** — the table guard passed locally (0.7 s) and timed
+  out in CI (>5 s, coverage + slower runner). Unit tests now have a local budget of 500 ms against
+  5 s in CI (`v3/vitest.config.ts`), counter-checked with a 700 ms test.
 - ✅ **A9 Own measurement errors (pattern)** — twice a zsh quirk made a measurement vacuous
   (option+value in one variable; unquoted `--include=*.ts`). Rule for the agent: measurements
   run via bash with quoted globs; "0 hits" counts only after a positive probe.

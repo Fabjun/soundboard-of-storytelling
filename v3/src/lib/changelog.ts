@@ -7,9 +7,16 @@ export type ChangelogEntry = {
   items: string[];
 };
 
-export const APP_VERSION = '3.0.68';
+export const APP_VERSION = '3.0.69';
 
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.69',
+    date: '2026-09-30',
+    items: [
+      'test: unit tests have a 500 ms local time budget (5 s in CI), so slow tests fail before the push',
+    ],
+  },
   {
     version: '3.0.68',
     date: '2026-09-30',
