@@ -109,6 +109,7 @@ file. Format: `docs/architecture/_template.md`.
 | [ADR-0056](0056-documentation-freshness.md)       | Documentation freshness is checked automatically                | Accepted               | infrastructure | 2026-09-30 |
 | [ADR-0058](0058-repository-wide-formatting.md)    | One formatter and linter setup for the whole repository         | Accepted               | infrastructure | 2026-09-30 |
 | [ADR-0059](0059-property-and-mutation-testing.md) | Property-based and mutation testing                             | Accepted               | infrastructure | 2026-09-30 |
+| [ADR-0060](0060-commit-message-convention.md)     | Commit messages follow Conventional Commits                     | Proposed               | infrastructure | 2026-10-01 |
 
 ### Process & product decisions
 

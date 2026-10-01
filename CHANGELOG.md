@@ -4,6 +4,10 @@
 
 All notable changes to Soundboard of Storytelling, newest first.
 
+## 3.0.88 — 2026-10-01
+
+- ci: commit messages follow Conventional Commits, checked by commitlint (S6, ADR-0060 proposed)
+
 ## 3.0.87 — 2026-10-01
 
 - ci: mutation test processes get a heap cap (a looping mutant filled the CI runner); the summary fails on a missing module; review log for work done while the owner is away

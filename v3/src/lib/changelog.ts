@@ -7,9 +7,16 @@ export type ChangelogEntry = {
   items: string[];
 };
 
-export const APP_VERSION = '3.0.87';
+export const APP_VERSION = '3.0.88';
 
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.88',
+    date: '2026-10-01',
+    items: [
+      'ci: commit messages follow Conventional Commits, checked by commitlint (S6, ADR-0060 proposed)',
+    ],
+  },
   {
     version: '3.0.87',
     date: '2026-10-01',

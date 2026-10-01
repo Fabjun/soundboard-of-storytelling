@@ -437,6 +437,9 @@ any non-doc file flagged ⚠ for approval. Routine additionally: `v3/src/lib/cha
     formatted by `npm run format:md`, which fails instead of changing content — fix the source
     (escape a bare `*`/`_`, a `|` in a table cell). Before committing any TypeScript/TSX:
     `npm run lint` must exit 0. Format with `npm run format` if needed. CI enforces both.
+    11a. **Commit messages** (ADR-0060, proposed): Conventional Commits —
+    `<type>(<scope>): <description>`, types `build chore ci docs feat fix perf refactor revert
+style test`; checked by the `commit-msg` hook and for pull requests in CI.
 12. **Architecture Decision Records**: for every substantial architecture decision (data
     model, persistence, cross-cutting pattern, platform assumptions, new infrastructure)
     create an ADR in `docs/architecture/`, following `docs/architecture/_template.md`; the
