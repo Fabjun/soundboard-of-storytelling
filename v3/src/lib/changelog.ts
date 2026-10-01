@@ -7,9 +7,16 @@ export type ChangelogEntry = {
   items: string[];
 };
 
-export const APP_VERSION = '3.0.96';
+export const APP_VERSION = '3.0.99';
 
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.99',
+    date: '2026-10-02',
+    items: [
+      'test: board model mutation score 92.76 % → 100 % (edge cases of free cells, keys, undo order, consistency rules); coverage floor 89/90/80/87',
+    ],
+  },
   {
     version: '3.0.96',
     date: '2026-10-02',

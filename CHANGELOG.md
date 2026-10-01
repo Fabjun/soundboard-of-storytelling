@@ -4,6 +4,10 @@
 
 All notable changes to Soundboard of Storytelling, newest first.
 
+## 3.0.99 — 2026-10-02
+
+- test: board model mutation score 92.76 % → 100 % (edge cases of free cells, keys, undo order, consistency rules); coverage floor 89/90/80/87
+
 ## 3.0.96 — 2026-10-02
 
 - feat(decks): All pads can create pads that sit in no deck (ADD PAD, A key, library drop); a board reopens in the view it showed last
