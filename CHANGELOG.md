@@ -7,6 +7,7 @@ All notable changes to Soundboard of Storytelling, newest first.
 ## 3.0.100 — 2026-10-02
 
 - feat(model): three pad types — Single and Loop hold several files with an order, Playlist merges into Loop; a Single with several files plays the next one in turn or a random one; DB v5 (Slice 9d, ADR-0048)
+- test: the start screen visual test hides the version footer — a longer version moved the centred line and failed it
 
 ## 3.0.99 — 2026-10-02
 
