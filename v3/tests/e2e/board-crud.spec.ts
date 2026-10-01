@@ -9,7 +9,7 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { test, expect } from '@playwright/test';
-import { goToBoardList } from './helpers';
+import { goToBoardList, reloadApp } from './helpers';
 
 test.beforeEach(async ({ page }) => {
   await page.goto('/soundboard-of-storytelling/');
@@ -63,13 +63,12 @@ test('3 — renamed board persists after page reload', async ({ page }) => {
   await input.fill('Persistent Board');
   await input.press('Enter');
 
-  // Wait for title to update (confirms IDB save has happened)
+  // The new title shows at once; reloadApp waits until it is also saved
   await expect(boardRow.locator('[data-testid^="board-list-screen-name-text-"]')).toHaveText(
     'Persistent Board',
   );
 
-  // Reload the page
-  await page.reload();
+  await reloadApp(page);
   await page.getByRole('button', { name: 'BOARD' }).click();
   await page.getByTestId('board-list-screen-new-button').waitFor();
 

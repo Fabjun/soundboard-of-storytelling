@@ -264,8 +264,23 @@ export async function padPosition(page: Page, padId: string): Promise<string | n
   return page.getByTestId(`pad-grid-cell-${padId}`).getAttribute('data-pos');
 }
 
-/** After a reload: StartScreen → board list → open the first board. */
+/**
+ * Waits until no board save is running. A change shows BEFORE it is stored (updateBoard), so a
+ * visible change is no proof it is saved — wait for this before every reload or navigation.
+ */
+export async function waitForSaves(page: Page): Promise<void> {
+  await expect(page.locator('html')).not.toHaveAttribute('data-saving');
+}
+
+/** Reload after the running board saves have finished (the only reload E2E specs use). */
+export async function reloadApp(page: Page): Promise<void> {
+  await waitForSaves(page);
+  await page.reload();
+}
+
+/** Once the saves are done: StartScreen → board list → open the first board. */
 export async function reopenFirstBoard(page: Page): Promise<void> {
+  await waitForSaves(page);
   await page.goto('/soundboard-of-storytelling/');
   await goToBoardList(page);
   await page.locator('[data-testid^="board-list-screen-name-text-"]').first().click();

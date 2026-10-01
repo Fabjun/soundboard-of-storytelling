@@ -15,6 +15,7 @@ import {
   createDeck,
   enterSetupMode,
   createPadAtCell00,
+  reloadApp,
 } from './helpers';
 
 test.beforeEach(async ({ page }) => {
@@ -54,7 +55,7 @@ test('17 — change pad name in editor → persists after page reload', async ({
   await page.waitForTimeout(800);
 
   // Reload page and navigate back to the board
-  await page.reload();
+  await reloadApp(page);
   await page.getByRole('button', { name: 'BOARD' }).click();
   // Board should still exist
   const boardRow = page.locator('[data-testid^="board-list-screen-row-"]').first();

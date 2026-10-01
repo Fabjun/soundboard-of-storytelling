@@ -15,6 +15,7 @@ export const CHANGELOG: ChangelogEntry[] = [
     date: '2026-10-02',
     items: [
       'feat(decks): All pads can create pads that sit in no deck (ADD PAD, A key, library drop); a board reopens in the view it showed last',
+      'test: a change shows before it is saved — E2E reloads wait for running board saves (data-saving on <html>)',
     ],
   },
   {

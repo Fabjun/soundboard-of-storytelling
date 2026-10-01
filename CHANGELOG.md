@@ -7,6 +7,7 @@ All notable changes to Soundboard of Storytelling, newest first.
 ## 3.0.96 — 2026-10-02
 
 - feat(decks): All pads can create pads that sit in no deck (ADD PAD, A key, library drop); a board reopens in the view it showed last
+- test: a change shows before it is saved — E2E reloads wait for running board saves (data-saving on <html>)
 
 ## 3.0.95 — 2026-10-02
 
