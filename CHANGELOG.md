@@ -4,6 +4,10 @@
 
 All notable changes to Soundboard of Storytelling, newest first.
 
+## 3.0.97 — 2026-10-02
+
+- docs: review log — owner decisions O1–O8 of 2026-10-02 and the new pull requests
+
 ## 3.0.92 — 2026-10-01
 
 - test: WebKit test seed never creates the database (race broke app boot); lint forbids conditional assertions in E2E tests; mutation break threshold 73
