@@ -20,9 +20,10 @@ review pending.
 
 ## Pull requests to review
 
-| #   | Branch                 | Topic                                             | Decisions                            | Status |
-| --- | ---------------------- | ------------------------------------------------- | ------------------------------------ | ------ |
-| 1   | `s6-commit-convention` | S6 commit message convention (ADR-0060, Proposed) | [S6](#s6--commit-message-convention) | open   |
+| #   | Branch                                                                                          | Topic                                                     | Decisions                                          | Status |
+| --- | ----------------------------------------------------------------------------------------------- | --------------------------------------------------------- | -------------------------------------------------- | ------ |
+| 1   | `s6-commit-convention` — [PR #30](https://github.com/Fabjun/soundboard-of-storytelling/pull/30) | S6 commit message convention (ADR-0060, Proposed)         | [S6](#s6--commit-message-convention)               | open   |
+| 2   | `slice-9c-pad-pool` — [PR #31](https://github.com/Fabjun/soundboard-of-storytelling/pull/31)    | Slice 9c: pad pool, placements, quick-access model, DB v4 | D1–D7 in the PR description; interim risk until 9e | open   |
 
 ### S6 — commit message convention
 
@@ -39,6 +40,7 @@ review pending.
 
 Approved work continued directly on `main` (each commit passed all hooks; CI results noted).
 
-| Commit      | What                                                                               | Evidence                                                                                                               |
-| ----------- | ---------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
-| _see below_ | Mutation testing: heap cap per test process; summary job fails on a missing module | weekly run 36825054856: engine.ts job exhausted 16 GB (memory logged); locally with the cap: 0.4–2 GB over 371 mutants |
+| Commit  | What                                                                               | Evidence                                                                                                               |
+| ------- | ---------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| 968653e | Mutation testing: heap cap per test process; summary job fails on a missing module | weekly run 36825054856: engine.ts job exhausted 16 GB (memory logged); locally with the cap: 0.4–2 GB over 371 mutants |
+| eaf6912 | Mutation break threshold 59 → 68                                                   | first complete CI run 36827375932: 68.89 % (1,249 of 1,813), timeouts 0.22 %, engine.ts in 15 min                      |
