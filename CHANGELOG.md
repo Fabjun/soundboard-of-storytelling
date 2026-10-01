@@ -4,6 +4,10 @@
 
 All notable changes to Soundboard of Storytelling, newest first.
 
+## 3.0.87 — 2026-10-01
+
+- ci: mutation test processes get a heap cap (a looping mutant filled the CI runner); the summary fails on a missing module; review log for work done while the owner is away
+
 ## 3.0.86 — 2026-10-01
 
 - ci: weekly mutation testing as one job per module with vitest related, plus a summary job; locally half the cores; guards read the file list from git (T11c)

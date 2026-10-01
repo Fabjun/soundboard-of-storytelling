@@ -161,10 +161,18 @@ jobs:
 
   # The score over all modules against the break threshold of stryker.config.mjs.
   mutation-summary:
-    needs: mutation
+    needs: [mutation-modules, mutation]
     if: always()
     runs-on: ubuntu-latest
     steps:
+      # A module job that failed or never reported must not leave a green summary over the rest
+      # (weekly run 36825054856: engine.ts died, the summary scored the other nine and passed).
+      - name: Every module job succeeded
+        if: needs.mutation.result != 'success'
+        run: |
+          echo "::error::A mutation module job did not succeed (result: ${{ needs.mutation.result }}) — the summary would miss it."
+          exit 1
+
       - uses: actions/checkout@v7
 
       - uses: actions/setup-node@v7
@@ -184,4 +192,13 @@ jobs:
 
       - name: Mutation score over all modules (fails below the break threshold)
         working-directory: v3
-        run: npm run mutation:report -- reports/parts/*/mutation.json --break
+        env:
+          MODULES: ${{ needs.mutation-modules.outputs.modules }}
+        run: |
+          EXPECTED=$(node -e "console.log(JSON.parse(process.env.MODULES).length)")
+          FOUND=$(ls reports/parts/*/mutation.json | wc -l)
+          if [ "$FOUND" -ne "$EXPECTED" ]; then
+            echo "::error::$FOUND mutation reports for $EXPECTED modules."
+            exit 1
+          fi
+          npm run mutation:report -- reports/parts/*/mutation.json --break

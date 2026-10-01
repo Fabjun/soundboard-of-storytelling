@@ -7,9 +7,16 @@ export type ChangelogEntry = {
   items: string[];
 };
 
-export const APP_VERSION = '3.0.86';
+export const APP_VERSION = '3.0.87';
 
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.87',
+    date: '2026-10-01',
+    items: [
+      'ci: mutation test processes get a heap cap (a looping mutant filled the CI runner); the summary fails on a missing module; review log for work done while the owner is away',
+    ],
+  },
   {
     version: '3.0.86',
     date: '2026-10-01',

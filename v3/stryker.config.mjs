@@ -11,6 +11,11 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 const VITEST = '--maxWorkers=1 --testTimeout=5000';
+// Heap cap per test process: a mutant that loops and allocates (engine.ts: +2 GB in seconds) dies
+// at its own limit — counted as detected — instead of filling the machine; four of them
+// exhausted the 16 GB CI runner (weekly run 36825054856, memory logged). Unmutated tests need
+// well below 512 MB.
+const HEAP = 'NODE_OPTIONS=--max-old-space-size=512';
 // One module per CI job (weekly.yml matrix, list from npm run mutation:modules). Its mutants can
 // only affect tests that import it, so `vitest related` runs just those: 2–6 test files instead of
 // all (measured 2026-10-01: ~3 s instead of ~7 s per mutant).
@@ -43,8 +48,8 @@ export default {
     // as detected, inflating the score (weekly run 36770237372). --testTimeout: the 500 ms local
     // budget would turn slow runs into timeouts as well.
     command: MODULE
-      ? `npx vitest related ${MODULE} --run ${VITEST}`
-      : `npx vitest run ${VITEST} --exclude 'tests/unit/*Guards.test.ts' --exclude 'tests/unit/e2eProjects.test.ts'`,
+      ? `${HEAP} npx vitest related ${MODULE} --run ${VITEST}`
+      : `${HEAP} npx vitest run ${VITEST} --exclude 'tests/unit/*Guards.test.ts' --exclude 'tests/unit/e2eProjects.test.ts'`,
   },
   coverageAnalysis: 'off',
   mutate: MODULE ? [MODULE] : MUTATE,
