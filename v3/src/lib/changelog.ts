@@ -15,6 +15,7 @@ export const CHANGELOG: ChangelogEntry[] = [
     date: '2026-10-02',
     items: [
       'feat(backup): the app asks the browser for persistent storage at start (Slice 10, D4); ADR-0061 proposes the backup file format and piecewise import',
+      'feat(backup): backup files (V1 and V3, gzip or plain) are read piece by piece — one library entry in memory at a time',
     ],
   },
   {

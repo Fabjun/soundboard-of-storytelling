@@ -7,6 +7,7 @@ All notable changes to Soundboard of Storytelling, newest first.
 ## 3.0.102 — 2026-10-02
 
 - feat(backup): the app asks the browser for persistent storage at start (Slice 10, D4); ADR-0061 proposes the backup file format and piecewise import
+- feat(backup): backup files (V1 and V3, gzip or plain) are read piece by piece — one library entry in memory at a time
 
 ## 3.0.100 — 2026-10-02
 
