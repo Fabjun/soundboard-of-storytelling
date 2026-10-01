@@ -133,6 +133,7 @@ export function PadGrid({
     <>
       <div
         class={'sb-pad-grid' + (isSetup ? ' sb-grid-bg' : '')}
+        data-testid="pad-grid"
         style={
           {
             '--grid-cols': String(cols),
