@@ -31,9 +31,9 @@ export function BoardListScreen(): JSX.Element {
       id: nanoid(),
       name,
       themeId: 'hearth',
-      settings: { quickAccessLayout: 'hidden', quickAccessSetCount: 1 },
+      pads: [],
       decks: [],
-      sets: [],
+      quickAccess: [],
     };
     try {
       await boardPut(newBoard);
@@ -105,7 +105,7 @@ function BoardRow({ board, onOpen }: { board: Board; onOpen: () => void }): JSX.
   const [editValue, setEditValue] = useState(board.name);
   const [deleteConfirm, setDeleteConfirm] = useState(false);
 
-  const totalPads = board.decks.reduce((sum, s) => sum + s.pads.length, 0);
+  const totalPads = board.pads.length; // the pool: each pad counts once, however many decks show it
   const decksCount = board.decks.length;
 
   async function commitRename() {

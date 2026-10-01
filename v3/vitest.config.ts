@@ -32,10 +32,10 @@ export default defineConfig({
       // Enforced in CI via `npm run test:coverage`. Only ever RAISE these —
       // at slice completion, to the new measured values rounded down.
       thresholds: {
-        lines: 69,
-        functions: 71,
-        branches: 61,
-        statements: 67,
+        lines: 82,
+        functions: 86,
+        branches: 72,
+        statements: 80,
       },
     },
   },

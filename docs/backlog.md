@@ -1391,6 +1391,10 @@ role + accessible name is the standard. Most icon-only controls have no accessib
 **When:** Slice 13 — give every control an accessible name while rebuilding the layout, then
 switch those locators to `getByRole` and drop the exception from ADR-0054.
 
+Found 2026-10-01 (Slice 9c): the SETUP toolbar button **ADD PAD** has no accessible name in Chromium
+(the accessibility tree shows a nameless `button`), so `getByRole('button', { name: 'ADD PAD' })`
+finds nothing; `deck-crud.spec.ts` test 12 locates it by text for now.
+
 ### Type-check every TypeScript file (T12)
 
 Found 2026-09-30 during S4: unit tests, E2E tests and two tool configs were never type-checked

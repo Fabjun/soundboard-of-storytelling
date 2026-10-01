@@ -21,6 +21,7 @@ import { PixelIcon } from './PixelIcon';
 import { UndoToast } from './UndoToast';
 import { boardPut } from '../db/idb';
 import { upsertBoard } from '../state/store';
+import { duplicateDeck as duplicateDeckIn } from '../lib/boardModel';
 import { nanoid } from '../lib/nanoid';
 import { findConflictingDeck } from '../lib/deckConflict';
 
@@ -105,17 +106,8 @@ export function DeckRail({
   async function duplicateDeck(deck: Deck) {
     const existing = board.decks.filter((s) => s.name.startsWith(deck.name));
     const suffix = existing.length > 1 ? ` · ${existing.length}` : ' · 2';
-    const newDeck: Deck = {
-      ...deck,
-      id: nanoid(),
-      name: deck.name + suffix,
-      order: Math.max(...board.decks.map((s) => s.order)) + 1,
-      pads: deck.pads.map((p) => ({ ...p, id: nanoid() })),
-    };
-    const updatedBoard: Board = {
-      ...board,
-      decks: [...board.decks, newDeck],
-    };
+    // Same pads, new placements (docs/architecture/0048-pad-pool-decks.md#2-behavior-final-not-provisional) — no pad copies.
+    const updatedBoard = duplicateDeckIn(board, deck.id, nanoid(), deck.name + suffix);
     try {
       await boardPut(updatedBoard);
       upsertBoard(updatedBoard);
@@ -142,7 +134,7 @@ export function DeckRail({
         setDeletedDeck({
           deck,
           boardSnapshot,
-          message: `Deleted '${deck.name}' · ${deck.pads.length} pad${deck.pads.length !== 1 ? 's' : ''}`,
+          message: `Deleted '${deck.name}' · ${deck.placements.length} pad${deck.placements.length !== 1 ? 's' : ''}`,
         });
         // If deleted deck was active, switch to first remaining
         if (activeDeckId === deck.id && updatedBoard.decks.length > 0) {
@@ -176,7 +168,7 @@ export function DeckRail({
       name: `Deck ${board.decks.length + 1}`,
       order: board.decks.length,
       gridConfig: { cols: 4, rows: 4, gap: 8, padSize: 'md' },
-      pads: [],
+      placements: [],
     };
     const updatedBoard: Board = {
       ...board,
@@ -261,7 +253,9 @@ export function DeckRail({
                 )}
 
                 {/* Pad count */}
-                {editingId !== deck.id && <span class="sb-count-text">{deck.pads.length}</span>}
+                {editingId !== deck.id && (
+                  <span class="sb-count-text">{deck.placements.length}</span>
+                )}
 
                 {/* Action chips (visible on hover / active) */}
                 {editingId !== deck.id && (

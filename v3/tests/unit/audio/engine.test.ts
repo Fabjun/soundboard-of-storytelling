@@ -503,17 +503,9 @@ describe('initAudioBridge', () => {
         id: 'b',
         name: 'B',
         themeId: 'hearth',
-        settings: { quickAccessLayout: 'hidden', quickAccessSetCount: 1 },
-        decks: [
-          {
-            id: 'd',
-            name: 'D',
-            order: 0,
-            gridConfig: { cols: 4, rows: 4, gap: 8, padSize: 'md' },
-            pads: [s1],
-          },
-        ],
-        sets: [],
+        pads: [s1], // combo children are found in the board's pool (ADR-0048)
+        decks: [],
+        quickAccess: [],
       },
     ];
     audio.initAudioBridge();

@@ -2,7 +2,7 @@
 // Pad Drag-and-Drop — pointer-events-based, SETUP mode only
 //
 // Ported from V1 (index.html onPadPointerDown / onDragMove / onDragEnd) and
-// adapted for V3's coordinate-based Pad.position model.
+// adapted for V3's coordinate model: a deck's placements (padId + position, ADR-0048).
 //
 // V1 algorithm:         Array-index-based INSERT/SWAP
 // V3 algorithm:         Row-major index for position arithmetic, then
@@ -20,7 +20,7 @@
 //   - No combo-step remapping needed (Slice 4+).
 // ─────────────────────────────────────────────────────────────────────────────
 
-import type { Pad, PadPosition } from '../types';
+import type { PadPosition, Placement } from '../types';
 import { posToIndex, indexToPos } from './padUtils';
 
 // ── Types ────────────────────────────────────────────────────────────────────
@@ -153,7 +153,7 @@ function _onPointerMove(e: PointerEvent, _srcEl: HTMLElement): void {
 
   // Ignore self
   if (_state.srcId !== null) {
-    const srcCellKey = _srcCellKey(_state.srcId, _currentPads());
+    const srcCellKey = _srcCellKey(_state.srcId, _currentPlacements());
     if (srcCellKey === tgtKey) return;
   }
 
@@ -250,7 +250,7 @@ function _clearDropIndicators(): void {
 
 function _applySourceClass(on: boolean): void {
   if (_state.srcId === null) return;
-  const srcKey = _srcCellKey(_state.srcId, _currentPads());
+  const srcKey = _srcCellKey(_state.srcId, _currentPlacements());
   if (!srcKey) return;
   const el = _state.cellRefs.get(srcKey);
   if (on) {
@@ -262,17 +262,17 @@ function _applySourceClass(on: boolean): void {
 
 // ── Utilities ─────────────────────────────────────────────────────────────────
 
-/** The global pad array is injected per-move via _currentPads(). We read it from a closure. */
-let _padsRef: Pad[] = [];
-export function setPadsRef(pads: Pad[]): void {
-  _padsRef = pads;
+/** The deck's placements, injected by PadGrid on every render; read per move. */
+let _placementsRef: Placement[] = [];
+export function setPlacementsRef(placements: Placement[]): void {
+  _placementsRef = placements;
 }
-function _currentPads(): Pad[] {
-  return _padsRef;
+function _currentPlacements(): Placement[] {
+  return _placementsRef;
 }
 
-function _srcCellKey(srcId: string, pads: Pad[]): string | null {
-  const pad = pads.find((p) => p.id === srcId);
+function _srcCellKey(srcId: string, placements: Placement[]): string | null {
+  const pad = placements.find((p) => p.padId === srcId);
   if (!pad?.position) return null;
   return `${pad.position.col},${pad.position.row}`;
 }
@@ -300,8 +300,8 @@ function _reset(): void {
  * Apply a SWAP: exchange the positions of two pads.
  * Returns a new pads array (immutable).
  */
-export function applySwap(pads: Pad[], srcId: string, tgtPos: PadPosition): Pad[] {
-  const srcIdx = pads.findIndex((p) => p.id === srcId);
+export function applySwap(pads: Placement[], srcId: string, tgtPos: PadPosition): Placement[] {
+  const srcIdx = pads.findIndex((p) => p.padId === srcId);
   if (srcIdx < 0) return pads;
 
   const tgtIdx = pads.findIndex(
@@ -335,16 +335,16 @@ export function applySwap(pads: Pad[], srcId: string, tgtPos: PadPosition): Pad[
  * Returns a new pads array (immutable).
  */
 export function applyInsert(
-  pads: Pad[],
+  pads: Placement[],
   srcId: string,
   toIndex: number,
   cols: number,
   rows: number,
-): Pad[] {
+): Placement[] {
   const total = cols * rows;
   const clampedTo = Math.max(0, Math.min(toIndex, total - 1));
 
-  const srcPad = pads.find((p) => p.id === srcId);
+  const srcPad = pads.find((p) => p.padId === srcId);
   if (!srcPad?.position) return pads;
 
   const fromIndex = posToIndex(srcPad.position, cols);
@@ -379,7 +379,7 @@ export function applyInsert(
   }
 
   // Move source to target
-  const srcInNext = next.find((p) => p.id === srcId);
+  const srcInNext = next.find((p) => p.padId === srcId);
   if (srcInNext) {
     srcInNext.position = indexToPos(insertIdx, cols);
   }

@@ -13,11 +13,12 @@
 import { useEffect, useState } from 'preact/hooks';
 import type { JSX } from 'preact';
 import type { AppMode, Board, Pad, PadPosition, Deck } from '../types';
+import { addPadToDeck, deckPads, setPlacements, type PlacedPad } from '../lib/boardModel';
 import { PadGridCell } from './PadGridCell';
 import { PadCreationPopover, type CreationResult } from './PadCreationPopover';
 import {
   startDrag,
-  setPadsRef,
+  setPlacementsRef,
   registerCellRef,
   configureDnd,
   applySwap,
@@ -58,12 +59,10 @@ export function PadGrid({
   const [popoverPos, setPopoverPos] = useState<PadPosition | null>(null);
   const [popoverCellRect, setPopoverCellRect] = useState<DOMRect | null>(null);
 
-  // Build lookup map: "col,row" → Pad
-  const padMap = new Map<string, Pad>();
-  for (const pad of deck.pads) {
-    if (pad.position) {
-      padMap.set(`${pad.position.col},${pad.position.row}`, pad);
-    }
+  // Lookup "col,row" → pad of the pool + its placement in this deck
+  const padMap = new Map<string, PlacedPad>();
+  for (const entry of deckPads(board, deck)) {
+    padMap.set(`${entry.placement.position.col},${entry.placement.position.row}`, entry);
   }
 
   // ── DnD setup (pad-to-pad, Pointer Events) ────────────────────────────────
@@ -73,24 +72,17 @@ export function PadGrid({
   }, [cols, rows]);
 
   useEffect(() => {
-    setPadsRef(deck.pads);
+    setPlacementsRef(deck.placements);
   });
 
   async function handleDrop(result: DndDropResult) {
     if (result.kind === 'cancel') return;
 
-    let updatedPads: Pad[];
-    if (result.kind === 'swap') {
-      updatedPads = applySwap(deck.pads, result.srcId, result.tgtPos);
-    } else {
-      updatedPads = applyInsert(deck.pads, result.srcId, result.toIndex, cols, rows);
-    }
-
-    const updatedDeck: Deck = { ...deck, pads: updatedPads };
-    const updatedBoard: Board = {
-      ...board,
-      decks: board.decks.map((s) => (s.id === deck.id ? updatedDeck : s)),
-    };
+    const placements =
+      result.kind === 'swap'
+        ? applySwap(deck.placements, result.srcId, result.tgtPos)
+        : applyInsert(deck.placements, result.srcId, result.toIndex, cols, rows);
+    const updatedBoard: Board = setPlacements(board, deck.id, placements);
     try {
       await boardPut(updatedBoard);
       upsertBoard(updatedBoard);
@@ -108,12 +100,8 @@ export function PadGrid({
 
   // ── Pad CRUD ───────────────────────────────────────────────────────────────
 
-  async function savePadToDeck(newPad: Pad) {
-    const updatedDeck: Deck = { ...deck, pads: [...deck.pads, newPad] };
-    const updatedBoard: Board = {
-      ...board,
-      decks: board.decks.map((s) => (s.id === deck.id ? updatedDeck : s)),
-    };
+  async function savePadToDeck(newPad: Pad, position: PadPosition) {
+    const updatedBoard: Board = addPadToDeck(board, deck.id, newPad, position);
     try {
       await boardPut(updatedBoard);
       upsertBoard(updatedBoard);
@@ -123,17 +111,18 @@ export function PadGrid({
   }
 
   async function handleCreationResult(result: CreationResult) {
+    const position = popoverPos;
     setPopoverPos(null);
     setPopoverCellRect(null);
 
-    if (result.action === 'cancel') return;
+    if (result.action === 'cancel' || !position) return;
 
     if (result.action === 'create') {
-      await savePadToDeck(result.pad);
+      await savePadToDeck(result.pad, position);
     } else if (result.action === 'open-editor') {
       // Build a partial pad and open the editor (sets selectedPad)
       const partial = result.partialPad;
-      await savePadToDeck(partial);
+      await savePadToDeck(partial, position);
       onRequestNewPad(partial);
     }
   }
@@ -155,11 +144,13 @@ export function PadGrid({
         {Array.from({ length: rows }, (_, row) =>
           Array.from({ length: cols }, (_, col) => {
             const key = `${col},${row}`;
-            const pad = padMap.get(key) ?? null;
+            const entry = padMap.get(key);
+            const pad = entry?.pad ?? null;
             return (
               <PadGridCell
                 key={key}
                 pad={pad}
+                hotkey={entry?.placement.hotkey}
                 mode={mode}
                 col={col}
                 row={row}

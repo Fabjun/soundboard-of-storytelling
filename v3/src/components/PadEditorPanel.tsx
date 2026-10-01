@@ -31,6 +31,7 @@ import { padTypeColor, padTypeLabel, applyTypeChange, padMigrationMatrix } from 
 import { libraryItems } from '../state/store';
 import { boardPut } from '../db/idb';
 import { upsertBoard } from '../state/store';
+import { updatePad } from '../lib/boardModel';
 
 interface PadEditorPanelProps {
   pad: Pad;
@@ -64,6 +65,8 @@ export function PadEditorPanel({
   const [libPickerOpen, setLibPickerOpen] = useState(false);
 
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  /** The pad's key in this deck — keys belong to the placement (ADR-0048). */
+  const hotkey = deck.placements.find((p) => p.padId === pad.id)?.hotkey;
 
   // Sync from prop changes (when pad changes externally).
   // Dep is pad.id intentionally — we only reset local state on PAD IDENTITY change,
@@ -84,14 +87,8 @@ export function PadEditorPanel({
   function scheduleAutoSave(updatedPad: Pad) {
     if (debounceRef.current !== null) clearTimeout(debounceRef.current);
     debounceRef.current = setTimeout(async () => {
-      const updatedDeck: Deck = {
-        ...deck,
-        pads: deck.pads.map((p) => (p.id === updatedPad.id ? updatedPad : p)),
-      };
-      const updatedBoard: Board = {
-        ...board,
-        decks: board.decks.map((s) => (s.id === updatedDeck.id ? updatedDeck : s)),
-      };
+      // The pad lives once in the pool: the edit shows in every deck that places it (ADR-0048).
+      const updatedBoard: Board = updatePad(board, updatedPad);
       try {
         await boardPut(updatedBoard);
         upsertBoard(updatedBoard);
@@ -107,8 +104,6 @@ export function PadEditorPanel({
     const base: PadBase = {
       id: pad.id,
       name,
-      position: pad.position,
-      hotkey: pad.hotkey,
       iconRef: pad.iconRef,
       color: pad.color,
       volume,
@@ -351,9 +346,9 @@ export function PadEditorPanel({
           <PixelIcon name="keyboard" size={11} color="var(--text-mute)" />
           <span
             class="sb-hotkey-value sb-flex-1"
-            style={{ color: pad.hotkey ? 'var(--text)' : 'var(--text-mute)' }}
+            style={{ color: hotkey ? 'var(--text)' : 'var(--text-mute)' }}
           >
-            {pad.hotkey ?? '— not assigned —'}
+            {hotkey ?? '— not assigned —'}
           </span>
           <span class="sb-hint-text">Slice 8</span>
         </div>

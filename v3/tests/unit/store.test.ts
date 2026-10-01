@@ -31,9 +31,9 @@ function makeBoard(id: string, name = 'Test Board'): Board {
     id,
     name,
     themeId: 'hearth',
-    settings: { quickAccessLayout: 'hidden', quickAccessSetCount: 1 },
+    pads: [],
     decks: [],
-    sets: [],
+    quickAccess: [],
   };
 }
 
@@ -155,14 +155,14 @@ describe('currentDeck computed', () => {
           name: 'Intro',
           order: 0,
           gridConfig: { cols: 4, rows: 4, gap: 8, padSize: '1fr' },
-          pads: [],
+          placements: [],
         },
         {
           id: 's2',
           name: 'Act 1',
           order: 1,
           gridConfig: { cols: 4, rows: 4, gap: 8, padSize: '1fr' },
-          pads: [],
+          placements: [],
         },
       ],
     };
@@ -181,7 +181,7 @@ describe('currentDeck computed', () => {
           name: 'Intro',
           order: 0,
           gridConfig: { cols: 4, rows: 4, gap: 8, padSize: '1fr' },
-          pads: [],
+          placements: [],
         },
       ],
     };

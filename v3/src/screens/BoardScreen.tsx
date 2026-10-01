@@ -35,6 +35,7 @@ import { PixelIcon } from '../components/PixelIcon';
 import type { AppMode, Board, Pad, PadPosition, Deck } from '../types';
 import { nanoid } from '../lib/nanoid';
 import { nextFreeSlot, typeInference } from '../lib/padUtils';
+import { addPadToDeck, deletePad } from '../lib/boardModel';
 import { type LibDndDropResult } from '../lib/libDnd';
 
 type RightPanelMode = 'library' | 'editor' | 'empty';
@@ -73,23 +74,18 @@ export function BoardScreen(): JSX.Element {
   // always be called unconditionally. handleAddPad guards for !board/!deck.
   async function handleAddPad() {
     if (!deck || !board) return;
-    const pos = nextFreeSlot(deck.pads, deck.gridConfig.cols, deck.gridConfig.rows);
+    const pos = nextFreeSlot(deck.placements, deck.gridConfig.cols, deck.gridConfig.rows);
     if (!pos) return; // Grid full
     const newPad: Pad = {
       id: nanoid(),
       type: 'single',
       name: '',
-      position: pos,
       volume: 80,
       fadeIn: 0,
       fadeOut: 0,
       // libraryItemRef intentionally absent: editor opens to fill it in
     };
-    const updatedDeck: Deck = { ...deck, pads: [...deck.pads, newPad] };
-    const updatedBoard: Board = {
-      ...board,
-      decks: board.decks.map((s) => (s.id === deck.id ? updatedDeck : s)),
-    };
+    const updatedBoard: Board = addPadToDeck(board, deck.id, newPad, pos);
     try {
       await boardPut(updatedBoard);
       upsertBoard(updatedBoard);
@@ -165,11 +161,11 @@ export function BoardScreen(): JSX.Element {
     const { itemId, targetPos } = result;
 
     // If the target slot is occupied, fall back to the next free slot
-    const occupied = deck.pads.find(
-      (p) => p.position?.col === targetPos.col && p.position?.row === targetPos.row,
+    const occupied = deck.placements.find(
+      (p) => p.position.col === targetPos.col && p.position.row === targetPos.row,
     );
     const finalPos = occupied
-      ? nextFreeSlot(deck.pads, deck.gridConfig.cols, deck.gridConfig.rows)
+      ? nextFreeSlot(deck.placements, deck.gridConfig.cols, deck.gridConfig.rows)
       : targetPos;
     if (!finalPos) return; // grid full
 
@@ -183,7 +179,6 @@ export function BoardScreen(): JSX.Element {
             id: nanoid(),
             type: 'loop',
             name: item.name,
-            position: finalPos,
             libraryItemRef: itemId,
             volume: 80,
             fadeIn: 0,
@@ -193,18 +188,13 @@ export function BoardScreen(): JSX.Element {
             id: nanoid(),
             type: 'single',
             name: item.name,
-            position: finalPos,
             libraryItemRef: itemId,
             volume: 80,
             fadeIn: 0,
             fadeOut: 0,
           };
 
-    const updatedDeck: Deck = { ...deck, pads: [...deck.pads, newPad] };
-    const updatedBoard: Board = {
-      ...board,
-      decks: board.decks.map((s) => (s.id === deck.id ? updatedDeck : s)),
-    };
+    const updatedBoard: Board = addPadToDeck(board, deck.id, newPad, finalPos);
     try {
       await boardPut(updatedBoard);
       upsertBoard(updatedBoard);
@@ -226,11 +216,11 @@ export function BoardScreen(): JSX.Element {
     setPlaceMode(null); // clear immediately so double-taps don't create two pads
 
     // Occupied slot → fall back to next free slot (consistent with handleLibDrop)
-    const occupied = deck.pads.find(
-      (p) => p.position?.col === pos.col && p.position?.row === pos.row,
+    const occupied = deck.placements.find(
+      (p) => p.position.col === pos.col && p.position.row === pos.row,
     );
     const finalPos = occupied
-      ? nextFreeSlot(deck.pads, deck.gridConfig.cols, deck.gridConfig.rows)
+      ? nextFreeSlot(deck.placements, deck.gridConfig.cols, deck.gridConfig.rows)
       : pos;
 
     await handleLibDrop({ kind: 'drop', itemId, targetPos: finalPos ?? pos });
@@ -238,14 +228,9 @@ export function BoardScreen(): JSX.Element {
 
   async function handlePadDelete(padId: string) {
     if (!deck || !board) return;
-    const updatedDeck: Deck = {
-      ...deck,
-      pads: deck.pads.filter((p) => p.id !== padId),
-    };
-    const updatedBoard: Board = {
-      ...board,
-      decks: board.decks.map((s) => (s.id === deck.id ? updatedDeck : s)),
-    };
+    // Delete pad (ADR-0048): from the pool, every deck, quick access and combo steps.
+    // "Remove from deck" (placement only) follows in Slice 9e.
+    const updatedBoard: Board = deletePad(board, padId);
     try {
       await boardPut(updatedBoard);
       upsertBoard(updatedBoard);
@@ -262,7 +247,10 @@ export function BoardScreen(): JSX.Element {
 
   // ── Pad for editor ─────────────────────────────────────────────────────────
 
-  const selectedPad = deck?.pads.find((p) => p.id === selectedPadId) ?? null;
+  const selectedPad =
+    deck && deck.placements.some((p) => p.padId === selectedPadId)
+      ? (board.pads.find((p) => p.id === selectedPadId) ?? null)
+      : null;
 
   // ── Layout ─────────────────────────────────────────────────────────────────
 
@@ -302,7 +290,7 @@ export function BoardScreen(): JSX.Element {
                   name: 'Deck 1',
                   order: 0,
                   gridConfig: { cols: 4, rows: 4, gap: 8, padSize: 'md' },
-                  pads: [],
+                  placements: [],
                 };
                 const updatedBoard: Board = { ...board, decks: [newDeck] };
                 try {
@@ -394,7 +382,7 @@ export function BoardScreen(): JSX.Element {
         boardName={board.name}
         infoText={
           deck
-            ? `${deck.name} · ${deck.pads.length} pad${deck.pads.length !== 1 ? 's' : ''}`
+            ? `${deck.name} · ${deck.placements.length} pad${deck.placements.length !== 1 ? 's' : ''}`
             : 'No deck selected'
         }
       />

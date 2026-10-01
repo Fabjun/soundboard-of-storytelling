@@ -3,10 +3,10 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { fc } from '@fast-check/vitest';
-import type { Pad } from '../../src/types';
+import type { Placement } from '../../src/types';
 import { indexToPos } from '../../src/lib/padUtils';
 
-/** A grid (cols × rows) with pads on a random subset of its cells, each cell used once. */
+/** A grid (cols × rows) with placements on a random subset of its cells, each cell used once. */
 export const layout = fc
   .record({ cols: fc.integer({ min: 1, max: 8 }), rows: fc.integer({ min: 1, max: 8 }) })
   .chain(({ cols, rows }) =>
@@ -18,14 +18,9 @@ export const layout = fc
       .map((cells) => ({
         cols,
         rows,
-        pads: cells.map((cell, n): Pad => ({
-          id: `p${n}`,
-          type: 'single',
-          name: `Pad ${n}`,
+        placements: cells.map((cell, n): Placement => ({
+          padId: `p${n}`,
           position: indexToPos(cell, cols),
-          volume: 80,
-          fadeIn: 0,
-          fadeOut: 0,
         })),
       })),
   );

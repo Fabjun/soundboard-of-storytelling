@@ -15,10 +15,12 @@ import { isSinglePad, isLoopPad, isPlaylistPad, isComboPad } from '../types';
  * Rationale: predictable beats smart; one-in-twenty workflows break
  * with near-focused heuristics.
  */
-export function nextFreeSlot(pads: Pad[], cols: number, rows: number): PadPosition | null {
-  const occupied = new globalThis.Set(
-    pads.filter((p) => p.position !== null).map((p) => `${p.position!.col},${p.position!.row}`),
-  );
+export function nextFreeSlot(
+  placements: readonly { position: PadPosition }[],
+  cols: number,
+  rows: number,
+): PadPosition | null {
+  const occupied = new globalThis.Set(placements.map((p) => `${p.position.col},${p.position.row}`));
   for (let row = 0; row < rows; row++) {
     for (let col = 0; col < cols; col++) {
       if (!occupied.has(`${col},${row}`)) return { col, row };
@@ -192,8 +194,6 @@ export function applyTypeChange(pad: Pad, newType: PadType): Pad {
   const base: PadBase = {
     id: pad.id,
     name: pad.name,
-    position: pad.position,
-    hotkey: pad.hotkey,
     iconRef: pad.iconRef,
     color: pad.color,
     volume: pad.volume,

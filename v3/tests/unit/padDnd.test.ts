@@ -8,40 +8,28 @@
 // them unguarded). Cases chosen by boundary value analysis.
 // ─────────────────────────────────────────────────────────────────────────────
 
-import type { Pad, PadPosition, SinglePad } from '../../src/types';
+import type { PadPosition, Placement } from '../../src/types';
 import { afterEach, beforeEach, vi } from 'vitest';
 import {
   applySwap,
   applyInsert,
   configureDnd,
   registerCellRef,
-  setPadsRef,
+  setPlacementsRef,
   startDrag,
   type DndDropResult,
 } from '../../src/lib/padDnd';
 
 // ── Test factory ──────────────────────────────────────────────────────────────
 
-function makePad(
-  id: string,
-  pos: PadPosition,
-  overrides?: Partial<Omit<SinglePad, 'type'>>,
-): SinglePad {
-  return {
-    id,
-    type: 'single',
-    name: `Pad ${id}`,
-    position: pos,
-    volume: 80,
-    fadeIn: 0,
-    fadeOut: 0,
-    ...overrides,
-  };
+/** A placement of pad `id` in a deck (padDnd works on a deck's placements, ADR-0048). */
+function makePad(id: string, pos: PadPosition): Placement {
+  return { padId: id, position: pos };
 }
 
 /** Build a full 4×4 grid of pads (row-major). */
-function makeGrid(): Pad[] {
-  const pads: Pad[] = [];
+function makeGrid(): Placement[] {
+  const pads: Placement[] = [];
   for (let row = 0; row < 4; row++) {
     for (let col = 0; col < 4; col++) {
       const id = `${col}-${row}`;
@@ -52,8 +40,8 @@ function makeGrid(): Pad[] {
 }
 
 /** Get the pad at a given position from a pads array. */
-function padAt(pads: Pad[], col: number, row: number): Pad | undefined {
-  return pads.find((p) => p.position?.col === col && p.position?.row === row);
+function padAt(pads: Placement[], col: number, row: number): Placement | undefined {
+  return pads.find((p) => p.position.col === col && p.position.row === row);
 }
 
 // ── applySwap ────────────────────────────────────────────────────────────────
@@ -62,19 +50,19 @@ describe('applySwap', () => {
   test('both slots occupied → swaps positions', () => {
     const pads = [makePad('a', { col: 0, row: 0 }), makePad('b', { col: 1, row: 0 })];
     const result = applySwap(pads, 'a', { col: 1, row: 0 });
-    expect(padAt(result, 0, 0)?.id).toBe('b');
-    expect(padAt(result, 1, 0)?.id).toBe('a');
+    expect(padAt(result, 0, 0)?.padId).toBe('b');
+    expect(padAt(result, 1, 0)?.padId).toBe('a');
   });
 
   test('target slot empty → source moves, no other pad affected', () => {
     const pads = [makePad('a', { col: 0, row: 0 }), makePad('b', { col: 2, row: 0 })];
     const result = applySwap(pads, 'a', { col: 3, row: 0 });
     // 'a' moved to (3,0)
-    expect(padAt(result, 3, 0)?.id).toBe('a');
+    expect(padAt(result, 3, 0)?.padId).toBe('a');
     // (0,0) is now empty
     expect(padAt(result, 0, 0)).toBeUndefined();
     // 'b' untouched
-    expect(padAt(result, 2, 0)?.id).toBe('b');
+    expect(padAt(result, 2, 0)?.padId).toBe('b');
   });
 
   test('unknown srcId → returns original array unchanged', () => {
@@ -92,8 +80,10 @@ describe('applySwap', () => {
         !(p.position?.col === 0 && p.position?.row === 0) &&
         !(p.position?.col === 3 && p.position?.row === 3),
     );
-    const originalUnchanged = pads.filter((p) => !(p.id === '0-0') && !(p.id === '3-3'));
-    expect(unchanged.map((p) => p.id).sort()).toEqual(originalUnchanged.map((p) => p.id).sort());
+    const originalUnchanged = pads.filter((p) => !(p.padId === '0-0') && !(p.padId === '3-3'));
+    expect(unchanged.map((p) => p.padId).sort()).toEqual(
+      originalUnchanged.map((p) => p.padId).sort(),
+    );
   });
 
   test('immutable: original array is not mutated', () => {
@@ -107,18 +97,6 @@ describe('applySwap', () => {
 });
 
 // ── applyInsert ───────────────────────────────────────────────────────────────
-
-describe('applySwap with unplaced pads', () => {
-  it('pads without position are skipped when looking for the target', () => {
-    const pads = [
-      makePad('a', { col: 0, row: 0 }),
-      { ...makePad('u', { col: 0, row: 0 }), position: null },
-    ];
-    const next = applySwap(pads, 'a', { col: 1, row: 0 });
-    expect(next.find((p) => p.id === 'a')!.position).toEqual({ col: 1, row: 0 });
-    expect(next.find((p) => p.id === 'u')!.position).toBeNull();
-  });
-});
 
 describe('applyInsert', () => {
   test('drag forward: source at index 0, insert at index 3 → source ends at 2', () => {
@@ -134,13 +112,13 @@ describe('applyInsert', () => {
     const result = applyInsert(pads, 'a', 3, 4, 4);
 
     // 'a' should be at index 2 (col=2, row=0)
-    expect(padAt(result, 2, 0)?.id).toBe('a');
+    expect(padAt(result, 2, 0)?.padId).toBe('a');
     // 'b' shifts from index 1 → index 0 (col=0, row=0)
-    expect(padAt(result, 0, 0)?.id).toBe('b');
+    expect(padAt(result, 0, 0)?.padId).toBe('b');
     // 'c' shifts from index 2 → index 1 (col=1, row=0)
-    expect(padAt(result, 1, 0)?.id).toBe('c');
+    expect(padAt(result, 1, 0)?.padId).toBe('c');
     // 'd' stays at index 3 (col=3, row=0) — not in the shift range
-    expect(padAt(result, 3, 0)?.id).toBe('d');
+    expect(padAt(result, 3, 0)?.padId).toBe('d');
   });
 
   test('drag backward: source at index 3, insert at index 0 → source ends at 0', () => {
@@ -155,13 +133,13 @@ describe('applyInsert', () => {
     const result = applyInsert(pads, 'd', 0, 4, 4);
 
     // 'd' moves to index 0 (col=0, row=0)
-    expect(padAt(result, 0, 0)?.id).toBe('d');
+    expect(padAt(result, 0, 0)?.padId).toBe('d');
     // 'a' shifts from 0 → 1
-    expect(padAt(result, 1, 0)?.id).toBe('a');
+    expect(padAt(result, 1, 0)?.padId).toBe('a');
     // 'b' shifts from 1 → 2
-    expect(padAt(result, 2, 0)?.id).toBe('b');
+    expect(padAt(result, 2, 0)?.padId).toBe('b');
     // 'c' shifts from 2 → 3
-    expect(padAt(result, 3, 0)?.id).toBe('c');
+    expect(padAt(result, 3, 0)?.padId).toBe('c');
   });
 
   test('toIndex clamped to total-1 when out of range', () => {
@@ -225,7 +203,7 @@ function cellElement(col: number, row: number, width = CELL): HTMLElement {
 
 describe('drag flow (startDrag)', () => {
   let cells: Map<string, HTMLElement>;
-  let pads: Pad[];
+  let pads: Placement[];
   let onDrop: ReturnType<typeof vi.fn<(r: DndDropResult) => void>>;
 
   /** Grid of COLS × 4 cells; every cell holds pad "p<col>,<row>". */
@@ -241,7 +219,7 @@ describe('drag flow (startDrag)', () => {
         pads.push(makePad(`p${key}`, { col, row }));
       }
     configureDnd(COLS, 4);
-    setPadsRef(pads);
+    setPlacementsRef(pads);
   }
 
   const move = (x: number, y: number): void => {
@@ -493,9 +471,8 @@ describe('drag flow (startDrag)', () => {
     expect(() => up()).not.toThrow();
   });
 
-  it('a dragged pad without position gets no source marker', () => {
-    pads[0] = { ...pads[0], position: null };
-    setPadsRef(pads);
+  it('a dragged pad without placement in this deck gets no source marker', () => {
+    setPlacementsRef(pads.slice(1)); // pad p0,0 is not placed in the deck
     press(0, 0);
     move(58, 50);
     expect(cells.get('0,0')!.classList.contains('is-drag-source')).toBe(false);

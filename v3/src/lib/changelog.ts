@@ -7,9 +7,16 @@ export type ChangelogEntry = {
   items: string[];
 };
 
-export const APP_VERSION = '3.0.87';
+export const APP_VERSION = '3.0.89';
 
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.89',
+    date: '2026-10-01',
+    items: [
+      'feat(model): pad pool — pads belong to the board, decks place them with position and key; duplicated decks share their pads; quick-access model; DB v4 (Slice 9c, ADR-0048)',
+    ],
+  },
   {
     version: '3.0.87',
     date: '2026-10-01',

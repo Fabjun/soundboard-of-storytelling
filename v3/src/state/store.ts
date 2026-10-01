@@ -50,16 +50,9 @@ export const currentMode = signal<AppMode>('play');
 export const activeTheme = signal<string>('hearth');
 
 // ---------------------------------------------------------------------------
-// Quick-access sets
-// ---------------------------------------------------------------------------
-
-/** IDs of PadSets currently displayed in the quick-access strip. */
-export const activeSetIds = signal<string[]>([]);
-
-// ---------------------------------------------------------------------------
 // Playback state
 //
-// Using globalThis.Set to avoid naming collision with the soundboard PadSet type.
+// globalThis.Set: explicit built-in Set (the code base used to have a PadSet type).
 // ReadonlySet in the type signature prevents callers from mutating directly;
 // mutations go through the helpers below.
 // ---------------------------------------------------------------------------

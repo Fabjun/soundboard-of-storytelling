@@ -23,10 +23,10 @@ describe('grid positions', () => {
 
   test.prop([layout])(
     'nextFreeSlot returns the first free cell in row-major order, or null when full',
-    ({ cols, rows, pads }) => {
-      const taken = new Set(pads.map((p) => posToIndex(p.position!, cols)));
+    ({ cols, rows, placements }) => {
+      const taken = new Set(placements.map((p) => posToIndex(p.position, cols)));
       const firstFree = Array.from({ length: cols * rows }, (_, i) => i).find((i) => !taken.has(i));
-      const slot = nextFreeSlot(pads, cols, rows);
+      const slot = nextFreeSlot(placements, cols, rows);
       if (firstFree === undefined) expect(slot).toBeNull();
       else expect(slot).toEqual(indexToPos(firstFree, cols));
     },

@@ -137,3 +137,38 @@ test('11 — undo deck delete → tab restored', async ({ page }) => {
     .textContent();
   expect(restoredText).toContain((deckText ?? '').replace(/\s+/g, ' ').trim().split(' ')[1] ?? '');
 });
+
+// ── Test 12: Duplicate deck shares its pads (pad pool, ADR-0048) ──────────────
+
+test('12 — duplicate deck shares its pads: a rename in one deck shows in the other', async ({
+  page,
+}) => {
+  await page.getByTestId('deck-rail-new-button').click();
+  const tabs = page.locator('[data-testid^="deck-rail-deck-tab-"]');
+  await tabs.first().waitFor();
+
+  // A pad without audio (ADD PAD), named in the editor (auto-save after 500 ms). Located by its
+  // text: the button has no accessible name in Chromium yet (BACKLOG "Role-based E2E locators").
+  await page.getByText('ADD PAD', { exact: true }).click();
+  await page.getByTestId('pad-editor-panel-name-input').waitFor();
+  const padCell = page
+    .locator('[data-testid^="pad-grid-cell-"]:not([data-testid^="pad-grid-cell-empty-slot-"])')
+    .first();
+  const padTestId = (await padCell.getAttribute('data-testid'))!;
+  await page.getByTestId('pad-editor-panel-name-input').fill('Thunder');
+  await expect(page.getByTestId(padTestId)).toContainText('Thunder');
+
+  // Duplicate the deck and open the copy: the same pad (same id) is there
+  await tabs.first().hover();
+  await tabs.first().locator('[data-testid^="deck-rail-copy-button-"]').click();
+  await expect(tabs).toHaveCount(2);
+  await tabs.nth(1).click();
+  await expect(page.getByTestId(padTestId)).toContainText('Thunder');
+
+  // Rename it in the copy → the original deck shows the new name
+  await page.getByTestId(padTestId).click();
+  await page.getByTestId('pad-editor-panel-name-input').fill('Storm');
+  await expect(page.getByTestId(padTestId)).toContainText('Storm');
+  await tabs.first().click();
+  await expect(page.getByTestId(padTestId)).toContainText('Storm');
+});
