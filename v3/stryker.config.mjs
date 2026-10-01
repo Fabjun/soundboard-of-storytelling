@@ -35,10 +35,11 @@ export const MUTATE = [
 ];
 
 // Only ever RAISE (like the coverage floor): measured score rounded down. Clean CI baseline
-// 2026-10-01 (weekly run 36827375932, all ten modules): 68.89 %. A run that tests nothing scores
+// 2026-10-01 (weekly run 36827375932, all ten modules): 68.89 %; after the engine tests
+// (4d85195, run 36830307454): 73.52 %, timeouts 0.28 %. A run that tests nothing scores
 // ~0 and fails. In per-module CI jobs the aggregate job enforces it over all modules
 // (npm run mutation:report -- --break).
-export const BREAK = 68;
+export const BREAK = 73;
 
 /** @type {import('@stryker-mutator/api/core').PartialStrykerOptions} */
 export default {

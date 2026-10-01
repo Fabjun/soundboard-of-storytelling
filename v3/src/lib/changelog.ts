@@ -7,9 +7,16 @@ export type ChangelogEntry = {
   items: string[];
 };
 
-export const APP_VERSION = '3.0.91';
+export const APP_VERSION = '3.0.92';
 
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.92',
+    date: '2026-10-01',
+    items: [
+      'test: WebKit test seed never creates the database (race broke app boot); lint forbids conditional assertions in E2E tests; mutation break threshold 73',
+    ],
+  },
   {
     version: '3.0.91',
     date: '2026-10-01',

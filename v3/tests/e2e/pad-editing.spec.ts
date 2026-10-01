@@ -106,17 +106,13 @@ test('19 — lossy type change → PadTypeConfirmDialog appears', async ({ page 
   await padCell.click();
   await page.getByTestId('pad-editor-panel').waitFor();
 
-  // Switch to PLAYLIST type (from SINGLE: this may trigger a dialog)
-  // playlist→single is lossy; single→playlist may be an add (no dialog)
-  // So first go single→playlist (no dialog expected), then playlist→single (lossy)
+  // single→playlist is a 'migrate' change (padMigrationMatrix) of a pad with name and source:
+  // the dialog always appears — confirm it.
   await page.getByTestId('pad-editor-panel-type-button-playlist').click();
-  // If a dialog appears, dismiss it first (single→playlist might be lossy too)
-  const maybeDialog = page.getByTestId('pad-type-confirm-dialog');
-  const dialogVisible = await maybeDialog.isVisible();
-  if (dialogVisible) {
-    await page.getByTestId('pad-type-confirm-dialog-switch-button').click();
-    await expect(maybeDialog).not.toBeVisible({ timeout: 2000 });
-  }
+  const dialog = page.getByTestId('pad-type-confirm-dialog');
+  await expect(dialog).toBeVisible();
+  await page.getByTestId('pad-type-confirm-dialog-switch-button').click();
+  await expect(dialog).not.toBeVisible({ timeout: 2000 });
   // Now switch back: playlist→single (lossy: drops playlist sources)
   await page.getByTestId('pad-editor-panel-type-button-single').click();
   // Confirmation dialog should appear

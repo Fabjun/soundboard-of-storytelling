@@ -6,7 +6,7 @@
 // if they need clean IndexedDB state.
 // ─────────────────────────────────────────────────────────────────────────────
 
-import type { Locator, Page } from '@playwright/test';
+import { expect, type Locator, type Page } from '@playwright/test';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
@@ -52,45 +52,64 @@ export async function uploadTestAudio(page: Page): Promise<void> {
 /**
  * WebKit only: headless WebKit cannot decode audio, so the real upload fails there.
  * Instead, write one library entry (metadata shape of the upload pipeline, no audio) straight
- * into the app's IndexedDB and reload. Waits until the APP has created its database —
- * opening it first from here would create it without the app's object stores.
- * The upload path itself stays covered in Chromium (uploadTestAudio).
+ * into the app's IndexedDB and reload. The upload path itself stays covered in Chromium
+ * (uploadTestAudio).
+ *
+ * The seed must never CREATE the database: an open without version would create an empty v1
+ * database, and the app's upgrade from v1 then skips the library store (NotFoundError at boot).
+ * `indexedDB.databases()` is no proof the app has finished creating it — on 2026-10-01 it listed
+ * the database while a fresh document still had none (measured: seed opened an empty v1 at
+ * t=111 ms, app failed at t=211 ms). So the seed aborts its own upgrade when the database does
+ * not exist yet and retries until the app's library store is there.
  */
 export async function seedTestAudio(page: Page): Promise<void> {
   await page.goto('/soundboard-of-storytelling/');
-  await page.waitForFunction(async () =>
-    (await indexedDB.databases()).some((d) => d.name === 'sos-v3'),
-  );
-  await page.evaluate(
-    (name) =>
-      new Promise<void>((resolve, reject) => {
-        const open = indexedDB.open('sos-v3');
-        open.onerror = () => reject(open.error);
-        open.onsuccess = () => {
-          const db = open.result;
-          const tx = db.transaction('library', 'readwrite');
-          tx.objectStore('library').put({
-            id: 'e2e0000000000000000000000000000000000000000000000000000000000001',
-            type: 'audio',
-            name,
-            size: 44,
-            tags: [],
-            addedAt: Date.now(),
-            duration: 1,
-            peaks: new Array(30).fill(0.5),
-            // No blob: Playwright's WebKit context (ephemeral, like Safari Private
-            // Browsing) cannot store Blobs in IndexedDB (verified 2026-09-29). The
-            // WebKit specs never play audio, and libGetAllMeta never reads the blob.
-          });
-          tx.oncomplete = () => {
-            db.close();
-            resolve();
-          };
-          tx.onerror = () => reject(tx.error);
-        };
-      }),
-    `${TEST_AUDIO_NAME}.wav`,
-  );
+  await expect
+    .poll(
+      () =>
+        page
+          .evaluate(
+            (name) =>
+              new Promise<string>((resolve) => {
+                const open = indexedDB.open('sos-v3');
+                // No database yet: abort, so this open leaves nothing behind.
+                open.onupgradeneeded = () => open.transaction!.abort();
+                open.onerror = () => resolve('database not created yet');
+                open.onsuccess = () => {
+                  const db = open.result;
+                  if (!db.objectStoreNames.contains('library')) {
+                    db.close();
+                    resolve('library store missing');
+                    return;
+                  }
+                  const tx = db.transaction('library', 'readwrite');
+                  tx.objectStore('library').put({
+                    id: 'e2e0000000000000000000000000000000000000000000000000000000000001',
+                    type: 'audio',
+                    name,
+                    size: 44,
+                    tags: [],
+                    addedAt: Date.now(),
+                    duration: 1,
+                    peaks: new Array(30).fill(0.5),
+                    // No blob: Playwright's WebKit context (ephemeral, like Safari Private
+                    // Browsing) cannot store Blobs in IndexedDB (verified 2026-09-29). The
+                    // WebKit specs never play audio, and libGetAllMeta never reads the blob.
+                  });
+                  tx.oncomplete = () => {
+                    db.close();
+                    resolve('seeded');
+                  };
+                  tx.onerror = () => resolve(`seed failed: ${String(tx.error)}`);
+                };
+              }),
+            `${TEST_AUDIO_NAME}.wav`,
+          )
+          // A navigation between two attempts destroys the evaluation context — try again.
+          .catch((e: unknown) => `evaluate failed: ${String(e)}`),
+      { message: 'seed the test audio into the app database', timeout: 10_000 },
+    )
+    .toBe('seeded');
   await page.reload();
 }
 

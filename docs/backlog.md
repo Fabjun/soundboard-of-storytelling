@@ -1236,6 +1236,23 @@ holding such a pad plays the following step twice (double sound). Fix needs the 
 (ADR-0048 §4: engine changes under product-owner control). Pinned by
 `tests/unit/audio/engine.test.ts` (`test.fails` + a precise current-behaviour test).
 
+### Bug: board writes from an outdated board copy lose changes
+
+Found 2026-10-01 (Slice 9e work). Two writers save a copy of the board taken some time earlier
+and so overwrite every change made in between:
+
+- **Deck undo** (`v3/src/components/DeckRail.tsx`, `undoDelete`) restores the whole board as it was
+  when the deck was deleted — any pad or deck change during the 6 s undo window is lost.
+- **PAD editor auto-save** (`v3/src/components/PadEditorPanel.tsx`) saves 500 ms after the last
+  keystroke with the board of that render — a drag and drop, deck rename or new pad in those
+  500 ms is lost. Fixed on the Slice 9e branch (PR #32) for this writer only.
+
+Root cause: board changes are written as finished boards (`boardPut(updatedBoard)`) computed from
+the `board` a component rendered with. Standard remedy: apply each change as a function to the
+latest board at write time (the "updater function" pattern), through one save helper, and guard
+that components do not call `boardPut` directly. A new scheme → proposed on its own branch.
+**When:** branch on top of Slice 9e; review with the Slice 9 PRs.
+
 ### Major dependency updates (one at a time)
 
 Status 2026-09-30 (owner approval of the plan; each major measured in a throwaway worktree first,
