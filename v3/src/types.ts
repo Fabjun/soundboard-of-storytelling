@@ -45,7 +45,7 @@ export type QuickAccessEntry = {
   hotkey?: string;
 };
 
-export type PadType = 'single' | 'loop' | 'playlist' | 'combo';
+export type PadType = Pad['type']; // single | loop | combo (Playlist merged into Loop, ADR-0048)
 
 export type PadPosition = {
   col: number; // 0-indexed, 0..cols-1
@@ -75,27 +75,34 @@ export type ComboStep = {
   fadeOutAll?: number;
 };
 
-/** One-shot playback. libraryItemRef points to a single audio file (hash). */
+/**
+ * How a pad with several files uses them (ADR-0048): `sequential` — one after another, in the
+ * order of `files`; `shuffle` — a random one each time.
+ */
+export type FileOrder = 'sequential' | 'shuffle';
+
+/**
+ * Plays once. With several files each trigger plays one of them — the next in turn
+ * (`sequential`) or a random one (`shuffle`). `files` are library item hashes; may be empty.
+ */
 export type SinglePad = PadBase & {
   type: 'single';
-  libraryItemRef?: string; // optional: pad may have no source yet
+  files: string[];
+  order: FileOrder;
   trimStart?: number;
   trimEnd?: number;
 };
 
-/** Infinite-loop playback. libraryItemRef points to a single audio file (hash). */
+/**
+ * Runs until stopped. One file repeats seamlessly; several files play one after another, in
+ * order or shuffled (the former Playlist type, ADR-0048). `files` may be empty.
+ */
 export type LoopPad = PadBase & {
   type: 'loop';
-  libraryItemRef?: string; // optional: pad may have no source yet
+  files: string[];
+  order: FileOrder;
   trimStart?: number;
   trimEnd?: number;
-};
-
-/** Sequential playlist. files is an ordered list of library item hashes. */
-export type PlaylistPad = PadBase & {
-  type: 'playlist';
-  files: string[]; // ordered list of hashes; may be empty
-  shuffle?: boolean;
 };
 
 /** Combo sequence: a chain of steps, each triggering one or more pads. */
@@ -105,12 +112,11 @@ export type ComboPad = PadBase & {
 };
 
 /** Discriminated union of all pad types. Use type guards to narrow. */
-export type Pad = SinglePad | LoopPad | PlaylistPad | ComboPad;
+export type Pad = SinglePad | LoopPad | ComboPad;
 
 // Type guards — prefer these over inline `pad.type === 'x'` comparisons.
 export const isSinglePad = (p: Pad): p is SinglePad => p.type === 'single';
 export const isLoopPad = (p: Pad): p is LoopPad => p.type === 'loop';
-export const isPlaylistPad = (p: Pad): p is PlaylistPad => p.type === 'playlist';
 export const isComboPad = (p: Pad): p is ComboPad => p.type === 'combo';
 
 export type LibraryItemType = 'audio' | 'icon' | 'image';

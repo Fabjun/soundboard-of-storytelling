@@ -25,7 +25,7 @@
 import { useState, useRef, useEffect } from 'preact/hooks';
 import type { JSX } from 'preact';
 import type { Board, Pad, PadBase, PadType, Deck } from '../types';
-import { isSinglePad, isLoopPad, isPlaylistPad, isComboPad } from '../types';
+import { isComboPad } from '../types';
 import { PixelIcon } from './PixelIcon';
 import { Waveform } from './Waveform';
 import { PadTypeConfirmDialog } from './PadTypeConfirmDialog';
@@ -46,7 +46,7 @@ interface PadEditorPanelProps {
   onRemoveFromDeck: (padId: string) => void;
 }
 
-const PAD_TYPES: PadType[] = ['single', 'loop', 'playlist', 'combo'];
+const PAD_TYPES: PadType[] = ['single', 'loop', 'combo'];
 
 export function PadEditorPanel({
   pad,
@@ -59,9 +59,8 @@ export function PadEditorPanel({
   // Local state mirrors the pad; auto-saved on change
   const [name, setName] = useState(pad.name);
   const [type, setType] = useState<PadType>(pad.type);
-  const [libraryRef, setLibraryRef] = useState<string | undefined>(
-    isSinglePad(pad) || isLoopPad(pad) ? pad.libraryItemRef : undefined,
-  );
+  /** Audio files of a Single / Loop pad (ADR-0048); empty for a Combo. */
+  const [files, setFiles] = useState<string[]>(isComboPad(pad) ? [] : pad.files);
   const [volume, setVolume] = useState(pad.volume);
   const [fadeIn, setFadeIn] = useState(pad.fadeIn);
   const [fadeOut, setFadeOut] = useState(pad.fadeOut);
@@ -82,7 +81,7 @@ export function PadEditorPanel({
   useEffect(() => {
     setName(pad.name);
     setType(pad.type);
-    setLibraryRef(isSinglePad(pad) || isLoopPad(pad) ? pad.libraryItemRef : undefined);
+    setFiles(isComboPad(pad) ? [] : pad.files);
     setVolume(pad.volume);
     setFadeIn(pad.fadeIn);
     setFadeOut(pad.fadeOut);
@@ -102,8 +101,9 @@ export function PadEditorPanel({
   }
 
   // libraryRefOverride: when the libraryRef state hasn't committed yet (handleLibrarySelect)
-  function buildCurrentPad(libraryRefOverride?: string): Pad {
-    const effectiveRef = libraryRefOverride !== undefined ? libraryRefOverride : libraryRef;
+  // filesOverride: when the files state hasn't committed yet (handleLibrarySelect)
+  function buildCurrentPad(filesOverride?: string[]): Pad {
+    const effectiveFiles = filesOverride ?? files;
     const base: PadBase = {
       id: pad.id,
       name,
@@ -113,20 +113,12 @@ export function PadEditorPanel({
       fadeIn,
       fadeOut,
     };
-    switch (type) {
-      case 'single':
-        return { ...base, type: 'single', libraryItemRef: effectiveRef };
-      case 'loop':
-        return { ...base, type: 'loop', libraryItemRef: effectiveRef };
-      case 'playlist': {
-        const files = isPlaylistPad(pad) ? pad.files : effectiveRef ? [effectiveRef] : [];
-        return { ...base, type: 'playlist', files };
-      }
-      case 'combo': {
-        const steps = isComboPad(pad) ? pad.steps : [];
-        return { ...base, type: 'combo', steps };
-      }
-    }
+    if (type === 'combo') return { ...base, type, steps: isComboPad(pad) ? pad.steps : [] };
+    // Order and trim are not edited here yet — keep what the pad has
+    const kept = isComboPad(pad)
+      ? { order: 'sequential' as const }
+      : { order: pad.order, trimStart: pad.trimStart, trimEnd: pad.trimEnd };
+    return { ...base, type, files: effectiveFiles, ...kept };
   }
 
   function handleNameChange(newName: string) {
@@ -149,19 +141,19 @@ export function PadEditorPanel({
     scheduleAutoSave({ ...buildCurrentPad(), fadeOut: v });
   }
 
+  /** Choosing a file sets the pad's only file (several files: editing UI in Slice 11). */
   function handleLibrarySelect(id: string) {
-    setLibraryRef(id);
+    setFiles([id]);
     setLibPickerOpen(false);
-    scheduleAutoSave(buildCurrentPad(id));
+    scheduleAutoSave(buildCurrentPad([id]));
   }
 
   // ── Type change ──────────────────────────────────────────────────────────
 
   function requestTypeChange(newType: PadType) {
     if (newType === type) return;
-    // No dialog for brand-new pad (no name or library ref = fresh)
-    const ref = isSinglePad(pad) || isLoopPad(pad) ? pad.libraryItemRef : undefined;
-    const isFresh = !ref && pad.name === '';
+    // No dialog for a brand-new pad (no name and no file = fresh)
+    const isFresh = files.length === 0 && pad.name === '';
     const { verdict } = padMigrationMatrix(type, newType);
     if (isFresh || verdict === 'add') {
       applyTypeSwitch(newType);
@@ -173,9 +165,7 @@ export function PadEditorPanel({
   function applyTypeSwitch(newType: PadType) {
     const migrated = applyTypeChange(buildCurrentPad(), newType);
     setType(migrated.type);
-    setLibraryRef(
-      isSinglePad(migrated) || isLoopPad(migrated) ? migrated.libraryItemRef : undefined,
-    );
+    setFiles(isComboPad(migrated) ? [] : migrated.files);
     scheduleAutoSave(migrated);
     setPendingType(null);
   }
@@ -215,7 +205,11 @@ export function PadEditorPanel({
   const filteredAudio = libSearch.trim()
     ? allAudio.filter((m) => m.name.toLowerCase().includes(libSearch.toLowerCase()))
     : allAudio;
+  const libraryRef = files[0];
   const selectedItem = allAudio.find((m) => m.id === libraryRef);
+  /** Several files (e.g. from an import): shown, not edited here until the file list (Slice 11). */
+  const severalFiles = files.length > 1;
+  const orderText = !isComboPad(pad) && pad.order === 'shuffle' ? 'shuffled' : 'in order';
 
   // ── Render ───────────────────────────────────────────────────────────────
 
@@ -267,57 +261,69 @@ export function PadEditorPanel({
         </div>
       </div>
 
-      {/* Library source */}
-      <div class="sb-inspector-section">
-        <div class="sb-section-header-row">
-          <label class="sb-field-label">AUDIO SOURCE</label>
-          <button class="sb-btn sb-btn-xs sb-btn-ghost" onClick={() => setLibPickerOpen((o) => !o)}>
-            {libPickerOpen ? 'CLOSE' : 'BROWSE'}
-          </button>
-        </div>
-
-        {/* Current source */}
-        {selectedItem ? (
-          <div class="sb-lib-browser">
-            <div class="sb-lib-browser-item-name">{selectedItem.name}</div>
-            {selectedItem.peaks.length > 0 && <Waveform peaks={selectedItem.peaks} height={24} />}
-          </div>
-        ) : (
-          <div class="sb-lib-browser-empty">No source selected</div>
-        )}
-
-        {/* Inline library picker */}
-        {libPickerOpen && (
-          <div class="sb-lib-browser-list">
-            <div class="sb-lib-browser-search">
-              <input
-                class="sb-search-input"
-                type="text"
-                placeholder="Search…"
-                value={libSearch}
-                onInput={(e) => setLibSearch((e.target as HTMLInputElement).value)}
-                autoFocus
-              />
-            </div>
-            {filteredAudio.slice(0, 50).map((item) => (
-              <div
-                key={item.id}
-                class="sb-lib-browser-item"
-                onClick={() => handleLibrarySelect(item.id)}
-                style={{
-                  color: libraryRef === item.id ? 'var(--gold)' : 'var(--text-dim)',
-                  background: libraryRef === item.id ? 'var(--raised)' : 'none',
-                }}
+      {/* Audio source — Single and Loop only; a Combo plays other pads */}
+      {type !== 'combo' && (
+        <div class="sb-inspector-section">
+          <div class="sb-section-header-row">
+            <label class="sb-field-label">AUDIO SOURCE</label>
+            {!severalFiles && (
+              <button
+                class="sb-btn sb-btn-xs sb-btn-ghost"
+                onClick={() => setLibPickerOpen((o) => !o)}
               >
-                {item.name}
-              </div>
-            ))}
-            {filteredAudio.length === 0 && (
-              <div class="sb-lib-browser-no-results">No files found</div>
+                {libPickerOpen ? 'CLOSE' : 'BROWSE'}
+              </button>
             )}
           </div>
-        )}
-      </div>
+
+          {/* Current source */}
+          {selectedItem ? (
+            <div class="sb-lib-browser">
+              <div class="sb-lib-browser-item-name">{selectedItem.name}</div>
+              {selectedItem.peaks.length > 0 && <Waveform peaks={selectedItem.peaks} height={24} />}
+            </div>
+          ) : (
+            <div class="sb-lib-browser-empty">No source selected</div>
+          )}
+          {severalFiles && (
+            <div class="sb-hint-text" data-testid="pad-editor-panel-files-text">
+              {files.length} files, {orderText}
+            </div>
+          )}
+
+          {/* Inline library picker */}
+          {libPickerOpen && (
+            <div class="sb-lib-browser-list">
+              <div class="sb-lib-browser-search">
+                <input
+                  class="sb-search-input"
+                  type="text"
+                  placeholder="Search…"
+                  value={libSearch}
+                  onInput={(e) => setLibSearch((e.target as HTMLInputElement).value)}
+                  autoFocus
+                />
+              </div>
+              {filteredAudio.slice(0, 50).map((item) => (
+                <div
+                  key={item.id}
+                  class="sb-lib-browser-item"
+                  onClick={() => handleLibrarySelect(item.id)}
+                  style={{
+                    color: libraryRef === item.id ? 'var(--gold)' : 'var(--text-dim)',
+                    background: libraryRef === item.id ? 'var(--raised)' : 'none',
+                  }}
+                >
+                  {item.name}
+                </div>
+              ))}
+              {filteredAudio.length === 0 && (
+                <div class="sb-lib-browser-no-results">No files found</div>
+              )}
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Volume */}
       <div class="sb-inspector-section">

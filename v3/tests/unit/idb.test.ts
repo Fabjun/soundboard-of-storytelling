@@ -24,6 +24,7 @@ import {
   libRename,
   _resetDB,
 } from '../../src/db/idb';
+import { newPad } from '../../src/lib/padUtils';
 
 // ── Factories ─────────────────────────────────────────────────────────────────
 
@@ -254,5 +255,43 @@ describe('DB upgrade to v4', () => {
     await boardPut(b);
     _resetDB();
     expect(await boardGet('b4')).toEqual(b);
+  });
+});
+
+// ── Upgrade v4 → v5 (ADR-0048, Slice 9d) ──────────────────────────────────────
+
+describe('DB upgrade to v5', () => {
+  test('clears only the boards store (pads with libraryItemRef / playlists); library audio is untouched', async () => {
+    // A v4 database: pool pads still in the old shape (one libraryItemRef, playlist type)
+    const v4 = await openDB('sos-v3', 4, {
+      upgrade(db) {
+        db.createObjectStore('library', { keyPath: 'id' });
+        db.createObjectStore('boards', { keyPath: 'id' });
+      },
+    });
+    await v4.put('boards', {
+      ...makeBoard('OLD'),
+      pads: [
+        { id: 's', type: 'single', libraryItemRef: 'HASH1' },
+        { id: 'p', type: 'playlist', files: ['HASH1'] },
+      ],
+      quickAccess: [],
+    });
+    await v4.put('library', makeLibraryItem('HASH1', 'keep.mp3'));
+    v4.close();
+
+    expect(await boardGetAll()).toEqual([]);
+    expect((await libGetAllMeta()).map((m) => m.id)).toEqual(['HASH1']);
+  });
+
+  test('a board in the v5 format survives a reopen', async () => {
+    const b = {
+      ...makeBoard('b5'),
+      pads: [newPad('p', 'loop', 'Rain', ['HASH1', 'HASH2'])],
+      quickAccess: [],
+    };
+    await boardPut(b);
+    _resetDB();
+    expect(await boardGet('b5')).toEqual(b);
   });
 });

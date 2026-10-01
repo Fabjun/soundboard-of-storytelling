@@ -5,7 +5,8 @@
 // engine.ts internals are never imported directly from components.
 // ─────────────────────────────────────────────────────────────────────────────
 
-import type { Pad } from '../types';
+import type { Pad, SinglePad } from '../types';
+import type { EnginePad } from './types';
 import {
   playOnce,
   playLoop,
@@ -41,11 +42,12 @@ export function initAudioBridge(): void {
       removePlayingPad(id);
       removeLoopingPad(id);
     },
-    // Combo steps reference pads of the board's pool (ADR-0048) — lookup only, engine unchanged.
+    // Combo steps reference pads of the board's pool (ADR-0048) — looked up and mapped to the
+    // engine's shapes; the engine itself is unchanged.
     getPad: (id) => {
       for (const board of boards.value) {
         const pad = board.pads.find((p) => p.id === id);
-        if (pad) return pad;
+        if (pad) return toEnginePad(pad);
       }
       return null;
     },
@@ -56,17 +58,53 @@ export function initAudioBridge(): void {
 
 export { initAudio } from './engine';
 
-export async function play(padId: string, pad: Pad): Promise<void> {
+// ── App pads → engine shapes (ADR-0048) ─────────────────────────────────────
+
+/** Next file index per Single pad with `sequential` order ("the next one in turn"). */
+const singleTurn = new Map<string, number>();
+
+/** The file a Single pad plays on this trigger: the next in turn, or a random one. */
+function pickSingleFile(pad: SinglePad): string | undefined {
+  if (pad.files.length === 0) return undefined;
+  if (pad.order === 'shuffle') return pad.files[Math.floor(Math.random() * pad.files.length)];
+  const i = (singleTurn.get(pad.id) ?? 0) % pad.files.length;
+  singleTurn.set(pad.id, i + 1);
+  return pad.files[i];
+}
+
+/**
+ * Maps an app pad (ADR-0048: Single / Loop with `files` + `order`) to the shape V1's engine
+ * plays: Single → one file per trigger; Loop with one file → seamless loop; Loop with several
+ * files → the engine's playlist (repeats the list alone; plays it once inside a combo).
+ */
+export function toEnginePad(pad: Pad): EnginePad {
   switch (pad.type) {
+    case 'single': {
+      const { files: _files, order: _order, ...rest } = pad;
+      return { ...rest, libraryItemRef: pickSingleFile(pad) };
+    }
+    case 'loop': {
+      const { files, order, trimStart, trimEnd, ...rest } = pad;
+      if (files.length <= 1) return { ...rest, libraryItemRef: files[0], trimStart, trimEnd };
+      return { ...rest, type: 'playlist', files, shuffle: order === 'shuffle' };
+    }
+    case 'combo':
+      return pad;
+  }
+}
+
+export async function play(padId: string, pad: Pad): Promise<void> {
+  const enginePad = toEnginePad(pad);
+  switch (enginePad.type) {
     case 'single':
-      return playOnce(padId, pad);
+      return playOnce(padId, enginePad);
     case 'loop':
-      return playLoop(padId, pad);
+      return playLoop(padId, enginePad);
     case 'playlist':
-      playPlaylist(padId, pad);
+      playPlaylist(padId, enginePad);
       return;
     case 'combo':
-      playCombo(padId, pad);
+      playCombo(padId, enginePad);
       return;
   }
 }

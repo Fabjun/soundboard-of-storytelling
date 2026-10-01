@@ -3,7 +3,7 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 import type { Pad, PadBase, PadPosition, PadType } from '../types';
-import { isSinglePad, isLoopPad, isPlaylistPad, isComboPad } from '../types';
+import { isComboPad } from '../types';
 
 // ── Slot scanning ────────────────────────────────────────────────────────────
 
@@ -54,17 +54,38 @@ export function indexToPos(index: number, cols: number): PadPosition {
  *   < 5 s     → SINGLE (short clip, fire-and-forget)
  *   5–9.99 s  → SINGLE (ambiguous zone; default SINGLE, flip allowed on pad)
  *   ≥ 10 s    → LOOP   (sustained ambient)
- *   fileCount > 1 → PLAYLIST (always, regardless of duration)
+ *   fileCount > 1 → LOOP (several files play one after another — the former Playlist,
+ *                   ADR-0048), regardless of duration
  */
 export function typeInference(durationSeconds: number, fileCount: number): PadType {
-  if (fileCount > 1) return 'playlist';
+  if (fileCount > 1) return 'loop';
   if (durationSeconds >= 10) return 'loop';
   return 'single';
 }
 
+// ── New pads ─────────────────────────────────────────────────────────────────
+
+/** Volume of a new pad (0–100). */
+export const DEFAULT_PAD_VOLUME = 80;
+
+/**
+ * A new pad with the default settings — the one place that knows them (ADD PAD, library drop,
+ * creation popover). `files` are library item hashes; a Combo starts with no steps.
+ */
+export function newPad(id: string, type: PadType, name: string, files: string[] = []): Pad {
+  const base: PadBase = { id, name, volume: DEFAULT_PAD_VOLUME, fadeIn: 0, fadeOut: 0 };
+  return type === 'combo'
+    ? { ...base, type, steps: [] }
+    : { ...base, type, files, order: 'sequential' };
+}
+
 // ── Pad type-change migration ────────────────────────────────────────────────
 
-export type MigrationVerdict = 'add' | 'migrate' | 'drop' | 'lossy' | 'reset';
+/**
+ * What a type change does to the pad's content. `add`: nothing is lost (no dialog needed);
+ * `reset`: the source is cleared — files when changing to Combo, steps when leaving it.
+ */
+export type MigrationVerdict = 'add' | 'reset';
 
 export interface MigrationResult {
   verdict: MigrationVerdict;
@@ -74,104 +95,30 @@ export interface MigrationResult {
 }
 
 /**
- * Compute the migration verdict and field summary for a type change.
+ * Compute the migration verdict and field summary for a type change (ADR-0048: three types).
  *
- * Universal fields (always preserved): name, hotkey, volume, fadeIn, fadeOut,
- * color, iconRef.
+ * Universal fields (always preserved): name, hotkey, volume, fadeIn, fadeOut, color, iconRef.
  *
- * Type-specific source field:
- *   SINGLE/LOOP: libraryItemRef = the track
- *   PLAYLIST:    libraryItemRef = items[0] (conceptually; full playlist in Slice 4)
- *   COMBO:       libraryItemRef = undefined (chain-based, Slice 4)
+ *   SINGLE ↔ LOOP:  ADD   (both keep files, order and trim — one building block, P5)
+ *   SINGLE/LOOP → COMBO, COMBO → SINGLE/LOOP:  RESET (audio files ↔ combo steps)
  *
- * v23 verdict matrix:
- *   SINGLE → LOOP:     ADD     (loop point defaults added, source preserved)
- *   SINGLE → PLAYLIST: MIGRATE (items[0] = source)
- *   SINGLE → COMBO:    RESET   (chain starts empty)
- *   LOOP   → SINGLE:   DROP    (loop point dropped, source preserved)
- *   LOOP   → PLAYLIST: MIGRATE (items[0] = source)
- *   LOOP   → COMBO:    RESET
- *   PLAYLIST → SINGLE: LOSSY   (items[0] → source, rest dropped)
- *   PLAYLIST → LOOP:   LOSSY   (items[0] → source, rest dropped, loop point added)
- *   PLAYLIST → COMBO:  RESET
- *   COMBO  → any:      RESET   (source/chain resets, reconfigure needed)
- *   any    → COMBO:    RESET
- *
- * Dialog is shown only when the verdict is not trivially safe.
- * For brand-new pads (no data yet): call with an empty/default pad → verdict will
- * be ADD or trivial → caller should skip dialog.
+ * The dialog is shown only when the verdict is RESET.
  */
 export function padMigrationMatrix(from: PadType, to: PadType): MigrationResult {
-  if (from === to) {
-    return { verdict: 'add', keeps: universalFields(), migrates: [], drops: [] };
-  }
-
-  // COMBO source always resets
-  if (from === 'combo' || to === 'combo') {
-    return {
-      verdict: 'reset',
-      keeps: universalFields(),
-      migrates: [],
-      drops: from === 'combo' ? [] : ['audio source'],
-    };
-  }
-
-  if (from === 'single' && to === 'loop') {
+  if (from === to || (from !== 'combo' && to !== 'combo')) {
     return {
       verdict: 'add',
-      keeps: [...universalFields(), 'audio source'],
+      keeps: from === to ? universalFields() : [...universalFields(), 'audio files'],
       migrates: [],
       drops: [],
     };
   }
-
-  if (from === 'single' && to === 'playlist') {
-    return {
-      verdict: 'migrate',
-      keeps: universalFields(),
-      migrates: ['audio source → playlist item 1'],
-      drops: [],
-    };
-  }
-
-  if (from === 'loop' && to === 'single') {
-    return {
-      verdict: 'drop',
-      keeps: [...universalFields(), 'audio source'],
-      migrates: [],
-      drops: ['loop point'],
-    };
-  }
-
-  if (from === 'loop' && to === 'playlist') {
-    return {
-      verdict: 'migrate',
-      keeps: universalFields(),
-      migrates: ['audio source → playlist item 1'],
-      drops: ['loop point'],
-    };
-  }
-
-  if (from === 'playlist' && to === 'single') {
-    return {
-      verdict: 'lossy',
-      keeps: [...universalFields(), 'playlist item 1 → audio source'],
-      migrates: [],
-      drops: ['playlist items 2+'],
-    };
-  }
-
-  if (from === 'playlist' && to === 'loop') {
-    return {
-      verdict: 'lossy',
-      keeps: [...universalFields(), 'playlist item 1 → audio source'],
-      migrates: [],
-      drops: ['playlist items 2+'],
-    };
-  }
-
-  // Fallback — should not be reached with current 4 types
-  return { verdict: 'reset', keeps: universalFields(), migrates: [], drops: ['audio source'] };
+  return {
+    verdict: 'reset',
+    keeps: universalFields(),
+    migrates: [],
+    drops: from === 'combo' ? ['combo steps'] : ['audio files'],
+  };
 }
 
 function universalFields(): string[] {
@@ -180,17 +127,12 @@ function universalFields(): string[] {
 
 /**
  * Apply a type change to a pad, following the migration policy.
- * Returns a new Pad (immutable). Constructs the correct union variant.
- *
- * - RESET:  type-specific source data cleared (combo steps → [], playlist files → [])
- * - LOSSY:  first playlist item promoted to libraryItemRef; rest dropped
- * - Others: source preserved where semantically compatible
+ * Returns a new Pad (immutable). Single ↔ Loop keep files, order and trim; a change to or from
+ * Combo starts the new content empty.
  *
  * Caller is responsible for showing PadTypeConfirmDialog before calling this.
  */
 export function applyTypeChange(pad: Pad, newType: PadType): Pad {
-  const { verdict } = padMigrationMatrix(pad.type, newType);
-
   const base: PadBase = {
     id: pad.id,
     name: pad.name,
@@ -201,30 +143,12 @@ export function applyTypeChange(pad: Pad, newType: PadType): Pad {
     fadeOut: pad.fadeOut,
   };
 
-  // Extract the "primary" library reference from the current pad.
-  const sourceRef: string | undefined =
-    isSinglePad(pad) || isLoopPad(pad)
-      ? pad.libraryItemRef
-      : isPlaylistPad(pad)
-        ? (pad.files[0] ?? undefined)
-        : undefined;
-
-  const ref = verdict === 'reset' ? undefined : sourceRef;
-
-  switch (newType) {
-    case 'single':
-      return { ...base, type: 'single', libraryItemRef: ref };
-    case 'loop':
-      return { ...base, type: 'loop', libraryItemRef: ref };
-    case 'playlist': {
-      const files = isPlaylistPad(pad) && verdict !== 'reset' ? pad.files : ref ? [ref] : [];
-      return { ...base, type: 'playlist', files };
-    }
-    case 'combo': {
-      const steps = isComboPad(pad) && verdict !== 'reset' ? pad.steps : [];
-      return { ...base, type: 'combo', steps };
-    }
+  if (newType === 'combo') {
+    return { ...base, type: 'combo', steps: isComboPad(pad) ? pad.steps : [] };
   }
+  if (isComboPad(pad)) return { ...base, type: newType, files: [], order: 'sequential' };
+  const { files, order, trimStart, trimEnd } = pad;
+  return { ...base, type: newType, files, order, trimStart, trimEnd };
 }
 
 // ── Pad type tokens ──────────────────────────────────────────────────────────
@@ -236,8 +160,6 @@ export function padTypeColor(type: PadType): string {
       return 'var(--pad-single)';
     case 'loop':
       return 'var(--pad-loop)';
-    case 'playlist':
-      return 'var(--pad-playlist)';
     case 'combo':
       return 'var(--pad-combo)';
   }
@@ -250,8 +172,6 @@ export function padTypeGlow(type: PadType): string {
       return 'var(--pad-single-glow)';
     case 'loop':
       return 'var(--pad-loop-glow)';
-    case 'playlist':
-      return 'var(--pad-playlist-glow)';
     case 'combo':
       return 'var(--pad-combo-glow)';
   }
@@ -264,8 +184,6 @@ export function padTypeLabel(type: PadType): string {
       return 'SGL';
     case 'loop':
       return 'LOOP';
-    case 'playlist':
-      return 'LIST';
     case 'combo':
       return 'COMBO';
   }

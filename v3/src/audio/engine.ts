@@ -7,7 +7,13 @@
 // No algorithm redesign; module-scope state replaces V1's globals.
 // ─────────────────────────────────────────────────────────────────────────────
 
-import type { ComboPad, LoopPad, PlaylistPad, SinglePad } from '../types';
+// The engine plays V1's pad shapes; index.ts maps the app's pads to them (toEnginePad).
+import type { ComboPad } from '../types';
+import type {
+  EngineLoopPad as LoopPad,
+  EnginePlaylistPad as PlaylistPad,
+  EngineSinglePad as SinglePad,
+} from './types';
 import { libGet } from '../db/idb';
 import type { AudioCallbacks, ComboRuntimeState, PadInstance } from './types';
 

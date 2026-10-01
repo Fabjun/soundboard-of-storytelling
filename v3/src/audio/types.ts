@@ -2,14 +2,44 @@
 // Audio engine — internal types
 // ─────────────────────────────────────────────────────────────────────────────
 
-import type { ComboPad, Pad } from '../types';
+import type { ComboPad, PadBase } from '../types';
+
+// ── Pad shapes the engine plays (V1's model) ─────────────────────────────────
+// The engine is V1 code and stays unchanged (CLAUDE.md, ADR-0048 engine rule). The app's
+// model (Single / Loop with `files` + `order`, ADR-0048) is mapped to these shapes by
+// toEnginePad() in index.ts — the engine never sees the app's pad types.
+
+/** One file, played once. */
+export type EngineSinglePad = PadBase & {
+  type: 'single';
+  libraryItemRef?: string;
+  trimStart?: number;
+  trimEnd?: number;
+};
+
+/** One file, repeated seamlessly. */
+export type EngineLoopPad = PadBase & {
+  type: 'loop';
+  libraryItemRef?: string;
+  trimStart?: number;
+  trimEnd?: number;
+};
+
+/** Several files one after another (alone: repeats the list; in a combo: plays it once). */
+export type EnginePlaylistPad = PadBase & {
+  type: 'playlist';
+  files: string[];
+  shuffle?: boolean;
+};
+
+export type EnginePad = EngineSinglePad | EngineLoopPad | EnginePlaylistPad | ComboPad;
 
 /** Callbacks wired by index.ts to connect engine events to Preact Signals. */
 export type AudioCallbacks = {
   onPadStarted: (id: string, isLoop: boolean) => void;
   onPadStopped: (id: string) => void;
   /** Resolves a pad by ID — required for combo step execution. */
-  getPad: (id: string) => Pad | null;
+  getPad: (id: string) => EnginePad | null;
 };
 
 /**

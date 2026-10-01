@@ -26,7 +26,7 @@ Inline: `// eslint-disable-next-line <rule> -- <reason>` (enforced by `require-d
 
 | Location                                       | Rule                                      | Reason                                                                                       |
 | ---------------------------------------------- | ----------------------------------------- | -------------------------------------------------------------------------------------------- |
-| `v3/src/components/PadEditorPanel.tsx:89`      | `react-hooks/exhaustive-deps`             | reset only when a different pad is opened (pad.id), not on every auto-save                   |
+| `v3/src/components/PadEditorPanel.tsx:88`      | `react-hooks/exhaustive-deps`             | reset only when a different pad is opened (pad.id), not on every auto-save                   |
 | `v3/src/screens/BoardScreen.tsx:77`            | `react-hooks/exhaustive-deps`             | auto-select only on board identity change, never override the user's deck choice             |
 | `v3/tests/e2e/deck-crud.spec.ts:76`            | `playwright/no-skipped-test`              | quarantine: feature not built (BACKLOG "Deck reorder")                                       |
 | `v3/tests/e2e/mobile/overflow.spec.ts:30`      | `playwright/no-skipped-test`              | quarantine: mobile layout not built until Slice 13 (BACKLOG "Re-enable mobile layout tests") |
@@ -45,7 +45,7 @@ The reason is the comment line directly above — enforced by `testGuards.test.t
 | `v3/src/lib/flameMath.ts:68` | Formatting: keep the pixel table aligned row by row (Prettier would reflow it). |
 | `v3/src/lib/flameMath.ts:75` | Formatting: keep the pixel table aligned row by row (Prettier would reflow it). |
 
-## Quarantined tests (6)
+## Quarantined tests (5)
 
 Procedure: `docs/development/testing.md`; reference enforced by `testGuards.test.ts`.
 
@@ -54,9 +54,8 @@ Procedure: `docs/development/testing.md`; reference enforced by `testGuards.test
 | `v3/tests/e2e/deck-crud.spec.ts:77`            | `fixme` | BACKLOG "Deck reorder"                               |
 | `v3/tests/e2e/mobile/overflow.spec.ts:31`      | `fixme` | BACKLOG "Re-enable mobile layout tests"              |
 | `v3/tests/e2e/mobile/touch-targets.spec.ts:35` | `fixme` | BACKLOG "Re-enable mobile layout tests"              |
-| `v3/tests/unit/audio/engine.test.ts:424`       | `fails` | BACKLOG "step stops the combo itself"                |
-| `v3/tests/unit/audio/engine.test.ts:559`       | `fails` | BACKLOG "Bug: combo step starts the next step twice" |
-| `v3/tests/unit/audio/engine.test.ts:592`       | `fails` | BACKLOG "Bug: combo step starts the next step twice" |
+| `v3/tests/unit/audio/engine.test.ts:486`       | `fails` | BACKLOG "step stops the combo itself"                |
+| `v3/tests/unit/audio/engine.test.ts:621`       | `fails` | BACKLOG "Bug: combo step starts the next step twice" |
 
 ## Modules without their own unit test (4)
 

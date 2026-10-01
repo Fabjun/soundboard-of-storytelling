@@ -31,7 +31,7 @@ import type { Board, LibraryItem, LibraryItemMeta } from '../types';
 // ---------------------------------------------------------------------------
 
 const DB_NAME = 'sos-v3';
-const DB_VERSION = 4;
+const DB_VERSION = 5;
 
 let _db: IDBPDatabase | null = null;
 
@@ -59,7 +59,9 @@ async function getDB(): Promise<IDBPDatabase> {
       // replaced by Board.quickAccess (ADR-0048, Slice 9c). Same rule as v3: clear ONLY the boards
       // store (old-format test data); library and other databases untouched. One clear covers
       // both steps when a v2 database is upgraded straight to v4.
-      if (oldVersion >= 2 && oldVersion < 4) {
+      // v5: Single / Loop pads hold `files` + `order`; Playlist merges into Loop (ADR-0048,
+      // Slice 9d). Same rule: clear ONLY the boards store; one clear covers every older step.
+      if (oldVersion >= 2 && oldVersion < 5) {
         void tx.objectStore('boards').clear();
       }
     },
