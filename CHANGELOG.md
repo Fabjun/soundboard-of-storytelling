@@ -4,6 +4,10 @@
 
 All notable changes to Soundboard of Storytelling, newest first.
 
+## 3.0.101 — 2026-10-02
+
+- test: the start screen visual test hides the version footer (a longer version moved the centred line); review log: PRs #35/#36, Slice 9 structure review
+
 ## 3.0.97 — 2026-10-02
 
 - docs: review log — owner decisions O1–O8 of 2026-10-02 and the new pull requests

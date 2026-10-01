@@ -145,7 +145,7 @@ export function StartScreen(): JSX.Element {
       </div>
 
       {/* ── Footer: clickable version → changelog + audio state ── */}
-      <div class="sb-start-footer">
+      <div class="sb-start-footer" data-testid="start-screen-footer-region">
         <button
           class="sb-version-link"
           onClick={() => setShowChangelog(true)}

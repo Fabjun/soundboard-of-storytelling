@@ -7,9 +7,16 @@ export type ChangelogEntry = {
   items: string[];
 };
 
-export const APP_VERSION = '3.0.97';
+export const APP_VERSION = '3.0.101';
 
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.101',
+    date: '2026-10-02',
+    items: [
+      'test: the start screen visual test hides the version footer (a longer version moved the centred line); review log: PRs #35/#36, Slice 9 structure review',
+    ],
+  },
   {
     version: '3.0.97',
     date: '2026-10-02',
