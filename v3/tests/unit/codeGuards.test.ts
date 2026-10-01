@@ -11,6 +11,10 @@
 //    helper files are named helpers.ts.
 // 5. Inline style lengths carry a unit (Preact 11 no longer appends px to numbers) — checked
 //    with the TypeScript type checker, so variables, ternaries and shorthands count.
+//    Numbered E2E titles (`N — …`) are the Slice-3 verification points 1–22, each used once.
+// 6. Board writes go through src/state/boardWrites.ts: components and screens never call
+//    boardPut / upsertBoard, which save or show a finished board computed from an outdated copy
+//    (BACKLOG "Bug: board writes from an outdated board copy lose changes").
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { readdirSync, readFileSync } from 'node:fs';
@@ -147,6 +151,23 @@ describe('guard: E2E locators and spec names (ADR-0054)', () => {
     );
   const files = walk(E2E).filter((f) => f.endsWith('.ts'));
 
+  it('numbers only the Slice-3 verification points (1–22), each once', () => {
+    // `test('N — …')` marks a Slice-3 verification point; later tests carry no number
+    // (two specs once both had a test 12).
+    const seen = new Map<number, string>();
+    const bad: string[] = [];
+    for (const f of files) {
+      for (const m of readFileSync(f, 'utf8').matchAll(/\btest\(\s*['"`](\d+) —/g)) {
+        const n = Number(m[1]);
+        const where = relative(E2E, f);
+        if (n < 1 || n > 22) bad.push(`${where}: ${n} is not a Slice-3 verification point`);
+        else if (seen.has(n)) bad.push(`${where}: ${n} also in ${seen.get(n)}`);
+        else seen.set(n, where);
+      }
+    }
+    expect(bad, 'new tests get a title without a number').toEqual([]);
+  });
+
   it('never locates or asserts by CSS class', () => {
     const bad: string[] = [];
     for (const f of files) {
@@ -245,5 +266,23 @@ describe('guard: inline style lengths carry a unit (Preact 11 upgrade)', () => {
 
   it('no numeric value for a length in style={…}', () => {
     expect(found, 'write the unit, e.g. `${n}px`').toEqual([]);
+  });
+});
+
+describe('guard: board writes go through boardWrites (BACKLOG "board writes from an outdated board copy")', () => {
+  const calls = componentFiles.flatMap((f) => {
+    const src = readFileSync(join(SRC, f), 'utf8');
+    return [...src.matchAll(/\b(boardPut|upsertBoard)\s*\(/g)].map((m) => `${f}: ${m[1]}(…)`);
+  });
+  const usesUpdateBoard = componentFiles.filter((f) =>
+    /\bupdateBoard\s*\(/.test(readFileSync(join(SRC, f), 'utf8')),
+  );
+
+  it('finds board writers (sanity)', () => {
+    expect(usesUpdateBoard.length).toBeGreaterThanOrEqual(5);
+  });
+
+  it('components and screens use updateBoard / createBoard, never boardPut / upsertBoard', () => {
+    expect(calls, 'write: await updateBoard(board.id, (b) => change(b, …))').toEqual([]);
   });
 });

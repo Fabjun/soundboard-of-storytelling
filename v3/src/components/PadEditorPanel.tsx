@@ -30,9 +30,8 @@ import { PixelIcon } from './PixelIcon';
 import { Waveform } from './Waveform';
 import { PadTypeConfirmDialog } from './PadTypeConfirmDialog';
 import { padTypeColor, padTypeLabel, applyTypeChange, padMigrationMatrix } from '../lib/padUtils';
-import { currentBoard, libraryItems } from '../state/store';
-import { boardPut } from '../db/idb';
-import { upsertBoard } from '../state/store';
+import { libraryItems } from '../state/store';
+import { updateBoard } from '../state/boardWrites';
 import { deckCount, placeInDeck, removeFromDeck, updatePad } from '../lib/boardModel';
 import { nextFreeSlot } from '../lib/padUtils';
 
@@ -96,14 +95,9 @@ export function PadEditorPanel({
     if (debounceRef.current !== null) clearTimeout(debounceRef.current);
     debounceRef.current = setTimeout(async () => {
       // The pad lives once in the pool: the edit shows in every deck that places it (ADR-0048).
-      // Apply it to the board as it is NOW — a deck checkbox may have saved it in the meantime.
-      const updatedBoard: Board = updatePad(currentBoard.value ?? board, updatedPad);
-      try {
-        await boardPut(updatedBoard);
-        upsertBoard(updatedBoard);
-      } catch (e) {
-        console.error('Pad auto-save failed:', e);
-      }
+      // updateBoard applies it to the board as it is when the delay ends, so a change made in
+      // the meantime (deck checkbox, drag and drop, deck rename) is kept.
+      await updateBoard(board.id, (b) => updatePad(b, updatedPad));
     }, 500);
   }
 
@@ -198,21 +192,10 @@ export function PadEditorPanel({
 
   // ── Decks checklist / remove from deck ───────────────────────────────────
 
-  async function saveBoard(updatedBoard: Board, what: string) {
-    try {
-      await boardPut(updatedBoard);
-      upsertBoard(updatedBoard);
-    } catch (e) {
-      console.error(`${what} failed:`, e);
-    }
-  }
-
   function handleDeckToggle(deckId: string, checked: boolean) {
-    const latest = currentBoard.value ?? board;
-    const updatedBoard = checked
-      ? placeInDeck(latest, deckId, pad.id)
-      : removeFromDeck(latest, deckId, pad.id);
-    if (updatedBoard !== latest) void saveBoard(updatedBoard, 'Deck checklist');
+    void updateBoard(board.id, (b) =>
+      checked ? placeInDeck(b, deckId, pad.id) : removeFromDeck(b, deckId, pad.id),
+    );
   }
 
   function handleRemove() {

@@ -13,7 +13,7 @@
 //   GAME  (mode='play'):  no editing, pad clicks → Slice 4 playback stub
 // ─────────────────────────────────────────────────────────────────────────────
 
-import { useState, useEffect } from 'preact/hooks';
+import { useState, useEffect, useRef } from 'preact/hooks';
 import type { JSX } from 'preact';
 import {
   currentScreen,
@@ -22,10 +22,9 @@ import {
   currentBoard,
   currentDeck,
   allPadsView,
-  upsertBoard,
   libraryItems,
 } from '../state/store';
-import { boardPut } from '../db/idb';
+import { updateBoard } from '../state/boardWrites';
 import { BoardTopBar } from '../components/BoardTopBar';
 import { DeckRail } from '../components/DeckRail';
 import { PadGrid } from '../components/PadGrid';
@@ -33,10 +32,17 @@ import { PadEditorPanel } from '../components/PadEditorPanel';
 import { LibraryPanel } from '../components/LibraryPanel';
 import { StatusBar } from '../components/StatusBar';
 import { PixelIcon } from '../components/PixelIcon';
-import type { AppMode, Board, Pad, PadPosition, Deck } from '../types';
+import type { AppMode, Pad, PadPosition } from '../types';
 import { nanoid } from '../lib/nanoid';
-import { nextFreeSlot, typeInference } from '../lib/padUtils';
-import { DEFAULT_GRID, addPadToDeck, deletePad, removeFromDeck } from '../lib/boardModel';
+import { typeInference } from '../lib/padUtils';
+import {
+  DEFAULT_GRID,
+  addDeck,
+  addPadToFreeCell,
+  deletePad,
+  nextDeckName,
+  removeFromDeck,
+} from '../lib/boardModel';
 import { type LibDndDropResult } from '../lib/libDnd';
 
 type RightPanelMode = 'library' | 'editor' | 'empty';
@@ -79,8 +85,7 @@ export function BoardScreen(): JSX.Element {
   // always be called unconditionally. handleAddPad guards for !board/!deck.
   async function handleAddPad() {
     if (!deck || !board) return;
-    const pos = nextFreeSlot(deck.placements, deck.gridConfig.cols, deck.gridConfig.rows);
-    if (!pos) return; // Grid full
+    const deckId = deck.id;
     const newPad: Pad = {
       id: nanoid(),
       type: 'single',
@@ -90,33 +95,30 @@ export function BoardScreen(): JSX.Element {
       fadeOut: 0,
       // libraryItemRef intentionally absent: editor opens to fill it in
     };
-    const updatedBoard: Board = addPadToDeck(board, deck.id, newPad, pos);
-    try {
-      await boardPut(updatedBoard);
-      upsertBoard(updatedBoard);
+    // The cell is chosen on the latest board: a held or double-pressed A key adds pads to
+    // different cells. Null = grid full (or save failed) — nothing to open.
+    const saved = await updateBoard(board.id, (b) => addPadToFreeCell(b, deckId, newPad));
+    if (saved) {
       setSelectedPadId(newPad.id);
       setRightPanel('editor');
-    } catch (e) {
-      console.error('Add pad failed:', e);
     }
   }
 
+  // One listener for the whole screen; it reads the state at key time — the mode signal and the
+  // handler of the latest render. A listener re-registered in an effect lagged one paint behind:
+  // an A pressed right after switching to SETUP still saw GAME and was ignored.
+  const addPadRef = useRef(handleAddPad);
+  addPadRef.current = handleAddPad;
   useEffect(() => {
     function onKeyDown(e: KeyboardEvent) {
-      if (mode !== 'edit') return;
+      if (currentMode.value !== 'edit') return;
       const tag = (e.target as HTMLElement).tagName;
       if (tag === 'INPUT' || tag === 'TEXTAREA') return;
-      if (e.key === 'a' || e.key === 'A') {
-        handleAddPad();
-      }
+      if (e.key === 'a' || e.key === 'A') void addPadRef.current();
     }
     document.addEventListener('keydown', onKeyDown);
     return () => document.removeEventListener('keydown', onKeyDown);
-    // handleAddPad intentionally omitted: it's a new function ref every render but
-    // captures mode/deck/board via closure — adding it would re-register the
-    // listener on every render. The real deps (mode, deck, board) are listed.
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- handleAddPad is a new ref each render; its real deps (mode, deck, board) are listed
-  }, [mode, deck, board]);
+  }, []);
 
   if (!board) {
     return (
@@ -164,15 +166,7 @@ export function BoardScreen(): JSX.Element {
   async function handleLibDrop(result: LibDndDropResult) {
     if (result.kind === 'cancel' || !deck || !board) return;
     const { itemId, targetPos } = result;
-
-    // If the target slot is occupied, fall back to the next free slot
-    const occupied = deck.placements.find(
-      (p) => p.position.col === targetPos.col && p.position.row === targetPos.row,
-    );
-    const finalPos = occupied
-      ? nextFreeSlot(deck.placements, deck.gridConfig.cols, deck.gridConfig.rows)
-      : targetPos;
-    if (!finalPos) return; // grid full
+    const deckId = deck.id;
 
     const item = libraryItems.value.find((m) => m.id === itemId);
     if (!item) return;
@@ -199,13 +193,8 @@ export function BoardScreen(): JSX.Element {
             fadeOut: 0,
           };
 
-    const updatedBoard: Board = addPadToDeck(board, deck.id, newPad, finalPos);
-    try {
-      await boardPut(updatedBoard);
-      upsertBoard(updatedBoard);
-    } catch (e) {
-      console.error('Lib drop pad create failed:', e);
-    }
+    // On the target cell; when it is taken, on the next free one (nothing when the grid is full).
+    await updateBoard(board.id, (b) => addPadToFreeCell(b, deckId, newPad, targetPos));
   }
 
   // ── Path B Mobile — Place-Mode ─────────────────────────────────────────────
@@ -220,42 +209,26 @@ export function BoardScreen(): JSX.Element {
     const { itemId } = placeMode;
     setPlaceMode(null); // clear immediately so double-taps don't create two pads
 
-    // Occupied slot → fall back to next free slot (consistent with handleLibDrop)
-    const occupied = deck.placements.find(
-      (p) => p.position.col === pos.col && p.position.row === pos.row,
-    );
-    const finalPos = occupied
-      ? nextFreeSlot(deck.placements, deck.gridConfig.cols, deck.gridConfig.rows)
-      : pos;
-
-    await handleLibDrop({ kind: 'drop', itemId, targetPos: finalPos ?? pos });
+    // A taken cell falls back to the next free one inside handleLibDrop.
+    await handleLibDrop({ kind: 'drop', itemId, targetPos: pos });
   }
 
   async function handlePadDelete(padId: string) {
     if (!board) return;
     // Delete pad (ADR-0048): from the pool, every deck, quick access and combo steps.
-    const updatedBoard: Board = deletePad(board, padId);
-    try {
-      await boardPut(updatedBoard);
-      upsertBoard(updatedBoard);
+    if (await updateBoard(board.id, (b) => deletePad(b, padId))) {
       setSelectedPadId(null);
       setRightPanel('empty');
-    } catch (e) {
-      console.error('Pad delete failed:', e);
     }
   }
 
   async function handleRemoveFromDeck(padId: string) {
     if (!deck || !board) return;
     // Remove from deck (ADR-0048): only this placement; the pad stays in the pool and other decks.
-    const updatedBoard: Board = removeFromDeck(board, deck.id, padId);
-    try {
-      await boardPut(updatedBoard);
-      upsertBoard(updatedBoard);
+    const deckId = deck.id;
+    if (await updateBoard(board.id, (b) => removeFromDeck(b, deckId, padId))) {
       setSelectedPadId(null);
       setRightPanel('empty');
-    } catch (e) {
-      console.error('Remove from deck failed:', e);
     }
   }
 
@@ -325,21 +298,11 @@ export function BoardScreen(): JSX.Element {
           ) : !hasDecks ? (
             <EmptyBoardState
               onAddDeck={async () => {
-                const newDeck: Deck = {
-                  id: nanoid(),
-                  name: 'Deck 1',
-                  order: 0,
-                  gridConfig: { ...DEFAULT_GRID },
-                  placements: [],
-                };
-                const updatedBoard: Board = { ...board, decks: [newDeck] };
-                try {
-                  await boardPut(updatedBoard);
-                  upsertBoard(updatedBoard);
-                  currentDeckId.value = newDeck.id;
-                } catch (e) {
-                  console.error('Add deck failed:', e);
-                }
+                const id = nanoid();
+                const saved = await updateBoard(board.id, (b) =>
+                  addDeck(b, { id, name: nextDeckName(b), gridConfig: { ...DEFAULT_GRID } }),
+                );
+                if (saved) currentDeckId.value = id;
               }}
             />
           ) : !deck ? (

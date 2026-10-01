@@ -2,10 +2,10 @@
 // Full E2E — pad pool views and actions (Slice 9e,
 // docs/architecture/0048-pad-pool-decks.md#2-behavior-final-not-provisional)
 //
-// 1. Remove from deck keeps the pad: All pads still shows it
-// 2. Delete pad shows "used in N decks" and removes it from every deck and All pads
-// 3. The PAD editor's deck checklist places the pad in another deck and takes it out again
-// 4. A rename and a deck checkbox in quick succession both survive a reload
+// - Remove from deck keeps the pad: All pads still shows it
+// - Delete pad shows "used in N decks" and removes it from every deck and All pads
+// - The PAD editor's deck checklist places the pad in another deck and takes it out again
+// - A rename and a deck checkbox in quick succession both survive a reload
 //
 // No audio needed: pads come from ADD PAD (runs in Chromium and WebKit).
 // ─────────────────────────────────────────────────────────────────────────────
@@ -46,7 +46,7 @@ test.beforeEach(async ({ page }) => {
   await enterSetupMode(page);
 });
 
-test('1 — remove from deck keeps the pad in All pads', async ({ page }) => {
+test('remove from deck keeps the pad in All pads', async ({ page }) => {
   await twoDecks(page);
   await tabs(page).first().click();
   const cell = await addNamedPad(page, 'Thunder');
@@ -71,7 +71,7 @@ test('1 — remove from deck keeps the pad in All pads', async ({ page }) => {
   await expect(page.getByTestId('pad-editor-panel-remove-button')).toHaveCount(0);
 });
 
-test('2 — delete pad shows its decks and removes it everywhere', async ({ page }) => {
+test('delete pad shows its decks and removes it everywhere', async ({ page }) => {
   await page.getByTestId('deck-rail-new-button').click();
   await tabs(page).first().waitFor();
   const cell = await addNamedPad(page, 'Thunder');
@@ -94,7 +94,7 @@ test('2 — delete pad shows its decks and removes it everywhere', async ({ page
   await expect(page.getByTestId(cell)).toHaveCount(0);
 });
 
-test('3 — the deck checklist places the pad in another deck and takes it out', async ({ page }) => {
+test('the deck checklist places the pad in another deck and takes it out', async ({ page }) => {
   const [deck1, deck2] = await twoDecks(page);
   await tabs(page).first().click();
   const cell = await addNamedPad(page, 'Thunder');
@@ -120,7 +120,7 @@ test('3 — the deck checklist places the pad in another deck and takes it out',
   await expect(page.getByTestId(cell)).toBeVisible();
 });
 
-test('4 — a rename and a deck checkbox right after it both survive a reload', async ({ page }) => {
+test('a rename and a deck checkbox right after it both survive a reload', async ({ page }) => {
   const [, deck2] = await twoDecks(page);
   await tabs(page).first().click();
   const cell = await addNamedPad(page, 'Thunder');

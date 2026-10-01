@@ -15,10 +15,10 @@ import {
   currentBoardId,
   currentDeckId,
   boards,
-  upsertBoard,
   removeBoardFromStore,
 } from '../state/store';
-import { boardPut, boardDelete } from '../db/idb';
+import { boardDelete } from '../db/idb';
+import { createBoard, updateBoard } from '../state/boardWrites';
 import type { Board } from '../types';
 import { nanoid } from '../lib/nanoid';
 
@@ -35,12 +35,7 @@ export function BoardListScreen(): JSX.Element {
       decks: [],
       quickAccess: [],
     };
-    try {
-      await boardPut(newBoard);
-      upsertBoard(newBoard);
-    } catch (e) {
-      console.error('Board create failed:', e);
-    }
+    await createBoard(newBoard);
   }
 
   function openBoard(board: Board) {
@@ -114,13 +109,7 @@ function BoardRow({ board, onOpen }: { board: Board; onOpen: () => void }): JSX.
       setEditing(false);
       return;
     }
-    const updated: Board = { ...board, name: newName };
-    try {
-      await boardPut(updated);
-      upsertBoard(updated);
-    } catch (e) {
-      console.error('Board rename failed:', e);
-    }
+    await updateBoard(board.id, (b) => ({ ...b, name: newName }));
     setEditing(false);
   }
 

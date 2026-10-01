@@ -1260,7 +1260,14 @@ Root cause: board changes are written as finished boards (`boardPut(updatedBoard
 the `board` a component rendered with. Standard remedy: apply each change as a function to the
 latest board at write time (the "updater function" pattern), through one save helper, and guard
 that components do not call `boardPut` directly. A new scheme → proposed on its own branch.
-**When:** branch on top of Slice 9e; review with the Slice 9 PRs.
+**Fix (branch `board-writes`, stacked on Slice 9e, review pending):** `v3/src/state/boardWrites.ts`
+(`updateBoard`, `createBoard`) — all 16 writers use it; codeGuards forbids `boardPut` /
+`upsertBoard` in components and screens. Owner decision 2026-10-02: show at once, then save; a
+failed save shows the stored board again. Further instances of the class found and fixed there:
+the A key listener read the mode of an older render (an A right after switching to SETUP was
+ignored — the reason E2E tests called the shortcut "racy"); two quick A presses put two pads in
+one cell; a new deck after a delete took a number and name still in use.
+**When:** review with the Slice 9 PRs.
 
 ### Major dependency updates (one at a time)
 

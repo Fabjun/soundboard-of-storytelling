@@ -7,9 +7,16 @@ export type ChangelogEntry = {
   items: string[];
 };
 
-export const APP_VERSION = '3.0.94';
+export const APP_VERSION = '3.0.95';
 
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.95',
+    date: '2026-10-02',
+    items: [
+      'fix(board): changes build on the latest board — deck undo keeps later edits, two quick A presses get two cells, the A key works right after switching to SETUP; deck badges show the position 1, 2, 3; a new deck takes the smallest free "Deck N"',
+    ],
+  },
   {
     version: '3.0.94',
     date: '2026-10-01',

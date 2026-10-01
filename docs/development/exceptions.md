@@ -20,16 +20,15 @@ From the `## Exceptions` section of each ADR.
 | [ADR-0059](../architecture/0059-property-and-mutation-testing.md) | `libDnd.ts`, `changelog.ts`, `audio/types.ts` not mutated                                       | no unit tests by design (E2E-only, data, types) — the EXEMPT list of `testGuards.test.ts`                                                                                            | testGuards                        | when a file gets unit tests            |
 | [ADR-0059](../architecture/0059-property-and-mutation-testing.md) | npm override `typed-rest-client > qs`                                                           | Stryker 10 pins a `qs` with moderate advisories; 6.16.0 fixes them in the same major                                                                                                 | `v3/package.json` `//overrides`   | BACKLOG "T11c"                         |
 
-## ESLint rule suppressions (7)
+## ESLint rule suppressions (6)
 
 Inline: `// eslint-disable-next-line <rule> -- <reason>` (enforced by `require-description`). Config: `'<rule>': 'off', // <reason>` in `v3/eslint.config.js` (enforced by `testGuards.test.ts`).
 
 | Location                                       | Rule                                      | Reason                                                                                       |
 | ---------------------------------------------- | ----------------------------------------- | -------------------------------------------------------------------------------------------- |
-| `v3/src/components/PadEditorPanel.tsx:90`      | `react-hooks/exhaustive-deps`             | reset only when a different pad is opened (pad.id), not on every auto-save                   |
-| `v3/src/screens/BoardScreen.tsx:66`            | `react-hooks/exhaustive-deps`             | auto-select only on board identity change, never override the user's deck choice             |
-| `v3/src/screens/BoardScreen.tsx:118`           | `react-hooks/exhaustive-deps`             | handleAddPad is a new ref each render; its real deps (mode, deck, board) are listed          |
-| `v3/tests/e2e/deck-crud.spec.ts:74`            | `playwright/no-skipped-test`              | quarantine: feature not built (BACKLOG "Deck reorder")                                       |
+| `v3/src/components/PadEditorPanel.tsx:89`      | `react-hooks/exhaustive-deps`             | reset only when a different pad is opened (pad.id), not on every auto-save                   |
+| `v3/src/screens/BoardScreen.tsx:72`            | `react-hooks/exhaustive-deps`             | auto-select only on board identity change, never override the user's deck choice             |
+| `v3/tests/e2e/deck-crud.spec.ts:76`            | `playwright/no-skipped-test`              | quarantine: feature not built (BACKLOG "Deck reorder")                                       |
 | `v3/tests/e2e/mobile/overflow.spec.ts:30`      | `playwright/no-skipped-test`              | quarantine: mobile layout not built until Slice 13 (BACKLOG "Re-enable mobile layout tests") |
 | `v3/tests/e2e/mobile/touch-targets.spec.ts:34` | `playwright/no-skipped-test`              | quarantine: mobile layout not built until Slice 13 (BACKLOG "Re-enable mobile layout tests") |
 | `v3/eslint.config.js:18`                       | `@typescript-eslint/no-unused-vars` (off) | tsc noUnusedLocals/noUnusedParameters report it                                              |
@@ -52,7 +51,7 @@ Procedure: `docs/development/testing.md`; reference enforced by `testGuards.test
 
 | Location                                       | Marker  | Reference                                            |
 | ---------------------------------------------- | ------- | ---------------------------------------------------- |
-| `v3/tests/e2e/deck-crud.spec.ts:75`            | `fixme` | BACKLOG "Deck reorder"                               |
+| `v3/tests/e2e/deck-crud.spec.ts:77`            | `fixme` | BACKLOG "Deck reorder"                               |
 | `v3/tests/e2e/mobile/overflow.spec.ts:31`      | `fixme` | BACKLOG "Re-enable mobile layout tests"              |
 | `v3/tests/e2e/mobile/touch-targets.spec.ts:35` | `fixme` | BACKLOG "Re-enable mobile layout tests"              |
 | `v3/tests/unit/audio/engine.test.ts:424`       | `fails` | BACKLOG "step stops the combo itself"                |

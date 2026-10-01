@@ -13,12 +13,15 @@ import type { Board, ComboPad, Pad } from '../../src/types';
 import {
   addDeck,
   addPadToDeck,
+  addPadToFreeCell,
   boardProblems,
   deleteDeck,
   deletePad,
   duplicateDeck,
   placeInDeck,
   removeFromDeck,
+  renameDeck,
+  restoreDeck,
   setPlacementHotkey,
   updatePad,
 } from '../../src/lib/boardModel';
@@ -31,7 +34,7 @@ const start = (): Board => ({
   name: 'Board',
   themeId: 'hearth',
   pads: [],
-  decks: [{ id: 'd0', name: 'Deck', order: 0, gridConfig: grid, placements: [] }],
+  decks: [{ id: 'start', name: 'Deck', order: 0, gridConfig: grid, placements: [] }],
   quickAccess: [],
 });
 
@@ -45,6 +48,16 @@ const op = fc.oneof(
   fc.record({ kind: fc.constant('rename' as const), pad: fc.nat(9) }),
   fc.record({ kind: fc.constant('remove' as const), deck: fc.nat(5), pad: fc.nat(9) }),
   fc.record({ kind: fc.constant('place' as const), deck: fc.nat(5), pad: fc.nat(9) }),
+  // preferred cell may lie outside the grid or be taken
+  fc.record({
+    kind: fc.constant('addFree' as const),
+    deck: fc.nat(5),
+    col: fc.integer({ min: -1, max: 4 }),
+    row: fc.integer({ min: -1, max: 3 }),
+  }),
+  // delete a deck, delete a pad meanwhile, undo the deck delete
+  fc.record({ kind: fc.constant('undoDeck' as const), deck: fc.nat(5), pad: fc.nat(9) }),
+  fc.record({ kind: fc.constant('renameDeck' as const), deck: fc.nat(5) }),
 );
 
 /** Applies one operation the way the UI would (free cell, existing ids) and returns the board. */
@@ -89,6 +102,26 @@ function apply(b: Board, o: Op, n: number): Board {
       return deck && pad ? removeFromDeck(b, deck.id, pad.id) : b;
     case 'place':
       return deck && pad ? placeInDeck(b, deck.id, pad.id) : b;
+    case 'addFree': {
+      if (!deck) return b;
+      const newPad: Pad = {
+        id: `p${n}`,
+        name: `Pad ${n}`,
+        volume: 80,
+        fadeIn: 0,
+        fadeOut: 0,
+        type: 'single',
+      };
+      return addPadToFreeCell(b, deck.id, newPad, { col: o.col, row: o.row });
+    }
+    case 'undoDeck': {
+      if (!deck) return b;
+      let next = deleteDeck(b, deck.id);
+      if (pad) next = deletePad(next, pad.id);
+      return restoreDeck(next, deck);
+    }
+    case 'renameDeck':
+      return deck ? renameDeck(b, deck.id, `${deck.name}!`) : b;
     default:
       return b;
   }

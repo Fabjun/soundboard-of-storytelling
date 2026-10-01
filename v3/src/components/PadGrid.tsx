@@ -34,8 +34,7 @@ import {
   applyInsert,
   type DndDropResult,
 } from '../lib/padDnd';
-import { upsertBoard } from '../state/store';
-import { boardPut } from '../db/idb';
+import { updateBoard } from '../state/boardWrites';
 
 interface PadGridProps {
   /** The deck to show; null = the All pads view of the whole pool (ADR-0048). */
@@ -93,17 +92,16 @@ export function PadGrid({
   async function handleDrop(result: DndDropResult) {
     if (result.kind === 'cancel' || !deck) return;
 
-    const placements =
-      result.kind === 'swap'
-        ? applySwap(deck.placements, result.srcId, result.tgtPos)
-        : applyInsert(deck.placements, result.srcId, result.toIndex, cols, rows);
-    const updatedBoard: Board = setPlacements(board, deck.id, placements);
-    try {
-      await boardPut(updatedBoard);
-      upsertBoard(updatedBoard);
-    } catch (e) {
-      console.error('Pad DnD save failed:', e);
-    }
+    const deckId = deck.id;
+    await updateBoard(board.id, (b) => {
+      const latest = b.decks.find((d) => d.id === deckId);
+      if (!latest) return b;
+      const placements =
+        result.kind === 'swap'
+          ? applySwap(latest.placements, result.srcId, result.tgtPos)
+          : applyInsert(latest.placements, result.srcId, result.toIndex, cols, rows);
+      return setPlacements(b, deckId, placements);
+    });
   }
 
   function handlePadPointerDown(e: PointerEvent, pad: Pad) {
@@ -117,13 +115,8 @@ export function PadGrid({
 
   async function savePadToDeck(newPad: Pad, position: PadPosition) {
     if (!deck) return;
-    const updatedBoard: Board = addPadToDeck(board, deck.id, newPad, position);
-    try {
-      await boardPut(updatedBoard);
-      upsertBoard(updatedBoard);
-    } catch (e) {
-      console.error('Pad create failed:', e);
-    }
+    const deckId = deck.id;
+    await updateBoard(board.id, (b) => addPadToDeck(b, deckId, newPad, position));
   }
 
   async function handleCreationResult(result: CreationResult) {
