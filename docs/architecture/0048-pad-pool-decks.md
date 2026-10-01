@@ -71,15 +71,15 @@ type FileOrder = 'sequential' | 'shuffle';
 The product owner decided to build the behavior in its final form now; only look and phone
 layout follow in Slice 13.
 
-| Behavior                                 | Decision                                                                                                                                           |
-| ---------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Editing a pad                            | changes it everywhere it appears                                                                                                                   |
-| **Duplicate deck**                       | the copy references the **same pads** (new placements, same pad ids). An independent "duplicate pad" action may come later.                        |
-| **All pads**                             | its own view, first entry in the deck rail; shows the whole pool (incl. pads in no deck), sorted by name; no saved arrangement                     |
-| **Remove from deck**                     | removes the placement; the pad stays in the pool (visible in All pads). Two-tap confirm.                                                           |
-| **Delete pad**                           | removes the pad from the pool, all placements, the quick-access bar and combo steps. Two-tap confirm, shows "used in N decks".                     |
-| **Add a pad to other decks**             | PAD editor section "Decks": a checklist of all decks; checking places the pad on the next free slot of that deck, unchecking removes the placement |
-| Choosing several files in the PAD editor | model ready in Slice 9; editing UI in Slice 11                                                                                                     |
+| Behavior                                 | Decision                                                                                                                                                                                                                                                                    |
+| ---------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Editing a pad                            | changes it everywhere it appears                                                                                                                                                                                                                                            |
+| **Duplicate deck**                       | the copy references the **same pads** (new placements, same pad ids). An independent "duplicate pad" action may come later.                                                                                                                                                 |
+| **All pads**                             | its own view, first entry in the deck rail; shows the whole pool (incl. pads in no deck), sorted by name; no saved arrangement. Owner 2026-10-02: ADD PAD and a library drop there create a pad in no deck; a board reopens in the view it showed last (a deck or All pads) |
+| **Remove from deck**                     | removes the placement; the pad stays in the pool (visible in All pads). Two-tap confirm.                                                                                                                                                                                    |
+| **Delete pad**                           | removes the pad from the pool, all placements, the quick-access bar and combo steps. Two-tap confirm, shows "used in N decks".                                                                                                                                              |
+| **Add a pad to other decks**             | PAD editor section "Decks": a checklist of all decks; checking places the pad on the next free slot of that deck, unchecking removes the placement                                                                                                                          |
+| Choosing several files in the PAD editor | model ready in Slice 9; editing UI in Slice 11                                                                                                                                                                                                                              |
 
 ### 3. Persistence
 

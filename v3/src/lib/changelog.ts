@@ -7,9 +7,16 @@ export type ChangelogEntry = {
   items: string[];
 };
 
-export const APP_VERSION = '3.0.95';
+export const APP_VERSION = '3.0.96';
 
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.96',
+    date: '2026-10-02',
+    items: [
+      'feat(decks): All pads can create pads that sit in no deck (ADD PAD, A key, library drop); a board reopens in the view it showed last',
+    ],
+  },
   {
     version: '3.0.95',
     date: '2026-10-02',

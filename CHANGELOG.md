@@ -4,6 +4,10 @@
 
 All notable changes to Soundboard of Storytelling, newest first.
 
+## 3.0.96 — 2026-10-02
+
+- feat(decks): All pads can create pads that sit in no deck (ADD PAD, A key, library drop); a board reopens in the view it showed last
+
 ## 3.0.95 — 2026-10-02
 
 - fix(board): changes build on the latest board — deck undo keeps later edits, two quick A presses get two cells, the A key works right after switching to SETUP; deck badges show the position 1, 2, 3; a new deck takes the smallest free "Deck N"

@@ -28,6 +28,10 @@ territory. `docs/architecture/concept-brief.md §1` sets IndexedDB explicitly.
   and pads). Access exclusively via the `src/db/idb.ts` API.
 - **localStorage:** small UI state items that need no sync guarantee (theme choice, last open
   screen preference or similar). No audio, no boards.
+- **localStorage keys** (added 2026-10-02 with the first preference, review pending): only in
+  `v3/src/db/prefs.ts`, as typed functions, keys `sos-v3:<name>[:<id>]` — Web Storage is shared
+  by the whole origin and V1 runs on the same one. Unavailable storage never raises an error.
+  Guarded by `v3/tests/unit/codeGuards.test.ts`.
 
 Direct access to IDB outside `src/db/idb.ts` is forbidden (CLAUDE.md §Permanent coding
 standards).

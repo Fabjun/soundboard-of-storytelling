@@ -6,12 +6,23 @@
 // - Delete pad shows "used in N decks" and removes it from every deck and All pads
 // - The PAD editor's deck checklist places the pad in another deck and takes it out again
 // - A rename and a deck checkbox in quick succession both survive a reload
+// - All pads creates pads that sit in no deck: ADD PAD and a library drop (owner decision
+//   2026-10-02)
+// - A board opens in the view it showed last (owner decision 2026-10-02)
 //
 // No audio needed: pads come from ADD PAD (runs in Chromium and WebKit).
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { test, expect, type Page } from '@playwright/test';
-import { goToBoardList, createBoardAndNavigate, enterSetupMode, reopenFirstBoard } from './helpers';
+import {
+  TEST_AUDIO_NAME,
+  createBoardAndNavigate,
+  enterSetupMode,
+  ensureTestAudio,
+  goToBoardList,
+  pointerDrag,
+  reopenFirstBoard,
+} from './helpers';
 
 const tabs = (page: Page) => page.locator('[data-testid^="deck-rail-deck-tab-"]');
 const occupied = (page: Page) =>
@@ -134,4 +145,51 @@ test('a rename and a deck checkbox right after it both survive a reload', async 
   await reopenFirstBoard(page);
   await tabs(page).nth(1).click();
   await expect(page.getByTestId(cell)).toContainText('Rain');
+});
+
+const emptySlots = (page: Page) => page.locator('[data-testid^="pad-grid-cell-empty-slot-"]');
+
+test('ADD PAD in All pads creates a pad that sits in no deck', async ({ page }) => {
+  const [deck1] = await twoDecks(page);
+  await page.getByTestId('deck-rail-all-pads-tab').click();
+  await page.getByText('ADD PAD', { exact: true }).click();
+  await page.getByTestId('pad-editor-panel-name-input').fill('Wind');
+  const cell = occupied(page).first();
+  await expect(cell).toContainText('Wind');
+  await expect(page.getByTestId(`pad-editor-panel-deck-input-${deck1}`)).not.toBeChecked();
+  await tabs(page).first().click();
+  await expect(occupied(page)).toHaveCount(0); // the deck holds no pad
+});
+
+test('a library file dropped on All pads becomes a pad in no deck', async ({ page }) => {
+  await ensureTestAudio(page);
+  await reopenFirstBoard(page);
+  await enterSetupMode(page);
+  await page.getByTestId('deck-rail-all-pads-tab').click();
+  await page.getByTitle('Open library panel').click();
+  const row = page
+    .locator('[data-testid^="library-panel-row-"]')
+    .filter({ hasText: TEST_AUDIO_NAME })
+    .first();
+  await row.waitFor();
+  await pointerDrag(page, row, page.getByText('No pads yet', { exact: false }));
+  await expect(occupied(page)).toHaveCount(1);
+  await expect(occupied(page).first()).toContainText(TEST_AUDIO_NAME);
+  await expect(page.getByTestId('deck-rail-all-pads-tab')).toContainText('1');
+});
+
+test('a board opens in the view it showed last', async ({ page }) => {
+  await twoDecks(page);
+  // A pad only in the second deck: visible there and in All pads, not in the first deck
+  await tabs(page).nth(1).click();
+  await addNamedPad(page, 'Rain');
+
+  await reopenFirstBoard(page);
+  await expect(occupied(page)).toContainText(['Rain']); // second deck again, not the first
+  await expect(emptySlots(page)).toHaveCount(15);
+
+  await page.getByTestId('deck-rail-all-pads-tab').click();
+  await reopenFirstBoard(page);
+  await expect(occupied(page)).toContainText(['Rain']);
+  await expect(emptySlots(page)).toHaveCount(0); // All pads has no empty cells
 });

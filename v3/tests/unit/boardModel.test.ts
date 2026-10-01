@@ -11,6 +11,7 @@ import {
   addDeck,
   addPadToDeck,
   addPadToFreeCell,
+  addPadToPool,
   boardProblems,
   deckCount,
   deckPads,
@@ -291,6 +292,13 @@ describe('changes applied to the latest board (board writes)', () => {
     b = addPadToFreeCell(b, 'd1', single('c'), { col: 9, row: 0 }); // outside the grid
     expect(findDeck(b, 'd1')!.placements[2].position).toEqual({ col: 1, row: 0 });
     expect(boardProblems(b)).toEqual([]);
+  });
+
+  it('a pad added to the pool only sits in no deck', () => {
+    const b = addPadToPool(emptyBoard(), single('a'));
+    expect(b.pads.map((p) => p.id)).toEqual(['a']);
+    expect(b.decks.every((d) => d.placements.length === 0)).toBe(true);
+    expect(deckCount(b, 'a')).toBe(0);
   });
 
   it('two adds in a row on the same board never share a cell', () => {

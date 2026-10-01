@@ -9,12 +9,14 @@
 //    its component file and ends with an element kind (root: the component name alone);
 //    E2E tests never locate by CSS class; spec files are kebab-case without a folder prefix,
 //    helper files are named helpers.ts.
+//    Numbered E2E titles (`N — …`) are the Slice-3 verification points 1–22, each used once.
 // 5. Inline style lengths carry a unit (Preact 11 no longer appends px to numbers) — checked
 //    with the TypeScript type checker, so variables, ternaries and shorthands count.
-//    Numbered E2E titles (`N — …`) are the Slice-3 verification points 1–22, each used once.
 // 6. Board writes go through src/state/boardWrites.ts: components and screens never call
 //    boardPut / upsertBoard, which save or show a finished board computed from an outdated copy
 //    (BACKLOG "Bug: board writes from an outdated board copy lose changes").
+// 7. localStorage only in src/db/prefs.ts (keys `sos-v3:<name>[:<id>]`, ADR-0014) — V1 shares
+//    the origin, so an unprefixed key elsewhere could collide with V1's data.
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { readdirSync, readFileSync } from 'node:fs';
@@ -284,5 +286,25 @@ describe('guard: board writes go through boardWrites (BACKLOG "board writes from
 
   it('components and screens use updateBoard / createBoard, never boardPut / upsertBoard', () => {
     expect(calls, 'write: await updateBoard(board.id, (b) => change(b, …))').toEqual([]);
+  });
+});
+
+describe('guard: localStorage only through src/db/prefs.ts (ADR-0014)', () => {
+  const walkSrc = (dir: string): string[] =>
+    readdirSync(dir, { withFileTypes: true }).flatMap((e) =>
+      e.isDirectory() ? walkSrc(join(dir, e.name)) : [join(dir, e.name)],
+    );
+  const files = walkSrc(SRC).filter((f) => /\.tsx?$/.test(f));
+
+  it('finds source files (sanity)', () => {
+    expect(files.length).toBeGreaterThan(30);
+  });
+
+  it('no other file touches localStorage or sessionStorage', () => {
+    const bad = files
+      .filter((f) => relative(SRC, f) !== join('db', 'prefs.ts'))
+      .filter((f) => /\b(localStorage|sessionStorage)\b/.test(readFileSync(f, 'utf8')))
+      .map((f) => relative(SRC, f));
+    expect(bad, 'add a typed function with an sos-v3: key to src/db/prefs.ts').toEqual([]);
   });
 });
