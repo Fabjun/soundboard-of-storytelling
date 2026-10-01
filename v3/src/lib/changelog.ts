@@ -7,9 +7,16 @@ export type ChangelogEntry = {
   items: string[];
 };
 
-export const APP_VERSION = '3.0.100';
+export const APP_VERSION = '3.0.102';
 
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.102',
+    date: '2026-10-02',
+    items: [
+      'feat(backup): the app asks the browser for persistent storage at start (Slice 10, D4); ADR-0061 proposes the backup file format and piecewise import',
+    ],
+  },
   {
     version: '3.0.100',
     date: '2026-10-02',

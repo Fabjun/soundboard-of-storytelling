@@ -10,6 +10,7 @@ import { useEffect } from 'preact/hooks';
 import type { JSX } from 'preact';
 import { currentScreen, libraryItems, boards } from './state/store';
 import { libGetAllMeta, boardGetAll } from './db/idb';
+import { requestPersistentStorage } from './db/persistentStorage';
 import { StartScreen } from './screens/StartScreen';
 import { LibraryScreen } from './screens/LibraryScreen';
 import { BoardListScreen } from './screens/BoardListScreen';
@@ -31,6 +32,9 @@ export function App(): JSX.Element {
         boards.value = all;
       })
       .catch((err) => console.error('Board bootstrap failed:', err));
+
+    // D4: ask the browser to keep boards and audio (invisible to the user; ADR-0061)
+    void requestPersistentStorage();
   }, []);
 
   const screen = currentScreen.value;
