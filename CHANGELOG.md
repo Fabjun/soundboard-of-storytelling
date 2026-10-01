@@ -4,13 +4,25 @@
 
 All notable changes to Soundboard of Storytelling, newest first.
 
-## 3.0.93 — 2026-10-01
+## 3.0.94 — 2026-10-01
 
 - feat(decks): All pads view of the whole pool; remove a pad from one deck or delete it everywhere ("used in N decks"); PAD editor deck checklist places a pad in other decks (Slice 9e, ADR-0048)
 
-## 3.0.89 — 2026-10-01
+## 3.0.93 — 2026-10-01
 
 - feat(model): pad pool — pads belong to the board, decks place them with position and key; duplicated decks share their pads; quick-access model; DB v4 (Slice 9c, ADR-0048)
+
+## 3.0.92 — 2026-10-01
+
+- test: WebKit test seed never creates the database (race broke app boot); lint forbids conditional assertions in E2E tests; mutation break threshold 73
+
+## 3.0.91 — 2026-10-01
+
+- test: engine tests for combo children and the fade-out-all step; found a bug — a combo step can start the next step twice (pinned, fix pending owner approval)
+
+## 3.0.90 — 2026-10-01
+
+- test: mutation break threshold 68 % after the first complete CI run (68.89 %)
 
 ## 3.0.87 — 2026-10-01
 

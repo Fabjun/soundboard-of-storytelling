@@ -46,16 +46,18 @@ The reason is the comment line directly above — enforced by `testGuards.test.t
 | `v3/src/lib/flameMath.ts:68` | Formatting: keep the pixel table aligned row by row (Prettier would reflow it). |
 | `v3/src/lib/flameMath.ts:75` | Formatting: keep the pixel table aligned row by row (Prettier would reflow it). |
 
-## Quarantined tests (4)
+## Quarantined tests (6)
 
 Procedure: `docs/development/testing.md`; reference enforced by `testGuards.test.ts`.
 
-| Location                                       | Marker  | Reference                               |
-| ---------------------------------------------- | ------- | --------------------------------------- |
-| `v3/tests/e2e/deck-crud.spec.ts:75`            | `fixme` | BACKLOG "Deck reorder"                  |
-| `v3/tests/e2e/mobile/overflow.spec.ts:31`      | `fixme` | BACKLOG "Re-enable mobile layout tests" |
-| `v3/tests/e2e/mobile/touch-targets.spec.ts:35` | `fixme` | BACKLOG "Re-enable mobile layout tests" |
-| `v3/tests/unit/audio/engine.test.ts:424`       | `fails` | BACKLOG "step stops the combo itself"   |
+| Location                                       | Marker  | Reference                                            |
+| ---------------------------------------------- | ------- | ---------------------------------------------------- |
+| `v3/tests/e2e/deck-crud.spec.ts:75`            | `fixme` | BACKLOG "Deck reorder"                               |
+| `v3/tests/e2e/mobile/overflow.spec.ts:31`      | `fixme` | BACKLOG "Re-enable mobile layout tests"              |
+| `v3/tests/e2e/mobile/touch-targets.spec.ts:35` | `fixme` | BACKLOG "Re-enable mobile layout tests"              |
+| `v3/tests/unit/audio/engine.test.ts:424`       | `fails` | BACKLOG "step stops the combo itself"                |
+| `v3/tests/unit/audio/engine.test.ts:559`       | `fails` | BACKLOG "Bug: combo step starts the next step twice" |
+| `v3/tests/unit/audio/engine.test.ts:592`       | `fails` | BACKLOG "Bug: combo step starts the next step twice" |
 
 ## Modules without their own unit test (4)
 

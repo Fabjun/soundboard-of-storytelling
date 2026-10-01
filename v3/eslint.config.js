@@ -113,6 +113,10 @@ export default [
       // skip AND fixme only as a visible, justified exception (eslint-disable comment + reason)
       'playwright/no-skipped-test': ['error', { disallowFixme: true }],
       'playwright/valid-expect': 'error', // expect() without matcher / missing await
+      // An `if` around an assertion lets the test pass without checking anything when the
+      // condition is false (found 3× on 2026-10-01). Both rules are in the plugin's recommended set.
+      'playwright/no-conditional-in-test': 'error',
+      'playwright/no-conditional-expect': 'error',
     },
   },
 

@@ -515,3 +515,170 @@ describe('initAudioBridge', () => {
     expect(store.playingPads.value.has('c')).toBe(true);
   });
 });
+
+// ── Combo children in detail (T11c: mutation testing left createPadInstance unguarded) ─
+
+describe('combo children', () => {
+  test('a single child plays its trim window: offset trimStart, duration trimEnd − trimStart', async () => {
+    pads.set('s1', single('s1', 'h1', { trimStart: 2, trimEnd: 5 }));
+    audio.play('c', combo('c', [{ padIds: ['s1'] }]));
+    await flush();
+    expect(ctx.sources[0].started).toEqual({ when: 0, offset: 2, dur: 3 });
+  });
+
+  test('without a trim window a child starts at 0 and plays to the end', async () => {
+    pads.set('s1', single('s1', 'h1'));
+    audio.play('c', combo('c', [{ padIds: ['s1'] }]));
+    await flush();
+    expect(ctx.sources[0].started).toEqual({ when: 0, offset: 0, dur: undefined });
+  });
+
+  test('a loop child loops its trim window', async () => {
+    pads.set('bg', loop('bg', 'h3', { trimStart: 1, trimEnd: 4 }));
+    audio.play('c', combo('c', [{ padIds: ['bg'], duration: 9 }]));
+    await flush();
+    expect(ctx.sources[0].loop).toBe(true);
+    expect(ctx.sources[0].started).toEqual({ when: 0, offset: 1, dur: 3 });
+  });
+
+  test('a child uses its own volume and fade-in on its own gain', async () => {
+    pads.set('s1', single('s1', 'h1', { volume: 50, fadeIn: 2 }));
+    audio.play('c', combo('c', [{ padIds: ['s1'] }]));
+    await flush();
+    const childGain = ctx.gains[ctx.gains.length - 1];
+    expect(childGain.gain.events).toEqual([
+      ['set', 0, 0],
+      ['ramp', 0.5, 2],
+    ]);
+  });
+
+  // KNOWN ENGINE BUG (found 2026-10-01, T11c): a child that finishes synchronously makes
+  // playComboStep start the next step twice. test.fails documents the bug; when the engine is
+  // fixed (under product-owner control) this turns red → switch to test().
+  // BACKLOG "Bug: combo step starts the next step twice"
+  test.fails('a child without an audio reference counts as finished at once', async () => {
+    pads.set('s0', single('s0', ''));
+    pads.set('s2', single('s2', 'h2'));
+    audio.play('c', combo('c', [{ padIds: ['s0'] }, { padIds: ['s2'] }]));
+    await flush();
+    expect(tags()).toEqual(['h2']);
+  });
+
+  test('a child whose audio is missing counts as finished', async () => {
+    missing.add('gone');
+    pads.set('s0', single('s0', 'gone'));
+    pads.set('s2', single('s2', 'h2'));
+    audio.play('c', combo('c', [{ padIds: ['s0'] }, { padIds: ['s2'] }]));
+    await flush();
+    expect(tags()).toEqual(['h2']);
+  });
+
+  test('a playlist child plays its files in order, releases each, then the combo continues', async () => {
+    pads.set('pl', playlist('pl', ['a', 'b']));
+    pads.set('s2', single('s2', 'h2'));
+    audio.play('c', combo('c', [{ padIds: ['pl'] }, { padIds: ['s2'] }]));
+    await flush();
+    expect(tags()).toEqual(['a']);
+    ctx.sources[0].end();
+    await flush();
+    expect(tags()).toEqual(['a', 'b']);
+    expect(engine.libBufs['a']).toBeUndefined(); // released after it ended (iOS memory rule)
+    ctx.sources[1].end();
+    await flush();
+    expect(tags()).toEqual(['a', 'b', 'h2']);
+  });
+
+  // Same known bug as above. BACKLOG "Bug: combo step starts the next step twice"
+  test.fails('an empty playlist child counts as finished at once', async () => {
+    pads.set('pl', playlist('pl', []));
+    pads.set('s2', single('s2', 'h2'));
+    audio.play('c', combo('c', [{ padIds: ['pl'] }, { padIds: ['s2'] }]));
+    await flush();
+    expect(tags()).toEqual(['h2']);
+  });
+
+  test('current behaviour (bug): a child that ends at once starts the next step twice', async () => {
+    pads.set('s0', single('s0', ''));
+    pads.set('pl', playlist('pl', []));
+    pads.set('s2', single('s2', 'h2'));
+    audio.play('c1', combo('c1', [{ padIds: ['s0'] }, { padIds: ['s2'] }]));
+    await flush();
+    expect(tags()).toEqual(['h2', 'h2']);
+    audio.play('c2', combo('c2', [{ padIds: ['pl'] }, { padIds: ['s2'] }]));
+    await flush();
+    expect(tags()).toEqual(['h2', 'h2', 'h2', 'h2']);
+  });
+
+  test('a shuffled playlist child picks its file with Math.random', async () => {
+    vi.spyOn(Math, 'random').mockReturnValue(0.99);
+    pads.set('pl', playlist('pl', ['a', 'b', 'z'], { shuffle: true }));
+    audio.play('c', combo('c', [{ padIds: ['pl'] }]));
+    await flush();
+    expect(tags()).toEqual(['z']);
+  });
+
+  test('stopping the combo silences the child and ignores its late "ended" event', async () => {
+    pads.set('s1', single('s1', 'h1'));
+    pads.set('s2', single('s2', 'h2'));
+    audio.play('c', combo('c', [{ padIds: ['s1'] }, { padIds: ['s2'] }]));
+    await flush();
+    const childGain = ctx.gains[ctx.gains.length - 1];
+    audio.stop('c');
+    expect(childGain.gain.value).toBe(0);
+    ctx.sources[0].end(); // the browser reports the end after the stop
+    await flush();
+    expect(tags()).toEqual(['h1']); // the next step does not start
+  });
+});
+
+// ── "Fade out all" combo step (T11c: had no test at all) ──────────────────────
+
+describe('fade out all (combo step)', () => {
+  test('ramps every other playing pad to 0 over the duration, then stops and reports it', async () => {
+    vi.useFakeTimers();
+    await audio.play('L', loop('L', 'h9'));
+    await flush();
+    const loopGain = ctx.gains[ctx.gains.length - 1];
+    pads.set('s1', single('s1', 'h1'));
+    audio.play('c', combo('c', [{ padIds: [], fadeOutAll: 2 }, { padIds: ['s1'] }]));
+    await flush();
+    expect(loopGain.gain.events.slice(-3)).toEqual([
+      ['cancel', 0],
+      ['set', loopGain.gain.value, 0],
+      ['ramp', 0, 2],
+    ]);
+    expect(ctx.sources[0].stopped).toBeNull(); // still fading
+
+    vi.advanceTimersByTime(2050);
+    await flush();
+    expect(ctx.sources[0].stopped).toEqual({ when: 'now' });
+    expect(stopped).toContain('L');
+    expect(stopped).not.toContain('c'); // the fading combo itself keeps running
+    expect(audio.isPlaying('L')).toBe(false);
+  });
+
+  test('the next step waits for the fade plus 100 ms', async () => {
+    vi.useFakeTimers();
+    pads.set('s1', single('s1', 'h1'));
+    audio.play('c', combo('c', [{ padIds: [], fadeOutAll: 1 }, { padIds: ['s1'] }]));
+    await flush();
+    vi.advanceTimersByTime(1099);
+    await flush();
+    expect(ctx.sources).toHaveLength(0);
+    vi.advanceTimersByTime(1);
+    await flush();
+    expect(tags()).toEqual(['h1']);
+  });
+
+  test('other running combos are stopped at once', async () => {
+    vi.useFakeTimers();
+    pads.set('bg', loop('bg', 'h3'));
+    audio.play('other', combo('other', [{ padIds: ['bg'], duration: 60 }]));
+    await flush();
+    pads.set('s1', single('s1', 'h1'));
+    audio.play('c', combo('c', [{ padIds: [], fadeOutAll: 1 }, { padIds: ['s1'] }]));
+    await flush();
+    expect(stopped).toContain('other');
+    expect(ctx.sources[0].stopped).toEqual({ when: 'now' });
+  });
+});

@@ -39,13 +39,12 @@ test('22 — GAME mode: CRUD controls hidden, ModeToggle shows is-game', async (
   // empty cells have no + button affordance and clicking doesn't open the popover.
   // Verify: pad creation popover cannot be triggered
   const emptyCell = page.getByTestId('pad-grid-cell-empty-slot-0-0');
-  if (await emptyCell.isVisible()) {
-    await emptyCell.click();
-    // Popover should NOT appear in GAME mode
-    await expect(page.getByTestId('pad-creation-popover')).not.toBeVisible({
-      timeout: 1000,
-    });
-  }
+  await expect(emptyCell).toBeVisible();
+  await emptyCell.click();
+  // Popover should NOT appear in GAME mode
+  await expect(page.getByTestId('pad-creation-popover')).not.toBeVisible({
+    timeout: 1000,
+  });
 
   // Verify switching back to SETUP restores the toggle state
   await enterSetupMode(page);
