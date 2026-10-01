@@ -137,6 +137,8 @@ export default [
       'coverage/**', // generated coverage report
       'playwright-report/**', // generated E2E report
       'test-results/**', // generated E2E artefacts
+      '.stryker-tmp/**', // Stryker sandbox copies of the project during a mutation run
+      'reports/**', // generated mutation report
     ],
   },
 ];

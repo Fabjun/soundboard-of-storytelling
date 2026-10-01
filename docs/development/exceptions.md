@@ -68,7 +68,7 @@ EXEMPT list in `v3/tests/unit/testGuards.test.ts`.
 | `v3/src/audio/index.ts`   | audio facade — tested through tests/unit/audio/engine.test.ts                 |
 | `v3/src/lib/libDnd.ts`    | pointer/DOM drag — covered by E2E pad-creation test 14 in Chromium and WebKit |
 
-## Tool ignore lists (18)
+## Tool ignore lists (17)
 
 Paths excluded from formatting, linting or doc guards.
 
@@ -85,9 +85,8 @@ Paths excluded from formatting, linting or doc guards.
 | ESLint global ignores | `coverage/**`                               | generated coverage report                                                                                                                                                                                                                                          |
 | ESLint global ignores | `playwright-report/**`                      | generated E2E report                                                                                                                                                                                                                                               |
 | ESLint global ignores | `test-results/**`                           | generated E2E artefacts                                                                                                                                                                                                                                            |
-| docsGuards SKIP       | `node_modules`                              | installed dependencies                                                                                                                                                                                                                                             |
-| docsGuards SKIP       | `.git`                                      | repository internals                                                                                                                                                                                                                                               |
-| docsGuards SKIP       | `dist`                                      | build output                                                                                                                                                                                                                                                       |
+| ESLint global ignores | `.stryker-tmp/**`                           | Stryker sandbox copies of the project during a mutation run                                                                                                                                                                                                        |
+| ESLint global ignores | `reports/**`                                | generated mutation report                                                                                                                                                                                                                                          |
 | docsGuards SKIP       | `design-sources`                            | Claude Design downloads, kept exactly as delivered (ADR-0050)                                                                                                                                                                                                      |
 | npm override          | `typed-rest-client > qs` → `^6.16.0`        | typed-rest-client 2.3 (pinned by @stryker-mutator/core 10) pins qs 6.15.1 with moderate advisories (GHSA-q8mj-m7cp-5q26, GHSA-x5fp-wj9c-mxmx, GHSA-4mjr-xmp4-gh2g); 6.16.0 fixes them within the same major — remove when Stryker ships typed-rest-client >= 3.1.2 |
 | Dependabot ignore     | `@types/node` (version-update:semver-major) | @types/node follows the Node runtime (.nvmrc); a newer major describes APIs the runtime lacks — raise with .nvmrc (guarded by testGuards)                                                                                                                          |
@@ -107,7 +106,7 @@ Historical docs excluded in `.vale.ini`, and passages marked `<!-- vale … = NO
 | `.vale.ini`                                            | `docs/product/v1-v2-inventory.md` | historical record — keeps the names valid at its time                             |
 | `.vale.ini`                                            | `CHANGELOG.md`                    | historical record — keeps the names valid at its time                             |
 | `.vale.ini`                                            | `docs/development/exceptions.md`  | historical record — keeps the names valid at its time                             |
-| `CLAUDE.md:669`                                        | `SoS.SupersededTerms` off         | historical slice records keep the names valid at the time (Scene before Slice 9b) |
+| `CLAUDE.md:673`                                        | `SoS.SupersededTerms` off         | historical slice records keep the names valid at the time (Scene before Slice 9b) |
 | `docs/architecture/0056-documentation-freshness.md:32` | `SoS.SupersededTerms` off         | …                                                                                 |
 | `docs/architecture/concept-brief.md:75`                | `SoS.SupersededTerms` off         | explains the rename                                                               |
 | `docs/product/README.md:108`                           | `SoS.SupersededTerms` off         | records the rename decision                                                       |

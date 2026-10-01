@@ -87,11 +87,13 @@ jobs:
           fi
 
   # Mutation testing (T11c, ADR-0059): how many planted bugs the unit tests detect. Too slow for
-  # every push (~30 min); fails below the break threshold in v3/stryker.config.mjs — a run that
-  # silently tests nothing (stryker-js#6210) scores ~0 and turns this red.
-  mutation:
+  # every push. One job per module (list from stryker.config.mjs via mutation:modules); each mutant
+  # runs only `vitest related <module>`. One job for everything was killed twice by the runner
+  # after 11–18 min with ~2 h still to go (weekly runs 36770237372, 36775054865).
+  mutation-modules:
     runs-on: ubuntu-latest
-    timeout-minutes: 150
+    outputs:
+      modules: ${{ steps.list.outputs.modules }}
     steps:
       - uses: actions/checkout@v7
 
@@ -105,11 +107,46 @@ jobs:
         working-directory: v3
         run: npm ci
 
-      - name: Mutation testing (StrykerJS)
+      - name: List the modules to mutate
+        id: list
         working-directory: v3
-        run: npm run test:mutation
+        run: echo "modules=$(npm run -s mutation:modules)" >> "$GITHUB_OUTPUT"
 
-      # Score + timeout share; fails above 5 % timeouts (a starved runner inflates the score).
+  mutation:
+    needs: mutation-modules
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        module: ${{ fromJSON(needs.mutation-modules.outputs.modules) }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+          cache-dependency-path: v3/package-lock.json
+
+      - name: Install dependencies
+        working-directory: v3
+        run: npm ci
+
+      - name: Mutation testing (StrykerJS) — ${{ matrix.module }}
+        working-directory: v3
+        env:
+          MUTATE_MODULE: ${{ matrix.module }}
+        # Memory every 60 s in the log (evidence if the runner dies again).
+        # MUTATION_SECONDS: runtime for mutation:report (fails above 70 % of timeout-minutes).
+        run: |
+          ( while true; do free -m | awk 'NR==2 {print "memory: " $3 " of " $2 " MB used"}'; sleep 60; done ) &
+          START=$(date +%s)
+          npm run test:mutation; RC=$?
+          echo "MUTATION_SECONDS=$(( $(date +%s) - START ))" >> "$GITHUB_ENV"
+          exit $RC
+
+      # Score + timeout share of this module; fails above 5 % timeouts or 70 % of the time limit.
       - name: Mutation score and timeout share
         if: always()
         working-directory: v3
@@ -118,6 +155,33 @@ jobs:
       - uses: actions/upload-artifact@v7
         if: always()
         with:
-          name: mutation-report
+          name: mutation-${{ strategy.job-index }}
           path: v3/reports/mutation/
           retention-days: 30
+
+  # The score over all modules against the break threshold of stryker.config.mjs.
+  mutation-summary:
+    needs: mutation
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+          cache-dependency-path: v3/package-lock.json
+
+      - name: Install dependencies
+        working-directory: v3
+        run: npm ci
+
+      - uses: actions/download-artifact@v8
+        with:
+          pattern: mutation-*
+          path: v3/reports/parts
+
+      - name: Mutation score over all modules (fails below the break threshold)
+        working-directory: v3
+        run: npm run mutation:report -- reports/parts/*/mutation.json --break

@@ -7,9 +7,23 @@ export type ChangelogEntry = {
   items: string[];
 };
 
-export const APP_VERSION = '3.0.84';
+export const APP_VERSION = '3.0.86';
 
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.86',
+    date: '2026-10-01',
+    items: [
+      'ci: weekly mutation testing as one job per module with vitest related, plus a summary job; locally half the cores; guards read the file list from git (T11c)',
+    ],
+  },
+  {
+    version: '3.0.85',
+    date: '2026-09-30',
+    items: [
+      'ci: the weekly mutation job reports its runtime and fails from 70 % of its time limit; structure review checks thresholds and runtimes',
+    ],
+  },
   {
     version: '3.0.84',
     date: '2026-09-30',

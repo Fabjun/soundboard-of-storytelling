@@ -21,9 +21,10 @@
 // 9. npm overrides carry a reason; files excluded from mutation testing are EXEMPT files.
 // ─────────────────────────────────────────────────────────────────────────────
 
-import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { basename, dirname, join, relative } from 'node:path';
 import ts from 'typescript';
+import { repoFiles } from '../../scripts/lib/repo-files';
 
 const V3 = join(__dirname, '..', '..');
 const BACKLOG = join(V3, '..', 'docs/backlog.md');
@@ -38,18 +39,13 @@ const EXEMPT: Record<string, string> = {
     'pointer/DOM drag — covered by E2E pad-creation test 14 in Chromium and WebKit',
 };
 
+/** Files below `dir` whose name matches, as absolute paths (.gitignore decides — repoFiles). */
 function walk(dir: string, match: (f: string) => boolean): string[] {
-  const out: string[] = [];
-  for (const entry of readdirSync(dir)) {
-    const full = join(dir, entry);
-    if (statSync(full).isDirectory()) {
-      if (entry === 'node_modules' || entry.endsWith('-snapshots')) continue;
-      out.push(...walk(full, match));
-    } else if (match(entry)) {
-      out.push(full);
-    }
-  }
-  return out;
+  const root = join(V3, '..');
+  const prefix = relative(root, dir).split('\\').join('/');
+  return repoFiles(root)
+    .filter((f) => f.startsWith(`${prefix}/`) && match(basename(f)))
+    .map((f) => join(root, f));
 }
 
 const rel = (f: string): string => relative(V3, f).split('\\').join('/');

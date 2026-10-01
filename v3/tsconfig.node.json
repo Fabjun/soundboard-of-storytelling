@@ -19,7 +19,17 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "erasableSyntaxOnly": true,
+
+    /* stryker.config.mjs is JavaScript (Stryker reads no TypeScript config) — checked via JSDoc */
+    "allowJs": true,
+    "checkJs": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["vite.config.ts", "vitest.config.ts", "playwright.config.ts", "scripts/**/*.ts"]
+  "include": [
+    "vite.config.ts",
+    "vitest.config.ts",
+    "playwright.config.ts",
+    "stryker.config.mjs",
+    "scripts/**/*.ts"
+  ]
 }

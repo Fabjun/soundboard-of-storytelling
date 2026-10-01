@@ -23,6 +23,7 @@
     "test:e2e:debug": "playwright test --debug",
     "test:mutation": "stryker run",
     "mutation:report": "tsx scripts/mutation-report.ts",
+    "mutation:modules": "tsx scripts/mutation-modules.ts",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "cd .. && prettier --write .",

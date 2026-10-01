@@ -4,6 +4,14 @@
 
 All notable changes to Soundboard of Storytelling, newest first.
 
+## 3.0.86 — 2026-10-01
+
+- ci: weekly mutation testing as one job per module with vitest related, plus a summary job; locally half the cores; guards read the file list from git (T11c)
+
+## 3.0.85 — 2026-09-30
+
+- ci: the weekly mutation job reports its runtime and fails from 70 % of its time limit; structure review checks thresholds and runtimes
+
 ## 3.0.84 — 2026-09-30
 
 - test: drag-and-drop flow unit tests (padDnd mutation score 30 % → 91.6 %); mutation runs guarded against timeout inflation (T11c)

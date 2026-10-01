@@ -463,13 +463,19 @@ there (T11c, ADR-0059). [StrykerJS](https://stryker-mutator.io/) plants small bu
 in the logic modules — `<` for `<=`, an emptied function, a flipped condition — and runs the unit
 tests against each; the **mutation score** is the share of detected mutants.
 
-- **When:** weekly in CI (`weekly.yml`, job `mutation`, ~30 min) and on demand:
-  `cd v3 && npm run test:mutation` (report: v3/reports/mutation/index.html, not committed). Not in the hooks —
-  too slow.
+- **When:** weekly in CI (`weekly.yml`): one job per module (matrix; the list comes from
+  `npm run mutation:modules`, i.e. from `v3/stryker.config.mjs`), each mutant runs only
+  `vitest related <module>`; job `mutation-summary` scores all modules together. Whole-codebase
+  runs belong in CI (`gh workflow run weekly.yml`), not on a laptop. Locally one module:
+  `MUTATE_MODULE=src/lib/padDnd.ts npm run test:mutation` (Stryker uses half the cores locally;
+  report: v3/reports/mutation/index.html, not committed).
 - **Timeouts are not trusted:** Stryker counts a timed-out mutant as detected, so an overloaded
   machine inflates the score. `npm run mutation:report` prints score and timeout share and fails
   above 5 % timeouts (a clean run: below 1 %). Each mutant runs `vitest --maxWorkers=1` —
   Stryker already runs one process per CPU.
+- **Runtime:** the weekly job records its runtime; `mutation:report` fails from 70 % of the job's
+  `timeout-minutes` (read from `weekly.yml`). The run grows with mutants × test-suite time — act
+  early: the faster runner once available, incremental mode, or splitting by module.
 - **Threshold:** `thresholds.break` in `v3/stryker.config.mjs` = the measured score, rounded
   down; only ever raised (like the coverage floor). A run that silently tests nothing scores
   about 0 % and fails — counter-checked with a test command that always passes.

@@ -568,6 +568,10 @@ Before committing a slice, also:
    - Is any fact typed by hand that the code determines (counts, lists, step lists)?
      → generate it or reference the source.
    - Did an error class occur twice? → pattern: root cause, project-wide search, check.
+   - Thresholds and runtimes: raise the coverage floor and the mutation `thresholds.break` where
+     the last measurement rose — thresholds only ever go up; lowering one is an exception that
+     needs the owner's decision. Read the last weekly run summary: runtimes near their limit (the
+     mutation job fails from 70 % of its time limit) get a plan before they break.
    - Findings: fix now, or record in `docs/backlog.md` with a trigger.
 
    A **full structure audit** runs only on occasion: before a new phase (e.g. first live use),

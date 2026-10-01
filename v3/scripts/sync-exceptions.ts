@@ -16,11 +16,12 @@
  * Run: npm run sync:exceptions  (from v3/) — part of npm run sync:docs.
  */
 
-import { readdirSync, readFileSync, statSync } from 'fs';
+import { readdirSync, readFileSync } from 'fs';
 import { dirname, join, relative, resolve } from 'path';
 import { fileURLToPath } from 'url';
 import { writeGenerated } from './lib/write-generated';
 import { escapeCell } from './lib/markdown';
+import { repoFiles } from './lib/repo-files';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(__dirname, '..', '..');
@@ -30,15 +31,13 @@ const TARGET = join(ROOT, 'docs', 'development', 'exceptions.md');
 const rel = (f: string): string => relative(ROOT, f).split('\\').join('/');
 const esc = escapeCell;
 
+/** Files below `dir` whose name matches (tracked and new files — .gitignore decides). */
 function walk(dir: string, match: (f: string) => boolean): string[] {
-  const out: string[] = [];
-  for (const entry of readdirSync(dir)) {
-    if (entry === 'node_modules' || entry.endsWith('-snapshots')) continue;
-    const full = join(dir, entry);
-    if (statSync(full).isDirectory()) out.push(...walk(full, match));
-    else if (match(entry)) out.push(full);
-  }
-  return out.sort();
+  const prefix = relative(ROOT, dir).split('\\').join('/');
+  return repoFiles(ROOT)
+    .filter((f) => (prefix ? f.startsWith(`${prefix}/`) : true) && match(f.split('/').pop()!))
+    .map((f) => join(ROOT, f))
+    .sort();
 }
 
 const codeFiles = [

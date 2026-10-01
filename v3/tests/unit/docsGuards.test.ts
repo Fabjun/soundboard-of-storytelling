@@ -25,30 +25,26 @@
 // 10. The API list in CLAUDE.md names functions that idb.ts / upload.ts export.
 // ─────────────────────────────────────────────────────────────────────────────
 
-import { readdirSync, readFileSync, statSync } from 'node:fs';
+import { readdirSync, readFileSync } from 'node:fs';
 import { dirname, join, normalize, relative, sep } from 'node:path';
 import GithubSlugger from 'github-slugger';
+import { repoFiles } from '../../scripts/lib/repo-files';
 
 const ROOT = join(__dirname, '..', '..', '..');
 const ROOT_MD = ['CHANGELOG.md', 'CLAUDE.md', 'README.md'];
 const DOC_NAME = /^(?:README|_template|[a-z0-9]+(?:-[a-z0-9]+)*)\.md$/;
-// Exceptions to the naming/link rules (ADR-0053: each with a reason).
+// Exceptions to the naming/link rules (ADR-0053: each with a reason). Ignored files are excluded
+// by .gitignore (repoFiles); hidden folders (.github, .vale, .husky) follow their tools' naming.
 const SKIP = new Set([
-  'node_modules', // installed dependencies
-  '.git', // repository internals
-  'dist', // build output
   'design-sources', // Claude Design downloads, kept exactly as delivered (ADR-0050)
 ]);
 
+/** Markdown files of the repository, as absolute paths, without SKIP and hidden folders. */
 function walkMd(dir: string): string[] {
-  const out: string[] = [];
-  for (const entry of readdirSync(dir)) {
-    if (SKIP.has(entry) || entry.startsWith('.')) continue;
-    const full = join(dir, entry);
-    if (statSync(full).isDirectory()) out.push(...walkMd(full));
-    else if (entry.endsWith('.md')) out.push(full);
-  }
-  return out;
+  return repoFiles(dir)
+    .filter((f) => f.endsWith('.md'))
+    .filter((f) => !f.split('/').some((seg) => SKIP.has(seg) || seg.startsWith('.')))
+    .map((f) => join(dir, f));
 }
 
 /** Case-exact existence check, segment by segment (fs.existsSync ignores case on macOS). */
@@ -221,19 +217,9 @@ const ACTIVE_DOCS = walkMd(ROOT)
 describe('guard: file paths in active docs exist (ADR-0056)', () => {
   const tracked = walkMd(ROOT).length > 0; // sanity: walkMd works
   const historical = HISTORICAL;
-  const allFiles = (dir: string): string[] =>
-    readdirSync(dir, { withFileTypes: true }).flatMap((e) =>
-      ['node_modules', '.git', 'dist', 'coverage', 'playwright-report', 'test-results'].includes(
-        e.name,
-      )
-        ? []
-        : e.isDirectory()
-          ? allFiles(join(dir, e.name))
-          : [rel(join(dir, e.name))],
-    );
-  const repoFiles = allFiles(ROOT);
+  const allRepoFiles = repoFiles(ROOT);
   const repoDirs = new Set(
-    repoFiles.flatMap((f) =>
+    allRepoFiles.flatMap((f) =>
       f
         .split('/')
         .slice(0, -1)
@@ -252,8 +238,8 @@ describe('guard: file paths in active docs exist (ADR-0056)', () => {
   it('names only existing files in code spans', () => {
     const exists = (from: string, p: string): boolean => {
       const cands = [p, rel(join(ROOT, dirname(from), p)), `v3/${p}`, `v3/src/${p}`];
-      if (cands.some((c) => repoFiles.includes(c) || repoDirs.has(c))) return true;
-      return repoFiles.filter((f) => f.endsWith(`/${p}`)).length === 1; // unique short form
+      if (cands.some((c) => allRepoFiles.includes(c) || repoDirs.has(c))) return true;
+      return allRepoFiles.filter((f) => f.endsWith(`/${p}`)).length === 1; // unique short form
     };
     const bad: string[] = [];
     for (const f of active) {
@@ -277,15 +263,7 @@ describe('guard: file paths in active docs exist (ADR-0056)', () => {
 describe('guard: section references are links (ADR-0056)', () => {
   const SECTION = '\u00a7'; // the section sign, written escaped so this file obeys its own rule
   const codeFiles = (dir: string): string[] =>
-    readdirSync(join(ROOT, dir), { withFileTypes: true }).flatMap((e) =>
-      ['node_modules', 'dist', 'coverage', 'playwright-report', 'test-results'].includes(e.name)
-        ? []
-        : e.isDirectory()
-          ? codeFiles(`${dir}/${e.name}`)
-          : /\.(?:ts|tsx|css|js|mjs)$/.test(e.name)
-            ? [`${dir}/${e.name}`]
-            : [],
-    );
+    repoFiles(ROOT).filter((f) => f.startsWith(`${dir}/`) && /\.(?:ts|tsx|css|js|mjs)$/.test(f));
   // Exceptions (ADR-0053: each with a reason).
   const CODE_EXEMPT = new Set([
     'v3/src/lib/changelog.ts', // release notes are a historical record, like CHANGELOG.md

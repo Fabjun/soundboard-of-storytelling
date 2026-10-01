@@ -28,8 +28,9 @@ runs no test per mutant (stryker-js#6210); a hand-planted bug that failed 4 test
    generators in `tests/unit/arbitraries.ts`. Generators are biased towards boundaries — uniform
    random input missed a real display bug that the biased generator found at once.
 3. **Mutation testing** with StrykerJS, the standard mutation tool for JavaScript/TypeScript:
-   weekly in CI (`weekly.yml`, job `mutation`) and `npm run test:mutation`; not in the hooks
-   (about 30 minutes). `thresholds.break` = measured score rounded down, only raised — a run
+   weekly in CI (`weekly.yml`) as one job per module — each mutant runs only `vitest related
+<module>` — plus a summary job over all modules; `npm run test:mutation` on demand; not in the
+   hooks. A single job for everything was killed twice by the runner with about 2 h to go. `thresholds.break` = measured score rounded down, only raised — a run
    that tests nothing scores about 0 % and fails (counter-checked).
 4. **Timeouts are not trusted** — Stryker counts a timed-out mutant as detected, so a starved
    machine inflates the score (first CI run: 89 of 134 mutants timed out). Each mutant runs
