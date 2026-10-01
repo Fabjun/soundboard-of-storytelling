@@ -1226,6 +1226,16 @@ Pinned by `tests/unit/audio/engine.test.ts` (`test.fails` + a precise current-be
 **When:** decided by the product owner — with Slice 9d (engine step) at the latest, before the
 V1 import (Slice 10) makes real combos usable.
 
+### Bug: combo step starts the next step twice when a child ends at once
+
+Found 2026-10-01 by targeted tests for mutation testing (T11c). In `playComboStep`
+(`v3/src/audio/engine.ts`) a child that finishes synchronously — a pad without an audio reference,
+or an empty playlist — calls its "ended" callback inside the loop: `fgRem` drops to 0 and the next
+step starts; after the loop the `fgRem === 0` branch starts it a second time. Impact: a combo step
+holding such a pad plays the following step twice (double sound). Fix needs the owner's approval
+(ADR-0048 §4: engine changes under product-owner control). Pinned by
+`tests/unit/audio/engine.test.ts` (`test.fails` + a precise current-behaviour test).
+
 ### Major dependency updates (one at a time)
 
 Status 2026-09-30 (owner approval of the plan; each major measured in a throwaway worktree first,

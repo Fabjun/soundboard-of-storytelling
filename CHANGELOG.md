@@ -4,6 +4,10 @@
 
 All notable changes to Soundboard of Storytelling, newest first.
 
+## 3.0.91 — 2026-10-01
+
+- test: engine tests for combo children and the fade-out-all step; found a bug — a combo step can start the next step twice (pinned, fix pending owner approval)
+
 ## 3.0.90 — 2026-10-01
 
 - test: mutation break threshold 68 % after the first complete CI run (68.89 %)

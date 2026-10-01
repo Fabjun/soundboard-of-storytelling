@@ -7,9 +7,16 @@ export type ChangelogEntry = {
   items: string[];
 };
 
-export const APP_VERSION = '3.0.90';
+export const APP_VERSION = '3.0.91';
 
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.91',
+    date: '2026-10-01',
+    items: [
+      'test: engine tests for combo children and the fade-out-all step; found a bug — a combo step can start the next step twice (pinned, fix pending owner approval)',
+    ],
+  },
   {
     version: '3.0.90',
     date: '2026-10-01',
