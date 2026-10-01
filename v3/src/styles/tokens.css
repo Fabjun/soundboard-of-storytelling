@@ -1099,6 +1099,18 @@
   border-bottom: 1px solid var(--border-soft);
 }
 
+.sb-deck-check-row {
+  /* @inventory: One deck in the PAD editor's deck checklist — label row with a checkbox, 44px touch target (Slice 9e). */
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 44px;
+  cursor: pointer;
+  font-family: var(--font-mono);
+  font-size: var(--fs-sm);
+  color: var(--text);
+}
+
 /* Numeric input chip (Premiere-style scrubber) */
 .sb-num {
   /* @inventory: Premiere-style numeric scrubber chip — ew-resize cursor, sunk background; for PAD editor trim and loop inputs. [unused-css] */
@@ -1533,6 +1545,16 @@
   padding: var(--space-3);
   flex: 1;
   min-height: 0;
+}
+
+.sb-pad-grid-pool {
+  /* @inventory: Variant of sb-pad-grid for the All pads view — rows take their content height and the pool scrolls instead of sharing the panel height (Slice 9e). */
+  grid-template-rows: none;
+  grid-auto-rows: min-content;
+  align-content: start;
+  overflow-y: auto;
+  overscroll-behavior: none;
+  -webkit-overflow-scrolling: touch;
 }
 
 /* ── Pad Grid Cell ── Sub-element of .sb-pad-grid ─────────────────── */

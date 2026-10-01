@@ -7,9 +7,16 @@ export type ChangelogEntry = {
   items: string[];
 };
 
-export const APP_VERSION = '3.0.89';
+export const APP_VERSION = '3.0.93';
 
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.93',
+    date: '2026-10-01',
+    items: [
+      'feat(decks): All pads view of the whole pool; remove a pad from one deck or delete it everywhere ("used in N decks"); PAD editor deck checklist places a pad in other decks (Slice 9e, ADR-0048)',
+    ],
+  },
   {
     version: '3.0.89',
     date: '2026-10-01',

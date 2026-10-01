@@ -16,8 +16,10 @@
 //   - Waveform preview (if source set)
 //   - Volume slider (0-100)
 //   - Fade In / Fade Out sliders (0-10s)
-//   - Hotkey display (read-only; Key-Capture = Slice 8)
-//   - Delete button (2-tap confirm)
+//   - Hotkey display (read-only; Key-Capture = Slice 8) — deck view only, keys belong to a placement
+//   - Decks checklist: place the pad in other decks or remove it (Slice 9e, ADR-0048)
+//   - Remove from deck (2-tap confirm, deck view only) — the pad stays in the pool
+//   - Delete button (2-tap confirm) — shows in how many decks the pad is used
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { useState, useRef, useEffect } from 'preact/hooks';
@@ -28,17 +30,21 @@ import { PixelIcon } from './PixelIcon';
 import { Waveform } from './Waveform';
 import { PadTypeConfirmDialog } from './PadTypeConfirmDialog';
 import { padTypeColor, padTypeLabel, applyTypeChange, padMigrationMatrix } from '../lib/padUtils';
-import { libraryItems } from '../state/store';
+import { currentBoard, libraryItems } from '../state/store';
 import { boardPut } from '../db/idb';
 import { upsertBoard } from '../state/store';
-import { updatePad } from '../lib/boardModel';
+import { deckCount, placeInDeck, removeFromDeck, updatePad } from '../lib/boardModel';
+import { nextFreeSlot } from '../lib/padUtils';
 
 interface PadEditorPanelProps {
   pad: Pad;
-  deck: Deck;
+  /** The deck the pad was opened from; null = opened from the All pads view. */
+  deck: Deck | null;
   board: Board;
   onClose: () => void;
   onDelete: (padId: string) => void;
+  /** Removes the pad from `deck` only (deck view). */
+  onRemoveFromDeck: (padId: string) => void;
 }
 
 const PAD_TYPES: PadType[] = ['single', 'loop', 'playlist', 'combo'];
@@ -49,6 +55,7 @@ export function PadEditorPanel({
   board,
   onClose,
   onDelete,
+  onRemoveFromDeck,
 }: PadEditorPanelProps): JSX.Element {
   // Local state mirrors the pad; auto-saved on change
   const [name, setName] = useState(pad.name);
@@ -61,12 +68,13 @@ export function PadEditorPanel({
   const [fadeOut, setFadeOut] = useState(pad.fadeOut);
   const [pendingType, setPendingType] = useState<PadType | null>(null);
   const [deleteConfirm, setDeleteConfirm] = useState(false);
+  const [removeConfirm, setRemoveConfirm] = useState(false);
   const [libSearch, setLibSearch] = useState('');
   const [libPickerOpen, setLibPickerOpen] = useState(false);
 
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   /** The pad's key in this deck — keys belong to the placement (ADR-0048). */
-  const hotkey = deck.placements.find((p) => p.padId === pad.id)?.hotkey;
+  const hotkey = deck?.placements.find((p) => p.padId === pad.id)?.hotkey;
 
   // Sync from prop changes (when pad changes externally).
   // Dep is pad.id intentionally — we only reset local state on PAD IDENTITY change,
@@ -88,7 +96,8 @@ export function PadEditorPanel({
     if (debounceRef.current !== null) clearTimeout(debounceRef.current);
     debounceRef.current = setTimeout(async () => {
       // The pad lives once in the pool: the edit shows in every deck that places it (ADR-0048).
-      const updatedBoard: Board = updatePad(board, updatedPad);
+      // Apply it to the board as it is NOW — a deck checkbox may have saved it in the meantime.
+      const updatedBoard: Board = updatePad(currentBoard.value ?? board, updatedPad);
       try {
         await boardPut(updatedBoard);
         upsertBoard(updatedBoard);
@@ -186,6 +195,36 @@ export function PadEditorPanel({
       setDeleteConfirm(true);
     }
   }
+
+  // ── Decks checklist / remove from deck ───────────────────────────────────
+
+  async function saveBoard(updatedBoard: Board, what: string) {
+    try {
+      await boardPut(updatedBoard);
+      upsertBoard(updatedBoard);
+    } catch (e) {
+      console.error(`${what} failed:`, e);
+    }
+  }
+
+  function handleDeckToggle(deckId: string, checked: boolean) {
+    const latest = currentBoard.value ?? board;
+    const updatedBoard = checked
+      ? placeInDeck(latest, deckId, pad.id)
+      : removeFromDeck(latest, deckId, pad.id);
+    if (updatedBoard !== latest) void saveBoard(updatedBoard, 'Deck checklist');
+  }
+
+  function handleRemove() {
+    if (removeConfirm) {
+      onRemoveFromDeck(pad.id);
+    } else {
+      setRemoveConfirm(true);
+    }
+  }
+
+  const decksByOrder = [...board.decks].sort((a, b) => a.order - b.order);
+  const usedIn = deckCount(board, pad.id);
 
   // ── Library picker ───────────────────────────────────────────────────────
 
@@ -339,23 +378,63 @@ export function PadEditorPanel({
         />
       </div>
 
-      {/* Hotkey (read-only; Key-Capture = Slice 8) */}
-      <div class="sb-inspector-section">
-        <label class="sb-field-label">HOTKEY</label>
-        <div class="sb-readonly-field">
-          <PixelIcon name="keyboard" size={11} color="var(--text-mute)" />
-          <span
-            class="sb-hotkey-value sb-flex-1"
-            style={{ color: hotkey ? 'var(--text)' : 'var(--text-mute)' }}
-          >
-            {hotkey ?? '— not assigned —'}
-          </span>
-          <span class="sb-hint-text">Slice 8</span>
+      {/* Hotkey (read-only; Key-Capture = Slice 8) — keys belong to a deck's placement */}
+      {deck && (
+        <div class="sb-inspector-section">
+          <label class="sb-field-label">HOTKEY</label>
+          <div class="sb-readonly-field">
+            <PixelIcon name="keyboard" size={11} color="var(--text-mute)" />
+            <span
+              class="sb-hotkey-value sb-flex-1"
+              style={{ color: hotkey ? 'var(--text)' : 'var(--text-mute)' }}
+            >
+              {hotkey ?? '— not assigned —'}
+            </span>
+            <span class="sb-hint-text">Slice 8</span>
+          </div>
         </div>
+      )}
+
+      {/* Decks — place the pad in other decks or take it out (ADR-0048) */}
+      <div class="sb-inspector-section">
+        <label class="sb-field-label">DECKS</label>
+        {decksByOrder.length === 0 && <div class="sb-hint-text">No decks yet</div>}
+        {decksByOrder.map((d) => {
+          const placed = d.placements.some((p) => p.padId === pad.id);
+          const full =
+            !placed && nextFreeSlot(d.placements, d.gridConfig.cols, d.gridConfig.rows) === null;
+          return (
+            <label key={d.id} class="sb-deck-check-row">
+              <input
+                type="checkbox"
+                data-testid={`pad-editor-panel-deck-input-${d.id}`}
+                checked={placed}
+                disabled={full}
+                onChange={(e) => handleDeckToggle(d.id, (e.target as HTMLInputElement).checked)}
+              />
+              <span class="sb-flex-trunc">{d.name}</span>
+              {full && <span class="sb-hint-text">(full)</span>}
+            </label>
+          );
+        })}
       </div>
 
       {/* Spacer */}
       <div class="sb-flex-1" />
+
+      {/* Remove from deck — deck view only; the pad stays in the pool */}
+      {deck && (
+        <div class="sb-inspector-section">
+          <button
+            class="sb-btn sb-btn-ghost sb-btn-block"
+            data-testid="pad-editor-panel-remove-button"
+            onClick={handleRemove}
+            onBlur={() => setRemoveConfirm(false)}
+          >
+            {removeConfirm ? 'CONFIRM REMOVE' : 'REMOVE FROM DECK'}
+          </button>
+        </div>
+      )}
 
       {/* Delete */}
       <div class="sb-inspector-section">
@@ -368,6 +447,11 @@ export function PadEditorPanel({
           <PixelIcon name="skull" size={12} />
           {deleteConfirm ? 'CONFIRM DELETE' : 'DELETE PAD'}
         </button>
+        {deleteConfirm && (
+          <div class="sb-hint-text" data-testid="pad-editor-panel-delete-text">
+            Used in {usedIn} {usedIn === 1 ? 'deck' : 'decks'} — deleting removes it everywhere.
+          </div>
+        )}
       </div>
 
       {/* Type change confirm dialog */}

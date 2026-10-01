@@ -4,6 +4,10 @@
 
 All notable changes to Soundboard of Storytelling, newest first.
 
+## 3.0.93 — 2026-10-01
+
+- feat(decks): All pads view of the whole pool; remove a pad from one deck or delete it everywhere ("used in N decks"); PAD editor deck checklist places a pad in other decks (Slice 9e, ADR-0048)
+
 ## 3.0.89 — 2026-10-01
 
 - feat(model): pad pool — pads belong to the board, decks place them with position and key; duplicated decks share their pads; quick-access model; DB v4 (Slice 9c, ADR-0048)

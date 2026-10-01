@@ -7,6 +7,7 @@
 import { describe, expect, it } from 'vitest';
 import type { Board, ComboPad, Pad, SinglePad } from '../../src/types';
 import {
+  DEFAULT_GRID,
   addDeck,
   addPadToDeck,
   boardProblems,
@@ -16,6 +17,10 @@ import {
   deletePad,
   duplicateDeck,
   findDeck,
+  placeInDeck,
+  poolByName,
+  poolLayout,
+  removeFromDeck,
   setPlacementHotkey,
   setPlacements,
   updatePad,
@@ -195,5 +200,79 @@ describe('boardProblems finds broken boards', () => {
       'deck d1: cell 2,0 outside the 2×1 grid',
       'quick access: unknown pad ghost',
     ]);
+  });
+});
+
+describe('remove from deck, place in deck, All pads (Slice 9e)', () => {
+  it('removing from one deck keeps the pad in the pool and in other decks', () => {
+    let b = addPadToDeck(emptyBoard(), 'd1', single('a'), { col: 0, row: 0 });
+    b = duplicateDeck(b, 'd1', 'd3', 'copy');
+    b = removeFromDeck(b, 'd1', 'a');
+    expect(findDeck(b, 'd1')!.placements).toEqual([]);
+    expect(findDeck(b, 'd3')!.placements.map((p) => p.padId)).toEqual(['a']);
+    expect(b.pads.map((p) => p.id)).toEqual(['a']);
+    expect(boardProblems(b)).toEqual([]);
+  });
+
+  it('placing puts the pad on the next free cell (row-major)', () => {
+    let b = addPadToDeck(emptyBoard(), 'd1', single('a'), { col: 0, row: 0 });
+    b = addPadToDeck(b, 'd2', single('x'), { col: 0, row: 0 });
+    b = placeInDeck(b, 'd2', 'a');
+    expect(findDeck(b, 'd2')!.placements.find((p) => p.padId === 'a')!.position).toEqual({
+      col: 1,
+      row: 0,
+    });
+    expect(boardProblems(b)).toEqual([]);
+  });
+
+  it('placing changes nothing when the pad is already there, unknown, the deck unknown or full', () => {
+    let b = addPadToDeck(emptyBoard(), 'd1', single('a'), { col: 0, row: 0 });
+    expect(placeInDeck(b, 'd1', 'a')).toBe(b); // already placed
+    expect(placeInDeck(b, 'd2', 'ghost')).toBe(b); // unknown pad
+    expect(placeInDeck(b, 'nope', 'a')).toBe(b); // unknown deck
+    b = {
+      ...b,
+      decks: b.decks.map((d) => ({ ...d, gridConfig: { ...d.gridConfig, cols: 1, rows: 1 } })),
+    };
+    b = addPadToDeck(b, 'd2', single('x'), { col: 0, row: 0 });
+    expect(placeInDeck(b, 'd2', 'a')).toBe(b); // 1×1 grid already full
+  });
+
+  it('All pads lists the whole pool by name, case-insensitive, ties by id', () => {
+    let b = addPadToDeck(
+      emptyBoard(),
+      'd1',
+      { ...single('2'), name: 'thunder' },
+      { col: 0, row: 0 },
+    );
+    b = {
+      ...b,
+      pads: [...b.pads, { ...single('1'), name: 'Thunder' }, { ...single('3'), name: 'Applause' }],
+    };
+    expect(poolByName(b).map((p) => p.id)).toEqual(['3', '1', '2']);
+    expect(poolByName(emptyBoard())).toEqual([]);
+  });
+
+  it('the All pads layout fills rows left to right without gaps and has no keys', () => {
+    const b = {
+      ...emptyBoard(),
+      pads: ['e', 'a', 'd', 'b', 'c'].map(single),
+    };
+    const layout = poolLayout(b, 4);
+    expect(
+      layout.map((e) => [e.pad.id, e.placement.position.col, e.placement.position.row]),
+    ).toEqual([
+      ['a', 0, 0],
+      ['b', 1, 0],
+      ['c', 2, 0],
+      ['d', 3, 0],
+      ['e', 0, 1],
+    ]);
+    expect(layout.every((e) => e.placement.hotkey === undefined)).toBe(true);
+    expect(poolLayout(emptyBoard(), 4)).toEqual([]);
+  });
+
+  it('the default grid is 4×4 — the size of every new deck and the width of All pads', () => {
+    expect(DEFAULT_GRID).toEqual({ cols: 4, rows: 4, gap: 8, padSize: 'md' });
   });
 });

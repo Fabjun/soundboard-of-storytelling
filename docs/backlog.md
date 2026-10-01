@@ -40,7 +40,16 @@ Found 2026-09-29 (T3): DeckRail has no reorder at all, although Slice 3 docs and
 inventory claimed it. **Decided** by the product owner: decks are reordered by **drag & drop,
 with mouse and touch** (Pointer Events, never HTML5 DnD); alternatives remain open. E2E test 9 in
 `deck-crud.spec.ts` is quarantined (`test.fixme`) until the feature lands.
-**When:** with the deck work in Slice 9e or the adaptive layout in Slice 13.
+**When:** the adaptive layout in Slice 13 (not part of step 9e, whose scope ADR-0048 §5 fixes:
+All pads, remove vs delete, deck checklist).
+
+### All pads view: no library drop, no new pads (provisional)
+
+Slice 9e (branch, review pending): the All pads view only selects, edits and plays pads. A library
+drag or place-mode tap there does nothing, the ADD PAD toolbar is hidden and the `A` key is
+ignored — new pads are created in a deck. Open for the owner: should the view create pads that
+sit in no deck, and what should a library drop there do?
+**When:** owner review of the Slice 9e PR; UI in Slice 13 at the latest.
 
 > **Slice numbers in this section refer to the May plan** (Slices 5–8, superseded 2026-09-28).
 > Mapping to the new plan (Slices 9–14): `CLAUDE.md §Slice progress`. Items are re-triaged when
@@ -1394,6 +1403,8 @@ switch those locators to `getByRole` and drop the exception from ADR-0054.
 Found 2026-10-01 (Slice 9c): the SETUP toolbar button **ADD PAD** has no accessible name in Chromium
 (the accessibility tree shows a nameless `button`), so `getByRole('button', { name: 'ADD PAD' })`
 finds nothing; `deck-crud.spec.ts` test 12 locates it by text for now.
+Slice 9e: `pad-pool.spec.ts` does the same; the new **All pads** entry of the deck rail is a `div`
+without a role, like every deck tab (located by test id).
 
 ### Type-check every TypeScript file (T12)
 

@@ -21,7 +21,7 @@ import { PixelIcon } from './PixelIcon';
 import { UndoToast } from './UndoToast';
 import { boardPut } from '../db/idb';
 import { upsertBoard } from '../state/store';
-import { duplicateDeck as duplicateDeckIn } from '../lib/boardModel';
+import { DEFAULT_GRID, duplicateDeck as duplicateDeckIn } from '../lib/boardModel';
 import { nanoid } from '../lib/nanoid';
 import { findConflictingDeck } from '../lib/deckConflict';
 
@@ -29,6 +29,9 @@ interface DeckRailProps {
   board: Board;
   activeDeckId: string | null;
   onDeckSelect: (deckId: string) => void;
+  /** The All pads entry is the active view (no deck active). */
+  allPadsActive: boolean;
+  onAllPadsSelect: () => void;
   conflictIds?: ReadonlySet<string>; // reserved for external conflict override; live detection is internal
 }
 
@@ -36,6 +39,8 @@ export function DeckRail({
   board,
   activeDeckId,
   onDeckSelect,
+  allPadsActive,
+  onAllPadsSelect,
   conflictIds,
 }: DeckRailProps): JSX.Element {
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -167,7 +172,7 @@ export function DeckRail({
       id: nanoid(),
       name: `Deck ${board.decks.length + 1}`,
       order: board.decks.length,
-      gridConfig: { cols: 4, rows: 4, gap: 8, padSize: 'md' },
+      gridConfig: { ...DEFAULT_GRID },
       placements: [],
     };
     const updatedBoard: Board = {
@@ -187,6 +192,19 @@ export function DeckRail({
 
   return (
     <div class="sb-deck-rail" data-testid="deck-rail">
+      {/* All pads — the whole pool, always the first entry (ADR-0048) */}
+      <div
+        class={'sb-deck-tab' + (allPadsActive ? ' is-active' : '')}
+        data-testid="deck-rail-all-pads-tab"
+        onClick={() => {
+          onAllPadsSelect();
+          setPendingDeleteId(null);
+        }}
+      >
+        <span class="sb-deck-num-badge">≡</span>
+        <span class="sb-flex-trunc">All pads</span>
+        <span class="sb-count-text">{board.pads.length}</span>
+      </div>
       {decks.length === 0 ? (
         <div class="sb-panel-empty">
           No decks yet.
