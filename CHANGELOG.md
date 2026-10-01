@@ -4,6 +4,10 @@
 
 All notable changes to Soundboard of Storytelling, newest first.
 
+## 3.0.98 — 2026-10-02
+
+- fix(audio): a combo step whose child ends at once no longer starts the next step twice, cuts short a sibling or skips the step duration
+
 ## 3.0.97 — 2026-10-02
 
 - docs: review log — owner decisions O1–O8 of 2026-10-02 and the new pull requests

@@ -1235,6 +1235,10 @@ step starts; after the loop the `fgRem === 0` branch starts it a second time. Im
 holding such a pad plays the following step twice (double sound). Fix needs the owner's approval
 (ADR-0048 §4: engine changes under product-owner control). Pinned by
 `tests/unit/audio/engine.test.ts` (`test.fails` + a precise current-behaviour test).
+Owner decision 2026-10-02 (O1): prepare the fix. **Fix on branch `engine-combo-double-start`**
+(PR, not merged): children are counted while they start; an end only advances once all are
+started. Also fixes two effects of the same cause — a sibling still playing was cut short, and the
+step's duration / fade-out delay was skipped. Waits for the owner's playback check and approval.
 
 ### Bug: board writes from an outdated board copy lose changes
 
