@@ -30,6 +30,7 @@ review pending.
 | 6   | `engine-combo-double-start` — [PR #35](https://github.com/Fabjun/soundboard-of-storytelling/pull/35) (on `main`)     | **Engine** fix: combo step advances once, after all its children started                            | O1 (owner); needs playback check + approval                                                | open   |
 | 7   | `slice-9d-pad-files` — [PR #36](https://github.com/Fabjun/soundboard-of-storytelling/pull/36) (stacked on #34)       | Slice 9d: Single / Loop hold files + order, Playlist merges into Loop, DB v5                        | **Audio dispatch** — needs approval; 3 open questions in the PR                            | open   |
 | 8   | `slice-10-backup` — [PR #37](https://github.com/Fabjun/soundboard-of-storytelling/pull/37) (stacked on #36)          | Slice 10: export, import (V1 and V3), persistent storage, last-backup reminder; ADR-0061 (Proposed) | B1–B9 in the PR; real V1 backup imported locally: 31 pads, 99 audio files, heap peak 43 MB | open   |
+| 9   | `slice-11-combo-editor` — [PR #38](https://github.com/Fabjun/soundboard-of-storytelling/pull/38) (stacked on #37)    | Slice 11: combo editor (minimal), cycle protection; screens react to changes at once                | C1–C5 in the PR                                                                            | open   |
 
 ### S6 — commit message convention
 

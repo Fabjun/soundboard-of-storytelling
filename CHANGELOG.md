@@ -4,6 +4,10 @@
 
 All notable changes to Soundboard of Storytelling, newest first.
 
+## 3.0.106 — 2026-10-02
+
+- docs: review log — Slice 11 pull request (#38)
+
 ## 3.0.104 — 2026-10-02
 
 - docs: review log — the PR #37 row that 3.0.103 missed
