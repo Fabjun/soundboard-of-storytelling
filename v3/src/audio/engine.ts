@@ -610,6 +610,15 @@ function playComboStep(padId: string, state: ComboRuntimeState, pad: ComboPad, s
 
   state.currentFgInstances = [];
   let fgRem = 0;
+  // A child can end while it is being started (no audio reference, empty playlist). Until every
+  // child of this step is started, an end only counts down — otherwise the next step started
+  // inside the loop and again after it (BACKLOG "Bug: combo step starts the next step twice").
+  let starting = true;
+  const childEnded = () => {
+    if (state.stopped) return;
+    fgRem--;
+    if (fgRem === 0 && !starting) playComboStep(padId, state, pad, stepIdx + 1);
+  };
 
   for (const childId of step.padIds) {
     const childPad = callbacks?.getPad(childId);
@@ -617,11 +626,7 @@ function playComboStep(padId: string, state: ComboRuntimeState, pad: ComboPad, s
 
     if (childPad.type === 'combo') {
       fgRem++;
-      playComboInternal(childId, childPad, () => {
-        if (state.stopped) return;
-        fgRem--;
-        if (fgRem === 0) playComboStep(padId, state, pad, stepIdx + 1);
-      });
+      playComboInternal(childId, childPad, childEnded);
       continue;
     }
 
@@ -632,14 +637,13 @@ function playComboStep(padId: string, state: ComboRuntimeState, pad: ComboPad, s
     } else {
       fgRem++;
       state.currentFgInstances.push(inst);
-      inst.start(() => {
-        if (state.stopped) return;
-        fgRem--;
-        if (fgRem === 0) playComboStep(padId, state, pad, stepIdx + 1);
-      });
+      inst.start(childEnded);
     }
   }
+  starting = false;
 
+  // No foreground child, or all of them ended while starting: wait for the step's duration
+  // (or the stop-all / fade-out delay), then go on.
   if (fgRem === 0) {
     const ms = Math.max((step.duration ?? 0) * 1000, delayNext);
     if (ms > 0) {

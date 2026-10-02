@@ -7,9 +7,35 @@ export type ChangelogEntry = {
   items: string[];
 };
 
-export const APP_VERSION = '3.0.119';
+export const APP_VERSION = '3.0.123';
 
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.123',
+    date: '2026-10-02',
+    items: ['chore: merge main into the stack — engine fix #35, Slice 15 plan, principle P8'],
+  },
+  {
+    version: '3.0.122',
+    date: '2026-10-02',
+    items: [
+      'docs: plan — Slice 15 PAD editor at V1 scope (before Slice 12); principle P8: every V1/V2 feature is built unless deliberately rejected',
+    ],
+  },
+  {
+    version: '3.0.121',
+    date: '2026-10-02',
+    items: [
+      'docs: review log — engine fix #35 accepted and merged; boot fix, local traces; flaky-test note on machine overload',
+    ],
+  },
+  {
+    version: '3.0.120',
+    date: '2026-10-02',
+    items: [
+      'fix(audio): a combo step whose child ends at once no longer starts the next step twice, cuts short a sibling or skips the step duration (owner playback check passed)',
+    ],
+  },
   {
     version: '3.0.119',
     date: '2026-10-02',

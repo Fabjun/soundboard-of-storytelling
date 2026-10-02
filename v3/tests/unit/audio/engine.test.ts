@@ -552,11 +552,9 @@ describe('combo children', () => {
     ]);
   });
 
-  // KNOWN ENGINE BUG (found 2026-10-01, T11c): a child that finishes synchronously makes
-  // playComboStep start the next step twice. test.fails documents the bug; when the engine is
-  // fixed (under product-owner control) this turns red → switch to test().
-  // BACKLOG "Bug: combo step starts the next step twice"
-  test.fails('a child without an audio reference counts as finished at once', async () => {
+  // A child that finishes while it is being started (found 2026-10-01, T11c; fixed under the
+  // owner's control 2026-10-02) used to start the next step twice.
+  test('a child without an audio reference counts as finished at once', async () => {
     pads.set('s0', single('s0', ''));
     pads.set('s2', single('s2', 'h2'));
     audio.play('c', combo('c', [{ padIds: ['s0'] }, { padIds: ['s2'] }]));
@@ -588,8 +586,7 @@ describe('combo children', () => {
     expect(tags()).toEqual(['a', 'b', 'h2']);
   });
 
-  // Same known bug as above. BACKLOG "Bug: combo step starts the next step twice"
-  test.fails('an empty playlist child counts as finished at once', async () => {
+  test('an empty playlist child counts as finished at once', async () => {
     pads.set('pl', playlist('pl', []));
     pads.set('s2', single('s2', 'h2'));
     audio.play('c', combo('c', [{ padIds: ['pl'] }, { padIds: ['s2'] }]));
@@ -597,16 +594,37 @@ describe('combo children', () => {
     expect(tags()).toEqual(['h2']);
   });
 
-  test('current behaviour (bug): a child that ends at once starts the next step twice', async () => {
+  test('a child that ends at once starts the next step exactly once', async () => {
     pads.set('s0', single('s0', ''));
     pads.set('pl', playlist('pl', []));
     pads.set('s2', single('s2', 'h2'));
-    audio.play('c1', combo('c1', [{ padIds: ['s0'] }, { padIds: ['s2'] }]));
+    audio.play('c1', combo('c1', [{ padIds: ['s0', 'pl'] }, { padIds: ['s2'] }]));
     await flush();
-    expect(tags()).toEqual(['h2', 'h2']);
-    audio.play('c2', combo('c2', [{ padIds: ['pl'] }, { padIds: ['s2'] }]));
+    expect(tags()).toEqual(['h2']);
+  });
+
+  test('a child that ends at once does not cut short a sibling that still plays', async () => {
+    pads.set('s0', single('s0', ''));
+    pads.set('s1', single('s1', 'h1'));
+    pads.set('s2', single('s2', 'h2'));
+    audio.play('c', combo('c', [{ padIds: ['s0', 's1'] }, { padIds: ['s2'] }]));
     await flush();
-    expect(tags()).toEqual(['h2', 'h2', 'h2', 'h2']);
+    expect(tags()).toEqual(['h1']); // the next step waits for s1
+    ctx.sources[0].end();
+    await flush();
+    expect(tags()).toEqual(['h1', 'h2']);
+  });
+
+  test("a step whose children all end at once still waits for the step's duration", async () => {
+    vi.useFakeTimers();
+    pads.set('s0', single('s0', ''));
+    pads.set('s2', single('s2', 'h2'));
+    audio.play('c', combo('c', [{ padIds: ['s0'], duration: 2 }, { padIds: ['s2'] }]));
+    await flush();
+    expect(tags()).toEqual([]);
+    vi.advanceTimersByTime(2000);
+    await flush();
+    expect(tags()).toEqual(['h2']);
   });
 
   test('a shuffled playlist child picks its file with Math.random', async () => {
