@@ -4,6 +4,10 @@
 
 All notable changes to Soundboard of Storytelling, newest first.
 
+## 3.0.134 — 2026-10-03
+
+- test(guards): guard rules are cited by name, never by number — the numbers shift when rules are added
+
 ## 3.0.132 — 2026-10-02
 
 - docs: plan — STOP ALL in two stages and a saving status (Slice 12), undo / redo (new Slice 18), relative units before Slice 13, Tab access and plain error messages as UI rules (owner decisions)

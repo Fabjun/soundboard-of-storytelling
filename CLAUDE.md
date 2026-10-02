@@ -272,7 +272,7 @@ and has diverged). Never hardcode colors, fonts, or spacing.
 - Every area whose content can be larger than the window scrolls — nothing is cut off or hidden
   under another bar (WCAG 2.2 SC 1.4.10 Reflow; `v3/tests/e2e/layout-reach.spec.ts` scrolls with
   the mouse wheel and requires each control to be wholly visible)
-- The app shows no internal plan names (slice numbers, backlog) — `codeGuards` rule 7
+- The app shows no internal plan names (slice numbers, backlog) — guarded by `codeGuards` ("the app shows no internal plan names")
 - Every control works with the Tab key and has an accessible name (icon buttons: `aria-label`);
   error messages say in plain words what happened and what to do (Nielsen heuristic 9) — owner
   decision 2026-10-02; the existing screens get an audit (BACKLOG "Tab access and plain errors")
@@ -293,7 +293,7 @@ and has diverged). Never hardcode colors, fonts, or spacing.
 - **Stored state loads before the first render** (2026-10-02): library list and boards are
   loaded in `v3/src/state/boot.ts`, and `main.tsx` renders only afterwards (like redux-persist's
   PersistGate) — a load that finishes later would replace what the user created meanwhile
-  (`codeGuards` rule 6).
+  (guarded by `codeGuards`: "the stored state is loaded only before the first render").
 - **Suggestions are derived, choices are state** (2026-10-02): a value the app suggests (e.g. a
   pad name from the chosen file) is computed on render — never written into the same state as a
   value the user typed or picked, so it can neither overwrite a choice nor pass for one

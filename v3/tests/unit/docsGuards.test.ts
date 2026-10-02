@@ -26,6 +26,10 @@
 // 10. The API list in CLAUDE.md names functions that idb.ts / upload.ts export.
 // 11. Every feature in the V1 / V2 inventory carries a decision — a slice, Parked or Rejected, never
 //    Open (principle P8, docs/product/README.md#7-design-principles).
+// 12. Guard rules are referred to by name, never by their number: the numbers shift when
+//    branches add rules, and a numbered reference then points at another rule (2026-10-03:
+//    CLAUDE.md cited number 7 for plan names, which was number 8 on the stack). The review log
+//    is exempt — its dated entries record what was true at the time.
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { readdirSync, readFileSync } from 'node:fs';
@@ -492,5 +496,41 @@ describe('guard: the API list in CLAUDE.md names real exports (audit A7)', () =>
 
   it('every listed function is exported by idb.ts or upload.ts', () => {
     expect(listed.filter((name) => !exported.has(name))).toEqual([]);
+  });
+});
+
+describe('guard: guard rules are referred to by name, not by number', () => {
+  const NUMBERED = /\b(code|docs|test)Guards\b\W{0,6}rule \d/i;
+  const walkCode = (dir: string): string[] =>
+    readdirSync(dir, { withFileTypes: true }).flatMap((e) =>
+      e.isDirectory()
+        ? walkCode(join(dir, e.name))
+        : /\.(ts|tsx|mjs)$/.test(e.name)
+          ? [join(dir, e.name)]
+          : [],
+    );
+  const files = [
+    // The review log is exempt: its dated entries record what was true at the time
+    ...ACTIVE_DOCS.filter((f) => f !== 'docs/development/review-log.md').map((f) => join(ROOT, f)),
+    ...['src', 'tests', 'scripts'].flatMap((d) => walkCode(join(ROOT, 'v3', d))),
+  ];
+
+  it('finds docs and code (sanity)', () => {
+    expect(files.length).toBeGreaterThan(100); // 123 on 2026-10-03
+  });
+
+  it('no active doc or source file cites a guard rule by its number', () => {
+    const numbered = files
+      .flatMap((f) =>
+        readFileSync(f, 'utf8')
+          .split('\n')
+          .map((line, i) => ({ line, at: `${rel(f)}:${i + 1}` })),
+      )
+      .filter(({ line }) => NUMBERED.test(line) && !line.includes('NUMBERED = '))
+      .map(({ at }) => at);
+    expect(
+      numbered,
+      'name the rule, e.g. `codeGuards` ("the app shows no internal plan names")',
+    ).toEqual([]);
   });
 });

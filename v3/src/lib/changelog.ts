@@ -7,9 +7,16 @@ export type ChangelogEntry = {
   items: string[];
 };
 
-export const APP_VERSION = '3.0.132';
+export const APP_VERSION = '3.0.134';
 
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.134',
+    date: '2026-10-03',
+    items: [
+      'test(guards): guard rules are cited by name, never by number — the numbers shift when rules are added',
+    ],
+  },
   {
     version: '3.0.132',
     date: '2026-10-02',

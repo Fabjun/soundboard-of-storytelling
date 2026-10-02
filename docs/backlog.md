@@ -1277,7 +1277,7 @@ a re-run — the procedure's step 1 was not fully kept). Not reproduced: 5 × th
 30 × the flow in WebKit, 10 × in Chromium with 6× CPU throttling.
 **Cause found in the code** (fixed on main): the stored boards were loaded after the first
 render and replaced the store when the load finished — a board created before that vanished.
-The state now loads before the first render (`v3/src/state/boot.ts`, `codeGuards` rule 6).
+The state now loads before the first render (`v3/src/state/boot.ts`, guarded by `codeGuards`).
 Whether this caused the one failure is **not proven**: a failed board save also removes the new
 board (`createBoard` rollback on the stack).
 A second rare failure the same day: `pad-dnd.spec.ts` test 20 (SWAP) in `full` during a
