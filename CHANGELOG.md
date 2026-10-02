@@ -4,6 +4,10 @@
 
 All notable changes to Soundboard of Storytelling, newest first.
 
+## 3.0.127 — 2026-10-02
+
+- docs: review log — #36 decisions built; decisions for #37, #38, #39 and the P8 slice proposal prepared with sources
+
 ## 3.0.124 — 2026-10-02
 
 - docs(adr): every "Refines" has its "Refined by" back-link — checked by docsGuards; three missing back-links added
