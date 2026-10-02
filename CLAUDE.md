@@ -248,7 +248,7 @@ and has diverged). Never hardcode colors, fonts, or spacing.
 --flame, --blood, --blood-bright, --blood-soft
 --text, --text-dim, --text-mute, --text-strong
 --mode-setup, --mode-game
---pad-single, --pad-loop, --pad-playlist, --pad-combo
+--pad-single, --pad-loop, --pad-combo
   (each with -soft and -glow variants)
 ```
 

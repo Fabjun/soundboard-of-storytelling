@@ -421,7 +421,7 @@ export function fadeOutAllInternal(duration: number): void {
 // ── COMBO ENGINE (V1 lines 3970–4238) ────────────────────────────────────────
 
 function isInfiniteBg(pad: SinglePad | LoopPad | PlaylistPad): boolean {
-  return pad.type === 'loop';
+  return pad.type === 'loop' || (pad.type === 'playlist' && pad.loop === true);
 }
 
 /**
@@ -510,11 +510,18 @@ function createPadInstance(
         return;
       }
       let pos = 0;
+      // A looping list starts over at its end — unless a whole round played nothing (every file
+      // missing or undecodable), so it never spins without sound.
+      let playedThisRound = false;
       (async function nextTrack() {
         if (stopped) return;
         if (pos >= pad.files.length) {
-          onEnded?.();
-          return;
+          if (!pad.loop || !playedThisRound) {
+            onEnded?.();
+            return;
+          }
+          pos = 0;
+          playedThisRound = false;
         }
         const i = pad.shuffle ? Math.floor(Math.random() * pad.files.length) : pos;
         pos++;
@@ -534,6 +541,7 @@ function createPadInstance(
           s.buffer = b;
           s.connect(g);
           active.push(s);
+          playedThisRound = true;
           s.onended = () => {
             if (stopped) return;
             active.splice(active.indexOf(s), 1);

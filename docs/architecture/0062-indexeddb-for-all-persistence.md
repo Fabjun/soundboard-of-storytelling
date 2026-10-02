@@ -4,6 +4,7 @@
 **Date:** 2026-10-02
 **Slice:** cross-cutting
 **Refines:** —
+**Refined by:** ADR-0061 (backup file format and piecewise import)
 **Category:** Persistence
 
 ## Context

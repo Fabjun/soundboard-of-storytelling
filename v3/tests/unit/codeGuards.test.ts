@@ -20,7 +20,7 @@
 //    boardPut / upsertBoard, which save or show a finished board computed from an outdated copy
 //    (BACKLOG "Bug: board writes from an outdated board copy lose changes"). A screen that
 //    reacts to a change uses applyBoardChange (at once), never `if (await updateBoard(`.
-// 8. No localStorage / sessionStorage anywhere (owner decision 2026-10-02, ADR-0014): small
+// 8. No localStorage / sessionStorage anywhere (owner decision 2026-10-02, ADR-0062): small
 //    UI state lives in IndexedDB (src/state/prefs.ts) — web.dev advises against localStorage.
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -337,7 +337,7 @@ describe('guard: board writes go through boardWrites (BACKLOG "board writes from
   });
 });
 
-describe('guard: no localStorage or sessionStorage (ADR-0014)', () => {
+describe('guard: no localStorage or sessionStorage (ADR-0062)', () => {
   const walkSrc = (dir: string): string[] =>
     readdirSync(dir, { withFileTypes: true }).flatMap((e) =>
       e.isDirectory() ? walkSrc(join(dir, e.name)) : [join(dir, e.name)],

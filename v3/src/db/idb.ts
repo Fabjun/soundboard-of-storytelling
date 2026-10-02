@@ -65,7 +65,7 @@ async function getDB(): Promise<IDBPDatabase> {
         void tx.objectStore('boards').clear();
       }
       // v6: a small key-value store for UI preferences and per-pad stats (owner decision
-      // 2026-10-02: IndexedDB, not Web Storage — ADR-0014). Only ADDS a store: boards and
+      // 2026-10-02: IndexedDB, not Web Storage — ADR-0062). Only ADDS a store: boards and
       // library stay as they are.
       if (oldVersion < 6) {
         db.createObjectStore('keyval');

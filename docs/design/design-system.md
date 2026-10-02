@@ -282,7 +282,7 @@ also in [§6](#6-component-inventory)):
 | `sb-panel-empty`               | Empty-state text message inside a scrollable panel or rail — centered, padded, mono xs muted, relaxed line-height. Used in DeckRail (no decks) and LibraryPanel (no results).                                                                                                                                                                                                      | `v3/src/styles/tokens.css` |
 | `sb-panel-header`              | Compact 28px header strip on inspector panels (icon + uppercase label).                                                                                                                                                                                                                                                                                                            | `v3/src/styles/tokens.css` |
 | `sb-panel-title`               | Flexible-fill title span inside a panel header — mono xs in normal text color.                                                                                                                                                                                                                                                                                                     | `v3/src/styles/tokens.css` |
-| `sb-pill`                      | Compact pixel-frame badge; type-colour variants via is-on, is-loop, is-playlist, is-combo.                                                                                                                                                                                                                                                                                         | `v3/src/styles/tokens.css` |
+| `sb-pill`                      | Compact pixel-frame badge; type-colour variants via is-on, is-loop, is-combo.                                                                                                                                                                                                                                                                                                      | `v3/src/styles/tokens.css` |
 | `sb-pix`                       | Shared CSS base for card/btn/pad/pill/menu-row pixel-frame styling; never applied directly as a className. [unused-css]                                                                                                                                                                                                                                                            | `v3/src/styles/tokens.css` |
 | `sb-pixel-icon`                | SVG display fix for PixelIcon — block display prevents inline baseline gap. Applied as hardcoded base class inside PixelIcon component; callers' class prop is appended after.                                                                                                                                                                                                     | `v3/src/styles/tokens.css` |
 | `sb-place-banner`              | Place-Mode notification banner in BoardScreen — flex row, setup-mode background, no-shrink. Shown while user picks a pad slot.                                                                                                                                                                                                                                                     | `v3/src/styles/tokens.css` |
@@ -432,20 +432,17 @@ also in [§6](#6-component-inventory)):
 
 ### PAD TYPES
 
-| Token                 | Value                       | Description |
-| --------------------- | --------------------------- | ----------- |
-| `--pad-single`        | `#d4b25c`                   | —           |
-| `--pad-single-soft`   | `rgba(212, 178, 92, 0.16)`  | —           |
-| `--pad-single-glow`   | `rgba(245, 213, 122, 0.55)` | —           |
-| `--pad-loop`          | `#6db5b8`                   | —           |
-| `--pad-loop-soft`     | `rgba(109, 181, 184, 0.16)` | —           |
-| `--pad-loop-glow`     | `rgba(141, 213, 216, 0.55)` | —           |
-| `--pad-playlist`      | `#9d7fc7`                   | —           |
-| `--pad-playlist-soft` | `rgba(157, 127, 199, 0.16)` | —           |
-| `--pad-playlist-glow` | `rgba(189, 159, 231, 0.55)` | —           |
-| `--pad-combo`         | `#c9529d`                   | —           |
-| `--pad-combo-soft`    | `rgba(201, 82, 157, 0.18)`  | —           |
-| `--pad-combo-glow`    | `rgba(225, 110, 185, 0.55)` | —           |
+| Token               | Value                       | Description |
+| ------------------- | --------------------------- | ----------- |
+| `--pad-single`      | `#d4b25c`                   | —           |
+| `--pad-single-soft` | `rgba(212, 178, 92, 0.16)`  | —           |
+| `--pad-single-glow` | `rgba(245, 213, 122, 0.55)` | —           |
+| `--pad-loop`        | `#6db5b8`                   | —           |
+| `--pad-loop-soft`   | `rgba(109, 181, 184, 0.16)` | —           |
+| `--pad-loop-glow`   | `rgba(141, 213, 216, 0.55)` | —           |
+| `--pad-combo`       | `#c9529d`                   | —           |
+| `--pad-combo-soft`  | `rgba(201, 82, 157, 0.18)`  | —           |
+| `--pad-combo-glow`  | `rgba(225, 110, 185, 0.55)` | —           |
 
 ### PAD SURFACE
 
