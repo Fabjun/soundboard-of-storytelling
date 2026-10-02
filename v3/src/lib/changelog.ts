@@ -7,15 +7,111 @@ export type ChangelogEntry = {
   items: string[];
 };
 
-export const APP_VERSION = '3.0.99';
+export const APP_VERSION = '3.0.119';
 
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.119',
+    date: '2026-10-02',
+    items: ['chore: merge main into the stack — local test runs keep the trace of a failed test'],
+  },
+  {
+    version: '3.0.118',
+    date: '2026-10-02',
+    items: [
+      'test(e2e): local runs keep the trace of every failed test, so a rare failure in a git hook can be diagnosed afterwards',
+    ],
+  },
+  {
+    version: '3.0.117',
+    date: '2026-10-02',
+    items: ['chore: merge main into the stack — the stored state loads before the first render'],
+  },
+  {
+    version: '3.0.116',
+    date: '2026-10-02',
+    items: [
+      'test(guards): rule 6 checks who replaces boards / library list in the store, so reading them for an export stays allowed',
+    ],
+  },
+  {
+    version: '3.0.115',
+    date: '2026-10-02',
+    items: [
+      'fix(boot): boards and the library list load before the first screen — a board created right after the start can no longer vanish',
+    ],
+  },
+  {
+    version: '3.0.114',
+    date: '2026-10-02',
+    items: ['chore: merge main into the stack — a new pad is Single unless the user picks a type'],
+  },
+  {
+    version: '3.0.113',
+    date: '2026-10-02',
+    items: [
+      'docs: review log — the Single default fix on main and PR #40 (a waiting auto-save is written, never dropped)',
+    ],
+  },
+  {
+    version: '3.0.111',
+    date: '2026-10-02',
+    items: [
+      'fix(pads): a new pad is Single unless you pick another type — no Loop guessed from long files; the suggested name follows the chosen file',
+    ],
+  },
+  {
+    version: '3.0.110',
+    date: '2026-10-02',
+    items: ['docs: review log — the review session with the owner and PR #39'],
+  },
+  {
+    version: '3.0.108',
+    date: '2026-10-02',
+    items: [
+      'docs: research before every decision (owner rule); testing pitfall — a new git worktree runs no hooks until npm ci',
+    ],
+  },
+  {
+    version: '3.0.107',
+    date: '2026-10-02',
+    items: [
+      'ci: commit messages follow Conventional Commits, checked by commitlint (S6, ADR-0060 accepted by the owner)',
+    ],
+  },
+  {
+    version: '3.0.106',
+    date: '2026-10-02',
+    items: ['docs: review log — Slice 11 pull request (#38)'],
+  },
+  {
+    version: '3.0.104',
+    date: '2026-10-02',
+    items: ['docs: review log — the PR #37 row that 3.0.103 missed'],
+  },
+  {
+    version: '3.0.103',
+    date: '2026-10-02',
+    items: ['docs: review log — Slice 10 pull request (#37)'],
+  },
+  {
+    version: '3.0.101',
+    date: '2026-10-02',
+    items: [
+      'test: the start screen visual test hides the version footer (a longer version moved the centred line); review log: PRs #35/#36, Slice 9 structure review',
+    ],
+  },
   {
     version: '3.0.99',
     date: '2026-10-02',
     items: [
       'test: board model mutation score 92.76 % → 100 % (edge cases of free cells, keys, undo order, consistency rules); coverage floor 89/90/80/87',
     ],
+  },
+  {
+    version: '3.0.97',
+    date: '2026-10-02',
+    items: ['docs: review log — owner decisions O1–O8 of 2026-10-02 and the new pull requests'],
   },
   {
     version: '3.0.96',

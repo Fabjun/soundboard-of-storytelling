@@ -49,11 +49,26 @@ export async function uploadTestAudio(page: Page): Promise<void> {
   });
 }
 
+/** A library entry the seed writes: metadata only, no audio. */
+export interface SeedAudio {
+  id: string;
+  name: string;
+  /** Seconds. */
+  duration: number;
+}
+
+/** The seeded stand-in for the test WAV (WebKit). */
+export const TEST_AUDIO_SEED: SeedAudio = {
+  id: 'e2e0000000000000000000000000000000000000000000000000000000000001',
+  name: `${TEST_AUDIO_NAME}.wav`,
+  duration: 1,
+};
+
 /**
- * WebKit only: headless WebKit cannot decode audio, so the real upload fails there.
- * Instead, write one library entry (metadata shape of the upload pipeline, no audio) straight
- * into the app's IndexedDB and reload. The upload path itself stays covered in Chromium
- * (uploadTestAudio).
+ * Headless WebKit cannot decode audio, so the real upload fails there. Instead, write one
+ * library entry (metadata shape of the upload pipeline, no audio) straight into the app's
+ * IndexedDB and reload. The upload path itself stays covered in Chromium (uploadTestAudio).
+ * Any engine may seed an entry a test needs only as metadata — e.g. a long file.
  *
  * The seed must never CREATE the database: an open without version would create an empty v1
  * database, and the app's upgrade from v1 then skips the library store (NotFoundError at boot).
@@ -62,14 +77,14 @@ export async function uploadTestAudio(page: Page): Promise<void> {
  * t=111 ms, app failed at t=211 ms). So the seed aborts its own upgrade when the database does
  * not exist yet and retries until the app's library store is there.
  */
-export async function seedTestAudio(page: Page): Promise<void> {
+export async function seedTestAudio(page: Page, audio: SeedAudio = TEST_AUDIO_SEED): Promise<void> {
   await page.goto('/soundboard-of-storytelling/');
   await expect
     .poll(
       () =>
         page
           .evaluate(
-            (name) =>
+            (entry) =>
               new Promise<string>((resolve) => {
                 const open = indexedDB.open('sos-v3');
                 // No database yet: abort, so this open leaves nothing behind.
@@ -84,13 +99,13 @@ export async function seedTestAudio(page: Page): Promise<void> {
                   }
                   const tx = db.transaction('library', 'readwrite');
                   tx.objectStore('library').put({
-                    id: 'e2e0000000000000000000000000000000000000000000000000000000000001',
+                    id: entry.id,
                     type: 'audio',
-                    name,
+                    name: entry.name,
                     size: 44,
                     tags: [],
                     addedAt: Date.now(),
-                    duration: 1,
+                    duration: entry.duration,
                     peaks: new Array(30).fill(0.5),
                     // No blob: Playwright's WebKit context (ephemeral, like Safari Private
                     // Browsing) cannot store Blobs in IndexedDB (verified 2026-09-29). The
@@ -103,7 +118,7 @@ export async function seedTestAudio(page: Page): Promise<void> {
                   tx.onerror = () => resolve(`seed failed: ${String(tx.error)}`);
                 };
               }),
-            `${TEST_AUDIO_NAME}.wav`,
+            audio,
           )
           // A navigation between two attempts destroys the evaluation context — try again.
           .catch((e: unknown) => `evaluate failed: ${String(e)}`),
