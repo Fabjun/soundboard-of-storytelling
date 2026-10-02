@@ -1230,6 +1230,25 @@ movement) would need a clear coexistence contract. First-pass recommendation: GA
 
 ## 4. Deferred Infrastructure
 
+### Relative units for sizes (structure step before Slice 13)
+
+Measured 2026-10-02: `v3/src/styles/tokens.css` has 452 px values, 0 rem, no `clamp()` — font
+sizes and spacing ignore the user's text-size setting (WCAG 2.2 SC 1.4.4: text resizable to 200 %
+"without loss of content or functionality"; web.dev: rem / em so text "can respond to user
+preferences"). Owner decision: switch before Slice 13 — an ADR fixes the scheme (rem for type and
+spacing, `fr` / flex / `%` for layout, `clamp()` for fluid sizes, px only for borders, pixel-art
+details and minimum touch targets — Apple HIG 44 pt, WCAG 2.5.8 24 px), tokens migrate, a guard
+blocks new px values for type and spacing.
+**When:** before Slice 13.
+
+### Tab access and plain errors (audit of the existing screens)
+
+Owner decision 2026-10-02 (CLAUDE.md UI rules): every control reachable with the Tab key and named
+for screen readers; error messages in plain words with a next step. Found: the PAD editor's close
+button had no accessible name (fixed 35c602d); BACKLOG "Role-based E2E locators" lists buttons
+without accessible names in Chromium.
+**When:** next structure review; checks: an accessibility lint rule or an axe scan in E2E.
+
 ### PAD editor: several files per pad cannot be edited yet
 
 Found 2026-10-02 while preparing the #36 playback check: since Slice 9d a Single or Loop holds

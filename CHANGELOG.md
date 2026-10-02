@@ -4,6 +4,10 @@
 
 All notable changes to Soundboard of Storytelling, newest first.
 
+## 3.0.132 — 2026-10-02
+
+- docs: plan — STOP ALL in two stages and a saving status (Slice 12), undo / redo (new Slice 18), relative units before Slice 13, Tab access and plain error messages as UI rules (owner decisions)
+
 ## 3.0.131 — 2026-10-02
 
 - fix(layout): the deck grid scrolls when its pads do not fit, and the start screen footer no longer covers BOARD / LIBRARY on a short window

@@ -7,9 +7,16 @@ export type ChangelogEntry = {
   items: string[];
 };
 
-export const APP_VERSION = '3.0.131';
+export const APP_VERSION = '3.0.132';
 
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.132',
+    date: '2026-10-02',
+    items: [
+      'docs: plan — STOP ALL in two stages and a saving status (Slice 12), undo / redo (new Slice 18), relative units before Slice 13, Tab access and plain error messages as UI rules (owner decisions)',
+    ],
+  },
   {
     version: '3.0.131',
     date: '2026-10-02',
