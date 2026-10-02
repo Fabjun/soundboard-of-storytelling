@@ -66,8 +66,8 @@ number in brackets = test cases in the file (incl. quarantine)._
 | `pwa`             | Chromium (Desktop)             | Build only  | `pwa` (7)                                                                                                                                                                                  |
 | `visual`          | Chromium (Desktop), macOS only | Dev         | `board-list-empty` (1), `board-list-with-board` (1), `board-screen-game` (1), `board-screen-setup` (1), `deck-rail` (1), `library-empty` (1), `mode-toggle-states` (2), `start-screen` (1) |
 
-**Unit tests (Vitest):** 31 files, 399 test cases —
-`audio/engine.test.ts` (43), `audio/lru.property.test.ts` (0), `audio/lru.test.ts` (11), `backupExport.test.ts` (8), `backupImport.test.ts` (17), `backupReader.test.ts` (9), `boardModel.property.test.ts` (0), `boardModel.test.ts` (39), `boardWrites.test.ts` (9), `boot.test.ts` (3), `codeGuards.test.ts` (22), `comboModel.property.test.ts` (0), `comboModel.test.ts` (13), `deckConflict.test.ts` (9), `docsGuards.test.ts` (22), `e2eProjects.test.ts` (6), `flameMath.property.test.ts` (0), `flameMath.test.ts` (22), `idb.test.ts` (19), `nanoid.test.ts` (2), `padDnd.property.test.ts` (0), `padDnd.test.ts` (31), `padUtils.property.test.ts` (0), `padUtils.test.ts` (27), `persistentStorage.test.ts` (4), `prefs.test.ts` (8), `store.test.ts` (23), `testGuards.test.ts` (23), `upload.property.test.ts` (0), `upload.test.ts` (14), `v1Import.test.ts` (15)
+**Unit tests (Vitest):** 31 files, 401 test cases —
+`audio/engine.test.ts` (45), `audio/lru.property.test.ts` (0), `audio/lru.test.ts` (11), `backupExport.test.ts` (8), `backupImport.test.ts` (17), `backupReader.test.ts` (9), `boardModel.property.test.ts` (0), `boardModel.test.ts` (39), `boardWrites.test.ts` (9), `boot.test.ts` (3), `codeGuards.test.ts` (22), `comboModel.property.test.ts` (0), `comboModel.test.ts` (13), `deckConflict.test.ts` (9), `docsGuards.test.ts` (22), `e2eProjects.test.ts` (6), `flameMath.property.test.ts` (0), `flameMath.test.ts` (22), `idb.test.ts` (19), `nanoid.test.ts` (2), `padDnd.property.test.ts` (0), `padDnd.test.ts` (31), `padUtils.property.test.ts` (0), `padUtils.test.ts` (27), `persistentStorage.test.ts` (4), `prefs.test.ts` (8), `store.test.ts` (23), `testGuards.test.ts` (23), `upload.property.test.ts` (0), `upload.test.ts` (14), `v1Import.test.ts` (15)
 
 <!-- AUTO-GENERATED:test-inventory END -->
 
@@ -589,7 +589,7 @@ Without step 1 a red result proves nothing (seen 2026-09-30: the baseline was al
 
 A test that sometimes passes and sometimes fails is a bug — in the test or in the app.
 
-1. **Secure the evidence:** read the error output and `playwright-report/` (or the CI artifact) **before** re-running.
+1. **Secure the evidence:** read the error output and `playwright-report/` (or the CI artifact) **before** re-running. Locally every failed test keeps its trace in `v3/test-results/` (`npx playwright show-trace <zip>`); copy the folder away first — the next run clears it.
 2. **Find and fix the cause** (timing, missing wait for a state, real app bug).
 3. **Only if that is not possible right away:** quarantine with `test.fixme(…)` **and** a reason in the test name/comment **and** a BACKLOG entry. Never silently `skip`, never raise retries.
 
@@ -671,3 +671,11 @@ Scope or narrow the locator instead:
 - `getByRole('button', { name: /X/ })`
 - `page.getByTestId('top-bar').getByText('X', { exact: true })` — scoped to a region
 - `page.getByTestId('...')` as the fallback
+
+### 8. A new git worktree runs no hooks until `npm ci`
+
+`core.hooksPath` points to `.husky/_`, which `npm run prepare` (husky) generates and git ignores.
+A fresh `git worktree` has no `.husky/_`, and git then skips pre-commit, commit-msg and pre-push
+**without a message** — commits and pushes go out unchecked (found 2026-10-02; CI caught it).
+Before the first commit in a new worktree: `cd <worktree>/v3 && npm ci`, then check that
+`.husky/_` exists.

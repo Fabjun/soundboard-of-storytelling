@@ -4,6 +4,22 @@
 
 All notable changes to Soundboard of Storytelling, newest first.
 
+## 3.0.123 — 2026-10-02
+
+- chore: merge main into the stack — engine fix #35, Slice 15 plan, principle P8
+
+## 3.0.122 — 2026-10-02
+
+- docs: plan — Slice 15 PAD editor at V1 scope (before Slice 12); principle P8: every V1/V2 feature is built unless deliberately rejected
+
+## 3.0.121 — 2026-10-02
+
+- docs: review log — engine fix #35 accepted and merged; boot fix, local traces; flaky-test note on machine overload
+
+## 3.0.120 — 2026-10-02
+
+- fix(audio): a combo step whose child ends at once no longer starts the next step twice, cuts short a sibling or skips the step duration (owner playback check passed)
+
 ## 3.0.119 — 2026-10-02
 
 - chore: merge main into the stack — local test runs keep the trace of a failed test
