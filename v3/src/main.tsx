@@ -10,6 +10,7 @@ import { initAudioBridge } from './audio/index';
 import { pendingSaves } from './state/store';
 import { loadPrefs } from './state/prefs';
 import { startPlayHistory } from './state/playHistory';
+import { loadStoredState } from './state/boot';
 
 // Apply the design-system root class to <body>.
 // All design tokens and layout utilities depend on this being present.
@@ -28,6 +29,10 @@ effect(() => {
 // Remember when each pad was last played ("Last played" sort in All pads).
 startPlayHistory();
 
-// Preferences (last view, last backup …) are read before the first render, so no screen shows a
-// default first and then jumps (src/state/prefs.ts).
-void loadPrefs().finally(() => render(<App />, document.getElementById('app')!));
+// First render only once the stored state (src/state/boot.ts) and the preferences
+// (src/state/prefs.ts) are loaded: nothing the user creates can be replaced by a late load, and
+// no screen shows a default first and then jumps. allSettled, not all: one failing load must not
+// let the app render before the other has finished.
+void Promise.allSettled([loadStoredState(), loadPrefs()]).then(() =>
+  render(<App />, document.getElementById('app')!),
+);

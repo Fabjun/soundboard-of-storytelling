@@ -105,7 +105,7 @@ export const masterVolume = signal<number>(80);
 // The blob lives exclusively in IndexedDB; use libGet(id) for playback.
 // ---------------------------------------------------------------------------
 
-/** All library entries, metadata only. Populated at app boot via libGetAllMeta(). */
+/** All library entries, metadata only. Loaded before the first render (src/state/boot.ts). */
 export const libraryItems = signal<LibraryItemMeta[]>([]);
 
 /**
