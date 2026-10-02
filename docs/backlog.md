@@ -1259,7 +1259,7 @@ Pinned by `tests/unit/audio/engine.test.ts` (`test.fails` + a precise current-be
 **When:** decided by the product owner — with Slice 9d (engine step) at the latest, before the
 V1 import (Slice 10) makes real combos usable.
 
-### Bug: combo step starts the next step twice when a child ends at once
+### Bug: combo step starts the next step twice when a child ends at once ✅ Done (PR #35)
 
 Found 2026-10-01 by targeted tests for mutation testing (T11c). In `playComboStep`
 (`v3/src/audio/engine.ts`) a child that finishes synchronously — a pad without an audio reference,
@@ -1268,6 +1268,11 @@ step starts; after the loop the `fgRem === 0` branch starts it a second time. Im
 holding such a pad plays the following step twice (double sound). Fix needs the owner's approval
 (ADR-0048 §4: engine changes under product-owner control). Pinned by
 `tests/unit/audio/engine.test.ts` (`test.fails` + a precise current-behaviour test).
+Owner decision 2026-10-02 (O1): prepare the fix. **Fixed** (PR #35, squash-merged 2026-10-02):
+children are counted while they start; an end only advances once all are started. Also fixes two
+effects of the same cause — a sibling still playing was cut short, and the step's duration /
+fade-out delay was skipped. The owner's playback check passed (a combo with an empty pad in step 1
+plays step 2 once); the owner approved the engine change (ADR-0048 §4).
 
 ### Bug: board writes from an outdated board copy lose changes
 

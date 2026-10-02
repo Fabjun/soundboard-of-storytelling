@@ -7,9 +7,16 @@ export type ChangelogEntry = {
   items: string[];
 };
 
-export const APP_VERSION = '3.0.118';
+export const APP_VERSION = '3.0.120';
 
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.120',
+    date: '2026-10-02',
+    items: [
+      'fix(audio): a combo step whose child ends at once no longer starts the next step twice, cuts short a sibling or skips the step duration (owner playback check passed)',
+    ],
+  },
   {
     version: '3.0.118',
     date: '2026-10-02',

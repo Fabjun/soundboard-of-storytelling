@@ -4,6 +4,10 @@
 
 All notable changes to Soundboard of Storytelling, newest first.
 
+## 3.0.120 — 2026-10-02
+
+- fix(audio): a combo step whose child ends at once no longer starts the next step twice, cuts short a sibling or skips the step duration (owner playback check passed)
+
 ## 3.0.118 — 2026-10-02
 
 - test(e2e): local runs keep the trace of every failed test, so a rare failure in a git hook can be diagnosed afterwards
