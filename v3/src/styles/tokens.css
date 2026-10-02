@@ -1151,7 +1151,7 @@
 
 /* ── StartScreen ─────────────────────────────────────────────────── */
 .sb-start-screen {
-  /* @inventory: Centered splash container for StartScreen — full-viewport centered flex column with 3-stop flame gradient. 1-use (StartScreen only). */
+  /* @inventory: Centered splash container for StartScreen — full-viewport flex column with 3-stop flame gradient; the content is centred by equal auto margins of the first child and the footer, and grows (the page scrolls) when the window is too short. 1-use (StartScreen only). */
   position: relative;
   display: flex;
   flex-direction: column;
@@ -1171,6 +1171,7 @@
   align-items: center;
   justify-content: center;
   position: relative;
+  margin-top: auto;
   margin-bottom: var(--space-8);
 }
 .sb-animated-flame {
@@ -1208,9 +1209,10 @@
   margin-top: var(--space-8);
 }
 .sb-start-footer {
-  /* @inventory: Absolutely positioned footer strip on StartScreen — mono xs muted text, centered, flex row for version link + build info. 1-use. */
-  position: absolute;
-  bottom: var(--space-4);
+  /* @inventory: Footer strip at the bottom of StartScreen — in the flow, pushed down by an auto margin, so on a short window it sits below the buttons instead of over them; mono xs muted text, centered, flex row for version link + build info. 1-use. */
+  margin-top: auto;
+  padding-top: var(--space-4);
+  padding-bottom: var(--space-4);
   font-family: var(--font-mono);
   font-size: var(--fs-xs);
   color: var(--text-mute);
@@ -1537,14 +1539,17 @@
 
 /* ── Pad Grid ── center panel ─────────────────────────────────────── */
 .sb-pad-grid {
-  /* @inventory: CSS grid for the active deck's pads; col/row counts from --grid-cols/--grid-rows CSS vars. */
+  /* @inventory: CSS grid for the active deck's pads; col/row counts from --grid-cols/--grid-rows CSS vars. Rows share the height but never shrink below their pads; what does not fit scrolls (WCAG 1.4.10 Reflow). */
   display: grid;
   grid-template-columns: repeat(var(--grid-cols, 4), 1fr);
-  grid-template-rows: repeat(var(--grid-rows, 4), 1fr);
+  grid-template-rows: repeat(var(--grid-rows, 4), minmax(min-content, 1fr));
   gap: var(--grid-gap, 8px);
   padding: var(--space-3);
   flex: 1;
   min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: none;
+  -webkit-overflow-scrolling: touch;
 }
 
 .sb-pad-grid-pool {
@@ -2430,11 +2435,6 @@
   align-items: center;
   gap: var(--space-2);
   flex-shrink: 0;
-}
-.sb-kbd {
-  /* @inventory: Inline keyboard key indicator — raised background, tight horizontal padding. */
-  background: var(--raised);
-  padding: 0 var(--space-1);
 }
 .sb-empty-body {
   /* @inventory: Description text inside an empty state — mono xs muted, centered, max-width constrained, relaxed line-height. */

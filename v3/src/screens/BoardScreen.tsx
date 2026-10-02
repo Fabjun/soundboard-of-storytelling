@@ -74,9 +74,8 @@ export function BoardScreen(): JSX.Element {
     }
   }, [mode]);
 
-  // Path C — ADD PAD keyboard shortcut (key 'A' in SETUP mode)
-  // Defined here (before early return) to satisfy Rules of Hooks — hooks must
-  // always be called unconditionally. handleAddPad guards for !board/!deck.
+  // Path C — ADD PAD. No keyboard shortcut: the app is operated by its buttons (owner decision
+  // 2026-10-02 — keyboard control of the app is Parked; pad keys in GAME are Slice 12).
   async function handleAddPad() {
     if (!deck || !board) return;
     const pos = nextFreeSlot(deck.placements, deck.gridConfig.cols, deck.gridConfig.rows);
@@ -100,23 +99,6 @@ export function BoardScreen(): JSX.Element {
       console.error('Add pad failed:', e);
     }
   }
-
-  useEffect(() => {
-    function onKeyDown(e: KeyboardEvent) {
-      if (mode !== 'edit') return;
-      const tag = (e.target as HTMLElement).tagName;
-      if (tag === 'INPUT' || tag === 'TEXTAREA') return;
-      if (e.key === 'a' || e.key === 'A') {
-        handleAddPad();
-      }
-    }
-    document.addEventListener('keydown', onKeyDown);
-    return () => document.removeEventListener('keydown', onKeyDown);
-    // handleAddPad intentionally omitted: it's a new function ref every render but
-    // captures mode/deck/board via closure — adding it would re-register the
-    // listener on every render. The real deps (mode, deck, board) are listed.
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- handleAddPad is a new ref each render; its real deps (mode, deck, board) are listed
-  }, [mode, deck, board]);
 
   if (!board) {
     return (
@@ -372,9 +354,6 @@ export function BoardScreen(): JSX.Element {
                 <PixelIcon name="sparkle" size={11} />
                 ADD PAD
               </button>
-              <span class="sb-hint-text">
-                or press <kbd class="sb-kbd">A</kbd>
-              </span>
             </div>
           )}
         </main>

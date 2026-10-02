@@ -21,7 +21,7 @@ From the `## Exceptions` section of each ADR.
 | [ADR-0059](../architecture/0059-property-and-mutation-testing.md) | npm override `typed-rest-client > qs`                                                           | Stryker 10 pins a `qs` with moderate advisories; 6.16.0 fixes them in the same major                                                                                                 | `v3/package.json` `//overrides`   | BACKLOG "T11c"                         |
 | [ADR-0060](../architecture/0060-commit-message-convention.md)     | `subject-case` off                                                                              | subjects often start with a proper noun ("Preact 11", "ESLint …"); the rule rejected 13 of the last 60 commits for that alone                                                        | `v3/commitlint.config.mjs`        | permanent                              |
 
-## ESLint rule suppressions (7)
+## ESLint rule suppressions (6)
 
 Inline: `// eslint-disable-next-line <rule> -- <reason>` (enforced by `require-description`). Config: `'<rule>': 'off', // <reason>` in `v3/eslint.config.js` (enforced by `testGuards.test.ts`).
 
@@ -29,7 +29,6 @@ Inline: `// eslint-disable-next-line <rule> -- <reason>` (enforced by `require-d
 | ---------------------------------------------- | ----------------------------------------- | -------------------------------------------------------------------------------------------- |
 | `v3/src/components/PadEditorPanel.tsx:90`      | `react-hooks/exhaustive-deps`             | reset only when a different pad is opened (pad.id), not on every auto-save                   |
 | `v3/src/screens/BoardScreen.tsx:66`            | `react-hooks/exhaustive-deps`             | auto-select only on board identity change, never override the user's deck choice             |
-| `v3/src/screens/BoardScreen.tsx:118`           | `react-hooks/exhaustive-deps`             | handleAddPad is a new ref each render; its real deps (mode, deck, board) are listed          |
 | `v3/tests/e2e/deck-crud.spec.ts:74`            | `playwright/no-skipped-test`              | quarantine: feature not built (BACKLOG "Deck reorder")                                       |
 | `v3/tests/e2e/mobile/overflow.spec.ts:30`      | `playwright/no-skipped-test`              | quarantine: mobile layout not built until Slice 13 (BACKLOG "Re-enable mobile layout tests") |
 | `v3/tests/e2e/mobile/touch-targets.spec.ts:34` | `playwright/no-skipped-test`              | quarantine: mobile layout not built until Slice 13 (BACKLOG "Re-enable mobile layout tests") |
@@ -107,12 +106,12 @@ Historical docs excluded in `.vale.ini`, and passages marked `<!-- vale … = NO
 | `.vale.ini`                                            | `docs/product/v1-v2-inventory.md` | historical record — keeps the names valid at its time                             |
 | `.vale.ini`                                            | `CHANGELOG.md`                    | historical record — keeps the names valid at its time                             |
 | `.vale.ini`                                            | `docs/development/exceptions.md`  | historical record — keeps the names valid at its time                             |
-| `CLAUDE.md:686`                                        | `SoS.SupersededTerms` off         | historical slice records keep the names valid at the time (Scene before Slice 9b) |
+| `CLAUDE.md:693`                                        | `SoS.SupersededTerms` off         | historical slice records keep the names valid at the time (Scene before Slice 9b) |
 | `docs/architecture/0056-documentation-freshness.md:32` | `SoS.SupersededTerms` off         | …                                                                                 |
 | `docs/architecture/concept-brief.md:75`                | `SoS.SupersededTerms` off         | explains the rename                                                               |
 | `docs/product/README.md:108`                           | `SoS.SupersededTerms` off         | records the rename decision                                                       |
-| `docs/product/README.md:279`                           | `SoS.SupersededTerms` off         | records the rename                                                                |
-| `docs/product/README.md:298`                           | `SoS.SupersededTerms` off         | records the rename decision (Q1)                                                  |
+| `docs/product/README.md:281`                           | `SoS.SupersededTerms` off         | records the rename                                                                |
+| `docs/product/README.md:300`                           | `SoS.SupersededTerms` off         | records the rename decision (Q1)                                                  |
 
 ## To-do markers (0)
 
