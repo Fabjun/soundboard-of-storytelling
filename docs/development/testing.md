@@ -669,3 +669,11 @@ Scope or narrow the locator instead:
 - `getByRole('button', { name: /X/ })`
 - `page.getByTestId('top-bar').getByText('X', { exact: true })` — scoped to a region
 - `page.getByTestId('...')` as the fallback
+
+### 8. A new git worktree runs no hooks until `npm ci`
+
+`core.hooksPath` points to `.husky/_`, which `npm run prepare` (husky) generates and git ignores.
+A fresh `git worktree` has no `.husky/_`, and git then skips pre-commit, commit-msg and pre-push
+**without a message** — commits and pushes go out unchecked (found 2026-10-02; CI caught it).
+Before the first commit in a new worktree: `cd <worktree>/v3 && npm ci`, then check that
+`.husky/_` exists.
