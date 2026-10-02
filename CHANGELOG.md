@@ -4,9 +4,37 @@
 
 All notable changes to Soundboard of Storytelling, newest first.
 
-## 3.0.88 — 2026-10-01
+## 3.0.106 — 2026-10-02
 
-- ci: commit messages follow Conventional Commits, checked by commitlint (S6, ADR-0060 proposed)
+- docs: review log — Slice 11 pull request (#38)
+
+## 3.0.104 — 2026-10-02
+
+- docs: review log — the PR #37 row that 3.0.103 missed
+
+## 3.0.103 — 2026-10-02
+
+- docs: review log — Slice 10 pull request (#37)
+
+## 3.0.101 — 2026-10-02
+
+- test: the start screen visual test hides the version footer (a longer version moved the centred line); review log: PRs #35/#36, Slice 9 structure review
+
+## 3.0.97 — 2026-10-02
+
+- docs: review log — owner decisions O1–O8 of 2026-10-02 and the new pull requests
+
+## 3.0.92 — 2026-10-01
+
+- test: WebKit test seed never creates the database (race broke app boot); lint forbids conditional assertions in E2E tests; mutation break threshold 73
+
+## 3.0.91 — 2026-10-01
+
+- test: engine tests for combo children and the fade-out-all step; found a bug — a combo step can start the next step twice (pinned, fix pending owner approval)
+
+## 3.0.90 — 2026-10-01
+
+- test: mutation break threshold 68 % after the first complete CI run (68.89 %)
 
 ## 3.0.87 — 2026-10-01
 

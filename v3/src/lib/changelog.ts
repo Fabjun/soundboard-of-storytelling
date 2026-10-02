@@ -7,15 +7,61 @@ export type ChangelogEntry = {
   items: string[];
 };
 
-export const APP_VERSION = '3.0.88';
+export const APP_VERSION = '3.0.107';
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
-    version: '3.0.88',
+    version: '3.0.107',
+    date: '2026-10-02',
+    items: [
+      'ci: commit messages follow Conventional Commits, checked by commitlint (S6, ADR-0060 accepted by the owner)',
+    ],
+  },
+  {
+    version: '3.0.106',
+    date: '2026-10-02',
+    items: ['docs: review log — Slice 11 pull request (#38)'],
+  },
+  {
+    version: '3.0.104',
+    date: '2026-10-02',
+    items: ['docs: review log — the PR #37 row that 3.0.103 missed'],
+  },
+  {
+    version: '3.0.103',
+    date: '2026-10-02',
+    items: ['docs: review log — Slice 10 pull request (#37)'],
+  },
+  {
+    version: '3.0.101',
+    date: '2026-10-02',
+    items: [
+      'test: the start screen visual test hides the version footer (a longer version moved the centred line); review log: PRs #35/#36, Slice 9 structure review',
+    ],
+  },
+  {
+    version: '3.0.97',
+    date: '2026-10-02',
+    items: ['docs: review log — owner decisions O1–O8 of 2026-10-02 and the new pull requests'],
+  },
+  {
+    version: '3.0.92',
     date: '2026-10-01',
     items: [
-      'ci: commit messages follow Conventional Commits, checked by commitlint (S6, ADR-0060 proposed)',
+      'test: WebKit test seed never creates the database (race broke app boot); lint forbids conditional assertions in E2E tests; mutation break threshold 73',
     ],
+  },
+  {
+    version: '3.0.91',
+    date: '2026-10-01',
+    items: [
+      'test: engine tests for combo children and the fade-out-all step; found a bug — a combo step can start the next step twice (pinned, fix pending owner approval)',
+    ],
+  },
+  {
+    version: '3.0.90',
+    date: '2026-10-01',
+    items: ['test: mutation break threshold 68 % after the first complete CI run (68.89 %)'],
   },
   {
     version: '3.0.87',

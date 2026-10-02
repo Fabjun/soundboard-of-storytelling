@@ -53,22 +53,18 @@ test.describe.fixme(FIXME_REASON, () => {
     await assertNoOverflow(page, page.getByTestId('board-top-bar'), 'board-top-bar');
 
     // Pad grid container — the 4-column layout at 390px is the highest-risk element
-    const padGrid = page.locator('[data-testid="pad-grid"]');
-    if ((await padGrid.count()) > 0) {
-      await assertNoOverflow(page, padGrid, 'pad-grid');
-    }
+    // No `if (count > 0)` guards: the grid had no test id, so such a guard skipped this check.
+    await assertNoOverflow(page, page.getByTestId('pad-grid'), 'pad-grid');
 
     // First empty pad cell — representative for all cells
-    const firstCell = page.getByTestId('pad-grid-cell-empty-slot-0-0');
-    if ((await firstCell.count()) > 0) {
-      await assertNoOverflow(page, firstCell, 'pad-grid-cell-empty-slot-0-0');
-    }
+    await assertNoOverflow(
+      page,
+      page.getByTestId('pad-grid-cell-empty-slot-0-0'),
+      'pad-grid-cell-empty-slot-0-0',
+    );
 
     // Deck rail (horizontal scroll container) — the rail itself must not overflow
-    const deckRail = page.locator('[data-testid="deck-rail"]');
-    if ((await deckRail.count()) > 0) {
-      await assertNoOverflow(page, deckRail, 'deck-rail');
-    }
+    await assertNoOverflow(page, page.getByTestId('deck-rail'), 'deck-rail');
   });
 
   test('StartScreen does not overflow 390px viewport', async ({ page }) => {

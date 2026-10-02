@@ -1,6 +1,6 @@
 # ADR-0060: Commit messages follow Conventional Commits
 
-**Status:** Proposed
+**Status:** Accepted
 **Date:** 2026-10-01
 **Slice:** infrastructure
 **Refines:** —
@@ -13,8 +13,8 @@ mechanically like every other scheme. Measured on 2026-10-01: 206 of 213 commits
 form `type(scope): description`, all of the last 60; the types in use are those of Conventional
 Commits plus two one-offs (`security`, `infra`). Nothing checked the form so far.
 
-_Provisional decision taken by Claude while the owner was away (owner's instruction 2026-10-01);
-review pending — see `docs/development/review-log.md`._
+_Drafted by Claude while the owner was away (2026-10-01); accepted by the owner on 2026-10-02
+(`docs/development/review-log.md`)._
 
 ## Decision
 
