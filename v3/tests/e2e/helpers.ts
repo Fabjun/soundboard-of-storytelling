@@ -67,8 +67,13 @@ export const TEST_AUDIO_SEED: SeedAudio = {
 /**
  * Headless WebKit cannot decode audio, so the real upload fails there. Instead, write one
  * library entry (metadata shape of the upload pipeline, no audio) straight into the app's
- * IndexedDB and reload. The upload path itself stays covered in Chromium (uploadTestAudio).
+ * IndexedDB. The upload path itself stays covered in Chromium (uploadTestAudio).
  * Any engine may seed an entry a test needs only as metadata — e.g. a long file.
+ *
+ * No reload at the end: the app reads the library at its next start, and every caller navigates
+ * next (goto / reopenFirstBoard). In CI, WebKit on Linux crashed on exactly that next navigation
+ * after the reload ("page.goto: WebKit encountered an internal error", 2026-10-02 — Playwright
+ * issue microsoft/playwright#43070: goto + reload crashes the WebKit content process since 1.60).
  *
  * The seed must never CREATE the database: an open without version would create an empty v1
  * database, and the app's upgrade from v1 then skips the library store (NotFoundError at boot).
@@ -125,12 +130,12 @@ export async function seedTestAudio(page: Page, audio: SeedAudio = TEST_AUDIO_SE
       { message: 'seed the test audio into the app database', timeout: 10_000 },
     )
     .toBe('seeded');
-  await page.reload();
 }
 
 /**
  * Make one test audio file available in the library: real upload in Chromium,
- * seeded entry in WebKit (no audio codecs headless). Ends on the StartScreen.
+ * seeded entry in WebKit (no audio codecs headless). The caller navigates next, so the app
+ * starts with the entry in its library.
  */
 export async function ensureTestAudio(page: Page): Promise<void> {
   const browser = page.context().browser()?.browserType().name();
