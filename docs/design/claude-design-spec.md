@@ -41,7 +41,6 @@ Source: [design-system.md §3](design-system.md#3-state-vocabulary-closed-set).
 | `is-raised`        | elevated surface                   |
 | `is-italic`        | italic rendering                   |
 | `is-loop`          | loop context                       |
-| `is-playlist`      | playlist context                   |
 | `is-combo`         | combo context                      |
 | `is-deep`          | pad depth-stack opt-in             |
 | `is-compact`       | compact rendering                  |
@@ -73,7 +72,7 @@ Full list: [design-system.md §A](design-system.md#a-token-inventory). Core subs
 `--mode-setup` `--mode-game`
 
 **Pad type colors**
-`--pad-single` `--pad-loop` `--pad-playlist` `--pad-combo`
+`--pad-single` `--pad-loop` `--pad-combo`
 
 **Spacing** (4 / 8 / 12 / 16 / 20 / 24px — larger values in [design-system.md §A](design-system.md#a-token-inventory))
 `--space-1` `--space-2` `--space-3` `--space-4` `--space-5` `--space-6`

@@ -4,6 +4,10 @@
 
 All notable changes to Soundboard of Storytelling, newest first.
 
+## 3.0.126 — 2026-10-02
+
+- feat(pads): a Loop with several files runs in the background of a combo and its list repeats; it glows like any loop; the old Playlist colours are gone (owner decisions on PR #36; engine change awaits the playback check)
+
 ## 3.0.125 — 2026-10-02
 
 - chore: merge main into the stack — ADR back-link guard

@@ -7,9 +7,16 @@ export type ChangelogEntry = {
   items: string[];
 };
 
-export const APP_VERSION = '3.0.125';
+export const APP_VERSION = '3.0.126';
 
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.126',
+    date: '2026-10-02',
+    items: [
+      'feat(pads): a Loop with several files runs in the background of a combo and its list repeats; it glows like any loop; the old Playlist colours are gone (owner decisions on PR #36; engine change awaits the playback check)',
+    ],
+  },
   {
     version: '3.0.125',
     date: '2026-10-02',

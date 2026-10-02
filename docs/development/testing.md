@@ -66,8 +66,8 @@ number in brackets = test cases in the file (incl. quarantine)._
 | `pwa`             | Chromium (Desktop)             | Build only  | `pwa` (7)                                                                                                                                                                                  |
 | `visual`          | Chromium (Desktop), macOS only | Dev         | `board-list-empty` (1), `board-list-with-board` (1), `board-screen-game` (1), `board-screen-setup` (1), `deck-rail` (1), `library-empty` (1), `mode-toggle-states` (2), `start-screen` (1) |
 
-**Unit tests (Vitest):** 24 files, 327 test cases —
-`audio/engine.test.ts` (45), `audio/lru.property.test.ts` (0), `audio/lru.test.ts` (11), `boardModel.property.test.ts` (0), `boardModel.test.ts` (36), `boardWrites.test.ts` (7), `boot.test.ts` (3), `codeGuards.test.ts` (21), `deckConflict.test.ts` (9), `docsGuards.test.ts` (23), `e2eProjects.test.ts` (6), `flameMath.property.test.ts` (0), `flameMath.test.ts` (22), `idb.test.ts` (19), `nanoid.test.ts` (2), `padDnd.property.test.ts` (0), `padDnd.test.ts` (31), `padUtils.property.test.ts` (0), `padUtils.test.ts` (27), `prefs.test.ts` (6), `store.test.ts` (23), `testGuards.test.ts` (23), `upload.property.test.ts` (0), `upload.test.ts` (13)
+**Unit tests (Vitest):** 24 files, 329 test cases —
+`audio/engine.test.ts` (47), `audio/lru.property.test.ts` (0), `audio/lru.test.ts` (11), `boardModel.property.test.ts` (0), `boardModel.test.ts` (36), `boardWrites.test.ts` (7), `boot.test.ts` (3), `codeGuards.test.ts` (21), `deckConflict.test.ts` (9), `docsGuards.test.ts` (23), `e2eProjects.test.ts` (6), `flameMath.property.test.ts` (0), `flameMath.test.ts` (22), `idb.test.ts` (19), `nanoid.test.ts` (2), `padDnd.property.test.ts` (0), `padDnd.test.ts` (31), `padUtils.property.test.ts` (0), `padUtils.test.ts` (27), `prefs.test.ts` (6), `store.test.ts` (23), `testGuards.test.ts` (23), `upload.property.test.ts` (0), `upload.test.ts` (13)
 
 <!-- AUTO-GENERATED:test-inventory END -->
 

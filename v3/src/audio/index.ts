@@ -36,7 +36,9 @@ export function initAudioBridge(): void {
   configureCallbacks({
     onPadStarted: (id, isLoop) => {
       addPlayingPad(id);
-      if (isLoop) addLoopingPad(id);
+      // A Loop with several files plays as the engine's playlist, which reports isLoop = false:
+      // the glow follows the pad type (owner decision 2026-10-02, PR #36).
+      if (isLoop || findPad(id)?.type === 'loop') addLoopingPad(id);
     },
     onPadStopped: (id) => {
       removePlayingPad(id);
@@ -45,13 +47,19 @@ export function initAudioBridge(): void {
     // Combo steps reference pads of the board's pool (ADR-0048) — looked up and mapped to the
     // engine's shapes; the engine itself is unchanged.
     getPad: (id) => {
-      for (const board of boards.value) {
-        const pad = board.pads.find((p) => p.id === id);
-        if (pad) return toEnginePad(pad);
-      }
-      return null;
+      const pad = findPad(id);
+      return pad ? toEnginePad(pad) : null;
     },
   });
+}
+
+/** The app pad with this id — pads live in the boards' pools (ADR-0048). */
+function findPad(id: string): Pad | null {
+  for (const board of boards.value) {
+    const pad = board.pads.find((p) => p.id === id);
+    if (pad) return pad;
+  }
+  return null;
 }
 
 // ── Public API ────────────────────────────────────────────────────────────────
@@ -86,7 +94,7 @@ export function toEnginePad(pad: Pad): EnginePad {
     case 'loop': {
       const { files, order, trimStart, trimEnd, ...rest } = pad;
       if (files.length <= 1) return { ...rest, libraryItemRef: files[0], trimStart, trimEnd };
-      return { ...rest, type: 'playlist', files, shuffle: order === 'shuffle' };
+      return { ...rest, type: 'playlist', files, shuffle: order === 'shuffle', loop: true };
     }
     case 'combo':
       return pad;
