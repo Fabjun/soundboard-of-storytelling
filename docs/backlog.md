@@ -263,8 +263,9 @@ Decide after real-use data is available, likely with Claude Design.
 
 ### PAD Editor (Polish)
 
-Items below are PAD Editor interaction details deferred from Slice 3/4. All target Slice 8
-or a dedicated editor polish pass.
+Items below are PAD Editor interaction details deferred from Slice 3/4. They targeted the
+superseded Slice 8; re-triaged 2026-10-02: the PAD editor at V1 scope is **Slice 15** (CLAUDE.md
+slice table) — when planning it, decide for each item whether it belongs to it.
 
 ### Key Capture flow
 
@@ -1248,6 +1249,15 @@ movement) would need a clear coexistence contract. First-pass recommendation: GA
 
 ## 4. Deferred Infrastructure
 
+### Assign a slice to every inventory feature still "Open" (P8)
+
+Owner decision 2026-10-02 (docs/product/README.md §7 P8): everything V1 / V2 could do is built
+unless deliberately rejected. On that day 22 features in `docs/product/v1-v2-inventory.md` had no
+decision ("Open") — board duplicate and search, library preview / sort / groups, settings screen,
+themes, onboarding, among others. Each needs a slice (or a deliberate **Rejected** with reason).
+**When:** together with the owner, before Slice 15 is planned; then a docsGuards check that every
+row not built names a slice, Parked or Rejected.
+
 ### Flaky smoke test: a new board vanished right after NEW BOARD (WebKit, 2026-10-02)
 
 Seen once, in the pre-commit smoke run of a stack merge (`board-writes`): `mode-toggle.spec.ts`
@@ -1265,7 +1275,11 @@ pre-push run — the dragged pad stayed on its cell; 8 quiet re-runs green. Both
 other heavy commands ran on the same machine (npm ci, unit tests in a second worktree).
 **Gap closed (2026-10-02):** local runs never retried, so `trace: 'on-first-retry'` kept no
 trace; local runs now use `retain-on-failure` (cost measured: 19 s instead of 18 s for 21 tests).
-**When:** on the next occurrence — read the trace from `v3/test-results/`.
+**Later the same day (afternoon):** a third gate failed with 8 timeouts across specs; the
+machine was swapping hard (16 GB RAM; at 16:23 254 MB free and 6.9 GB compressed; load average about 380 on 10 cores right after the failed gate, 255 at 16:22, 175 at 16:35; macOS services relaunched in a loop). It eased on its own (1-minute load 4.3 when measured later that afternoon). The
+earlier failures may have had the same cause — not proven. Gates now run only on a quiet machine
+(load checked first) and never next to other heavy commands.
+**When:** on the next occurrence — read the trace from `v3/test-results/` and note the load.
 
 ### Bug: combo "stop all" step stops the combo itself
 
@@ -1278,7 +1292,7 @@ Pinned by `tests/unit/audio/engine.test.ts` (`test.fails` + a precise current-be
 **When:** decided by the product owner — with Slice 9d (engine step) at the latest, before the
 V1 import (Slice 10) makes real combos usable.
 
-### Bug: combo step starts the next step twice when a child ends at once
+### Bug: combo step starts the next step twice when a child ends at once ✅ Done (ccd24f3)
 
 Found 2026-10-01 by targeted tests for mutation testing (T11c). In `playComboStep`
 (`v3/src/audio/engine.ts`) a child that finishes synchronously — a pad without an audio reference,
@@ -1287,6 +1301,11 @@ step starts; after the loop the `fgRem === 0` branch starts it a second time. Im
 holding such a pad plays the following step twice (double sound). Fix needs the owner's approval
 (ADR-0048 §4: engine changes under product-owner control). Pinned by
 `tests/unit/audio/engine.test.ts` (`test.fails` + a precise current-behaviour test).
+Owner decision 2026-10-02 (O1): prepare the fix. **Fixed** (PR #35, squash-merged 2026-10-02):
+children are counted while they start; an end only advances once all are started. Also fixes two
+effects of the same cause — a sibling still playing was cut short, and the step's duration /
+fade-out delay was skipped. The owner's playback check passed (a combo with an empty pad in step 1
+plays step 2 once); the owner approved the engine change (ADR-0048 §4).
 
 ### Bug: board writes from an outdated board copy lose changes
 
