@@ -1230,7 +1230,7 @@ movement) would need a clear coexistence contract. First-pass recommendation: GA
 
 ## 4. Deferred Infrastructure
 
-### Assign a slice to every inventory feature still "Open" (P8)
+### Assign a slice to every inventory feature still "Open" (P8) ✅ Done (owner decisions 2026-10-02)
 
 Owner decision 2026-10-02 (docs/product/README.md §7 P8): everything V1 / V2 could do is built
 unless deliberately rejected. On that day 22 features in `docs/product/v1-v2-inventory.md` had no

@@ -4,6 +4,10 @@
 
 All notable changes to Soundboard of Storytelling, newest first.
 
+## 3.0.130 — 2026-10-02
+
+- docs: owner decisions on #37, #38, #39 and the P8 slice plan (new Slices 16 Library, 17 Help & onboarding); every V1/V2 feature now carries a decision, checked by docsGuards
+
 ## 3.0.128 — 2026-10-02
 
 - test(e2e): the WebKit seed no longer reloads the page — the next navigation crashed WebKit on Linux CI (Playwright issue #43070)

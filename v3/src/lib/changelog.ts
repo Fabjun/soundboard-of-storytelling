@@ -7,9 +7,16 @@ export type ChangelogEntry = {
   items: string[];
 };
 
-export const APP_VERSION = '3.0.128';
+export const APP_VERSION = '3.0.130';
 
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.130',
+    date: '2026-10-02',
+    items: [
+      'docs: owner decisions on #37, #38, #39 and the P8 slice plan (new Slices 16 Library, 17 Help & onboarding); every V1/V2 feature now carries a decision, checked by docsGuards',
+    ],
+  },
   {
     version: '3.0.128',
     date: '2026-10-02',
