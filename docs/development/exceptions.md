@@ -111,8 +111,8 @@ Historical docs excluded in `.vale.ini`, and passages marked `<!-- vale … = NO
 | `docs/architecture/0056-documentation-freshness.md:32` | `SoS.SupersededTerms` off         | …                                                                                 |
 | `docs/architecture/concept-brief.md:75`                | `SoS.SupersededTerms` off         | explains the rename                                                               |
 | `docs/product/README.md:108`                           | `SoS.SupersededTerms` off         | records the rename decision                                                       |
-| `docs/product/README.md:276`                           | `SoS.SupersededTerms` off         | records the rename                                                                |
-| `docs/product/README.md:295`                           | `SoS.SupersededTerms` off         | records the rename decision (Q1)                                                  |
+| `docs/product/README.md:279`                           | `SoS.SupersededTerms` off         | records the rename                                                                |
+| `docs/product/README.md:298`                           | `SoS.SupersededTerms` off         | records the rename decision (Q1)                                                  |
 
 ## To-do markers (0)
 

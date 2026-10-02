@@ -7,9 +7,16 @@ export type ChangelogEntry = {
   items: string[];
 };
 
-export const APP_VERSION = '3.0.121';
+export const APP_VERSION = '3.0.122';
 
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.122',
+    date: '2026-10-02',
+    items: [
+      'docs: plan — Slice 15 PAD editor at V1 scope (before Slice 12); principle P8: every V1/V2 feature is built unless deliberately rejected',
+    ],
+  },
   {
     version: '3.0.121',
     date: '2026-10-02',

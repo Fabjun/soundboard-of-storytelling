@@ -4,6 +4,10 @@
 
 All notable changes to Soundboard of Storytelling, newest first.
 
+## 3.0.122 — 2026-10-02
+
+- docs: plan — Slice 15 PAD editor at V1 scope (before Slice 12); principle P8: every V1/V2 feature is built unless deliberately rejected
+
 ## 3.0.121 — 2026-10-02
 
 - docs: review log — engine fix #35 accepted and merged; boot fix, local traces; flaky-test note on machine overload

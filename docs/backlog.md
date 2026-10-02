@@ -252,8 +252,9 @@ Decide after real-use data is available, likely with Claude Design.
 
 ### PAD Editor (Polish)
 
-Items below are PAD Editor interaction details deferred from Slice 3/4. All target Slice 8
-or a dedicated editor polish pass.
+Items below are PAD Editor interaction details deferred from Slice 3/4. They targeted the
+superseded Slice 8; re-triaged 2026-10-02: the PAD editor at V1 scope is **Slice 15** (CLAUDE.md
+slice table) — when planning it, decide for each item whether it belongs to it.
 
 ### Key Capture flow
 
@@ -1228,6 +1229,15 @@ movement) would need a clear coexistence contract. First-pass recommendation: GA
 ---
 
 ## 4. Deferred Infrastructure
+
+### Assign a slice to every inventory feature still "Open" (P8)
+
+Owner decision 2026-10-02 (docs/product/README.md §7 P8): everything V1 / V2 could do is built
+unless deliberately rejected. On that day 22 features in `docs/product/v1-v2-inventory.md` had no
+decision ("Open") — board duplicate and search, library preview / sort / groups, settings screen,
+themes, onboarding, among others. Each needs a slice (or a deliberate **Rejected** with reason).
+**When:** together with the owner, before Slice 15 is planned; then a docsGuards check that every
+row not built names a slice, Parked or Rejected.
 
 ### Flaky smoke test: a new board vanished right after NEW BOARD (WebKit, 2026-10-02)
 
