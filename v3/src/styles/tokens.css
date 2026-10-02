@@ -96,14 +96,10 @@
   --pad-loop: #6db5b8;
   --pad-loop-soft: rgba(109, 181, 184, 0.16);
   --pad-loop-glow: rgba(141, 213, 216, 0.55);
-  /* PLAYLIST · violet — sequence, ritual                              */
-  --pad-playlist: #9d7fc7;
-  --pad-playlist-soft: rgba(157, 127, 199, 0.16);
-  --pad-playlist-glow: rgba(189, 159, 231, 0.55);
   /* COMBO · rose magenta — orchestral, chain; pink opens the "theatrical /
      spell-cast" pole the other pad types don't cover. Gold-coral were too
      close (hue 46° vs 28°); rose at hue ~325° sits clearly apart from
-     gold (46°), playlist violet (265°), and blood (0°).                  */
+     gold (46°) and blood (0°).                                           */
   --pad-combo: #c9529d;
   --pad-combo-soft: rgba(201, 82, 157, 0.18);
   --pad-combo-glow: rgba(225, 110, 185, 0.55);
@@ -336,12 +332,6 @@
   --pad-loop-soft: rgba(79, 166, 122, 0.16);
   --pad-loop-glow: rgba(95, 200, 144, 0.55);
 
-  /* PLAYLIST · dusk-violet — earthier than Hearth's #9D7FC7.
-     Reads as forest-twilight / ritual / lore.                         */
-  --pad-playlist: #8a6fa0;
-  --pad-playlist-soft: rgba(138, 111, 160, 0.16);
-  --pad-playlist-glow: rgba(176, 144, 202, 0.55);
-
   --glow-radial: #18402f;
 }
 
@@ -372,8 +362,6 @@
   --pad-single-glow: rgba(255, 95, 168, 0.55);
   --pad-loop: #3dd4f0;
   --pad-loop-glow: rgba(61, 212, 240, 0.55);
-  --pad-playlist: #b988ff;
-  --pad-playlist-glow: rgba(185, 136, 255, 0.55);
   --pad-combo: #ffd256;
   --pad-combo-glow: rgba(255, 210, 86, 0.55);
 
@@ -412,9 +400,6 @@
 
   --pad-loop: #c04c75;
   --pad-loop-glow: rgba(192, 76, 117, 0.55);
-
-  --pad-playlist: #7a5295;
-  --pad-playlist-glow: rgba(122, 82, 149, 0.55);
 
   /* COMBO · desaturated cyan — icy "spell" kontrapunkt to the blood
      palette. Sits clearly apart from --blood, --gold, and --pad-loop. */
@@ -753,7 +738,7 @@
 }
 /* The type "spine": 4-px-wide bar of pad colour painted along the
    LEFT edge of every pad. Idle pads show only this — that's the
-   passive cue that says "this is a Loop / Playlist / Combo". When
+   passive cue that says "this is a Single / Loop / Combo". When
    the pad becomes hot, the spine widens to the full perimeter.       */
 .sb-pad::before {
   content: '';
@@ -841,7 +826,7 @@
 
 /* ── Pill ───────────────────────────────────────────────────── */
 .sb-pill {
-  /* @inventory: Compact pixel-frame badge; type-colour variants via is-on, is-loop, is-playlist, is-combo. */
+  /* @inventory: Compact pixel-frame badge; type-colour variants via is-on, is-loop, is-combo. */
   --pix-step: 3px;
   display: inline-flex;
   align-items: center;
@@ -874,13 +859,6 @@
 }
 .sb-pill.is-loop .sb-dot {
   background: var(--pad-loop);
-}
-.sb-pill.is-playlist {
-  --pix-border: var(--pad-playlist);
-  color: var(--pad-playlist);
-}
-.sb-pill.is-playlist .sb-dot {
-  background: var(--pad-playlist);
 }
 .sb-pill.is-combo {
   --pix-border: var(--pad-combo);

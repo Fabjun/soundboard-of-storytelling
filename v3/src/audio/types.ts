@@ -30,6 +30,11 @@ export type EnginePlaylistPad = PadBase & {
   type: 'playlist';
   files: string[];
   shuffle?: boolean;
+  /**
+   * The list repeats until stopped — a Loop with several files (ADR-0048). In a combo such a
+   * child runs in the background like a one-file loop (owner decision 2026-10-02, PR #36).
+   */
+  loop?: boolean;
 };
 
 export type EnginePad = EngineSinglePad | EngineLoopPad | EnginePlaylistPad | ComboPad;

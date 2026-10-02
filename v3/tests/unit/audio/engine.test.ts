@@ -576,6 +576,22 @@ describe('initAudioBridge', () => {
     expect(tags()).toEqual(['h1']);
     expect(store.playingPads.value.has('c')).toBe(true);
   });
+
+  test('a Loop with several files glows like a loop; a Single does not', async () => {
+    const store = await import('../../../src/state/store');
+    const many = playlist('many', ['h1', 'h2']);
+    const once = single('once', 'h3');
+    store.boards.value = [
+      { id: 'b', name: 'B', themeId: 'hearth', pads: [many, once], decks: [], quickAccess: [] },
+    ];
+    audio.initAudioBridge();
+    await audio.play('many', many);
+    await audio.play('once', once);
+    await flush();
+    expect(store.loopingPads.value.has('many')).toBe(true);
+    expect(store.loopingPads.value.has('once')).toBe(false);
+    expect(store.playingPads.value.has('once')).toBe(true);
+  });
 });
 
 // ── Combo children in detail (T11c: mutation testing left createPadInstance unguarded) ─
@@ -633,19 +649,34 @@ describe('combo children', () => {
     expect(tags()).toEqual(['h2']);
   });
 
-  test('a playlist child plays its files in order, releases each, then the combo continues', async () => {
+  // A Loop with several files runs in the background of a combo, like a one-file loop, and its
+  // list repeats until the combo stops (owner decision 2026-10-02, PR #36).
+  test('a Loop with several files runs in the background: the next step starts at once, the list repeats', async () => {
     pads.set('pl', playlist('pl', ['a', 'b']));
     pads.set('s2', single('s2', 'h2'));
     audio.play('c', combo('c', [{ padIds: ['pl'] }, { padIds: ['s2'] }]));
     await flush();
-    expect(tags()).toEqual(['a']);
+    expect(tags()).toEqual(['a', 'h2']);
     ctx.sources[0].end();
     await flush();
-    expect(tags()).toEqual(['a', 'b']);
+    expect(tags()).toEqual(['a', 'h2', 'b']);
     expect(engine.libBufs['a']).toBeUndefined(); // released after it ended (iOS memory rule)
-    ctx.sources[1].end();
+    ctx.sources[2].end();
     await flush();
-    expect(tags()).toEqual(['a', 'b', 'h2']);
+    expect(tags()).toEqual(['a', 'h2', 'b', 'a']); // starts over
+  });
+
+  test('a looping list whose files are all missing stops instead of spinning', async () => {
+    missing.add('m1');
+    missing.add('m2');
+    pads.set('pl', playlist('pl', ['m1', 'm2']));
+    pads.set('s2', single('s2', 'h2'));
+    audio.play('c', combo('c', [{ padIds: ['pl'] }, { padIds: ['s2'] }]));
+    await flush();
+    expect(tags()).toEqual(['h2']);
+    const idb = await import('../../../src/db/idb');
+    const tries = vi.mocked(idb.libGet).mock.calls.filter(([h]) => h === 'm1').length;
+    expect(tries).toBe(1); // one round, then it gave up — no endless retry
   });
 
   // Slice 9d behaviour change: a Loop with no file is mapped to the engine's loop (not to an
@@ -696,7 +727,8 @@ describe('combo children', () => {
   test('a shuffled playlist child picks its file with Math.random', async () => {
     vi.spyOn(Math, 'random').mockReturnValue(0.99);
     pads.set('pl', playlist('pl', ['a', 'b', 'z'], { shuffle: true }));
-    audio.play('c', combo('c', [{ padIds: ['pl'] }]));
+    // A background child: the step needs a duration to keep the combo (and the child) running
+    audio.play('c', combo('c', [{ padIds: ['pl'], duration: 9 }]));
     await flush();
     expect(tags()).toEqual(['z']);
   });
