@@ -17,7 +17,7 @@
 //   - Waveform preview (if source set)
 //   - Volume slider (0-100)
 //   - Fade In / Fade Out sliders (0-10s)
-//   - Hotkey display (read-only; Key-Capture = Slice 8) — deck view only, keys belong to a placement
+//   - Hotkey display (read-only; assigning keys comes with Slice 12) — deck view only, keys belong to a placement
 //   - Decks checklist: place the pad in other decks or remove it (Slice 9e, ADR-0048)
 //   - Remove from deck (2-tap confirm, deck view only) — the pad stays in the pool
 //   - Delete button (2-tap confirm) — shows in how many decks the pad is used
@@ -235,7 +235,12 @@ export function PadEditorPanel({
       <div class="sb-panel-header is-active" style={{ borderBottom: `2px solid ${typeColor}` }}>
         <span class="sb-type-indicator" style={{ background: typeColor }} />
         <span class="sb-panel-title">Pad Editor</span>
-        <button class="sb-btn sb-btn-icon sb-btn-ghost" onClick={onClose}>
+        <button
+          class="sb-btn sb-btn-icon sb-btn-ghost"
+          data-testid="pad-editor-panel-close-button"
+          aria-label="Close the pad editor"
+          onClick={onClose}
+        >
           ×
         </button>
       </div>
@@ -394,7 +399,7 @@ export function PadEditorPanel({
         />
       </div>
 
-      {/* Hotkey (read-only; Key-Capture = Slice 8) — keys belong to a deck's placement */}
+      {/* Hotkey (read-only; assigning keys comes with Slice 12) — keys belong to a deck's placement */}
       {deck && (
         <div class="sb-inspector-section">
           <label class="sb-field-label">HOTKEY</label>
@@ -406,7 +411,7 @@ export function PadEditorPanel({
             >
               {hotkey ?? '— not assigned —'}
             </span>
-            <span class="sb-hint-text">Slice 8</span>
+            <span class="sb-hint-text">read-only</span>
           </div>
         </div>
       )}
