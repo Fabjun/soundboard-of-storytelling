@@ -4,6 +4,10 @@
 
 All notable changes to Soundboard of Storytelling, newest first.
 
+## 3.0.107 — 2026-10-02
+
+- ci: commit messages follow Conventional Commits, checked by commitlint (S6, ADR-0060 accepted by the owner)
+
 ## 3.0.106 — 2026-10-02
 
 - docs: review log — Slice 11 pull request (#38)

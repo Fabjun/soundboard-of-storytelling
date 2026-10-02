@@ -1,6 +1,6 @@
 # ADR-XXXX: <Title>
 
-**Status:** Accepted | Deprecated | Superseded by ADR-YYYY
+**Status:** Proposed | Accepted | Deprecated | Superseded by ADR-YYYY
 **Date:** YYYY-MM-DD
 **Slice:** Slice X | cross-cutting | infrastructure
 **Refines:** ADR-XXXX | —
