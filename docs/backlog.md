@@ -1275,6 +1275,13 @@ trace; local runs now use `retain-on-failure` (cost measured: 19 s instead of 18
 machine was swapping hard (16 GB RAM; at 16:23 254 MB free and 6.9 GB compressed; load average about 380 on 10 cores right after the failed gate, 255 at 16:22, 175 at 16:35; macOS services relaunched in a loop). It eased on its own (1-minute load 4.3 when measured later that afternoon). The
 earlier failures may have had the same cause — not proven. Gates now run only on a quiet machine
 (load checked first) and never next to other heavy commands.
+**CI (evening):** `full-webkit` flaked on main (2 of ~10 runs) and on 6 of 9 stack PRs — always
+the `page.goto` right after the WebKit seed, which ended with `page.reload()`: "WebKit
+encountered an internal error" or a 30 s timeout on the first click. Matches Playwright issue
+microsoft/playwright#43070 (goto + reload crashes the WebKit content process on Linux since 1.60;
+we run 1.63 since 2026-09-30, green for ~20 runs before). Mitigation: the seed no longer reloads
+(every caller navigates next). Measure over the next ten CI runs; if it recurs, pin the WebKit
+build that passes (the issue names 1.59) as an exception with this entry as trigger.
 **When:** on the next occurrence — read the trace from `v3/test-results/` and note the load.
 
 ### Bug: combo "stop all" step stops the combo itself

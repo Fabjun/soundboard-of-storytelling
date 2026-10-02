@@ -4,6 +4,18 @@
 
 All notable changes to Soundboard of Storytelling, newest first.
 
+## 3.0.129 — 2026-10-02
+
+- chore: merge main into the stack — WebKit seed fix, review log
+
+## 3.0.128 — 2026-10-02
+
+- test(e2e): the WebKit seed no longer reloads the page — the next navigation crashed WebKit on Linux CI (Playwright issue #43070)
+
+## 3.0.127 — 2026-10-02
+
+- docs: review log — #36 decisions built; decisions for #37, #38, #39 and the P8 slice proposal prepared with sources
+
 ## 3.0.126 — 2026-10-02
 
 - feat(pads): a Loop with several files runs in the background of a combo and its list repeats; it glows like any loop; the old Playlist colours are gone (owner decisions on PR #36; engine change awaits the playback check)
