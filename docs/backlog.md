@@ -1229,6 +1229,23 @@ movement) would need a clear coexistence contract. First-pass recommendation: GA
 
 ## 4. Deferred Infrastructure
 
+### Flaky smoke test: a new board vanished right after NEW BOARD (WebKit, 2026-10-02)
+
+Seen once, in the pre-commit smoke run of a stack merge (`board-writes`): `mode-toggle.spec.ts`
+in `smoke-webkit` — the board screen showed "Board not found." right after the board was created
+and opened. Evidence: the error output and the page snapshot (the HTML report was overwritten by
+a re-run — the procedure's step 1 was not fully kept). Not reproduced: 5 × the spec in WebKit,
+30 × the flow in WebKit, 10 × in Chromium with 6× CPU throttling.
+**Cause found in the code** (fixed on main): the stored boards were loaded after the first
+render and replaced the store when the load finished — a board created before that vanished.
+The state now loads before the first render (`v3/src/state/boot.ts`, `codeGuards` rule 6).
+Whether this caused the one failure is **not proven**: a failed board save also removes the new
+board (`createBoard` rollback on the stack).
+**Gap:** local runs keep no trace (`trace: 'on-first-retry'`, no retries locally), so a rare
+failure in a hook cannot be diagnosed afterwards.
+**When:** on the next occurrence — and before that, decide on `trace: 'retain-on-failure'` for
+local runs (measure the cost first).
+
 ### Bug: combo "stop all" step stops the combo itself
 
 Found 2026-09-29 by the T4 characterization tests. A combo step with `stopAll` calls

@@ -7,9 +7,28 @@ export type ChangelogEntry = {
   items: string[];
 };
 
-export const APP_VERSION = '3.0.114';
+export const APP_VERSION = '3.0.117';
 
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.117',
+    date: '2026-10-02',
+    items: ['chore: merge main into the stack — the stored state loads before the first render'],
+  },
+  {
+    version: '3.0.116',
+    date: '2026-10-02',
+    items: [
+      'test(guards): rule 6 checks who replaces boards / library list in the store, so reading them for an export stays allowed',
+    ],
+  },
+  {
+    version: '3.0.115',
+    date: '2026-10-02',
+    items: [
+      'fix(boot): boards and the library list load before the first screen — a board created right after the start can no longer vanish',
+    ],
+  },
   {
     version: '3.0.114',
     date: '2026-10-02',
