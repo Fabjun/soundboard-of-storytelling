@@ -1,15 +1,14 @@
 // ─────────────────────────────────────────────────────────────────────────────
 // App — Root component
 //
-// Responsibilities:
-//  1. Bootstrap: load library metadata + all boards from IDB on first mount
-//  2. Top-level screen routing via currentScreen signal
+// Top-level screen routing via the currentScreen signal. The stored state (library list,
+// boards) is already loaded when App first renders — see src/state/boot.ts and main.tsx.
+// On mount it asks once for persistent storage (ADR-0061).
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { useEffect } from 'preact/hooks';
 import type { JSX } from 'preact';
-import { currentScreen, libraryItems, boards } from './state/store';
-import { libGetAllMeta, boardGetAll } from './db/idb';
+import { currentScreen } from './state/store';
 import { requestPersistentStorage } from './db/persistentStorage';
 import { StartScreen } from './screens/StartScreen';
 import { LibraryScreen } from './screens/LibraryScreen';
@@ -17,23 +16,8 @@ import { BoardListScreen } from './screens/BoardListScreen';
 import { BoardScreen } from './screens/BoardScreen';
 
 export function App(): JSX.Element {
-  // Bootstrap: populate libraryItems and boards signals from IDB once on mount.
-  // libGetAllMeta() uses a cursor — safe for any library size (no Blob in RAM).
-  // boardGetAll() loads plain JSON documents — no blobs, no cursor trick needed.
+  // D4: ask the browser to keep boards and audio (invisible to the user; ADR-0061)
   useEffect(() => {
-    libGetAllMeta()
-      .then((items) => {
-        libraryItems.value = items;
-      })
-      .catch((err) => console.error('Library bootstrap failed:', err));
-
-    boardGetAll()
-      .then((all) => {
-        boards.value = all;
-      })
-      .catch((err) => console.error('Board bootstrap failed:', err));
-
-    // D4: ask the browser to keep boards and audio (invisible to the user; ADR-0061)
     void requestPersistentStorage();
   }, []);
 

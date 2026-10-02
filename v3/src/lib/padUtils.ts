@@ -45,23 +45,13 @@ export function indexToPos(index: number, cols: number): PadPosition {
   return { col: index % cols, row: Math.floor(index / cols) };
 }
 
-// ── Pad type inference ───────────────────────────────────────────────────────
+// ── New pad type ─────────────────────────────────────────────────────────────
 
 /**
- * Infer pad type from audio duration and file count.
- *
- * Thresholds (docs/design/design-notes.md A2 Pre-disposition):
- *   < 5 s     → SINGLE (short clip, fire-and-forget)
- *   5–9.99 s  → SINGLE (ambiguous zone; default SINGLE, flip allowed on pad)
- *   ≥ 10 s    → LOOP   (sustained ambient)
- *   fileCount > 1 → LOOP (several files play one after another — the former Playlist,
- *                   ADR-0048), regardless of duration
+ * Type of a new pad when the user picks none — on every creation path. No type is guessed from
+ * the file (owner decision 2026-10-02, docs/product/README.md#pad-types--decided).
  */
-export function typeInference(durationSeconds: number, fileCount: number): PadType {
-  if (fileCount > 1) return 'loop';
-  if (durationSeconds >= 10) return 'loop';
-  return 'single';
-}
+export const DEFAULT_PAD_TYPE = 'single' satisfies PadType;
 
 // ── New pads ─────────────────────────────────────────────────────────────────
 
