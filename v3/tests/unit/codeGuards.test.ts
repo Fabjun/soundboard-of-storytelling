@@ -14,6 +14,8 @@
 // 6. The stored state is loaded once, before the first render (src/state/boot.ts): only boot.ts
 //    and the store's own setters replace boards / libraryItems — a load that finished after the
 //    first render replaced a board created meanwhile (2026-10-02). Reading for an export is fine.
+// 7. No internal plan names ("Slice 8", "BACKLOG") in what the app shows — text and attributes of
+//    components and screens; code comments may name them.
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { readdirSync, readFileSync } from 'node:fs';
@@ -272,5 +274,25 @@ describe('guard: the stored state is loaded only before the first render (src/st
       'state/boot.ts',
       'state/store.ts',
     ]);
+  });
+});
+
+describe('guard: the app shows no internal plan names', () => {
+  // Comment lines (`//`, `/*`, `*`, `{/*`) may name slices; everything else is rendered or an attribute
+  const shown = componentFiles.flatMap((f) =>
+    readFileSync(join(SRC, f), 'utf8')
+      .split('\n')
+      .map((line, i) => ({ line, at: `${f}:${i + 1}` }))
+      .filter(({ line }) => !/^\s*(\/\/|\/\*|\*|\{\/\*)/.test(line))
+      .filter(({ line }) => /\b(Slice \d|BACKLOG)\b/.test(line.replace(/\/\/.*$/, '')))
+      .map(({ at }) => at),
+  );
+
+  it('finds component files (sanity)', () => {
+    expect(componentFiles.length).toBeGreaterThan(20);
+  });
+
+  it('no component or screen shows a slice number or a backlog reference', () => {
+    expect(shown, 'say what the user can do, not where it is planned').toEqual([]);
   });
 });
