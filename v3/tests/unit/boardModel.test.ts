@@ -30,6 +30,8 @@ import {
   setPlacementHotkey,
   setPlacements,
   updatePad,
+  parseBoard,
+  withNewIds,
 } from '../../src/lib/boardModel';
 
 const grid = { cols: 4, rows: 4, gap: 4, padSize: 'md' };
@@ -465,5 +467,235 @@ describe('edges found by mutation testing', () => {
       'deck d2: cell 0,2 outside the 2×2 grid',
       'combo c: step references unknown pad ghost',
     ]);
+  });
+});
+
+describe('withNewIds (import)', () => {
+  it('renews every id; placements, quick access and combo steps follow; content stays', () => {
+    let b = addPadToDeck(emptyBoard(), 'd1', single('a'), { col: 0, row: 0 });
+    const combo: ComboPad = {
+      id: 'c',
+      type: 'combo',
+      name: 'c',
+      volume: 80,
+      fadeIn: 0,
+      fadeOut: 0,
+      steps: [{ padIds: ['a', 'ghost'] }],
+    };
+    b = addPadToDeck(b, 'd2', combo, { col: 1, row: 0 });
+    b = { ...b, quickAccess: [{ padId: 'a', hotkey: 'K1' }] };
+    let n = 0;
+    const c = withNewIds(b, () => `x${n++}`);
+    const [a, copied] = c.pads;
+    expect(
+      [c.id, ...c.decks.map((d) => d.id), a.id, copied.id].every((id) => id.startsWith('x')),
+    ).toBe(true);
+    expect(new Set([c.id, ...c.decks.map((d) => d.id), a.id, copied.id]).size).toBe(5);
+    expect(c.decks[0].placements[0]).toEqual({ padId: a.id, position: { col: 0, row: 0 } });
+    expect(c.decks[1].placements[0].padId).toBe(copied.id);
+    expect(c.quickAccess).toEqual([{ padId: a.id, hotkey: 'K1' }]);
+    expect(copied).toMatchObject({ type: 'combo', steps: [{ padIds: [a.id, 'ghost'] }] }); // unknown stays
+    expect(c.name).toBe(b.name);
+    expect(a.name).toBe('a');
+  });
+});
+
+describe('updatePad', () => {
+  it('replaces only the pad with that id', () => {
+    let b = addPadToDeck(emptyBoard(), 'd1', single('a'), { col: 0, row: 0 });
+    b = addPadToDeck(b, 'd1', single('b'), { col: 1, row: 0 });
+    b = updatePad(b, { ...single('a'), name: 'changed' });
+    expect(b.pads.map((p) => p.name)).toEqual(['changed', 'b']);
+  });
+});
+
+describe('parseBoard (untrusted boards from a backup file)', () => {
+  /** A valid board using every optional field once. */
+  const valid = () => ({
+    id: 'b',
+    name: 'Night',
+    themeId: 'hearth',
+    pads: [
+      {
+        id: 'p',
+        type: 'single',
+        name: 'Owl',
+        volume: 80,
+        fadeIn: 0,
+        fadeOut: 1,
+        iconRef: 'owl',
+        color: 'red',
+        files: ['h1'],
+        order: 'sequential',
+        trimStart: 1,
+        trimEnd: 2,
+      },
+      {
+        id: 'l',
+        type: 'loop',
+        name: 'Rain',
+        volume: 80,
+        fadeIn: 0,
+        fadeOut: 0,
+        files: [],
+        order: 'shuffle',
+      },
+      {
+        id: 'c',
+        type: 'combo',
+        name: 'Day',
+        volume: 80,
+        fadeIn: 0,
+        fadeOut: 0,
+        steps: [{ padIds: ['p'], duration: 2, stopAll: true, fadeOutAll: 1.5 }, { padIds: [] }],
+      },
+    ],
+    decks: [
+      {
+        id: 'd',
+        name: 'Deck 1',
+        order: 0,
+        gridConfig: { cols: 4, rows: 4, gap: 8, padSize: 'md' },
+        placements: [
+          { padId: 'p', position: { col: 0, row: 0 }, hotkey: 'K1' },
+          { padId: 'c', position: { col: 1, row: 0 } },
+        ],
+      },
+    ],
+    quickAccess: [{ padId: 'l', hotkey: 'K2' }, { padId: 'c' }],
+  });
+
+  it('accepts a valid board with every optional field, and keeps only the board fields', () => {
+    expect(parseBoard({ ...valid(), extra: 1 })).toEqual(valid());
+  });
+
+  /** The board with one pad changed — the others stay, so only that pad's field is wrong. */
+  const withPad = (b: ReturnType<typeof valid>, i: number, patch: Record<string, unknown>) => ({
+    ...b,
+    pads: b.pads.map((p, k) => (k === i ? { ...p, ...patch } : p)),
+  });
+
+  /** [description, change] — each one makes the board invalid. */
+  const broken: [string, (b: ReturnType<typeof valid>) => unknown][] = [
+    ['not an object', () => 'board'],
+    ['an array', () => []],
+    ['id missing', (b) => ({ ...b, id: 1 })],
+    ['name missing', (b) => ({ ...b, name: undefined })],
+    ['themeId missing', (b) => ({ ...b, themeId: null })],
+    ['pads not an array', (b) => ({ ...b, pads: {} })],
+    ['decks not an array', (b) => ({ ...b, decks: 'd' })],
+    ['quickAccess not an array', (b) => ({ ...b, quickAccess: undefined })],
+    ['pad not an object', (b) => ({ ...b, pads: [...b.pads, null] })],
+    ['pad id', (b) => withPad(b, 0, { id: 5 })],
+    ['pad name', (b) => withPad(b, 0, { name: null })],
+    ['pad volume', (b) => withPad(b, 0, { volume: '80' })],
+    ['pad fadeIn', (b) => withPad(b, 0, { fadeIn: null })],
+    ['pad fadeOut', (b) => withPad(b, 0, { fadeOut: undefined })],
+    ['pad iconRef', (b) => withPad(b, 0, { iconRef: 1 })],
+    ['pad color', (b) => withPad(b, 0, { color: false })],
+    ['pad type', (b) => withPad(b, 0, { type: 'playlist' })],
+    ['pad files', (b) => withPad(b, 0, { files: ['h1', 2] })],
+    ['pad files missing', (b) => withPad(b, 0, { files: undefined })],
+    ['pad order', (b) => withPad(b, 0, { order: 'random' })],
+    ['pad trimStart', (b) => withPad(b, 0, { trimStart: '1' })],
+    ['pad trimEnd', (b) => withPad(b, 0, { trimEnd: null })],
+    ['loop files', (b) => withPad(b, 1, { files: 'h' })],
+    ['combo steps', (b) => withPad(b, 2, { steps: undefined })],
+    ['combo step', (b) => withPad(b, 2, { steps: [5] })],
+    ['step padIds', (b) => withPad(b, 2, { steps: [{ padIds: 'p' }] })],
+    ['step duration', (b) => withPad(b, 2, { steps: [{ padIds: [], duration: '2' }] })],
+    ['step stopAll', (b) => withPad(b, 2, { steps: [{ padIds: [], stopAll: 1 }] })],
+    ['step fadeOutAll', (b) => withPad(b, 2, { steps: [{ padIds: [], fadeOutAll: true }] })],
+    ['deck not an object', (b) => ({ ...b, decks: [7] })],
+    ['deck id', (b) => ({ ...b, decks: [{ ...b.decks[0], id: null }] })],
+    ['deck name', (b) => ({ ...b, decks: [{ ...b.decks[0], name: 3 }] })],
+    ['deck order', (b) => ({ ...b, decks: [{ ...b.decks[0], order: '0' }] })],
+    ['grid missing', (b) => ({ ...b, decks: [{ ...b.decks[0], gridConfig: null }] })],
+    [
+      'grid cols',
+      (b) => ({
+        ...b,
+        decks: [{ ...b.decks[0], gridConfig: { ...b.decks[0].gridConfig, cols: '4' } }],
+      }),
+    ],
+    [
+      'grid rows',
+      (b) => ({
+        ...b,
+        decks: [{ ...b.decks[0], gridConfig: { ...b.decks[0].gridConfig, rows: null } }],
+      }),
+    ],
+    [
+      'grid gap',
+      (b) => ({
+        ...b,
+        decks: [{ ...b.decks[0], gridConfig: { ...b.decks[0].gridConfig, gap: undefined } }],
+      }),
+    ],
+    [
+      'grid padSize',
+      (b) => ({
+        ...b,
+        decks: [{ ...b.decks[0], gridConfig: { ...b.decks[0].gridConfig, padSize: 2 } }],
+      }),
+    ],
+    ['placements', (b) => ({ ...b, decks: [{ ...b.decks[0], placements: {} }] })],
+    ['placement', (b) => ({ ...b, decks: [{ ...b.decks[0], placements: ['p'] }] })],
+    [
+      'placement padId',
+      (b) => ({
+        ...b,
+        decks: [{ ...b.decks[0], placements: [{ padId: 1, position: { col: 0, row: 0 } }] }],
+      }),
+    ],
+    [
+      'placement position',
+      (b) => ({ ...b, decks: [{ ...b.decks[0], placements: [{ padId: 'p', position: [0, 0] }] }] }),
+    ],
+    [
+      'placement col',
+      (b) => ({
+        ...b,
+        decks: [{ ...b.decks[0], placements: [{ padId: 'p', position: { col: '0', row: 0 } }] }],
+      }),
+    ],
+    [
+      'placement row',
+      (b) => ({
+        ...b,
+        decks: [{ ...b.decks[0], placements: [{ padId: 'p', position: { col: 0 } }] }],
+      }),
+    ],
+    [
+      'placement hotkey',
+      (b) => ({
+        ...b,
+        decks: [
+          { ...b.decks[0], placements: [{ padId: 'p', position: { col: 0, row: 0 }, hotkey: 1 }] },
+        ],
+      }),
+    ],
+    ['placement null', (b) => ({ ...b, decks: [{ ...b.decks[0], placements: [null] }] })],
+    [
+      'one valid and one broken placement',
+      (b) => ({
+        ...b,
+        decks: [{ ...b.decks[0], placements: [...b.decks[0].placements, { padId: 'l' }] }],
+      }),
+    ],
+    ['quick access entry', (b) => ({ ...b, quickAccess: [null] })],
+    ['quick access padId', (b) => ({ ...b, quickAccess: [{ padId: 2 }] })],
+    ['quick access hotkey', (b) => ({ ...b, quickAccess: [{ padId: 'l', hotkey: false }] })],
+    [
+      'inconsistent (unknown pad placed)',
+      (b) => ({
+        ...b,
+        decks: [{ ...b.decks[0], placements: [{ padId: 'ghost', position: { col: 0, row: 0 } }] }],
+      }),
+    ],
+  ];
+
+  it.each(broken)('rejects: %s', (_, change) => {
+    expect(parseBoard(change(valid()))).toBeNull();
   });
 });

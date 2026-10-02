@@ -9,6 +9,7 @@ All notable changes to Soundboard of Storytelling, newest first.
 - feat(backup): the app asks the browser for persistent storage at start (Slice 10, D4); ADR-0061 proposes the backup file format and piecewise import
 - feat(backup): backup files (V1 and V3, gzip or plain) are read piece by piece — one library entry in memory at a time
 - feat(backup): V1 boards map to V3 boards with one deck — all pad modes, combos with their steps, keys, volume and fades
+- feat(backup): importing a backup — summary first, then audio one file at a time and boards last; nothing existing changes
 
 ## 3.0.100 — 2026-10-02
 

@@ -6,7 +6,15 @@
 // place it with a position and a key. Editing a pad changes it everywhere it appears.
 // ─────────────────────────────────────────────────────────────────────────────
 
-import type { Board, Deck, Pad, PadPosition, Placement } from '../types';
+import type {
+  Board,
+  ComboStep,
+  Deck,
+  Pad,
+  PadPosition,
+  Placement,
+  QuickAccessEntry,
+} from '../types';
 import { nextFreeSlot } from './padUtils';
 
 /** A pad as one deck shows it: the pad from the pool plus its placement in that deck. */
@@ -260,6 +268,112 @@ export function restoreDeck(board: Board, deck: Deck): Board {
 /** Removes a deck. Its pads stay in the pool (ADR-0048: pads belong to the board, not a deck). */
 export function deleteDeck(board: Board, deckId: string): Board {
   return { ...board, decks: board.decks.filter((d) => d.id !== deckId) };
+}
+
+/**
+ * A copy of a board with new ids for the board, its decks and its pads; placements, the
+ * quick-access bar and combo steps follow. An imported board then never shares an id with one
+ * already stored (pads are looked up by id across boards). Unknown references stay as they are —
+ * boardProblems() reports them.
+ */
+export function withNewIds(board: Board, newId: () => string): Board {
+  const padIds = new Map(board.pads.map((p) => [p.id, newId()]));
+  const pad = (id: string) => padIds.get(id) ?? id;
+  return {
+    ...board,
+    id: newId(),
+    pads: board.pads.map((p) =>
+      p.type === 'combo'
+        ? {
+            ...p,
+            id: pad(p.id),
+            steps: p.steps.map((s) => ({ ...s, padIds: s.padIds.map(pad) })),
+          }
+        : { ...p, id: pad(p.id) },
+    ),
+    decks: board.decks.map((d) => ({
+      ...d,
+      id: newId(),
+      placements: d.placements.map((pl) => ({ ...pl, padId: pad(pl.padId) })),
+    })),
+    quickAccess: board.quickAccess.map((q) => ({ ...q, padId: pad(q.padId) })),
+  };
+}
+
+// ── Untrusted boards (backup files) ──────────────────────────────────────────
+
+type Rec = Record<string, unknown>;
+const isRec = (v: unknown): v is Rec => typeof v === 'object' && v !== null && !Array.isArray(v);
+const isNum = (v: unknown): v is number => typeof v === 'number' && Number.isFinite(v);
+const isStr = (v: unknown): v is string => typeof v === 'string';
+const isStrArray = (v: unknown): v is string[] => Array.isArray(v) && v.every(isStr);
+const optional = (v: unknown, check: (x: unknown) => boolean) => v === undefined || check(v);
+
+function isStep(v: unknown): v is ComboStep {
+  return (
+    isRec(v) &&
+    isStrArray(v.padIds) &&
+    optional(v.duration, isNum) &&
+    optional(v.stopAll, (x) => typeof x === 'boolean') &&
+    optional(v.fadeOutAll, isNum)
+  );
+}
+
+function isPad(v: unknown): v is Pad {
+  if (!isRec(v) || !isStr(v.id) || !isStr(v.name)) return false;
+  if (!isNum(v.volume) || !isNum(v.fadeIn) || !isNum(v.fadeOut)) return false;
+  if (!optional(v.iconRef, isStr) || !optional(v.color, isStr)) return false;
+  if (v.type === 'combo') return Array.isArray(v.steps) && v.steps.every(isStep);
+  return (
+    (v.type === 'single' || v.type === 'loop') &&
+    isStrArray(v.files) &&
+    (v.order === 'sequential' || v.order === 'shuffle') &&
+    optional(v.trimStart, isNum) &&
+    optional(v.trimEnd, isNum)
+  );
+}
+
+function isPlacement(v: unknown): v is Placement {
+  return (
+    isRec(v) &&
+    isStr(v.padId) &&
+    isRec(v.position) &&
+    isNum(v.position.col) &&
+    isNum(v.position.row) &&
+    optional(v.hotkey, isStr)
+  );
+}
+
+function isDeck(v: unknown): v is Deck {
+  if (!isRec(v) || !isStr(v.id) || !isStr(v.name) || !isNum(v.order)) return false;
+  const g = v.gridConfig;
+  return (
+    isRec(g) &&
+    isNum(g.cols) &&
+    isNum(g.rows) &&
+    isNum(g.gap) &&
+    isStr(g.padSize) &&
+    Array.isArray(v.placements) &&
+    v.placements.every(isPlacement)
+  );
+}
+
+function isQuickAccessEntry(v: unknown): v is QuickAccessEntry {
+  return isRec(v) && isStr(v.padId) && optional(v.hotkey, isStr);
+}
+
+/**
+ * A board read from a file (untrusted JSON), if it has the board's shape AND passes the model's
+ * consistency rules — otherwise null. Only the board's own fields are kept.
+ */
+export function parseBoard(v: unknown): Board | null {
+  if (!isRec(v) || !isStr(v.id) || !isStr(v.name) || !isStr(v.themeId)) return null;
+  const { pads, decks, quickAccess } = v;
+  if (!Array.isArray(pads) || !pads.every(isPad)) return null;
+  if (!Array.isArray(decks) || !decks.every(isDeck)) return null;
+  if (!Array.isArray(quickAccess) || !quickAccess.every(isQuickAccessEntry)) return null;
+  const board: Board = { id: v.id, name: v.name, themeId: v.themeId, pads, decks, quickAccess };
+  return boardProblems(board).length === 0 ? board : null;
 }
 
 /**
