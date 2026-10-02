@@ -20,7 +20,9 @@
 //    boardPut / upsertBoard, which save or show a finished board computed from an outdated copy
 //    (BACKLOG "Bug: board writes from an outdated board copy lose changes"). A screen that
 //    reacts to a change uses applyBoardChange (at once), never `if (await updateBoard(`.
-// 8. No localStorage / sessionStorage anywhere (owner decision 2026-10-02, ADR-0062): small
+// 8. No internal plan names ("Slice 8", "BACKLOG") in what the app shows — text and attributes of
+//    components and screens; code comments may name them.
+// 9. No localStorage / sessionStorage anywhere (owner decision 2026-10-02, ADR-0062): small
 //    UI state lives in IndexedDB (src/state/prefs.ts) — web.dev advises against localStorage.
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -334,6 +336,26 @@ describe('guard: board writes go through boardWrites (BACKLOG "board writes from
 
   it('components and screens use updateBoard / createBoard, never boardPut / upsertBoard', () => {
     expect(calls, 'write: await updateBoard(board.id, (b) => change(b, …))').toEqual([]);
+  });
+});
+
+describe('guard: the app shows no internal plan names', () => {
+  // Comment lines (`//`, `/*`, `*`, `{/*`) may name slices; everything else is rendered or an attribute
+  const shown = componentFiles.flatMap((f) =>
+    readFileSync(join(SRC, f), 'utf8')
+      .split('\n')
+      .map((line, i) => ({ line, at: `${f}:${i + 1}` }))
+      .filter(({ line }) => !/^\s*(\/\/|\/\*|\*|\{\/\*)/.test(line))
+      .filter(({ line }) => /\b(Slice \d|BACKLOG)\b/.test(line.replace(/\/\/.*$/, '')))
+      .map(({ at }) => at),
+  );
+
+  it('finds component files (sanity)', () => {
+    expect(componentFiles.length).toBeGreaterThan(20);
+  });
+
+  it('no component or screen shows a slice number or a backlog reference', () => {
+    expect(shown, 'say what the user can do, not where it is planned').toEqual([]);
   });
 });
 

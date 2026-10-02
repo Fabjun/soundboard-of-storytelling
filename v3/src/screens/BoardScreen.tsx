@@ -13,7 +13,7 @@
 //   GAME  (mode='play'):  no editing, pad clicks → Slice 4 playback stub
 // ─────────────────────────────────────────────────────────────────────────────
 
-import { useState, useEffect, useRef } from 'preact/hooks';
+import { useState, useEffect } from 'preact/hooks';
 import type { JSX } from 'preact';
 import {
   currentScreen,
@@ -94,9 +94,8 @@ export function BoardScreen(): JSX.Element {
     }
   }, [mode]);
 
-  // Path C — ADD PAD keyboard shortcut (key 'A' in SETUP mode)
-  // Defined here (before early return) to satisfy Rules of Hooks — hooks must
-  // always be called unconditionally. handleAddPad guards for !board/!deck.
+  // Path C — ADD PAD. No keyboard shortcut: the app is operated by its buttons (owner decision
+  // 2026-10-02 — keyboard control of the app is Parked; pad keys in GAME are Slice 12).
   async function handleAddPad() {
     if (!board || (!deck && !poolView)) return;
     const deckId = deck?.id;
@@ -114,22 +113,6 @@ export function BoardScreen(): JSX.Element {
       setRightPanel('editor');
     }
   }
-
-  // One listener for the whole screen; it reads the state at key time — the mode signal and the
-  // handler of the latest render. A listener re-registered in an effect lagged one paint behind:
-  // an A pressed right after switching to SETUP still saw GAME and was ignored.
-  const addPadRef = useRef(handleAddPad);
-  addPadRef.current = handleAddPad;
-  useEffect(() => {
-    function onKeyDown(e: KeyboardEvent) {
-      if (currentMode.value !== 'edit') return;
-      const tag = (e.target as HTMLElement).tagName;
-      if (tag === 'INPUT' || tag === 'TEXTAREA') return;
-      if (e.key === 'a' || e.key === 'A') void addPadRef.current();
-    }
-    document.addEventListener('keydown', onKeyDown);
-    return () => document.removeEventListener('keydown', onKeyDown);
-  }, []);
 
   if (!board) {
     return (
@@ -397,9 +380,6 @@ export function BoardScreen(): JSX.Element {
                 <PixelIcon name="sparkle" size={11} />
                 ADD PAD
               </button>
-              <span class="sb-hint-text">
-                or press <kbd class="sb-kbd">A</kbd>
-              </span>
             </div>
           )}
         </main>
