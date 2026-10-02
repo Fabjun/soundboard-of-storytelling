@@ -4,6 +4,14 @@
 
 All notable changes to Soundboard of Storytelling, newest first.
 
+## 3.0.119 — 2026-10-02
+
+- chore: merge main into the stack — local test runs keep the trace of a failed test
+
+## 3.0.118 — 2026-10-02
+
+- test(e2e): local runs keep the trace of every failed test, so a rare failure in a git hook can be diagnosed afterwards
+
 ## 3.0.117 — 2026-10-02
 
 - chore: merge main into the stack — the stored state loads before the first render
