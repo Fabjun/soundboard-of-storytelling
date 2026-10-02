@@ -7,9 +7,16 @@ export type ChangelogEntry = {
   items: string[];
 };
 
-export const APP_VERSION = '3.0.127';
+export const APP_VERSION = '3.0.128';
 
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.128',
+    date: '2026-10-02',
+    items: [
+      'test(e2e): the WebKit seed no longer reloads the page — the next navigation crashed WebKit on Linux CI (Playwright issue #43070)',
+    ],
+  },
   {
     version: '3.0.127',
     date: '2026-10-02',

@@ -4,6 +4,10 @@
 
 All notable changes to Soundboard of Storytelling, newest first.
 
+## 3.0.128 — 2026-10-02
+
+- test(e2e): the WebKit seed no longer reloads the page — the next navigation crashed WebKit on Linux CI (Playwright issue #43070)
+
 ## 3.0.127 — 2026-10-02
 
 - docs: review log — #36 decisions built; decisions for #37, #38, #39 and the P8 slice proposal prepared with sources
