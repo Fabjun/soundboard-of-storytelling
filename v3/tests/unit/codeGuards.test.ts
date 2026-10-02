@@ -13,10 +13,13 @@
 //    Specs reload only through reloadApp, which waits for running board saves.
 // 5. Inline style lengths carry a unit (Preact 11 no longer appends px to numbers) — checked
 //    with the TypeScript type checker, so variables, ternaries and shorthands count.
-// 6. Board writes go through src/state/boardWrites.ts: components and screens never call
+// 6. The stored state is loaded once, before the first render (src/state/boot.ts): only boot.ts
+//    and the store's own setters replace boards / libraryItems — a load that finished after the
+//    first render replaced a board created meanwhile (2026-10-02). Reading for an export is fine.
+// 7. Board writes go through src/state/boardWrites.ts: components and screens never call
 //    boardPut / upsertBoard, which save or show a finished board computed from an outdated copy
 //    (BACKLOG "Bug: board writes from an outdated board copy lose changes").
-// 7. localStorage only in src/db/prefs.ts (keys `sos-v3:<name>[:<id>]`, ADR-0014) — V1 shares
+// 8. localStorage only in src/db/prefs.ts (keys `sos-v3:<name>[:<id>]`, ADR-0014) — V1 shares
 //    the origin, so an unprefixed key elsewhere could collide with V1's data.
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -279,6 +282,30 @@ describe('guard: inline style lengths carry a unit (Preact 11 upgrade)', () => {
 
   it('no numeric value for a length in style={…}', () => {
     expect(found, 'write the unit, e.g. `${n}px`').toEqual([]);
+  });
+});
+
+describe('guard: the stored state is loaded only before the first render (src/state/boot.ts)', () => {
+  const walkSrc = (dir: string): string[] =>
+    readdirSync(dir, { withFileTypes: true }).flatMap((e) =>
+      e.isDirectory() ? walkSrc(join(dir, e.name)) : [join(dir, e.name)],
+    );
+  // `boards.value = …` / `libraryItems.value = …` replaces the whole collection in the store
+  const writers = walkSrc(SRC)
+    .filter((f) => /\.tsx?$/.test(f))
+    .filter((f) => /\b(boards|libraryItems)\.value\s*=(?!=)/.test(readFileSync(f, 'utf8')))
+    .map((f) => relative(SRC, f).split('\\').join('/'))
+    .sort();
+
+  it('boot.ts fills the store (sanity)', () => {
+    expect(writers).toContain('state/boot.ts');
+  });
+
+  it('only boot.ts and the store setters replace boards / library list', () => {
+    expect(writers, 'load in src/state/boot.ts; change through the store setters').toEqual([
+      'state/boot.ts',
+      'state/store.ts',
+    ]);
   });
 });
 
