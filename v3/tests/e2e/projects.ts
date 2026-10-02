@@ -23,6 +23,7 @@ export const FULL_TESTS = [
   'pad-creation',
   'pad-editing',
   'layout-reach',
+  'whats-new',
   'pad-dnd',
   'game-mode',
   'audio',
@@ -39,6 +40,7 @@ export const FULL_WEBKIT_TESTS = [
   'pad-creation',
   'pad-editing',
   'layout-reach',
+  'whats-new',
   'pad-dnd',
 ];
 

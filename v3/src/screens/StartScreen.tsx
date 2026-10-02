@@ -6,7 +6,7 @@
 // Responsibilities:
 //  1. Render the app splash (animated flame, title, tagline)
 //  2. On button tap: unlock the Web Audio context + navigate to board-list
-//  3. Show version (clickable → changelog overlay) + audio state in footer
+//  3. Show version (clickable → What's new) + audio state in footer
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { useState } from 'preact/hooks';
@@ -15,46 +15,54 @@ import { PixelIcon } from '../components/PixelIcon';
 import { AnimatedFlame } from '../components/AnimatedFlame';
 import { audioContextState, currentScreen } from '../state/store';
 import { initAudio } from '../audio/index';
-import { APP_VERSION, CHANGELOG } from '../lib/changelog';
+import { APP_VERSION } from '../lib/changelog';
+import { WHATS_NEW, WHATS_NEW_GROUPS } from '../lib/whatsNew';
 
 declare const __BUILD_DATE__: string;
 
-// ── ChangelogOverlay ──────────────────────────────────────────────────────────
+// ── WhatsNewOverlay ───────────────────────────────────────────────────────────
 
-function ChangelogOverlay({ onClose }: { onClose: () => void }): JSX.Element {
+/** The release notes for the people who use the app, newest version first (ADR-0063). */
+function WhatsNewOverlay({ onClose }: { onClose: () => void }): JSX.Element {
   return (
-    <div class="sb-overlay">
-      {/* Header */}
+    <div class="sb-overlay" data-testid="start-screen-whats-new-region">
       <div class="sb-overlay-header">
-        <div class="sb-overlay-title">CHANGELOG</div>
+        <div class="sb-overlay-title">WHAT'S NEW</div>
         <button
           class="sb-btn sb-btn-sm sb-btn-ghost"
           onClick={onClose}
-          aria-label="Close changelog"
+          aria-label="Close What's new"
         >
           ×
         </button>
       </div>
 
-      {/* Scrollable entries */}
       <div class="sb-overlay-body">
-        {CHANGELOG.map((entry) => (
-          <div key={entry.version}>
-            {/* Version header */}
-            <div class="sb-row sb-changelog-entry-header">
-              <span class="sb-changelog-version">v {entry.version}</span>
+        {WHATS_NEW.map((entry) => (
+          <section key={entry.version} aria-label={`Version ${entry.version}`}>
+            <div class="sb-row sb-whats-new-entry-header">
+              <span class="sb-whats-new-version">v {entry.version}</span>
               <span class="sb-caption">{entry.date}</span>
             </div>
 
-            {/* Items */}
-            <ul class="sb-changelog-items">
-              {entry.items.map((item, i) => (
-                <li key={i} class="sb-mono sb-changelog-item">
-                  {item}
-                </li>
-              ))}
-            </ul>
-          </div>
+            {/* Only the groups this version has, in a fixed order */}
+            {WHATS_NEW_GROUPS.map(([key, heading]) => {
+              const sentences = entry[key];
+              if (!sentences?.length) return null;
+              return (
+                <div key={key}>
+                  <h3 class="sb-whats-new-group">{heading}</h3>
+                  <ul class="sb-whats-new-items">
+                    {sentences.map((text) => (
+                      <li key={text} class="sb-mono sb-whats-new-item">
+                        {text}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              );
+            })}
+          </section>
         ))}
       </div>
     </div>
@@ -93,11 +101,11 @@ function handleUnlock(): void {
 // ── Screen ────────────────────────────────────────────────────────────────────
 
 export function StartScreen(): JSX.Element {
-  const [showChangelog, setShowChangelog] = useState(false);
+  const [showWhatsNew, setShowWhatsNew] = useState(false);
 
   return (
     <div class="sb sb-scanlines sb-start-screen">
-      {showChangelog && <ChangelogOverlay onClose={() => setShowChangelog(false)} />}
+      {showWhatsNew && <WhatsNewOverlay onClose={() => setShowWhatsNew(false)} />}
 
       {/* ── Animated flame (tap to freeze) — v13-animated-flame.jsx ── */}
       <div class="sb-flame-well" data-testid="start-screen-flame-region">
@@ -144,12 +152,12 @@ export function StartScreen(): JSX.Element {
         </button>
       </div>
 
-      {/* ── Footer: clickable version → changelog + audio state ── */}
+      {/* ── Footer: clickable version → What's new + audio state ── */}
       <div class="sb-start-footer" data-testid="start-screen-footer-region">
         <button
           class="sb-version-link"
-          onClick={() => setShowChangelog(true)}
-          aria-label="Open changelog"
+          onClick={() => setShowWhatsNew(true)}
+          aria-label="Open What's new"
         >
           v {APP_VERSION}
         </button>

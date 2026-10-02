@@ -515,7 +515,7 @@ without exception:
 > The pre-push hook closes the gap between the local pre-commit (smoke only) and CI (all suites).
 > After `git clone`: `cd v3 && npm install` activates the hook automatically.
 
-0. **Bump `APP_VERSION` + changelog entry** in `v3/src/lib/changelog.ts` — required before every push, in the same commit as the change. Enforced by the pre-push hook.
+0. **Bump `APP_VERSION` + changelog entry** in `v3/src/lib/changelog.ts` — required before every push, in the same commit as the change. Enforced by the pre-push hook. Every item starts with a commit type. A change people can notice (`feat`, `fix`, `perf`, `a11y`) also gets a sentence in `v3/src/lib/whatsNew.ts` — plain words, what they can now do (ADR-0063; checked by `v3/tests/unit/whatsNew.test.ts`).
 1. `cd v3 && npm run build` — must exit 0 with zero TypeScript errors
 2. `git add` the relevant files, then `git commit` — lint-staged auto-formats + lints staged files
 3. `cd v3 && npm run test` — all unit tests must pass (exit 0)

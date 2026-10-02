@@ -1971,30 +1971,41 @@
   gap: var(--space-6);
 }
 
-/* ── Changelog (children of sb-overlay) ─────────────────────────── */
-.sb-changelog-entry-header {
-  /* @inventory: Per-entry header row in a changelog list — baseline alignment and margin override on sb-row. Use as class="sb-row sb-changelog-entry-header". */
+/* ── What's new (children of sb-overlay, ADR-0063) ─────────────────── */
+.sb-whats-new-entry-header {
+  /* @inventory: Per-version header row in What's new — baseline alignment, space above (between versions) and below. Use as class="sb-row sb-whats-new-entry-header". */
   align-items: baseline;
-  margin-bottom: var(--space-2);
+  margin-top: var(--space-4);
+  margin-bottom: var(--space-1);
 }
-.sb-changelog-version {
-  /* @inventory: Version number label inside a changelog entry — large VT323 in gold. */
+.sb-whats-new-version {
+  /* @inventory: Version number label in What's new — large VT323 in gold. */
   font-family: var(--font-ui);
   font-size: var(--fs-lg);
   letter-spacing: 0.06em;
   color: var(--gold);
 }
-.sb-changelog-items {
-  /* @inventory: <ul> list reset for changelog items — flex-column layout with small gap and no default margins. */
+.sb-whats-new-group {
+  /* @inventory: Group heading in What's new (New / Improved / Fixed / Removed) — small uppercase VT323, dimmed text, tight margins. */
+  margin: var(--space-2) 0 var(--space-1);
+  font-family: var(--font-ui);
+  font-size: var(--fs-sm);
+  font-weight: normal;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+.sb-whats-new-items {
+  /* @inventory: <ul> list reset for What's new sentences — flex-column layout with small gap and no default margins. */
   margin: 0;
   padding-left: var(--space-4);
   display: flex;
   flex-direction: column;
   gap: var(--space-1);
 }
-.sb-changelog-item {
-  /* @inventory: Changelog list item text additions on top of sb-mono — xs font-size and relaxed line-height. Use as class="sb-mono sb-changelog-item". */
-  font-size: var(--fs-xs);
+.sb-whats-new-item {
+  /* @inventory: What's new sentence on top of sb-mono — small font-size and relaxed line-height for reading. Use as class="sb-mono sb-whats-new-item". */
+  font-size: var(--fs-sm);
   line-height: 1.55;
 }
 

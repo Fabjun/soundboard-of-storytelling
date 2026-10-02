@@ -113,12 +113,13 @@ file. Format: `docs/architecture/_template.md`.
 
 ### Process & product decisions
 
-| #                                              | Title                                                | Status   | Slice         | Date       |
-| ---------------------------------------------- | ---------------------------------------------------- | -------- | ------------- | ---------- |
-| [ADR-0039](0039-vertical-slices.md)            | Vertical slices as the development model (8 slices)  | Accepted | cross-cutting | 2026-05-27 |
-| [ADR-0041](0041-english-only.md)               | English as the app language — no i18n infrastructure | Accepted | cross-cutting | 2026-05-27 |
-| [ADR-0046](0046-design-code-import-gate.md)    | Design→Code Integration via Checked Import Gate      | Accepted | cross-cutting | 2026-06-11 |
-| [ADR-0047](0047-documentation-architecture.md) | Documentation architecture — hub / leaf / template   | Accepted | cross-cutting | 2026-09-28 |
-| [ADR-0050](0050-repository-file-naming.md)     | Repository file naming                               | Accepted | cross-cutting | 2026-09-29 |
+| #                                               | Title                                                                             | Status   | Slice         | Date       |
+| ----------------------------------------------- | --------------------------------------------------------------------------------- | -------- | ------------- | ---------- |
+| [ADR-0039](0039-vertical-slices.md)             | Vertical slices as the development model (8 slices)                               | Accepted | cross-cutting | 2026-05-27 |
+| [ADR-0041](0041-english-only.md)                | English as the app language — no i18n infrastructure                              | Accepted | cross-cutting | 2026-05-27 |
+| [ADR-0046](0046-design-code-import-gate.md)     | Design→Code Integration via Checked Import Gate                                   | Accepted | cross-cutting | 2026-06-11 |
+| [ADR-0047](0047-documentation-architecture.md)  | Documentation architecture — hub / leaf / template                                | Accepted | cross-cutting | 2026-09-28 |
+| [ADR-0050](0050-repository-file-naming.md)      | Repository file naming                                                            | Accepted | cross-cutting | 2026-09-29 |
+| [ADR-0063](0063-release-notes-in-two-levels.md) | Release notes in two levels — "What's new" in the app, a changelog for developers | Accepted | cross-cutting | 2026-10-03 |
 
 <!-- AUTO-GENERATED:adr-index END -->
