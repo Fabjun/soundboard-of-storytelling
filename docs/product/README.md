@@ -149,6 +149,9 @@ The former **Playlist** type merges into Loop (resolves Q2). This changes the da
 (`PadType`, ADR-0042): a superseding ADR and a migration of existing playlist pads are
 required before implementation ([backlog: Playlist → Loop merge](../backlog.md#playlist--loop-merge-data-model)).
 
+A new pad is a **Single** unless the user picks another type — on every creation path; the app
+never guesses a type from the file (e.g. Loop for a long file). **Decided** 2026-10-02 (built).
+
 #### Playing pads
 
 | Statement                                                                           | Status              |

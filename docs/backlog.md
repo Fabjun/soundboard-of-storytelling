@@ -51,6 +51,18 @@ ignored — new pads are created in a deck. Open for the owner: should the view 
 sit in no deck, and what should a library drop there do?
 **When:** owner review of the Slice 9e PR; UI in Slice 13 at the latest.
 
+### Combo by dropping one pad onto another — idea (Open)
+
+Owner idea 2026-10-02: drag a pad onto another pad to create a Combo of both; the pads' icons
+could merge into the Combo's icon. Precedent: on the iPhone Home Screen, dragging an app onto
+another app creates a folder ([Apple Support](https://support.apple.com/guide/iphone/organize-your-apps-in-folders-iph822ece7dd/ios)).
+**Open questions:** a drop on a pad swaps the two today (pad DnD, `v3/src/lib/padDnd.ts`) —
+which gesture or drop zone creates a Combo instead; do both pads stay in the deck; what the
+Combo's steps are (both in one step, or one after the other); pads have no icons yet, so
+merged icons need an icon concept first. Minimal-first: the Combo editor (Slice 11) comes
+first, gestures later.
+**When:** after Slice 11, discussed with the owner before any plan.
+
 > **Slice numbers in this section refer to the May plan** (Slices 5–8, superseded 2026-09-28).
 > Mapping to the new plan (Slices 9–14): `CLAUDE.md §Slice progress`. Items are re-triaged when
 > the respective new slice is planned.
@@ -1191,6 +1203,8 @@ two design sessions with `--fade` in context.
 Pad-type inference defaults to SINGLE in the ambiguous 5–10 s band. Re-evaluate if real audio
 sets show many sub-loops in this zone.
 **Source:** docs/design/design-notes.md §Slice 3 — A2 Path B.
+→ superseded 2026-10-02: no type inference any more — a new pad is SINGLE unless the user picks
+a type ([product/README.md §Pad types](product/README.md#pad-types--decided)).
 
 ### ModeToggle sparks — design-implementation divergence
 
@@ -1328,7 +1342,7 @@ approval per stage; guard tests keep each scheme from drifting back.
 | S3    | Exception scheme (ADR-0053, sources cited): permanent = rule + reason, temporary = + `BACKLOG "…"`; ESLint `require-description` / `no-unlimited-disable` / unused directives = error; prettier-ignore and to-do markers guarded in `testGuards`; config files linted, unnecessary `*.config` Prettier exclusion removed; ADR `## Exceptions` tables; generated register `docs/development/exceptions.md` (35 entries)                           | ✅ Done (see git log: "…(S3)")                |
 | S4    | Test locators and IDs (ADR-0054, sources cited; supersedes ADR-0038): role/label/text first, test IDs as fallback, never CSS classes (≈30 class locators/assertions replaced); state via `aria-pressed` (pads in GAME, pad type buttons); test ID scheme `<component>-<element>-<kind>` applied to all 35+ IDs; spec files without folder prefix, `helpers.ts`, visual baselines moved (not regenerated); guards in `codeGuards` / `e2eProjects` | ✅ Done (see git log: "…(S4)")                |
 | S5    | English only: tool/hook/CI messages, generator texts, ADR categories and template, `testing.md` (stale facts corrected), CLAUDE.md, backlog/design/analysis passages, all ADRs 0001–0045 translated faithfully (fidelity check: code spans, links, headings identical except renamed section references); uniform ADR headers; guards in `docsGuards` (ADR header order + category, no German words — threshold calibrated to 1)                 | ✅ Done (see git log: "…(S5 1/4)"–"(S5 4/4)") |
-| S6    | Commit message convention in CLAUDE.md + `commit-msg` hook                                                                                                                                                                                                                                                                                                                                                                                       | open                                          |
+| S6    | Commit message convention (ADR-0060, **Proposed** — provisional, review pending): Conventional Commits checked by commitlint in a `commit-msg` hook and for pull requests in CI; `subject-case` off (proper nouns). Branch `s6-commit-convention`                                                                                                                                                                                                | ⏳ Branch + PR, review pending                |
 
 **Deferred to Slice 13:** re-evaluate the ADR-0028 exception for the two top bars (`TopBar` on
 Library/Board list, `BoardTopBar` on Board — deliberately separate per ADR-0026) and merge them

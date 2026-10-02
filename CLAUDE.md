@@ -57,7 +57,9 @@
 
 - **Research first** — before any plan, decision, scheme or tooling choice, research the
   current industry standard / official guidance (web, not memory alone) and cite the sources
-  in the plan; deviate only with a stated reason.
+  in the plan; deviate only with a stated reason. This holds for **every** decision, large or
+  small, whether it is put to the owner or taken by Claude: the recommended option is the
+  researched most professional solution, with its source (user decision 2026-10-02).
 - **Try to refute your own draft** — critically review every plan and result, including the
   counter-check itself (can it be vacuous or cause harm?), and improve it before presenting.
 - **A repeated error is a pattern** — when an error class occurs a second time, stop fixing
@@ -281,6 +283,10 @@ and has diverged). Never hardcode colors, fonts, or spacing.
   element type, variants via props. Never parallel components for
   "slightly different" needs. If tempted, ask.
 - **Delete buttons**: always 2-tap confirmation.
+- **Suggestions are derived, choices are state** (2026-10-02): a value the app suggests (e.g. a
+  pad name from the chosen file) is computed on render — never written into the same state as a
+  value the user typed or picked, so it can neither overwrite a choice nor pass for one
+  ([docs/design/design-notes.md](docs/design/design-notes.md), A2 Suggestion vs. pick).
 - **JSX safety**: Preact auto-escapes children. Do not bypass this
   with `dangerouslySetInnerHTML` unless absolutely required and
   approved.
@@ -437,6 +443,9 @@ any non-doc file flagged ⚠ for approval. Routine additionally: `v3/src/lib/cha
     formatted by `npm run format:md`, which fails instead of changing content — fix the source
     (escape a bare `*`/`_`, a `|` in a table cell). Before committing any TypeScript/TSX:
     `npm run lint` must exit 0. Format with `npm run format` if needed. CI enforces both.
+    11a. **Commit messages** (ADR-0060, proposed): Conventional Commits —
+    `<type>(<scope>): <description>`, types `build chore ci docs feat fix perf refactor revert
+style test`; checked by the `commit-msg` hook and for pull requests in CI.
 12. **Architecture Decision Records**: for every substantial architecture decision (data
     model, persistence, cross-cutting pattern, platform assumptions, new infrastructure)
     create an ADR in `docs/architecture/`, following `docs/architecture/_template.md`; the

@@ -4,6 +4,50 @@
 
 All notable changes to Soundboard of Storytelling, newest first.
 
+## 3.0.114 — 2026-10-02
+
+- chore: merge main into the stack — a new pad is Single unless the user picks a type
+
+## 3.0.113 — 2026-10-02
+
+- docs: review log — the Single default fix on main and PR #40 (a waiting auto-save is written, never dropped)
+
+## 3.0.111 — 2026-10-02
+
+- fix(pads): a new pad is Single unless you pick another type — no Loop guessed from long files; the suggested name follows the chosen file
+
+## 3.0.110 — 2026-10-02
+
+- docs: review log — the review session with the owner and PR #39
+
+## 3.0.108 — 2026-10-02
+
+- docs: research before every decision (owner rule); testing pitfall — a new git worktree runs no hooks until npm ci
+
+## 3.0.107 — 2026-10-02
+
+- ci: commit messages follow Conventional Commits, checked by commitlint (S6, ADR-0060 accepted by the owner)
+
+## 3.0.106 — 2026-10-02
+
+- docs: review log — Slice 11 pull request (#38)
+
+## 3.0.104 — 2026-10-02
+
+- docs: review log — the PR #37 row that 3.0.103 missed
+
+## 3.0.103 — 2026-10-02
+
+- docs: review log — Slice 10 pull request (#37)
+
+## 3.0.101 — 2026-10-02
+
+- test: the start screen visual test hides the version footer (a longer version moved the centred line); review log: PRs #35/#36, Slice 9 structure review
+
+## 3.0.97 — 2026-10-02
+
+- docs: review log — owner decisions O1–O8 of 2026-10-02 and the new pull requests
+
 ## 3.0.94 — 2026-10-01
 
 - feat(decks): All pads view of the whole pool; remove a pad from one deck or delete it everywhere ("used in N decks"); PAD editor deck checklist places a pad in other decks (Slice 9e, ADR-0048)
