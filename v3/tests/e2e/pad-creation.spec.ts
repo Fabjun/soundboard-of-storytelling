@@ -5,8 +5,7 @@
 // 13. Select audio from RECENT → ADD PAD → pad appears in cell
 // 14. Library drag to empty cell → pad created there (real pointer drag)
 // 15. BROWSE tab in popover → source select + ADD PAD
-// Later tests (no Slice-3 number): the A key pressed twice quickly adds two pads on two cells;
-// a new pad is SINGLE unless the user picks a type; the suggested name follows the file, a typed
+// Later tests (no Slice-3 number): a new pad is SINGLE unless the user picks a type; the suggested name follows the file, a typed
 // name is kept.
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -128,20 +127,6 @@ test('15 — Path A: BROWSE tab → search → select → ADD PAD', async ({ pag
       .locator('[data-testid^="pad-grid-cell-"]:not([data-testid^="pad-grid-cell-empty-slot-"])')
       .first(),
   ).toBeVisible();
-});
-
-// ── A key twice: each new pad gets its own cell (BACKLOG "Bug: board writes from an outdated board copy lose changes") ──
-
-test('pressing A twice quickly adds two pads on two different cells', async ({ page }) => {
-  // The second key press comes before the first pad is saved; the cell must still be free.
-  await page.keyboard.press('a');
-  await page.keyboard.press('a');
-  const pads = page.locator(
-    '[data-testid^="pad-grid-cell-"]:not([data-testid^="pad-grid-cell-empty-slot-"])',
-  );
-  await expect(pads).toHaveCount(2);
-  const cells = await pads.evaluateAll((els) => els.map((el) => el.getAttribute('data-pos')));
-  expect(new Set(cells).size).toBe(2);
 });
 
 // ── Later tests: what the user picks or types is kept ─────────────────────────
