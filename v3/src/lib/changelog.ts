@@ -7,9 +7,16 @@ export type ChangelogEntry = {
   items: string[];
 };
 
-export const APP_VERSION = '3.0.122';
+export const APP_VERSION = '3.0.124';
 
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.124',
+    date: '2026-10-02',
+    items: [
+      'docs(adr): every "Refines" has its "Refined by" back-link — checked by docsGuards; three missing back-links added',
+    ],
+  },
   {
     version: '3.0.122',
     date: '2026-10-02',

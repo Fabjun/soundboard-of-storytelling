@@ -4,6 +4,10 @@
 
 All notable changes to Soundboard of Storytelling, newest first.
 
+## 3.0.124 — 2026-10-02
+
+- docs(adr): every "Refines" has its "Refined by" back-link — checked by docsGuards; three missing back-links added
+
 ## 3.0.122 — 2026-10-02
 
 - docs: plan — Slice 15 PAD editor at V1 scope (before Slice 12); principle P8: every V1/V2 feature is built unless deliberately rejected

@@ -4,6 +4,7 @@
 **Date:** 2026-05-27
 **Slice:** Slice 4
 **Refines:** —
+**Refined by:** ADR-0043 (AudioContext created synchronously in the click handler)
 **Category:** Audio engine & iOS memory
 
 ## Context
