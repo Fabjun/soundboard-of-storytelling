@@ -1,5 +1,5 @@
 // ─────────────────────────────────────────────────────────────────────────────
-// prefs — UI preferences in IndexedDB (ADR-0014; owner decision 2026-10-02)
+// prefs — UI preferences in IndexedDB (ADR-0062; owner decision 2026-10-02)
 // Real IndexedDB semantics via fake-indexeddb. Cases: nothing stored, round trip incl. a reload
 // (loadPrefs), per-board keys, unknown values, clear, writes counted in pendingSaves, a failing
 // database never breaks the app.

@@ -149,6 +149,9 @@ The former **Playlist** type merges into Loop (resolves Q2). This changes the da
 (`PadType`, ADR-0042): a superseding ADR and a migration of existing playlist pads are
 required before implementation ([backlog: Playlist → Loop merge](../backlog.md#playlist--loop-merge-data-model)).
 
+A new pad is a **Single** unless the user picks another type — on every creation path; the app
+never guesses a type from the file (e.g. Loop for a long file). **Decided** 2026-10-02 (built).
+
 #### Playing pads
 
 | Statement                                                                           | Status              |
@@ -170,12 +173,14 @@ required before implementation ([backlog: Playlist → Loop merge](../backlog.md
 
 #### Pad options
 
-| Statement                                                                                       | Status                                                            |
-| ----------------------------------------------------------------------------------------------- | ----------------------------------------------------------------- |
-| Per-pad volume, fade in, fade out.                                                              | **Decided** (built)                                               |
-| PREVIEW in the PAD editor.                                                                      | **Decided** ([§3](#3-app-modes-game-and-setup)) — _not yet built_ |
-| Trim start / end in the PAD editor (engine support exists).                                     | **Decided** — low priority, _not yet built_                       |
-| Audio ducking, master volume, crossfade between pads, level meter, quick volume via long-press. | **Parked**                                                        |
+| Statement                                                                                                             | Status                                                                             |
+| --------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
+| Per-pad volume, fade in, fade out.                                                                                    | **Decided** (built)                                                                |
+| PREVIEW in the PAD editor.                                                                                            | **Decided** — Slice 15 ([§3](#3-app-modes-game-and-setup)), _not yet built_        |
+| Trim start / end in the PAD editor (engine support exists).                                                           | **Decided** — Slice 15 (owner 2026-10-02: no longer low priority), _not yet built_ |
+| REPEAT: a loop plays N times or endlessly (as in V1); engine change under the owner's control.                        | **Decided** — Slice 15, _not yet built_                                            |
+| The PAD editor has at least V1's functions: waveform + PREVIEW, trim, REPEAT, icons (up to 4 per pad), pad templates. | **Decided** 2026-10-02 — Slice 15                                                  |
+| Audio ducking, master volume, crossfade between pads, level meter, quick volume via long-press.                       | **Parked**                                                                         |
 
 #### Open
 
@@ -257,6 +262,7 @@ finished experience.
 | P5  | **Emergence over features.** Few, well-defined building blocks (pad types, decks, the two modes) that combine into rich results. The GAME / SETUP split is itself an example: simple, yet it makes complexity manageable. For a new feature, ask first: does it emerge from existing blocks? Does it need a new _general_ block? Only then consider a special case.          | **Decided** |
 | P6  | **Safe in live use.** During a running session nothing may surprise the game master or break irreversibly (e.g. the [Lock](#lock); two-tap delete). Depth belongs in SETUP, not in the heat of play.                                                                                                                                                                         | **Decided** |
 | P7  | **Learn from the prototypes, don't copy them.** V1 and V2 are sources for behavior, features and lessons. V3 re-implements in its own idiom (class system, tokens, components). Exception: the audio engine, ported unchanged by design.                                                                                                                                     | **Decided** |
+| P8  | **Everything the prototypes could do comes first.** Every feature of V1 and V2 is built in V3 unless the owner deliberately decides against it (status **Rejected**, with the reason). A feature in the [V1 / V2 inventory](v1-v2-inventory.md) without a decision counts as _to be built_ and gets a slice when the plan is next updated. Owner decision 2026-10-02.        | **Decided** |
 
 Engineering approach ("Think big, but don't rush") is not a product principle — it stays
 in `docs/backlog.md` until `docs/architecture/README.md` exists.

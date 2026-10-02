@@ -1,0 +1,12 @@
+#!/bin/sh
+# Commit message convention (ADR-0060): Conventional Commits, checked by commitlint.
+ROOT="$(git rev-parse --show-toplevel)"
+case "$1" in /*) MSG="$1" ;; *) MSG="$ROOT/$1" ;; esac
+cd "$ROOT/v3" || exit 1
+npx --no -- commitlint --edit "$MSG" || {
+  printf '\n❌ Commit message does not follow Conventional Commits — commit aborted.\n'
+  printf '   Form: <type>(<optional scope>): <description>   e.g.  fix(audio): release buffers on stop\n'
+  printf '   Types: build chore ci docs feat fix perf refactor revert style test\n'
+  printf '   Your message is kept in .git/COMMIT_EDITMSG.\n\n'
+  exit 1
+}

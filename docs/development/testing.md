@@ -59,15 +59,15 @@ number in brackets = test cases in the file (incl. quarantine)._
 | ----------------- | ------------------------------ | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `smoke`           | Chromium (Desktop)             | Dev + Build | `app-loads` (1), `library-empty` (1), `board-list-empty` (1), `board-create` (1), `mode-toggle` (1)                                                                                        |
 | `smoke-webkit`    | WebKit (Desktop)               | Dev         | `app-loads` (1), `library-empty` (1), `board-list-empty` (1), `board-create` (1), `mode-toggle` (1)                                                                                        |
-| `full`            | Chromium (Desktop)             | Dev + Build | `board-crud` (5), `deck-crud` (10), `pad-creation` (5), `pad-editing` (6), `pad-dnd` (2), `pad-pool` (8), `combo-editor` (3), `backup` (5), `game-mode` (1), `audio` (3)                   |
-| `full-webkit`     | WebKit (Desktop)               | Dev         | `board-crud` (5), `deck-crud` (10), `pad-creation` (5), `pad-editing` (6), `pad-dnd` (2), `pad-pool` (8), `combo-editor` (3)                                                               |
+| `full`            | Chromium (Desktop)             | Dev + Build | `board-crud` (5), `deck-crud` (10), `pad-creation` (7), `pad-editing` (6), `pad-dnd` (2), `pad-pool` (8), `combo-editor` (3), `backup` (5), `game-mode` (1), `audio` (3)                   |
+| `full-webkit`     | WebKit (Desktop)               | Dev         | `board-crud` (5), `deck-crud` (10), `pad-creation` (7), `pad-editing` (6), `pad-dnd` (2), `pad-pool` (8), `combo-editor` (3)                                                               |
 | `mobile`          | WebKit (iPhone 13 Pro)         | Dev         | `unlock-nav` (3), `board-flow` (2), `mode-toggle` (2), `touch-targets` (5), `overflow` (2)                                                                                                 |
 | `mobile-chromium` | Chromium (iPhone 13 Pro)       | Dev         | `pad-interaction` (2), `pad-creation` (1)                                                                                                                                                  |
 | `pwa`             | Chromium (Desktop)             | Build only  | `pwa` (7)                                                                                                                                                                                  |
 | `visual`          | Chromium (Desktop), macOS only | Dev         | `board-list-empty` (1), `board-list-with-board` (1), `board-screen-game` (1), `board-screen-setup` (1), `deck-rail` (1), `library-empty` (1), `mode-toggle-states` (2), `start-screen` (1) |
 
-**Unit tests (Vitest):** 33 files, 431 test cases —
-`audio/engine.test.ts` (43), `audio/lru.property.test.ts` (0), `audio/lru.test.ts` (11), `backupExport.test.ts` (8), `backupImport.test.ts` (17), `backupReader.test.ts` (9), `boardModel.property.test.ts` (0), `boardModel.test.ts` (40), `boardWrites.test.ts` (9), `codeGuards.test.ts` (22), `comboModel.property.test.ts` (0), `comboModel.test.ts` (13), `debouncedSave.test.ts` (5), `deckConflict.test.ts` (9), `docsGuards.test.ts` (22), `e2eProjects.test.ts` (6), `flameMath.property.test.ts` (0), `flameMath.test.ts` (22), `idb.test.ts` (20), `nanoid.test.ts` (2), `padDnd.property.test.ts` (0), `padDnd.test.ts` (31), `padSort.test.ts` (13), `padUtils.property.test.ts` (0), `padUtils.test.ts` (36), `persistentStorage.test.ts` (4), `playHistory.test.ts` (3), `prefs.test.ts` (11), `store.test.ts` (23), `testGuards.test.ts` (23), `upload.property.test.ts` (0), `upload.test.ts` (14), `v1Import.test.ts` (15)
+**Unit tests (Vitest):** 34 files, 434 test cases —
+`audio/engine.test.ts` (47), `audio/lru.property.test.ts` (0), `audio/lru.test.ts` (11), `backupExport.test.ts` (8), `backupImport.test.ts` (17), `backupReader.test.ts` (9), `boardModel.property.test.ts` (0), `boardModel.test.ts` (40), `boardWrites.test.ts` (9), `boot.test.ts` (3), `codeGuards.test.ts` (24), `comboModel.property.test.ts` (0), `comboModel.test.ts` (13), `debouncedSave.test.ts` (5), `deckConflict.test.ts` (9), `docsGuards.test.ts` (23), `e2eProjects.test.ts` (6), `flameMath.property.test.ts` (0), `flameMath.test.ts` (22), `idb.test.ts` (20), `nanoid.test.ts` (2), `padDnd.property.test.ts` (0), `padDnd.test.ts` (31), `padSort.test.ts` (13), `padUtils.property.test.ts` (0), `padUtils.test.ts` (29), `persistentStorage.test.ts` (4), `playHistory.test.ts` (3), `prefs.test.ts` (11), `store.test.ts` (23), `testGuards.test.ts` (23), `upload.property.test.ts` (0), `upload.test.ts` (14), `v1Import.test.ts` (15)
 
 <!-- AUTO-GENERATED:test-inventory END -->
 
@@ -223,6 +223,7 @@ Jobs and steps, generated from the workflow:
 | `unit-build-lint` | —               | (setup)                                                            | actions/checkout@v7                                                                                                                                                                                                                                                                                    |
 | `unit-build-lint` | —               | (setup)                                                            | actions/setup-node@v7                                                                                                                                                                                                                                                                                  |
 | `unit-build-lint` | —               | Install dependencies                                               | `npm ci`                                                                                                                                                                                                                                                                                               |
+| `unit-build-lint` | —               | Commit messages follow Conventional Commits (pull requests)        | `npx --no -- commitlint --from ${{ github.event.pull_request.base.sha }} --to ${{ github.event.pull_request.head.sha }} --verbose`                                                                                                                                                                     |
 | `unit-build-lint` | —               | Security audit (blocking at high/critical)                         | `npm audit --audit-level=high`                                                                                                                                                                                                                                                                         |
 | `unit-build-lint` | —               | Build (tsc -b type-checks app, tests, configs, scripts — ADR-0055) | `npm run build`                                                                                                                                                                                                                                                                                        |
 | `unit-build-lint` | —               | Unit tests + coverage floor                                        | `npm run test:coverage`                                                                                                                                                                                                                                                                                |
@@ -588,7 +589,7 @@ Without step 1 a red result proves nothing (seen 2026-09-30: the baseline was al
 
 A test that sometimes passes and sometimes fails is a bug — in the test or in the app.
 
-1. **Secure the evidence:** read the error output and `playwright-report/` (or the CI artifact) **before** re-running.
+1. **Secure the evidence:** read the error output and `playwright-report/` (or the CI artifact) **before** re-running. Locally every failed test keeps its trace in `v3/test-results/` (`npx playwright show-trace <zip>`); copy the folder away first — the next run clears it.
 2. **Find and fix the cause** (timing, missing wait for a state, real app bug).
 3. **Only if that is not possible right away:** quarantine with `test.fixme(…)` **and** a reason in the test name/comment **and** a BACKLOG entry. Never silently `skip`, never raise retries.
 
@@ -671,7 +672,15 @@ Scope or narrow the locator instead:
 - `page.getByTestId('top-bar').getByText('X', { exact: true })` — scoped to a region
 - `page.getByTestId('...')` as the fallback
 
-### 8. Stopping time with `page.clock`
+### 8. A new git worktree runs no hooks until `npm ci`
+
+`core.hooksPath` points to `.husky/_`, which `npm run prepare` (husky) generates and git ignores.
+A fresh `git worktree` has no `.husky/_`, and git then skips pre-commit, commit-msg and pre-push
+**without a message** — commits and pushes go out unchecked (found 2026-10-02; CI caught it).
+Before the first commit in a new worktree: `cd <worktree>/v3 && npm ci`, then check that
+`.husky/_` exists.
+
+### 9. Stopping time with `page.clock`
 
 A test that must not depend on how fast it clicks (e.g. "typed within the 500 ms auto-save
 delay") stops the page clock. Two traps, both found by a counter-check that stayed green:

@@ -4,9 +4,73 @@
 
 All notable changes to Soundboard of Storytelling, newest first.
 
+## 3.0.126 — 2026-10-02
+
+- feat(pads): a Loop with several files runs in the background of a combo and its list repeats; it glows like any loop; the old Playlist colours are gone (owner decisions on PR #36; engine change awaits the playback check)
+
+## 3.0.125 — 2026-10-02
+
+- chore: merge main into the stack — ADR back-link guard
+
+## 3.0.124 — 2026-10-02
+
+- docs(adr): every "Refines" has its "Refined by" back-link — checked by docsGuards; three missing back-links added
+
+## 3.0.123 — 2026-10-02
+
+- chore: merge main into the stack — engine fix #35, Slice 15 plan, principle P8
+
+## 3.0.122 — 2026-10-02
+
+- docs: plan — Slice 15 PAD editor at V1 scope (before Slice 12); principle P8: every V1/V2 feature is built unless deliberately rejected
+
+## 3.0.121 — 2026-10-02
+
+- docs: review log — engine fix #35 accepted and merged; boot fix, local traces; flaky-test note on machine overload
+
+## 3.0.120 — 2026-10-02
+
+- fix(audio): a combo step whose child ends at once no longer starts the next step twice, cuts short a sibling or skips the step duration (owner playback check passed)
+
+## 3.0.119 — 2026-10-02
+
+- chore: merge main into the stack — local test runs keep the trace of a failed test
+
+## 3.0.118 — 2026-10-02
+
+- test(e2e): local runs keep the trace of every failed test, so a rare failure in a git hook can be diagnosed afterwards
+
+## 3.0.117 — 2026-10-02
+
+- chore: merge main into the stack — the stored state loads before the first render
+
+## 3.0.116 — 2026-10-02
+
+- test(guards): rule 6 checks who replaces boards / library list in the store, so reading them for an export stays allowed
+
+## 3.0.115 — 2026-10-02
+
+- fix(boot): boards and the library list load before the first screen — a board created right after the start can no longer vanish
+
+## 3.0.114 — 2026-10-02
+
+- chore: merge main into the stack — a new pad is Single unless the user picks a type
+
+## 3.0.113 — 2026-10-02
+
+- docs: review log — the Single default fix on main and PR #40 (a waiting auto-save is written, never dropped)
+
 ## 3.0.112 — 2026-10-02
 
 - fix(pads): a pad name typed just before the next pad opens, or before switching apps, is saved — the waiting auto-save is written, never dropped
+
+## 3.0.111 — 2026-10-02
+
+- fix(pads): a new pad is Single unless you pick another type — no Loop guessed from long files; the suggested name follows the chosen file
+
+## 3.0.110 — 2026-10-02
+
+- docs: review log — the review session with the owner and PR #39
 
 ## 3.0.109 — 2026-10-02
 
@@ -14,11 +78,31 @@ All notable changes to Soundboard of Storytelling, newest first.
 - refactor(prefs): UI preferences (last view, last backup) live in IndexedDB instead of Web Storage (owner decision L1 after research); DB v6 only adds a store
 - feat(decks): All pads can be sorted — name, date added, date modified, kind, not in a deck first, duration, last played — each reversible and remembered per board (owner decision E1)
 
+## 3.0.108 — 2026-10-02
+
+- docs: research before every decision (owner rule); testing pitfall — a new git worktree runs no hooks until npm ci
+
+## 3.0.107 — 2026-10-02
+
+- ci: commit messages follow Conventional Commits, checked by commitlint (S6, ADR-0060 accepted by the owner)
+
+## 3.0.106 — 2026-10-02
+
+- docs: review log — Slice 11 pull request (#38)
+
 ## 3.0.105 — 2026-10-02
 
 - feat(combo): combo steps model and protection against combos that start themselves (Slice 11); an imported V1 combo that would do so loses that step reference
 - feat(combo): combo editor in the PAD editor — steps with the pads that start together, the wait and "stop everything first"; only pads that cannot start the combo itself are offered
 - fix(board): a new pad or deck is selected at once, not after it is saved — a name typed right after ADD PAD went to the previous pad
+
+## 3.0.104 — 2026-10-02
+
+- docs: review log — the PR #37 row that 3.0.103 missed
+
+## 3.0.103 — 2026-10-02
+
+- docs: review log — Slice 10 pull request (#37)
 
 ## 3.0.102 — 2026-10-02
 
@@ -29,6 +113,10 @@ All notable changes to Soundboard of Storytelling, newest first.
 - feat(backup): IMPORT on the board list — choose a V1 or V3 backup, confirm the summary, follow the progress, read what was dropped
 - feat(backup): EXPORT saves all boards and audio in one file (share sheet on the iPhone, download elsewhere); the board list shows when the last backup was made and reminds after a week
 
+## 3.0.101 — 2026-10-02
+
+- test: the start screen visual test hides the version footer (a longer version moved the centred line); review log: PRs #35/#36, Slice 9 structure review
+
 ## 3.0.100 — 2026-10-02
 
 - feat(model): three pad types — Single and Loop hold several files with an order, Playlist merges into Loop; a Single with several files plays the next one in turn or a random one; DB v5 (Slice 9d, ADR-0048)
@@ -37,6 +125,10 @@ All notable changes to Soundboard of Storytelling, newest first.
 ## 3.0.99 — 2026-10-02
 
 - test: board model mutation score 92.76 % → 100 % (edge cases of free cells, keys, undo order, consistency rules); coverage floor 89/90/80/87
+
+## 3.0.97 — 2026-10-02
+
+- docs: review log — owner decisions O1–O8 of 2026-10-02 and the new pull requests
 
 ## 3.0.96 — 2026-10-02
 

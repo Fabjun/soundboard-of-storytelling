@@ -88,9 +88,9 @@ _Pending._
 
 Names only — no values.
 
-- Tokens: `--pad-single`, `--pad-loop`, `--pad-playlist`, `--pad-combo` (and `-soft` / `-glow`
-  variants) — current code; `--pad-playlist` is affected by the Playlist → Loop merge
-  ([product §5](../../product/README.md#5-core-concepts), [backlog: Playlist → Loop merge](../../backlog.md#playlist--loop-merge-data-model)).
+- Tokens: `--pad-single`, `--pad-loop`, `--pad-combo` (and `-soft` / `-glow` variants) — current
+  code. The Playlist colour tokens were removed with the Playlist → Loop merge (owner decision
+  2026-10-02, PR #36; [product §5](../../product/README.md#5-core-concepts)).
 - Classes: `sb-pad`, `sb-pad-grid`, `sb-pad-grid-cell` — current code.
 
 ## Accessibility

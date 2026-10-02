@@ -57,7 +57,9 @@
 
 - **Research first** — before any plan, decision, scheme or tooling choice, research the
   current industry standard / official guidance (web, not memory alone) and cite the sources
-  in the plan; deviate only with a stated reason.
+  in the plan; deviate only with a stated reason. This holds for **every** decision, large or
+  small, whether it is put to the owner or taken by Claude: the recommended option is the
+  researched most professional solution, with its source (user decision 2026-10-02).
 - **Try to refute your own draft** — critically review every plan and result, including the
   counter-check itself (can it be vacuous or cause harm?), and improve it before presenting.
 - **A repeated error is a pattern** — when an error class occurs a second time, stop fixing
@@ -119,7 +121,8 @@
   store added for Board documents (decks and pads embedded as JSON, ADR-0010).
   Pad sets (`Board.sets`) exist in the model only; they are replaced by the
   quick-access bar (ADR-0048).
-- **Preferences**: `localStorage` (small UI state, theme choice, etc.)
+- **Preferences**: IndexedDB too — key-value store `keyval`, loaded before the first render
+  (`v3/src/state/prefs.ts`); no Web Storage anywhere (ADR-0062, owner decision 2026-10-02).
 - **PWA**: managed via `vite-plugin-pwa`. No hand-written service worker (V1 had one). Auto-
   generated SHELL list, auto-bumped version on build.
 - **No third-party origins at runtime** (ADR-0057): fonts and all other assets are
@@ -245,7 +248,7 @@ and has diverged). Never hardcode colors, fonts, or spacing.
 --flame, --blood, --blood-bright, --blood-soft
 --text, --text-dim, --text-mute, --text-strong
 --mode-setup, --mode-game
---pad-single, --pad-loop, --pad-playlist, --pad-combo
+--pad-single, --pad-loop, --pad-combo
   (each with -soft and -glow variants)
 ```
 
@@ -281,10 +284,18 @@ and has diverged). Never hardcode colors, fonts, or spacing.
   element type, variants via props. Never parallel components for
   "slightly different" needs. If tempted, ask.
 - **Delete buttons**: always 2-tap confirmation.
+- **Stored state loads before the first render** (2026-10-02): library list and boards are
+  loaded in `v3/src/state/boot.ts`, and `main.tsx` renders only afterwards (like redux-persist's
+  PersistGate) — a load that finishes later would replace what the user created meanwhile
+  (`codeGuards` rule 6).
+- **Suggestions are derived, choices are state** (2026-10-02): a value the app suggests (e.g. a
+  pad name from the chosen file) is computed on render — never written into the same state as a
+  value the user typed or picked, so it can neither overwrite a choice nor pass for one
+  ([docs/design/design-notes.md](docs/design/design-notes.md), A2 Suggestion vs. pick).
 - **Delayed writes are flushed, never dropped** (2026-10-02): a write that waits (auto-save
   debounce) goes through `v3/src/lib/debouncedSave.ts` and is written at once when its context
   ends — the editor closes or switches pad, the page is hidden (Chrome Page Lifecycle: persist
-  unsaved state on hidden). Every file with a timer is listed with its reason (`codeGuards` rule 8).
+  unsaved state on hidden). Every file with a timer is listed with its reason (`codeGuards` rule 9).
 - **JSX safety**: Preact auto-escapes children. Do not bypass this
   with `dangerouslySetInnerHTML` unless absolutely required and
   approved.
@@ -441,6 +452,9 @@ any non-doc file flagged ⚠ for approval. Routine additionally: `v3/src/lib/cha
     formatted by `npm run format:md`, which fails instead of changing content — fix the source
     (escape a bare `*`/`_`, a `|` in a table cell). Before committing any TypeScript/TSX:
     `npm run lint` must exit 0. Format with `npm run format` if needed. CI enforces both.
+    11a. **Commit messages** (ADR-0060, proposed): Conventional Commits —
+    `<type>(<scope>): <description>`, types `build chore ci docs feat fix perf refactor revert
+style test`; checked by the `commit-msg` hook and for pull requests in CI.
 12. **Architecture Decision Records**: for every substantial architecture decision (data
     model, persistence, cross-cutting pattern, platform assumptions, new infrastructure)
     create an ADR in `docs/architecture/`, following `docs/architecture/_template.md`; the
@@ -692,6 +706,10 @@ boardDelete(id: string): Promise<void>
 | 12  | Live control                | ⬜ Pending                             | —          | Numpad K1–K14, STOP ALL, pause, Wake Lock, mode switch stops sounds, Lock ([docs/product/README.md §3](docs/product/README.md#3-app-modes-game-and-setup), [§6](docs/product/README.md#6-platforms--input)). Goal: first real game night with V3 (laptop / tablet)                                                                                                                                        |
 | 13  | Adaptive layout             | ⬜ Pending                             | —          | Smartphones in general (not only iPhone): deck switcher, All pads, quick-access bar, search/sort bar, PAD card format + zoom (`docs/design/components/pad.md`)                                                                                                                                                                                                                                            |
 | 14  | Settings & polish           | ⬜ Pending                             | —          | Settings screen, Settings options from docs/product/README.md P2, themes                                                                                                                                                                                                                                                                                                                                  |
+| 15  | PAD editor (V1 scope)       | ⬜ Pending                             | —          | **Runs after 11, before 12** (owner decision 2026-10-02). At least the V1 editor: waveform with playhead and PREVIEW (respects fade and trim), trim start / end, REPEAT (a loop N times — engine change: owner approval + playback check), icons (up to 4 per pad), pad templates ([docs/product/README.md §5 Pad options](docs/product/README.md#pad-options))                                           |
+
+**Order (owner decision 2026-10-02):** … 11 → 15 → 12 → 13 → 14 — Slice 15 was added after the
+re-plan and runs before 12; numbers are identifiers, not the order.
 
 **Re-plan 2026-09-28 (numbering rule):** Slices 5–8 of the May plan are superseded; their numbers
 are **never reused**. Every existing reference to "Slice 5–8" (BACKLOG, ADRs, DESIGN_NOTES, code

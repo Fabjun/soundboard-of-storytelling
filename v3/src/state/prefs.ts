@@ -1,5 +1,5 @@
 // ─────────────────────────────────────────────────────────────────────────────
-// Preferences — small UI state kept in IndexedDB (ADR-0014, owner decision 2026-10-02)
+// Preferences — small UI state kept in IndexedDB (ADR-0062, owner decision 2026-10-02)
 //
 // IndexedDB, not the synchronous Web Storage API, which web.dev "Storage for the web" advises
 // against (it blocks the main thread). All entries are small and are read

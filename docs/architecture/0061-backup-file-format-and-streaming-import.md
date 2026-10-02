@@ -3,7 +3,7 @@
 **Status:** Proposed
 **Date:** 2026-10-02
 **Slice:** Slice 10
-**Refines:** ADR-0014
+**Refines:** ADR-0062
 **Category:** Persistence
 
 > **Proposed — decided provisionally while the product owner was away (2026-10-02), review
@@ -110,7 +110,7 @@ not shown (D4: invisible).
 ## Related
 
 - **Files:** v3/src/lib/backupReader.ts, v3/src/lib/v1Import.ts (planned)
-- **ADRs:** ADR-0014 (IndexedDB as sole persistence), ADR-0048 (pad pool, three pad types)
+- **ADRs:** ADR-0062 (IndexedDB for all persistence), ADR-0048 (pad pool, three pad types)
 - **Source documents:** [data-backup.md](../product/features/data-backup.md),
   [v1-v2-inventory.md §5](../product/v1-v2-inventory.md#5-data--backup)
 - **Sources:**
