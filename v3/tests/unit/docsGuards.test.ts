@@ -8,7 +8,8 @@
 //    after the push (seen while renaming the docs on 2026-09-29).
 // 3. README facts that drift silently: Node version (.nvmrc) and live URL (Vite base).
 // 4. ADR headers: Status, Date, Slice, Refines, [Refined by], Category — in this order, with a
-//    category from v3/scripts/sync-adr.ts (CLAUDE.md rule 12).
+//    category from v3/scripts/sync-adr.ts (CLAUDE.md rule 12). "Refines: ADR-X" and ADR-X's
+//    "Refined by" name each other (docs/architecture/_template.md).
 // 5. Project language is English (CLAUDE.md#project-identity): no file contains German
 //    function words — a heuristic, calibrated so English text never trips it.
 // 6. File paths in code spans of ACTIVE docs name files that exist in this repository
@@ -161,6 +162,31 @@ describe('guard: ADR headers (CLAUDE.md rule 12)', () => {
       }
     }
     expect(bad).toEqual([]);
+  });
+
+  it('"Refines" and "Refined by" name each other', () => {
+    // Header lines only (the first block before "## "); a "Refined by" may wrap onto a second line
+    const header = (f: string) => readFileSync(join(dir, f), 'utf8').split('\n## ')[0];
+    const field = (text: string, name: string) =>
+      new RegExp(`^\\*\\*${name}:\\*\\* ([\\s\\S]*?)(?=\\n\\*\\*|$)`, 'm').exec(text)?.[1] ?? '';
+    const ids = (s: string) => [...s.matchAll(/ADR-(\d{4})/g)].map((m) => m[1]);
+    const byNum = new Map(adrs.map((f) => [f.slice(0, 4), header(f)]));
+    const broken: string[] = [];
+    for (const [num, text] of byNum) {
+      for (const target of ids(field(text, 'Refines'))) {
+        if (!ids(field(byNum.get(target) ?? '', 'Refined by')).includes(num)) {
+          broken.push(`ADR-${num} refines ADR-${target}, which lacks "Refined by: ADR-${num}"`);
+        }
+      }
+      for (const source of ids(field(text, 'Refined by'))) {
+        if (!ids(field(byNum.get(source) ?? '', 'Refines')).includes(num)) {
+          broken.push(
+            `ADR-${num} names ADR-${source} under "Refined by", which does not refine it`,
+          );
+        }
+      }
+    }
+    expect(broken).toEqual([]);
   });
 });
 

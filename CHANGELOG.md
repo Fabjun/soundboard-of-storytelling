@@ -4,6 +4,14 @@
 
 All notable changes to Soundboard of Storytelling, newest first.
 
+## 3.0.125 — 2026-10-02
+
+- chore: merge main into the stack — ADR back-link guard
+
+## 3.0.124 — 2026-10-02
+
+- docs(adr): every "Refines" has its "Refined by" back-link — checked by docsGuards; three missing back-links added
+
 ## 3.0.123 — 2026-10-02
 
 - chore: merge main into the stack — engine fix #35, Slice 15 plan, principle P8
