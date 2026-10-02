@@ -15,7 +15,8 @@
 //    with the TypeScript type checker, so variables, ternaries and shorthands count.
 // 6. Board writes go through src/state/boardWrites.ts: components and screens never call
 //    boardPut / upsertBoard, which save or show a finished board computed from an outdated copy
-//    (BACKLOG "Bug: board writes from an outdated board copy lose changes").
+//    (BACKLOG "Bug: board writes from an outdated board copy lose changes"). A screen that
+//    reacts to a change uses applyBoardChange (at once), never `if (await updateBoard(`.
 // 7. localStorage only in src/db/prefs.ts (keys `sos-v3:<name>[:<id>]`, ADR-0014) — V1 shares
 //    the origin, so an unprefixed key elsewhere could collide with V1's data.
 // ─────────────────────────────────────────────────────────────────────────────
@@ -293,6 +294,15 @@ describe('guard: board writes go through boardWrites (BACKLOG "board writes from
 
   it('finds board writers (sanity)', () => {
     expect(usesUpdateBoard.length).toBeGreaterThanOrEqual(5);
+  });
+
+  it('the screen reacts to a change at once, not after its save (applyBoardChange)', () => {
+    // `if (await updateBoard(` / `x = await updateBoard(` reacts only once the save is done — a
+    // name typed meanwhile went to the previous pad (2026-10-02).
+    const late = componentFiles.flatMap((f) =>
+      /(if \(|=\s*)await updateBoard\(/.test(readFileSync(join(SRC, f), 'utf8')) ? [f] : [],
+    );
+    expect(late, 'const { board } = applyBoardChange(…); if (board) …').toEqual([]);
   });
 
   it('components and screens use updateBoard / createBoard, never boardPut / upsertBoard', () => {

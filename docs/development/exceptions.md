@@ -26,7 +26,7 @@ Inline: `// eslint-disable-next-line <rule> -- <reason>` (enforced by `require-d
 
 | Location                                       | Rule                                      | Reason                                                                                       |
 | ---------------------------------------------- | ----------------------------------------- | -------------------------------------------------------------------------------------------- |
-| `v3/src/components/PadEditorPanel.tsx:88`      | `react-hooks/exhaustive-deps`             | reset only when a different pad is opened (pad.id), not on every auto-save                   |
+| `v3/src/components/PadEditorPanel.tsx:92`      | `react-hooks/exhaustive-deps`             | reset only when a different pad is opened (pad.id), not on every auto-save                   |
 | `v3/src/screens/BoardScreen.tsx:77`            | `react-hooks/exhaustive-deps`             | auto-select only on board identity change, never override the user's deck choice             |
 | `v3/tests/e2e/deck-crud.spec.ts:76`            | `playwright/no-skipped-test`              | quarantine: feature not built (BACKLOG "Deck reorder")                                       |
 | `v3/tests/e2e/mobile/overflow.spec.ts:30`      | `playwright/no-skipped-test`              | quarantine: mobile layout not built until Slice 13 (BACKLOG "Re-enable mobile layout tests") |

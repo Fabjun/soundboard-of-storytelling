@@ -15,6 +15,8 @@ export const CHANGELOG: ChangelogEntry[] = [
     date: '2026-10-02',
     items: [
       'feat(combo): combo steps model and protection against combos that start themselves (Slice 11); an imported V1 combo that would do so loses that step reference',
+      'feat(combo): combo editor in the PAD editor — steps with the pads that start together, the wait and "stop everything first"; only pads that cannot start the combo itself are offered',
+      'fix(board): a new pad or deck is selected at once, not after it is saved — a name typed right after ADD PAD went to the previous pad',
     ],
   },
   {
