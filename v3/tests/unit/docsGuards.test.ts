@@ -24,6 +24,8 @@
 // 8. Every GFM table row has as many cells as its header — GitHub drops extra cells silently.
 // 9. Code blocks in active docs use no superseded term (Vale skips code).
 // 10. The API list in CLAUDE.md names functions that idb.ts / upload.ts export.
+// 11. Every feature in the V1 / V2 inventory carries a decision — a slice, Parked or Rejected, never
+//    Open (principle P8, docs/product/README.md#7-design-principles).
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { readdirSync, readFileSync } from 'node:fs';
@@ -124,6 +126,23 @@ describe('guard: README facts match the code', () => {
     const base = /base:\s*'([^']+)'/.exec(vite)?.[1];
     expect(base).toBeTruthy();
     expect(readme).toContain(`https://fabjun.github.io${base}`);
+  });
+});
+
+describe('guard: every V1 / V2 feature has a decision (P8)', () => {
+  const rows = readFileSync(join(ROOT, 'docs', 'product', 'v1-v2-inventory.md'), 'utf8')
+    .split('\n')
+    .filter((l) => l.startsWith('|') && !l.startsWith('| ---') && !l.startsWith('| Feature'))
+    .map((l) => l.split('|').map((c) => c.trim()))
+    .filter((c) => c.length >= 8);
+
+  it('finds the inventory rows (sanity)', () => {
+    expect(rows.length).toBeGreaterThan(60);
+  });
+
+  it('no feature is left without a decision', () => {
+    const open = rows.filter((c) => /^(\*\*)?Open\b/.test(c[c.length - 2] ?? '')).map((c) => c[1]);
+    expect(open, 'decide: a slice, **Parked** or **Rejected** with the reason').toEqual([]);
   });
 });
 

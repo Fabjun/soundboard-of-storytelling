@@ -4,6 +4,25 @@
 
 All notable changes to Soundboard of Storytelling, newest first.
 
+## 3.0.133 — 2026-10-03
+
+- chore: merge main into the stack — scroll fix, no app shortcuts, comfort plan
+
+## 3.0.132 — 2026-10-02
+
+- docs: plan — STOP ALL in two stages and a saving status (Slice 12), undo / redo (new Slice 18), relative units before Slice 13, Tab access and plain error messages as UI rules (owner decisions)
+
+## 3.0.131 — 2026-10-02
+
+- fix(layout): the deck grid scrolls when its pads do not fit, and the start screen footer no longer covers BOARD / LIBRARY on a short window
+- feat: the app is operated by its buttons — the A shortcut for adding a pad is gone (owner decision; keyboard control of the app is parked)
+- fix: the app no longer shows internal plan names (the HOTKEY field said "Slice 8")
+- docs: plan — editing several files per pad belongs to Slice 15; testing.md: what we test
+
+## 3.0.130 — 2026-10-02
+
+- docs: owner decisions on #37, #38, #39 and the P8 slice plan (new Slices 16 Library, 17 Help & onboarding); every V1/V2 feature now carries a decision, checked by docsGuards
+
 ## 3.0.129 — 2026-10-02
 
 - chore: merge main into the stack — WebKit seed fix, review log

@@ -22,6 +22,7 @@ export const FULL_TESTS = [
   'deck-crud',
   'pad-creation',
   'pad-editing',
+  'layout-reach',
   'pad-dnd',
   'pad-pool',
   'backup',
@@ -39,6 +40,7 @@ export const FULL_WEBKIT_TESTS = [
   'deck-crud',
   'pad-creation',
   'pad-editing',
+  'layout-reach',
   'pad-dnd',
   'pad-pool',
 ];

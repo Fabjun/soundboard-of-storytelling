@@ -59,15 +59,15 @@ number in brackets = test cases in the file (incl. quarantine)._
 | ----------------- | ------------------------------ | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `smoke`           | Chromium (Desktop)             | Dev + Build | `app-loads` (1), `library-empty` (1), `board-list-empty` (1), `board-create` (1), `mode-toggle` (1)                                                                                        |
 | `smoke-webkit`    | WebKit (Desktop)               | Dev         | `app-loads` (1), `library-empty` (1), `board-list-empty` (1), `board-create` (1), `mode-toggle` (1)                                                                                        |
-| `full`            | Chromium (Desktop)             | Dev + Build | `board-crud` (5), `deck-crud` (9), `pad-creation` (7), `pad-editing` (4), `pad-dnd` (2), `pad-pool` (7), `backup` (5), `game-mode` (1), `audio` (3)                                        |
-| `full-webkit`     | WebKit (Desktop)               | Dev         | `board-crud` (5), `deck-crud` (9), `pad-creation` (7), `pad-editing` (4), `pad-dnd` (2), `pad-pool` (7)                                                                                    |
+| `full`            | Chromium (Desktop)             | Dev + Build | `board-crud` (5), `deck-crud` (9), `pad-creation` (6), `pad-editing` (4), `layout-reach` (2), `pad-dnd` (2), `pad-pool` (7), `backup` (5), `game-mode` (1), `audio` (3)                    |
+| `full-webkit`     | WebKit (Desktop)               | Dev         | `board-crud` (5), `deck-crud` (9), `pad-creation` (6), `pad-editing` (4), `layout-reach` (2), `pad-dnd` (2), `pad-pool` (7)                                                                |
 | `mobile`          | WebKit (iPhone 13 Pro)         | Dev         | `unlock-nav` (3), `board-flow` (2), `mode-toggle` (2), `touch-targets` (5), `overflow` (2)                                                                                                 |
 | `mobile-chromium` | Chromium (iPhone 13 Pro)       | Dev         | `pad-interaction` (2), `pad-creation` (1)                                                                                                                                                  |
 | `pwa`             | Chromium (Desktop)             | Build only  | `pwa` (7)                                                                                                                                                                                  |
 | `visual`          | Chromium (Desktop), macOS only | Dev         | `board-list-empty` (1), `board-list-with-board` (1), `board-screen-game` (1), `board-screen-setup` (1), `deck-rail` (1), `library-empty` (1), `mode-toggle-states` (2), `start-screen` (1) |
 
-**Unit tests (Vitest):** 29 files, 387 test cases —
-`audio/engine.test.ts` (47), `audio/lru.property.test.ts` (0), `audio/lru.test.ts` (11), `backupExport.test.ts` (8), `backupImport.test.ts` (17), `backupReader.test.ts` (9), `boardModel.property.test.ts` (0), `boardModel.test.ts` (39), `boardWrites.test.ts` (7), `boot.test.ts` (3), `codeGuards.test.ts` (21), `deckConflict.test.ts` (9), `docsGuards.test.ts` (23), `e2eProjects.test.ts` (6), `flameMath.property.test.ts` (0), `flameMath.test.ts` (22), `idb.test.ts` (19), `nanoid.test.ts` (2), `padDnd.property.test.ts` (0), `padDnd.test.ts` (31), `padUtils.property.test.ts` (0), `padUtils.test.ts` (27), `persistentStorage.test.ts` (4), `prefs.test.ts` (8), `store.test.ts` (23), `testGuards.test.ts` (23), `upload.property.test.ts` (0), `upload.test.ts` (14), `v1Import.test.ts` (14)
+**Unit tests (Vitest):** 29 files, 391 test cases —
+`audio/engine.test.ts` (47), `audio/lru.property.test.ts` (0), `audio/lru.test.ts` (11), `backupExport.test.ts` (8), `backupImport.test.ts` (17), `backupReader.test.ts` (9), `boardModel.property.test.ts` (0), `boardModel.test.ts` (39), `boardWrites.test.ts` (7), `boot.test.ts` (3), `codeGuards.test.ts` (23), `deckConflict.test.ts` (9), `docsGuards.test.ts` (25), `e2eProjects.test.ts` (6), `flameMath.property.test.ts` (0), `flameMath.test.ts` (22), `idb.test.ts` (19), `nanoid.test.ts` (2), `padDnd.property.test.ts` (0), `padDnd.test.ts` (31), `padUtils.property.test.ts` (0), `padUtils.test.ts` (27), `persistentStorage.test.ts` (4), `prefs.test.ts` (8), `store.test.ts` (23), `testGuards.test.ts` (23), `upload.property.test.ts` (0), `upload.test.ts` (14), `v1Import.test.ts` (14)
 
 <!-- AUTO-GENERATED:test-inventory END -->
 
@@ -373,6 +373,16 @@ cd v3 && npm run build && npm run size  # build + size check
 ```
 
 ---
+
+## What we test
+
+Test behaviour that exists and **can break** ("test things that might break" — Kent Beck,
+Extreme Programming). When a feature is removed or the code is reshaped so a risk no longer
+exists, no test checks the absence — there is nothing left that could break (owner decision
+2026-10-02). A repeated error class gets one guard that covers the whole class (CLAUDE.md working
+principles), not a test per instance. Tests stay current with the code: a change also reviews
+the tests of the changed behaviour — a test of removed or superseded behaviour is deleted or
+rewritten in the same commit.
 
 ## Test design: edge-case checklist
 
