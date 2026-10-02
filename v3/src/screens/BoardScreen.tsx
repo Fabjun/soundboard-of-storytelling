@@ -35,7 +35,7 @@ import { StatusBar } from '../components/StatusBar';
 import { PixelIcon } from '../components/PixelIcon';
 import type { AppMode, Pad, PadPosition } from '../types';
 import { nanoid } from '../lib/nanoid';
-import { newPad, typeInference } from '../lib/padUtils';
+import { DEFAULT_PAD_TYPE, newPad } from '../lib/padUtils';
 import {
   DEFAULT_GRID,
   addDeck,
@@ -92,7 +92,7 @@ export function BoardScreen(): JSX.Element {
     if (!board || (!deck && !poolView)) return;
     const deckId = deck?.id;
     // No file yet: the editor opens to choose one
-    const pad = newPad(nanoid(), 'single', '');
+    const pad = newPad(nanoid(), DEFAULT_PAD_TYPE, '');
     // All pads: the pad goes to the pool only (owner decision 2026-10-02). In a deck the cell is
     // chosen on the latest board: a held or double-pressed A key adds pads to different cells.
     // Null = grid full (or save failed) — nothing to open.
@@ -173,7 +173,7 @@ export function BoardScreen(): JSX.Element {
     const item = libraryItems.value.find((m) => m.id === itemId);
     if (!item) return;
 
-    const pad = newPad(nanoid(), typeInference(item.duration, 1), item.name, [itemId]);
+    const pad = newPad(nanoid(), DEFAULT_PAD_TYPE, item.name, [itemId]);
 
     // Deck: on the target cell; when it is taken, on the next free one (nothing when the grid is
     // full). All pads: into the pool, the drop position does not matter there.

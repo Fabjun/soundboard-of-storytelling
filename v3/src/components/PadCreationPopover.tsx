@@ -7,7 +7,7 @@
 //   - Source modes: RECENT (last 5) + BROWSE (searchable) implemented
 //   - DROP HERE: Slice 8 (placeholder shown)
 //   - "More options →" handoff to PadEditorPanel
-//   - Type pills pre-selected via typeInference(duration)
+//   - Type pills: SINGLE until the user picks another type (DEFAULT_PAD_TYPE)
 //
 // Desktop: fixed popover anchored to cell rect (flips above if < 200px below).
 // Mobile (< 600px): bottom sheet via PadCreationSheet.
@@ -19,7 +19,7 @@ import type { LibraryItemMeta, Pad, PadPosition, PadType } from '../types';
 import { PixelIcon } from './PixelIcon';
 import { Waveform } from './Waveform';
 import { libraryItems } from '../state/store';
-import { newPad, typeInference, padTypeColor, padTypeLabel } from '../lib/padUtils';
+import { DEFAULT_PAD_TYPE, newPad, padTypeColor, padTypeLabel } from '../lib/padUtils';
 import { nanoid } from '../lib/nanoid';
 
 export type CreationResult =
@@ -53,17 +53,16 @@ export function PadCreationPopover({
   const [search, setSearch] = useState('');
   const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
   const [padName, setPadName] = useState('');
-  const [padType, setPadType] = useState<PadType>('single');
+  const [padType, setPadType] = useState<PadType>(DEFAULT_PAD_TYPE);
 
   const selectedItem = selectedItemId
     ? (allAudio.find((m) => m.id === selectedItemId) ?? null)
     : null;
 
-  // Update type and name when item is selected
+  // The name suggested by the selected file is derived (placeholder), never stored as if typed —
+  // so it follows a later file choice and never overwrites a typed name.
   function selectItem(item: LibraryItemMeta) {
     setSelectedItemId(item.id);
-    setPadName((prev) => (prev === '' ? item.name : prev));
-    setPadType(typeInference(item.duration, 1));
   }
 
   const filteredBrowse = search.trim()

@@ -8,6 +8,7 @@ import '@fontsource/share-tech-mono';
 import './styles/global.css';
 import { initAudioBridge } from './audio/index';
 import { pendingBoardSaves } from './state/boardWrites';
+import { loadStoredState } from './state/boot';
 
 // Apply the design-system root class to <body>.
 // All design tokens and layout utilities depend on this being present.
@@ -23,4 +24,6 @@ effect(() => {
   document.documentElement.toggleAttribute('data-saving', pendingBoardSaves.value > 0);
 });
 
-render(<App />, document.getElementById('app')!);
+// First render only once the stored state is loaded: nothing the user creates can be replaced
+// by a late load (src/state/boot.ts).
+void loadStoredState().finally(() => render(<App />, document.getElementById('app')!));

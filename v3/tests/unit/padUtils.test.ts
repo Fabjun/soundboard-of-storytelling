@@ -9,7 +9,6 @@ import {
   nextFreeSlot,
   posToIndex,
   indexToPos,
-  typeInference,
   padMigrationMatrix,
   applyTypeChange,
   padTypeLabel,
@@ -120,38 +119,6 @@ describe('posToIndex / indexToPos round-trip', () => {
         expect(indexToPos(idx, 4)).toEqual(pos);
       }
     }
-  });
-});
-
-// ── typeInference ─────────────────────────────────────────────────────────────
-
-describe('typeInference', () => {
-  test('short clip (< 5s) → single', () => {
-    expect(typeInference(4.9, 1)).toBe('single');
-  });
-
-  test('boundary 5.0s → single (ambiguous zone, defaults single)', () => {
-    expect(typeInference(5.0, 1)).toBe('single');
-  });
-
-  test('upper ambiguous zone (9.99s) → single', () => {
-    expect(typeInference(9.99, 1)).toBe('single');
-  });
-
-  test('boundary 10.0s → loop', () => {
-    expect(typeInference(10.0, 1)).toBe('loop');
-  });
-
-  test('long clip (30s) → loop', () => {
-    expect(typeInference(30, 1)).toBe('loop');
-  });
-
-  test('several files override the duration: 1s + 2 files → loop (the former playlist)', () => {
-    expect(typeInference(1, 2)).toBe('loop');
-  });
-
-  test('several files with a long duration: 30s + 3 files → loop', () => {
-    expect(typeInference(30, 3)).toBe('loop');
   });
 });
 

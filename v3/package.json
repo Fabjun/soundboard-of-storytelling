@@ -55,6 +55,8 @@
     "preact": "^11.0.0"
   },
   "devDependencies": {
+    "@commitlint/cli": "^21.2.3",
+    "@commitlint/config-conventional": "^21.2.3",
     "@eslint-community/eslint-plugin-eslint-comments": "^4.8.1",
     "@fast-check/vitest": "^0.5.0",
     "@playwright/test": "^1.63.0",
