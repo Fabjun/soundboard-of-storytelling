@@ -7,9 +7,28 @@ export type ChangelogEntry = {
   items: string[];
 };
 
-export const APP_VERSION = '3.0.126';
+export const APP_VERSION = '3.0.129';
 
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.129',
+    date: '2026-10-02',
+    items: ['chore: merge main into the stack — WebKit seed fix, review log'],
+  },
+  {
+    version: '3.0.128',
+    date: '2026-10-02',
+    items: [
+      'test(e2e): the WebKit seed no longer reloads the page — the next navigation crashed WebKit on Linux CI (Playwright issue #43070)',
+    ],
+  },
+  {
+    version: '3.0.127',
+    date: '2026-10-02',
+    items: [
+      'docs: review log — #36 decisions built; decisions for #37, #38, #39 and the P8 slice proposal prepared with sources',
+    ],
+  },
   {
     version: '3.0.126',
     date: '2026-10-02',
