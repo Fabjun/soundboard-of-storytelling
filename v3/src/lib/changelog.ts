@@ -7,9 +7,16 @@ export type ChangelogEntry = {
   items: string[];
 };
 
-export const APP_VERSION = '3.0.120';
+export const APP_VERSION = '3.0.121';
 
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.121',
+    date: '2026-10-02',
+    items: [
+      'docs: review log — engine fix #35 accepted and merged; boot fix, local traces; flaky-test note on machine overload',
+    ],
+  },
   {
     version: '3.0.120',
     date: '2026-10-02',

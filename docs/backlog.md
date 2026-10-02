@@ -1246,7 +1246,11 @@ pre-push run — the dragged pad stayed on its cell; 8 quiet re-runs green. Both
 other heavy commands ran on the same machine (npm ci, unit tests in a second worktree).
 **Gap closed (2026-10-02):** local runs never retried, so `trace: 'on-first-retry'` kept no
 trace; local runs now use `retain-on-failure` (cost measured: 19 s instead of 18 s for 21 tests).
-**When:** on the next occurrence — read the trace from `v3/test-results/`.
+**Later the same day (afternoon):** a third gate failed with 8 timeouts across specs; the
+machine was swapping hard (16 GB RAM; at 16:23 254 MB free and 6.9 GB compressed; load average about 380 on 10 cores right after the failed gate, 255 at 16:22, 175 at 16:35; macOS services relaunched in a loop). It eased on its own (1-minute load 4.3 when measured later that afternoon). The
+earlier failures may have had the same cause — not proven. Gates now run only on a quiet machine
+(load checked first) and never next to other heavy commands.
+**When:** on the next occurrence — read the trace from `v3/test-results/` and note the load.
 
 ### Bug: combo "stop all" step stops the combo itself
 
@@ -1259,7 +1263,7 @@ Pinned by `tests/unit/audio/engine.test.ts` (`test.fails` + a precise current-be
 **When:** decided by the product owner — with Slice 9d (engine step) at the latest, before the
 V1 import (Slice 10) makes real combos usable.
 
-### Bug: combo step starts the next step twice when a child ends at once ✅ Done (PR #35)
+### Bug: combo step starts the next step twice when a child ends at once ✅ Done (ccd24f3)
 
 Found 2026-10-01 by targeted tests for mutation testing (T11c). In `playComboStep`
 (`v3/src/audio/engine.ts`) a child that finishes synchronously — a pad without an audio reference,
