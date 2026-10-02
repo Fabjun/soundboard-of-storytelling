@@ -4,6 +4,10 @@
 
 All notable changes to Soundboard of Storytelling, newest first.
 
+## 3.0.118 — 2026-10-02
+
+- test(e2e): local runs keep the trace of every failed test, so a rare failure in a git hook can be diagnosed afterwards
+
 ## 3.0.116 — 2026-10-02
 
 - test(guards): rule 6 checks who replaces boards / library list in the store, so reading them for an export stays allowed

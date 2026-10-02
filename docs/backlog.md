@@ -1241,10 +1241,12 @@ render and replaced the store when the load finished — a board created before 
 The state now loads before the first render (`v3/src/state/boot.ts`, `codeGuards` rule 6).
 Whether this caused the one failure is **not proven**: a failed board save also removes the new
 board (`createBoard` rollback on the stack).
-**Gap:** local runs keep no trace (`trace: 'on-first-retry'`, no retries locally), so a rare
-failure in a hook cannot be diagnosed afterwards.
-**When:** on the next occurrence — and before that, decide on `trace: 'retain-on-failure'` for
-local runs (measure the cost first).
+A second rare failure the same day: `pad-dnd.spec.ts` test 20 (SWAP) in `full` during a
+pre-push run — the dragged pad stayed on its cell; 8 quiet re-runs green. Both happened while
+other heavy commands ran on the same machine (npm ci, unit tests in a second worktree).
+**Gap closed (2026-10-02):** local runs never retried, so `trace: 'on-first-retry'` kept no
+trace; local runs now use `retain-on-failure` (cost measured: 19 s instead of 18 s for 21 tests).
+**When:** on the next occurrence — read the trace from `v3/test-results/`.
 
 ### Bug: combo "stop all" step stops the combo itself
 
