@@ -589,7 +589,7 @@ Without step 1 a red result proves nothing (seen 2026-09-30: the baseline was al
 
 A test that sometimes passes and sometimes fails is a bug — in the test or in the app.
 
-1. **Secure the evidence:** read the error output and `playwright-report/` (or the CI artifact) **before** re-running.
+1. **Secure the evidence:** read the error output and `playwright-report/` (or the CI artifact) **before** re-running. Locally every failed test keeps its trace in `v3/test-results/` (`npx playwright show-trace <zip>`); copy the folder away first — the next run clears it.
 2. **Find and fix the cause** (timing, missing wait for a state, real app bug).
 3. **Only if that is not possible right away:** quarantine with `test.fixme(…)` **and** a reason in the test name/comment **and** a BACKLOG entry. Never silently `skip`, never raise retries.
 
@@ -671,3 +671,11 @@ Scope or narrow the locator instead:
 - `getByRole('button', { name: /X/ })`
 - `page.getByTestId('top-bar').getByText('X', { exact: true })` — scoped to a region
 - `page.getByTestId('...')` as the fallback
+
+### 8. A new git worktree runs no hooks until `npm ci`
+
+`core.hooksPath` points to `.husky/_`, which `npm run prepare` (husky) generates and git ignores.
+A fresh `git worktree` has no `.husky/_`, and git then skips pre-commit, commit-msg and pre-push
+**without a message** — commits and pushes go out unchecked (found 2026-10-02; CI caught it).
+Before the first commit in a new worktree: `cd <worktree>/v3 && npm ci`, then check that
+`.husky/_` exists.
