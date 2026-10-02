@@ -7,9 +7,19 @@ export type ChangelogEntry = {
   items: string[];
 };
 
-export const APP_VERSION = '3.0.130';
+export const APP_VERSION = '3.0.131';
 
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.131',
+    date: '2026-10-02',
+    items: [
+      'fix(layout): the deck grid scrolls when its pads do not fit, and the start screen footer no longer covers BOARD / LIBRARY on a short window',
+      'feat: the app is operated by its buttons — the A shortcut for adding a pad is gone (owner decision; keyboard control of the app is parked)',
+      'fix: the app no longer shows internal plan names (the HOTKEY field said "Slice 8")',
+      'docs: plan — editing several files per pad belongs to Slice 15; testing.md: what we test',
+    ],
+  },
   {
     version: '3.0.130',
     date: '2026-10-02',

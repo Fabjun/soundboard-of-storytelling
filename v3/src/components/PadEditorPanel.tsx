@@ -16,7 +16,7 @@
 //   - Waveform preview (if source set)
 //   - Volume slider (0-100)
 //   - Fade In / Fade Out sliders (0-10s)
-//   - Hotkey display (read-only; Key-Capture = Slice 8)
+//   - Hotkey display (read-only; assigning keys comes with Slice 12)
 //   - Delete button (2-tap confirm)
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -210,7 +210,12 @@ export function PadEditorPanel({
       <div class="sb-panel-header is-active" style={{ borderBottom: `2px solid ${typeColor}` }}>
         <span class="sb-type-indicator" style={{ background: typeColor }} />
         <span class="sb-panel-title">Pad Editor</span>
-        <button class="sb-btn sb-btn-icon sb-btn-ghost" onClick={onClose}>
+        <button
+          class="sb-btn sb-btn-icon sb-btn-ghost"
+          data-testid="pad-editor-panel-close-button"
+          aria-label="Close the pad editor"
+          onClick={onClose}
+        >
           ×
         </button>
       </div>
@@ -344,7 +349,7 @@ export function PadEditorPanel({
         />
       </div>
 
-      {/* Hotkey (read-only; Key-Capture = Slice 8) */}
+      {/* Hotkey (read-only; assigning keys comes with Slice 12) */}
       <div class="sb-inspector-section">
         <label class="sb-field-label">HOTKEY</label>
         <div class="sb-readonly-field">
@@ -355,7 +360,7 @@ export function PadEditorPanel({
           >
             {pad.hotkey ?? '— not assigned —'}
           </span>
-          <span class="sb-hint-text">Slice 8</span>
+          <span class="sb-hint-text">read-only</span>
         </div>
       </div>
 

@@ -1230,6 +1230,16 @@ movement) would need a clear coexistence contract. First-pass recommendation: GA
 
 ## 4. Deferred Infrastructure
 
+### PAD editor: several files per pad cannot be edited yet
+
+Found 2026-10-02 while preparing the #36 playback check: since Slice 9d a Single or Loop holds
+several files, but the PAD editor's file choice replaces them with one (code comment pointed to
+"Slice 11", which became the combo editor). Several files reach a pad only through the V1 import
+today. V1 could edit them (playlist pads).
+**When:** Slice 15 (PAD editor at V1 scope); fix the stale comment in
+`v3/src/components/PadEditorPanel.tsx` with it. The "N files" line under the source is easy to miss
+(the owner could not find it on 2026-10-02) — the file list replaces it.
+
 ### Assign a slice to every inventory feature still "Open" (P8) ✅ Done (owner decisions 2026-10-02)
 
 Owner decision 2026-10-02 (docs/product/README.md §7 P8): everything V1 / V2 could do is built

@@ -5,7 +5,7 @@
 //
 // Slice 3 scope:
 //   - Source modes: RECENT (last 5) + BROWSE (searchable) implemented
-//   - DROP HERE: Slice 8 (placeholder shown)
+//   - DROP HERE: not built yet (placeholder shown; superseded May-plan Slice 8)
 //   - "More options →" handoff to PadEditorPanel
 //   - Type pills: SINGLE until the user picks another type (DEFAULT_PAD_TYPE)
 //
@@ -121,7 +121,7 @@ export function PadCreationPopover({
             {tab}
           </button>
         ))}
-        <button disabled class="sb-tab sb-tab-sm" title="Drop Here — Slice 8">
+        <button disabled class="sb-tab sb-tab-sm" title="Drop a file here — not available yet">
           DROP
         </button>
       </div>
