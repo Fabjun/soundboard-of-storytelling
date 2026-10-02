@@ -11,9 +11,9 @@
 //    helper files are named helpers.ts.
 // 5. Inline style lengths carry a unit (Preact 11 no longer appends px to numbers) — checked
 //    with the TypeScript type checker, so variables, ternaries and shorthands count.
-// 6. The stored state is loaded once, before the first render (src/state/boot.ts): outside
-//    src/db only boot.ts calls boardGetAll / libGetAllMeta — a load after the first render
-//    replaced a board created meanwhile (2026-10-02).
+// 6. The stored state is loaded once, before the first render (src/state/boot.ts): only boot.ts
+//    and the store's own setters replace boards / libraryItems — a load that finished after the
+//    first render replaced a board created meanwhile (2026-10-02). Reading for an export is fine.
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { readdirSync, readFileSync } from 'node:fs';
@@ -256,19 +256,21 @@ describe('guard: the stored state is loaded only before the first render (src/st
     readdirSync(dir, { withFileTypes: true }).flatMap((e) =>
       e.isDirectory() ? walkSrc(join(dir, e.name)) : [join(dir, e.name)],
     );
-  const loaders = walkSrc(SRC)
+  // `boards.value = …` / `libraryItems.value = …` replaces the whole collection in the store
+  const writers = walkSrc(SRC)
     .filter((f) => /\.tsx?$/.test(f))
+    .filter((f) => /\b(boards|libraryItems)\.value\s*=(?!=)/.test(readFileSync(f, 'utf8')))
     .map((f) => relative(SRC, f).split('\\').join('/'))
-    .filter((f) => !f.startsWith('db/'))
-    .filter((f) => /\b(boardGetAll|libGetAllMeta)\s*\(/.test(readFileSync(join(SRC, f), 'utf8')));
+    .sort();
 
-  it('boot.ts loads the stored state (sanity)', () => {
-    expect(loaders).toContain('state/boot.ts');
+  it('boot.ts fills the store (sanity)', () => {
+    expect(writers).toContain('state/boot.ts');
   });
 
-  it('nothing else loads it — a later load would replace what the user created meanwhile', () => {
-    expect(loaders, 'load in src/state/boot.ts (main.tsx renders after it)').toEqual([
+  it('only boot.ts and the store setters replace boards / library list', () => {
+    expect(writers, 'load in src/state/boot.ts; change through the store setters').toEqual([
       'state/boot.ts',
+      'state/store.ts',
     ]);
   });
 });

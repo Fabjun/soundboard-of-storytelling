@@ -4,6 +4,10 @@
 
 All notable changes to Soundboard of Storytelling, newest first.
 
+## 3.0.116 — 2026-10-02
+
+- test(guards): rule 6 checks who replaces boards / library list in the store, so reading them for an export stays allowed
+
 ## 3.0.115 — 2026-10-02
 
 - fix(boot): boards and the library list load before the first screen — a board created right after the start can no longer vanish
