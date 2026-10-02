@@ -46,18 +46,16 @@ The reason is the comment line directly above — enforced by `testGuards.test.t
 | `v3/src/lib/flameMath.ts:68` | Formatting: keep the pixel table aligned row by row (Prettier would reflow it). |
 | `v3/src/lib/flameMath.ts:75` | Formatting: keep the pixel table aligned row by row (Prettier would reflow it). |
 
-## Quarantined tests (6)
+## Quarantined tests (4)
 
 Procedure: `docs/development/testing.md`; reference enforced by `testGuards.test.ts`.
 
-| Location                                       | Marker  | Reference                                            |
-| ---------------------------------------------- | ------- | ---------------------------------------------------- |
-| `v3/tests/e2e/deck-crud.spec.ts:77`            | `fixme` | BACKLOG "Deck reorder"                               |
-| `v3/tests/e2e/mobile/overflow.spec.ts:31`      | `fixme` | BACKLOG "Re-enable mobile layout tests"              |
-| `v3/tests/e2e/mobile/touch-targets.spec.ts:35` | `fixme` | BACKLOG "Re-enable mobile layout tests"              |
-| `v3/tests/unit/audio/engine.test.ts:424`       | `fails` | BACKLOG "step stops the combo itself"                |
-| `v3/tests/unit/audio/engine.test.ts:559`       | `fails` | BACKLOG "Bug: combo step starts the next step twice" |
-| `v3/tests/unit/audio/engine.test.ts:592`       | `fails` | BACKLOG "Bug: combo step starts the next step twice" |
+| Location                                       | Marker  | Reference                               |
+| ---------------------------------------------- | ------- | --------------------------------------- |
+| `v3/tests/e2e/deck-crud.spec.ts:77`            | `fixme` | BACKLOG "Deck reorder"                  |
+| `v3/tests/e2e/mobile/overflow.spec.ts:31`      | `fixme` | BACKLOG "Re-enable mobile layout tests" |
+| `v3/tests/e2e/mobile/touch-targets.spec.ts:35` | `fixme` | BACKLOG "Re-enable mobile layout tests" |
+| `v3/tests/unit/audio/engine.test.ts:424`       | `fails` | BACKLOG "step stops the combo itself"   |
 
 ## Modules without their own unit test (4)
 
@@ -112,8 +110,8 @@ Historical docs excluded in `.vale.ini`, and passages marked `<!-- vale … = NO
 | `docs/architecture/0056-documentation-freshness.md:32` | `SoS.SupersededTerms` off         | …                                                                                 |
 | `docs/architecture/concept-brief.md:75`                | `SoS.SupersededTerms` off         | explains the rename                                                               |
 | `docs/product/README.md:108`                           | `SoS.SupersededTerms` off         | records the rename decision                                                       |
-| `docs/product/README.md:276`                           | `SoS.SupersededTerms` off         | records the rename                                                                |
-| `docs/product/README.md:295`                           | `SoS.SupersededTerms` off         | records the rename decision (Q1)                                                  |
+| `docs/product/README.md:279`                           | `SoS.SupersededTerms` off         | records the rename                                                                |
+| `docs/product/README.md:298`                           | `SoS.SupersededTerms` off         | records the rename decision (Q1)                                                  |
 
 ## To-do markers (0)
 
