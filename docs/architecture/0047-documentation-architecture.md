@@ -4,7 +4,8 @@
 **Date:** 2026-09-28
 **Slice:** cross-cutting
 **Refines:** —
-**Refined by:** ADR-0050 (file naming — hubs are `README.md`, lowercase-kebab leaves)
+**Refined by:** ADR-0050 (file naming — hubs are `README.md`, lowercase-kebab leaves); ADR-0056
+(documentation freshness is checked automatically)
 **Category:** Process & product decisions
 
 ## Context
