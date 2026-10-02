@@ -5,9 +5,11 @@
 // 17. Change pad name → auto-saved (persists after reload)
 // 18. Trivial type change (single→loop) → no dialog, type updates
 // 19. Lossy type change (single→combo drops the audio files) → PadTypeConfirmDialog appears
+// Later tests (no Slice-3 number): an edit still waiting for its auto-save is written when the next
+// pad opens or the page is hidden — never dropped.
 // ─────────────────────────────────────────────────────────────────────────────
 
-import { test, expect } from '@playwright/test';
+import { test, expect, type Page } from '@playwright/test';
 import {
   ensureTestAudio,
   goToBoardList,
@@ -16,6 +18,7 @@ import {
   enterSetupMode,
   createPadAtCell00,
   reloadApp,
+  reopenFirstBoard,
 } from './helpers';
 
 test.beforeEach(async ({ page }) => {
@@ -127,4 +130,47 @@ test('19 — lossy type change → PadTypeConfirmDialog appears', async ({ page 
     'aria-pressed',
     'true',
   );
+});
+
+// ── Later tests: a pending auto-save is written, never dropped ───────────────
+// The page clock is paused, so the 500 ms auto-save delay never ends: only the immediate write
+// on pad switch / page hide can save the name (no dependence on how fast the test clicks).
+
+/** Reload the board with a fake clock, then stop time (install alone lets time flow). */
+async function pauseClock(page: Page): Promise<void> {
+  await page.clock.install();
+  await reopenFirstBoard(page);
+  await enterSetupMode(page);
+  await page.clock.pauseAt(Date.now() + 60_000);
+}
+
+test('a name typed just before the next pad opens is kept', async ({ page }) => {
+  const first = page
+    .locator('[data-testid^="pad-grid-cell-"]:not([data-testid^="pad-grid-cell-empty-slot-"])')
+    .first();
+  await pauseClock(page);
+  await first.click();
+  await page.getByTestId('pad-editor-panel-name-input').fill('Owl');
+  // Located by text: the button has no accessible name in Chromium yet (BACKLOG "Role-based E2E locators").
+  await page.getByText('ADD PAD', { exact: true }).click();
+  await expect(first).toContainText('Owl');
+
+  await page.clock.resume();
+  await reopenFirstBoard(page);
+  await expect(first).toContainText('Owl');
+});
+
+test('a name typed just before the page is hidden is kept', async ({ page }) => {
+  const first = page
+    .locator('[data-testid^="pad-grid-cell-"]:not([data-testid^="pad-grid-cell-empty-slot-"])')
+    .first();
+  await pauseClock(page);
+  await first.click();
+  await page.getByTestId('pad-editor-panel-name-input').fill('Rain');
+  // What the browser does on an app switch or tab close
+  await page.evaluate(() => {
+    Object.defineProperty(document, 'visibilityState', { configurable: true, get: () => 'hidden' });
+    document.dispatchEvent(new Event('visibilitychange'));
+  });
+  await expect(first).toContainText('Rain');
 });

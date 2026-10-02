@@ -281,6 +281,10 @@ and has diverged). Never hardcode colors, fonts, or spacing.
   element type, variants via props. Never parallel components for
   "slightly different" needs. If tempted, ask.
 - **Delete buttons**: always 2-tap confirmation.
+- **Delayed writes are flushed, never dropped** (2026-10-02): a write that waits (auto-save
+  debounce) goes through `v3/src/lib/debouncedSave.ts` and is written at once when its context
+  ends — the editor closes or switches pad, the page is hidden (Chrome Page Lifecycle: persist
+  unsaved state on hidden). Every file with a timer is listed with its reason (`codeGuards` rule 8).
 - **JSX safety**: Preact auto-escapes children. Do not bypass this
   with `dangerouslySetInnerHTML` unless absolutely required and
   approved.

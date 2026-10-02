@@ -59,15 +59,15 @@ number in brackets = test cases in the file (incl. quarantine)._
 | ----------------- | ------------------------------ | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `smoke`           | Chromium (Desktop)             | Dev + Build | `app-loads` (1), `library-empty` (1), `board-list-empty` (1), `board-create` (1), `mode-toggle` (1)                                                                                        |
 | `smoke-webkit`    | WebKit (Desktop)               | Dev         | `app-loads` (1), `library-empty` (1), `board-list-empty` (1), `board-create` (1), `mode-toggle` (1)                                                                                        |
-| `full`            | Chromium (Desktop)             | Dev + Build | `board-crud` (5), `deck-crud` (10), `pad-creation` (5), `pad-editing` (4), `pad-dnd` (2), `pad-pool` (8), `combo-editor` (3), `backup` (5), `game-mode` (1), `audio` (3)                   |
-| `full-webkit`     | WebKit (Desktop)               | Dev         | `board-crud` (5), `deck-crud` (10), `pad-creation` (5), `pad-editing` (4), `pad-dnd` (2), `pad-pool` (8), `combo-editor` (3)                                                               |
+| `full`            | Chromium (Desktop)             | Dev + Build | `board-crud` (5), `deck-crud` (10), `pad-creation` (5), `pad-editing` (6), `pad-dnd` (2), `pad-pool` (8), `combo-editor` (3), `backup` (5), `game-mode` (1), `audio` (3)                   |
+| `full-webkit`     | WebKit (Desktop)               | Dev         | `board-crud` (5), `deck-crud` (10), `pad-creation` (5), `pad-editing` (6), `pad-dnd` (2), `pad-pool` (8), `combo-editor` (3)                                                               |
 | `mobile`          | WebKit (iPhone 13 Pro)         | Dev         | `unlock-nav` (3), `board-flow` (2), `mode-toggle` (2), `touch-targets` (5), `overflow` (2)                                                                                                 |
 | `mobile-chromium` | Chromium (iPhone 13 Pro)       | Dev         | `pad-interaction` (2), `pad-creation` (1)                                                                                                                                                  |
 | `pwa`             | Chromium (Desktop)             | Build only  | `pwa` (7)                                                                                                                                                                                  |
 | `visual`          | Chromium (Desktop), macOS only | Dev         | `board-list-empty` (1), `board-list-with-board` (1), `board-screen-game` (1), `board-screen-setup` (1), `deck-rail` (1), `library-empty` (1), `mode-toggle-states` (2), `start-screen` (1) |
 
-**Unit tests (Vitest):** 32 files, 424 test cases —
-`audio/engine.test.ts` (43), `audio/lru.property.test.ts` (0), `audio/lru.test.ts` (11), `backupExport.test.ts` (8), `backupImport.test.ts` (17), `backupReader.test.ts` (9), `boardModel.property.test.ts` (0), `boardModel.test.ts` (40), `boardWrites.test.ts` (9), `codeGuards.test.ts` (20), `comboModel.property.test.ts` (0), `comboModel.test.ts` (13), `deckConflict.test.ts` (9), `docsGuards.test.ts` (22), `e2eProjects.test.ts` (6), `flameMath.property.test.ts` (0), `flameMath.test.ts` (22), `idb.test.ts` (20), `nanoid.test.ts` (2), `padDnd.property.test.ts` (0), `padDnd.test.ts` (31), `padSort.test.ts` (13), `padUtils.property.test.ts` (0), `padUtils.test.ts` (36), `persistentStorage.test.ts` (4), `playHistory.test.ts` (3), `prefs.test.ts` (11), `store.test.ts` (23), `testGuards.test.ts` (23), `upload.property.test.ts` (0), `upload.test.ts` (14), `v1Import.test.ts` (15)
+**Unit tests (Vitest):** 33 files, 431 test cases —
+`audio/engine.test.ts` (43), `audio/lru.property.test.ts` (0), `audio/lru.test.ts` (11), `backupExport.test.ts` (8), `backupImport.test.ts` (17), `backupReader.test.ts` (9), `boardModel.property.test.ts` (0), `boardModel.test.ts` (40), `boardWrites.test.ts` (9), `codeGuards.test.ts` (22), `comboModel.property.test.ts` (0), `comboModel.test.ts` (13), `debouncedSave.test.ts` (5), `deckConflict.test.ts` (9), `docsGuards.test.ts` (22), `e2eProjects.test.ts` (6), `flameMath.property.test.ts` (0), `flameMath.test.ts` (22), `idb.test.ts` (20), `nanoid.test.ts` (2), `padDnd.property.test.ts` (0), `padDnd.test.ts` (31), `padSort.test.ts` (13), `padUtils.property.test.ts` (0), `padUtils.test.ts` (36), `persistentStorage.test.ts` (4), `playHistory.test.ts` (3), `prefs.test.ts` (11), `store.test.ts` (23), `testGuards.test.ts` (23), `upload.property.test.ts` (0), `upload.test.ts` (14), `v1Import.test.ts` (15)
 
 <!-- AUTO-GENERATED:test-inventory END -->
 
@@ -670,3 +670,14 @@ Scope or narrow the locator instead:
 - `getByRole('button', { name: /X/ })`
 - `page.getByTestId('top-bar').getByText('X', { exact: true })` — scoped to a region
 - `page.getByTestId('...')` as the fallback
+
+### 8. Stopping time with `page.clock`
+
+A test that must not depend on how fast it clicks (e.g. "typed within the 500 ms auto-save
+delay") stops the page clock. Two traps, both found by a counter-check that stayed green:
+
+- `page.clock.install()` alone lets time flow — call `page.clock.pauseAt(…)` to stop it, and
+  install before the app loads (reload or navigate after installing).
+- With the clock stopped, Preact runs no passive effects or their cleanups (they wait for the
+  next frame). Code under test that must run at once belongs in an event handler or a
+  `useLayoutEffect` cleanup — see `v3/tests/e2e/pad-editing.spec.ts` (pauseClock).

@@ -19,6 +19,9 @@
 //    reacts to a change uses applyBoardChange (at once), never `if (await updateBoard(`.
 // 7. No localStorage / sessionStorage anywhere (owner decision 2026-10-02, ADR-0014): small
 //    UI state lives in IndexedDB (src/state/prefs.ts) — web.dev advises against localStorage.
+// 8. Every file with a timer (setTimeout / setInterval) is listed with its reason. A delayed
+//    write goes through src/lib/debouncedSave.ts, which writes a pending value when its context
+//    ends instead of dropping it — a bare clearTimeout lost a typed pad name (2026-10-02).
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { readdirSync, readFileSync } from 'node:fs';
@@ -326,5 +329,38 @@ describe('guard: no localStorage or sessionStorage (ADR-0014)', () => {
       .filter((f) => /\b(localStorage|sessionStorage)\b/.test(readFileSync(f, 'utf8')))
       .map((f) => relative(SRC, f));
     expect(bad, 'keep UI state in IndexedDB: a typed function in src/state/prefs.ts').toEqual([]);
+  });
+});
+
+describe('guard: timers are listed with their reason (delayed writes use debouncedSave)', () => {
+  /** src-relative file → why it needs a timer. None of them delays a write. */
+  const TIMER_FILES: Record<string, string> = {
+    'audio/engine.ts': 'V1 audio engine: fades, combo steps, pause timers (ADR-0044)',
+    'components/LibraryPanel.tsx': 'long press starts the library drag',
+    'components/ModeToggle.tsx': 'removes the spark elements after their animation',
+    'components/UndoToast.tsx': 'hides the toast; the deletion itself is already saved',
+    'lib/backupExport.ts': 'revokes the download URL once the browser has taken the file',
+    'lib/debouncedSave.ts': 'the delayed write itself — flushed, never dropped',
+  };
+  const walkSrc = (dir: string): string[] =>
+    readdirSync(dir, { withFileTypes: true }).flatMap((e) =>
+      e.isDirectory() ? walkSrc(join(dir, e.name)) : [join(dir, e.name)],
+    );
+  const withTimers = walkSrc(SRC)
+    .filter(
+      (f) => /\.tsx?$/.test(f) && /\bset(Timeout|Interval)\s*\(/.test(readFileSync(f, 'utf8')),
+    )
+    .map((f) => relative(SRC, f).split('\\').join('/'))
+    .sort();
+
+  it('finds timers (sanity)', () => {
+    expect(withTimers).toContain('lib/debouncedSave.ts');
+  });
+
+  it('every file with a timer is listed — a delayed write uses debouncedSave instead', () => {
+    expect(
+      withTimers,
+      'save later: debouncedSave(write, ms); other timers: add file + reason',
+    ).toEqual(Object.keys(TIMER_FILES).sort());
   });
 });

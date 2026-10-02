@@ -4,6 +4,10 @@
 
 All notable changes to Soundboard of Storytelling, newest first.
 
+## 3.0.112 — 2026-10-02
+
+- fix(pads): a pad name typed just before the next pad opens, or before switching apps, is saved — the waiting auto-save is written, never dropped
+
 ## 3.0.109 — 2026-10-02
 
 - feat(decks): a duplicated deck appears directly after its original (owner decision D4 after research)

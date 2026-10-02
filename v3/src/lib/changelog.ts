@@ -7,9 +7,16 @@ export type ChangelogEntry = {
   items: string[];
 };
 
-export const APP_VERSION = '3.0.109';
+export const APP_VERSION = '3.0.112';
 
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.112',
+    date: '2026-10-02',
+    items: [
+      'fix(pads): a pad name typed just before the next pad opens, or before switching apps, is saved — the waiting auto-save is written, never dropped',
+    ],
+  },
   {
     version: '3.0.109',
     date: '2026-10-02',

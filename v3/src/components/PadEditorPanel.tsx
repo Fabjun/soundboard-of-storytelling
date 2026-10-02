@@ -7,7 +7,8 @@
 //   "More options" handoff from Path A Popover
 //
 // Save strategy: Auto-Save with 500ms debounce (no explicit Save button).
-// Matches V1 workflow, prevents forgotten saves.
+// Matches V1 workflow, prevents forgotten saves. A pending edit is written at once — never
+// dropped — when the editor switches pad, closes or the page is hidden (src/lib/debouncedSave.ts).
 //
 // Fields in Slice 3:
 //   - Name (required)
@@ -22,7 +23,7 @@
 //   - Delete button (2-tap confirm) — shows in how many decks the pad is used
 // ─────────────────────────────────────────────────────────────────────────────
 
-import { useState, useRef, useEffect } from 'preact/hooks';
+import { useState, useEffect, useLayoutEffect } from 'preact/hooks';
 import type { JSX } from 'preact';
 import type { Board, ComboStep, Pad, PadBase, PadType, Deck } from '../types';
 import { isComboPad } from '../types';
@@ -41,6 +42,7 @@ import { libraryItems } from '../state/store';
 import { updateBoard } from '../state/boardWrites';
 import { deckCount, placeInDeck, removeFromDeck, updatePad } from '../lib/boardModel';
 import { nextFreeSlot } from '../lib/padUtils';
+import { debouncedSave } from '../lib/debouncedSave';
 
 interface PadEditorPanelProps {
   pad: Pad;
@@ -79,35 +81,36 @@ export function PadEditorPanel({
   const [libSearch, setLibSearch] = useState('');
   const [libPickerOpen, setLibPickerOpen] = useState(false);
 
-  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // The pad lives once in the pool: the edit shows in every deck that places it (ADR-0048).
+  // updateBoard applies it to the board as it is when the save runs, so a change made in the
+  // meantime (deck checkbox, drag and drop, deck rename) is kept.
+  const [autoSave] = useState(() =>
+    debouncedSave<{ boardId: string; pad: Pad }>((edit) => {
+      void updateBoard(edit.boardId, (b) => updatePad(b, edit.pad));
+    }, 500),
+  );
   /** The pad's key in this deck — keys belong to the placement (ADR-0048). */
   const hotkey = deck?.placements.find((p) => p.padId === pad.id)?.hotkey;
 
-  // Sync from prop changes (when pad changes externally).
-  // Dep is pad.id intentionally — we only reset local state on PAD IDENTITY change,
-  // not on every field mutation. Reacting to all pad.* fields would reset the
-  // in-progress edit state on each auto-save (cursor jumps in inputs).
+  // One editor per pad: BoardScreen keys it by pad id, so another pad gets a fresh editor with
+  // fresh state (react.dev, "You Might Not Need an Effect" — resetting state with a key). The
+  // pending edit belongs to this pad and is written when the editor goes — a layout cleanup, as
+  // Preact runs passive cleanups only after the next paint.
+  useLayoutEffect(() => () => autoSave.flush(), [autoSave]);
+
+  // The page being hidden is the last reliable moment to save (app switch, tab close)
   useEffect(() => {
-    setName(pad.name);
-    setType(pad.type);
-    setFiles(isComboPad(pad) ? [] : pad.files);
-    setSteps(isComboPad(pad) ? pad.steps : []);
-    setVolume(pad.volume);
-    setFadeIn(pad.fadeIn);
-    setFadeOut(pad.fadeOut);
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- reset only when a different pad is opened (pad.id), not on every auto-save
-  }, [pad.id]);
+    const onVisibility = () => {
+      if (document.visibilityState === 'hidden') autoSave.flush();
+    };
+    document.addEventListener('visibilitychange', onVisibility);
+    return () => document.removeEventListener('visibilitychange', onVisibility);
+  }, [autoSave]);
 
   // ── Auto-save with 500ms debounce ────────────────────────────────────────
 
   function scheduleAutoSave(updatedPad: Pad) {
-    if (debounceRef.current !== null) clearTimeout(debounceRef.current);
-    debounceRef.current = setTimeout(async () => {
-      // The pad lives once in the pool: the edit shows in every deck that places it (ADR-0048).
-      // updateBoard applies it to the board as it is when the delay ends, so a change made in
-      // the meantime (deck checkbox, drag and drop, deck rename) is kept.
-      await updateBoard(board.id, (b) => updatePad(b, updatedPad));
-    }, 500);
+    autoSave.schedule({ boardId: board.id, pad: updatedPad });
   }
 
   // libraryRefOverride: when the libraryRef state hasn't committed yet (handleLibrarySelect)
