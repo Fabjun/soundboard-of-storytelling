@@ -7,9 +7,16 @@ export type ChangelogEntry = {
   items: string[];
 };
 
-export const APP_VERSION = '3.0.107';
+export const APP_VERSION = '3.0.108';
 
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.108',
+    date: '2026-10-02',
+    items: [
+      'docs: research before every decision (owner rule); testing pitfall — a new git worktree runs no hooks until npm ci',
+    ],
+  },
   {
     version: '3.0.107',
     date: '2026-10-02',

@@ -57,7 +57,9 @@
 
 - **Research first** — before any plan, decision, scheme or tooling choice, research the
   current industry standard / official guidance (web, not memory alone) and cite the sources
-  in the plan; deviate only with a stated reason.
+  in the plan; deviate only with a stated reason. This holds for **every** decision, large or
+  small, whether it is put to the owner or taken by Claude: the recommended option is the
+  researched most professional solution, with its source (user decision 2026-10-02).
 - **Try to refute your own draft** — critically review every plan and result, including the
   counter-check itself (can it be vacuous or cause harm?), and improve it before presenting.
 - **A repeated error is a pattern** — when an error class occurs a second time, stop fixing
