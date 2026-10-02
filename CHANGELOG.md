@@ -11,6 +11,7 @@ All notable changes to Soundboard of Storytelling, newest first.
 - feat(backup): V1 boards map to V3 boards with one deck — all pad modes, combos with their steps, keys, volume and fades
 - feat(backup): importing a backup — summary first, then audio one file at a time and boards last; nothing existing changes
 - feat(backup): IMPORT on the board list — choose a V1 or V3 backup, confirm the summary, follow the progress, read what was dropped
+- feat(backup): EXPORT saves all boards and audio in one file (share sheet on the iPhone, download elsewhere); the board list shows when the last backup was made and reminds after a week
 
 ## 3.0.100 — 2026-10-02
 

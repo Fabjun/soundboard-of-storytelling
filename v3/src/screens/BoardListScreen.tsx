@@ -10,6 +10,8 @@ import type { JSX } from 'preact';
 import { TopBar } from '../components/TopBar';
 import { StatusBar } from '../components/StatusBar';
 import { BackupImportPanel } from '../components/BackupImportPanel';
+import { BackupExportPanel } from '../components/BackupExportPanel';
+import { describeBackupAge } from '../lib/backupExport';
 import { PixelIcon } from '../components/PixelIcon';
 import {
   currentScreen,
@@ -19,7 +21,7 @@ import {
   removeBoardFromStore,
 } from '../state/store';
 import { boardDelete } from '../db/idb';
-import { clearLastView } from '../db/prefs';
+import { clearLastView, getLastBackup } from '../db/prefs';
 import { createBoard, updateBoard } from '../state/boardWrites';
 import type { Board } from '../types';
 import { nanoid } from '../lib/nanoid';
@@ -29,6 +31,10 @@ export function BoardListScreen(): JSX.Element {
   /** A backup file chosen for import (D2) — shows the import panel. */
   const [importFile, setImportFile] = useState<File | null>(null);
   const importInputRef = useRef<HTMLInputElement>(null);
+  const [exporting, setExporting] = useState(false);
+  /** When the last backup was saved (D3) — re-read after a save. */
+  const [lastBackup, setLastBackupShown] = useState(getLastBackup);
+  const backupAge = describeBackupAge(lastBackup, Date.now());
 
   async function handleCreate() {
     const name = `Board ${allBoards.length + 1}`;
@@ -80,6 +86,13 @@ export function BoardListScreen(): JSX.Element {
             </button>
             <button
               class="sb-btn sb-btn-sm sb-btn-ghost"
+              data-testid="board-list-screen-export-button"
+              onClick={() => setExporting(true)}
+            >
+              EXPORT
+            </button>
+            <button
+              class="sb-btn sb-btn-sm sb-btn-ghost"
               data-testid="board-list-screen-import-button"
               onClick={() => importInputRef.current?.click()}
             >
@@ -100,6 +113,17 @@ export function BoardListScreen(): JSX.Element {
 
       {/* Board list */}
       <div class="sb-board-list-area">
+        {/* D3: when the last backup was made; a reminder when there is none or it is old */}
+        <div class="sb-caption" data-testid="board-list-screen-backup-text">
+          {backupAge.text}
+          {backupAge.stale && ' — EXPORT saves your boards and audio in one file.'}
+        </div>
+        {exporting && (
+          <BackupExportPanel
+            onClose={() => setExporting(false)}
+            onSaved={() => setLastBackupShown(getLastBackup())}
+          />
+        )}
         {importFile && <BackupImportPanel file={importFile} onClose={() => setImportFile(null)} />}
         {allBoards.length === 0 ? (
           <EmptyBoardsState onCreate={handleCreate} />

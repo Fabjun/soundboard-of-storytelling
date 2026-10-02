@@ -24,7 +24,7 @@ export const FULL_TESTS = [
   'pad-editing',
   'pad-dnd',
   'pad-pool',
-  'backup-import',
+  'backup',
   'game-mode',
   'audio',
 ];

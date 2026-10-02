@@ -5,7 +5,13 @@
 // storage unavailable (throws) — never an error for a preference.
 // ─────────────────────────────────────────────────────────────────────────────
 
-import { clearLastView, getLastView, setLastView } from '../../src/db/prefs';
+import {
+  clearLastView,
+  getLastBackup,
+  getLastView,
+  setLastBackup,
+  setLastView,
+} from '../../src/db/prefs';
 
 beforeEach(() => localStorage.clear());
 afterEach(() => vi.restoreAllMocks());
@@ -51,5 +57,28 @@ describe('last view of a board', () => {
     expect(() => setLastView('b1', { kind: 'all-pads' })).not.toThrow();
     expect(getLastView('b1')).toBeNull();
     expect(() => clearLastView('b1')).not.toThrow();
+  });
+});
+
+describe('last backup (D3)', () => {
+  it('is null before the first backup, then the stored time', () => {
+    expect(getLastBackup()).toBeNull();
+    setLastBackup(1_700_000_000_000);
+    expect(getLastBackup()).toBe(1_700_000_000_000);
+    expect(localStorage.getItem('sos-v3:last-backup')).toBe('1700000000000');
+  });
+
+  it('ignores a value that is not a time; never throws without storage', () => {
+    localStorage.setItem('sos-v3:last-backup', 'soon');
+    expect(getLastBackup()).toBeNull();
+    localStorage.setItem('sos-v3:last-backup', '0');
+    expect(getLastBackup()).toBeNull();
+    const fail = () => {
+      throw new DOMException('denied', 'SecurityError');
+    };
+    vi.spyOn(Storage.prototype, 'getItem').mockImplementation(fail);
+    vi.spyOn(Storage.prototype, 'setItem').mockImplementation(fail);
+    expect(() => setLastBackup(1)).not.toThrow();
+    expect(getLastBackup()).toBeNull();
   });
 });

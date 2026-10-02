@@ -1,9 +1,11 @@
 // ─────────────────────────────────────────────────────────────────────────────
-// Full E2E — import a backup (Slice 10, D2 / D5, ADR-0061)
+// Full E2E — backup: export and import (Slice 10, D1–D3 / D5, ADR-0061)
 //
 // - A V1 backup (gzip, as V1 writes it) → summary → IMPORT → the board with its pads and the
 //   audio are there and the pad plays
 // - A file that is not a backup → a clear message, nothing imported
+// - EXPORT → SAVE downloads one file; "last backup" shows today; that file restores the board and
+//   its audio in a fresh browser (round trip)
 //
 // Chromium only: headless WebKit cannot decode audio, and the import decodes every file.
 // Synthetic backups built from the test WAV — the owner's real backup is never committed.
@@ -13,7 +15,15 @@ import { readFileSync } from 'node:fs';
 import { gzipSync } from 'node:zlib';
 import { createHash } from 'node:crypto';
 import { test, expect, type Page } from '@playwright/test';
-import { goToBoardList, TEST_AUDIO_PATH, goToLibrary, waitForSaves } from './helpers';
+import {
+  goToBoardList,
+  TEST_AUDIO_PATH,
+  TEST_AUDIO_NAME,
+  goToLibrary,
+  waitForSaves,
+  setupBoardAndDeck,
+  createPadAtCell00,
+} from './helpers';
 
 const wav = readFileSync(TEST_AUDIO_PATH);
 const wavHash = createHash('sha256').update(wav).digest('hex');
@@ -128,4 +138,57 @@ test('a file that is not a backup is refused with a message', async ({ page }) =
   );
   await page.getByTestId('backup-import-panel-close-button').click();
   await expect(page.locator('[data-testid^="board-list-screen-row-"]')).toHaveCount(0);
+});
+
+test('no backup yet: the board list reminds to export', async ({ page }) => {
+  await expect(page.getByTestId('board-list-screen-backup-text')).toHaveText(
+    'No backup yet — EXPORT saves your boards and audio in one file.',
+  );
+});
+
+test('EXPORT saves one file that restores the board and its audio in a fresh browser', async ({
+  page,
+  browser,
+}) => {
+  // A board with a pad that plays the uploaded test audio (the helper starts on the start screen)
+  await page.goto('/soundboard-of-storytelling/');
+  await setupBoardAndDeck(page);
+  await createPadAtCell00(page); // named after the test audio file
+  await waitForSaves(page);
+  await page.goto('/soundboard-of-storytelling/');
+  await goToBoardList(page);
+
+  await page.getByTestId('board-list-screen-export-button').click();
+  await expect(page.getByTestId('backup-export-panel-ready-text')).toContainText(
+    /soundboard-backup-\d{4}-\d{2}-\d{2}\.json\.gz/,
+  );
+  const downloading = page.waitForEvent('download');
+  await page.getByTestId('backup-export-panel-save-button').click();
+  const download = await downloading;
+  expect(download.suggestedFilename()).toMatch(/^soundboard-backup-.*\.json\.gz$/);
+  const path = await download.path();
+  await expect(page.getByTestId('backup-export-panel-saved-text')).toBeVisible();
+  await expect(page.getByTestId('board-list-screen-backup-text')).toHaveText('Last backup: today');
+
+  // A fresh browser (empty storage) imports the file
+  const fresh = await browser.newContext();
+  const other = await fresh.newPage();
+  await other.goto('/soundboard-of-storytelling/');
+  await goToBoardList(other);
+  await other.getByTestId('board-list-screen-import-input').setInputFiles(path);
+  await expect(other.getByTestId('backup-import-panel-summary-text')).toContainText(
+    '1 board, 1 pad, 1 audio file — 0 already in the library',
+  );
+  await other.getByTestId('backup-import-panel-confirm-button').click();
+  await expect(other.getByTestId('backup-import-panel-result-text')).toContainText(
+    'Done: 1 audio file added, 0 already there, 1 board added.',
+  );
+  await other.getByTestId('backup-import-panel-close-button').click();
+  await other.locator('[data-testid^="board-list-screen-name-text-"]').first().click();
+  const pads = other.locator(
+    '[data-testid^="pad-grid-cell-"]:not([data-testid^="pad-grid-cell-empty-slot-"])',
+  );
+  await expect(pads).toHaveCount(1);
+  await expect(pads.first()).toContainText(TEST_AUDIO_NAME);
+  await fresh.close();
 });
