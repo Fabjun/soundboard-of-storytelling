@@ -34,7 +34,7 @@ import { StatusBar } from '../components/StatusBar';
 import { PixelIcon } from '../components/PixelIcon';
 import type { AppMode, Pad, PadPosition } from '../types';
 import { nanoid } from '../lib/nanoid';
-import { typeInference } from '../lib/padUtils';
+import { DEFAULT_PAD_TYPE } from '../lib/padUtils';
 import {
   DEFAULT_GRID,
   addDeck,
@@ -171,27 +171,15 @@ export function BoardScreen(): JSX.Element {
     const item = libraryItems.value.find((m) => m.id === itemId);
     if (!item) return;
 
-    const inferredType = typeInference(item.duration, 1); // returns 'single' or 'loop' for fileCount=1
-    const newPad: Pad =
-      inferredType === 'loop'
-        ? {
-            id: nanoid(),
-            type: 'loop',
-            name: item.name,
-            libraryItemRef: itemId,
-            volume: 80,
-            fadeIn: 0,
-            fadeOut: 0,
-          }
-        : {
-            id: nanoid(),
-            type: 'single',
-            name: item.name,
-            libraryItemRef: itemId,
-            volume: 80,
-            fadeIn: 0,
-            fadeOut: 0,
-          };
+    const newPad: Pad = {
+      id: nanoid(),
+      type: DEFAULT_PAD_TYPE,
+      name: item.name,
+      libraryItemRef: itemId,
+      volume: 80,
+      fadeIn: 0,
+      fadeOut: 0,
+    };
 
     // On the target cell; when it is taken, on the next free one (nothing when the grid is full).
     await updateBoard(board.id, (b) => addPadToFreeCell(b, deckId, newPad, targetPos));

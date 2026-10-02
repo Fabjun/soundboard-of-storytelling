@@ -5,7 +5,9 @@
 // 13. Select audio from RECENT → ADD PAD → pad appears in cell
 // 14. Library drag to empty cell → pad created there (real pointer drag)
 // 15. BROWSE tab in popover → source select + ADD PAD
-// Later test (no Slice-3 number): the A key pressed twice quickly adds two pads on two cells.
+// Later tests (no Slice-3 number): the A key pressed twice quickly adds two pads on two cells;
+// a new pad is SINGLE unless the user picks a type; the suggested name follows the file, a typed
+// name is kept.
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { test, expect } from '@playwright/test';
@@ -16,6 +18,8 @@ import {
   createDeck,
   enterSetupMode,
   pointerDrag,
+  reopenFirstBoard,
+  seedTestAudio,
   TEST_AUDIO_NAME,
 } from './helpers';
 
@@ -138,4 +142,72 @@ test('pressing A twice quickly adds two pads on two different cells', async ({ p
   await expect(pads).toHaveCount(2);
   const cells = await pads.evaluateAll((els) => els.map((el) => el.getAttribute('data-pos')));
   expect(new Set(cells).size).toBe(2);
+});
+
+// ── Later tests: what the user picks or types is kept ─────────────────────────
+
+const LONG_AUDIO = {
+  id: 'e2e0000000000000000000000000000000000000000000000000000000000002',
+  name: 'long-12s.wav',
+  duration: 12,
+};
+
+test('a new pad is SGL unless the user picks a type — also for a long file', async ({ page }) => {
+  // A long file: before 2026-10-02 the app guessed LOOP from ≥ 10 s (metadata is enough)
+  await seedTestAudio(page, LONG_AUDIO);
+  await reopenFirstBoard(page);
+  await enterSetupMode(page);
+  const popover = page.getByTestId('pad-creation-popover');
+  const longItem = popover
+    .locator('[data-testid^="pad-creation-popover-source-item-"]')
+    .filter({ hasText: 'long-12s' });
+  const padAt = (pos: string) =>
+    page.locator(
+      `[data-pos="${pos}"][data-testid^="pad-grid-cell-"]:not([data-testid^="pad-grid-cell-empty-slot-"])`,
+    );
+
+  // Popover, no type picked → SGL
+  await page.getByTestId('pad-grid-cell-empty-slot-0-0').click();
+  await longItem.click();
+  await page.getByTestId('pad-creation-popover-add-button').click();
+  await expect(padAt('0,0')).toContainText('SGL');
+
+  // Popover, LOOP picked before the file → LOOP is kept
+  await page.getByTestId('pad-grid-cell-empty-slot-1-0').click();
+  await popover.getByRole('button', { name: 'LOOP', exact: true }).click();
+  await longItem.click();
+  await page.getByTestId('pad-creation-popover-add-button').click();
+  await expect(padAt('1,0')).toContainText('LOOP');
+
+  // Library drag (no type to pick) → SGL
+  await page.getByTitle('Open library panel').click();
+  const row = page.locator('[data-testid^="library-panel-row-"]').filter({ hasText: 'long-12s' });
+  await pointerDrag(page, row, page.getByTestId('pad-grid-cell-empty-slot-2-1'));
+  await expect(padAt('2,1')).toContainText('SGL');
+});
+
+test('the suggested name follows the chosen file; a typed name is kept', async ({ page }) => {
+  await seedTestAudio(page, LONG_AUDIO);
+  await reopenFirstBoard(page);
+  await enterSetupMode(page);
+  const popover = page.getByTestId('pad-creation-popover');
+  const item = (name: string) =>
+    popover.locator('[data-testid^="pad-creation-popover-source-item-"]').filter({ hasText: name });
+  const pads = page.locator(
+    '[data-testid^="pad-grid-cell-"]:not([data-testid^="pad-grid-cell-empty-slot-"])',
+  );
+
+  // One file, then another: the pad takes the name of the second
+  await page.getByTestId('pad-grid-cell-empty-slot-0-0').click();
+  await item(TEST_AUDIO_NAME).click();
+  await item('long-12s').click();
+  await page.getByTestId('pad-creation-popover-add-button').click();
+  await expect(pads.first()).toContainText('long-12s');
+
+  // A typed name survives choosing a file
+  await page.getByTestId('pad-grid-cell-empty-slot-1-0').click();
+  await page.getByTestId('pad-creation-popover-name-input').fill('Rain');
+  await item('long-12s').click();
+  await page.getByTestId('pad-creation-popover-add-button').click();
+  await expect(pads.filter({ hasText: 'Rain' })).toHaveCount(1);
 });
