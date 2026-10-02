@@ -8,13 +8,8 @@
 import { IDBFactory } from 'fake-indexeddb';
 import type { Board } from '../../src/types';
 import { boardGet, _resetDB } from '../../src/db/idb';
-import { boards } from '../../src/state/store';
-import {
-  applyBoardChange,
-  createBoard,
-  pendingBoardSaves,
-  updateBoard,
-} from '../../src/state/boardWrites';
+import { boards, pendingSaves } from '../../src/state/store';
+import { applyBoardChange, createBoard, updateBoard } from '../../src/state/boardWrites';
 
 const board = (): Board => ({
   id: 'b',
@@ -90,14 +85,14 @@ describe('updateBoard', () => {
   });
 
   it('counts running saves: 1 while saving, 0 after success and after failure', async () => {
-    expect(pendingBoardSaves.value).toBe(0);
+    expect(pendingSaves.value).toBe(0);
     const creating = createBoard(board());
-    expect(pendingBoardSaves.value).toBe(1); // set synchronously — visible before the save ends
+    expect(pendingSaves.value).toBe(1); // set synchronously — visible before the save ends
     await creating;
-    expect(pendingBoardSaves.value).toBe(0);
+    expect(pendingSaves.value).toBe(0);
     const error = vi.spyOn(console, 'error').mockImplementation(() => {});
     await updateBoard('b', (b) => Object.assign({ ...b }, { bad: () => 0 }));
-    expect(pendingBoardSaves.value).toBe(0);
+    expect(pendingSaves.value).toBe(0);
     error.mockRestore();
   });
 });
@@ -108,7 +103,7 @@ describe('applyBoardChange', () => {
     const { board: now, saved } = applyBoardChange('b', (b) => ({ ...b, name: 'Now' }));
     expect(now?.name).toBe('Now');
     expect(stored()).toBe(now);
-    expect(pendingBoardSaves.value).toBe(1);
+    expect(pendingSaves.value).toBe(1);
     expect(await saved).toEqual(now);
     expect((await boardGet('b'))!.name).toBe('Now');
   });

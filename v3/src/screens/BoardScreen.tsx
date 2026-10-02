@@ -25,7 +25,7 @@ import {
   libraryItems,
 } from '../state/store';
 import { applyBoardChange, updateBoard } from '../state/boardWrites';
-import { getLastView, setLastView } from '../db/prefs';
+import { getLastView, setLastView } from '../state/prefs';
 import { BoardTopBar } from '../components/BoardTopBar';
 import { DeckRail } from '../components/DeckRail';
 import { PadGrid } from '../components/PadGrid';

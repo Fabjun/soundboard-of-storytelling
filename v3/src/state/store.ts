@@ -172,3 +172,14 @@ export function upsertBoard(board: Board): void {
 export function removeBoardFromStore(id: string): void {
   boards.value = boards.value.filter((b) => b.id !== id);
 }
+
+// ---------------------------------------------------------------------------
+// Saves in flight
+// ---------------------------------------------------------------------------
+
+/**
+ * Writes to IndexedDB still running (boards, preferences). A change shows before it is stored, so
+ * "visible" is not "saved": whatever must not lose a change (a future "Saving…" hint, E2E tests
+ * before a reload) waits for 0. main.tsx mirrors it as the `data-saving` attribute on <html>.
+ */
+export const pendingSaves = signal(0);

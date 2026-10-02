@@ -7,6 +7,7 @@ All notable changes to Soundboard of Storytelling, newest first.
 ## 3.0.109 — 2026-10-02
 
 - feat(decks): a duplicated deck appears directly after its original (owner decision D4 after research)
+- refactor(prefs): UI preferences (last view, last backup) live in IndexedDB instead of Web Storage (owner decision L1 after research); DB v6 only adds a store
 
 ## 3.0.105 — 2026-10-02
 

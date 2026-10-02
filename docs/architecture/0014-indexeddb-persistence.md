@@ -26,12 +26,16 @@ territory. `docs/architecture/concept-brief.md §1` sets IndexedDB explicitly.
 
 - **IndexedDB:** all app content data. Library (audio Blobs + metadata), boards (with scenes
   and pads). Access exclusively via the `src/db/idb.ts` API.
-- **localStorage:** small UI state items that need no sync guarantee (theme choice, last open
-  screen preference or similar). No audio, no boards.
-- **localStorage keys** (added 2026-10-02 with the first preference, review pending): only in
-  `v3/src/db/prefs.ts`, as typed functions, keys `sos-v3:<name>[:<id>]` — Web Storage is shared
-  by the whole origin and V1 runs on the same one. Unavailable storage never raises an error.
-  Guarded by `v3/tests/unit/codeGuards.test.ts`.
+- ~~**localStorage:** small UI state items that need no sync guarantee (theme choice, last open
+  screen preference or similar). No audio, no boards.~~ Superseded by the refinement below
+  (2026-10-02).
+- **UI preferences in IndexedDB too** (refinement, owner decision 2026-10-02): small UI state
+  (last view of a board, last backup, sort choices, per-pad play times) lives in a key-value
+  store `keyval` of the same database (DB v6), read once at app start by
+  `v3/src/state/prefs.ts` — not in localStorage. Reason: web.dev advises "LocalStorage should be
+  avoided because it is synchronous and will block the main thread"; one storage layer instead of
+  two; the values can go into the backup file; the service worker can read them. Guarded by
+  `v3/tests/unit/codeGuards.test.ts` (no localStorage / sessionStorage in the source).
 
 Direct access to IDB outside `src/db/idb.ts` is forbidden (CLAUDE.md §Permanent coding
 standards).

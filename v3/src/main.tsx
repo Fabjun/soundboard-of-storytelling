@@ -7,7 +7,8 @@ import '@fontsource/vt323';
 import '@fontsource/share-tech-mono';
 import './styles/global.css';
 import { initAudioBridge } from './audio/index';
-import { pendingBoardSaves } from './state/boardWrites';
+import { pendingSaves } from './state/store';
+import { loadPrefs } from './state/prefs';
 
 // Apply the design-system root class to <body>.
 // All design tokens and layout utilities depend on this being present.
@@ -20,7 +21,9 @@ initAudioBridge();
 // `data-saving` on <html> while a board save runs — a change shows before it is stored, so
 // whatever must not lose it (E2E reloads, a future "Saving…" hint) waits for it to go away.
 effect(() => {
-  document.documentElement.toggleAttribute('data-saving', pendingBoardSaves.value > 0);
+  document.documentElement.toggleAttribute('data-saving', pendingSaves.value > 0);
 });
 
-render(<App />, document.getElementById('app')!);
+// Preferences (last view, last backup …) are read before the first render, so no screen shows a
+// default first and then jumps (src/state/prefs.ts).
+void loadPrefs().finally(() => render(<App />, document.getElementById('app')!));

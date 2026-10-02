@@ -31,7 +31,7 @@ import type { Board, LibraryItem, LibraryItemMeta } from '../types';
 // ---------------------------------------------------------------------------
 
 const DB_NAME = 'sos-v3';
-const DB_VERSION = 5;
+const DB_VERSION = 6;
 
 let _db: IDBPDatabase | null = null;
 
@@ -63,6 +63,12 @@ async function getDB(): Promise<IDBPDatabase> {
       // Slice 9d). Same rule: clear ONLY the boards store; one clear covers every older step.
       if (oldVersion >= 2 && oldVersion < 5) {
         void tx.objectStore('boards').clear();
+      }
+      // v6: a small key-value store for UI preferences and per-pad stats (owner decision
+      // 2026-10-02: IndexedDB, not Web Storage — ADR-0014). Only ADDS a store: boards and
+      // library stay as they are.
+      if (oldVersion < 6) {
+        db.createObjectStore('keyval');
       }
     },
   });
@@ -180,4 +186,27 @@ export async function boardPut(board: Board): Promise<void> {
 export async function boardDelete(id: string): Promise<void> {
   const db = await getDB();
   await db.delete('boards', id);
+}
+
+// ---------------------------------------------------------------------------
+// Key-value store (preferences, per-pad stats) — small values only, never audio or boards
+// ---------------------------------------------------------------------------
+
+/** Every key-value entry — small, so read in one go at app start (src/state/prefs.ts). */
+export async function kvGetAll(): Promise<[string, unknown][]> {
+  const db = await getDB();
+  const tx = db.transaction('keyval', 'readonly');
+  const entries: [string, unknown][] = [];
+  for await (const cursor of tx.store) entries.push([String(cursor.key), cursor.value]);
+  return entries;
+}
+
+export async function kvPut(key: string, value: unknown): Promise<void> {
+  const db = await getDB();
+  await db.put('keyval', value, key);
+}
+
+export async function kvDelete(key: string): Promise<void> {
+  const db = await getDB();
+  await db.delete('keyval', key);
 }

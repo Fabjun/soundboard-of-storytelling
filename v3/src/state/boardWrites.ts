@@ -14,17 +14,9 @@
 // Guarded: components and screens never call boardPut / upsertBoard (codeGuards).
 // ─────────────────────────────────────────────────────────────────────────────
 
-import { signal } from '@preact/signals';
 import type { Board } from '../types';
 import { boardGet, boardPut } from '../db/idb';
-import { boards, removeBoardFromStore, upsertBoard } from './store';
-
-/**
- * Board saves still running. A change shows before it is stored, so "visible" no longer means
- * "saved": whatever must not lose a change (a future "Saving…" hint, E2E tests before a reload)
- * waits for 0. main.tsx mirrors it as the `data-saving` attribute on <html>.
- */
-export const pendingBoardSaves = signal(0);
+import { boards, pendingSaves, removeBoardFromStore, upsertBoard } from './store';
 
 /**
  * Applies `change` to the latest version of a board, shows the result and saves it.
@@ -64,7 +56,7 @@ export async function createBoard(board: Board): Promise<Board | null> {
 }
 
 async function save(board: Board): Promise<Board | null> {
-  pendingBoardSaves.value++; // synchronously, before the first await — callers see it at once
+  pendingSaves.value++; // synchronously, before the first await — callers see it at once
   try {
     await boardPut(board);
     return board;
@@ -79,6 +71,6 @@ async function save(board: Board): Promise<Board | null> {
     }
     return null;
   } finally {
-    pendingBoardSaves.value--;
+    pendingSaves.value--;
   }
 }
