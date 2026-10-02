@@ -1245,7 +1245,36 @@ movement) would need a clear coexistence contract. First-pass recommendation: GA
 
 ## 4. Deferred Infrastructure
 
-### Assign a slice to every inventory feature still "Open" (P8)
+### Relative units for sizes (structure step before Slice 13)
+
+Measured 2026-10-02: `v3/src/styles/tokens.css` has 452 px values, 0 rem, no `clamp()` — font
+sizes and spacing ignore the user's text-size setting (WCAG 2.2 SC 1.4.4: text resizable to 200 %
+"without loss of content or functionality"; web.dev: rem / em so text "can respond to user
+preferences"). Owner decision: switch before Slice 13 — an ADR fixes the scheme (rem for type and
+spacing, `fr` / flex / `%` for layout, `clamp()` for fluid sizes, px only for borders, pixel-art
+details and minimum touch targets — Apple HIG 44 pt, WCAG 2.5.8 24 px), tokens migrate, a guard
+blocks new px values for type and spacing.
+**When:** before Slice 13.
+
+### Tab access and plain errors (audit of the existing screens)
+
+Owner decision 2026-10-02 (CLAUDE.md UI rules): every control reachable with the Tab key and named
+for screen readers; error messages in plain words with a next step. Found: the PAD editor's close
+button had no accessible name (fixed 35c602d); BACKLOG "Role-based E2E locators" lists buttons
+without accessible names in Chromium.
+**When:** next structure review; checks: an accessibility lint rule or an axe scan in E2E.
+
+### PAD editor: several files per pad cannot be edited yet
+
+Found 2026-10-02 while preparing the #36 playback check: since Slice 9d a Single or Loop holds
+several files, but the PAD editor's file choice replaces them with one (code comment pointed to
+"Slice 11", which became the combo editor). Several files reach a pad only through the V1 import
+today. V1 could edit them (playlist pads).
+**When:** Slice 15 (PAD editor at V1 scope); fix the stale comment in
+`v3/src/components/PadEditorPanel.tsx` with it. The "N files" line under the source is easy to miss
+(the owner could not find it on 2026-10-02) — the file list replaces it.
+
+### Assign a slice to every inventory feature still "Open" (P8) ✅ Done (owner decisions 2026-10-02)
 
 Owner decision 2026-10-02 (docs/product/README.md §7 P8): everything V1 / V2 could do is built
 unless deliberately rejected. On that day 22 features in `docs/product/v1-v2-inventory.md` had no
