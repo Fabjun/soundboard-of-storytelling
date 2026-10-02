@@ -7,9 +7,74 @@ export type ChangelogEntry = {
   items: string[];
 };
 
-export const APP_VERSION = '3.0.93';
+export const APP_VERSION = '3.0.114';
 
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.114',
+    date: '2026-10-02',
+    items: ['chore: merge main into the stack — a new pad is Single unless the user picks a type'],
+  },
+  {
+    version: '3.0.113',
+    date: '2026-10-02',
+    items: [
+      'docs: review log — the Single default fix on main and PR #40 (a waiting auto-save is written, never dropped)',
+    ],
+  },
+  {
+    version: '3.0.111',
+    date: '2026-10-02',
+    items: [
+      'fix(pads): a new pad is Single unless you pick another type — no Loop guessed from long files; the suggested name follows the chosen file',
+    ],
+  },
+  {
+    version: '3.0.110',
+    date: '2026-10-02',
+    items: ['docs: review log — the review session with the owner and PR #39'],
+  },
+  {
+    version: '3.0.108',
+    date: '2026-10-02',
+    items: [
+      'docs: research before every decision (owner rule); testing pitfall — a new git worktree runs no hooks until npm ci',
+    ],
+  },
+  {
+    version: '3.0.107',
+    date: '2026-10-02',
+    items: [
+      'ci: commit messages follow Conventional Commits, checked by commitlint (S6, ADR-0060 accepted by the owner)',
+    ],
+  },
+  {
+    version: '3.0.106',
+    date: '2026-10-02',
+    items: ['docs: review log — Slice 11 pull request (#38)'],
+  },
+  {
+    version: '3.0.104',
+    date: '2026-10-02',
+    items: ['docs: review log — the PR #37 row that 3.0.103 missed'],
+  },
+  {
+    version: '3.0.103',
+    date: '2026-10-02',
+    items: ['docs: review log — Slice 10 pull request (#37)'],
+  },
+  {
+    version: '3.0.101',
+    date: '2026-10-02',
+    items: [
+      'test: the start screen visual test hides the version footer (a longer version moved the centred line); review log: PRs #35/#36, Slice 9 structure review',
+    ],
+  },
+  {
+    version: '3.0.97',
+    date: '2026-10-02',
+    items: ['docs: review log — owner decisions O1–O8 of 2026-10-02 and the new pull requests'],
+  },
   {
     version: '3.0.93',
     date: '2026-10-01',
