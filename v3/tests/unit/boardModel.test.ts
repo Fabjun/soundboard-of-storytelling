@@ -143,19 +143,40 @@ describe('decks', () => {
     expect(deckCount(b, 'a')).toBe(2);
   });
 
-  it('duplicating places the same pads (no copies) and appends the copy at the end', () => {
+  it('duplicating places the same pads (no copies); the copy comes directly after the original', () => {
     let b = addPadToDeck(emptyBoard(), 'd1', single('a'), { col: 2, row: 3 });
     b = duplicateDeck(b, 'd1', 'd3', 'Deck 1 · 2');
     expect(b.pads).toHaveLength(1);
+    expect([...b.decks].sort((x, y) => x.order - y.order).map((d) => [d.id, d.order])).toEqual([
+      ['d1', 0],
+      ['d3', 1],
+      ['d2', 2],
+    ]);
+    expect(boardProblems(b)).toEqual([]);
+    expect(findDeck(b, 'd3')!.placements).toEqual(findDeck(b, 'd1')!.placements);
+    expect(findDeck(b, 'd3')!.placements[0].position).not.toBe(
+      findDeck(b, 'd1')!.placements[0].position,
+    );
+  });
+
+  it('duplicating the last deck puts the copy at the end; gaps in the order numbers stay valid', () => {
+    let b = duplicateDeck(emptyBoard(), 'd2', 'd3', 'copy');
     expect([...b.decks].sort((x, y) => x.order - y.order).map((d) => d.id)).toEqual([
       'd1',
       'd2',
       'd3',
     ]);
-    expect(findDeck(b, 'd3')!.placements).toEqual(findDeck(b, 'd1')!.placements);
-    expect(findDeck(b, 'd3')!.placements[0].position).not.toBe(
-      findDeck(b, 'd1')!.placements[0].position,
-    );
+    b = {
+      ...emptyBoard(),
+      decks: [{ ...emptyBoard().decks[0] }, { ...emptyBoard().decks[1], order: 5 }],
+    };
+    b = duplicateDeck(b, 'd1', 'd3', 'copy');
+    expect(b.decks.map((d) => [d.id, d.order])).toEqual([
+      ['d1', 0],
+      ['d2', 6],
+      ['d3', 1],
+    ]);
+    expect(boardProblems(b)).toEqual([]);
   });
 
   it('duplicating an unknown deck changes nothing', () => {

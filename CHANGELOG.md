@@ -4,6 +4,10 @@
 
 All notable changes to Soundboard of Storytelling, newest first.
 
+## 3.0.109 — 2026-10-02
+
+- feat(decks): a duplicated deck appears directly after its original (owner decision D4 after research)
+
 ## 3.0.105 — 2026-10-02
 
 - feat(combo): combo steps model and protection against combos that start themselves (Slice 11); an imported V1 combo that would do so loses that step reference

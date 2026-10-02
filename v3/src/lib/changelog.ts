@@ -7,9 +7,16 @@ export type ChangelogEntry = {
   items: string[];
 };
 
-export const APP_VERSION = '3.0.105';
+export const APP_VERSION = '3.0.109';
 
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.109',
+    date: '2026-10-02',
+    items: [
+      'feat(decks): a duplicated deck appears directly after its original (owner decision D4 after research)',
+    ],
+  },
   {
     version: '3.0.105',
     date: '2026-10-02',

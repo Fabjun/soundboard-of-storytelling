@@ -221,7 +221,7 @@ export function addDeck(board: Board, deck: Omit<Deck, 'order' | 'placements'>):
 }
 
 /**
- * Duplicates a deck and appends the copy at the end (as before Slice 9c). The copy places the
+ * Duplicates a deck; the copy comes directly after the original. The copy places the
  * SAME pads (same ids, same positions and keys) — no pad copies (docs/architecture/0048-pad-pool-decks.md#2-behavior-final-not-provisional).
  */
 export function duplicateDeck(
@@ -232,14 +232,19 @@ export function duplicateDeck(
 ): Board {
   const source = findDeck(board, deckId);
   if (!source) return board;
+  // Directly after the original (industry standard: Figma pages, PowerPoint slides; owner
+  // 2026-10-02) — every deck after it moves one place on.
   const copy: Deck = {
     ...source,
     id: copyId,
     name: copyName,
-    order: nextDeckOrder(board),
+    order: source.order + 1,
     placements: source.placements.map((p) => ({ ...p, position: { ...p.position } })),
   };
-  return { ...board, decks: [...board.decks, copy] };
+  const shifted = board.decks.map((d) =>
+    d.order > source.order ? { ...d, order: d.order + 1 } : d,
+  );
+  return { ...board, decks: [...shifted, copy] };
 }
 
 /** Renames a deck. */
