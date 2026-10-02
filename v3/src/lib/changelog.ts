@@ -7,9 +7,16 @@ export type ChangelogEntry = {
   items: string[];
 };
 
-export const APP_VERSION = '3.0.110';
+export const APP_VERSION = '3.0.111';
 
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.111',
+    date: '2026-10-02',
+    items: [
+      'fix(pads): a new pad is Single unless you pick another type — no Loop guessed from long files; the suggested name follows the chosen file',
+    ],
+  },
   {
     version: '3.0.110',
     date: '2026-10-02',

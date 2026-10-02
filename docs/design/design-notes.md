@@ -31,6 +31,10 @@
 
 ### A2 · Path B audio-duration → pad-type inference
 
+→ **superseded 2026-10-02** by the owner: a new pad is SINGLE unless the user picks a type, on
+every path — no inference ([docs/product/README.md §Pad types](../product/README.md#pad-types--decided)).
+The text below is the original Slice-3 note.
+
 Audio dropped from Library auto-creates a pad with type inferred from
 duration: `<5 s → SINGLE`, `≥10 s → LOOP`, multi-file drop → `PLAYLIST`.
 The 5–10 s zone is ambiguous.
@@ -42,6 +46,11 @@ in-flow only in Path A via type pills (`PadCreationPopover.tsx:193`); Path B cre
 immediately with no in-flow override; post-creation change always available via Pad Editor
 (`PadEditorPanel.tsx:379` + `PadTypeConfirmDialog.tsx`). Whether Path B needs an in-flow
 flip is a future UX question — not re-opened here.)_
+**Suggestion vs. pick (2026-10-02):** found when picking SGL, then a ≥ 10 s file, gave a LOOP
+pad — the file choice overwrote the pick. The type is no longer suggested at all (see above). The
+file name stays a suggestion: shown as placeholder, never stored as if typed, so it follows a
+later file choice and never overwrites a typed name. Source: [Default Dominance](https://www.uxtigers.com/post/defaults) —
+"keep separate records of values users actively selected and values they merely inherited".
 
 ### A2 · Path C "next available slot" scan order
 

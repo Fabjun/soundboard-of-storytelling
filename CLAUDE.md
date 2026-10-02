@@ -283,6 +283,10 @@ and has diverged). Never hardcode colors, fonts, or spacing.
   element type, variants via props. Never parallel components for
   "slightly different" needs. If tempted, ask.
 - **Delete buttons**: always 2-tap confirmation.
+- **Suggestions are derived, choices are state** (2026-10-02): a value the app suggests (e.g. a
+  pad name from the chosen file) is computed on render — never written into the same state as a
+  value the user typed or picked, so it can neither overwrite a choice nor pass for one
+  ([docs/design/design-notes.md](docs/design/design-notes.md), A2 Suggestion vs. pick).
 - **JSX safety**: Preact auto-escapes children. Do not bypass this
   with `dangerouslySetInnerHTML` unless absolutely required and
   approved.

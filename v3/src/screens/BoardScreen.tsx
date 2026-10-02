@@ -34,7 +34,7 @@ import { StatusBar } from '../components/StatusBar';
 import { PixelIcon } from '../components/PixelIcon';
 import type { AppMode, Board, Pad, PadPosition, Deck } from '../types';
 import { nanoid } from '../lib/nanoid';
-import { nextFreeSlot, typeInference } from '../lib/padUtils';
+import { DEFAULT_PAD_TYPE, nextFreeSlot } from '../lib/padUtils';
 import { type LibDndDropResult } from '../lib/libDnd';
 
 type RightPanelMode = 'library' | 'editor' | 'empty';
@@ -176,29 +176,16 @@ export function BoardScreen(): JSX.Element {
     const item = libraryItems.value.find((m) => m.id === itemId);
     if (!item) return;
 
-    const inferredType = typeInference(item.duration, 1); // returns 'single' or 'loop' for fileCount=1
-    const newPad: Pad =
-      inferredType === 'loop'
-        ? {
-            id: nanoid(),
-            type: 'loop',
-            name: item.name,
-            position: finalPos,
-            libraryItemRef: itemId,
-            volume: 80,
-            fadeIn: 0,
-            fadeOut: 0,
-          }
-        : {
-            id: nanoid(),
-            type: 'single',
-            name: item.name,
-            position: finalPos,
-            libraryItemRef: itemId,
-            volume: 80,
-            fadeIn: 0,
-            fadeOut: 0,
-          };
+    const newPad: Pad = {
+      id: nanoid(),
+      type: DEFAULT_PAD_TYPE,
+      name: item.name,
+      position: finalPos,
+      libraryItemRef: itemId,
+      volume: 80,
+      fadeIn: 0,
+      fadeOut: 0,
+    };
 
     const updatedDeck: Deck = { ...deck, pads: [...deck.pads, newPad] };
     const updatedBoard: Board = {

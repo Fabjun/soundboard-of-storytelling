@@ -42,6 +42,18 @@ with mouse and touch** (Pointer Events, never HTML5 DnD); alternatives remain op
 `deck-crud.spec.ts` is quarantined (`test.fixme`) until the feature lands.
 **When:** with the deck work in Slice 9e or the adaptive layout in Slice 13.
 
+### Combo by dropping one pad onto another — idea (Open)
+
+Owner idea 2026-10-02: drag a pad onto another pad to create a Combo of both; the pads' icons
+could merge into the Combo's icon. Precedent: on the iPhone Home Screen, dragging an app onto
+another app creates a folder ([Apple Support](https://support.apple.com/guide/iphone/organize-your-apps-in-folders-iph822ece7dd/ios)).
+**Open questions:** a drop on a pad swaps the two today (pad DnD, `v3/src/lib/padDnd.ts`) —
+which gesture or drop zone creates a Combo instead; do both pads stay in the deck; what the
+Combo's steps are (both in one step, or one after the other); pads have no icons yet, so
+merged icons need an icon concept first. Minimal-first: the Combo editor (Slice 11) comes
+first, gestures later.
+**When:** after Slice 11, discussed with the owner before any plan.
+
 > **Slice numbers in this section refer to the May plan** (Slices 5–8, superseded 2026-09-28).
 > Mapping to the new plan (Slices 9–14): `CLAUDE.md §Slice progress`. Items are re-triaged when
 > the respective new slice is planned.
@@ -1182,6 +1194,8 @@ two design sessions with `--fade` in context.
 Pad-type inference defaults to SINGLE in the ambiguous 5–10 s band. Re-evaluate if real audio
 sets show many sub-loops in this zone.
 **Source:** docs/design/design-notes.md §Slice 3 — A2 Path B.
+→ superseded 2026-10-02: no type inference any more — a new pad is SINGLE unless the user picks
+a type ([product/README.md §Pad types](product/README.md#pad-types--decided)).
 
 ### ModeToggle sparks — design-implementation divergence
 
