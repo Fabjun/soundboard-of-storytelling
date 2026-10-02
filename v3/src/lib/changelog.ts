@@ -7,9 +7,21 @@ export type ChangelogEntry = {
   items: string[];
 };
 
-export const APP_VERSION = '3.0.117';
+export const APP_VERSION = '3.0.119';
 
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.119',
+    date: '2026-10-02',
+    items: ['chore: merge main into the stack — local test runs keep the trace of a failed test'],
+  },
+  {
+    version: '3.0.118',
+    date: '2026-10-02',
+    items: [
+      'test(e2e): local runs keep the trace of every failed test, so a rare failure in a git hook can be diagnosed afterwards',
+    ],
+  },
   {
     version: '3.0.117',
     date: '2026-10-02',

@@ -75,7 +75,12 @@ export default defineConfig({
   forbidOnly: true,
   use: {
     baseURL: TEST_ORIGIN,
-    trace: 'on-first-retry',
+    // CI retries, so the first retry records a trace (Playwright's CI advice). Local runs and the
+    // git hooks never retry: there every test records and a failed one keeps its trace —
+    // 'retain-on-failure', "useful when retries aren't enabled" (playwright.dev/docs/trace-viewer).
+    // Measured cost: 19 s instead of 18 s for 21 full tests. Without it, two rare hook failures on
+    // 2026-10-02 could not be diagnosed (docs/backlog.md, flaky smoke test).
+    trace: process.env.CI ? 'on-first-retry' : 'retain-on-failure',
   },
   expect: {
     toHaveScreenshot: {
