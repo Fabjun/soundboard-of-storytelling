@@ -10,6 +10,7 @@
 import type { Board, ComboStep, FileOrder, Pad, PadBase, Placement } from '../types';
 import { DEFAULT_GRID } from './boardModel';
 import { DEFAULT_PAD_VOLUME, indexToPos } from './padUtils';
+import { breakCycles } from './comboModel';
 
 /** V1 used a fade-out-all step's `dur` as the fade time, 2.5 s when not set. */
 export const V1_FADE_OUT_ALL_DEFAULT = 2.5;
@@ -26,6 +27,8 @@ export type V1ImportNotes = {
   unknownModes: number;
   /** Pad files whose audio is not in the backup or the library. */
   missingFiles: number;
+  /** Combo step references removed because they would make a combo start itself. */
+  cycleRefs: number;
 };
 
 export const emptyNotes = (): V1ImportNotes => ({
@@ -34,6 +37,7 @@ export const emptyNotes = (): V1ImportNotes => ({
   missingStepPads: 0,
   unknownModes: 0,
   missingFiles: 0,
+  cycleRefs: 0,
 });
 
 type Json = Record<string, unknown>;
@@ -161,7 +165,7 @@ export function mapV1Board(v1: unknown, ctx: V1MapContext): Board | null {
   });
 
   const rows = Math.max(DEFAULT_GRID.rows, Math.ceil(placements.length / cols));
-  return {
+  const board: Board = {
     id: ctx.newId(),
     name: uniqueBoardName(str(v1.name) ?? 'Imported board', ctx.takenNames),
     themeId: 'hearth',
@@ -177,4 +181,8 @@ export function mapV1Board(v1: unknown, ctx: V1MapContext): Board | null {
     ],
     quickAccess: [],
   };
+  // A combo that starts itself would make the engine start it again and again — drop such steps
+  const { board: safe, removed } = breakCycles(board);
+  ctx.notes.cycleRefs += removed;
+  return safe;
 }

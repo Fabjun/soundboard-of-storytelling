@@ -7,9 +7,16 @@ export type ChangelogEntry = {
   items: string[];
 };
 
-export const APP_VERSION = '3.0.102';
+export const APP_VERSION = '3.0.105';
 
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.105',
+    date: '2026-10-02',
+    items: [
+      'feat(combo): combo steps model and protection against combos that start themselves (Slice 11); an imported V1 combo that would do so loses that step reference',
+    ],
+  },
   {
     version: '3.0.102',
     date: '2026-10-02',

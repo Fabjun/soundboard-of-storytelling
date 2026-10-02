@@ -41,6 +41,8 @@ function noteLines(r: ImportResult): string[] {
       `${plural(n.comboPadOptions, 'combo step')} had per-pad volume or fade — not imported yet.`,
     n.missingStepPads && `${plural(n.missingStepPads, 'combo reference')} pointed at no pad.`,
     n.unknownModes && `${plural(n.unknownModes, 'pad')} had an unknown type — imported as Single.`,
+    n.cycleRefs &&
+      `${plural(n.cycleRefs, 'combo step reference')} removed — the combo would have started itself.`,
     r.boardsSkipped && `${plural(r.boardsSkipped, 'board')} could not be read.`,
     ...r.audioFailed,
   ].filter((l): l is string => typeof l === 'string');

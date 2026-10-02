@@ -157,6 +157,7 @@ describe('mapV1Board', () => {
       missingStepPads: 0,
       unknownModes: 1,
       missingFiles: 1,
+      cycleRefs: 0,
     });
   });
 
@@ -179,6 +180,27 @@ describe('mapV1Board', () => {
       name: 'Imported board',
       pads: [],
     });
+  });
+});
+
+describe('mapV1Board — combos that would start themselves', () => {
+  it('drops step references that close a cycle and counts them', () => {
+    const ctx = context();
+    const b = mapV1Board(
+      v1Board([
+        { mode: 'combo', steps: [{ pads: [1] }] }, // 0 → 1
+        { mode: 'combo', steps: [{ pads: [0] }, { pads: [2] }] }, // 1 → 0: a cycle
+        { mode: 'once' },
+        { mode: 'combo', steps: [{ pads: [3, 2] }] }, // starts itself
+      ]),
+      ctx,
+    )!;
+    expect(ctx.notes.cycleRefs).toBe(2);
+    expect(boardProblems(b)).toEqual([]);
+    const [c0, c1, s, c3] = b.pads as [ComboPad, ComboPad, SinglePad, ComboPad];
+    expect(c0.steps).toEqual([{ padIds: [] }]);
+    expect(c1.steps).toEqual([{ padIds: [c0.id] }, { padIds: [s.id] }]);
+    expect(c3.steps).toEqual([{ padIds: [s.id] }]);
   });
 });
 
