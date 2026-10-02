@@ -10,23 +10,13 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { test, expect, type Page } from '@playwright/test';
-import { goToBoardList, createBoardAndNavigate, enterSetupMode, reopenFirstBoard } from './helpers';
-
-const padCells = (page: Page) =>
-  page.locator('[data-testid^="pad-grid-cell-"]:not([data-testid^="pad-grid-cell-empty-slot-"])');
-
-/** ADD PAD → (optionally make it a combo while it is still fresh) → name it; returns its id. */
-async function addPad(page: Page, name: string, combo = false): Promise<string> {
-  const before = await padCells(page).count();
-  // Located by text: the button has no accessible name in Chromium yet (BACKLOG "Role-based E2E locators").
-  await page.getByText('ADD PAD', { exact: true }).click();
-  await expect(padCells(page)).toHaveCount(before + 1);
-  const testId = (await padCells(page).nth(before).getAttribute('data-testid'))!;
-  if (combo) await page.getByTestId('pad-editor-panel-type-button-combo').click();
-  await page.getByTestId('pad-editor-panel-name-input').fill(name);
-  await expect(page.getByTestId(testId)).toContainText(name);
-  return testId.replace('pad-grid-cell-', '');
-}
+import {
+  addNamedPad,
+  goToBoardList,
+  createBoardAndNavigate,
+  enterSetupMode,
+  reopenFirstBoard,
+} from './helpers';
 
 const choose = (page: Page, step: number, label: string) =>
   page.getByTestId(`combo-steps-editor-pad-input-${step}`).selectOption({ label });
@@ -40,9 +30,9 @@ test.beforeEach(async ({ page }) => {
 });
 
 test('a combo keeps its steps: pads, wait and "stop everything first"', async ({ page }) => {
-  const owl = await addPad(page, 'Owl');
-  const rain = await addPad(page, 'Rain');
-  const day = await addPad(page, 'Day', true);
+  const owl = await addNamedPad(page, 'Owl');
+  const rain = await addNamedPad(page, 'Rain');
+  const day = await addNamedPad(page, 'Day', { combo: true });
 
   await page.getByTestId('combo-steps-editor-add-button').click();
   await choose(page, 0, 'Owl');
@@ -64,9 +54,9 @@ test('a combo keeps its steps: pads, wait and "stop everything first"', async ({
 });
 
 test('a combo is never offered itself or a combo that starts it', async ({ page }) => {
-  await addPad(page, 'Owl');
-  const a = await addPad(page, 'Dawn', true);
-  await addPad(page, 'Dusk', true);
+  await addNamedPad(page, 'Owl');
+  const a = await addNamedPad(page, 'Dawn', { combo: true });
+  await addNamedPad(page, 'Dusk', { combo: true });
 
   // Dusk starts Dawn
   await page.getByTestId('combo-steps-editor-add-button').click();
@@ -84,8 +74,8 @@ test('a combo is never offered itself or a combo that starts it', async ({ page 
 });
 
 test('taking a pad out of a step and removing a step need two taps', async ({ page }) => {
-  const owl = await addPad(page, 'Owl');
-  await addPad(page, 'Day', true);
+  const owl = await addNamedPad(page, 'Owl');
+  await addNamedPad(page, 'Day', { combo: true });
   await page.getByTestId('combo-steps-editor-add-button').click();
   await choose(page, 0, 'Owl');
 

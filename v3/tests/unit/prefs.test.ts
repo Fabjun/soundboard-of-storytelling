@@ -11,6 +11,11 @@ import { pendingSaves } from '../../src/state/store';
 import {
   clearLastView,
   getLastBackup,
+  getLastPlayed,
+  getPadSort,
+  prefsVersion,
+  setLastPlayed,
+  setPadSort,
   getLastView,
   loadPrefs,
   setLastBackup,
@@ -64,6 +69,7 @@ describe('last view of a board', () => {
     clearLastView('b1');
     expect(getLastView('b1')).toBeNull();
     await settled();
+    expect((await kvGetAll()).map(([k]) => k)).toEqual(['last-view:b2']); // really deleted
     await loadPrefs();
     expect(getLastView('b1')).toBeNull();
     expect(getLastView('b2')).toEqual({ kind: 'all-pads' });
@@ -76,12 +82,13 @@ describe('last backup (D3)', () => {
     setLastBackup(1_700_000_000_000);
     expect(getLastBackup()).toBe(1_700_000_000_000);
     await settled();
+    expect(await kvGetAll()).toEqual([['last-backup', 1_700_000_000_000]]);
     await loadPrefs();
     expect(getLastBackup()).toBe(1_700_000_000_000);
   });
 
   it('ignores a value that is not a time', async () => {
-    for (const bad of ['soon', 0, -5, Number.NaN]) {
+    for (const bad of ['soon', '5', 0, -5, Number.NaN, Number.POSITIVE_INFINITY]) {
       await kvPut('last-backup', bad);
       await loadPrefs();
       expect(getLastBackup()).toBeNull();
@@ -103,7 +110,55 @@ describe('a failing database', () => {
     expect(() => setLastBackup(1)).not.toThrow();
     expect(getLastBackup()).toBe(1); // the session still sees it
     await settled();
-    expect(error).toHaveBeenCalled();
+    expect(error).toHaveBeenCalledWith(
+      'Saving the preference last-backup failed:',
+      expect.anything(),
+    );
     vi.unstubAllGlobals();
+  });
+});
+
+describe('sort of the All pads view, per board (E1)', () => {
+  it('is by name until chosen; the choice is kept per board and after a reload', async () => {
+    expect(getPadSort('b1')).toEqual({ key: 'name', reversed: false });
+    setPadSort('b1', { key: 'played', reversed: true });
+    expect(getPadSort('b1')).toEqual({ key: 'played', reversed: true });
+    expect(getPadSort('b2')).toEqual({ key: 'name', reversed: false });
+    await settled();
+    await loadPrefs();
+    expect(getPadSort('b1')).toEqual({ key: 'played', reversed: true });
+  });
+
+  it('a stored value that is not a sort falls back to name', async () => {
+    await kvPut('pad-sort:b1', { key: 'size', reversed: false });
+    await loadPrefs();
+    expect(getPadSort('b1')).toEqual({ key: 'name', reversed: false });
+  });
+});
+
+describe('last played, per pad', () => {
+  it('null until played; kept after a reload; bad values ignored', async () => {
+    expect(getLastPlayed('p')).toBeNull();
+    setLastPlayed('p', 123);
+    expect(getLastPlayed('p')).toBe(123);
+    await settled();
+    await loadPrefs();
+    expect(getLastPlayed('p')).toBe(123);
+    for (const bad of ['yesterday', '5', 0, Number.POSITIVE_INFINITY]) {
+      await kvPut('last-played:q', bad);
+      await loadPrefs();
+      expect(getLastPlayed('q')).toBeNull();
+    }
+  });
+});
+
+describe('prefsVersion', () => {
+  it('changes on every write and on loading, so the screen re-reads', async () => {
+    const v = prefsVersion.value;
+    setLastBackup(5);
+    expect(prefsVersion.value).toBe(v + 1);
+    await settled();
+    await loadPrefs();
+    expect(prefsVersion.value).toBe(v + 2);
   });
 });

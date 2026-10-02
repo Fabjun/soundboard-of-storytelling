@@ -81,7 +81,7 @@ export function PadCreationPopover({
 
   function buildPad(id: string): Pad {
     const name = padName.trim() || (selectedItem?.name ?? 'New Pad');
-    return newPad(id, padType, name, selectedItemId ? [selectedItemId] : []);
+    return newPad(id, padType, name, selectedItemId ? [selectedItemId] : [], Date.now());
   }
 
   function handleCreate() {

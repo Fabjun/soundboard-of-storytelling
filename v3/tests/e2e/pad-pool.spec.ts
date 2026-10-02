@@ -22,11 +22,11 @@ import {
   goToBoardList,
   pointerDrag,
   reopenFirstBoard,
+  addNamedPad,
+  padCells,
 } from './helpers';
 
 const tabs = (page: Page) => page.locator('[data-testid^="deck-rail-deck-tab-"]');
-const occupied = (page: Page) =>
-  page.locator('[data-testid^="pad-grid-cell-"]:not([data-testid^="pad-grid-cell-empty-slot-"])');
 
 /** Two decks; returns their ids in rail order. */
 async function twoDecks(page: Page): Promise<[string, string]> {
@@ -39,16 +39,9 @@ async function twoDecks(page: Page): Promise<[string, string]> {
   return [ids[0], ids[1]];
 }
 
-/** ADD PAD in the open deck, named in the editor; returns the pad's cell test id. */
-async function addNamedPad(page: Page, name: string): Promise<string> {
-  // Located by text: the button has no accessible name in Chromium yet (BACKLOG "Role-based E2E locators").
-  await page.getByText('ADD PAD', { exact: true }).click();
-  await page.getByTestId('pad-editor-panel-name-input').waitFor();
-  const cellTestId = (await occupied(page).first().getAttribute('data-testid'))!;
-  await page.getByTestId('pad-editor-panel-name-input').fill(name);
-  await expect(page.getByTestId(cellTestId)).toContainText(name);
-  return cellTestId;
-}
+/** ADD PAD in the open deck (shared helper), returning the pad's cell test id. */
+const addPadCell = async (page: Page, name: string) =>
+  `pad-grid-cell-${await addNamedPad(page, name)}`;
 
 test.beforeEach(async ({ page }) => {
   await page.goto('/soundboard-of-storytelling/');
@@ -60,7 +53,7 @@ test.beforeEach(async ({ page }) => {
 test('remove from deck keeps the pad in All pads', async ({ page }) => {
   await twoDecks(page);
   await tabs(page).first().click();
-  const cell = await addNamedPad(page, 'Thunder');
+  const cell = await addPadCell(page, 'Thunder');
 
   // Two taps: the first only arms the button
   const remove = page.getByTestId('pad-editor-panel-remove-button');
@@ -85,7 +78,7 @@ test('remove from deck keeps the pad in All pads', async ({ page }) => {
 test('delete pad shows its decks and removes it everywhere', async ({ page }) => {
   await page.getByTestId('deck-rail-new-button').click();
   await tabs(page).first().waitFor();
-  const cell = await addNamedPad(page, 'Thunder');
+  const cell = await addPadCell(page, 'Thunder');
 
   // Duplicate the deck: the copy places the same pad (ADR-0048)
   await tabs(page).first().hover();
@@ -108,7 +101,7 @@ test('delete pad shows its decks and removes it everywhere', async ({ page }) =>
 test('the deck checklist places the pad in another deck and takes it out', async ({ page }) => {
   const [deck1, deck2] = await twoDecks(page);
   await tabs(page).first().click();
-  const cell = await addNamedPad(page, 'Thunder');
+  const cell = await addPadCell(page, 'Thunder');
 
   const box1 = page.getByTestId(`pad-editor-panel-deck-input-${deck1}`);
   const box2 = page.getByTestId(`pad-editor-panel-deck-input-${deck2}`);
@@ -134,7 +127,7 @@ test('the deck checklist places the pad in another deck and takes it out', async
 test('a rename and a deck checkbox right after it both survive a reload', async ({ page }) => {
   const [, deck2] = await twoDecks(page);
   await tabs(page).first().click();
-  const cell = await addNamedPad(page, 'Thunder');
+  const cell = await addPadCell(page, 'Thunder');
 
   // Rename (saved after a 500 ms debounce) and check the second deck before that save runs
   await page.getByTestId('pad-editor-panel-name-input').fill('Rain');
@@ -154,11 +147,11 @@ test('ADD PAD in All pads creates a pad that sits in no deck', async ({ page }) 
   await page.getByTestId('deck-rail-all-pads-tab').click();
   await page.getByText('ADD PAD', { exact: true }).click();
   await page.getByTestId('pad-editor-panel-name-input').fill('Wind');
-  const cell = occupied(page).first();
+  const cell = padCells(page).first();
   await expect(cell).toContainText('Wind');
   await expect(page.getByTestId(`pad-editor-panel-deck-input-${deck1}`)).not.toBeChecked();
   await tabs(page).first().click();
-  await expect(occupied(page)).toHaveCount(0); // the deck holds no pad
+  await expect(padCells(page)).toHaveCount(0); // the deck holds no pad
 });
 
 test('a library file dropped on All pads becomes a pad in no deck', async ({ page }) => {
@@ -173,8 +166,8 @@ test('a library file dropped on All pads becomes a pad in no deck', async ({ pag
     .first();
   await row.waitFor();
   await pointerDrag(page, row, page.getByText('No pads yet', { exact: false }));
-  await expect(occupied(page)).toHaveCount(1);
-  await expect(occupied(page).first()).toContainText(TEST_AUDIO_NAME);
+  await expect(padCells(page)).toHaveCount(1);
+  await expect(padCells(page).first()).toContainText(TEST_AUDIO_NAME);
   await expect(page.getByTestId('deck-rail-all-pads-tab')).toContainText('1');
 });
 
@@ -182,14 +175,39 @@ test('a board opens in the view it showed last', async ({ page }) => {
   await twoDecks(page);
   // A pad only in the second deck: visible there and in All pads, not in the first deck
   await tabs(page).nth(1).click();
-  await addNamedPad(page, 'Rain');
+  await addPadCell(page, 'Rain');
 
   await reopenFirstBoard(page);
-  await expect(occupied(page)).toContainText(['Rain']); // second deck again, not the first
+  await expect(padCells(page)).toContainText(['Rain']); // second deck again, not the first
   await expect(emptySlots(page)).toHaveCount(15);
 
   await page.getByTestId('deck-rail-all-pads-tab').click();
   await reopenFirstBoard(page);
-  await expect(occupied(page)).toContainText(['Rain']);
+  await expect(padCells(page)).toContainText(['Rain']);
   await expect(emptySlots(page)).toHaveCount(0); // All pads has no empty cells
+});
+
+test('All pads sorts by name, by date added and reversed; the choice stays with the board', async ({
+  page,
+}) => {
+  await page.getByTestId('deck-rail-new-button').click();
+  await tabs(page).first().waitFor();
+  for (const name of ['Bravo', 'Alpha', 'Charlie']) await addPadCell(page, name);
+  await page.getByTestId('deck-rail-all-pads-tab').click();
+
+  const order = async () =>
+    (await padCells(page).allTextContents()).map(
+      (t) => ['Alpha', 'Bravo', 'Charlie'].find((n) => t.includes(n)) ?? t,
+    );
+  expect(await order()).toEqual(['Alpha', 'Bravo', 'Charlie']); // Name A→Z by default
+
+  await page.getByTestId('board-screen-sort-input').selectOption({ label: 'Date added' });
+  await expect.poll(order).toEqual(['Charlie', 'Alpha', 'Bravo']); // newest first
+
+  await page.getByTestId('board-screen-reverse-button').click();
+  await expect.poll(order).toEqual(['Bravo', 'Alpha', 'Charlie']); // oldest first
+
+  await reopenFirstBoard(page); // the board opens in All pads again, with the same sort
+  await expect.poll(order).toEqual(['Bravo', 'Alpha', 'Charlie']);
+  await expect(page.getByTestId('board-screen-sort-input')).toHaveValue('added');
 });

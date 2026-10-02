@@ -289,7 +289,7 @@ describe('remove from deck, place in deck, All pads (Slice 9e)', () => {
       ...emptyBoard(),
       pads: ['e', 'a', 'd', 'b', 'c'].map(single),
     };
-    const layout = poolLayout(b, 4);
+    const layout = poolLayout(poolByName(b), 4);
     expect(
       layout.map((e) => [e.pad.id, e.placement.position.col, e.placement.position.row]),
     ).toEqual([
@@ -300,7 +300,7 @@ describe('remove from deck, place in deck, All pads (Slice 9e)', () => {
       ['e', 0, 1],
     ]);
     expect(layout.every((e) => e.placement.hotkey === undefined)).toBe(true);
-    expect(poolLayout(emptyBoard(), 4)).toEqual([]);
+    expect(poolLayout([], 4)).toEqual([]);
   });
 
   it('the default grid is 4×4 — the size of every new deck and the width of All pads', () => {
@@ -614,6 +614,8 @@ describe('parseBoard (untrusted boards from a backup file)', () => {
     ['pad fadeOut', (b) => withPad(b, 0, { fadeOut: undefined })],
     ['pad iconRef', (b) => withPad(b, 0, { iconRef: 1 })],
     ['pad color', (b) => withPad(b, 0, { color: false })],
+    ['pad addedAt', (b) => withPad(b, 0, { addedAt: 'yesterday' })],
+    ['pad modifiedAt', (b) => withPad(b, 0, { modifiedAt: null })],
     ['pad type', (b) => withPad(b, 0, { type: 'playlist' })],
     ['pad files', (b) => withPad(b, 0, { files: ['h1', 2] })],
     ['pad files missing', (b) => withPad(b, 0, { files: undefined })],

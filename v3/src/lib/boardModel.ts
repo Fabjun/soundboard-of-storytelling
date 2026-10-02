@@ -159,11 +159,11 @@ export function poolByName(board: Board): Pad[] {
 }
 
 /**
- * The pool laid out for the All pads view: sorted by name, row-major in `cols` columns without
- * gaps. The placements exist only for rendering — no key, never stored.
+ * Pads laid out for the All pads view in the order given (padSort.ts), row-major in `cols`
+ * columns without gaps. The placements exist only for rendering — no key, never stored.
  */
-export function poolLayout(board: Board, cols: number): PlacedPad[] {
-  return poolByName(board).map((pad, i) => ({
+export function poolLayout(pads: readonly Pad[], cols: number): PlacedPad[] {
+  return pads.map((pad, i) => ({
     pad,
     placement: { padId: pad.id, position: { col: i % cols, row: Math.floor(i / cols) } },
   }));
@@ -329,6 +329,7 @@ function isPad(v: unknown): v is Pad {
   if (!isRec(v) || !isStr(v.id) || !isStr(v.name)) return false;
   if (!isNum(v.volume) || !isNum(v.fadeIn) || !isNum(v.fadeOut)) return false;
   if (!optional(v.iconRef, isStr) || !optional(v.color, isStr)) return false;
+  if (!optional(v.addedAt, isNum) || !optional(v.modifiedAt, isNum)) return false;
   if (v.type === 'combo') return Array.isArray(v.steps) && v.steps.every(isStep);
   return (
     (v.type === 'single' || v.type === 'loop') &&

@@ -9,6 +9,7 @@ import './styles/global.css';
 import { initAudioBridge } from './audio/index';
 import { pendingSaves } from './state/store';
 import { loadPrefs } from './state/prefs';
+import { startPlayHistory } from './state/playHistory';
 
 // Apply the design-system root class to <body>.
 // All design tokens and layout utilities depend on this being present.
@@ -23,6 +24,9 @@ initAudioBridge();
 effect(() => {
   document.documentElement.toggleAttribute('data-saving', pendingSaves.value > 0);
 });
+
+// Remember when each pad was last played ("Last played" sort in All pads).
+startPlayHistory();
 
 // Preferences (last view, last backup …) are read before the first render, so no screen shows a
 // default first and then jumps (src/state/prefs.ts).

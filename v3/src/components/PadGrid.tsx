@@ -20,6 +20,7 @@ import {
   DEFAULT_GRID,
   addPadToDeck,
   deckPads,
+  poolByName,
   poolLayout,
   setPlacements,
   type PlacedPad,
@@ -40,6 +41,8 @@ import { updateBoard } from '../state/boardWrites';
 interface PadGridProps {
   /** The deck to show; null = the All pads view of the whole pool (ADR-0048). */
   deck: Deck | null;
+  /** All pads view: the pool in the order chosen (padSort.ts); by name when not given. */
+  poolOrder?: readonly Pad[];
   board: Board;
   mode: AppMode;
   selectedPadId: string | null;
@@ -53,6 +56,7 @@ interface PadGridProps {
 
 export function PadGrid({
   deck,
+  poolOrder,
   board,
   mode,
   selectedPadId,
@@ -62,7 +66,9 @@ export function PadGrid({
   onPlaceModeTap,
 }: PadGridProps): JSX.Element {
   const isPool = deck === null;
-  const entries = deck ? deckPads(board, deck) : poolLayout(board, DEFAULT_GRID.cols);
+  const entries = deck
+    ? deckPads(board, deck)
+    : poolLayout(poolOrder ?? poolByName(board), DEFAULT_GRID.cols);
   const cols = deck ? deck.gridConfig.cols : DEFAULT_GRID.cols;
   const rows = deck ? deck.gridConfig.rows : Math.ceil(entries.length / cols);
   const gap = deck ? deck.gridConfig.gap : DEFAULT_GRID.gap;

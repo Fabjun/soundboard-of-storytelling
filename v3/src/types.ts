@@ -61,6 +61,10 @@ export type PadBase = {
   volume: number; // 0–100
   fadeIn: number; // seconds
   fadeOut: number; // seconds
+  /** When the pad was created (ms since epoch) — "Date Added" sort; absent on older pads. */
+  addedAt?: number;
+  /** When the pad was last edited in the PAD editor (ms since epoch) — "Date Modified" sort. */
+  modifiedAt?: number;
 };
 
 /** One step in a combo sequence. */

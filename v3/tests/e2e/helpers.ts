@@ -286,3 +286,29 @@ export async function reopenFirstBoard(page: Page): Promise<void> {
   await page.locator('[data-testid^="board-list-screen-name-text-"]').first().click();
   await page.getByTestId('mode-toggle').waitFor();
 }
+
+// ── Pads ──────────────────────────────────────────────────────────────────────
+
+/** The pads shown in the grid (not the empty cells). */
+export const padCells = (page: Page) =>
+  page.locator('[data-testid^="pad-grid-cell-"]:not([data-testid^="pad-grid-cell-empty-slot-"])');
+
+/**
+ * ADD PAD in the open deck or All pads, optionally made a Combo while it is still fresh (no
+ * dialog), then named. Returns the new pad's id. Needs SETUP mode.
+ */
+export async function addNamedPad(
+  page: Page,
+  name: string,
+  opts: { combo?: boolean } = {},
+): Promise<string> {
+  const before = await padCells(page).count();
+  // Located by text: the button has no accessible name in Chromium yet (BACKLOG "Role-based E2E locators").
+  await page.getByText('ADD PAD', { exact: true }).click();
+  await expect(padCells(page)).toHaveCount(before + 1);
+  const testId = (await padCells(page).nth(before).getAttribute('data-testid'))!;
+  if (opts.combo) await page.getByTestId('pad-editor-panel-type-button-combo').click();
+  await page.getByTestId('pad-editor-panel-name-input').fill(name);
+  await expect(page.getByTestId(testId)).toContainText(name);
+  return testId.replace('pad-grid-cell-', '');
+}
