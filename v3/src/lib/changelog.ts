@@ -7,9 +7,14 @@ export type ChangelogEntry = {
   items: string[];
 };
 
-export const APP_VERSION = '3.0.108';
+export const APP_VERSION = '3.0.110';
 
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.110',
+    date: '2026-10-02',
+    items: ['docs: review log — the review session with the owner and PR #39'],
+  },
   {
     version: '3.0.108',
     date: '2026-10-02',

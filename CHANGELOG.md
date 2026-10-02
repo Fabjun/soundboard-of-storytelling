@@ -4,6 +4,10 @@
 
 All notable changes to Soundboard of Storytelling, newest first.
 
+## 3.0.110 — 2026-10-02
+
+- docs: review log — the review session with the owner and PR #39
+
 ## 3.0.108 — 2026-10-02
 
 - docs: research before every decision (owner rule); testing pitfall — a new git worktree runs no hooks until npm ci
