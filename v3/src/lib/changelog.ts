@@ -7,9 +7,16 @@ export type ChangelogEntry = {
   items: string[];
 };
 
-export const APP_VERSION = '3.0.111';
+export const APP_VERSION = '3.0.113';
 
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.113',
+    date: '2026-10-02',
+    items: [
+      'docs: review log — the Single default fix on main and PR #40 (a waiting auto-save is written, never dropped)',
+    ],
+  },
   {
     version: '3.0.111',
     date: '2026-10-02',

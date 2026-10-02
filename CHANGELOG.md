@@ -4,6 +4,10 @@
 
 All notable changes to Soundboard of Storytelling, newest first.
 
+## 3.0.113 — 2026-10-02
+
+- docs: review log — the Single default fix on main and PR #40 (a waiting auto-save is written, never dropped)
+
 ## 3.0.111 — 2026-10-02
 
 - fix(pads): a new pad is Single unless you pick another type — no Loop guessed from long files; the suggested name follows the chosen file
