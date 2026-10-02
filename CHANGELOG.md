@@ -4,6 +4,10 @@
 
 All notable changes to Soundboard of Storytelling, newest first.
 
+## 3.0.115 — 2026-10-02
+
+- fix(boot): boards and the library list load before the first screen — a board created right after the start can no longer vanish
+
 ## 3.0.113 — 2026-10-02
 
 - docs: review log — the Single default fix on main and PR #40 (a waiting auto-save is written, never dropped)

@@ -11,6 +11,9 @@
 //    helper files are named helpers.ts.
 // 5. Inline style lengths carry a unit (Preact 11 no longer appends px to numbers) — checked
 //    with the TypeScript type checker, so variables, ternaries and shorthands count.
+// 6. The stored state is loaded once, before the first render (src/state/boot.ts): outside
+//    src/db only boot.ts calls boardGetAll / libGetAllMeta — a load after the first render
+//    replaced a board created meanwhile (2026-10-02).
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { readdirSync, readFileSync } from 'node:fs';
@@ -245,5 +248,27 @@ describe('guard: inline style lengths carry a unit (Preact 11 upgrade)', () => {
 
   it('no numeric value for a length in style={…}', () => {
     expect(found, 'write the unit, e.g. `${n}px`').toEqual([]);
+  });
+});
+
+describe('guard: the stored state is loaded only before the first render (src/state/boot.ts)', () => {
+  const walkSrc = (dir: string): string[] =>
+    readdirSync(dir, { withFileTypes: true }).flatMap((e) =>
+      e.isDirectory() ? walkSrc(join(dir, e.name)) : [join(dir, e.name)],
+    );
+  const loaders = walkSrc(SRC)
+    .filter((f) => /\.tsx?$/.test(f))
+    .map((f) => relative(SRC, f).split('\\').join('/'))
+    .filter((f) => !f.startsWith('db/'))
+    .filter((f) => /\b(boardGetAll|libGetAllMeta)\s*\(/.test(readFileSync(join(SRC, f), 'utf8')));
+
+  it('boot.ts loads the stored state (sanity)', () => {
+    expect(loaders).toContain('state/boot.ts');
+  });
+
+  it('nothing else loads it — a later load would replace what the user created meanwhile', () => {
+    expect(loaders, 'load in src/state/boot.ts (main.tsx renders after it)').toEqual([
+      'state/boot.ts',
+    ]);
   });
 });

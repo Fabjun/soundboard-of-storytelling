@@ -283,6 +283,10 @@ and has diverged). Never hardcode colors, fonts, or spacing.
   element type, variants via props. Never parallel components for
   "slightly different" needs. If tempted, ask.
 - **Delete buttons**: always 2-tap confirmation.
+- **Stored state loads before the first render** (2026-10-02): library list and boards are
+  loaded in `v3/src/state/boot.ts`, and `main.tsx` renders only afterwards (like redux-persist's
+  PersistGate) — a load that finishes later would replace what the user created meanwhile
+  (`codeGuards` rule 6).
 - **Suggestions are derived, choices are state** (2026-10-02): a value the app suggests (e.g. a
   pad name from the chosen file) is computed on render — never written into the same state as a
   value the user typed or picked, so it can neither overwrite a choice nor pass for one

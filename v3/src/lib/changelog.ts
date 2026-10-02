@@ -7,9 +7,16 @@ export type ChangelogEntry = {
   items: string[];
 };
 
-export const APP_VERSION = '3.0.113';
+export const APP_VERSION = '3.0.115';
 
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.115',
+    date: '2026-10-02',
+    items: [
+      'fix(boot): boards and the library list load before the first screen — a board created right after the start can no longer vanish',
+    ],
+  },
   {
     version: '3.0.113',
     date: '2026-10-02',
