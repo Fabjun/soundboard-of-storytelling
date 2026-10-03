@@ -10,6 +10,7 @@ import {
   DEFAULT_GRID,
   addDeck,
   addPadToDeck,
+  addPadToFreeCell,
   boardProblems,
   deckCount,
   deckPads,
@@ -17,10 +18,14 @@ import {
   deletePad,
   duplicateDeck,
   findDeck,
+  nextDeckName,
+  nextDeckOrder,
   placeInDeck,
   poolByName,
   poolLayout,
   removeFromDeck,
+  renameDeck,
+  restoreDeck,
   setPlacementHotkey,
   setPlacements,
   updatePad,
@@ -274,5 +279,89 @@ describe('remove from deck, place in deck, All pads (Slice 9e)', () => {
 
   it('the default grid is 4×4 — the size of every new deck and the width of All pads', () => {
     expect(DEFAULT_GRID).toEqual({ cols: 4, rows: 4, gap: 8, padSize: 'md' });
+  });
+});
+
+describe('changes applied to the latest board (board writes)', () => {
+  it('adds a pad on the preferred cell when free, else on the next free cell', () => {
+    let b = addPadToFreeCell(emptyBoard(), 'd1', single('a'), { col: 2, row: 1 });
+    expect(findDeck(b, 'd1')!.placements[0].position).toEqual({ col: 2, row: 1 });
+    b = addPadToFreeCell(b, 'd1', single('b'), { col: 2, row: 1 }); // taken
+    expect(findDeck(b, 'd1')!.placements[1].position).toEqual({ col: 0, row: 0 });
+    b = addPadToFreeCell(b, 'd1', single('c'), { col: 9, row: 0 }); // outside the grid
+    expect(findDeck(b, 'd1')!.placements[2].position).toEqual({ col: 1, row: 0 });
+    expect(boardProblems(b)).toEqual([]);
+  });
+
+  it('two adds in a row on the same board never share a cell', () => {
+    let b = addPadToFreeCell(emptyBoard(), 'd1', single('a'));
+    b = addPadToFreeCell(b, 'd1', single('b'));
+    expect(findDeck(b, 'd1')!.placements.map((p) => p.position)).toEqual([
+      { col: 0, row: 0 },
+      { col: 1, row: 0 },
+    ]);
+  });
+
+  it('adding changes nothing when the deck is full or unknown', () => {
+    const tiny = {
+      ...emptyBoard(),
+      decks: emptyBoard().decks.map((d) => ({ ...d, gridConfig: { ...grid, cols: 1, rows: 1 } })),
+    };
+    const one = addPadToFreeCell(tiny, 'd1', single('a'));
+    expect(addPadToFreeCell(one, 'd1', single('b'))).toBe(one);
+    expect(addPadToFreeCell(one, 'nope', single('b'))).toBe(one);
+  });
+
+  it('the next deck order is highest + 1, not the deck count', () => {
+    expect(nextDeckOrder({ ...emptyBoard(), decks: [] })).toBe(0);
+    const b = deleteDeck(
+      addDeck(emptyBoard(), { id: 'd3', name: 'Deck 3', gridConfig: grid }),
+      'd2',
+    );
+    expect(b.decks.map((d) => d.order)).toEqual([0, 2]);
+    expect(nextDeckOrder(b)).toBe(3); // the count (2) is taken by d3
+  });
+
+  it('a new deck name takes the smallest unused "Deck N"', () => {
+    expect(nextDeckName({ ...emptyBoard(), decks: [] })).toBe('Deck 1');
+    expect(nextDeckName(emptyBoard())).toBe('Deck 3'); // Deck 1, Deck 2
+    expect(nextDeckName(deleteDeck(emptyBoard(), 'd1'))).toBe('Deck 1'); // gap filled
+    expect(nextDeckName(renameDeck(emptyBoard(), 'd1', 'Night'))).toBe('Deck 1');
+  });
+
+  it('renames one deck only', () => {
+    const b = renameDeck(emptyBoard(), 'd2', 'Night');
+    expect(b.decks.map((d) => d.name)).toEqual(['Deck 1', 'Night']);
+  });
+
+  it('undo of a deck delete keeps changes made in between and drops pads deleted meanwhile', () => {
+    let b = addPadToDeck(emptyBoard(), 'd2', single('a'), { col: 0, row: 0 });
+    b = addPadToDeck(b, 'd2', single('x'), { col: 1, row: 0 });
+    const deleted = findDeck(b, 'd2')!;
+    b = deleteDeck(b, 'd2');
+    b = renameDeck(b, 'd1', 'Renamed meanwhile');
+    b = deletePad(b, 'x');
+    b = restoreDeck(b, deleted);
+    expect(findDeck(b, 'd1')!.name).toBe('Renamed meanwhile');
+    expect(findDeck(b, 'd2')!.placements.map((p) => p.padId)).toEqual(['a']);
+    expect(findDeck(b, 'd2')!.order).toBe(1);
+    expect(boardProblems(b)).toEqual([]);
+  });
+
+  it('undo puts the deck last when its order number was taken meanwhile; no-op when it exists', () => {
+    const deleted = findDeck(emptyBoard(), 'd2')!;
+    let b = deleteDeck(emptyBoard(), 'd2');
+    b = { ...b, decks: [...b.decks, { ...deleted, id: 'd3', name: 'New' }] }; // takes order 1
+    b = restoreDeck(b, deleted);
+    expect(findDeck(b, 'd2')!.order).toBe(2);
+    expect(boardProblems(b)).toEqual([]);
+    expect(restoreDeck(b, deleted)).toBe(b);
+  });
+
+  it('boardProblems finds duplicate deck ids and shared order numbers', () => {
+    const b = emptyBoard();
+    expect(
+      boardProblems({ ...b, decks: [b.decks[0], { ...b.decks[1], id: 'd1', order: 0 }] }),
+    ).toEqual(['duplicate deck ids', 'two decks share an order number']);
   });
 });

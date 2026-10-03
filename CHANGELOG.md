@@ -7,6 +7,12 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.138 — 2026-10-03
+
+### Fixed
+
+- fix(board): every board change builds on the latest board — five lost-change bugs (PR #33, squash of board-writes)
+
 ## 3.0.137 — 2026-10-03
 
 ### Added
@@ -179,6 +185,12 @@ release notes the app shows are written separately for its users (`v3/src/lib/wh
 ### Internal
 
 - docs: review log — owner decisions O1–O8 of 2026-10-02 and the new pull requests
+
+## 3.0.95 — 2026-10-02
+
+### Fixed
+
+- fix(board): changes build on the latest board — deck undo keeps later edits, two quick A presses get two cells, the A key works right after switching to SETUP; deck badges show the position 1, 2, 3; a new deck takes the smallest free "Deck N"
 
 ## 3.0.94 — 2026-10-01
 

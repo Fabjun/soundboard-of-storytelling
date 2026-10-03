@@ -5,8 +5,8 @@
 // 13. Select audio from RECENT → ADD PAD → pad appears in cell
 // 14. Library drag to empty cell → pad created there (real pointer drag)
 // 15. BROWSE tab in popover → source select + ADD PAD
-// Later tests (no Slice-3 number): a new pad is SINGLE unless the user picks a type; the suggested
-// name follows the file, a typed name is kept.
+// Later tests (no Slice-3 number): a new pad is SINGLE unless the user picks a type; the suggested name follows the file, a typed
+// name is kept.
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { test, expect } from '@playwright/test';

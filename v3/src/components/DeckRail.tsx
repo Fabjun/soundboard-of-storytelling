@@ -19,9 +19,16 @@ import type { JSX } from 'preact';
 import type { Deck, Board } from '../types';
 import { PixelIcon } from './PixelIcon';
 import { UndoToast } from './UndoToast';
-import { boardPut } from '../db/idb';
-import { upsertBoard } from '../state/store';
-import { DEFAULT_GRID, duplicateDeck as duplicateDeckIn } from '../lib/boardModel';
+import { updateBoard } from '../state/boardWrites';
+import {
+  DEFAULT_GRID,
+  addDeck as addDeckTo,
+  deleteDeck,
+  duplicateDeck as duplicateDeckIn,
+  nextDeckName,
+  renameDeck,
+  restoreDeck,
+} from '../lib/boardModel';
 import { nanoid } from '../lib/nanoid';
 import { findConflictingDeck } from '../lib/deckConflict';
 
@@ -49,7 +56,6 @@ export function DeckRail({
   const committingForRef = useRef<string | null>(null);
   const [deletedDeck, setDeletedDeck] = useState<{
     deck: Deck;
-    boardSnapshot: Board;
     message: string;
   } | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -81,18 +87,9 @@ export function DeckRail({
       return;
     }
     committingForRef.current = deckId;
-    const updatedBoard: Board = {
-      ...board,
-      decks: board.decks.map((s) => (s.id === deckId ? { ...s, name: newName } : s)),
-    };
     try {
-      await boardPut(updatedBoard);
-      // boardPut has committed to IDB — upsertBoard must always follow to keep
-      // in-memory state consistent with the DB. Escape-during-await is "too late"
-      // to cancel an in-flight IDB transaction; the rename commits.
-      upsertBoard(updatedBoard);
-    } catch (e) {
-      console.error('Deck rename failed:', e);
+      // Shown at once and saved; Escape during the save is too late to cancel — the rename commits.
+      await updateBoard(board.id, (b) => renameDeck(b, deckId, newName));
     } finally {
       committingForRef.current = null;
       // Functional update: don't clobber a different deck's active edit
@@ -112,13 +109,8 @@ export function DeckRail({
     const existing = board.decks.filter((s) => s.name.startsWith(deck.name));
     const suffix = existing.length > 1 ? ` · ${existing.length}` : ' · 2';
     // Same pads, new placements (docs/architecture/0048-pad-pool-decks.md#2-behavior-final-not-provisional) — no pad copies.
-    const updatedBoard = duplicateDeckIn(board, deck.id, nanoid(), deck.name + suffix);
-    try {
-      await boardPut(updatedBoard);
-      upsertBoard(updatedBoard);
-    } catch (e) {
-      console.error('Deck duplicate failed:', e);
-    }
+    const copyId = nanoid();
+    await updateBoard(board.id, (b) => duplicateDeckIn(b, deck.id, copyId, deck.name + suffix));
   }
 
   // ── Delete ────────────────────────────────────────────────────────────────
@@ -127,26 +119,18 @@ export function DeckRail({
 
   async function requestDelete(deck: Deck) {
     if (pendingDeleteId === deck.id) {
-      // Second tap: execute
-      const boardSnapshot = { ...board };
-      const updatedBoard: Board = {
-        ...board,
-        decks: board.decks.filter((s) => s.id !== deck.id),
-      };
-      try {
-        await boardPut(updatedBoard);
-        upsertBoard(updatedBoard);
+      // Second tap: execute. Undo keeps only the deck — not a copy of the whole board, which
+      // would undo every other change made while the toast is shown.
+      const updatedBoard = await updateBoard(board.id, (b) => deleteDeck(b, deck.id));
+      if (updatedBoard) {
         setDeletedDeck({
           deck,
-          boardSnapshot,
           message: `Deleted '${deck.name}' · ${deck.placements.length} pad${deck.placements.length !== 1 ? 's' : ''}`,
         });
         // If deleted deck was active, switch to first remaining
         if (activeDeckId === deck.id && updatedBoard.decks.length > 0) {
-          onDeckSelect(updatedBoard.decks.sort((a, b) => a.order - b.order)[0].id);
+          onDeckSelect([...updatedBoard.decks].sort((a, b) => a.order - b.order)[0].id);
         }
-      } catch (e) {
-        console.error('Deck delete failed:', e);
       }
       setPendingDeleteId(null);
     } else {
@@ -156,36 +140,21 @@ export function DeckRail({
 
   async function undoDelete() {
     if (!deletedDeck) return;
-    try {
-      await boardPut(deletedDeck.boardSnapshot);
-      upsertBoard(deletedDeck.boardSnapshot);
-    } catch (e) {
-      console.error('Deck undo failed:', e);
-    }
+    const { deck } = deletedDeck;
+    await updateBoard(board.id, (b) => restoreDeck(b, deck));
     setDeletedDeck(null);
   }
 
   // ── New Deck ─────────────────────────────────────────────────────────────
 
   async function addDeck() {
-    const newDeck: Deck = {
-      id: nanoid(),
-      name: `Deck ${board.decks.length + 1}`,
-      order: board.decks.length,
-      gridConfig: { ...DEFAULT_GRID },
-      placements: [],
-    };
-    const updatedBoard: Board = {
-      ...board,
-      decks: [...board.decks, newDeck],
-    };
-    try {
-      await boardPut(updatedBoard);
-      upsertBoard(updatedBoard);
-      onDeckSelect(newDeck.id);
-    } catch (e) {
-      console.error('Add deck failed:', e);
-    }
+    const id = nanoid();
+    // Smallest unused "Deck N" (never the deck count — after a delete the count can repeat a
+    // name still in use); addDeck appends it at the end.
+    const saved = await updateBoard(board.id, (b) =>
+      addDeckTo(b, { id, name: nextDeckName(b), gridConfig: { ...DEFAULT_GRID } }),
+    );
+    if (saved) onDeckSelect(id);
   }
 
   // ── Render ────────────────────────────────────────────────────────────────
@@ -212,7 +181,7 @@ export function DeckRail({
           Add one below.
         </div>
       ) : (
-        decks.map((deck) => {
+        decks.map((deck, position) => {
           const isConflict =
             editingId === deck.id ? conflictOwner !== null : (conflictIds?.has(deck.id) ?? false);
           return (
@@ -234,8 +203,9 @@ export function DeckRail({
                 }}
                 onDblClick={() => startRename(deck)}
               >
-                {/* Deck number badge */}
-                <span class="sb-deck-num-badge">{deck.order + 1}</span>
+                {/* Deck number badge: its position in the rail, 1, 2, 3 … without gaps
+                    (owner decision 2026-10-02), not the stored order number */}
+                <span class="sb-deck-num-badge">{position + 1}</span>
 
                 {/* Name or inline edit input */}
                 {editingId === deck.id ? (

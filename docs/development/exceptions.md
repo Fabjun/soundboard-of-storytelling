@@ -27,9 +27,9 @@ Inline: `// eslint-disable-next-line <rule> -- <reason>` (enforced by `require-d
 
 | Location                                       | Rule                                      | Reason                                                                                       |
 | ---------------------------------------------- | ----------------------------------------- | -------------------------------------------------------------------------------------------- |
-| `v3/src/components/PadEditorPanel.tsx:90`      | `react-hooks/exhaustive-deps`             | reset only when a different pad is opened (pad.id), not on every auto-save                   |
-| `v3/src/screens/BoardScreen.tsx:66`            | `react-hooks/exhaustive-deps`             | auto-select only on board identity change, never override the user's deck choice             |
-| `v3/tests/e2e/deck-crud.spec.ts:74`            | `playwright/no-skipped-test`              | quarantine: feature not built (BACKLOG "Deck reorder")                                       |
+| `v3/src/components/PadEditorPanel.tsx:89`      | `react-hooks/exhaustive-deps`             | reset only when a different pad is opened (pad.id), not on every auto-save                   |
+| `v3/src/screens/BoardScreen.tsx:72`            | `react-hooks/exhaustive-deps`             | auto-select only on board identity change, never override the user's deck choice             |
+| `v3/tests/e2e/deck-crud.spec.ts:76`            | `playwright/no-skipped-test`              | quarantine: feature not built (BACKLOG "Deck reorder")                                       |
 | `v3/tests/e2e/mobile/overflow.spec.ts:30`      | `playwright/no-skipped-test`              | quarantine: mobile layout not built until Slice 13 (BACKLOG "Re-enable mobile layout tests") |
 | `v3/tests/e2e/mobile/touch-targets.spec.ts:34` | `playwright/no-skipped-test`              | quarantine: mobile layout not built until Slice 13 (BACKLOG "Re-enable mobile layout tests") |
 | `v3/eslint.config.js:18`                       | `@typescript-eslint/no-unused-vars` (off) | tsc noUnusedLocals/noUnusedParameters report it                                              |
@@ -52,7 +52,7 @@ Procedure: `docs/development/testing.md`; reference enforced by `testGuards.test
 
 | Location                                       | Marker  | Reference                               |
 | ---------------------------------------------- | ------- | --------------------------------------- |
-| `v3/tests/e2e/deck-crud.spec.ts:75`            | `fixme` | BACKLOG "Deck reorder"                  |
+| `v3/tests/e2e/deck-crud.spec.ts:77`            | `fixme` | BACKLOG "Deck reorder"                  |
 | `v3/tests/e2e/mobile/overflow.spec.ts:31`      | `fixme` | BACKLOG "Re-enable mobile layout tests" |
 | `v3/tests/e2e/mobile/touch-targets.spec.ts:35` | `fixme` | BACKLOG "Re-enable mobile layout tests" |
 | `v3/tests/unit/audio/engine.test.ts:424`       | `fails` | BACKLOG "step stops the combo itself"   |

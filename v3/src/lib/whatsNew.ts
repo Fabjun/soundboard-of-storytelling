@@ -34,6 +34,18 @@ export const WHATS_NEW_GROUPS = [
 
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
+    version: '3.0.138',
+    date: '2026-10-03',
+    improved: [
+      'The number on each deck tab shows its position: 1, 2, 3.',
+      'A new deck takes the lowest free name, so after deleting "Deck 2" the next new deck is "Deck 2" again.',
+    ],
+    fixed: [
+      'Undoing a deleted deck no longer throws away changes you made in the meantime.',
+      'Changes made quickly one after another are all kept.',
+    ],
+  },
+  {
     version: '3.0.137',
     date: '2026-10-03',
     new: [

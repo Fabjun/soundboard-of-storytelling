@@ -55,6 +55,32 @@ export function addPadToDeck(board: Board, deckId: string, pad: Pad, position: P
   }));
 }
 
+/**
+ * Adds a new pad to the pool and places it in a deck: on `preferred` when that cell is free,
+ * otherwise on the next free cell (row-major). Decided on the board passed in — callers pass the
+ * latest one (updateBoard), so two quick adds never pick the same cell. Unchanged when the deck
+ * is unknown or full.
+ */
+export function addPadToFreeCell(
+  board: Board,
+  deckId: string,
+  pad: Pad,
+  preferred?: PadPosition,
+): Board {
+  const deck = findDeck(board, deckId);
+  if (!deck) return board;
+  const { cols, rows } = deck.gridConfig;
+  const taken = (pos: PadPosition) =>
+    deck.placements.some((p) => p.position.col === pos.col && p.position.row === pos.row);
+  const inGrid = (pos: PadPosition) =>
+    pos.col >= 0 && pos.col < cols && pos.row >= 0 && pos.row < rows;
+  const position =
+    preferred && inGrid(preferred) && !taken(preferred)
+      ? preferred
+      : nextFreeSlot(deck.placements, cols, rows);
+  return position ? addPadToDeck(board, deckId, pad, position) : board;
+}
+
 /** Replaces a pad of the pool — the change shows in every deck that places it. */
 export function updatePad(board: Board, pad: Pad): Board {
   return { ...board, pads: board.pads.map((p) => (p.id === pad.id ? pad : p)) };
@@ -155,9 +181,28 @@ export function deletePad(board: Board, padId: string): Board {
   };
 }
 
+/**
+ * Order number for a deck added at the end: highest + 1. Never the deck count — after a delete
+ * the count can equal an order number still in use (two decks with the same badge).
+ */
+export function nextDeckOrder(board: Board): number {
+  return board.decks.reduce((max, d) => Math.max(max, d.order), -1) + 1;
+}
+
+/**
+ * Name for a new deck: "Deck N" with the smallest N no deck is named after (owner decision
+ * 2026-10-02: fill the gap — after "Deck 2" is deleted the next new deck is "Deck 2" again).
+ */
+export function nextDeckName(board: Board): string {
+  const names = new Set(board.decks.map((d) => d.name));
+  let n = 1;
+  while (names.has(`Deck ${n}`)) n++;
+  return `Deck ${n}`;
+}
+
 /** Adds an empty deck at the end. */
 export function addDeck(board: Board, deck: Omit<Deck, 'order' | 'placements'>): Board {
-  const order = board.decks.reduce((max, d) => Math.max(max, d.order), -1) + 1;
+  const order = nextDeckOrder(board);
   return { ...board, decks: [...board.decks, { ...deck, order, placements: [] }] };
 }
 
@@ -177,10 +222,34 @@ export function duplicateDeck(
     ...source,
     id: copyId,
     name: copyName,
-    order: board.decks.reduce((max, d) => Math.max(max, d.order), -1) + 1,
+    order: nextDeckOrder(board),
     placements: source.placements.map((p) => ({ ...p, position: { ...p.position } })),
   };
   return { ...board, decks: [...board.decks, copy] };
+}
+
+/** Renames a deck. */
+export function renameDeck(board: Board, deckId: string, name: string): Board {
+  return withDeck(board, deckId, (deck) => ({ ...deck, name }));
+}
+
+/**
+ * Puts a deleted deck back (undo) into the board as it is NOW — changes made since the delete
+ * stay. It keeps its order number unless another deck took it meanwhile (then it goes last) and
+ * drops placements of pads deleted meanwhile. Unchanged when a deck with that id exists.
+ */
+export function restoreDeck(board: Board, deck: Deck): Board {
+  if (findDeck(board, deck.id)) return board;
+  const pool = new Set(board.pads.map((p) => p.id));
+  const orderTaken = board.decks.some((d) => d.order === deck.order);
+  const order = orderTaken ? nextDeckOrder(board) : deck.order;
+  return {
+    ...board,
+    decks: [
+      ...board.decks,
+      { ...deck, order, placements: deck.placements.filter((p) => pool.has(p.padId)) },
+    ],
+  };
 }
 
 /** Removes a deck. Its pads stay in the pool (ADR-0048: pads belong to the board, not a deck). */
@@ -196,6 +265,11 @@ export function boardProblems(board: Board): string[] {
   const problems: string[] = [];
   const ids = new Set(board.pads.map((p) => p.id));
   if (ids.size !== board.pads.length) problems.push('duplicate pad ids in the pool');
+  if (new Set(board.decks.map((d) => d.id)).size !== board.decks.length)
+    problems.push('duplicate deck ids');
+  // Decks are sorted by order; two decks with one order number have no defined sequence.
+  if (new Set(board.decks.map((d) => d.order)).size !== board.decks.length)
+    problems.push('two decks share an order number');
   for (const deck of board.decks) {
     const { cols, rows } = deck.gridConfig;
     const cells = new Set<string>();

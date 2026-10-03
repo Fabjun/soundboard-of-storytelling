@@ -7,6 +7,8 @@
 // 9.  Reorder via drag → order changes                [test.fixme — feature not built]
 // 10. Delete → tab removed
 // 11. Undo delete → tab restored
+// Later tests (no Slice-3 number): duplicate shares pads; undo keeps later changes; a new deck
+// after a delete keeps gap-free badges and fills the name gap.
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { test, expect } from '@playwright/test';
@@ -138,9 +140,9 @@ test('11 — undo deck delete → tab restored', async ({ page }) => {
   expect(restoredText).toContain((deckText ?? '').replace(/\s+/g, ' ').trim().split(' ')[1] ?? '');
 });
 
-// ── Test 12: Duplicate deck shares its pads (pad pool, ADR-0048) ──────────────
+// ── Duplicate deck shares its pads (pad pool, ADR-0048; Slice 9c) ─────────────
 
-test('12 — duplicate deck shares its pads: a rename in one deck shows in the other', async ({
+test('duplicate deck shares its pads: a rename in one deck shows in the other', async ({
   page,
 }) => {
   await page.getByTestId('deck-rail-new-button').click();
@@ -171,4 +173,57 @@ test('12 — duplicate deck shares its pads: a rename in one deck shows in the o
   await expect(page.getByTestId(padTestId)).toContainText('Storm');
   await tabs.first().click();
   await expect(page.getByTestId(padTestId)).toContainText('Storm');
+});
+
+// ── Board writes build on the latest board (BACKLOG "Bug: board writes from an outdated board copy lose changes") ──
+
+test('undo of a deck delete keeps a deck rename made while the toast is shown', async ({
+  page,
+}) => {
+  const tabs = page.locator('[data-testid^="deck-rail-deck-tab-"]');
+  await page.getByTestId('deck-rail-new-button').click();
+  await page.getByTestId('deck-rail-new-button').click();
+  await expect(tabs).toHaveCount(2);
+
+  // Delete the second deck (two taps)
+  await tabs.nth(1).hover();
+  const deleteBtn = tabs.nth(1).locator('[data-testid^="deck-rail-delete-button-"]');
+  await deleteBtn.click();
+  await deleteBtn.click();
+  await expect(tabs).toHaveCount(1);
+
+  // While the undo toast is shown: rename the remaining deck
+  await expect(page.getByTestId('undo-toast')).toBeVisible();
+  await tabs.first().dblclick();
+  await page.getByTestId('deck-rail-name-input').fill('Village');
+  await page.getByTestId('deck-rail-name-input').press('Enter');
+  await expect(tabs.first()).toContainText('Village');
+
+  // Undo brings the deck back and keeps the rename
+  await page.getByTestId('undo-toast-undo-button').click();
+  await expect(tabs).toHaveCount(2);
+  await expect(tabs.first()).toContainText('Village');
+});
+
+test('a new deck after deleting a middle one: badges stay 1, 2, 3; the name fills the gap', async ({
+  page,
+}) => {
+  const tabs = page.locator('[data-testid^="deck-rail-deck-tab-"]');
+  for (let i = 0; i < 3; i++) await page.getByTestId('deck-rail-new-button').click();
+  await expect(tabs).toHaveCount(3);
+
+  await tabs.nth(1).hover();
+  const deleteBtn = tabs.nth(1).locator('[data-testid^="deck-rail-delete-button-"]');
+  await deleteBtn.click();
+  await deleteBtn.click();
+  await expect(tabs).toHaveCount(2);
+
+  await page.getByTestId('deck-rail-new-button').click();
+  await expect(tabs).toHaveCount(3);
+  // Badge (order + 1) and name of every tab — its first two child elements
+  const labels = await tabs.evaluateAll((els) =>
+    els.map((el) => `${el.children[0]?.textContent} ${el.children[1]?.textContent}`),
+  );
+  // Badge = position in the rail; the new deck is appended and named after the free number
+  expect(labels).toEqual(['1 Deck 1', '2 Deck 3', '3 Deck 2']);
 });

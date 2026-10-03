@@ -59,15 +59,15 @@ number in brackets = test cases in the file (incl. quarantine)._
 | ----------------- | ------------------------------ | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `smoke`           | Chromium (Desktop)             | Dev + Build | `app-loads` (1), `library-empty` (1), `board-list-empty` (1), `board-create` (1), `mode-toggle` (1)                                                                                        |
 | `smoke-webkit`    | WebKit (Desktop)               | Dev         | `app-loads` (1), `library-empty` (1), `board-list-empty` (1), `board-create` (1), `mode-toggle` (1)                                                                                        |
-| `full`            | Chromium (Desktop)             | Dev + Build | `board-crud` (5), `deck-crud` (7), `pad-creation` (6), `pad-editing` (4), `layout-reach` (2), `whats-new` (1), `pad-dnd` (2), `pad-pool` (4), `game-mode` (1), `audio` (3)                 |
-| `full-webkit`     | WebKit (Desktop)               | Dev         | `board-crud` (5), `deck-crud` (7), `pad-creation` (6), `pad-editing` (4), `layout-reach` (2), `whats-new` (1), `pad-dnd` (2), `pad-pool` (4)                                               |
+| `full`            | Chromium (Desktop)             | Dev + Build | `board-crud` (5), `deck-crud` (9), `pad-creation` (6), `pad-editing` (4), `layout-reach` (2), `whats-new` (1), `pad-dnd` (2), `pad-pool` (4), `game-mode` (1), `audio` (3)                 |
+| `full-webkit`     | WebKit (Desktop)               | Dev         | `board-crud` (5), `deck-crud` (9), `pad-creation` (6), `pad-editing` (4), `layout-reach` (2), `whats-new` (1), `pad-dnd` (2), `pad-pool` (4)                                               |
 | `mobile`          | WebKit (iPhone 13 Pro)         | Dev         | `unlock-nav` (3), `board-flow` (2), `mode-toggle` (2), `touch-targets` (5), `overflow` (2)                                                                                                 |
 | `mobile-chromium` | Chromium (iPhone 13 Pro)       | Dev         | `pad-interaction` (2), `pad-creation` (1)                                                                                                                                                  |
 | `pwa`             | Chromium (Desktop)             | Build only  | `pwa` (7)                                                                                                                                                                                  |
 | `visual`          | Chromium (Desktop), macOS only | Dev         | `board-list-empty` (1), `board-list-with-board` (1), `board-screen-game` (1), `board-screen-setup` (1), `deck-rail` (1), `library-empty` (1), `mode-toggle-states` (2), `start-screen` (1) |
 
-**Unit tests (Vitest):** 23 files, 304 test cases —
-`audio/engine.test.ts` (40), `audio/lru.property.test.ts` (0), `audio/lru.test.ts` (11), `boardModel.property.test.ts` (0), `boardModel.test.ts` (19), `boot.test.ts` (3), `codeGuards.test.ts` (17), `deckConflict.test.ts` (9), `docsGuards.test.ts` (27), `e2eProjects.test.ts` (6), `flameMath.property.test.ts` (0), `flameMath.test.ts` (22), `idb.test.ts` (17), `nanoid.test.ts` (2), `padDnd.property.test.ts` (0), `padDnd.test.ts` (31), `padUtils.property.test.ts` (0), `padUtils.test.ts` (35), `store.test.ts` (23), `testGuards.test.ts` (23), `upload.property.test.ts` (0), `upload.test.ts` (13), `whatsNew.test.ts` (6)
+**Unit tests (Vitest):** 24 files, 322 test cases —
+`audio/engine.test.ts` (40), `audio/lru.property.test.ts` (0), `audio/lru.test.ts` (11), `boardModel.property.test.ts` (0), `boardModel.test.ts` (28), `boardWrites.test.ts` (6), `boot.test.ts` (3), `codeGuards.test.ts` (20), `deckConflict.test.ts` (9), `docsGuards.test.ts` (27), `e2eProjects.test.ts` (6), `flameMath.property.test.ts` (0), `flameMath.test.ts` (22), `idb.test.ts` (17), `nanoid.test.ts` (2), `padDnd.property.test.ts` (0), `padDnd.test.ts` (31), `padUtils.property.test.ts` (0), `padUtils.test.ts` (35), `store.test.ts` (23), `testGuards.test.ts` (23), `upload.property.test.ts` (0), `upload.test.ts` (13), `whatsNew.test.ts` (6)
 
 <!-- AUTO-GENERATED:test-inventory END -->
 
@@ -100,6 +100,8 @@ data-testid="<component>"                           root element, e.g. undo-toas
 ### Spec files
 
 kebab-case, no folder prefix (`mobile/touch-targets.spec.ts`), helper files `<folder>/helpers.ts`.
+Test titles: a leading number (`test('12 — …')`) marks one of the Slice-3 verification points
+1–22 and is used once; tests written later have no number (guarded in `codeGuards.test.ts`).
 Existing test-ID locators that could use roles are migrated in Slice 13 (exception in ADR-0054,
 listed in [`exceptions.md`](exceptions.md)).
 

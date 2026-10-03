@@ -17,9 +17,16 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.137';
+export const APP_VERSION = '3.0.138';
 
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.138',
+    date: '2026-10-03',
+    items: [
+      'fix(board): every board change builds on the latest board — five lost-change bugs (PR #33, squash of board-writes)',
+    ],
+  },
   {
     version: '3.0.137',
     date: '2026-10-03',
@@ -196,6 +203,13 @@ export const CHANGELOG: ChangelogEntry[] = [
     version: '3.0.97',
     date: '2026-10-02',
     items: ['docs: review log — owner decisions O1–O8 of 2026-10-02 and the new pull requests'],
+  },
+  {
+    version: '3.0.95',
+    date: '2026-10-02',
+    items: [
+      'fix(board): changes build on the latest board — deck undo keeps later edits, two quick A presses get two cells, the A key works right after switching to SETUP; deck badges show the position 1, 2, 3; a new deck takes the smallest free "Deck N"',
+    ],
   },
   {
     version: '3.0.94',
