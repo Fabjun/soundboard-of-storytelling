@@ -13,6 +13,10 @@ release notes the app shows are written separately for its users (`v3/src/lib/wh
 
 - feat(model): pad pool — pads belong to the board, decks place them; DB v4 clears test boards (PR #31, squash of slice-9c-pad-pool)
 
+### Internal
+
+- build(deps): the docs link checker uses chokidar 4 — chokidar 3 pulled in braces with a high advisory (GHSA-vfj7-8cjw-p6xm) that has no fixed version
+
 ## 3.0.135 — 2026-10-03
 
 ### Added

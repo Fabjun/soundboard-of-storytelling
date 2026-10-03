@@ -94,11 +94,15 @@
     "yaml": "^2.9.1"
   },
   "//overrides": {
-    "typed-rest-client > qs": "typed-rest-client 2.3 (pinned by @stryker-mutator/core 10) pins qs 6.15.1 with moderate advisories (GHSA-q8mj-m7cp-5q26, GHSA-x5fp-wj9c-mxmx, GHSA-4mjr-xmp4-gh2g); 6.16.0 fixes them within the same major — remove when Stryker ships typed-rest-client >= 3.1.2"
+    "typed-rest-client > qs": "typed-rest-client 2.3 (pinned by @stryker-mutator/core 10) pins qs 6.15.1 with moderate advisories (GHSA-q8mj-m7cp-5q26, GHSA-x5fp-wj9c-mxmx, GHSA-4mjr-xmp4-gh2g); 6.16.0 fixes them within the same major — remove when Stryker ships typed-rest-client >= 3.1.2",
+    "unified-args > chokidar": "unified-args 11 (via remark-cli, the docs link checker) asks for chokidar 3, which pulls in braces <= 3.0.3 with a high advisory (GHSA-vfj7-8cjw-p6xm) that has no fixed version; chokidar 4 needs no braces and keeps the watch API unified-args uses — remove when remark-cli ships unified-args with chokidar >= 4"
   },
   "overrides": {
     "typed-rest-client": {
       "qs": "^6.16.0"
+    },
+    "unified-args": {
+      "chokidar": "^4.0.3"
     }
   }
 }
