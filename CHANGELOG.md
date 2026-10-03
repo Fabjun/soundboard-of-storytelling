@@ -7,6 +7,12 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.137 — 2026-10-03
+
+### Added
+
+- feat(decks): All pads view; remove a pad from one deck or delete it everywhere; deck checklist in the PAD editor (PR #32, squash of slice-9e-all-pads)
+
 ## 3.0.136 — 2026-10-03
 
 ### Added
@@ -173,6 +179,12 @@ release notes the app shows are written separately for its users (`v3/src/lib/wh
 ### Internal
 
 - docs: review log — owner decisions O1–O8 of 2026-10-02 and the new pull requests
+
+## 3.0.94 — 2026-10-01
+
+### Added
+
+- feat(decks): All pads view of the whole pool; remove a pad from one deck or delete it everywhere ("used in N decks"); PAD editor deck checklist places a pad in other decks (Slice 9e, ADR-0048)
 
 ## 3.0.93 — 2026-10-01
 

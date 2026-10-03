@@ -4,8 +4,8 @@
 // Layout: BoardTopBar | 3-column main area | StatusBar
 //
 // 3-column main area:
-//   Left  220px  DeckRail  (deck list + CRUD)
-//   Center 1fr   PadGrid    (4×4 grid + Path A/B creation)
+//   Left  220px  DeckRail  (All pads + deck list + CRUD)
+//   Center 1fr   PadGrid    (4×4 grid + Path A/B creation, or the All pads pool view)
 //   Right  280px Right panel (toggles: LibraryPanel ↔ PadEditorPanel)
 //
 // Modes:
@@ -21,6 +21,7 @@ import {
   currentMode,
   currentBoard,
   currentDeck,
+  allPadsView,
   upsertBoard,
   libraryItems,
 } from '../state/store';
@@ -35,14 +36,16 @@ import { PixelIcon } from '../components/PixelIcon';
 import type { AppMode, Board, Pad, PadPosition, Deck } from '../types';
 import { nanoid } from '../lib/nanoid';
 import { DEFAULT_PAD_TYPE, nextFreeSlot } from '../lib/padUtils';
-import { addPadToDeck, deletePad } from '../lib/boardModel';
+import { DEFAULT_GRID, addPadToDeck, deletePad, removeFromDeck } from '../lib/boardModel';
 import { type LibDndDropResult } from '../lib/libDnd';
 
 type RightPanelMode = 'library' | 'editor' | 'empty';
 
 export function BoardScreen(): JSX.Element {
   const board = currentBoard.value;
-  const deck = currentDeck.value;
+  /** All pads view: the whole pool instead of a deck (ADR-0048) — no deck is active then. */
+  const poolView = allPadsView.value;
+  const deck = poolView ? null : currentDeck.value;
   const mode = currentMode.value;
 
   const [rightPanel, setRightPanel] = useState<RightPanelMode>('empty');
@@ -54,6 +57,8 @@ export function BoardScreen(): JSX.Element {
   // Dep is board?.id intentionally — we only auto-select on BOARD IDENTITY change,
   // not on every board mutation (which would re-override a user deck selection).
   useEffect(() => {
+    // A board always opens in a deck view, not in All pads.
+    allPadsView.value = false;
     if (board && !currentDeckId.value && board.decks.length > 0) {
       const first = [...board.decks].sort((a, b) => a.order - b.order)[0];
       currentDeckId.value = first.id;
@@ -197,9 +202,8 @@ export function BoardScreen(): JSX.Element {
   }
 
   async function handlePadDelete(padId: string) {
-    if (!deck || !board) return;
+    if (!board) return;
     // Delete pad (ADR-0048): from the pool, every deck, quick access and combo steps.
-    // "Remove from deck" (placement only) follows in Slice 9e.
     const updatedBoard: Board = deletePad(board, padId);
     try {
       await boardPut(updatedBoard);
@@ -211,14 +215,29 @@ export function BoardScreen(): JSX.Element {
     }
   }
 
+  async function handleRemoveFromDeck(padId: string) {
+    if (!deck || !board) return;
+    // Remove from deck (ADR-0048): only this placement; the pad stays in the pool and other decks.
+    const updatedBoard: Board = removeFromDeck(board, deck.id, padId);
+    try {
+      await boardPut(updatedBoard);
+      upsertBoard(updatedBoard);
+      setSelectedPadId(null);
+      setRightPanel('empty');
+    } catch (e) {
+      console.error('Remove from deck failed:', e);
+    }
+  }
+
   // ── Empty Board state ──────────────────────────────────────────────────────
 
   const hasDecks = board.decks.length > 0;
 
   // ── Pad for editor ─────────────────────────────────────────────────────────
 
+  // Deck view: the pad must be placed in this deck. All pads: any pad of the pool.
   const selectedPad =
-    deck && deck.placements.some((p) => p.padId === selectedPadId)
+    poolView || (deck && deck.placements.some((p) => p.padId === selectedPadId))
       ? (board.pads.find((p) => p.id === selectedPadId) ?? null)
       : null;
 
@@ -228,7 +247,7 @@ export function BoardScreen(): JSX.Element {
     <div class="sb-screen">
       <BoardTopBar
         boardName={board.name}
-        deckName={deck?.name}
+        deckName={poolView ? 'All pads' : deck?.name}
         mode={mode}
         onModeSwitch={handleModeSwitch}
         libraryOpen={rightPanel === 'library'}
@@ -243,23 +262,44 @@ export function BoardScreen(): JSX.Element {
         {/* Left: Deck rail */}
         <DeckRail
           board={board}
-          activeDeckId={currentDeckId.value}
+          activeDeckId={poolView ? null : currentDeckId.value}
           onDeckSelect={(id) => {
+            allPadsView.value = false;
             currentDeckId.value = id;
             setSelectedPadId(null);
+          }}
+          allPadsActive={poolView}
+          onAllPadsSelect={() => {
+            allPadsView.value = true;
+            setSelectedPadId(null);
+            setPlaceMode(null);
+            if (rightPanel === 'editor') setRightPanel('empty');
           }}
         />
 
         {/* Center: Pad grid or empty states */}
         <main class="sb-board-main">
-          {!hasDecks ? (
+          {poolView ? (
+            board.pads.length === 0 ? (
+              <div class="sb-center-placeholder">No pads yet. Pads are created in a deck.</div>
+            ) : (
+              <PadGrid
+                deck={null}
+                board={board}
+                mode={mode}
+                selectedPadId={selectedPadId}
+                onPadSelect={handlePadSelect}
+                placeMode={null}
+              />
+            )
+          ) : !hasDecks ? (
             <EmptyBoardState
               onAddDeck={async () => {
                 const newDeck: Deck = {
                   id: nanoid(),
                   name: 'Deck 1',
                   order: 0,
-                  gridConfig: { cols: 4, rows: 4, gap: 8, padSize: 'md' },
+                  gridConfig: { ...DEFAULT_GRID },
                   placements: [],
                 };
                 const updatedBoard: Board = { ...board, decks: [newDeck] };
@@ -328,13 +368,14 @@ export function BoardScreen(): JSX.Element {
                 onEnterPlaceMode={handleEnterPlaceMode}
               />
             )}
-            {rightPanel === 'editor' && selectedPad && deck && (
+            {rightPanel === 'editor' && selectedPad && (
               <PadEditorPanel
                 pad={selectedPad}
                 deck={deck}
                 board={board}
                 onClose={handleEditorClose}
                 onDelete={handlePadDelete}
+                onRemoveFromDeck={handleRemoveFromDeck}
               />
             )}
             {/* No placeholder when rightPanel === 'empty': the pad grid fills
@@ -348,9 +389,11 @@ export function BoardScreen(): JSX.Element {
         mode={mode}
         boardName={board.name}
         infoText={
-          deck
-            ? `${deck.name} · ${deck.placements.length} pad${deck.placements.length !== 1 ? 's' : ''}`
-            : 'No deck selected'
+          poolView
+            ? `All pads · ${board.pads.length} pad${board.pads.length !== 1 ? 's' : ''}`
+            : deck
+              ? `${deck.name} · ${deck.placements.length} pad${deck.placements.length !== 1 ? 's' : ''}`
+              : 'No deck selected'
         }
       />
     </div>

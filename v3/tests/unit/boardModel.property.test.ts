@@ -17,6 +17,8 @@ import {
   deleteDeck,
   deletePad,
   duplicateDeck,
+  placeInDeck,
+  removeFromDeck,
   setPlacementHotkey,
   updatePad,
 } from '../../src/lib/boardModel';
@@ -41,6 +43,8 @@ const op = fc.oneof(
   fc.record({ kind: fc.constant('newDeck' as const) }),
   fc.record({ kind: fc.constant('hotkey' as const), deck: fc.nat(5), pad: fc.nat(9) }),
   fc.record({ kind: fc.constant('rename' as const), pad: fc.nat(9) }),
+  fc.record({ kind: fc.constant('remove' as const), deck: fc.nat(5), pad: fc.nat(9) }),
+  fc.record({ kind: fc.constant('place' as const), deck: fc.nat(5), pad: fc.nat(9) }),
 );
 
 /** Applies one operation the way the UI would (free cell, existing ids) and returns the board. */
@@ -81,6 +85,10 @@ function apply(b: Board, o: Op, n: number): Board {
       return deck && pad ? setPlacementHotkey(b, deck.id, pad.id, `K${n % 14}`) : b;
     case 'rename':
       return pad ? updatePad(b, { ...pad, name: `${pad.name}!` }) : b;
+    case 'remove':
+      return deck && pad ? removeFromDeck(b, deck.id, pad.id) : b;
+    case 'place':
+      return deck && pad ? placeInDeck(b, deck.id, pad.id) : b;
     default:
       return b;
   }

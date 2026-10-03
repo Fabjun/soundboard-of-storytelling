@@ -34,6 +34,8 @@ export const currentScreen = signal<AppScreen>('start');
 
 export const currentBoardId = signal<string | null>(null);
 export const currentDeckId = signal<string | null>(null);
+/** The All pads view (the whole pool, first entry of the deck rail, ADR-0048) instead of a deck. */
+export const allPadsView = signal(false);
 
 // ---------------------------------------------------------------------------
 // Mode

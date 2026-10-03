@@ -25,6 +25,7 @@ export const FULL_TESTS = [
   'layout-reach',
   'whats-new',
   'pad-dnd',
+  'pad-pool',
   'game-mode',
   'audio',
 ];
@@ -42,6 +43,7 @@ export const FULL_WEBKIT_TESTS = [
   'layout-reach',
   'whats-new',
   'pad-dnd',
+  'pad-pool',
 ];
 
 /** tests/e2e/mobile/<name>.spec.ts — audio-free, WebKit / iPhone 13 Pro (real Safari engine path). */

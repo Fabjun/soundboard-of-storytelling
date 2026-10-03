@@ -34,6 +34,15 @@ export const WHATS_NEW_GROUPS = [
 
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
+    version: '3.0.137',
+    date: '2026-10-03',
+    new: [
+      'All pads shows every pad of a board in one place, including pads that are in no deck.',
+      'You can take a pad out of one deck and keep it, or delete it from all decks at once.',
+      'In the pad editor, tick the decks a pad should appear in.',
+    ],
+  },
+  {
     version: '3.0.136',
     date: '2026-10-03',
     improved: [

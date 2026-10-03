@@ -8,12 +8,21 @@
 //   - SETUP mode: Pad-tap → PadEditorPanel
 //   - Path B: library drag handled by libDnd.ts (BoardScreen receives onLibDrop)
 //             No HTML5 DnD handlers here — iOS Brave compatibility.
+//   - All pads view (deck = null, Slice 9e): the whole pool by name, rows grow and scroll;
+//     no empty cells, no DnD, no creation popover — selecting and playing only.
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { useEffect, useState } from 'preact/hooks';
 import type { JSX } from 'preact';
 import type { AppMode, Board, Pad, PadPosition, Deck } from '../types';
-import { addPadToDeck, deckPads, setPlacements, type PlacedPad } from '../lib/boardModel';
+import {
+  DEFAULT_GRID,
+  addPadToDeck,
+  deckPads,
+  poolLayout,
+  setPlacements,
+  type PlacedPad,
+} from '../lib/boardModel';
 import { PadGridCell } from './PadGridCell';
 import { PadCreationPopover, type CreationResult } from './PadCreationPopover';
 import {
@@ -29,12 +38,13 @@ import { upsertBoard } from '../state/store';
 import { boardPut } from '../db/idb';
 
 interface PadGridProps {
-  deck: Deck;
+  /** The deck to show; null = the All pads view of the whole pool (ADR-0048). */
+  deck: Deck | null;
   board: Board;
   mode: AppMode;
   selectedPadId: string | null;
   onPadSelect: (pad: Pad) => void;
-  onRequestNewPad: (pad: Pad) => void; // Path C / "More options" → opens PadEditorPanel
+  onRequestNewPad?: (pad: Pad) => void; // Path C / "More options" → opens PadEditorPanel
   /** Path B mobile: non-null when a library item is pending placement. */
   placeMode: string | null;
   /** Called when the user taps an empty cell while placeMode is active. */
@@ -51,17 +61,22 @@ export function PadGrid({
   placeMode,
   onPlaceModeTap,
 }: PadGridProps): JSX.Element {
-  const cols = deck.gridConfig.cols;
-  const rows = deck.gridConfig.rows;
+  const isPool = deck === null;
+  const entries = deck ? deckPads(board, deck) : poolLayout(board, DEFAULT_GRID.cols);
+  const cols = deck ? deck.gridConfig.cols : DEFAULT_GRID.cols;
+  const rows = deck ? deck.gridConfig.rows : Math.ceil(entries.length / cols);
+  const gap = deck ? deck.gridConfig.gap : DEFAULT_GRID.gap;
   const isSetup = mode === 'edit';
+  // Moving and creating pads happens in a deck; the pool view only selects and plays.
+  const canArrange = isSetup && !isPool;
 
   // Path A popover state
   const [popoverPos, setPopoverPos] = useState<PadPosition | null>(null);
   const [popoverCellRect, setPopoverCellRect] = useState<DOMRect | null>(null);
 
-  // Lookup "col,row" → pad of the pool + its placement in this deck
+  // Lookup "col,row" → pad of the pool + its placement in this deck (or in the pool layout)
   const padMap = new Map<string, PlacedPad>();
-  for (const entry of deckPads(board, deck)) {
+  for (const entry of entries) {
     padMap.set(`${entry.placement.position.col},${entry.placement.position.row}`, entry);
   }
 
@@ -72,11 +87,11 @@ export function PadGrid({
   }, [cols, rows]);
 
   useEffect(() => {
-    setPlacementsRef(deck.placements);
+    if (deck) setPlacementsRef(deck.placements);
   });
 
   async function handleDrop(result: DndDropResult) {
-    if (result.kind === 'cancel') return;
+    if (result.kind === 'cancel' || !deck) return;
 
     const placements =
       result.kind === 'swap'
@@ -92,7 +107,7 @@ export function PadGrid({
   }
 
   function handlePadPointerDown(e: PointerEvent, pad: Pad) {
-    if (!isSetup) return;
+    if (!canArrange) return;
     const cellEl = (e.currentTarget as HTMLElement).closest('.sb-pad-grid-cell') as HTMLElement;
     if (!cellEl) return;
     startDrag(e, pad.id, cellEl, handleDrop);
@@ -101,6 +116,7 @@ export function PadGrid({
   // ── Pad CRUD ───────────────────────────────────────────────────────────────
 
   async function savePadToDeck(newPad: Pad, position: PadPosition) {
+    if (!deck) return;
     const updatedBoard: Board = addPadToDeck(board, deck.id, newPad, position);
     try {
       await boardPut(updatedBoard);
@@ -123,7 +139,7 @@ export function PadGrid({
       // Build a partial pad and open the editor (sets selectedPad)
       const partial = result.partialPad;
       await savePadToDeck(partial, position);
-      onRequestNewPad(partial);
+      onRequestNewPad?.(partial);
     }
   }
 
@@ -132,13 +148,15 @@ export function PadGrid({
   return (
     <>
       <div
-        class={'sb-pad-grid' + (isSetup ? ' sb-grid-bg' : '')}
+        class={
+          'sb-pad-grid' + (isPool ? ' sb-pad-grid-pool' : '') + (canArrange ? ' sb-grid-bg' : '')
+        }
         data-testid="pad-grid"
         style={
           {
             '--grid-cols': String(cols),
             '--grid-rows': String(rows),
-            '--grid-gap': `${deck.gridConfig.gap}px`,
+            '--grid-gap': `${gap}px`,
           } as Record<string, string>
         }
       >
@@ -147,6 +165,8 @@ export function PadGrid({
             const key = `${col},${row}`;
             const entry = padMap.get(key);
             const pad = entry?.pad ?? null;
+            // The pool has no empty cells: the last row simply ends.
+            if (isPool && !pad) return null;
             return (
               <PadGridCell
                 key={key}
@@ -156,7 +176,7 @@ export function PadGrid({
                 col={col}
                 row={row}
                 selected={!!pad && pad.id === selectedPadId}
-                cellRef={(el) => registerCellRef(key, el)}
+                cellRef={isPool ? undefined : (el) => registerCellRef(key, el)}
                 onEmpty={(rect) => {
                   // Place-Mode (Path B mobile): tap → place library item
                   if (placeMode && onPlaceModeTap) {
@@ -164,12 +184,12 @@ export function PadGrid({
                     return;
                   }
                   // Path A: open creation popover
-                  if (!isSetup) return;
+                  if (!canArrange) return;
                   setPopoverPos({ col, row });
                   setPopoverCellRect(rect);
                 }}
                 onPadSelect={onPadSelect}
-                onPadPointerDown={isSetup ? handlePadPointerDown : undefined}
+                onPadPointerDown={canArrange ? handlePadPointerDown : undefined}
               />
             );
           }),

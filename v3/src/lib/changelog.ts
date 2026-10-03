@@ -17,9 +17,16 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.136';
+export const APP_VERSION = '3.0.137';
 
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.137',
+    date: '2026-10-03',
+    items: [
+      'feat(decks): All pads view; remove a pad from one deck or delete it everywhere; deck checklist in the PAD editor (PR #32, squash of slice-9e-all-pads)',
+    ],
+  },
   {
     version: '3.0.136',
     date: '2026-10-03',
@@ -189,6 +196,13 @@ export const CHANGELOG: ChangelogEntry[] = [
     version: '3.0.97',
     date: '2026-10-02',
     items: ['docs: review log — owner decisions O1–O8 of 2026-10-02 and the new pull requests'],
+  },
+  {
+    version: '3.0.94',
+    date: '2026-10-01',
+    items: [
+      'feat(decks): All pads view of the whole pool; remove a pad from one deck or delete it everywhere ("used in N decks"); PAD editor deck checklist places a pad in other decks (Slice 9e, ADR-0048)',
+    ],
   },
   {
     version: '3.0.93',

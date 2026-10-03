@@ -7,9 +7,18 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 import type { Board, Deck, Pad, PadPosition, Placement } from '../types';
+import { nextFreeSlot } from './padUtils';
 
 /** A pad as one deck shows it: the pad from the pool plus its placement in that deck. */
 export type PlacedPad = { pad: Pad; placement: Placement };
+
+/** Grid of every new deck; its columns and gap also lay out the All pads view. Copy, never mutate. */
+export const DEFAULT_GRID: Readonly<Deck['gridConfig']> = {
+  cols: 4,
+  rows: 4,
+  gap: 8,
+  padSize: 'md',
+};
 
 export function findDeck(board: Board, deckId: string): Deck | undefined {
   return board.decks.find((d) => d.id === deckId);
@@ -71,6 +80,53 @@ export function setPlacementHotkey(
 /** Replaces a deck's placements, e.g. after a drag and drop. */
 export function setPlacements(board: Board, deckId: string, placements: Placement[]): Board {
   return withDeck(board, deckId, (deck) => ({ ...deck, placements }));
+}
+
+/**
+ * Removes a pad's placement from one deck. The pad stays in the pool (visible in All pads) and
+ * in every other deck (docs/architecture/0048-pad-pool-decks.md#2-behavior-final-not-provisional).
+ */
+export function removeFromDeck(board: Board, deckId: string, padId: string): Board {
+  return withDeck(board, deckId, (deck) => ({
+    ...deck,
+    placements: deck.placements.filter((p) => p.padId !== padId),
+  }));
+}
+
+/**
+ * Places a pool pad in a deck on the next free cell (row-major). Returns the board unchanged when
+ * the pad is already in that deck, the deck is unknown or the grid is full — the caller can tell
+ * by identity (`result === board`).
+ */
+export function placeInDeck(board: Board, deckId: string, padId: string): Board {
+  const deck = findDeck(board, deckId);
+  if (!deck || !findPad(board, padId) || deck.placements.some((p) => p.padId === padId))
+    return board;
+  const position = nextFreeSlot(deck.placements, deck.gridConfig.cols, deck.gridConfig.rows);
+  if (!position) return board;
+  return withDeck(board, deckId, (d) => ({
+    ...d,
+    placements: [...d.placements, { padId, position }],
+  }));
+}
+
+/** The whole pool for the All pads view: sorted by name (case-insensitive), then by id. */
+export function poolByName(board: Board): Pad[] {
+  return [...board.pads].sort(
+    (a, b) =>
+      a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }) || a.id.localeCompare(b.id),
+  );
+}
+
+/**
+ * The pool laid out for the All pads view: sorted by name, row-major in `cols` columns without
+ * gaps. The placements exist only for rendering — no key, never stored.
+ */
+export function poolLayout(board: Board, cols: number): PlacedPad[] {
+  return poolByName(board).map((pad, i) => ({
+    pad,
+    placement: { padId: pad.id, position: { col: i % cols, row: Math.floor(i / cols) } },
+  }));
 }
 
 /**
