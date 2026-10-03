@@ -17,10 +17,17 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.151';
+export const APP_VERSION = '3.0.152';
 
 /** The developer log, newest first; CHANGELOG.md is generated from it (sync-changelog). */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.152',
+    date: '2026-10-03',
+    items: [
+      'docs(backlog): idea — built-in sample sounds with redistributable licences (CC0) for the first launch, with Slice 17 (owner idea)',
+    ],
+  },
   {
     version: '3.0.151',
     date: '2026-10-03',

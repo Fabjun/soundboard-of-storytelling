@@ -61,6 +61,22 @@ merged icons need an icon concept first. Minimal-first: the Combo editor (Slice 
 first, gestures later.
 **When:** after Slice 11, discussed with the owner before any plan.
 
+### Built-in sample sounds — idea (Open)
+
+Owner idea 2026-10-03: the app ships a small set of sample sounds, so a new installation can
+create and play pads at once (first launch, onboarding). Prompted by the first device test of the
+backup: with an empty library no pad could be created.
+**Constraints:** the repository is public, so every shipped file is published — each sound needs a
+licence that allows redistribution (CC0 preferred) and a recorded source; the owner's own V1
+library is not shipped (provenance per file unknown, about 227 MB). The owner believes the sounds
+and icons used so far are licence-free — to be confirmed file by file before any of them ships;
+V1's icon set most likely comes from Nikoichu's CC0 "1-bit Pixel Icons" pack (structure audit
+A1, 2026-09-30). Size matters: sample sounds are precached for offline use (ADR-0057), so the set
+stays small (a few MB).
+**Open questions:** which sounds; loaded on first launch or offered as a button ("add sample
+sounds"); a licence register (file, source, licence) next to `third-party-licenses.txt`.
+**When:** with Slice 17 (help & onboarding), discussed with the owner before any plan.
+
 ### Backup reminder threshold as a setting
 
 Owner decision B5 (2026-10-02): the board list reminds after seven days without a backup

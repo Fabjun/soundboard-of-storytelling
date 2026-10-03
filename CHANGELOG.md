@@ -7,6 +7,12 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.152 — 2026-10-03
+
+### Internal
+
+- docs(backlog): idea — built-in sample sounds with redistributable licences (CC0) for the first launch, with Slice 17 (owner idea)
+
 ## 3.0.151 — 2026-10-03
 
 ### Internal
