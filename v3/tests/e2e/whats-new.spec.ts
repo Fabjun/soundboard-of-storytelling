@@ -19,7 +19,10 @@ test("the version link opens What's new, grouped per version, and closes again",
   const notes = page.getByTestId('start-screen-whats-new-region');
   await expect(notes).toBeVisible();
   const newest = WHATS_NEW[0];
-  const firstSection = notes.getByRole('region', { name: `Version ${newest.version}` });
+  const firstSection = notes.getByRole('region', {
+    name: `Version ${newest.version}`,
+    exact: true,
+  });
   await expect(firstSection).toBeVisible();
   // The newest entry's first sentence is shown, under its group heading
   const [firstGroup] = WHATS_NEW_GROUPS.filter(([key]) => newest[key]?.length);
@@ -32,6 +35,16 @@ test("the version link opens What's new, grouped per version, and closes again",
   await expect(firstSection.getByText(firstItem)).toBeHidden();
   await firstSection.getByText('Details', { exact: true }).click();
   await expect(firstSection.getByText(firstItem)).toBeVisible();
+
+  // The early development is there too, version by version: the oldest one with its details
+  const oldest = CHANGELOG[CHANGELOG.length - 1];
+  const oldestSection = notes.getByRole('region', {
+    name: `Version ${oldest.version}`,
+    exact: true, // "Version 3.0.1" would also match 3.0.10 … 3.0.199
+  });
+  await oldestSection.scrollIntoViewIfNeeded();
+  await oldestSection.getByText('Details', { exact: true }).click();
+  await expect(oldestSection.getByText(oldest.items[0])).toBeVisible();
 
   await page.getByRole('button', { name: "Close What's new" }).click();
   await expect(notes).toBeHidden();

@@ -17,10 +17,18 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.160';
+export const APP_VERSION = '3.0.161';
 
 /** The developer log, newest first; CHANGELOG.md is generated from it (sync-changelog). */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.161',
+    date: '2026-10-03',
+    items: [
+      'feat(whats-new): every version of the early development is listed — one generated entry per version before 3.0.135 without a hand-written one, its changes under Details (withEarlyVersions; ADR-0063 amendment, owner decision)',
+      'test(whats-new): every changelog version shows exactly once, nothing is generated from 3.0.135 on (counter-checked); E2E opens the details of the oldest version; region names matched exactly ("Version 3.0.1" also matched 3.0.10 …)',
+    ],
+  },
   {
     version: '3.0.160',
     date: '2026-10-03',

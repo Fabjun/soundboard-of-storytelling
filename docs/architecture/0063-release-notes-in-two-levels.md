@@ -72,8 +72,14 @@ What's new entry; a version without a visible change says in plain words under t
 under **Details** (HTML disclosure element) — the owner chose this over plain entries only, a
 partial deviation from Keep a Changelog's advice against commit lists for readers, accepted
 because the list shows only on request. `whatsNew.test.ts` now requires an entry for every
-version from the cutover on (it required one only for versions with a user-facing change). The
-112 versions before the cutover stay condensed into one entry.
+version from the cutover on (it required one only for versions with a user-facing change).
+
+**2026-10-03 (3.0.161):** The early development is listed version by version too (owner decision
+2026-10-03, "one by one, details only"). The few hand-written early entries stay;
+`withEarlyVersions` (`v3/src/lib/whatsNew.ts`) adds one entry for every other version before the
+cutover, with one plain sentence and the changes under Details — generated from the changelog,
+never typed. It generates nothing from the cutover on, so a missing hand-written entry still fails
+the check (counter-checked).
 
 ## Related
 

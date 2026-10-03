@@ -2,27 +2,24 @@
  * @fileoverview whatsNew — unit tests: release notes in two levels (ADR-0063)
  *
  * What's new is for the people who use the app (plain sentences, no technical terms); the
- * changelog is the per-push developer record (every item starts with a commit type). From the
- * cutover on, every version in the changelog has a What's new entry (owner decision 2026-10-03).
+ * changelog is the per-push developer record (every item starts with a commit type). From
+ * NOTES_SINCE on, every version in the changelog has a hand-written What's new entry; before it,
+ * withEarlyVersions generates one for each version without (owner decisions 2026-10-03).
  */
 
-import { CHANGELOG } from '../../src/lib/changelog';
+import { CHANGELOG, type ChangelogEntry } from '../../src/lib/changelog';
 import {
+  compareVersions,
+  EARLY_VERSION_NOTE,
+  NOTES_SINCE,
   versionLine,
   WHATS_NEW,
   WHATS_NEW_GROUPS,
+  withEarlyVersions,
   type WhatsNewEntry,
 } from '../../src/lib/whatsNew';
 
-/** First version written under ADR-0063 — earlier history is condensed, not checked item by item. */
-const CUTOVER = '3.0.135';
-
-const parse = (v: string): number[] => v.split('.').map(Number);
-const compare = (a: string, b: string): number => {
-  const [x, y] = [parse(a), parse(b)];
-  for (let i = 0; i < 3; i++) if (x[i] !== y[i]) return x[i] - y[i];
-  return 0;
-};
+const compare = compareVersions;
 const sentences = (e: WhatsNewEntry): string[] => WHATS_NEW_GROUPS.flatMap(([key]) => e[key] ?? []);
 
 /** Commit types (ADR-0060) plus the two older prefixes the history uses. */
@@ -80,15 +77,55 @@ describe("What's new (in the app)", () => {
     expect(order).toEqual([...order].sort((a, b) => compare(b, a)));
   });
 
-  it("from the cutover on, every version has a What's new entry — no gaps (Keep a Changelog)", () => {
+  it('from NOTES_SINCE on, every version has a hand-written entry — no gaps (Keep a Changelog)', () => {
     const covered = new Set(WHATS_NEW.map((e) => e.version));
-    const missing = CHANGELOG.filter((c) => compare(c.version, CUTOVER) >= 0)
+    const missing = CHANGELOG.filter((c) => compare(c.version, NOTES_SINCE) >= 0)
       .filter((c) => !covered.has(c.version))
       .map((c) => c.version);
     expect(
       missing,
       'add an entry to src/lib/whatsNew.ts ("Behind the scenes" if nothing visible changed)',
     ).toEqual([]);
+  });
+});
+
+describe('withEarlyVersions (every version in the app)', () => {
+  const all = withEarlyVersions(WHATS_NEW, CHANGELOG);
+
+  it('shows every changelog version exactly once, newest first', () => {
+    expect(all.map((e) => e.version)).toEqual(
+      CHANGELOG.map((c) => c.version).sort((a, b) => compare(b, a)),
+    );
+  });
+
+  it('keeps the hand-written early entries and generates the others with the early note', () => {
+    const first = all.find((e) => e.version === '3.0.4');
+    expect(first).toBe(WHATS_NEW.find((e) => e.version === '3.0.4'));
+    const generated = all.filter((e) => e.behindTheScenes?.[0] === EARLY_VERSION_NOTE);
+    expect(generated.length).toBeGreaterThan(100); // sanity: the early development is there
+    expect(generated.every((e) => compare(e.version, NOTES_SINCE) < 0)).toBe(true);
+  });
+
+  it('never generates an entry from NOTES_SINCE on — a missing hand-written one stays missing', () => {
+    const log: ChangelogEntry[] = [
+      { version: NOTES_SINCE, date: '2026-10-03', items: ['docs: x'] },
+      { version: '3.0.1', date: '2026-05-27', items: ['docs: y'] },
+    ];
+    expect(withEarlyVersions([], log).map((e) => e.version)).toEqual(['3.0.1']);
+  });
+
+  it('the early note reads as plain words too', () => {
+    expect(EARLY_VERSION_NOTE).toMatch(/^[A-Z].*\.$/);
+    expect(EARLY_VERSION_NOTE).not.toMatch(JARGON);
+    expect(EARLY_VERSION_NOTE).not.toMatch(PERSONAL);
+  });
+});
+
+describe('compareVersions', () => {
+  it('orders by number, not by text — 3.0.10 is newer than 3.0.9', () => {
+    expect(compare('3.0.10', '3.0.9')).toBeGreaterThan(0);
+    expect(compare('3.0.9', '3.1.0')).toBeLessThan(0);
+    expect(compare('3.0.4', '3.0.4')).toBe(0);
   });
 });
 

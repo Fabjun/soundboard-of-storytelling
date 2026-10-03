@@ -2,8 +2,10 @@
  * @fileoverview What's new — the release notes the app shows (ADR-0063)
  *
  * Written by hand for the people who use the app, in plain words, saying what the app can do now.
- * Every version from 3.0.135 on has an entry (Keep a Changelog: "There should be an entry for every
- * single version"; owner decision 2026-10-03); earlier history is condensed. Grouped per version as
+ * Every version has an entry (Keep a Changelog: "There should be an entry for every single
+ * version"; owner decisions 2026-10-03): from `NOTES_SINCE` on written by hand; before it, the few
+ * hand-written ones plus one generated entry per other version of the early development, which
+ * shows its changes under "Details" (`withEarlyVersions`). Grouped per version as
  * New / Improved / Fixed / Removed, newest first; a version without a visible change says in
  * "Behind the scenes" what was done, in plain words. The technical detail stays in
  * src/lib/changelog.ts (CHANGELOG.md is generated from it); the app folds it out per version
@@ -11,6 +13,15 @@
  * no "you", no commands; the app or the feature is the subject (owner rule 2026-10-03).
  * Checked by tests/unit/whatsNew.test.ts.
  */
+
+import type { ChangelogEntry } from './changelog';
+
+/** First version whose notes are all written by hand (ADR-0063). */
+export const NOTES_SINCE = '3.0.135';
+
+/** The sentence of a generated entry for a version of the early development. */
+export const EARLY_VERSION_NOTE =
+  'A version of the early development, before these notes were written; its changes are listed under Details.';
 
 /** One version's notes; every group is optional, but an entry has at least one sentence. */
 export interface WhatsNewEntry {
@@ -52,8 +63,38 @@ export function versionLine(appVersion: string, entries: readonly WhatsNewEntry[
     : `Version ${appVersion} — the latest visible changes came with ${latest}.`;
 }
 
+/** Orders two versions "major.minor.patch": negative when `a` is older than `b`. */
+export function compareVersions(a: string, b: string): number {
+  const [x, y] = [a, b].map((v) => v.split('.').map(Number));
+  for (let i = 0; i < 3; i++) if (x[i] !== y[i]) return x[i] - y[i];
+  return 0;
+}
+
+/**
+ * Returns `entries` plus one generated entry for every version before `NOTES_SINCE` that has none
+ * — its changes show under Details — newest first. Versions from `NOTES_SINCE` on are never
+ * generated: their notes are written by hand, and the check for gaps must see a missing one.
+ */
+export function withEarlyVersions(
+  entries: readonly WhatsNewEntry[],
+  changelog: readonly ChangelogEntry[],
+): WhatsNewEntry[] {
+  const covered = new Set(entries.map((e) => e.version));
+  const early = changelog
+    .filter((c) => compareVersions(c.version, NOTES_SINCE) < 0 && !covered.has(c.version))
+    .map((c) => ({ version: c.version, date: c.date, behindTheScenes: [EARLY_VERSION_NOTE] }));
+  return [...entries, ...early].sort((a, b) => compareVersions(b.version, a.version));
+}
+
 /** The release notes the start screen shows, newest first (checked by whatsNew.test.ts). */
 export const WHATS_NEW: WhatsNewEntry[] = [
+  {
+    version: '3.0.161',
+    date: '2026-10-03',
+    improved: [
+      "What's new lists every version since the very first; versions from the early development show their changes under Details.",
+    ],
+  },
   {
     version: '3.0.160',
     date: '2026-10-03',

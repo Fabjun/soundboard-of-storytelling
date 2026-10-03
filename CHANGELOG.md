@@ -7,6 +7,16 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.161 — 2026-10-03
+
+### Added
+
+- feat(whats-new): every version of the early development is listed — one generated entry per version before 3.0.135 without a hand-written one, its changes under Details (withEarlyVersions; ADR-0063 amendment, owner decision)
+
+### Internal
+
+- test(whats-new): every changelog version shows exactly once, nothing is generated from 3.0.135 on (counter-checked); E2E opens the details of the oldest version; region names matched exactly ("Version 3.0.1" also matched 3.0.10 …)
+
 ## 3.0.160 — 2026-10-03
 
 ### Internal

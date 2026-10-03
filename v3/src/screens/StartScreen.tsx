@@ -16,12 +16,14 @@ import { AnimatedFlame } from '../components/AnimatedFlame';
 import { audioContextState, currentScreen } from '../state/store';
 import { initAudio } from '../audio/index';
 import { APP_VERSION, CHANGELOG } from '../lib/changelog';
-import { versionLine, WHATS_NEW, WHATS_NEW_GROUPS } from '../lib/whatsNew';
+import { versionLine, WHATS_NEW, WHATS_NEW_GROUPS, withEarlyVersions } from '../lib/whatsNew';
 
 declare const __BUILD_DATE__: string;
 
 /** The developer changelog items of each version, shown under "Details" (owner decision 2026-10-03). */
 const DETAILS = new Map(CHANGELOG.map((c) => [c.version, c.items]));
+/** Every version's notes, the early development included (ADR-0063 amendment). */
+const NOTES = withEarlyVersions(WHATS_NEW, CHANGELOG);
 
 // ── WhatsNewOverlay ───────────────────────────────────────────────────────────
 
@@ -63,9 +65,9 @@ function WhatsNewOverlay({ onClose }: { onClose: () => void }): JSX.Element {
 
       <div class="sb-overlay-body">
         <div class="sb-caption" data-testid="start-screen-whats-new-version-text">
-          {versionLine(APP_VERSION, WHATS_NEW)}
+          {versionLine(APP_VERSION, NOTES)}
         </div>
-        {WHATS_NEW.map((entry) => (
+        {NOTES.map((entry) => (
           <section key={entry.version} aria-label={`Version ${entry.version}`}>
             <div class="sb-row sb-whats-new-entry-header">
               <span class="sb-whats-new-version">v {entry.version}</span>
