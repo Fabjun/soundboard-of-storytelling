@@ -6,8 +6,8 @@
  * (ADR-0057, checked by tests/e2e/pwa.spec.ts).
  */
 
-import { existsSync, readdirSync, readFileSync } from 'node:fs';
-import { join } from 'node:path';
+import { existsSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { join, resolve } from 'node:path';
 import { defineConfig, type Plugin } from 'vite';
 import preact from '@preact/preset-vite';
 import { VitePWA } from 'vite-plugin-pwa';
@@ -33,9 +33,11 @@ function packageRootOf(id: string): string | null {
  * virtual:pwa-register/preact) is covered and an unused dependency is not — plus their runtime
  * dependencies, transitively: a package may ship a prebuilt file with its dependencies inside
  * (workbox-window carries workbox-core), which no module id shows; listing one too many costs
- * nothing, one too few breaks a license. MIT/ISC require the notice in copies; the self-hosted
- * fonts' OFL requires the license alongside the font files (audit A2). A package without a
- * license file fails the build instead of shipping silently.
+ * nothing, one too few breaks a license. The service worker that vite-plugin-pwa builds afterwards
+ * (sw.js and its workbox-*.js) is read too: every Workbox module in it carries a
+ * `workbox:<name>:<version>` marker, which names its package `workbox-<name>`. MIT/ISC require the
+ * notice in copies; the self-hosted fonts' OFL requires the license alongside the font files
+ * (audit A2). A package without a license file fails the build instead of shipping silently.
  */
 function licenseNotices(): Plugin {
   /** Folder of `name` as Node resolves it from `from`: nested first, then the top level. */
@@ -43,28 +45,36 @@ function licenseNotices(): Plugin {
     const nested = join(from, 'node_modules', name);
     return existsSync(nested) ? nested : join('node_modules', name);
   };
+  let outDir = 'dist';
+  let seen = new Map<string, string>();
+  /** Adds the license of the package in `dir` and of its runtime dependencies, once each. */
+  const visit = (dir: string): void => {
+    const meta = JSON.parse(readFileSync(join(dir, 'package.json'), 'utf8')) as {
+      name: string;
+      version: string;
+      license?: string;
+      dependencies?: Record<string, string>;
+    };
+    const key = `${meta.name}@${meta.version}`;
+    if (seen.has(key)) return;
+    const file = readdirSync(dir).find((f) => /^licen[cs]e(\.|$)/i.test(f));
+    if (!file) throw new Error(`license-notices: ${key} has no license file`);
+    seen.set(
+      key,
+      `${key} — ${meta.license ?? 'see text'}\n\n${readFileSync(join(dir, file), 'utf8').trim()}`,
+    );
+    for (const dep of Object.keys(meta.dependencies ?? {})) visit(pkgDir(dep, dir));
+  };
   return {
     name: 'license-notices',
     apply: 'build',
+    configResolved(config) {
+      outDir = resolve(config.root, config.build.outDir);
+    },
+    buildStart() {
+      seen = new Map();
+    },
     generateBundle(_options, bundle) {
-      const seen = new Map<string, string>();
-      const visit = (dir: string): void => {
-        const meta = JSON.parse(readFileSync(join(dir, 'package.json'), 'utf8')) as {
-          name: string;
-          version: string;
-          license?: string;
-          dependencies?: Record<string, string>;
-        };
-        const key = `${meta.name}@${meta.version}`;
-        if (seen.has(key)) return;
-        const file = readdirSync(dir).find((f) => /^licen[cs]e(\.|$)/i.test(f));
-        if (!file) throw new Error(`license-notices: ${key} has no license file`);
-        seen.set(
-          key,
-          `${key} — ${meta.license ?? 'see text'}\n\n${readFileSync(join(dir, file), 'utf8').trim()}`,
-        );
-        for (const dep of Object.keys(meta.dependencies ?? {})) visit(pkgDir(dep, dir));
-      };
       for (const output of Object.values(bundle)) {
         if (output.type !== 'chunk') continue;
         for (const id of Object.keys(output.modules)) {
@@ -72,12 +82,26 @@ function licenseNotices(): Plugin {
           if (root) visit(root);
         }
       }
-      const texts = [...seen.keys()].sort().map((k) => seen.get(k));
-      this.emitFile({
-        type: 'asset',
-        fileName: 'third-party-licenses.txt',
-        source: `Third-party licenses\n\n${texts.join(`\n\n${'-'.repeat(72)}\n\n`)}\n`,
-      });
+    },
+    // After vite-plugin-pwa has written the service worker (its closeBundle has the default order)
+    closeBundle: {
+      order: 'post',
+      sequential: true,
+      handler() {
+        const workerFiles = readdirSync(outDir).filter((f) => /^(sw|workbox-[\w-]+)\.js$/.test(f));
+        if (workerFiles.length === 0) throw new Error('license-notices: no service worker found');
+        for (const file of workerFiles) {
+          const code = readFileSync(join(outDir, file), 'utf8');
+          for (const [, name] of code.matchAll(/workbox:([a-z-]+):\d/g)) {
+            visit(pkgDir(`workbox-${name}`, join('node_modules', 'workbox-build')));
+          }
+        }
+        const texts = [...seen.keys()].sort().map((k) => seen.get(k));
+        writeFileSync(
+          join(outDir, 'third-party-licenses.txt'),
+          `Third-party licenses\n\n${texts.join(`\n\n${'-'.repeat(72)}\n\n`)}\n`,
+        );
+      },
     },
   };
 }

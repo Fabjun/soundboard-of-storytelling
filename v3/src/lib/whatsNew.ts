@@ -55,6 +55,13 @@ export function versionLine(appVersion: string, entries: readonly WhatsNewEntry[
 /** The release notes the start screen shows, newest first (checked by whatsNew.test.ts). */
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
+    version: '3.0.160',
+    date: '2026-10-03',
+    behindTheScenes: [
+      'The list of third-party licenses that comes with the app now also names the parts that keep it working offline.',
+    ],
+  },
+  {
     version: '3.0.159',
     date: '2026-10-03',
     new: [

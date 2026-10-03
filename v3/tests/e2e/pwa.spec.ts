@@ -9,7 +9,7 @@
  * Run: `npm run test:e2e:prod` (builds, then serves dist/ via vite preview).
  */
 
-import { readFileSync, writeFileSync } from 'node:fs';
+import { readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { test, expect, type Page } from '@playwright/test';
 import { createBoardAndNavigate, goToBoardList, reloadApp, waitForSaves } from './helpers';
 
@@ -68,6 +68,19 @@ test('ships the license notices of every production dependency', async ({ page }
   // prebuilt file carries inside (ADR-0066)
   expect(text).toContain('workbox-window@');
   expect(text).toContain('workbox-core@');
+  // The service worker ships Workbox modules too: each `workbox:<name>:` marker in the files it
+  // loads names a package that must be in the notices
+  const dist = new URL('../../dist/', import.meta.url);
+  const workerFiles = readdirSync(dist).filter((f) => /^(sw|workbox-[\w-]+)\.js$/.test(f));
+  const shipped = new Set(
+    workerFiles.flatMap((f) =>
+      [...readFileSync(new URL(f, dist), 'utf8').matchAll(/workbox:([a-z-]+):\d/g)].map(
+        ([, name]) => `workbox-${name}`,
+      ),
+    ),
+  );
+  expect(shipped.size).toBeGreaterThanOrEqual(3); // sanity: the markers are found
+  for (const name of shipped) expect(text, name).toContain(`${name}@`);
 });
 
 test('service worker installs and controls the page', async ({ page }) => {

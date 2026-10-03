@@ -72,9 +72,14 @@ license. The generator in `v3/vite.config.ts` now takes every package whose modu
 bundled, plus their runtime dependencies transitively — a prebuilt package can carry its
 dependencies inside (workbox-window's file contains workbox-core, measured by its
 `workbox:core` marker). Same list as before for the current build, minus nothing; `pwa.spec.ts`
-checks `workbox-window` and `workbox-core` in the notices. Not covered yet: the service worker
-runtime that vite-plugin-pwa builds separately (`dist/workbox-*.js`: workbox-precaching,
--routing, -strategies) — BACKLOG "License notices of the service worker".
+checks `workbox-window` and `workbox-core` in the notices.
+
+**2026-10-03 (3.0.160):** The service worker is covered too (owner approval 2026-10-03). Its
+runtime is built separately by vite-plugin-pwa after the app bundle (`dist/sw.js`,
+`dist/workbox-*.js`); every Workbox module in it carries a `workbox:<name>:<version>` marker. After
+that build, the generator reads the markers and adds `workbox-<name>` with its dependencies —
+workbox-precaching, -routing and -strategies were missing before. `pwa.spec.ts` derives the
+expected packages from the markers of the shipped files.
 
 ## Related
 

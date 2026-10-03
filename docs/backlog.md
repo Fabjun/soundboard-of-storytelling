@@ -119,14 +119,13 @@ CI annotation 2026-10-03: "The ubuntu-latest label will migrate to Ubuntu 26 beg
 19, 2026" (actions/runner-images#14748). Check the CI runs on the new image (browsers, fonts).
 **When:** at the next structure review, before 2026-10-19.
 
-### License notices of the service worker
+### License notices of the service worker ✅ Done (3.0.160)
 
 `third-party-licenses.txt` is read from the app bundle (ADR-0057 amendment). The service worker
 runtime that vite-plugin-pwa builds separately (`dist/workbox-*.js`) ships workbox-precaching,
 workbox-routing and workbox-strategies (measured by their `workbox:<name>:` markers, 2026-10-03);
-their licenses are not in the notices — a gap that existed before the change. Option: after the
-build, read the markers of the generated file and add those packages.
-**When:** waits for the owner's approval (proposed 2026-10-03).
+their licenses were not in the notices — a gap that existed before. Approved by the owner
+2026-10-03; the generator now reads the markers after the service worker is built.
 
 ### Backup reminder threshold as a setting
 

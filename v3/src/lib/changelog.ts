@@ -17,10 +17,18 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.159';
+export const APP_VERSION = '3.0.160';
 
 /** The developer log, newest first; CHANGELOG.md is generated from it (sync-changelog). */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.160',
+    date: '2026-10-03',
+    items: [
+      'build(licenses): the license notices cover the service worker too — after vite-plugin-pwa builds it, the workbox:<name> markers of sw.js / workbox-*.js add their packages (workbox-precaching, -routing, -strategies were missing; ADR-0057 amendment, owner approval)',
+      'test(pwa): the expected Workbox packages are derived from the markers of the shipped worker files (counter-checked)',
+    ],
+  },
   {
     version: '3.0.159',
     date: '2026-10-03',

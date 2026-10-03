@@ -7,6 +7,13 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.160 — 2026-10-03
+
+### Internal
+
+- build(licenses): the license notices cover the service worker too — after vite-plugin-pwa builds it, the workbox:<name> markers of sw.js / workbox-*.js add their packages (workbox-precaching, -routing, -strategies were missing; ADR-0057 amendment, owner approval)
+- test(pwa): the expected Workbox packages are derived from the markers of the shipped worker files (counter-checked)
+
 ## 3.0.159 — 2026-10-03
 
 ### Added
