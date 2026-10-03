@@ -1,13 +1,13 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// Full E2E — combo editor, minimal first version (Slice 11, docs/product/README.md#combos--decided)
-//
-// - Steps with the pads that start together, the wait and "stop everything first" — kept after
-//   a reload
-// - A combo is never offered a pad that would make it start itself (no cycles)
-// - Removing a pad from a step and removing a step take two taps
-//
-// No audio needed: pads come from ADD PAD (Chromium and WebKit).
-// ─────────────────────────────────────────────────────────────────────────────
+/**
+ * @fileoverview Full E2E — combo editor, minimal first version (Slice 11, docs/product/README.md#combos--decided)
+ *
+ * - Steps with the pads that start together, the wait and "stop everything first" — kept after
+ *   a reload
+ * - A combo is never offered a pad that would make it start itself (no cycles)
+ * - Removing a pad from a step and removing a step take two taps
+ *
+ * No audio needed: pads come from ADD PAD (Chromium and WebKit).
+ */
 
 import { test, expect, type Page } from '@playwright/test';
 import {

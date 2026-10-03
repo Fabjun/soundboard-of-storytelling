@@ -1,20 +1,20 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// ZIP archive — the container of V3 backups
-// (docs/architecture/0061-backup-file-format-and-streaming-import.md#3-v3s-own-backup-file-d1d2)
-//
-// Writing goes through fflate's streaming Zip with stored (uncompressed) entries: audio is
-// compressed already, and each entry becomes Blob parts right away, so the archive is never one
-// big buffer.
-//
-// Reading is our own, after the ZIP specification (PKWARE APPNOTE 6.3.10): the end of central
-// directory record (4.3.16) leads to the central directory (4.3.12), the authoritative list of
-// entries; each local header (4.3.7) gives where the entry's bytes start. An entry is then a
-// `Blob.slice` of the file — nothing is copied or read before it is needed (iPhone memory rules).
-// fflate's streaming reader is not used: for entries written with a data descriptor (fflate's
-// writer always writes one) it finds an entry's end by searching the data for the descriptor
-// signature, which audio bytes can contain by chance, and APPNOTE 4.3.9 makes that signature
-// optional anyway.
-// ─────────────────────────────────────────────────────────────────────────────
+/**
+ * @fileoverview ZIP archive — the container of V3 backups
+ * (docs/architecture/0061-backup-file-format-and-streaming-import.md#3-v3s-own-backup-file-d1d2)
+ *
+ * Writing goes through fflate's streaming Zip with stored (uncompressed) entries: audio is
+ * compressed already, and each entry becomes Blob parts right away, so the archive is never one
+ * big buffer.
+ *
+ * Reading is our own, after the ZIP specification (PKWARE APPNOTE 6.3.10): the end of central
+ * directory record (4.3.16) leads to the central directory (4.3.12), the authoritative list of
+ * entries; each local header (4.3.7) gives where the entry's bytes start. An entry is then a
+ * `Blob.slice` of the file — nothing is copied or read before it is needed (iPhone memory rules).
+ * fflate's streaming reader is not used: for entries written with a data descriptor (fflate's
+ * writer always writes one) it finds an entry's end by searching the data for the descriptor
+ * signature, which audio bytes can contain by chance, and APPNOTE 4.3.9 makes that signature
+ * optional anyway.
+ */
 
 import { Zip, ZipPassThrough } from 'fflate';
 
@@ -32,8 +32,10 @@ export interface ZipEntry {
 /** Why an archive cannot be read. */
 export type ZipErrorKind = 'not-a-zip' | 'damaged' | 'unsupported';
 
+/** An archive that cannot be read; `kind` says why, the message adds where. */
 export class ZipError extends Error {
   readonly kind: ZipErrorKind;
+  /** Creates the error; the message is `"<kind>: <detail>"`. */
   constructor(kind: ZipErrorKind, detail: string) {
     super(`${kind}: ${detail}`);
     this.name = 'ZipError';
@@ -159,6 +161,12 @@ export interface ZipWriter {
   finish(type: string): Blob;
 }
 
+/**
+ * Starts an archive of stored (uncompressed) entries. Each entry's bytes become Blob parts as
+ * soon as it is added, so the archive is never one buffer in memory.
+ *
+ * @throws The fflate error when an entry cannot be written (on `add` or `finish`).
+ */
 export function createZipWriter(): ZipWriter {
   const parts: Blob[] = [];
   let failure: Error | null = null;

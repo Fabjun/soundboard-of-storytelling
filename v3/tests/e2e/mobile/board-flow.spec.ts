@@ -1,16 +1,16 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// Mobile E2E — Board Flow (Playwright WebKit, iPhone 13 Pro profile)
-//
-// SCOPE: Verifies that creating a board and navigating into it works via
-// touch events on a 390×844 viewport.
-//
-//   A. NEW BOARD tap → board row appears
-//   B. Board row title tap → BoardScreen loads (mode-toggle visible)
-//   C. Back button tap → returns to BoardListScreen
-//
-// OUT OF SCOPE (see docs/development/manual-iphone-checklist.md):
-//   File upload, audio output, Ringer Switch, backgrounding.
-// ─────────────────────────────────────────────────────────────────────────────
+/**
+ * @fileoverview Mobile E2E — Board Flow (Playwright WebKit, iPhone 13 Pro profile)
+ *
+ * SCOPE: Verifies that creating a board and navigating into it works via
+ * touch events on a 390×844 viewport.
+ *
+ *   A. NEW BOARD tap → board row appears
+ *   B. Board row title tap → BoardScreen loads (mode-toggle visible)
+ *   C. Back button tap → returns to BoardListScreen
+ *
+ * OUT OF SCOPE (see docs/development/manual-iphone-checklist.md):
+ *   File upload, audio output, Ringer Switch, backgrounding.
+ */
 
 import { test, expect } from '@playwright/test';
 import { goToBoardList } from '../helpers';

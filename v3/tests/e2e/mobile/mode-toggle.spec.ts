@@ -1,15 +1,15 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// Mobile E2E — Mode Toggle (Playwright WebKit, iPhone 13 Pro profile)
-//
-// SCOPE: Verifies that SETUP ↔ GAME switching responds to tap() events and
-// reflects the correct CSS class state on a 390×844 viewport.
-//
-//   A. GAME half tap → .sb-mode-toggle.is-game applied
-//   B. SETUP half tap → .sb-mode-toggle.is-setup applied
-//
-// OUT OF SCOPE (see docs/development/manual-iphone-checklist.md):
-//   Audio output, Ringer Switch, backgrounding.
-// ─────────────────────────────────────────────────────────────────────────────
+/**
+ * @fileoverview Mobile E2E — Mode Toggle (Playwright WebKit, iPhone 13 Pro profile)
+ *
+ * SCOPE: Verifies that SETUP ↔ GAME switching responds to tap() events and
+ * reflects the correct CSS class state on a 390×844 viewport.
+ *
+ *   A. GAME half tap → .sb-mode-toggle.is-game applied
+ *   B. SETUP half tap → .sb-mode-toggle.is-setup applied
+ *
+ * OUT OF SCOPE (see docs/development/manual-iphone-checklist.md):
+ *   Audio output, Ringer Switch, backgrounding.
+ */
 
 import { test, expect } from '@playwright/test';
 import { goToBoardList, createBoardAndNavigate } from '../helpers';

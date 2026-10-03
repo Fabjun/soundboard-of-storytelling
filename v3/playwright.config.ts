@@ -1,32 +1,32 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// Playwright configuration — E2E tests
-//
-// baseURL is http://localhost:5199 — a dedicated test port (dev server stays on 5173).
-// Tests navigate explicitly to /soundboard-of-storytelling/ so the URL is readable.
-//
-// Projects:
-//   smoke           — 5 smoke specs × Chromium (fast, ~10s)
-//   smoke-webkit    — same 5 specs × WebKit (iOS Safari proxy)
-//   full            — 6 full-suite specs × Chromium only (slice-3 coverage, ~90s)
-//   mobile          — touch-wiring (audio-free) × WebKit/iPhone 13 Pro (~15s)
-//   mobile-chromium — pad touch-wiring (requires audio) × Chromium/iPhone 13 Pro (~20s)
-//   visual          — screenshot regression specs × Chromium (local-only, NOT in CI)
-//
-// Why two mobile projects:
-//   Playwright's headless WebKit has no audio codec support — decodeAudioData
-//   fails, breaking any test that needs an audio file in the library.
-//   Tests that assert pad is-hot/is-looping DOM state run under Chromium with
-//   iPhone 13 Pro device settings (viewport 390×844, hasTouch, isMobile).
-//   Audio-free navigation/touch tests run under WebKit to exercise the actual
-//   Safari engine path for pointer events and CSS.
-//
-// Default `playwright test` (no flags) runs all projects.
-// Use --project=<name> to run a subset.
-//
-// webServer: starts its own Vite dev server on the dedicated test port and waits
-// for the app URL. Never reuses an existing server (see TEST_PORT).
-// Project membership lives in tests/e2e/projects.ts (guarded by a unit test).
-// ─────────────────────────────────────────────────────────────────────────────
+/**
+ * @fileoverview Playwright configuration — E2E tests
+ *
+ * baseURL is http://localhost:5199 — a dedicated test port (dev server stays on 5173).
+ * Tests navigate explicitly to /soundboard-of-storytelling/ so the URL is readable.
+ *
+ * Projects:
+ *   smoke           — 5 smoke specs × Chromium (fast, ~10s)
+ *   smoke-webkit    — same 5 specs × WebKit (iOS Safari proxy)
+ *   full            — 6 full-suite specs × Chromium only (slice-3 coverage, ~90s)
+ *   mobile          — touch-wiring (audio-free) × WebKit/iPhone 13 Pro (~15s)
+ *   mobile-chromium — pad touch-wiring (requires audio) × Chromium/iPhone 13 Pro (~20s)
+ *   visual          — screenshot regression specs × Chromium (local-only, NOT in CI)
+ *
+ * Why two mobile projects:
+ *   Playwright's headless WebKit has no audio codec support — decodeAudioData
+ *   fails, breaking any test that needs an audio file in the library.
+ *   Tests that assert pad is-hot/is-looping DOM state run under Chromium with
+ *   iPhone 13 Pro device settings (viewport 390×844, hasTouch, isMobile).
+ *   Audio-free navigation/touch tests run under WebKit to exercise the actual
+ *   Safari engine path for pointer events and CSS.
+ *
+ * Default `playwright test` (no flags) runs all projects.
+ * Use --project=<name> to run a subset.
+ *
+ * webServer: starts its own Vite dev server on the dedicated test port and waits
+ * for the app URL. Never reuses an existing server (see TEST_PORT).
+ * Project membership lives in tests/e2e/projects.ts (guarded by a unit test).
+ */
 
 import { defineConfig, devices } from '@playwright/test';
 import {

@@ -1,22 +1,23 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// Library Drag-and-Drop — pointer-events-based, SETUP mode only
-//
-// Used by LibraryPanel → drop onto PadGrid (Path B).
-// Isolated from padDnd.ts — separate state, no shared globals.
-// Two DnD operations (lib-drag + pad-drag) cannot run concurrently.
-//
-// Target-cell detection: document.elementFromPoint() → closest('[data-pos]')
-// Ghost has pointer-events: none so elementFromPoint sees through it.
-//
-// Platform note: HTML5 drag-and-drop is explicitly NOT used here.
-// iOS Safari/Brave does not support 'draggable'/'ondragstart'.
-// Pointer Events are supported on iOS 13+ (iPhone 6s and newer).
-// ─────────────────────────────────────────────────────────────────────────────
+/**
+ * @fileoverview Library Drag-and-Drop — pointer-events-based, SETUP mode only
+ *
+ * Used by LibraryPanel → drop onto PadGrid (Path B).
+ * Isolated from padDnd.ts — separate state, no shared globals.
+ * Two DnD operations (lib-drag + pad-drag) cannot run concurrently.
+ *
+ * Target-cell detection: document.elementFromPoint() → closest('[data-pos]')
+ * Ghost has pointer-events: none so elementFromPoint sees through it.
+ *
+ * Platform note: HTML5 drag-and-drop is explicitly NOT used here.
+ * iOS Safari/Brave does not support 'draggable'/'ondragstart'.
+ * Pointer Events are supported on iOS 13+ (iPhone 6s and newer).
+ */
 
 import type { PadPosition } from '../types';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
+/** How a library drag ended: dropped on the cell `targetPos`, or cancelled. */
 export type LibDndDropResult =
   { kind: 'cancel' } | { kind: 'drop'; itemId: string; targetPos: PadPosition };
 
@@ -53,16 +54,14 @@ let _s: LibDndState = {
 // ── Public API ────────────────────────────────────────────────────────────────
 
 /**
- * Start tracking a potential library-item drag.
- * Call from onPointerDown on the library row element.
+ * Starts tracking a possible drag of a library item; call it from the row's pointerdown.
  *
- * @param e           The originating PointerEvent.
- * @param itemId      The library item ID being dragged.
- * @param rowEl       The DOM element to clone for the drag ghost.
- * @param onDrop      Called when drag ends (with drop result or cancel).
- * @param onDragActivated  Optional: called the first time movement
- *                         exceeds DRAG_THRESHOLD. Use to cancel a
- *                         concurrent long-press timer in the source component.
+ * @param e - The pointerdown event.
+ * @param itemId - The library item that may be dragged.
+ * @param rowEl - The row element, cloned as the drag ghost.
+ * @param onDrop - Called when the drag ends, with the drop result or a cancel.
+ * @param onDragActivated - Called the first time the pointer moves past the drag threshold
+ *   (8 px) — use it to cancel a long-press timer in the row.
  */
 export function startLibDrag(
   e: PointerEvent,

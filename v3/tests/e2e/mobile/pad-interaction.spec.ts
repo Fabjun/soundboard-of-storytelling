@@ -1,28 +1,28 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// Mobile E2E — Pad Touch Interaction (Playwright Chromium, iPhone 13 Pro profile)
-//
-// SCOPE: This is the core touch-wiring test. Verifies that a pad tap() in GAME
-// mode triggers the correct Signal → DOM state change (.sb-pad.is-hot,
-// .sb-pad.is-looping) on a 390×844 viewport with hasTouch: true.
-//
-// Runs under Chromium (not WebKit) because headless WebKit has no audio codec
-// support — decodeAudioData fails, the upload pipeline skips the file, and any
-// test waiting for library audio times out. Chromium decodes WAV correctly.
-// The iPhone 13 Pro device settings (viewport, hasTouch, isMobile, UA) are
-// preserved via the mobile-chromium project in playwright.config.ts.
-//
-// This is the class of bug that has occurred on the real device: pads failed
-// to respond to touch events (Touch-Event-Wiring). The test catches it by
-// asserting the DOM state change, not by listening for audio output.
-//
-//   B. SINGLE pad: tap → is-hot; tap again → is-hot gone
-//   C. LOOP pad:   tap → is-looping; tap again → is-looping gone
-//
-// OUT OF SCOPE (see docs/development/manual-iphone-checklist.md):
-//   Audio output (headless Chromium — no sound), Ringer Switch, backgrounding.
-//   File upload uses the filechooser approach (IMPORT button → chooser.setFiles)
-//   which bypasses the iOS native picker — upload is setup infrastructure only.
-// ─────────────────────────────────────────────────────────────────────────────
+/**
+ * @fileoverview Mobile E2E — Pad Touch Interaction (Playwright Chromium, iPhone 13 Pro profile)
+ *
+ * SCOPE: This is the core touch-wiring test. Verifies that a pad tap() in GAME
+ * mode triggers the correct Signal → DOM state change (.sb-pad.is-hot,
+ * .sb-pad.is-looping) on a 390×844 viewport with hasTouch: true.
+ *
+ * Runs under Chromium (not WebKit) because headless WebKit has no audio codec
+ * support — decodeAudioData fails, the upload pipeline skips the file, and any
+ * test waiting for library audio times out. Chromium decodes WAV correctly.
+ * The iPhone 13 Pro device settings (viewport, hasTouch, isMobile, UA) are
+ * preserved via the mobile-chromium project in playwright.config.ts.
+ *
+ * This is the class of bug that has occurred on the real device: pads failed
+ * to respond to touch events (Touch-Event-Wiring). The test catches it by
+ * asserting the DOM state change, not by listening for audio output.
+ *
+ *   B. SINGLE pad: tap → is-hot; tap again → is-hot gone
+ *   C. LOOP pad:   tap → is-looping; tap again → is-looping gone
+ *
+ * OUT OF SCOPE (see docs/development/manual-iphone-checklist.md):
+ *   Audio output (headless Chromium — no sound), Ringer Switch, backgrounding.
+ *   File upload uses the filechooser approach (IMPORT button → chooser.setFiles)
+ *   which bypasses the iOS native picker — upload is setup infrastructure only.
+ */
 
 import { test, expect } from '@playwright/test';
 import {

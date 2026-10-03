@@ -1,11 +1,11 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// ComboStepsEditor — the steps of a combo in the PAD editor (Slice 11, minimal first version,
-// docs/product/README.md#combos--decided)
-//
-// Per step: the pads that start together, the wait until the next step, "stop everything first".
-// Controlled: the PAD editor owns the steps and saves them with the rest of the pad (one writer).
-// Only pads that do not lead back to this combo are offered (no cycles, comboModel).
-// ─────────────────────────────────────────────────────────────────────────────
+/**
+ * @fileoverview ComboStepsEditor — the steps of a combo in the PAD editor (Slice 11, minimal first version,
+ * docs/product/README.md#combos--decided)
+ *
+ * Per step: the pads that start together, the wait until the next step, "stop everything first".
+ * Controlled: the PAD editor owns the steps and saves them with the rest of the pad (one writer).
+ * Only pads that do not lead back to this combo are offered (no cycles, comboModel).
+ */
 
 import { useState } from 'preact/hooks';
 import type { JSX } from 'preact';
@@ -21,6 +21,11 @@ import {
 } from '../lib/comboModel';
 import { poolByName } from '../lib/boardModel';
 
+/**
+ * Edits the steps of the combo `comboId`: each step's pads, wait and "stop everything first".
+ * Controlled — every change goes to `onChange`; only pads that cannot start this combo are
+ * offered.
+ */
 export function ComboStepsEditor({
   comboId,
   steps,

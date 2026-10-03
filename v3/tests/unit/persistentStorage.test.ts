@@ -1,7 +1,7 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// persistentStorage — D4: ask for persistent storage, never fail
-// Cases: API missing, already persisted (no second request), granted, refused, throwing.
-// ─────────────────────────────────────────────────────────────────────────────
+/**
+ * @fileoverview persistentStorage — D4: ask for persistent storage, never fail
+ * Cases: API missing, already persisted (no second request), granted, refused, throwing.
+ */
 
 import { requestPersistentStorage } from '../../src/db/persistentStorage';
 

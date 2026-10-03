@@ -1,16 +1,16 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// Backup reader — reads a V1 or V3 backup file piece by piece (D6, ADR-0061)
-//
-// Three kinds of file, told apart by their first bytes, never by their name:
-//   - a ZIP archive (V3's own backups): the manifest backup.json lists the boards and the library;
-//     each audio file is a slice of the archive, read only when the import asks for it;
-//   - gzip (V1 backups, early V3 backups): unpacked as a stream by fflate — on every browser, so
-//     iOS before 16.4 (no DecompressionStream) reads them too (owner decision B8);
-//   - plain JSON.
-// JSON is never held as one string (iPhone memory rules 4 and 6): it streams into a streaming JSON
-// parser that hands over the boards once and the library entries one at a time. The next chunk is
-// read only after the entries of the current chunk are handled, so at most one entry is in memory.
-// ─────────────────────────────────────────────────────────────────────────────
+/**
+ * @fileoverview Backup reader — reads a V1 or V3 backup file piece by piece (D6, ADR-0061)
+ *
+ * Three kinds of file, told apart by their first bytes, never by their name:
+ *   - a ZIP archive (V3's own backups): the manifest backup.json lists the boards and the library;
+ *     each audio file is a slice of the archive, read only when the import asks for it;
+ *   - gzip (V1 backups, early V3 backups): unpacked as a stream by fflate — on every browser, so
+ *     iOS before 16.4 (no DecompressionStream) reads them too (owner decision B8);
+ *   - plain JSON.
+ * JSON is never held as one string (iPhone memory rules 4 and 6): it streams into a streaming JSON
+ * parser that hands over the boards once and the library entries one at a time. The next chunk is
+ * read only after the entries of the current chunk are handled, so at most one entry is in memory.
+ */
 
 import { Gunzip } from 'fflate';
 import { isZip, readZipDirectory, zipEntryBlob, ZipError, type ZipEntry } from './zipArchive';
@@ -18,8 +18,10 @@ import { isZip, readZipDirectory, zipEntryBlob, ZipError, type ZipEntry } from '
 /** Why a file could not be read — each maps to a message for the user. */
 export type BackupErrorKind = 'damaged' | 'not-a-backup' | 'unsupported-zip';
 
+/** A backup file that cannot be read; `kind` selects the message the import panel shows. */
 export class BackupError extends Error {
   readonly kind: BackupErrorKind;
+  /** Creates the error for `kind`; the message is the kind itself. */
   constructor(kind: BackupErrorKind) {
     super(kind);
     this.name = 'BackupError';
@@ -42,6 +44,7 @@ export interface BackupLibraryEntry {
   audio(): Promise<Blob | null>;
 }
 
+/** What `readBackup` hands the file's content to; both handlers are optional. */
 export interface BackupHandlers {
   /** The boards array — called once, before or after entries depending on the file. */
   onBoards?: (boards: unknown[]) => void;

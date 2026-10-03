@@ -1,12 +1,12 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// backupReader — reads V1 and V3 backups piece by piece (D6, ADR-0061)
-// Edge-case checklist: nothing / one / many entries, V1 vs V3 header, ZIP / gzip / plain JSON
-// (told apart by bytes), gzip without DecompressionStream (B8), chunks split anywhere (also inside
-// strings and escapes), invalid input, entries handled one at a time, audio on demand (base64
-// decoded and freed; ZIP slice; missing → null; damaged → rejects).
-// Property: for random backups and random chunk boundaries the reader hands over exactly what
-// JSON.parse would see.
-// ─────────────────────────────────────────────────────────────────────────────
+/**
+ * @fileoverview backupReader — reads V1 and V3 backups piece by piece (D6, ADR-0061)
+ * Edge-case checklist: nothing / one / many entries, V1 vs V3 header, ZIP / gzip / plain JSON
+ * (told apart by bytes), gzip without DecompressionStream (B8), chunks split anywhere (also inside
+ * strings and escapes), invalid input, entries handled one at a time, audio on demand (base64
+ * decoded and freed; ZIP slice; missing → null; damaged → rejects).
+ * Property: for random backups and random chunk boundaries the reader hands over exactly what
+ * JSON.parse would see.
+ */
 
 import { fc, test as propTest } from '@fast-check/vitest';
 import { zipSync } from 'fflate';

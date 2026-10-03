@@ -1,6 +1,6 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// Audio engine — internal types
-// ─────────────────────────────────────────────────────────────────────────────
+/**
+ * @fileoverview Audio engine — internal types
+ */
 
 import type { ComboPad, PadBase } from '../types';
 
@@ -37,6 +37,7 @@ export type EnginePlaylistPad = PadBase & {
   loop?: boolean;
 };
 
+/** Every shape the engine plays — V1's pad types; `toEnginePad` maps the app's pads to them. */
 export type EnginePad = EngineSinglePad | EngineLoopPad | EnginePlaylistPad | ComboPad;
 
 /** Callbacks wired by index.ts to connect engine events to Preact Signals. */

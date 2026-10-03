@@ -1,11 +1,11 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// V1 → V3 mapping (D5, docs/product/features/data-backup.md; mapping table in
-// docs/architecture/0061-backup-file-format-and-streaming-import.md#2-v1--v3-mapping-d5)
-//
-// Pure functions: a V1 board (untrusted JSON from a backup file) becomes a new V3 board with one
-// deck holding all its pads. Nothing here touches storage; the import (backupImport.ts) saves.
-// Every field is checked — a malformed pad is mapped with defaults, never crashes the import.
-// ─────────────────────────────────────────────────────────────────────────────
+/**
+ * @fileoverview V1 → V3 mapping (D5, docs/product/features/data-backup.md; mapping table in
+ * docs/architecture/0061-backup-file-format-and-streaming-import.md#2-v1--v3-mapping-d5)
+ *
+ * Pure functions: a V1 board (untrusted JSON from a backup file) becomes a new V3 board with one
+ * deck holding all its pads. Nothing here touches storage; the import (backupImport.ts) saves.
+ * Every field is checked — a malformed pad is mapped with defaults, never crashes the import.
+ */
 
 import type { Board, ComboStep, FileOrder, Pad, PadBase, Placement } from '../types';
 import { DEFAULT_GRID } from './boardModel';
@@ -31,6 +31,7 @@ export type V1ImportNotes = {
   cycleRefs: number;
 };
 
+/** Returns import notes with every count at zero. */
 export const emptyNotes = (): V1ImportNotes => ({
   loopCounts: 0,
   comboPadOptions: 0,
@@ -55,6 +56,7 @@ export function uniqueBoardName(name: string, taken: ReadonlySet<string>): strin
   return `${name} (${n})`;
 }
 
+/** What mapping a V1 board needs from the import: new ids, stored files, taken names, notes. */
 export interface V1MapContext {
   /** New ids for the board, its deck and its pads. */
   newId: () => string;

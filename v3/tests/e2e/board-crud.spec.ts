@@ -1,12 +1,12 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// Full E2E — Board CRUD (Slice-3 verification points 1–5)
-//
-// 1. Create board → appears in list
-// 2. Rename board → title updates
-// 3. Rename persists after page reload
-// 4. Delete board → 2-tap confirmation (first tap: confirm state visible)
-// 5. Delete board → 2nd tap removes it from list
-// ─────────────────────────────────────────────────────────────────────────────
+/**
+ * @fileoverview Full E2E — Board CRUD (Slice-3 verification points 1–5)
+ *
+ * 1. Create board → appears in list
+ * 2. Rename board → title updates
+ * 3. Rename persists after page reload
+ * 4. Delete board → 2-tap confirmation (first tap: confirm state visible)
+ * 5. Delete board → 2nd tap removes it from list
+ */
 
 import { test, expect } from '@playwright/test';
 import { goToBoardList, reloadApp } from './helpers';

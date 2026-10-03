@@ -1,6 +1,6 @@
 #!/usr/bin/env tsx
 /**
- * sync-changelog.ts
+ * @fileoverview sync-changelog.ts
  *
  * Generates the root CHANGELOG.md from v3/src/lib/changelog.ts — the developers' per-push
  * record, grouped by commit type in the Keep a Changelog layout (ADR-0063). The app shows its

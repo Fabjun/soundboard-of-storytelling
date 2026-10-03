@@ -1,10 +1,10 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// BoardTopBar — 3-column header for Board screen
-//
-// Source: design-sources/2026-05-25/v24-mode-toggle.jsx BoardTopBarV3
-//
-// Layout: 1fr (left: flame + breadcrumb) | auto (center: ModeToggle) | 1fr (right: actions)
-// ─────────────────────────────────────────────────────────────────────────────
+/**
+ * @fileoverview BoardTopBar — 3-column header for Board screen
+ *
+ * Source: design-sources/2026-05-25/v24-mode-toggle.jsx BoardTopBarV3
+ *
+ * Layout: 1fr (left: flame + breadcrumb) | auto (center: ModeToggle) | 1fr (right: actions)
+ */
 
 import type { JSX } from 'preact';
 import { PixelIcon } from './PixelIcon';
@@ -22,6 +22,10 @@ interface BoardTopBarProps {
   onBack: () => void;
 }
 
+/**
+ * Shows the board screen's header: back button and board / deck name, the mode toggle, and the
+ * library button.
+ */
 export function BoardTopBar({
   boardName,
   deckName,

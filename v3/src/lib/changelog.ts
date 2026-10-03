@@ -1,11 +1,11 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// Changelog — the per-push record for developers (ADR-0063)
-//
-// One entry per push, newest first; the pre-push hook requires a new APP_VERSION. Every item
-// starts with a Conventional Commits type (ADR-0060) — CHANGELOG.md is generated from this file
-// and groups the items by it. The app does not show this file: its release notes are
-// src/lib/whatsNew.ts, written for the people who use the app.
-// ─────────────────────────────────────────────────────────────────────────────
+/**
+ * @fileoverview Changelog — the per-push record for developers (ADR-0063)
+ *
+ * One entry per push, newest first; the pre-push hook requires a new APP_VERSION. Every item
+ * starts with a Conventional Commits type (ADR-0060) — CHANGELOG.md is generated from this file
+ * and groups the items by it. The app does not show this file: its release notes are
+ * src/lib/whatsNew.ts, written for the people who use the app.
+ */
 
 /** One push: its version, date and the commit-style items it brought. */
 export type ChangelogEntry = {
@@ -17,9 +17,21 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.145';
+export const APP_VERSION = '3.0.146';
 
+/** The developer log, newest first; CHANGELOG.md is generated from it (sync-changelog). */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.146',
+    date: '2026-10-03',
+    items: [
+      'docs(adr): ADR-0064 code comments — TSDoc doc comments on every export, a /** @fileoverview */ block opening every TypeScript file, line comments for the why (TSDoc, Google TypeScript style guide)',
+      'build(lint): eslint-plugin-jsdoc require-jsdoc and eslint-plugin-tsdoc syntax on src/ and scripts/; codeGuards checks the file overview',
+      'docs: 114 exports documented, 34 TSDoc syntax errors fixed, 150 file headers in one form; stale comments corrected (grid size, popover flip height, playing pads, start of playback, deck duplicate)',
+      'refactor(types): unused AppState, isSinglePad and isLoopPad removed',
+      'fix(test): quarantine markers named in a comment no longer count — testGuards and the exception register share one scan (scripts/lib/test-markers.ts)',
+    ],
+  },
   {
     version: '3.0.145',
     date: '2026-10-03',

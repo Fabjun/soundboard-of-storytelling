@@ -1,8 +1,8 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// playHistory — "Last played" is recorded when a pad starts (E1), from the playing-pads signal.
-// Cases: a start is recorded once (not again while it keeps playing), a new start after a stop
-// is recorded again, several pads, stopping the recorder.
-// ─────────────────────────────────────────────────────────────────────────────
+/**
+ * @fileoverview playHistory — "Last played" is recorded when a pad starts (E1), from the playing-pads signal.
+ * Cases: a start is recorded once (not again while it keeps playing), a new start after a stop
+ * is recorded again, several pads, stopping the recorder.
+ */
 
 import { IDBFactory } from 'fake-indexeddb';
 import { _resetDB } from '../../src/db/idb';

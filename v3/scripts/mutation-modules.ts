@@ -1,6 +1,6 @@
 #!/usr/bin/env tsx
 /**
- * mutation-modules.ts — prints the files mutation testing covers, as a JSON array (T11c).
+ * @fileoverview mutation-modules.ts — prints the files mutation testing covers, as a JSON array (T11c).
  *
  * Expands the MUTATE patterns of stryker.config.mjs (single source) so the weekly workflow can
  * run one job per module (matrix). Run: npm run mutation:modules (from v3/).

@@ -1,9 +1,9 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// comboModel — property-based tests (Slice 11)
-// Random combo graphs (combos referencing each other and singles): breakCycles always leaves a
-// board without cycles, only removes references (never adds or reorders), and leaves a board
-// that had no cycle as it was. Example-based tests: comboModel.test.ts.
-// ─────────────────────────────────────────────────────────────────────────────
+/**
+ * @fileoverview comboModel — property-based tests (Slice 11)
+ * Random combo graphs (combos referencing each other and singles): breakCycles always leaves a
+ * board without cycles, only removes references (never adds or reorders), and leaves a board
+ * that had no cycle as it was. Example-based tests: comboModel.test.ts.
+ */
 
 import { fc, test } from '@fast-check/vitest';
 import type { Board, ComboPad, Pad } from '../../src/types';

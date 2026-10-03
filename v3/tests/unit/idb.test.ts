@@ -1,13 +1,13 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// idb — unit tests for the IndexedDB layer
-//
-// Uses fake-indexeddb for an in-memory IDB implementation.
-// A fresh IDBFactory instance is created before each test to ensure full
-// isolation (no shared state between tests).
-//
-// _resetDB() is called to null the idb.ts module singleton so that the next
-// getDB() call opens a fresh database against the new IDBFactory.
-// ─────────────────────────────────────────────────────────────────────────────
+/**
+ * @fileoverview idb — unit tests for the IndexedDB layer
+ *
+ * Uses fake-indexeddb for an in-memory IDB implementation.
+ * A fresh IDBFactory instance is created before each test to ensure full
+ * isolation (no shared state between tests).
+ *
+ * _resetDB() is called to null the idb.ts module singleton so that the next
+ * getDB() call opens a fresh database against the new IDBFactory.
+ */
 
 // fake-indexeddb/auto is loaded via vitest setupFiles (tests/unit/setup.ts).
 // IDBFactory is imported here only to create fresh per-test instances.

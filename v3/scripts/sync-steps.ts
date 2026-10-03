@@ -1,6 +1,6 @@
 #!/usr/bin/env tsx
 /**
- * sync-steps.ts
+ * @fileoverview sync-steps.ts
  *
  * Writes the steps of the CI workflow and of the git hooks into docs/development/testing.md
  * (between AUTO-GENERATED markers). The step lists used to be typed in three places and drifted

@@ -1,11 +1,11 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// Audio Engine — core logic (ADR-0044)
-//
-// Algorithm fidelity: V1's LRU cache, iOS hacks, playlist advancement, and
-// combo sequencer are ported from V1's index.html (lines 2751–4238; local archive
-// ~/dev/archive/botc-soundboard/, not in this repository).
-// No algorithm redesign; module-scope state replaces V1's globals.
-// ─────────────────────────────────────────────────────────────────────────────
+/**
+ * @fileoverview Audio Engine — core logic (ADR-0044)
+ *
+ * Algorithm fidelity: V1's LRU cache, iOS hacks, playlist advancement, and
+ * combo sequencer are ported from V1's index.html (lines 2751–4238; local archive
+ * ~/dev/archive/botc-soundboard/, not in this repository).
+ * No algorithm redesign; module-scope state replaces V1's globals.
+ */
 
 // The engine plays V1's pad shapes; index.ts maps the app's pads to them (toEnginePad).
 import type { ComboPad } from '../types';
@@ -33,15 +33,24 @@ let callbacks: AudioCallbacks | null = null;
 
 const LRU_BUF_MAX_BYTES = 150 * 1024 * 1024; // 150 MB
 
+/**
+ * Decoded audio by library hash — the LRU cache (iPhone memory rule 7). Exported for the LRU
+ * tests; the engine itself is the only writer.
+ */
 export const libBufs: Record<string, AudioBuffer> = {};
 const libBufLru: string[] = []; // access-order, front = oldest
 let libBufBytes = 0;
 const libBufLoading: Record<string, Promise<void>> = {};
 
+/** Returns the memory a decoded buffer takes: samples × channels × 4 bytes (32-bit float PCM). */
 export function bufDecodedBytes(buf: AudioBuffer): number {
   return buf.length * buf.numberOfChannels * 4;
 }
 
+/**
+ * Marks the buffer in `libBufs` under `hash` as just used, and evicts the least recently used
+ * buffers while the cache is over 150 MB — always keeping the newest one.
+ */
 export function lruSet(hash: string): void {
   if (libBufLru.includes(hash)) {
     libBufLru.splice(libBufLru.indexOf(hash), 1);
@@ -57,6 +66,7 @@ export function lruSet(hash: string): void {
   }
 }
 
+/** Drops one buffer from the cache and its size from the total (no-op when it is not cached). */
 export function lruDelete(hash: string): void {
   if (!libBufs[hash]) return;
   libBufBytes -= bufDecodedBytes(libBufs[hash]);
@@ -108,6 +118,12 @@ function onPadStopped(id: string): void {
 
 // ── initAudio — iOS-safe, idempotent (ADR-0043) ───────────────────────────────
 
+/**
+ * Creates the audio context on the first call and unlocks audio on iOS; later calls do nothing.
+ *
+ * @remarks Must be called synchronously inside a tap handler (TAP TO UNLOCK): iOS allows the
+ * silent-audio session fix and `resume()` only within the user gesture.
+ */
 export function initAudio(): void {
   if (ctx) return;
 
@@ -148,6 +164,11 @@ export function initAudio(): void {
 
 // ── SINGLE playback (V1 play() 'once' path, ~line 3855) ───────────────────────
 
+/**
+ * Plays a Single's file once, with its volume, fades and trim; a pad that is still playing
+ * restarts. Does nothing before `initAudio` or without a file; a file that cannot be loaded is
+ * logged, not thrown.
+ */
 export async function playOnce(padId: string, pad: SinglePad): Promise<void> {
   if (!ctx || !pad.libraryItemRef) return;
   const hash = pad.libraryItemRef;
@@ -206,6 +227,10 @@ export async function playOnce(padId: string, pad: SinglePad): Promise<void> {
 
 // ── LOOP playback (V1 play() 'loop' path, ~line 3879) ────────────────────────
 
+/**
+ * Loops a Loop's single file seamlessly (within its trim) until it is stopped; a pad that is
+ * already playing is left alone. Does nothing before `initAudio` or without a file.
+ */
 export async function playLoop(padId: string, pad: LoopPad): Promise<void> {
   if (!ctx || !pad.libraryItemRef) return;
   if (srcs[padId]) return; // defensive: caller should have checked isPlaying
@@ -249,6 +274,10 @@ export async function playLoop(padId: string, pad: LoopPad): Promise<void> {
 
 // ── PLAYLIST playback (V1 play() playlist path + playNext, ~lines 3809–3944) ──
 
+/**
+ * Plays a list of files one after another — a Loop with several files (`toEnginePad`). Each
+ * file's decoded buffer is released before the next one is decoded (iPhone memory rules 2 and 5).
+ */
 export function playPlaylist(padId: string, pad: PlaylistPad): void {
   if (!ctx || !pad.files.length) return;
   if (srcs[padId]) return; // defensive
@@ -361,6 +390,7 @@ export function stopPad(padId: string, immediate = false, fadeOut = 0): void {
   }
 }
 
+/** Stops every playing pad and every running combo at once, without fades. */
 export function stopAllInternal(): void {
   for (const padId of Object.keys(srcs)) {
     srcs[padId].forEach((s) => {
@@ -379,6 +409,10 @@ export function stopAllInternal(): void {
   }
 }
 
+/**
+ * Fades every playing pad out over `duration` seconds and then stops it; running combos stop at
+ * once (their gain nodes are not reachable for a fade). Does nothing while audio is suspended.
+ */
 export function fadeOutAllInternal(duration: number): void {
   if (!ctx || ctx.state === 'suspended') return;
 
@@ -574,6 +608,10 @@ function createPadInstance(
   };
 }
 
+/**
+ * Runs a combo's steps in order; a combo that is running restarts from its first step. The
+ * pads of each step are looked up through the `getPad` callback (`configureCallbacks`).
+ */
 export function playCombo(padId: string, pad: ComboPad): void {
   if (!ctx) return;
   if (ctx.state === 'suspended') ctx.resume().catch(() => {});
@@ -746,10 +784,12 @@ function fadeOutAllExcept(exceptPadId: string, duration: number): void {
 
 // ── Public configuration ──────────────────────────────────────────────────────
 
+/** Connects the engine to the app: start / stop notices and the lookup of a combo's pads. */
 export function configureCallbacks(cb: AudioCallbacks): void {
   callbacks = cb;
 }
 
+/** Tells whether the pad is playing — a running combo or playlist counts from its start. */
 export function isPlayingInternal(padId: string): boolean {
   return !!srcs[padId];
 }

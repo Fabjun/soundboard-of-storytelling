@@ -1,3 +1,10 @@
+/**
+ * @fileoverview Visual regression — the deck rail with two decks, the first one active
+ *
+ * Compared against the macOS baseline (CLAUDE.md workflow rule 10); stableScreenshot (helpers.ts) first
+ * turns motion off and waits for the fonts.
+ */
+
 import { test, expect } from '@playwright/test';
 import { stableScreenshot } from './helpers';
 import { goToBoardList, createBoardAndNavigate, createDeck, enterSetupMode } from '../helpers';

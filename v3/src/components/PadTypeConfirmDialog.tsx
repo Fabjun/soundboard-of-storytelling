@@ -1,15 +1,15 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// PadTypeConfirmDialog — type-change confirmation per v23 Option C policy
-//
-// Source: design-sources/2026-05-25/v23-pad-type-change.jsx
-//
-// Shows verdict pill + KEEPS / MIGRATES / DROPS sections.
-// RESET cases get a danger-tinted SWITCH button.
-// Single tap CANCEL → type snaps back (caller handles).
-// Single tap SWITCH → onConfirm() called, caller applies applyTypeChange().
-//
-// Mobile: renders as a bottom sheet; desktop: centered popover.
-// ─────────────────────────────────────────────────────────────────────────────
+/**
+ * @fileoverview PadTypeConfirmDialog — type-change confirmation per v23 Option C policy
+ *
+ * Source: design-sources/2026-05-25/v23-pad-type-change.jsx
+ *
+ * Shows verdict pill + KEEPS / MIGRATES / DROPS sections.
+ * RESET cases get a danger-tinted SWITCH button.
+ * Single tap CANCEL → type snaps back (caller handles).
+ * Single tap SWITCH → onConfirm() called, caller applies applyTypeChange().
+ *
+ * Mobile: renders as a bottom sheet; desktop: centered popover.
+ */
 
 import { useEffect } from 'preact/hooks';
 import type { JSX } from 'preact';
@@ -39,6 +39,10 @@ const TYPE_LABELS: Record<PadType, string> = {
   combo: 'COMBO',
 };
 
+/**
+ * Asks before a pad changes type, showing which settings the change keeps, migrates and drops;
+ * SWITCH confirms, CANCEL keeps the old type.
+ */
 export function PadTypeConfirmDialog({
   fromType,
   toType,

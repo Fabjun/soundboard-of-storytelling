@@ -1,9 +1,9 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// Waveform — compact peak-bar renderer
-//
-// Renders stored peak values (30 numbers in [0,1]) as a row of vertical bars.
-// Never decodes audio; only uses pre-computed data stored at upload time.
-// ─────────────────────────────────────────────────────────────────────────────
+/**
+ * @fileoverview Waveform — compact peak-bar renderer
+ *
+ * Renders stored peak values (30 numbers in [0,1]) as a row of vertical bars.
+ * Never decodes audio; only uses pre-computed data stored at upload time.
+ */
 
 interface WaveformProps {
   /** 30 peak values in [0, 1], from LibraryItemMeta.peaks */
@@ -16,6 +16,7 @@ interface WaveformProps {
   dim?: boolean;
 }
 
+/** Draws an audio file's stored peaks as bars; bars before `progress` are highlighted. */
 export function Waveform({ peaks, progress = 0, height = 28, dim = false }: WaveformProps) {
   const n = peaks.length;
 

@@ -1,11 +1,11 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// upload — unit tests for the serial upload pipeline (iOS memory rules)
-//
-// CLAUDE.md#iphone--ios-safari--memory--stability-rules-critical: never decode in parallel; release decoded buffers;
-// never keep raw audio in working state. processFilesSerial is tested against a
-// fake AudioContext that records how many decodes run at the same time and in
-// which order decodes and context closes happen. IDB is fake-indexeddb.
-// ─────────────────────────────────────────────────────────────────────────────
+/**
+ * @fileoverview upload — unit tests for the serial upload pipeline (iOS memory rules)
+ *
+ * CLAUDE.md#iphone--ios-safari--memory--stability-rules-critical: never decode in parallel; release decoded buffers;
+ * never keep raw audio in working state. processFilesSerial is tested against a
+ * fake AudioContext that records how many decodes run at the same time and in
+ * which order decodes and context closes happen. IDB is fake-indexeddb.
+ */
 
 import { IDBFactory } from 'fake-indexeddb';
 import { _resetDB, libGetAllMeta } from '../../src/db/idb';

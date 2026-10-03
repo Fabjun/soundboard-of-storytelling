@@ -1,10 +1,10 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// upload — property-based tests (T11b)
-//
-// Rules for the formatters and the waveform peaks that must hold for EVERY input. On failure
-// fast-check prints the seed and the shrunk counterexample; pass `{ seed, path }` as fc options
-// to reproduce it. Example-based tests: upload.test.ts.
-// ─────────────────────────────────────────────────────────────────────────────
+/**
+ * @fileoverview upload — property-based tests (T11b)
+ *
+ * Rules for the formatters and the waveform peaks that must hold for EVERY input. On failure
+ * fast-check prints the seed and the shrunk counterexample; pass `{ seed, path }` as fc options
+ * to reproduce it. Example-based tests: upload.test.ts.
+ */
 
 import { fc, test } from '@fast-check/vitest';
 import { describe, expect } from 'vitest';

@@ -1,17 +1,17 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// PadGrid — 4×4 CSS grid of PadGridCells
-//
-// Orchestrates:
-//   - Rendering 16 cells (occupied + empty)
-//   - SETUP mode: DnD via padDnd.ts (pointer events)
-//   - SETUP mode: Cell-tap → Path A (PadCreationPopover) or Place-Mode drop
-//   - SETUP mode: Pad-tap → PadEditorPanel
-//   - Path B: library drag handled by libDnd.ts (BoardScreen receives onLibDrop)
-//             No HTML5 DnD handlers here — iOS Brave compatibility.
-//   - All pads view (deck = null, Slice 9e): the whole pool by name, rows grow and scroll;
-//     no empty cells, no DnD, no creation popover. New pads come from ADD PAD or a library
-//     drop onto the grid (BoardScreen, owner decision 2026-10-02).
-// ─────────────────────────────────────────────────────────────────────────────
+/**
+ * @fileoverview PadGrid — the grid of PadGridCells for a deck or the All pads view
+ *
+ * Orchestrates:
+ *   - Rendering the deck's cells, occupied and empty (columns and rows from its gridConfig)
+ *   - SETUP mode: DnD via padDnd.ts (pointer events)
+ *   - SETUP mode: Cell-tap → Path A (PadCreationPopover) or Place-Mode drop
+ *   - SETUP mode: Pad-tap → PadEditorPanel
+ *   - Path B: library drag handled by libDnd.ts (BoardScreen receives onLibDrop)
+ *             No HTML5 DnD handlers here — iOS Brave compatibility.
+ *   - All pads view (deck = null, Slice 9e): the whole pool by name, rows grow and scroll;
+ *     no empty cells, no DnD, no creation popover. New pads come from ADD PAD or a library
+ *     drop onto the grid (BoardScreen, owner decision 2026-10-02).
+ */
 
 import { useEffect, useState } from 'preact/hooks';
 import type { JSX } from 'preact';
@@ -54,6 +54,10 @@ interface PadGridProps {
   onPlaceModeTap?: (pos: PadPosition) => void;
 }
 
+/**
+ * Shows a deck's grid — or, with `deck` null, the whole pool as All pads. In SETUP, pads can be
+ * dragged, tapped to edit, and empty cells tapped to create a pad.
+ */
 export function PadGrid({
   deck,
   poolOrder,

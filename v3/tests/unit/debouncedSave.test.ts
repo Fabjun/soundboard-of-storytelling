@@ -1,6 +1,6 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// debouncedSave — unit tests (fake timers)
-// ─────────────────────────────────────────────────────────────────────────────
+/**
+ * @fileoverview debouncedSave — unit tests (fake timers)
+ */
 
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 import { debouncedSave } from '../../src/lib/debouncedSave';

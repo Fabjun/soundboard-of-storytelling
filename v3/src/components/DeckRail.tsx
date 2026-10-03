@@ -1,18 +1,19 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// DeckRail — left deck list panel for BoardScreen
-//
-// Source: design-sources/2026-05-25/v21-deck-crud.jsx
-//
-// Features:
-//   - Deck tabs sorted by order
-//   - Active tab highlight
-//   - Inline rename (double-click)
-//   - Hover action chips (RENAME · COPY · ×) — desktop
-//   - Delete with confirmation + UndoToast
-//   - Duplicate (copy pads + gridConfig)
-//   - Reorder: NOT built yet (decided: drag & drop, mouse + touch — BACKLOG "Deck reorder")
-//   - + NEW DECK button at bottom
-// ─────────────────────────────────────────────────────────────────────────────
+/**
+ * @fileoverview DeckRail — left deck list panel for BoardScreen
+ *
+ * Source: design-sources/2026-05-25/v21-deck-crud.jsx
+ *
+ * Features:
+ *   - Deck tabs sorted by order
+ *   - Active tab highlight
+ *   - Inline rename (double-click)
+ *   - Hover action chips (RENAME · COPY · ×) — desktop
+ *   - Delete with confirmation + UndoToast
+ *   - Duplicate: the copy places the same pads of the pool (shared, not copied) and appears
+ *     directly after the original
+ *   - Reorder: NOT built yet (decided: drag & drop, mouse + touch — BACKLOG "Deck reorder")
+ *   - + NEW DECK button at bottom
+ */
 
 import { useState, useRef } from 'preact/hooks';
 import type { JSX } from 'preact';
@@ -42,6 +43,10 @@ interface DeckRailProps {
   conflictIds?: ReadonlySet<string>; // reserved for external conflict override; live detection is internal
 }
 
+/**
+ * Shows the board's decks as tabs, with All pads first: select, rename, duplicate, delete with
+ * undo, and add a deck.
+ */
 export function DeckRail({
   board,
   activeDeckId,

@@ -1,6 +1,6 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// nanoid — unit tests (IDs for boards, decks and pads)
-// ─────────────────────────────────────────────────────────────────────────────
+/**
+ * @fileoverview nanoid — unit tests (IDs for boards, decks and pads)
+ */
 
 import { nanoid } from '../../src/lib/nanoid';
 

@@ -1,9 +1,9 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// Full E2E — What's new (ADR-0063)
-//
-// The version in the start screen footer opens the release notes: versions with their groups
-// (New / Improved / Fixed / Removed) in plain sentences; the close button returns to the start.
-// ─────────────────────────────────────────────────────────────────────────────
+/**
+ * @fileoverview Full E2E — What's new (ADR-0063)
+ *
+ * The version in the start screen footer opens the release notes: versions with their groups
+ * (New / Improved / Fixed / Removed) in plain sentences; the close button returns to the start.
+ */
 
 import { test, expect } from '@playwright/test';
 import { WHATS_NEW, WHATS_NEW_GROUPS } from '../../src/lib/whatsNew';

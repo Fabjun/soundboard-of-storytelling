@@ -1,33 +1,37 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// codeGuards — keep code names on the agreed scheme (ADR-0052)
-//
-// 1. Component files (src/components, src/screens, src/App.tsx): PascalCase, no version
-//    suffix (V2, V3 …), and the file exports a function with exactly its own name.
-// 2. CSS class selectors in src/styles: `sb` / `sb-*` / `sb-theme-*`, states `is-*` / `has-*`.
-// 3. npm scripts that run `tsx scripts/<file>.ts`: file name = script name with ':' → '-'.
-// 4. Test IDs and locators (ADR-0054): every data-testid starts with the kebab-case name of
-//    its component file and ends with an element kind (root: the component name alone);
-//    E2E tests never locate by CSS class; spec files are kebab-case without a folder prefix,
-//    helper files are named helpers.ts.
-//    Numbered E2E titles (`N — …`) are the Slice-3 verification points 1–22, each used once.
-//    Specs reload only through reloadApp, which waits for running board saves.
-// 5. Inline style lengths carry a unit (Preact 11 no longer appends px to numbers) — checked
-//    with the TypeScript type checker, so variables, ternaries and shorthands count.
-// 6. The stored state is loaded once, before the first render (src/state/boot.ts): only boot.ts
-//    and the store's own setters replace boards / libraryItems — a load that finished after the
-//    first render replaced a board created meanwhile (2026-10-02). Reading for an export is fine.
-// 7. Board writes go through src/state/boardWrites.ts: components and screens never call
-//    boardPut / upsertBoard, which save or show a finished board computed from an outdated copy
-//    (BACKLOG "Bug: board writes from an outdated board copy lose changes"). A screen that
-//    reacts to a change uses applyBoardChange (at once), never `if (await updateBoard(`.
-// 8. No internal plan names ("Slice 8", "BACKLOG") in what the app shows — text and attributes of
-//    components and screens; code comments may name them.
-// 9. No localStorage / sessionStorage anywhere (owner decision 2026-10-02, ADR-0062): small
-//    UI state lives in IndexedDB (src/state/prefs.ts) — web.dev advises against localStorage.
-// 10. Every file with a timer (setTimeout / setInterval) is listed with its reason. A delayed
-//    write goes through src/lib/debouncedSave.ts, which writes a pending value when its context
-//    ends instead of dropping it — a bare clearTimeout lost a typed pad name (2026-10-02).
-// ─────────────────────────────────────────────────────────────────────────────
+/**
+ * @fileoverview codeGuards — keep code names on the agreed scheme (ADR-0052)
+ *
+ * 1. Component files (src/components, src/screens, src/App.tsx): PascalCase, no version
+ *    suffix (V2, V3 …), and the file exports a function with exactly its own name.
+ * 2. CSS class selectors in src/styles: `sb` / `sb-*` / `sb-theme-*`, states `is-*` / `has-*`.
+ * 3. npm scripts that run `tsx scripts/<file>.ts`: file name = script name with ':' → '-'.
+ * 4. Test IDs and locators (ADR-0054): every data-testid starts with the kebab-case name of
+ *    its component file and ends with an element kind (root: the component name alone);
+ *    E2E tests never locate by CSS class; spec files are kebab-case without a folder prefix,
+ *    helper files are named helpers.ts.
+ *    Numbered E2E titles (`N — …`) are the Slice-3 verification points 1–22, each used once.
+ *    Specs reload only through reloadApp, which waits for running board saves.
+ * 5. Inline style lengths carry a unit (Preact 11 no longer appends px to numbers) — checked
+ *    with the TypeScript type checker, so variables, ternaries and shorthands count.
+ * 6. The stored state is loaded once, before the first render (src/state/boot.ts): only boot.ts
+ *    and the store's own setters replace boards / libraryItems — a load that finished after the
+ *    first render replaced a board created meanwhile (2026-10-02). Reading for an export is fine.
+ * 7. Board writes go through src/state/boardWrites.ts: components and screens never call
+ *    boardPut / upsertBoard, which save or show a finished board computed from an outdated copy
+ *    (BACKLOG "Bug: board writes from an outdated board copy lose changes"). A screen that
+ *    reacts to a change uses applyBoardChange (at once), never `if (await updateBoard(`.
+ * 8. No internal plan names ("Slice 8", "BACKLOG") in what the app shows — text and attributes of
+ *    components and screens; code comments may name them.
+ * 9. No localStorage / sessionStorage anywhere (owner decision 2026-10-02, ADR-0062): small
+ *    UI state lives in IndexedDB (src/state/prefs.ts) — web.dev advises against localStorage.
+ * 10. Every file with a timer (setTimeout / setInterval) is listed with its reason. A delayed
+ *    write goes through src/lib/debouncedSave.ts, which writes a pending value when its context
+ *    ends instead of dropping it — a bare clearTimeout lost a typed pad name (2026-10-02).
+ * 11. Every TypeScript file (src, tests, scripts, configuration files) opens with a
+ *    `/** @fileoverview …` block — only a shebang or a tool directive may come first — and none
+ *    opens with a box of `─` lines (ADR-0064; Google TypeScript style guide). Four header forms
+ *    were in use before (measured 2026-10-03).
+ */
 
 import { readdirSync, readFileSync } from 'node:fs';
 import { basename, join, relative } from 'node:path';
@@ -411,5 +415,35 @@ describe('guard: timers are listed with their reason (delayed writes use debounc
       withTimers,
       'save later: debouncedSave(write, ms); other timers: add file + reason',
     ).toEqual(Object.keys(TIMER_FILES).sort());
+  });
+});
+
+describe('guard: every TypeScript file opens with a file overview (ADR-0064)', () => {
+  const walk = (dir: string): string[] =>
+    readdirSync(dir, { withFileTypes: true }).flatMap((e) =>
+      e.isDirectory() ? walk(join(dir, e.name)) : [join(dir, e.name)],
+    );
+  const files = [
+    ...['src', 'tests', 'scripts'].flatMap((d) => walk(join(V3, d))),
+    ...readdirSync(V3)
+      .filter((f) => /\.config\.(ts|js|mjs)$/.test(f))
+      .map((f) => join(V3, f)),
+  ].filter((f) => /\.(tsx?|mjs)$/.test(f) || /\.config\.js$/.test(f));
+
+  /** The file's text after a shebang and leading tool directives (they must come first). */
+  const opening = (text: string): string =>
+    text.replace(/^(#!.*\n|\/\/ @vitest-environment .*\n)*/, '');
+
+  it('finds TypeScript files in src, tests, scripts and the configuration (sanity)', () => {
+    const rel = files.map((f) => relative(V3, f).split('\\').join('/'));
+    expect(rel).toEqual(expect.arrayContaining(['src/main.tsx', 'eslint.config.js']));
+    expect(rel.filter((f) => f.startsWith('tests/')).length).toBeGreaterThan(50);
+  });
+
+  it('the first comment is a /** @fileoverview block, never a box of ─ lines', () => {
+    const bad = files
+      .filter((f) => !/^\/\*\*\n \* @fileoverview \S/.test(opening(readFileSync(f, 'utf8'))))
+      .map((f) => relative(V3, f).split('\\').join('/'));
+    expect(bad, 'open the file with /**\\n * @fileoverview <what the file is for>').toEqual([]);
   });
 });

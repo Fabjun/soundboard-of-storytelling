@@ -1,8 +1,8 @@
 #!/usr/bin/env tsx
 /**
- * audit-inline-styles.ts
+ * @fileoverview audit-inline-styles.ts
  *
- * Classifies every style={} JSX attribute in v3/src/**\/*.tsx at the BLOCK level.
+ * Classifies every `style={}` JSX attribute in the .tsx files under v3/src at the BLOCK level.
  * Unit of analysis: the full property set of one style= attribute — never individual lines.
  * (Line-level counting produced a 60–80 miscount in the Session 1 A/B decision; this
  * script exists precisely to avoid that error.)

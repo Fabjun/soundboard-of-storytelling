@@ -1,3 +1,10 @@
+/**
+ * @fileoverview Visual regression — the board list with no boards (empty state)
+ *
+ * Compared against the macOS baseline (CLAUDE.md workflow rule 10); stableScreenshot (helpers.ts) first
+ * turns motion off and waits for the fonts.
+ */
+
 import { test, expect } from '@playwright/test';
 import { stableScreenshot } from './helpers';
 

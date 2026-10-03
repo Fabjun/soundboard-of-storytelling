@@ -1,9 +1,9 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// Audio Facade — public API + Signal bridge
-//
-// Phase 3 of Slice 4. All audio interactions go through this module;
-// engine.ts internals are never imported directly from components.
-// ─────────────────────────────────────────────────────────────────────────────
+/**
+ * @fileoverview Audio Facade — public API + Signal bridge
+ *
+ * Phase 3 of Slice 4. All audio interactions go through this module;
+ * engine.ts internals are never imported directly from components.
+ */
 
 import type { Pad, SinglePad } from '../types';
 import type { EnginePad } from './types';
@@ -101,6 +101,11 @@ export function toEnginePad(pad: Pad): EnginePad {
   }
 }
 
+/**
+ * Plays a pad the way its type says: a Single once (the next or a random file), a Loop until it
+ * is stopped (several files one after another), a Combo step by step. `padId` names the playing
+ * instance for `stop` and the playing signals.
+ */
 export async function play(padId: string, pad: Pad): Promise<void> {
   const enginePad = toEnginePad(pad);
   switch (enginePad.type) {
@@ -117,18 +122,25 @@ export async function play(padId: string, pad: Pad): Promise<void> {
   }
 }
 
+/**
+ * Stops a pad, fading it out over `fadeOut` seconds (callers pass the pad's own fade-out);
+ * `immediate` cuts it off regardless. A running combo stops at once.
+ */
 export function stop(padId: string, immediate = false, fadeOut = 0): void {
   stopPad(padId, immediate, fadeOut);
 }
 
+/** Stops everything that plays, at once. */
 export function stopAll(): void {
   stopAllInternal();
 }
 
+/** Fades everything that plays out over `duration` seconds; running combos stop at once. */
 export function fadeOutAll(duration: number): void {
   fadeOutAllInternal(duration);
 }
 
+/** Tells whether the pad is playing now. */
 export function isPlaying(padId: string): boolean {
   return isPlayingInternal(padId);
 }

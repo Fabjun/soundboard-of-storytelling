@@ -1,8 +1,8 @@
 #!/usr/bin/env tsx
 /**
- * format-md.ts — formats the given Markdown files with Prettier, but only if the content and
+ * @fileoverview format-md.ts — formats the given Markdown files with Prettier, but only if the content and
  * structure stay identical (see scripts/lib/markdown.ts). Used by lint-staged for every staged
- * .md file; run manually: npm run format:md -- <files…> (from v3/).
+ * .md file; run manually: `npm run format:md -- <files…>` (from v3/).
  */
 
 import { readFileSync, writeFileSync } from 'node:fs';

@@ -1,9 +1,9 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// LRU decoded-buffer cache — unit tests
-//
-// The LRU functions are pure module-level helpers exported from engine.ts.
-// Tests run without an AudioContext (no Web Audio API needed).
-// ─────────────────────────────────────────────────────────────────────────────
+/**
+ * @fileoverview LRU decoded-buffer cache — unit tests
+ *
+ * The LRU functions are pure module-level helpers exported from engine.ts.
+ * Tests run without an AudioContext (no Web Audio API needed).
+ */
 
 import { describe, test, expect, beforeEach } from 'vitest';
 import { libBufs, lruSet, lruDelete, bufDecodedBytes } from '../../../src/audio/engine';

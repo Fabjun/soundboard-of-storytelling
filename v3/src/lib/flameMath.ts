@@ -1,15 +1,15 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// flameMath — shape data, colour maths, freeze state machine and particles
-// for <AnimatedFlame /> (hybrid flame).
-//
-// Sources (Claude Design):
-//   • Idle animation — design-sources/2026-05-25/v13-animated-flame.jsx (+ V3 additions:
-//     core-ring glow, heart flicker)
-//   • Freeze / hold / thaw, particles, glow — design-sources/2026-09-28/…/flame-engine.jsx
-//     and flame-themes.jsx ("Hearth"), values unchanged.
-// Colours are never hardcoded here: the palette is read from design tokens at runtime
-// and passed in. Import record: docs/design/imports/animated-flame.md
-// ─────────────────────────────────────────────────────────────────────────────
+/**
+ * @fileoverview flameMath — shape data, colour maths, freeze state machine and particles
+ * for <AnimatedFlame /> (hybrid flame).
+ *
+ * Sources (Claude Design):
+ *   • Idle animation — design-sources/2026-05-25/v13-animated-flame.jsx (+ V3 additions:
+ *     core-ring glow, heart flicker)
+ *   • Freeze / hold / thaw, particles, glow — design-sources/2026-09-28/…/flame-engine.jsx
+ *     and flame-themes.jsx ("Hearth"), values unchanged.
+ * Colours are never hardcoded here: the palette is read from design tokens at runtime
+ * and passed in. Import record: docs/design/imports/animated-flame.md
+ */
 
 /** A pixel on the 16×17 flame grid: [x, y, layer] — layer 0 = outer, 1 = mid, 2 = core. */
 export type FlamePixel = [number, number, number];
@@ -79,10 +79,13 @@ export const SHARD_EDGES: GridPos[] = [
 
 // ── Canvas field (Hearth) ───────────────────────────────────────────────────
 
-/** Field size in cells; the 16×17 flame sits at (FIELD_OX, FIELD_OY). */
+/** Field width in cells; the 16×17 flame sits at (FIELD_OX, FIELD_OY). */
 export const FIELD_W = 32;
+/** Field height in cells — room above the flame for sparks and steam. */
 export const FIELD_H = 40;
+/** Column of the flame's left edge in the field. */
 export const FIELD_OX = 8;
+/** Row of the flame's top edge in the field. */
 export const FIELD_OY = 12;
 /** Canvas pixels per cell. */
 export const CELL = 10;
@@ -100,6 +103,11 @@ export const HEART_CORNER_DIM = 0.35;
 
 // ── Hearth behaviour (values 1:1) ───────────────────────────────────────────
 
+/**
+ * How taps freeze the flame: each tap adds `chargePerTap` (frozen at 1). Frozen, it holds for
+ * `holdDur` seconds; not yet frozen, it starts thawing `grace` seconds after the last tap. Thawing
+ * loses `thawRate` charge per second.
+ */
 export const HEARTH = {
   chargePerTap: 0.15,
   thawRate: 0.34,
@@ -128,6 +136,7 @@ export type FlamePalette = {
 
 // ── Colour maths ────────────────────────────────────────────────────────────
 
+/** Returns the value `t` of the way from `a` to `b` (linear interpolation; t from 0 to 1). */
 export function lerp(a: number, b: number, t: number): number {
   return a + (b - a) * t;
 }
@@ -187,8 +196,10 @@ export function pixelFreeze(charge: number, x: number, y: number): number {
 
 // ── State machine (Hearth: idle → transform → hold → revert → idle) ────────
 
+/** The flame's phase: burning, freezing under taps, frozen, thawing. */
 export type FlamePhase = 'idle' | 'transform' | 'hold' | 'revert';
 
+/** The freeze state of the flame; `charge` runs from 0 (burning) to 1 (frozen). */
 export type FlameState = {
   charge: number;
   phase: FlamePhase;
@@ -200,6 +211,7 @@ export type FlameState = {
   shiver: number;
 };
 
+/** Returns the state of a burning flame no tap has touched yet. */
 export function initialFlameState(): FlameState {
   return { charge: 0, phase: 'idle', lastTap: -9, holdStart: 0, shiver: 0 };
 }
@@ -247,8 +259,10 @@ export function tapFlameState(st: FlameState, t: number): 'hold-tap' | 'charge' 
 
 // ── Particles (Hearth engine) ───────────────────────────────────────────────
 
+/** The kinds of particle the flame throws: sparks, frost, steam, ice shards, melt drips. */
 export type ParticleKind = 'ember' | 'frost' | 'steam' | 'shard' | 'drip';
 
+/** One particle, in field cells and seconds. */
 export type Particle = {
   kind: ParticleKind;
   /** Position in field cells. */

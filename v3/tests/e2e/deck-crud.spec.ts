@@ -1,15 +1,15 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// Full E2E — Deck CRUD (Slice-3 verification points 6–11)
-//
-// 6.  Create deck → tab appears in DeckRail
-// 7.  Rename via double-click → tab label updates
-// 8.  Duplicate → new tab with "(copy)" suffix
-// 9.  Reorder via drag → order changes                [test.fixme — feature not built]
-// 10. Delete → tab removed
-// 11. Undo delete → tab restored
-// Later tests (no Slice-3 number): duplicate shares pads; undo keeps later changes; a new deck
-// after a delete keeps gap-free badges and fills the name gap.
-// ─────────────────────────────────────────────────────────────────────────────
+/**
+ * @fileoverview Full E2E — Deck CRUD (Slice-3 verification points 6–11)
+ *
+ * 6.  Create deck → tab appears in DeckRail
+ * 7.  Rename via double-click → tab label updates
+ * 8.  Duplicate → new tab with "(copy)" suffix
+ * 9.  Reorder via drag → order changes                [test.fixme — feature not built]
+ * 10. Delete → tab removed
+ * 11. Undo delete → tab restored
+ * Later tests (no Slice-3 number): duplicate shares pads; undo keeps later changes; a new deck
+ * after a delete keeps gap-free badges and fills the name gap.
+ */
 
 import { test, expect } from '@playwright/test';
 import { goToBoardList, createBoardAndNavigate, enterSetupMode } from './helpers';

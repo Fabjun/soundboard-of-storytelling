@@ -1,24 +1,24 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// Mobile E2E — Pad Creation Flow (Playwright Chromium, iPhone 13 Pro profile)
-//
-// SCOPE: Verifies that the full pad-creation touch flow (empty cell tap →
-// popover → source select → confirm) works on a 390×844 viewport.
-//
-//   A. Empty cell tap → PadCreationPopover opens
-//   B. Source item tap + ADD PAD tap → pad appears in grid
-//
-// Runs under Chromium (not WebKit) because headless WebKit has no audio codec
-// support — decodeAudioData fails, the upload pipeline skips the file, and any
-// test waiting for library audio times out. Chromium decodes WAV correctly.
-// The iPhone 13 Pro device settings (viewport, hasTouch, isMobile, UA) are
-// preserved via the mobile-chromium project in playwright.config.ts.
-//
-// OUT OF SCOPE (see docs/development/manual-iphone-checklist.md):
-//   File upload via iOS native picker — the filechooser approach (IMPORT button
-//   → chooser.setFiles) bypasses the native picker completely. The upload step
-//   is setup infrastructure: it proves the pad-creation touch flow, not the
-//   file-selection flow. Test the iOS picker manually on the real device.
-// ─────────────────────────────────────────────────────────────────────────────
+/**
+ * @fileoverview Mobile E2E — Pad Creation Flow (Playwright Chromium, iPhone 13 Pro profile)
+ *
+ * SCOPE: Verifies that the full pad-creation touch flow (empty cell tap →
+ * popover → source select → confirm) works on a 390×844 viewport.
+ *
+ *   A. Empty cell tap → PadCreationPopover opens
+ *   B. Source item tap + ADD PAD tap → pad appears in grid
+ *
+ * Runs under Chromium (not WebKit) because headless WebKit has no audio codec
+ * support — decodeAudioData fails, the upload pipeline skips the file, and any
+ * test waiting for library audio times out. Chromium decodes WAV correctly.
+ * The iPhone 13 Pro device settings (viewport, hasTouch, isMobile, UA) are
+ * preserved via the mobile-chromium project in playwright.config.ts.
+ *
+ * OUT OF SCOPE (see docs/development/manual-iphone-checklist.md):
+ *   File upload via iOS native picker — the filechooser approach (IMPORT button
+ *   → chooser.setFiles) bypasses the native picker completely. The upload step
+ *   is setup infrastructure: it proves the pad-creation touch flow, not the
+ *   file-selection flow. Test the iOS picker manually on the real device.
+ */
 
 import { test, expect } from '@playwright/test';
 import {

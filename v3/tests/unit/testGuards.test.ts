@@ -1,30 +1,31 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// testGuards — structural guards that keep the test suite honest (T7)
-//
-// 1. Every logic module (src/lib, src/state, src/db, src/audio) has a unit test
-//    file tests/unit/**/<name>.test.ts — or an EXEMPT entry with a reason.
-//    (CLAUDE.md required this only as text; upload.ts, libDnd.ts and nanoid.ts had
-//    no tests until 2026-09-29 and nobody noticed.)
-// 2. Every quarantine marker (skip / fixme / todo / fails) in tests/ is preceded
-//    by a reference  BACKLOG "<part of a heading>"  that exists in docs/backlog.md.
-//    (Four 'flaky' skips hid never-written tests and a missing feature.)
-// 3. Exception scheme (ADR-0053) for markers ESLint cannot check:
-//    to-do markers (TODO, FIXME, XXX) carry a BACKLOG reference; every `// prettier-ignore`
-//    is preceded by a comment line giving the reason.
-// 4. Every TypeScript file in v3/ (incl. v3/scripts/) belongs to a project that `tsc -b` checks
-//    (T12, ADR-0055) — Vitest and Playwright run tests without type checking, so an
-//    unchecked file hides type errors (found: 6 in unit tests, 1 in E2E, 2026-09-30).
-// 5. Lockstep dependency families (exact peer pins) share a Dependabot group (audit A6).
-// 6. Guard files (this one included) number their header rules 1..n in order.
-// 7. ESLint config rule switches name their reason inline; the tsc flags behind them stay on.
-// 8. Dependabot ignore rules carry a reason; @types/node matches the Node major in .nvmrc.
-// 9. npm overrides carry a reason; files excluded from mutation testing are EXEMPT files.
-// ─────────────────────────────────────────────────────────────────────────────
+/**
+ * @fileoverview testGuards — structural guards that keep the test suite honest (T7)
+ *
+ * 1. Every logic module (src/lib, src/state, src/db, src/audio) has a unit test
+ *    file <name>.test.ts anywhere under tests/unit/ — or an EXEMPT entry with a reason.
+ *    (CLAUDE.md required this only as text; upload.ts, libDnd.ts and nanoid.ts had
+ *    no tests until 2026-09-29 and nobody noticed.)
+ * 2. Every quarantine marker (skip / fixme / todo / fails) in tests/ is preceded
+ *    by a reference  BACKLOG "<part of a heading>"  that exists in docs/backlog.md.
+ *    (Four 'flaky' skips hid never-written tests and a missing feature.)
+ * 3. Exception scheme (ADR-0053) for markers ESLint cannot check:
+ *    to-do markers (TODO, FIXME, XXX) carry a BACKLOG reference; every `// prettier-ignore`
+ *    is preceded by a comment line giving the reason.
+ * 4. Every TypeScript file in v3/ (incl. v3/scripts/) belongs to a project that `tsc -b` checks
+ *    (T12, ADR-0055) — Vitest and Playwright run tests without type checking, so an
+ *    unchecked file hides type errors (found: 6 in unit tests, 1 in E2E, 2026-09-30).
+ * 5. Lockstep dependency families (exact peer pins) share a Dependabot group (audit A6).
+ * 6. Guard files (this one included) number their header rules 1..n in order.
+ * 7. ESLint config rule switches name their reason inline; the tsc flags behind them stay on.
+ * 8. Dependabot ignore rules carry a reason; @types/node matches the Node major in .nvmrc.
+ * 9. npm overrides carry a reason; files excluded from mutation testing are EXEMPT files.
+ */
 
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { basename, dirname, join, relative } from 'node:path';
 import ts from 'typescript';
 import { repoFiles } from '../../scripts/lib/repo-files';
+import { findQuarantineMarkers } from '../../scripts/lib/test-markers';
 
 const V3 = join(__dirname, '..', '..');
 const BACKLOG = join(V3, '..', 'docs/backlog.md');
@@ -85,19 +86,13 @@ describe('guard: every quarantine marker references an existing BACKLOG entry', 
   const headings = readFileSync(BACKLOG, 'utf8')
     .split('\n')
     .filter((l) => l.startsWith('#'));
-  const MARKER = /\b(?:test|it|describe)(?:\.describe)?\.(skip|fixme|todo|fails)\s*\(/;
-  const REF = /BACKLOG "([^"]+)"/;
-  const LOOKBACK = 8;
-
-  const markers: { at: string; ref: string | null }[] = [];
-  for (const file of walk(join(V3, 'tests'), (f) => /\.(test|spec)\.ts$/.test(f))) {
-    const lines = readFileSync(file, 'utf8').split('\n');
-    lines.forEach((line, i) => {
-      if (line.trim().startsWith('//') || !MARKER.test(line)) return;
-      const context = lines.slice(Math.max(0, i - LOOKBACK), i + 1).join('\n');
-      markers.push({ at: `${rel(file)}:${i + 1}`, ref: REF.exec(context)?.[1] ?? null });
-    });
-  }
+  // The same marker scan as the exception register (scripts/lib/test-markers.ts)
+  const markers = walk(join(V3, 'tests'), (f) => /\.(test|spec)\.ts$/.test(f)).flatMap((file) =>
+    findQuarantineMarkers(readFileSync(file, 'utf8').split('\n')).map((m) => ({
+      at: `${rel(file)}:${m.line}`,
+      ref: m.ref,
+    })),
+  );
 
   it('finds the known quarantine markers (sanity)', () => {
     expect(markers.length).toBeGreaterThanOrEqual(4);

@@ -1,5 +1,5 @@
 /**
- * markdown.ts — shared Markdown helpers for the doc generators and `format:md`.
+ * @fileoverview markdown.ts — shared Markdown helpers for the doc generators and `format:md`.
  *
  * Prettier can change what a Markdown file says when the source is ambiguous: a bare `*` in
  * prose becomes `_`, a `|` inside a table cell splits the row, an indented continuation line

@@ -1,13 +1,13 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// StartScreen — fire animation + TAP TO UNLOCK entry point
-//
-// Source: design-sources/2026-05-25/v2-screens.jsx StartScreen
-//
-// Responsibilities:
-//  1. Render the app splash (animated flame, title, tagline)
-//  2. On button tap: unlock the Web Audio context + navigate to board-list
-//  3. Show version (clickable → What's new) + audio state in footer
-// ─────────────────────────────────────────────────────────────────────────────
+/**
+ * @fileoverview StartScreen — fire animation + TAP TO UNLOCK entry point
+ *
+ * Source: design-sources/2026-05-25/v2-screens.jsx StartScreen
+ *
+ * Responsibilities:
+ *  1. Render the app splash (animated flame, title, tagline)
+ *  2. On button tap: unlock the Web Audio context + navigate to board-list
+ *  3. Show version (clickable → What's new) + audio state in footer
+ */
 
 import { useState } from 'preact/hooks';
 import type { JSX } from 'preact';
@@ -100,6 +100,10 @@ function handleUnlock(): void {
 
 // ── Screen ────────────────────────────────────────────────────────────────────
 
+/**
+ * Shows the start screen: TAP TO UNLOCK unlocks audio (it must run in the tap) and opens the
+ * board list; the version in the footer opens What's new.
+ */
 export function StartScreen(): JSX.Element {
   const [showWhatsNew, setShowWhatsNew] = useState(false);
 

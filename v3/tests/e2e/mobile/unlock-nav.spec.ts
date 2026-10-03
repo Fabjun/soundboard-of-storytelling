@@ -1,18 +1,18 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// Mobile E2E — Unlock + Navigation (Playwright WebKit, iPhone 13 Pro profile)
-//
-// SCOPE: Verifies that the primary navigation gestures work with real touch
-// events (tap()) on a 390×844 viewport with hasTouch: true.
-//
-//   A. TAP TO UNLOCK button tap → navigates to board-list
-//   B. LIBRARY button tap → LibraryScreen; back to start
-//   C. BOARD button tap → BoardListScreen; new-board-button visible
-//
-// OUT OF SCOPE (see docs/development/manual-iphone-checklist.md):
-//   File upload via iOS native picker, audio output, Ringer Switch, backgrounding.
-//   Playwright's setInputFiles() bypasses the native picker — an automated upload
-//   test would be green while the real device could fail.
-// ─────────────────────────────────────────────────────────────────────────────
+/**
+ * @fileoverview Mobile E2E — Unlock + Navigation (Playwright WebKit, iPhone 13 Pro profile)
+ *
+ * SCOPE: Verifies that the primary navigation gestures work with real touch
+ * events (tap()) on a 390×844 viewport with hasTouch: true.
+ *
+ *   A. TAP TO UNLOCK button tap → navigates to board-list
+ *   B. LIBRARY button tap → LibraryScreen; back to start
+ *   C. BOARD button tap → BoardListScreen; new-board-button visible
+ *
+ * OUT OF SCOPE (see docs/development/manual-iphone-checklist.md):
+ *   File upload via iOS native picker, audio output, Ringer Switch, backgrounding.
+ *   Playwright's setInputFiles() bypasses the native picker — an automated upload
+ *   test would be green while the real device could fail.
+ */
 
 import { test, expect } from '@playwright/test';
 

@@ -1,9 +1,9 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// Smoke test: ModeToggle switches between GAME and SETUP mode
-//
-// Starting state: currentMode = 'play' → .sb-mode-toggle has .is-game class
-// After clicking SETUP half: currentMode = 'edit' → .sb-mode-toggle has .is-setup
-// ─────────────────────────────────────────────────────────────────────────────
+/**
+ * @fileoverview Smoke test: ModeToggle switches between GAME and SETUP mode
+ *
+ * Starting state: currentMode = 'play' → .sb-mode-toggle has .is-game class
+ * After clicking SETUP half: currentMode = 'edit' → .sb-mode-toggle has .is-setup
+ */
 
 import { test, expect } from '@playwright/test';
 

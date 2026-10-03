@@ -1,15 +1,15 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// LibraryScreen — asset management (Slice 2)
-//
-// Layout: 2-column CSS grid (220px filter rail | 1fr audio list)
-// Source reference: design-sources/2026-05-25/v2-screens.jsx LibraryV2
-//
-// Slice 2 scope:
-//   - AUDIO tab: fully functional (upload, rename, delete, waveform, search)
-//   - ICONS / PADS / BOARDS tabs: placeholder (empty state)
-//   - No inspector panel (Slice 8+)
-//   - Tags: read-only display only (editing is a later slice)
-// ─────────────────────────────────────────────────────────────────────────────
+/**
+ * @fileoverview LibraryScreen — asset management
+ *
+ * Layout: 2-column CSS grid (220px filter rail | 1fr audio list)
+ * Source reference: design-sources/2026-05-25/v2-screens.jsx LibraryV2
+ *
+ * Built so far (Slice 2; the V1 library at full scope is Slice 16):
+ *   - AUDIO tab: fully functional (upload, rename, delete, waveform, search)
+ *   - ICONS / PADS / BOARDS tabs: placeholder (empty state)
+ *   - No inspector panel
+ *   - Tags: shown in the filter rail when any file has one; not editable yet
+ */
 
 import { useState, useRef } from 'preact/hooks';
 import type { JSX } from 'preact';
@@ -80,6 +80,7 @@ function UploadStatusBar(): JSX.Element | null {
 // LibraryScreen
 // ---------------------------------------------------------------------------
 
+/** Shows the audio library: upload files (one at a time), search, rename and delete them. */
 export function LibraryScreen(): JSX.Element {
   const [activeTab, setActiveTab] = useState<LibTab>('AUDIO');
   const [selectedId, setSelectedId] = useState<string | null>(null);

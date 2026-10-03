@@ -1,8 +1,8 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// boardModel — pad pool, decks, placements, quick access (ADR-0048, Slice 9c)
-// Cases chosen with the edge-case checklist (docs/development/testing.md): nothing / one / many,
-// references, duplicates, order. Invariants over random sequences: boardModel.property.test.ts.
-// ─────────────────────────────────────────────────────────────────────────────
+/**
+ * @fileoverview boardModel — pad pool, decks, placements, quick access (ADR-0048, Slice 9c)
+ * Cases chosen with the edge-case checklist (docs/development/testing.md): nothing / one / many,
+ * references, duplicates, order. Invariants over random sequences: boardModel.property.test.ts.
+ */
 
 import { describe, expect, it } from 'vitest';
 import type { Board, ComboPad, Pad, SinglePad } from '../../src/types';

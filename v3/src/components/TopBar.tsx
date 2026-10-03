@@ -1,8 +1,9 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// TopBar — persistent 48px header used on all screens
-//
-// Source: design-sources/2026-05-25/v2-screens.jsx TopBarV2
-// ─────────────────────────────────────────────────────────────────────────────
+/**
+ * @fileoverview TopBar — the 48px header of the library and the board list (the board screen
+ * has its own, BoardTopBar)
+ *
+ * Source: design-sources/2026-05-25/v2-screens.jsx TopBarV2
+ */
 
 import type { ComponentChildren, JSX } from 'preact';
 import { PixelIcon } from './PixelIcon';
@@ -18,6 +19,7 @@ interface TopBarProps {
   right?: ComponentChildren;
 }
 
+/** Shows the flame logo, the screen title with an optional breadcrumb, and a right-hand slot. */
 export function TopBar({ title, breadcrumb, mode, onModeSwap, right }: TopBarProps): JSX.Element {
   return (
     <div class="sb-topbar" data-testid="top-bar">

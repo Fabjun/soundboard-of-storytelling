@@ -1,9 +1,9 @@
 #!/usr/bin/env tsx
 /**
- * sync-tokens.ts
+ * @fileoverview sync-tokens.ts
  *
  * Reads v3/src/styles/tokens.css (canonical — what the app loads), extracts all
- * CSS custom properties from exclusive :root { } blocks, grouped by section, and
+ * CSS custom properties from exclusive `:root { }` blocks, grouped by section, and
  * writes a table between AUTO-GENERATED markers in docs/design/design-system.md#a-token-inventory.
  *
  * Only tokens inside an exclusive `:root { }` selector are included.

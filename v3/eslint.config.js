@@ -1,8 +1,8 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// ESLint flat config — Soundboard of Storytelling
-//
-// Stack: TypeScript + Preact (React-compat) + react-hooks plugin
-// ─────────────────────────────────────────────────────────────────────────────
+/**
+ * @fileoverview ESLint flat config — Soundboard of Storytelling
+ *
+ * Stack: TypeScript + Preact (React-compat) + react-hooks plugin
+ */
 
 import tsPlugin from '@typescript-eslint/eslint-plugin';
 import tsParser from '@typescript-eslint/parser';
@@ -10,6 +10,8 @@ import hooksPlugin from 'eslint-plugin-react-hooks';
 import vitestPlugin from '@vitest/eslint-plugin';
 import playwrightPlugin from 'eslint-plugin-playwright';
 import eslintComments from '@eslint-community/eslint-plugin-eslint-comments/configs';
+import jsdocPlugin from 'eslint-plugin-jsdoc';
+import tsdocPlugin from 'eslint-plugin-tsdoc';
 
 // Rules tsc already enforces in every tsconfig (noUnusedLocals / noUnusedParameters, checked by
 // testGuards): turned off so the same finding is not reported twice. Each switch names its
@@ -130,6 +132,36 @@ export default [
     rules: {
       ...tsPlugin.configs.recommended.rules,
       '@typescript-eslint/consistent-type-imports': 'error',
+    },
+  },
+
+  // ── Doc comments (ADR-0064) — production source and repository scripts ─────
+  // Every export has a TSDoc comment; tests are excluded (their names say what they check).
+  {
+    files: ['src/**/*.{ts,tsx}', 'scripts/**/*.ts'],
+    plugins: { jsdoc: jsdocPlugin, tsdoc: tsdocPlugin },
+    rules: {
+      'jsdoc/require-jsdoc': [
+        'error',
+        {
+          publicOnly: true,
+          require: {
+            FunctionDeclaration: true,
+            ClassDeclaration: true,
+            MethodDefinition: true,
+            ArrowFunctionExpression: true,
+            FunctionExpression: true,
+          },
+          contexts: [
+            'TSInterfaceDeclaration',
+            'TSTypeAliasDeclaration',
+            'TSEnumDeclaration',
+            'ExportNamedDeclaration > VariableDeclaration',
+          ],
+        },
+      ],
+      'jsdoc/no-types': 'error', // TypeScript has the types (Google TS style guide)
+      'tsdoc/syntax': 'error',
     },
   },
 

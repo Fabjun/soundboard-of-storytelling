@@ -1,13 +1,13 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// Preferences — small UI state kept in IndexedDB (ADR-0062, owner decision 2026-10-02)
-//
-// IndexedDB, not the synchronous Web Storage API, which web.dev "Storage for the web" advises
-// against (it blocks the main thread). All entries are small and are read
-// once at app start (loadPrefs, before the first render), so reading stays synchronous and the
-// screen never flashes a default first. Writes update the cache at once and are saved in the
-// background, counted in pendingSaves like board saves.
-// Keys: `<name>[:<id>]` in the `keyval` store.
-// ─────────────────────────────────────────────────────────────────────────────
+/**
+ * @fileoverview Preferences — small UI state kept in IndexedDB (ADR-0062, owner decision 2026-10-02)
+ *
+ * IndexedDB, not the synchronous Web Storage API, which web.dev "Storage for the web" advises
+ * against (it blocks the main thread). All entries are small and are read
+ * once at app start (loadPrefs, before the first render), so reading stays synchronous and the
+ * screen never flashes a default first. Writes update the cache at once and are saved in the
+ * background, counted in pendingSaves like board saves.
+ * Keys: `<name>[:<id>]` in the `keyval` store.
+ */
 
 import { signal } from '@preact/signals';
 import { kvDelete, kvGetAll, kvPut } from '../db/idb';
@@ -55,6 +55,7 @@ export function getLastView(boardId: string): BoardView | null {
   return null;
 }
 
+/** Remembers the view the board shows now; readable at once, stored in the background. */
 export function setLastView(boardId: string, view: BoardView): void {
   write(lastViewKey(boardId), view.kind === 'all-pads' ? 'all-pads' : `deck:${view.deckId}`);
 }
@@ -74,6 +75,7 @@ export function getLastBackup(): number | null {
   return typeof v === 'number' && Number.isFinite(v) && v > 0 ? v : null;
 }
 
+/** Records when a backup was saved (ms since epoch). */
 export function setLastBackup(when: number): void {
   write(LAST_BACKUP_KEY, when);
 }
@@ -88,6 +90,7 @@ export function getPadSort(boardId: string): PadSort {
   return isPadSort(v) ? v : DEFAULT_PAD_SORT;
 }
 
+/** Remembers the sort chosen for this board's All pads view. */
 export function setPadSort(boardId: string, sort: PadSort): void {
   write(padSortKey(boardId), { key: sort.key, reversed: sort.reversed });
 }
@@ -102,6 +105,7 @@ export function getLastPlayed(padId: string): number | null {
   return typeof v === 'number' && Number.isFinite(v) && v > 0 ? v : null;
 }
 
+/** Records when a pad was played (ms since epoch) — for the "Last played" sort. */
 export function setLastPlayed(padId: string, when: number): void {
   write(lastPlayedKey(padId), when);
 }

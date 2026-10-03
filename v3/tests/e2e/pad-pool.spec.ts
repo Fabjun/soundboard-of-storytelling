@@ -1,17 +1,17 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// Full E2E — pad pool views and actions (Slice 9e,
-// docs/architecture/0048-pad-pool-decks.md#2-behavior-final-not-provisional)
-//
-// - Remove from deck keeps the pad: All pads still shows it
-// - Delete pad shows "used in N decks" and removes it from every deck and All pads
-// - The PAD editor's deck checklist places the pad in another deck and takes it out again
-// - A rename and a deck checkbox in quick succession both survive a reload
-// - All pads creates pads that sit in no deck: ADD PAD and a library drop (owner decision
-//   2026-10-02)
-// - A board opens in the view it showed last (owner decision 2026-10-02)
-//
-// No audio needed: pads come from ADD PAD (runs in Chromium and WebKit).
-// ─────────────────────────────────────────────────────────────────────────────
+/**
+ * @fileoverview Full E2E — pad pool views and actions (Slice 9e,
+ * docs/architecture/0048-pad-pool-decks.md#2-behavior-final-not-provisional)
+ *
+ * - Remove from deck keeps the pad: All pads still shows it
+ * - Delete pad shows "used in N decks" and removes it from every deck and All pads
+ * - The PAD editor's deck checklist places the pad in another deck and takes it out again
+ * - A rename and a deck checkbox in quick succession both survive a reload
+ * - All pads creates pads that sit in no deck: ADD PAD and a library drop (owner decision
+ *   2026-10-02)
+ * - A board opens in the view it showed last (owner decision 2026-10-02)
+ *
+ * No audio needed: pads come from ADD PAD (runs in Chromium and WebKit).
+ */
 
 import { test, expect, type Page } from '@playwright/test';
 import {

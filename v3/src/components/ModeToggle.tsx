@@ -1,12 +1,12 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// ModeToggle — interactive SETUP | GAME toggle with spark animation
-//
-// Source: design-sources/2026-05-25/v24-mode-toggle.jsx
-//
-// Animation model: hammer-strike — sparks spawn at destination half and
-// fly outward in a ~200° fan. ~14 sparks desktop, 8 mobile.
-// Reduced-motion: 220ms drop-shadow flash instead.
-// ─────────────────────────────────────────────────────────────────────────────
+/**
+ * @fileoverview ModeToggle — interactive SETUP | GAME toggle with spark animation
+ *
+ * Source: design-sources/2026-05-25/v24-mode-toggle.jsx
+ *
+ * Animation model: hammer-strike — sparks spawn at destination half and
+ * fly outward in a ~200° fan. ~14 sparks desktop, 8 mobile.
+ * Reduced-motion: 220ms drop-shadow flash instead.
+ */
 
 import { useRef } from 'preact/hooks';
 import type { JSX } from 'preact';
@@ -57,6 +57,10 @@ function generateSparks(destMode: AppMode, count: number, rect: DOMRect): Spark[
   });
 }
 
+/**
+ * Switches between SETUP and GAME; a switch throws sparks toward the new side (none when the
+ * user prefers reduced motion). `compact` is the narrow form for small screens.
+ */
 export function ModeToggle({ mode, onSwitch, compact = false }: ModeToggleProps): JSX.Element {
   const toggleRef = useRef<HTMLDivElement>(null);
   const sparksRef = useRef<HTMLElement[]>([]);

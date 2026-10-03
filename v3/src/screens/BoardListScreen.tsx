@@ -1,9 +1,9 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// BoardListScreen — list all boards, create / rename / delete
-//
-// Pattern mirrors LibraryScreen: TopBar + list rows + StatusBar.
-// Each board row follows the AudioRow pattern (inline rename, 2-tap delete).
-// ─────────────────────────────────────────────────────────────────────────────
+/**
+ * @fileoverview BoardListScreen — list all boards, create / rename / delete
+ *
+ * Pattern mirrors LibraryScreen: TopBar + list rows + StatusBar.
+ * Each board row follows the AudioRow pattern (inline rename, 2-tap delete).
+ */
 
 import { useRef, useState } from 'preact/hooks';
 import type { JSX } from 'preact';
@@ -26,6 +26,10 @@ import { createBoard, updateBoard } from '../state/boardWrites';
 import type { Board } from '../types';
 import { nanoid } from '../lib/nanoid';
 
+/**
+ * Lists the boards — create, open, rename, delete with two taps — with EXPORT, IMPORT and the
+ * time of the last backup.
+ */
 export function BoardListScreen(): JSX.Element {
   const allBoards = boards.value;
   /** A backup file chosen for import (D2) — shows the import panel. */

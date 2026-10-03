@@ -1,20 +1,23 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// Pad sort — the order of the All pads view (owner decision 2026-10-02, E1)
-//
-// Modelled on the Finder (Apple Support "Sort and arrange items in the Finder on Mac"): sort keys
-// like Name, Date Added, Date Modified, Kind; each has a natural direction (names A→Z, dates
-// newest first), a second choice reverses it, and the choice is remembered per board (per folder
-// in the Finder). Pads without a value (never played, no date) always come last; equal values
-// are ordered by name, then id, so the order is stable.
-// ─────────────────────────────────────────────────────────────────────────────
+/**
+ * @fileoverview Pad sort — the order of the All pads view (owner decision 2026-10-02, E1)
+ *
+ * Modelled on the Finder (Apple Support "Sort and arrange items in the Finder on Mac"): sort keys
+ * like Name, Date Added, Date Modified, Kind; each has a natural direction (names A→Z, dates
+ * newest first), a second choice reverses it, and the choice is remembered per board (per folder
+ * in the Finder). Pads without a value (never played, no date) always come last; equal values
+ * are ordered by name, then id, so the order is stable.
+ */
 
 import type { Pad, PadType } from '../types';
 
+/** What All pads can be sorted by. */
 export type PadSortKey =
   'name' | 'added' | 'modified' | 'kind' | 'unplaced' | 'duration' | 'played';
 
+/** A sort choice: the key, and whether its natural direction is reversed. */
 export type PadSort = { key: PadSortKey; reversed: boolean };
 
+/** The order of a board whose sort was never chosen: by name, A→Z. */
 export const DEFAULT_PAD_SORT: PadSort = { key: 'name', reversed: false };
 
 /** Menu labels. */

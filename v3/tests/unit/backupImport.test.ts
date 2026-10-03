@@ -1,10 +1,10 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// backupImport — the two passes over a V1 / V3 backup (D2, D5, import rules; ADR-0061)
-// Real IndexedDB semantics (fake-indexeddb) and a fake AudioContext (decode fails for files whose
-// first byte is 0xff). Synthetic files only — the owner's real backup is never committed.
-// Import rules checked: nothing existing changes, audio already present is skipped, boards are
-// always new (new ids, name suffix), audio first and boards last (an abort adds no board).
-// ─────────────────────────────────────────────────────────────────────────────
+/**
+ * @fileoverview backupImport — the two passes over a V1 / V3 backup (D2, D5, import rules; ADR-0061)
+ * Real IndexedDB semantics (fake-indexeddb) and a fake AudioContext (decode fails for files whose
+ * first byte is 0xff). Synthetic files only — the owner's real backup is never committed.
+ * Import rules checked: nothing existing changes, audio already present is skipped, boards are
+ * always new (new ids, name suffix), audio first and boards last (an abort adds no board).
+ */
 
 import { IDBFactory } from 'fake-indexeddb';
 import type { Board, ComboPad, LoopPad, SinglePad } from '../../src/types';

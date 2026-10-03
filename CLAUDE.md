@@ -303,6 +303,12 @@ and has diverged). Never hardcode colors, fonts, or spacing.
   debounce) goes through `v3/src/lib/debouncedSave.ts` and is written at once when its context
   ends — the editor closes or switches pad, the page is hidden (Chrome Page Lifecycle: persist
   unsaved state on hidden). Every file with a timer is listed with its reason (guarded by `codeGuards`: "timers are listed with their reason").
+- **Code comments** (ADR-0064, owner decision 2026-10-03): every export of `src/` and `scripts/`
+  has a TSDoc comment that says what a caller needs to know (functions start with a verb phrase;
+  no types in tags); every TypeScript file opens with a `/** @fileoverview … */` block, never a
+  box of `─` lines; line comments explain why, not what; a comment that no longer matches the
+  code is fixed in the same commit. Guarded by ESLint (`jsdoc/require-jsdoc`, `tsdoc/syntax`) and
+  `codeGuards` ("every TypeScript file opens with a file overview").
 - **JSX safety**: Preact auto-escapes children. Do not bypass this
   with `dangerouslySetInnerHTML` unless absolutely required and
   approved.

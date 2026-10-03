@@ -1,10 +1,10 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// V3.0 Central State — Preact Signals
-//
-// All UI state lives here as signals. Components read via signal.value or
-// the auto-subscribing JSX binding. Mutations happen through the exported
-// setter signals — never mutate store internals directly.
-// ─────────────────────────────────────────────────────────────────────────────
+/**
+ * @fileoverview V3.0 Central State — Preact Signals
+ *
+ * All UI state lives here as signals. Components read via signal.value or
+ * the auto-subscribing JSX binding. Mutations happen through the exported
+ * setter signals — never mutate store internals directly.
+ */
 
 import { signal, computed } from '@preact/signals';
 import type {
@@ -27,12 +27,15 @@ export const audioContextState = signal<AudioContextState>('locked');
 // Navigation / routing
 // ---------------------------------------------------------------------------
 
+/** The app's top-level screens. */
 export type AppScreen = 'start' | 'library' | 'board-list' | 'board';
 
 /** Top-level screen routing. */
 export const currentScreen = signal<AppScreen>('start');
 
+/** The board the board screen shows; null outside a board. */
 export const currentBoardId = signal<string | null>(null);
+/** The deck the board screen shows; ignored while the All pads view is open. */
 export const currentDeckId = signal<string | null>(null);
 /** The All pads view (the whole pool, first entry of the deck rail, ADR-0048) instead of a deck. */
 export const allPadsView = signal(false);
@@ -59,11 +62,13 @@ export const activeTheme = signal<string>('hearth');
 // mutations go through the helpers below.
 // ---------------------------------------------------------------------------
 
+/** Ids of every pad that is playing now — loops included (fed by the audio bridge). */
 export const playingPads = signal<ReadonlySet<string>>(new globalThis.Set<string>());
 
+/** Ids of the playing pads that loop — a subset of `playingPads` (they glow as loops). */
 export const loopingPads = signal<ReadonlySet<string>>(new globalThis.Set<string>());
 
-/** Mark a pad as playing (one-shot). */
+/** Marks a pad as playing. */
 export function addPlayingPad(id: string): void {
   const next = new globalThis.Set(playingPads.value);
   next.add(id);

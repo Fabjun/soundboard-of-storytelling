@@ -7,6 +7,22 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.146 — 2026-10-03
+
+### Changed
+
+- refactor(types): unused AppState, isSinglePad and isLoopPad removed
+
+### Fixed
+
+- fix(test): quarantine markers named in a comment no longer count — testGuards and the exception register share one scan (scripts/lib/test-markers.ts)
+
+### Internal
+
+- docs(adr): ADR-0064 code comments — TSDoc doc comments on every export, a /** @fileoverview */ block opening every TypeScript file, line comments for the why (TSDoc, Google TypeScript style guide)
+- build(lint): eslint-plugin-jsdoc require-jsdoc and eslint-plugin-tsdoc syntax on src/ and scripts/; codeGuards checks the file overview
+- docs: 114 exports documented, 34 TSDoc syntax errors fixed, 150 file headers in one form; stale comments corrected (grid size, popover flip height, playing pads, start of playback, deck duplicate)
+
 ## 3.0.145 — 2026-10-03
 
 ### Added

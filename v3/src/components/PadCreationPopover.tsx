@@ -1,17 +1,18 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// PadCreationPopover — Path A pad creation (tap an empty slot)
-//
-// Source: design-sources/2026-05-25/v20-pad-creation-flow.jsx
-//
-// Slice 3 scope:
-//   - Source modes: RECENT (last 5) + BROWSE (searchable) implemented
-//   - DROP HERE: not built yet (placeholder shown; superseded May-plan Slice 8)
-//   - "More options →" handoff to PadEditorPanel
-//   - Type pills: SINGLE until the user picks another type (DEFAULT_PAD_TYPE)
-//
-// Desktop: fixed popover anchored to cell rect (flips above if < 200px below).
-// Mobile (< 600px): bottom sheet via PadCreationSheet.
-// ─────────────────────────────────────────────────────────────────────────────
+/**
+ * @fileoverview PadCreationPopover — Path A pad creation (tap an empty slot)
+ *
+ * Source: design-sources/2026-05-25/v20-pad-creation-flow.jsx
+ *
+ * Slice 3 scope:
+ *   - Source modes: RECENT (last 5) + BROWSE (searchable) implemented
+ *   - DROP HERE: not built yet (placeholder shown; superseded May-plan Slice 8)
+ *   - "More options →" handoff to PadEditorPanel
+ *   - Type pills: SINGLE until the user picks another type (DEFAULT_PAD_TYPE)
+ *
+ * Desktop: a fixed popover anchored to the cell; it opens above the cell when there is less room
+ * below than its height (380 px). Narrow windows (below 600 px wide): the same content as a
+ * bottom sheet.
+ */
 
 import { useState, useEffect } from 'preact/hooks';
 import type { JSX } from 'preact';
@@ -22,6 +23,7 @@ import { libraryItems } from '../state/store';
 import { DEFAULT_PAD_TYPE, newPad, padTypeColor, padTypeLabel } from '../lib/padUtils';
 import { nanoid } from '../lib/nanoid';
 
+/** What the popover ends with: a finished pad, a pad to finish in the PAD editor, or nothing. */
 export type CreationResult =
   | { action: 'create'; pad: Pad }
   | { action: 'open-editor'; partialPad: Pad }
@@ -39,6 +41,10 @@ type SourceTab = 'RECENT' | 'BROWSE';
 
 const PAD_TYPES: PadType[] = ['single', 'loop', 'combo'];
 
+/**
+ * Creates a pad in the empty cell `position`: pick an audio file (recent or searched), a name
+ * and a type, then ADD PAD — or hand over to the PAD editor for more options.
+ */
 export function PadCreationPopover({
   position,
   cellRect,
@@ -230,7 +236,7 @@ export function PadCreationPopover({
     );
   }
 
-  // Desktop positioning — flip above if < 240px below
+  // Desktop positioning — above the cell when the popover does not fit below it
   const spaceBelow = window.innerHeight - cellRect.bottom;
   const popoverHeight = 380;
   const top = spaceBelow >= popoverHeight ? cellRect.bottom + 4 : cellRect.top - popoverHeight - 4;

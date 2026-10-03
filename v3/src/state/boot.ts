@@ -1,12 +1,12 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// boot — load the stored state into the store before the first render
-//
-// The app renders only once the library list and the boards are loaded (main.tsx), like
-// redux-persist's PersistGate ("delays the rendering of your app's UI until your persisted
-// state has been retrieved"). Loaded after the first render, a late result replaced what the
-// user had created meanwhile — a board added right after the start vanished ("Board not
-// found", 2026-10-02).
-// ─────────────────────────────────────────────────────────────────────────────
+/**
+ * @fileoverview boot — load the stored state into the store before the first render
+ *
+ * The app renders only once the library list and the boards are loaded (main.tsx), like
+ * redux-persist's PersistGate ("delays the rendering of your app's UI until your persisted
+ * state has been retrieved"). Loaded after the first render, a late result replaced what the
+ * user had created meanwhile — a board added right after the start vanished ("Board not
+ * found", 2026-10-02).
+ */
 
 import { boardGetAll, libGetAllMeta } from '../db/idb';
 import { boards, libraryItems } from './store';

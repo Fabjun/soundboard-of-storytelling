@@ -1,3 +1,9 @@
+/**
+ * @fileoverview Deck name conflicts — tells while typing whether a deck name is taken
+ *
+ * Used by the deck rename field, which warns at once instead of after saving.
+ */
+
 import type { Deck } from '../types';
 
 /**

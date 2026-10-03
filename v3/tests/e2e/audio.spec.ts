@@ -1,16 +1,16 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// E2E — Audio Playback (Slice 4)
-//
-// Headless Chromium has a working Web Audio API — no real sound output, but
-// AudioContext is created, audio is decoded, and `onended` fires normally.
-// These tests validate the state flow: pad tap → Signal update → DOM class,
-// not the audio output itself.
-//
-// Tests covered:
-//   A. TAP TO UNLOCK — navigates to board-list (AudioContext initialised)
-//   B. SINGLE pad — tap → is-hot; tap again → is-hot gone
-//   C. LOOP pad   — tap → is-looping; tap again → is-looping gone
-// ─────────────────────────────────────────────────────────────────────────────
+/**
+ * @fileoverview E2E — Audio Playback (Slice 4)
+ *
+ * Headless Chromium has a working Web Audio API — no real sound output, but
+ * AudioContext is created, audio is decoded, and `onended` fires normally.
+ * These tests validate the state flow: pad tap → Signal update → DOM class,
+ * not the audio output itself.
+ *
+ * Tests covered:
+ *   A. TAP TO UNLOCK — navigates to board-list (AudioContext initialised)
+ *   B. SINGLE pad — tap → is-hot; tap again → is-hot gone
+ *   C. LOOP pad   — tap → is-looping; tap again → is-looping gone
+ */
 
 import { test, expect } from '@playwright/test';
 import {

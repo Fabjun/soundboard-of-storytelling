@@ -1,13 +1,13 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// PWA — production build only (project `pwa`, E2E_TARGET=prod)
-//
-// The dev server has no service worker, so none of this was ever tested before
-// 2026-09-29 (T5). Checks the promises of the shipped app at the game table:
-// the service worker installs and controls the page, the manifest is correct,
-// and the app loads — with its stored data and its fonts — without network after a first
-// visit. It also loads nothing from other origins (fonts are self-hosted, audit A2).
-// Run: `npm run test:e2e:prod` (builds, then serves dist/ via vite preview).
-// ─────────────────────────────────────────────────────────────────────────────
+/**
+ * @fileoverview PWA — production build only (project `pwa`, E2E_TARGET=prod)
+ *
+ * The dev server has no service worker, so none of this was ever tested before
+ * 2026-09-29 (T5). Checks the promises of the shipped app at the game table:
+ * the service worker installs and controls the page, the manifest is correct,
+ * and the app loads — with its stored data and its fonts — without network after a first
+ * visit. It also loads nothing from other origins (fonts are self-hosted, audit A2).
+ * Run: `npm run test:e2e:prod` (builds, then serves dist/ via vite preview).
+ */
 
 import { readFileSync } from 'node:fs';
 import { test, expect, type Page } from '@playwright/test';

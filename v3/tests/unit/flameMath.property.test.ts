@@ -1,10 +1,10 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// flameMath — property-based tests (T11b)
-//
-// Colour blending rules that must hold for EVERY colour pair. On failure fast-check prints the
-// seed and the shrunk counterexample; pass `{ seed, path }` as fc options to reproduce it.
-// Example-based tests: flameMath.test.ts.
-// ─────────────────────────────────────────────────────────────────────────────
+/**
+ * @fileoverview flameMath — property-based tests (T11b)
+ *
+ * Colour blending rules that must hold for EVERY colour pair. On failure fast-check prints the
+ * seed and the shrunk counterexample; pass `{ seed, path }` as fc options to reproduce it.
+ * Example-based tests: flameMath.test.ts.
+ */
 
 import { fc, test } from '@fast-check/vitest';
 import { describe, expect } from 'vitest';

@@ -1,10 +1,10 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// v1Import — V1 board → V3 board (D5). Synthetic V1 data only — the owner's real backup is
-// never committed (public repo).
-// Edge-case checklist: every V1 mode incl. the legacy ones, missing / malformed fields, gaps in
-// V1's pad array, combo references (valid, missing), files not available, name collisions,
-// more pads than a 4×4 deck.
-// ─────────────────────────────────────────────────────────────────────────────
+/**
+ * @fileoverview v1Import — V1 board → V3 board (D5). Synthetic V1 data only — the owner's real backup is
+ * never committed (public repo).
+ * Edge-case checklist: every V1 mode incl. the legacy ones, missing / malformed fields, gaps in
+ * V1's pad array, combo references (valid, missing), files not available, name collisions,
+ * more pads than a 4×4 deck.
+ */
 
 import type { ComboPad, LoopPad, SinglePad } from '../../src/types';
 import {

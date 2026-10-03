@@ -1,14 +1,14 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// StrykerJS — mutation testing (T11c, ADR-0059)
-//
-// Plants small bugs ("mutants") in the logic modules and runs the unit tests against each;
-// the mutation score is the share of bugs the tests detect. Slow (~30 min), so it runs weekly
-// in CI (weekly.yml) and on demand: npm run test:mutation (from v3/).
-//
-// Command runner, not @stryker-mutator/vitest-runner: on Vitest 5 that runner runs no test per
-// mutant and reports everything as survived (stryker-js#6210; measured here 2026-09-30:
-// padUtils 0 % vs 72 %). Review trigger: BACKLOG "T11c".
-// ─────────────────────────────────────────────────────────────────────────────
+/**
+ * @fileoverview StrykerJS — mutation testing (T11c, ADR-0059)
+ *
+ * Plants small bugs ("mutants") in the logic modules and runs the unit tests against each;
+ * the mutation score is the share of bugs the tests detect. Slow (~30 min), so it runs weekly
+ * in CI (weekly.yml) and on demand: npm run test:mutation (from v3/).
+ *
+ * Command runner, not @stryker-mutator/vitest-runner: on Vitest 5 that runner runs no test per
+ * mutant and reports everything as survived (stryker-js#6210; measured here 2026-09-30:
+ * padUtils 0 % vs 72 %). Review trigger: BACKLOG "T11c".
+ */
 
 const VITEST = '--maxWorkers=1 --testTimeout=5000';
 // Heap cap per test process: a mutant that loops and allocates (engine.ts: +2 GB in seconds) dies

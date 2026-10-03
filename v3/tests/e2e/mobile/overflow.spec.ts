@@ -1,16 +1,16 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// Mobile E2E — Horizontal Overflow (Playwright WebKit, iPhone 13 Pro profile)
-//
-// SCOPE: Verifies that key structural elements do not extend beyond the 390px
-// viewport width on a 390×844 layout. Uses boundingBox() rather than
-// toBeVisible() — an element can be "visible" while its actual content clips
-// past the viewport edge if overflow is hidden on an ancestor.
-//
-//   Checks: pad-grid container, deck-rail, topbar, individual pad cells
-//
-// OUT OF SCOPE (see docs/development/manual-iphone-checklist.md):
-//   Landscape orientation, audio output, file upload, Ringer Switch.
-// ─────────────────────────────────────────────────────────────────────────────
+/**
+ * @fileoverview Mobile E2E — Horizontal Overflow (Playwright WebKit, iPhone 13 Pro profile)
+ *
+ * SCOPE: Verifies that key structural elements do not extend beyond the 390px
+ * viewport width on a 390×844 layout. Uses boundingBox() rather than
+ * toBeVisible() — an element can be "visible" while its actual content clips
+ * past the viewport edge if overflow is hidden on an ancestor.
+ *
+ *   Checks: pad-grid container, deck-rail, topbar, individual pad cells
+ *
+ * OUT OF SCOPE (see docs/development/manual-iphone-checklist.md):
+ *   Landscape orientation, audio output, file upload, Ringer Switch.
+ */
 
 import { test, expect, type Locator, type Page } from '@playwright/test';
 import { goToBoardList, createBoardAndNavigate, createDeck } from '../helpers';

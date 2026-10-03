@@ -1,13 +1,13 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// Full E2E — Pad Editing (Slice-3 verification points 16–19)
-//
-// 16. Tap pad in SETUP → PadEditorPanel opens
-// 17. Change pad name → auto-saved (persists after reload)
-// 18. Trivial type change (single→loop) → no dialog, type updates
-// 19. Lossy type change (single→combo drops the audio files) → PadTypeConfirmDialog appears
-// Later tests (no Slice-3 number): an edit still waiting for its auto-save is written when the next
-// pad opens or the page is hidden — never dropped.
-// ─────────────────────────────────────────────────────────────────────────────
+/**
+ * @fileoverview Full E2E — Pad Editing (Slice-3 verification points 16–19)
+ *
+ * 16. Tap pad in SETUP → PadEditorPanel opens
+ * 17. Change pad name → auto-saved (persists after reload)
+ * 18. Trivial type change (single→loop) → no dialog, type updates
+ * 19. Lossy type change (single→combo drops the audio files) → PadTypeConfirmDialog appears
+ * Later tests (no Slice-3 number): an edit still waiting for its auto-save is written when the next
+ * pad opens or the page is hidden — never dropped.
+ */
 
 import { test, expect, type Page } from '@playwright/test';
 import {

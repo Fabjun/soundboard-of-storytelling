@@ -1,6 +1,6 @@
 #!/usr/bin/env tsx
 /**
- * mutation-report.ts — summarises reports/mutation/mutation.json (T11c, ADR-0059).
+ * @fileoverview mutation-report.ts — summarises reports/mutation/mutation.json (T11c, ADR-0059).
  *
  * Prints the mutation score and the timeout share, appends them to the GitHub step summary when
  * running in Actions, and fails when more than 5 % of the mutants timed out: Stryker counts a

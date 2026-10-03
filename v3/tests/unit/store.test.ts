@@ -1,11 +1,11 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// store — unit tests for Preact Signals mutations and computed reactivity
-//
-// Signals are module-level singletons. The beforeEach block resets all signals
-// that the tests touch so tests are isolated from each other.
-//
-// Preact Signals are pure JS objects — no DOM required. jsdom env is fine.
-// ─────────────────────────────────────────────────────────────────────────────
+/**
+ * @fileoverview store — unit tests for Preact Signals mutations and computed reactivity
+ *
+ * Signals are module-level singletons. The beforeEach block resets all signals
+ * that the tests touch so tests are isolated from each other.
+ *
+ * Preact Signals are pure JS objects — no DOM required. jsdom env is fine.
+ */
 
 import type { Board } from '../../src/types';
 import {

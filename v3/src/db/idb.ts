@@ -1,27 +1,27 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// V3.0 IndexedDB Layer
-//
-// Database: 'sos-v3', version 2
-// Object stores:
-//   'library'  (keyPath: 'id')  — LibraryItem entries (includes blob) [since v1]
-//   'boards'   (keyPath: 'id')  — Board documents (JSON, no blobs)    [since v2]
-//
-// MEMORY SAFETY RULES (carried over from V1 — see CLAUDE.md#iphone--ios-safari--memory--stability-rules-critical):
-//   - libGetAllMeta() uses a cursor and NEVER references cursor.value.blob.
-//     At most one full record is in RAM at a time during enumeration.
-//   - libGet() loads one full entry (with blob) — only call for playback.
-//   - libRename() briefly holds one Blob in RAM (IDB has no partial-update;
-//     it must read the full entry, patch the name, and re-put). The Blob is
-//     released as soon as libRename() returns. This is intentional and safe.
-//
-// BOARD PERSISTENCE TRADE-OFF (conscious decision):
-//   Boards are stored as complete JSON documents containing embedded Decks and
-//   Pads. Any pad edit rewrites the entire Board document. At 5 Decks × 16 Pads
-//   this is ~50 KB — fast and unproblematic. If boards grow significantly (20+
-//   decks), write-amplification may become measurable. Optimisation path (only
-//   if measured): separate 'decks' store with Board holding deck IDs only.
-//   Do not optimise until the problem is observed and quantified.
-// ─────────────────────────────────────────────────────────────────────────────
+/**
+ * @fileoverview V3.0 IndexedDB Layer
+ *
+ * Database: 'sos-v3', version 2
+ * Object stores:
+ *   'library'  (keyPath: 'id')  — LibraryItem entries (includes blob) [since v1]
+ *   'boards'   (keyPath: 'id')  — Board documents (JSON, no blobs)    [since v2]
+ *
+ * MEMORY SAFETY RULES (carried over from V1 — see CLAUDE.md#iphone--ios-safari--memory--stability-rules-critical):
+ *   - libGetAllMeta() uses a cursor and NEVER references cursor.value.blob.
+ *     At most one full record is in RAM at a time during enumeration.
+ *   - libGet() loads one full entry (with blob) — only call for playback.
+ *   - libRename() briefly holds one Blob in RAM (IDB has no partial-update;
+ *     it must read the full entry, patch the name, and re-put). The Blob is
+ *     released as soon as libRename() returns. This is intentional and safe.
+ *
+ * BOARD PERSISTENCE TRADE-OFF (conscious decision):
+ *   Boards are stored as complete JSON documents containing embedded Decks and
+ *   Pads. Any pad edit rewrites the entire Board document. At 5 Decks × 16 Pads
+ *   this is ~50 KB — fast and unproblematic. If boards grow significantly (20+
+ *   decks), write-amplification may become measurable. Optimisation path (only
+ *   if measured): separate 'decks' store with Board holding deck IDs only.
+ *   Do not optimise until the problem is observed and quantified.
+ */
 
 import { openDB, type IDBPDatabase } from 'idb';
 import type { Board, LibraryItem, LibraryItemMeta } from '../types';
@@ -201,11 +201,13 @@ export async function kvGetAll(): Promise<[string, unknown][]> {
   return entries;
 }
 
+/** Stores one key-value entry (a preference), replacing an earlier value. */
 export async function kvPut(key: string, value: unknown): Promise<void> {
   const db = await getDB();
   await db.put('keyval', value, key);
 }
 
+/** Deletes one key-value entry; a missing key is not an error. */
 export async function kvDelete(key: string): Promise<void> {
   const db = await getDB();
   await db.delete('keyval', key);

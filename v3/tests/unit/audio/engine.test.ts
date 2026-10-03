@@ -1,17 +1,17 @@
 // @vitest-environment jsdom
-// ─────────────────────────────────────────────────────────────────────────────
-// Audio engine — characterization tests (T4, before Slice 9d)
-//
-// Pins down TODAY's behaviour of src/audio/engine.ts + the facade in
-// src/audio/index.ts, so that the Slice-9d change to the play dispatch
-// (docs/architecture/0048-pad-pool-decks.md#4-audio-engine--change-under-product-owner-control) shows every behavioural
-// difference as a red test. The engine itself is NOT modified here.
-//
-// Runs against a fake Web Audio API that records what the engine does (sources,
-// buffers, start/stop calls, gain automation). IDB is mocked: libGet returns a
-// blob-like whose bytes are the hash, so each decoded buffer carries its hash
-// as a tag. The engine keeps module-level state → fresh module per test.
-// ─────────────────────────────────────────────────────────────────────────────
+/**
+ * @fileoverview Audio engine — characterization tests (T4, before Slice 9d)
+ *
+ * Pins down TODAY's behaviour of src/audio/engine.ts + the facade in
+ * src/audio/index.ts, so that the Slice-9d change to the play dispatch
+ * (docs/architecture/0048-pad-pool-decks.md#4-audio-engine--change-under-product-owner-control) shows every behavioural
+ * difference as a red test. The engine itself is NOT modified here.
+ *
+ * Runs against a fake Web Audio API that records what the engine does (sources,
+ * buffers, start/stop calls, gain automation). IDB is mocked: libGet returns a
+ * blob-like whose bytes are the hash, so each decoded buffer carries its hash
+ * as a tag. The engine keeps module-level state → fresh module per test.
+ */
 
 import type { ComboPad, LoopPad, Pad, SinglePad } from '../../../src/types';
 import type * as EngineModule from '../../../src/audio/engine';

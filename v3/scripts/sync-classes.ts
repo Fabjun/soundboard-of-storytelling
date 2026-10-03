@@ -1,6 +1,6 @@
 #!/usr/bin/env tsx
 /**
- * sync-classes.ts
+ * @fileoverview sync-classes.ts
  *
  * Extracts all sb-* CSS class names used in v3/src and writes a table
  * between AUTO-GENERATED markers in docs/design/design-system.md#6-component-inventory.
@@ -9,10 +9,10 @@
  *   - TSX: className="..." attribute values (static strings)
  *   - CSS: selector lines starting with .sb-
  *
- * Descriptions come from @inventory comments on CSS definitions:
- *   .sb-foo { /* @inventory: description goes here *\/  }
+ * Descriptions come from `@inventory` comments on CSS definitions:
+ *   `.sb-foo { /* @inventory: description goes here *\/ }`
  *
- * Classes without an @inventory comment appear with empty description.
+ * Classes without an `@inventory` comment appear with empty description.
  * That is intentional — it makes undocumented classes visible.
  *
  * Run: npm run sync:classes  (from v3/)

@@ -1,13 +1,13 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// Backup import — V1 and V3 backup files (D2, D5; ADR-0061)
-//
-// Two passes over the file (backupReader, one library entry in memory at a time):
-//   1. planImport — what the file holds, for the confirmation summary (import rules).
-//   2. runImport  — audio first (one file at a time through the upload pipeline), boards last;
-//      an abort leaves no board pointing at missing audio.
-// An import never changes or deletes existing data: audio already in the library is skipped,
-// boards are always added as new boards (new ids, a name suffix when the name is taken).
-// ─────────────────────────────────────────────────────────────────────────────
+/**
+ * @fileoverview Backup import — V1 and V3 backup files (D2, D5; ADR-0061)
+ *
+ * Two passes over the file (backupReader, one library entry in memory at a time):
+ *   1. planImport — what the file holds, for the confirmation summary (import rules).
+ *   2. runImport  — audio first (one file at a time through the upload pipeline), boards last;
+ *      an abort leaves no board pointing at missing audio.
+ * An import never changes or deletes existing data: audio already in the library is skipped,
+ * boards are always added as new boards (new ids, a name suffix when the name is taken).
+ */
 
 import type { Board } from '../types';
 import { boards as boardsSignal, libraryItems } from '../state/store';
@@ -31,6 +31,7 @@ export type ImportPlan = {
   otherEntries: number;
 };
 
+/** What an import did: audio added, skipped or failed, boards added or skipped, and notes. */
 export type ImportResult = {
   audioAdded: number;
   audioSkipped: number;

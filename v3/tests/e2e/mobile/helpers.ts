@@ -1,9 +1,9 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// Mobile test helpers — shared utilities for tests/e2e/mobile/*.spec.ts
-//
-// NOTE: General navigation/upload helpers are in ../helpers.ts.
-// This file contains mobile-specific utilities.
-// ─────────────────────────────────────────────────────────────────────────────
+/**
+ * @fileoverview Mobile test helpers — shared utilities for tests/e2e/mobile/*.spec.ts
+ *
+ * NOTE: General navigation/upload helpers are in ../helpers.ts.
+ * This file contains mobile-specific utilities.
+ */
 
 import type { Page } from '@playwright/test';
 import path from 'path';

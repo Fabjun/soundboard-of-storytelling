@@ -1,5 +1,5 @@
 /**
- * write-generated.ts — shared by the doc generators (sync:*).
+ * @fileoverview write-generated.ts — shared by the doc generators (sync:*).
  *
  * Writes a generated file already formatted with the project's Prettier config, so that
  * `sync:docs` and Prettier never rewrite each other's output (CI runs `sync:docs` and then
@@ -11,6 +11,12 @@ import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { format, resolveConfig } from 'prettier';
 import { formatMarkdown } from './markdown';
 
+/**
+ * Writes `text` to `file`, formatted the way Prettier would; leaves the file untouched when it
+ * already has that content. Resolves true when the file changed.
+ *
+ * @throws When Markdown formatting would change the content (see `formatMarkdown`).
+ */
 export async function writeGenerated(file: string, text: string): Promise<boolean> {
   const formatted = file.endsWith('.md')
     ? await formatMarkdown(file, text)

@@ -1,13 +1,14 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// V3.0 Shared TypeScript Types
-// This file is the source of truth for the schema (docs/architecture/concept-brief.md#41--data-model);
-// decisions: docs/architecture/0048-pad-pool-decks.md#1-data-model
-// ─────────────────────────────────────────────────────────────────────────────
+/**
+ * @fileoverview V3.0 Shared TypeScript Types
+ * This file is the source of truth for the schema (docs/architecture/concept-brief.md#41--data-model);
+ * decisions: docs/architecture/0048-pad-pool-decks.md#1-data-model
+ */
 
 // ---------------------------------------------------------------------------
 // Data model
 // ---------------------------------------------------------------------------
 
+/** A board: the pads of one game setup, the decks that place them and the quick-access bar. */
 export type Board = {
   id: string;
   name: string;
@@ -19,9 +20,11 @@ export type Board = {
   quickAccess: QuickAccessEntry[];
 };
 
+/** A deck: one grid of a board that places some of the board's pads (ADR-0048). */
 export type Deck = {
   id: string;
   name: string;
+  /** Position among the board's decks, from 0; the deck rail shows decks in this order. */
   order: number;
   gridConfig: {
     cols: number;
@@ -40,13 +43,16 @@ export type Placement = {
   hotkey?: string;
 };
 
+/** A pad of the pool in the board's quick-access bar, with its optional key. */
 export type QuickAccessEntry = {
   padId: string;
   hotkey?: string;
 };
 
-export type PadType = Pad['type']; // single | loop | combo (Playlist merged into Loop, ADR-0048)
+/** The pad types: `single`, `loop` and `combo` (the Playlist merged into Loop, ADR-0048). */
+export type PadType = Pad['type'];
 
+/** A cell of a deck's grid. */
 export type PadPosition = {
   col: number; // 0-indexed, 0..cols-1
   row: number; // 0-indexed, 0..rows-1
@@ -118,11 +124,13 @@ export type ComboPad = PadBase & {
 /** Discriminated union of all pad types. Use type guards to narrow. */
 export type Pad = SinglePad | LoopPad | ComboPad;
 
-// Type guards — prefer these over inline `pad.type === 'x'` comparisons.
-export const isSinglePad = (p: Pad): p is SinglePad => p.type === 'single';
-export const isLoopPad = (p: Pad): p is LoopPad => p.type === 'loop';
+/**
+ * Tells whether a pad is a combo — for places that need a predicate function (`filter`, `some`);
+ * elsewhere `pad.type === 'combo'` narrows the same way.
+ */
 export const isComboPad = (p: Pad): p is ComboPad => p.type === 'combo';
 
+/** What a library item holds; only `audio` is created so far, icons and images are planned. */
 export type LibraryItemType = 'audio' | 'icon' | 'image';
 
 /**
@@ -160,24 +168,11 @@ export type UploadResult = {
 };
 
 // ---------------------------------------------------------------------------
-// App state shape
-//
-// The canonical runtime store lives in src/state/store.ts as Preact Signals.
-// This interface documents the complete shape for type safety.
+// App state values — the runtime store itself lives in src/state/store.ts (Preact Signals)
 // ---------------------------------------------------------------------------
 
+/** The app mode: `play` is GAME (pads play), `edit` is SETUP (pads are arranged and edited). */
 export type AppMode = 'play' | 'edit';
 
+/** The audio context as the app tracks it: `locked` until the first tap unlocks audio (iOS). */
 export type AudioContextState = 'locked' | 'running' | 'suspended';
-
-export interface AppState {
-  currentBoardId: string | null;
-  currentDeckId: string | null;
-  currentMode: AppMode;
-  activeTheme: string;
-  /** IDs of pads currently in one-shot playback */
-  playingPads: ReadonlySet<string>;
-  /** IDs of pads currently looping */
-  loopingPads: ReadonlySet<string>;
-  masterVolume: number; // 0–100
-}

@@ -1,8 +1,8 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// deckConflict — unit tests
-//
-// findConflictingDeck is pure: no IDB, no signals, no DOM. No mocks needed.
-// ─────────────────────────────────────────────────────────────────────────────
+/**
+ * @fileoverview deckConflict — unit tests
+ *
+ * findConflictingDeck is pure: no IDB, no signals, no DOM. No mocks needed.
+ */
 
 import type { Deck } from '../../src/types';
 import { findConflictingDeck } from '../../src/lib/deckConflict';

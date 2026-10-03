@@ -1,8 +1,8 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// comboModel — combo steps and protection against cycles (Slice 11)
-// Edge-case checklist: no steps / one / many, self reference, direct and indirect cycles, shared
-// sub-combos (a diamond is not a cycle), step operations at the ends, bad durations.
-// ─────────────────────────────────────────────────────────────────────────────
+/**
+ * @fileoverview comboModel — combo steps and protection against cycles (Slice 11)
+ * Edge-case checklist: no steps / one / many, self reference, direct and indirect cycles, shared
+ * sub-combos (a diamond is not a cycle), step operations at the ends, bad durations.
+ */
 
 import type { Board, ComboPad, ComboStep, Pad } from '../../src/types';
 import {

@@ -1,10 +1,10 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// whatsNew — unit tests: release notes in two levels (ADR-0063)
-//
-// What's new is for the people who use the app (plain sentences, no technical terms); the
-// changelog is the per-push developer record (every item starts with a commit type). From the
-// cutover on, every user-facing change in the changelog has a What's new entry for its version.
-// ─────────────────────────────────────────────────────────────────────────────
+/**
+ * @fileoverview whatsNew — unit tests: release notes in two levels (ADR-0063)
+ *
+ * What's new is for the people who use the app (plain sentences, no technical terms); the
+ * changelog is the per-push developer record (every item starts with a commit type). From the
+ * cutover on, every user-facing change in the changelog has a What's new entry for its version.
+ */
 
 import { CHANGELOG } from '../../src/lib/changelog';
 import { WHATS_NEW, WHATS_NEW_GROUPS, type WhatsNewEntry } from '../../src/lib/whatsNew';

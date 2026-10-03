@@ -1,36 +1,36 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// docsGuards — keep the documentation consistent (ADR-0050)
-//
-// 1. File naming: only standard files in the repo root; lowercase-kebab .md in docs/
-//    (hubs are README.md, templates _template.md); design downloads in ISO-dated folders.
-// 2. Links: every relative Markdown link resolves with EXACT case. macOS ignores case,
-//    Linux CI does not — a link to TESTING.md for testing.md passes locally and fails
-//    after the push (seen while renaming the docs on 2026-09-29).
-// 3. README facts that drift silently: Node version (.nvmrc) and live URL (Vite base).
-// 4. ADR headers: Status, Date, Slice, Refines, [Refined by], Category — in this order, with a
-//    category from v3/scripts/sync-adr.ts (CLAUDE.md rule 12). "Refines: ADR-X" and ADR-X's
-//    "Refined by" name each other (docs/architecture/_template.md).
-// 5. Project language is English (CLAUDE.md#project-identity): no file contains German
-//    function words — a heuristic, calibrated so English text never trips it.
-// 6. File paths in code spans of ACTIVE docs name files that exist in this repository
-//    (external or planned files are written as plain text). Historical docs are excluded
-//    via the same list Vale uses (.vale.ini), and passages marked historical with
-//    `<!-- vale SoS.SupersededTerms = NO -->` are skipped (ADR-0056).
-// 7. Section references are links (ADR-0056): in active docs the section sign appears only
-//    in headings and in the text of a link with an anchor; code uses `path.md#anchor`
-//    (repository-relative) and never the section sign. Every `path.md#anchor` outside a
-//    Markdown link target is resolved here with GitHub's slug algorithm (github-slugger) —
-//    Markdown link targets are checked by remark-validate-links.
-// 8. Every GFM table row has as many cells as its header — GitHub drops extra cells silently.
-// 9. Code blocks in active docs use no superseded term (Vale skips code).
-// 10. The API list in CLAUDE.md names functions that idb.ts / upload.ts export.
-// 11. Every feature in the V1 / V2 inventory carries a decision — a slice, Parked or Rejected, never
-//    Open (principle P8, docs/product/README.md#7-design-principles).
-// 12. Guard rules are referred to by name, never by their number: the numbers shift when
-//    branches add rules, and a numbered reference then points at another rule (2026-10-03:
-//    CLAUDE.md cited number 7 for plan names, which was number 8 on the stack). The review log
-//    is exempt — its dated entries record what was true at the time.
-// ─────────────────────────────────────────────────────────────────────────────
+/**
+ * @fileoverview docsGuards — keep the documentation consistent (ADR-0050)
+ *
+ * 1. File naming: only standard files in the repo root; lowercase-kebab .md in docs/
+ *    (hubs are README.md, templates _template.md); design downloads in ISO-dated folders.
+ * 2. Links: every relative Markdown link resolves with EXACT case. macOS ignores case,
+ *    Linux CI does not — a link to TESTING.md for testing.md passes locally and fails
+ *    after the push (seen while renaming the docs on 2026-09-29).
+ * 3. README facts that drift silently: Node version (.nvmrc) and live URL (Vite base).
+ * 4. ADR headers: Status, Date, Slice, Refines, [Refined by], Category — in this order, with a
+ *    category from v3/scripts/sync-adr.ts (CLAUDE.md rule 12). "Refines: ADR-X" and ADR-X's
+ *    "Refined by" name each other (docs/architecture/_template.md).
+ * 5. Project language is English (CLAUDE.md#project-identity): no file contains German
+ *    function words — a heuristic, calibrated so English text never trips it.
+ * 6. File paths in code spans of ACTIVE docs name files that exist in this repository
+ *    (external or planned files are written as plain text). Historical docs are excluded
+ *    via the same list Vale uses (.vale.ini), and passages marked historical with
+ *    `<!-- vale SoS.SupersededTerms = NO -->` are skipped (ADR-0056).
+ * 7. Section references are links (ADR-0056): in active docs the section sign appears only
+ *    in headings and in the text of a link with an anchor; code uses `path.md#anchor`
+ *    (repository-relative) and never the section sign. Every `path.md#anchor` outside a
+ *    Markdown link target is resolved here with GitHub's slug algorithm (github-slugger) —
+ *    Markdown link targets are checked by remark-validate-links.
+ * 8. Every GFM table row has as many cells as its header — GitHub drops extra cells silently.
+ * 9. Code blocks in active docs use no superseded term (Vale skips code).
+ * 10. The API list in CLAUDE.md names functions that idb.ts / upload.ts export.
+ * 11. Every feature in the V1 / V2 inventory carries a decision — a slice, Parked or Rejected, never
+ *    Open (principle P8, docs/product/README.md#7-design-principles).
+ * 12. Guard rules are referred to by name, never by their number: the numbers shift when
+ *    branches add rules, and a numbered reference then points at another rule (2026-10-03:
+ *    CLAUDE.md cited number 7 for plan names, which was number 8 on the stack). The review log
+ *    is exempt — its dated entries record what was true at the time.
+ */
 
 import { readdirSync, readFileSync } from 'node:fs';
 import { dirname, join, normalize, relative, sep } from 'node:path';

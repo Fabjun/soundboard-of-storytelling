@@ -1,6 +1,6 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// Pad Utilities — pure functions, no side effects, no IDB/signal access
-// ─────────────────────────────────────────────────────────────────────────────
+/**
+ * @fileoverview Pad Utilities — pure functions, no side effects, no IDB/signal access
+ */
 
 import type { Pad, PadBase, PadPosition, PadType } from '../types';
 import { isComboPad } from '../types';
@@ -8,7 +8,7 @@ import { isComboPad } from '../types';
 // ── Slot scanning ────────────────────────────────────────────────────────────
 
 /**
- * Find the first free {col, row} slot in row-major order (top-left).
+ * Find the first free `{col, row}` slot in row-major order (top-left).
  * Returns null if the grid is completely full.
  *
  * Pre-disposition (docs/design/design-notes.md A2): row-major top-left scan.
@@ -30,7 +30,7 @@ export function nextFreeSlot(
 }
 
 /**
- * Convert a {col, row} position to a row-major linear index.
+ * Convert a `{col, row}` position to a row-major linear index.
  * Used by the INSERT DnD algorithm.
  */
 export function posToIndex(pos: PadPosition, cols: number): number {
@@ -38,7 +38,7 @@ export function posToIndex(pos: PadPosition, cols: number): number {
 }
 
 /**
- * Convert a row-major linear index back to {col, row}.
+ * Convert a row-major linear index back to `{col, row}`.
  * Inverse of posToIndex.
  */
 export function indexToPos(index: number, cols: number): PadPosition {
@@ -104,10 +104,14 @@ export function padBaseOf(pad: Pad): PadBase {
  */
 export type MigrationVerdict = 'add' | 'reset';
 
+/** What a type change does, for the confirmation dialog: the verdict and the fields per group. */
 export interface MigrationResult {
   verdict: MigrationVerdict;
+  /** Fields that stay as they are. */
   keeps: string[];
+  /** Fields that carry over in a changed form. */
   migrates: string[];
+  /** Fields that are lost. */
   drops: string[];
 }
 

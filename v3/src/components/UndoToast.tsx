@@ -1,9 +1,9 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// UndoToast — temporary notification with timed UNDO action
-//
-// Renders above the StatusBar (fixed bottom). Auto-dismisses after durationMs.
-// Caller is responsible for handling onUndo (restore data snapshot + IDB).
-// ─────────────────────────────────────────────────────────────────────────────
+/**
+ * @fileoverview UndoToast — temporary notification with timed UNDO action
+ *
+ * Renders above the StatusBar (fixed bottom). Auto-dismisses after durationMs.
+ * Caller is responsible for handling onUndo (restore data snapshot + IDB).
+ */
 
 import { useEffect, useRef } from 'preact/hooks';
 import type { JSX } from 'preact';
@@ -15,6 +15,10 @@ interface UndoToastProps {
   onDismiss: () => void;
 }
 
+/**
+ * Shows `message` with an UNDO button and closes itself after `durationMs`; the action it offers
+ * to undo is already saved, so closing loses nothing.
+ */
 export function UndoToast({
   message,
   durationMs = 6000,

@@ -1,6 +1,6 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// Shared fast-check generators ("arbitraries") for the property-based tests (T11b)
-// ─────────────────────────────────────────────────────────────────────────────
+/**
+ * @fileoverview Shared fast-check generators ("arbitraries") for the property-based tests (T11b)
+ */
 
 import { fc } from '@fast-check/vitest';
 import type { Placement } from '../../src/types';

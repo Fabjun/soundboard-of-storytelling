@@ -1,9 +1,9 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// boot — unit tests: the stored state is in the store before the first render
-//
-// IDB is fake-indexeddb (fresh per test). The library load can be made to fail, to show that
-// one failing load does not stop the other.
-// ─────────────────────────────────────────────────────────────────────────────
+/**
+ * @fileoverview boot — unit tests: the stored state is in the store before the first render
+ *
+ * IDB is fake-indexeddb (fresh per test). The library load can be made to fail, to show that
+ * one failing load does not stop the other.
+ */
 
 import { IDBFactory } from 'fake-indexeddb';
 import type { Board, LibraryItem } from '../../src/types';

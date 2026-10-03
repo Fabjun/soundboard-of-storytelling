@@ -1,10 +1,10 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// flameMath — unit tests
-//
-// Pure maths for the hybrid AnimatedFlame: shape, colours, Hearth freeze front,
-// phase automaton, particles, V3 core flicker. No DOM, no mocks needed.
-// Expected values mirror v13-animated-flame.jsx and flame-engine/-themes.jsx (Hearth).
-// ─────────────────────────────────────────────────────────────────────────────
+/**
+ * @fileoverview flameMath — unit tests
+ *
+ * Pure maths for the hybrid AnimatedFlame: shape, colours, Hearth freeze front,
+ * phase automaton, particles, V3 core flicker. No DOM, no mocks needed.
+ * Expected values mirror v13-animated-flame.jsx and flame-engine/-themes.jsx (Hearth).
+ */
 
 import {
   FLAME_BODY,

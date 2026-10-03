@@ -1,8 +1,8 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// Full E2E — GAME mode (Slice-3 verification point 22)
-//
-// 22. GAME mode: no CRUD-UI visible (delete buttons, drag handles, editor)
-// ─────────────────────────────────────────────────────────────────────────────
+/**
+ * @fileoverview Full E2E — GAME mode (Slice-3 verification point 22)
+ *
+ * 22. GAME mode: no CRUD-UI visible (delete buttons, drag handles, editor)
+ */
 
 import { test, expect } from '@playwright/test';
 import {

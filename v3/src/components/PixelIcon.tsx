@@ -1,10 +1,10 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// PixelIcon — 16×16 pixel-art icons
-//
-// Sourced from design-sources/2026-05-25/foundations.jsx PIXEL_ICONS dictionary.
-// Each icon is a list of "x y" coordinate strings on a 16×16 grid.
-// Rendered as crisp SVG rects — no rasterization, no blur.
-// ─────────────────────────────────────────────────────────────────────────────
+/**
+ * @fileoverview PixelIcon — 16×16 pixel-art icons
+ *
+ * Sourced from design-sources/2026-05-25/foundations.jsx PIXEL_ICONS dictionary.
+ * Each icon is a list of "x y" coordinate strings on a 16×16 grid.
+ * Rendered as crisp SVG rects — no rasterization, no blur.
+ */
 
 import type { CSSProperties, JSX } from 'preact';
 
@@ -1172,6 +1172,7 @@ const PIXEL_ICONS = {
   ],
 } as const;
 
+/** The names of the pixel icons `PixelIcon` can draw. */
 export type PixelIconName = keyof typeof PIXEL_ICONS;
 
 // ---------------------------------------------------------------------------

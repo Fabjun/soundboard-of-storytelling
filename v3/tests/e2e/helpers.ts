@@ -1,10 +1,10 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// E2E test helpers — shared setup flows for the full Slice-3 suite
-//
-// All helpers are self-contained (no cross-helper state). Callers are
-// responsible for starting from a fresh page.goto('/soundboard-of-storytelling/')
-// if they need clean IndexedDB state.
-// ─────────────────────────────────────────────────────────────────────────────
+/**
+ * @fileoverview E2E test helpers — shared setup flows for the full Slice-3 suite
+ *
+ * All helpers are self-contained (no cross-helper state). Callers are
+ * responsible for starting from a fresh page.goto('/soundboard-of-storytelling/')
+ * if they need clean IndexedDB state.
+ */
 
 import { expect, type Locator, type Page } from '@playwright/test';
 import path from 'path';

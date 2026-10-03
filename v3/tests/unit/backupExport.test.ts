@@ -1,8 +1,8 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// backupExport — everything in one ZIP file (D1, B1); the round trip export → import into an
-// empty app restores boards, audio and tags (D2, B9). fake-indexeddb + a fake decoder; synthetic
-// data.
-// ─────────────────────────────────────────────────────────────────────────────
+/**
+ * @fileoverview backupExport — everything in one ZIP file (D1, B1); the round trip export → import into an
+ * empty app restores boards, audio and tags (D2, B9). fake-indexeddb + a fake decoder; synthetic
+ * data.
+ */
 
 import { IDBFactory } from 'fake-indexeddb';
 import { _resetDB, boardGetAll, libGet, libGetAllMeta } from '../../src/db/idb';

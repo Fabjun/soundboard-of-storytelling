@@ -1,19 +1,19 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// Full E2E — Pad Drag & Drop (verification points 20–21)
-//
-// 20. SWAP:   drag a pad onto another pad's centre → the two exchange positions
-// 21. INSERT: drag a pad onto a cell's left edge → it is inserted there, the pads
-//             in between shift by one slot
-//
-// padDnd.ts uses Pointer Events + setPointerCapture (never HTML5 DnD — iOS), so
-// the drag is a real pointer sequence (helpers.pointerDrag). Three pads are used:
-// with two, an INSERT and a SWAP produce the same layout and could not be told apart.
-// Positions are read from the cells' data-pos ("col,row"); persistence is checked
-// after a reload.
-//
-// History: until 2026-09-29 both tests were test.skip("flaky") — their bodies were
-// never written (TODO stubs). Stability is checked with --repeat-each=20.
-// ─────────────────────────────────────────────────────────────────────────────
+/**
+ * @fileoverview Full E2E — Pad Drag & Drop (verification points 20–21)
+ *
+ * 20. SWAP:   drag a pad onto another pad's centre → the two exchange positions
+ * 21. INSERT: drag a pad onto a cell's left edge → it is inserted there, the pads
+ *             in between shift by one slot
+ *
+ * padDnd.ts uses Pointer Events + setPointerCapture (never HTML5 DnD — iOS), so
+ * the drag is a real pointer sequence (helpers.pointerDrag). Three pads are used:
+ * with two, an INSERT and a SWAP produce the same layout and could not be told apart.
+ * Positions are read from the cells' data-pos ("col,row"); persistence is checked
+ * after a reload.
+ *
+ * History: until 2026-09-29 both tests were test.skip("flaky") — their bodies were
+ * never written (TODO stubs). Stability is checked with --repeat-each=20.
+ */
 
 import { test, expect, type Page } from '@playwright/test';
 import {

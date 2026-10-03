@@ -1,15 +1,15 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// Full E2E — backup: export and import (Slice 10, D1–D3 / D5, ADR-0061)
-//
-// - A V1 backup (gzip, as V1 writes it) → summary → IMPORT → the board with its pads and the
-//   audio are there and the pad plays
-// - A file that is not a backup → a clear message, nothing imported
-// - EXPORT → SAVE downloads one ZIP file; "last backup" shows today; that file restores the board
-//   and its audio in a fresh browser (round trip)
-//
-// Chromium only: headless WebKit cannot decode audio, and the import decodes every file.
-// Synthetic backups built from the test WAV — the owner's real backup is never committed.
-// ─────────────────────────────────────────────────────────────────────────────
+/**
+ * @fileoverview Full E2E — backup: export and import (Slice 10, D1–D3 / D5, ADR-0061)
+ *
+ * - A V1 backup (gzip, as V1 writes it) → summary → IMPORT → the board with its pads and the
+ *   audio are there and the pad plays
+ * - A file that is not a backup → a clear message, nothing imported
+ * - EXPORT → SAVE downloads one ZIP file; "last backup" shows today; that file restores the board
+ *   and its audio in a fresh browser (round trip)
+ *
+ * Chromium only: headless WebKit cannot decode audio, and the import decodes every file.
+ * Synthetic backups built from the test WAV — the owner's real backup is never committed.
+ */
 
 import { readFileSync } from 'node:fs';
 import { gzipSync } from 'node:zlib';

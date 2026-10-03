@@ -1,9 +1,9 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// boardWrites — every board change builds on the latest board and is saved in call order
-// (BACKLOG "Bug: board writes from an outdated board copy lose changes").
-// Real IndexedDB semantics via fake-indexeddb (fresh factory per test); a failed save is
-// produced with a value IndexedDB cannot store (a function → DataCloneError), no mocks.
-// ─────────────────────────────────────────────────────────────────────────────
+/**
+ * @fileoverview boardWrites — every board change builds on the latest board and is saved in call order
+ * (BACKLOG "Bug: board writes from an outdated board copy lose changes").
+ * Real IndexedDB semantics via fake-indexeddb (fresh factory per test); a failed save is
+ * produced with a value IndexedDB cannot store (a function → DataCloneError), no mocks.
+ */
 
 import { IDBFactory } from 'fake-indexeddb';
 import type { Board } from '../../src/types';

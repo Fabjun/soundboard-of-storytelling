@@ -1,3 +1,10 @@
+/**
+ * @fileoverview Visual regression — the board screen in GAME mode with one deck
+ *
+ * Compared against the macOS baseline (CLAUDE.md workflow rule 10); stableScreenshot (helpers.ts) first
+ * turns motion off and waits for the fonts.
+ */
+
 import { test, expect } from '@playwright/test';
 import { stableScreenshot } from './helpers';
 import { goToBoardList, createBoardAndNavigate, createDeck, enterGameMode } from '../helpers';

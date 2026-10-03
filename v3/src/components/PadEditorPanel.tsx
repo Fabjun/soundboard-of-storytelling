@@ -1,27 +1,28 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// PadEditorPanel — right-inspector panel for pad editing (SETUP mode)
-//
-// Used for:
-//   Path C (ADD PAD): full editor from scratch
-//   Pad tap in SETUP mode: edit existing pad
-//   "More options" handoff from Path A Popover
-//
-// Save strategy: Auto-Save with 500ms debounce (no explicit Save button).
-// Matches V1 workflow, prevents forgotten saves. A pending edit is written at once — never
-// dropped — when the editor switches pad, closes or the page is hidden (src/lib/debouncedSave.ts).
-//
-// Fields in Slice 3:
-//   - Name (required)
-//   - Type (with PadTypeConfirmDialog on change)
-//   - Library source (search + pick from libraryItems)
-//   - Waveform preview (if source set)
-//   - Volume slider (0-100)
-//   - Fade In / Fade Out sliders (0-10s)
-//   - Hotkey display (read-only; assigning keys comes with Slice 12) — deck view only, keys belong to a placement
-//   - Decks checklist: place the pad in other decks or remove it (Slice 9e, ADR-0048)
-//   - Remove from deck (2-tap confirm, deck view only) — the pad stays in the pool
-//   - Delete button (2-tap confirm) — shows in how many decks the pad is used
-// ─────────────────────────────────────────────────────────────────────────────
+/**
+ * @fileoverview PadEditorPanel — right-inspector panel for pad editing (SETUP mode)
+ *
+ * Used for:
+ *   Path C (ADD PAD): full editor from scratch
+ *   Pad tap in SETUP mode: edit existing pad
+ *   "More options" handoff from Path A Popover
+ *
+ * Save strategy: Auto-Save with 500ms debounce (no explicit Save button).
+ * Matches V1 workflow, prevents forgotten saves. A pending edit is written at once — never
+ * dropped — when the editor switches pad, closes or the page is hidden (src/lib/debouncedSave.ts).
+ *
+ * Fields:
+ *   - Name (required)
+ *   - Type (with PadTypeConfirmDialog on change)
+ *   - Single / Loop: library source (search + pick from libraryItems) and its waveform; a pad
+ *     with several files shows their number and order — editing several files is Slice 15
+ *   - Combo: the steps (ComboStepsEditor)
+ *   - Volume slider (0-100)
+ *   - Fade In / Fade Out sliders (0-10s)
+ *   - Hotkey display (read-only; assigning keys comes with Slice 12) — deck view only, keys belong to a placement
+ *   - Decks checklist: place the pad in other decks or remove it (Slice 9e, ADR-0048)
+ *   - Remove from deck (2-tap confirm, deck view only) — the pad stays in the pool
+ *   - Delete button (2-tap confirm) — shows in how many decks the pad is used
+ */
 
 import { useState, useEffect, useLayoutEffect } from 'preact/hooks';
 import type { JSX } from 'preact';
@@ -57,6 +58,11 @@ interface PadEditorPanelProps {
 
 const PAD_TYPES: PadType[] = ['single', 'loop', 'combo'];
 
+/**
+ * Edits one pad in SETUP mode and saves each change on its own after a short pause; a pending
+ * change is written at once when the editor closes or switches pad. Also places the pad in decks,
+ * removes it from the current deck, or deletes it.
+ */
 export function PadEditorPanel({
   pad,
   deck,

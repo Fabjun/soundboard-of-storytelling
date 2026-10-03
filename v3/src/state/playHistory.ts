@@ -1,10 +1,10 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// Play history — remembers when each pad was last started (E1 "Last played")
-//
-// Watches the playing pads (the audio bridge's signal) — the audio code itself is not touched.
-// Stored in the preferences (IndexedDB key-value store), never in the board, so playing during a
-// game causes no board writes.
-// ─────────────────────────────────────────────────────────────────────────────
+/**
+ * @fileoverview Play history — remembers when each pad was last started (E1 "Last played")
+ *
+ * Watches the playing pads (the audio bridge's signal) — the audio code itself is not touched.
+ * Stored in the preferences (IndexedDB key-value store), never in the board, so playing during a
+ * game causes no board writes.
+ */
 
 import { effect } from '@preact/signals';
 import { playingPads } from './store';

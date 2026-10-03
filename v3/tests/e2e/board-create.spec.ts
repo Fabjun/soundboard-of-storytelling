@@ -1,6 +1,6 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// Smoke test: create a board, navigate into it, BoardScreen loads
-// ─────────────────────────────────────────────────────────────────────────────
+/**
+ * @fileoverview Smoke test: create a board, navigate into it, BoardScreen loads
+ */
 
 import { test, expect } from '@playwright/test';
 

@@ -1,6 +1,6 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// Smoke test: LIBRARY button opens LibraryScreen
-// ─────────────────────────────────────────────────────────────────────────────
+/**
+ * @fileoverview Smoke test: LIBRARY button opens LibraryScreen
+ */
 
 import { test, expect } from '@playwright/test';
 

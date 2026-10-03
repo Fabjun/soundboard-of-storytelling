@@ -1,15 +1,15 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// Upload pipeline — file processing, peak computation, IDB persistence
-//
-// MEMORY SAFETY RULES (see CLAUDE.md#iphone--ios-safari--memory--stability-rules-critical):
-//   - Files are processed SERIALLY. Never Promise.all over multiple files.
-//   - Each AudioBuffer is explicitly null'd after peak extraction, before
-//     AudioContext.close(). This ensures the GC can reclaim PCM memory
-//     before the next file's decode begins.
-//   - Raw audio (buf / Blob) is never stored in Signals or working arrays.
-//   - Peaks (30 numbers × 8 bytes = 240 bytes) are the only audio-derived
-//     data kept in memory after upload.
-// ─────────────────────────────────────────────────────────────────────────────
+/**
+ * @fileoverview Upload pipeline — file processing, peak computation, IDB persistence
+ *
+ * MEMORY SAFETY RULES (see CLAUDE.md#iphone--ios-safari--memory--stability-rules-critical):
+ *   - Files are processed SERIALLY. Never Promise.all over multiple files.
+ *   - Each AudioBuffer is explicitly null'd after peak extraction, before
+ *     AudioContext.close(). This ensures the GC can reclaim PCM memory
+ *     before the next file's decode begins.
+ *   - Raw audio (buf / Blob) is never stored in Signals or working arrays.
+ *   - Peaks (30 numbers × 8 bytes = 240 bytes) are the only audio-derived
+ *     data kept in memory after upload.
+ */
 
 import { sha256 } from '@noble/hashes/sha2.js';
 import { bytesToHex } from '@noble/hashes/utils.js';
@@ -24,10 +24,10 @@ import type { LibraryItemMeta, UploadResult } from '../types';
 /**
  * Compute the SHA-256 hex digest of a raw file buffer.
  *
- * Uses @noble/hashes instead of Web Crypto API because Web Crypto requires a
+ * Uses `@noble/hashes` instead of Web Crypto API because Web Crypto requires a
  * Secure Context (HTTPS or localhost). The dev server accessed from an iPhone
  * on the local network (http://192.168.x.x:5173) is NOT a Secure Context.
- * @noble/hashes has no such requirement and produces identical output.
+ * `@noble/hashes` has no such requirement and produces identical output.
  */
 export function computeHash(buf: ArrayBuffer): string {
   return bytesToHex(sha256(new Uint8Array(buf)));
@@ -44,8 +44,8 @@ export function computeHash(buf: ArrayBuffer): string {
  * maximum absolute sample value per window. Returns an array of N values
  * in [0, 1]. Ported directly from V1's _computePeaks function.
  *
- * @param decoded AudioBuffer — will be null'd by the caller after this returns
- * @param N       number of peak samples (default 30, matching V1)
+ * @param decoded - The decoded audio; the caller releases it right after this returns.
+ * @param N - Number of peaks (default 30, as in V1).
  */
 export function computePeaks(decoded: AudioBuffer, N = 30): number[] {
   const data = decoded.getChannelData(0);

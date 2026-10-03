@@ -1,19 +1,19 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// LibraryPanel — right-inspector slot showing library items (Path B)
-//
-// Allows dragging library items onto pad grid cells to create pads.
-//
-// Desktop + Mobile: Pointer-Events drag (via libDnd.ts).
-//   Threshold 8px → ghost follows cursor → drop on [data-pos] cell.
-//   HTML5 DnD ('draggable', ondragstart) is explicitly NOT used:
-//   iOS Safari/Brave does not support it.
-//
-// Mobile extra: Long-Press (350ms without movement) → onEnterPlaceMode.
-//   The place-mode flow (tap to place on a grid cell) is managed in BoardScreen.
-//   When drag threshold is crossed, the long-press timer is cancelled.
-//
-// The pad creation on drop happens in BoardScreen (handleLibDrop).
-// ─────────────────────────────────────────────────────────────────────────────
+/**
+ * @fileoverview LibraryPanel — right-inspector slot showing library items (Path B)
+ *
+ * Allows dragging library items onto pad grid cells to create pads.
+ *
+ * Desktop + Mobile: Pointer-Events drag (via libDnd.ts).
+ *   Threshold 8px → ghost follows cursor → drop on [data-pos] cell.
+ *   HTML5 DnD ('draggable', ondragstart) is explicitly NOT used:
+ *   iOS Safari/Brave does not support it.
+ *
+ * Mobile extra: Long-Press (350ms without movement) → onEnterPlaceMode.
+ *   The place-mode flow (tap to place on a grid cell) is managed in BoardScreen.
+ *   When drag threshold is crossed, the long-press timer is cancelled.
+ *
+ * The pad creation on drop happens in BoardScreen (handleLibDrop).
+ */
 
 import { useRef } from 'preact/hooks';
 import type { JSX } from 'preact';
@@ -32,6 +32,10 @@ interface LibraryPanelProps {
   onEnterPlaceMode?: (itemId: string) => void;
 }
 
+/**
+ * Lists the library's audio files beside the grid, with a search field. A file can be dragged
+ * onto a cell, or (touch) long-pressed to place it with the next tap.
+ */
 export function LibraryPanel({
   onClose,
   onLibDrop,

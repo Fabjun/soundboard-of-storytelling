@@ -1,8 +1,8 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// padSort — order of the All pads view (owner decision 2026-10-02, E1)
-// Edge-case checklist: every key in its natural direction and reversed, values missing (always
-// last), ties (by name, then id), case-insensitive names, durations per pad type, stored values.
-// ─────────────────────────────────────────────────────────────────────────────
+/**
+ * @fileoverview padSort — order of the All pads view (owner decision 2026-10-02, E1)
+ * Edge-case checklist: every key in its natural direction and reversed, values missing (always
+ * last), ties (by name, then id), case-insensitive names, durations per pad type, stored values.
+ */
 
 import type { ComboPad, LoopPad, Pad, SinglePad } from '../../src/types';
 import {

@@ -1,6 +1,6 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// Smoke test: app loads and StartScreen is visible
-// ─────────────────────────────────────────────────────────────────────────────
+/**
+ * @fileoverview Smoke test: app loads and StartScreen is visible
+ */
 
 import { test, expect } from '@playwright/test';
 

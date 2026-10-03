@@ -1,3 +1,10 @@
+/**
+ * @fileoverview Visual regression — the start screen with the flame logo and TAP TO UNLOCK
+ *
+ * Compared against the macOS baseline (CLAUDE.md workflow rule 10); stableScreenshot (helpers.ts) first
+ * turns motion off and waits for the fonts. The animated flame and the version line are hidden (see the test).
+ */
+
 import { test, expect } from '@playwright/test';
 import { stableScreenshot } from './helpers';
 

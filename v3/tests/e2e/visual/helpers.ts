@@ -1,8 +1,8 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// Visual regression helpers — anti-flakiness setup for screenshot tests
-//
-// Must be called before every toHaveScreenshot() call.
-// ─────────────────────────────────────────────────────────────────────────────
+/**
+ * @fileoverview Visual regression helpers — anti-flakiness setup for screenshot tests
+ *
+ * Must be called before every toHaveScreenshot() call.
+ */
 
 import type { Page } from '@playwright/test';
 

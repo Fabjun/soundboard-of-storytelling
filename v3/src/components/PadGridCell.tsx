@@ -1,13 +1,13 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// PadGridCell — single cell in the 4×4 pad grid
-//
-// Two states:
-//   occupied (.sb-pad.is-deep): shows type-colored pad with name + type badge
-//   empty (.sb-pad-grid-cell.is-empty): dashed shell with centered +, click → Path A
-//
-// DnD state classes applied from outside by padDnd.ts via cellRef:
-//   is-drag-source, is-drag-swap, is-insert-before, is-insert-after
-// ─────────────────────────────────────────────────────────────────────────────
+/**
+ * @fileoverview PadGridCell — one cell of a pad grid
+ *
+ * Two states:
+ *   occupied (.sb-pad.is-deep): shows type-colored pad with name + type badge
+ *   empty (.sb-pad-grid-cell.is-empty): dashed shell with centered +, click → Path A
+ *
+ * DnD state classes applied from outside by padDnd.ts via cellRef:
+ *   is-drag-source, is-drag-swap, is-insert-before, is-insert-after
+ */
 
 import type { JSX } from 'preact';
 import type { AppMode, Pad } from '../types';
@@ -34,6 +34,10 @@ interface PadGridCellProps {
   cellRef?: (el: HTMLElement | null) => void;
 }
 
+/**
+ * Shows one cell: a pad (tap plays or stops it in GAME, selects it in SETUP; it glows while it
+ * plays) or an empty cell that starts pad creation.
+ */
 export function PadGridCell({
   pad,
   hotkey,

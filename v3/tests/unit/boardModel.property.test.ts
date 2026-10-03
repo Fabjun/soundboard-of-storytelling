@@ -1,11 +1,11 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// boardModel — property-based tests (T11b, Slice 9c)
-//
-// Random sequences of the operations the UI performs keep every board consistent
-// (boardProblems is empty after each step), and deleting a pad leaves no reference to it.
-// On failure fast-check prints the seed and the shrunk sequence; pass `{ seed, path }` as fc
-// options to reproduce it. Example-based tests: boardModel.test.ts.
-// ─────────────────────────────────────────────────────────────────────────────
+/**
+ * @fileoverview boardModel — property-based tests (T11b, Slice 9c)
+ *
+ * Random sequences of the operations the UI performs keep every board consistent
+ * (boardProblems is empty after each step), and deleting a pad leaves no reference to it.
+ * On failure fast-check prints the seed and the shrunk sequence; pass `{ seed, path }` as fc
+ * options to reproduce it. Example-based tests: boardModel.test.ts.
+ */
 
 import { fc, test } from '@fast-check/vitest';
 import { describe, expect } from 'vitest';

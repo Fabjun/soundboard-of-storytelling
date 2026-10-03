@@ -1,6 +1,6 @@
 #!/usr/bin/env tsx
 /**
- * sync-adr.ts
+ * @fileoverview sync-adr.ts
  *
  * Reads all docs/architecture/00*.md ADR files, extracts metadata from
  * headers, and writes a categorized index table between AUTO-GENERATED

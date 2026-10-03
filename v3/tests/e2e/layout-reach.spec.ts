@@ -1,16 +1,16 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// Full E2E — every control can be reached on a short window
-//
-// Content that does not fit scrolls; nothing is cut off or hidden under another bar
-// (WCAG 2.2 SC 1.4.10 Reflow: no "loss of information or functionality"). Found 2026-10-02: the
-// deck grid of an imported 8-row deck had no scrolling — its last row slid under the ADD PAD
-// bar and could not be reached.
-//
-// Scrolled the way a person scrolls — the mouse wheel over the area — and then each control must
-// be WHOLLY visible (ratio 1; clipping by a parent counts). Two weaker versions of this test
-// stayed green against the bug: a click only needs the centre visible, and Playwright's
-// scrollIntoView also scrolls an `overflow: hidden` box that no person can scroll.
-// ─────────────────────────────────────────────────────────────────────────────
+/**
+ * @fileoverview Full E2E — every control can be reached on a short window
+ *
+ * Content that does not fit scrolls; nothing is cut off or hidden under another bar
+ * (WCAG 2.2 SC 1.4.10 Reflow: no "loss of information or functionality"). Found 2026-10-02: the
+ * deck grid of an imported 8-row deck had no scrolling — its last row slid under the ADD PAD
+ * bar and could not be reached.
+ *
+ * Scrolled the way a person scrolls — the mouse wheel over the area — and then each control must
+ * be WHOLLY visible (ratio 1; clipping by a parent counts). Two weaker versions of this test
+ * stayed green against the bug: a click only needs the centre visible, and Playwright's
+ * scrollIntoView also scrolls an `overflow: hidden` box that no person can scroll.
+ */
 
 import { test, expect } from '@playwright/test';
 import { goToBoardList, createBoardAndNavigate, createDeck, enterSetupMode } from './helpers';

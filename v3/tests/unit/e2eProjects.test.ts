@@ -1,12 +1,12 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// e2eProjects — guard: every E2E spec runs in exactly one Playwright project
-//
-// Playwright projects select specs by name lists (tests/e2e/projects.ts).
-// A spec missing from the lists silently runs nowhere — this happened on
-// 2026-09-29 after scene-crud was renamed to deck-crud. This test fails the
-// commit instead. Helper files (helpers.ts, helpers.ts, projects.ts) are
-// not specs and are ignored.
-// ─────────────────────────────────────────────────────────────────────────────
+/**
+ * @fileoverview e2eProjects — guard: every E2E spec runs in exactly one Playwright project
+ *
+ * Playwright projects select specs by name lists (tests/e2e/projects.ts).
+ * A spec missing from the lists silently runs nowhere — this happened on
+ * 2026-09-29 after scene-crud was renamed to deck-crud. This test fails the
+ * commit instead. Helper files (helpers.ts, helpers.ts, projects.ts) are
+ * not specs and are ignored.
+ */
 
 import { readdirSync, statSync } from 'node:fs';
 import { join, relative } from 'node:path';

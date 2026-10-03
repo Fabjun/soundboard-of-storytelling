@@ -94,24 +94,25 @@ file. Format: `docs/architecture/_template.md`.
 
 ### Test infrastructure & workflow
 
-| #                                                 | Title                                                           | Status                 | Slice          | Date       |
-| ------------------------------------------------- | --------------------------------------------------------------- | ---------------------- | -------------- | ---------- |
-| [ADR-0033](0033-three-layer-testing.md)           | Four-layer test strategy (unit / E2E smoke / E2E full / visual) | Accepted               | infrastructure | 2026-05-27 |
-| [ADR-0034](0034-vitest.md)                        | Vitest for unit tests                                           | Accepted               | infrastructure | 2026-05-27 |
-| [ADR-0035](0035-playwright.md)                    | Playwright for E2E tests                                        | Accepted               | infrastructure | 2026-05-27 |
-| [ADR-0036](0036-visual-regression-macos.md)       | Visual regression tests local only (macOS baselines)            | Accepted               | infrastructure | 2026-05-27 |
-| [ADR-0037](0037-husky-precommit.md)               | Husky pre-commit hook: build + unit + smoke E2E                 | Accepted               | infrastructure | 2026-05-27 |
-| [ADR-0038](0038-data-testid-convention.md)        | `data-testid` convention for E2E selectors                      | Superseded by ADR-0054 | infrastructure | 2026-05-27 |
-| [ADR-0040](0040-github-pages-deployment.md)       | GitHub Pages deployment gated on CI (`workflow_run`)            | Accepted               | infrastructure | 2026-05-27 |
-| [ADR-0049](0049-deploy-tested-artifact.md)        | Deploy the tested build artifact                                | Accepted               | infrastructure | 2026-09-29 |
-| [ADR-0051](0051-repository-security-settings.md)  | Repository security settings                                    | Accepted               | infrastructure | 2026-09-29 |
-| [ADR-0053](0053-exception-management.md)          | Exception management                                            | Accepted               | cross-cutting  | 2026-09-29 |
-| [ADR-0054](0054-test-locators-and-ids.md)         | Test locators and test IDs                                      | Accepted               | infrastructure | 2026-09-30 |
-| [ADR-0055](0055-typecheck-everything.md)          | Every TypeScript file is type-checked                           | Accepted               | infrastructure | 2026-09-30 |
-| [ADR-0056](0056-documentation-freshness.md)       | Documentation freshness is checked automatically                | Accepted               | infrastructure | 2026-09-30 |
-| [ADR-0058](0058-repository-wide-formatting.md)    | One formatter and linter setup for the whole repository         | Accepted               | infrastructure | 2026-09-30 |
-| [ADR-0059](0059-property-and-mutation-testing.md) | Property-based and mutation testing                             | Accepted               | infrastructure | 2026-09-30 |
-| [ADR-0060](0060-commit-message-convention.md)     | Commit messages follow Conventional Commits                     | Accepted               | infrastructure | 2026-10-01 |
+| #                                                 | Title                                                                         | Status                 | Slice          | Date       |
+| ------------------------------------------------- | ----------------------------------------------------------------------------- | ---------------------- | -------------- | ---------- |
+| [ADR-0033](0033-three-layer-testing.md)           | Four-layer test strategy (unit / E2E smoke / E2E full / visual)               | Accepted               | infrastructure | 2026-05-27 |
+| [ADR-0034](0034-vitest.md)                        | Vitest for unit tests                                                         | Accepted               | infrastructure | 2026-05-27 |
+| [ADR-0035](0035-playwright.md)                    | Playwright for E2E tests                                                      | Accepted               | infrastructure | 2026-05-27 |
+| [ADR-0036](0036-visual-regression-macos.md)       | Visual regression tests local only (macOS baselines)                          | Accepted               | infrastructure | 2026-05-27 |
+| [ADR-0037](0037-husky-precommit.md)               | Husky pre-commit hook: build + unit + smoke E2E                               | Accepted               | infrastructure | 2026-05-27 |
+| [ADR-0038](0038-data-testid-convention.md)        | `data-testid` convention for E2E selectors                                    | Superseded by ADR-0054 | infrastructure | 2026-05-27 |
+| [ADR-0040](0040-github-pages-deployment.md)       | GitHub Pages deployment gated on CI (`workflow_run`)                          | Accepted               | infrastructure | 2026-05-27 |
+| [ADR-0049](0049-deploy-tested-artifact.md)        | Deploy the tested build artifact                                              | Accepted               | infrastructure | 2026-09-29 |
+| [ADR-0051](0051-repository-security-settings.md)  | Repository security settings                                                  | Accepted               | infrastructure | 2026-09-29 |
+| [ADR-0053](0053-exception-management.md)          | Exception management                                                          | Accepted               | cross-cutting  | 2026-09-29 |
+| [ADR-0054](0054-test-locators-and-ids.md)         | Test locators and test IDs                                                    | Accepted               | infrastructure | 2026-09-30 |
+| [ADR-0055](0055-typecheck-everything.md)          | Every TypeScript file is type-checked                                         | Accepted               | infrastructure | 2026-09-30 |
+| [ADR-0056](0056-documentation-freshness.md)       | Documentation freshness is checked automatically                              | Accepted               | infrastructure | 2026-09-30 |
+| [ADR-0058](0058-repository-wide-formatting.md)    | One formatter and linter setup for the whole repository                       | Accepted               | infrastructure | 2026-09-30 |
+| [ADR-0059](0059-property-and-mutation-testing.md) | Property-based and mutation testing                                           | Accepted               | infrastructure | 2026-09-30 |
+| [ADR-0060](0060-commit-message-convention.md)     | Commit messages follow Conventional Commits                                   | Accepted               | infrastructure | 2026-10-01 |
+| [ADR-0064](0064-code-comments.md)                 | Code comments — TSDoc doc comments, file overviews, line comments for the why | Accepted               | cross-cutting  | 2026-10-03 |
 
 ### Process & product decisions
 

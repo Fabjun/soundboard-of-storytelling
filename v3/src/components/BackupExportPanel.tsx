@@ -1,10 +1,10 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// BackupExportPanel — save everything into one backup file (Slice 10, D1 / D3, ADR-0061)
-//
-// Two steps: building the file takes a while, and the share sheet needs a fresh tap (iOS), so the
-// file is built first and handed over on a second tap (SAVE). Minimal first version on the board
-// list; look and place follow with the layout (Slice 13).
-// ─────────────────────────────────────────────────────────────────────────────
+/**
+ * @fileoverview BackupExportPanel — save everything into one backup file (Slice 10, D1 / D3, ADR-0061)
+ *
+ * Two steps: building the file takes a while, and the share sheet needs a fresh tap (iOS), so the
+ * file is built first and handed over on a second tap (SAVE). Minimal first version on the board
+ * list; look and place follow with the layout (Slice 13).
+ */
 
 import { useEffect, useState } from 'preact/hooks';
 import type { JSX } from 'preact';
@@ -18,6 +18,10 @@ type Step =
   | { kind: 'saved' }
   | { kind: 'error'; message: string };
 
+/**
+ * Builds the backup file when it opens, then hands it over on SAVE (share sheet or download) and
+ * records the time of the backup.
+ */
 export function BackupExportPanel({
   onClose,
   onSaved,

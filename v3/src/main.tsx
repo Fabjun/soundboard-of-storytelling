@@ -1,3 +1,11 @@
+/**
+ * @fileoverview App entry point — wires the global services, then renders the app
+ *
+ * Fonts, global styles, the audio bridge, the saving marker and the play history are set up at
+ * module load; the first render waits until the stored state and the preferences are loaded
+ * (CLAUDE.md, "Stored state loads before the first render").
+ */
+
 import { render } from 'preact';
 import { effect } from '@preact/signals';
 import { App } from './App';

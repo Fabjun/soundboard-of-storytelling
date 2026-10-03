@@ -1,6 +1,6 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// Smoke test: BOARD button opens BoardListScreen with empty state CTA
-// ─────────────────────────────────────────────────────────────────────────────
+/**
+ * @fileoverview Smoke test: BOARD button opens BoardListScreen with empty state CTA
+ */
 
 import { test, expect } from '@playwright/test';
 

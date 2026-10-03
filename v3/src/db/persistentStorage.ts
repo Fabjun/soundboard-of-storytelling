@@ -1,11 +1,12 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// Persistent storage (D4, docs/product/features/data-backup.md; ADR-0061)
-//
-// Boards and audio live only in this browser's storage, which the browser may evict under storage
-// pressure. Asking for persistent storage makes eviction less likely. Invisible to the user (D4).
-// navigator.storage.persist() exists on iOS Safari from 15.2 — older browsers simply skip it.
-// ─────────────────────────────────────────────────────────────────────────────
+/**
+ * @fileoverview Persistent storage (D4, docs/product/features/data-backup.md; ADR-0061)
+ *
+ * Boards and audio live only in this browser's storage, which the browser may evict under storage
+ * pressure. Asking for persistent storage makes eviction less likely. Invisible to the user (D4).
+ * navigator.storage.persist() exists on iOS Safari from 15.2 — older browsers simply skip it.
+ */
 
+/** What the browser answered: storage kept, request declined, or no such request available. */
 export type PersistResult = 'persisted' | 'not-granted' | 'unsupported';
 
 /** Asks the browser to keep this origin's storage. Never throws. */

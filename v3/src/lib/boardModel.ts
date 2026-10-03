@@ -1,10 +1,10 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// Board model — the pad pool, its decks and the quick-access bar (ADR-0048, Slice 9c)
-//
-// Pure functions: every change returns a new Board, nothing is mutated, nothing is persisted
-// here (callers save with boardPut + upsertBoard). A pad lives once in the board's pool; decks
-// place it with a position and a key. Editing a pad changes it everywhere it appears.
-// ─────────────────────────────────────────────────────────────────────────────
+/**
+ * @fileoverview Board model — the pad pool, its decks and the quick-access bar (ADR-0048, Slice 9c)
+ *
+ * Pure functions: every change returns a new Board, nothing is mutated, nothing is persisted
+ * here (callers save with boardPut + upsertBoard). A pad lives once in the board's pool; decks
+ * place it with a position and a key. Editing a pad changes it everywhere it appears.
+ */
 
 import type {
   Board,
@@ -29,10 +29,12 @@ export const DEFAULT_GRID: Readonly<Deck['gridConfig']> = {
   padSize: 'md',
 };
 
+/** Returns the board's deck with this id, or undefined. */
 export function findDeck(board: Board, deckId: string): Deck | undefined {
   return board.decks.find((d) => d.id === deckId);
 }
 
+/** Returns the pad of the board's pool with this id, or undefined. */
 export function findPad(board: Board, padId: string): Pad | undefined {
   return board.pads.find((p) => p.id === padId);
 }

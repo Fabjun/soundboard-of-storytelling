@@ -1,8 +1,8 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// AudioRow — single row in the Library audio list
-//
-// Shows: type icon | name (renameable) + filename | waveform | duration | size | delete
-// ─────────────────────────────────────────────────────────────────────────────
+/**
+ * @fileoverview AudioRow — single row in the Library audio list
+ *
+ * Shows: type icon | name (renameable) + filename | waveform | duration | size | delete
+ */
 
 import { useRef, useState, useEffect } from 'preact/hooks';
 import { PixelIcon } from './PixelIcon';
@@ -96,6 +96,10 @@ function RenameField({ name, onCommit }: RenameFieldProps) {
 // AudioRow
 // ---------------------------------------------------------------------------
 
+/**
+ * Shows one audio file of the library: name (tap to rename), waveform, duration, size and a
+ * delete button that needs two taps.
+ */
 export function AudioRow({ meta, selected, onSelect, onDelete, onRename }: AudioRowProps) {
   const [deleteStep, setDeleteStep] = useState<'idle' | 'confirm'>('idle');
 

@@ -1,17 +1,17 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// BoardScreen — main board canvas (Slice 3)
-//
-// Layout: BoardTopBar | 3-column main area | StatusBar
-//
-// 3-column main area:
-//   Left  220px  DeckRail  (All pads + deck list + CRUD)
-//   Center 1fr   PadGrid    (4×4 grid + Path A/B creation, or the All pads pool view)
-//   Right  280px Right panel (toggles: LibraryPanel ↔ PadEditorPanel)
-//
-// Modes:
-//   SETUP (mode='edit'):  full CRUD, DnD, inspector visible
-//   GAME  (mode='play'):  no editing, pad clicks → Slice 4 playback stub
-// ─────────────────────────────────────────────────────────────────────────────
+/**
+ * @fileoverview BoardScreen — main board canvas
+ *
+ * Layout: BoardTopBar | 3-column main area | StatusBar
+ *
+ * 3-column main area:
+ *   Left  220px  DeckRail  (All pads + deck list + CRUD)
+ *   Center 1fr   PadGrid    (the deck's grid + Path A/B creation, or the All pads pool view)
+ *   Right  280px Right panel (toggles: LibraryPanel ↔ PadEditorPanel)
+ *
+ * Modes:
+ *   SETUP (mode='edit'):  full CRUD, DnD, inspector visible
+ *   GAME  (mode='play'):  no editing; a tap plays or stops a pad
+ */
 
 import { useState, useEffect } from 'preact/hooks';
 import type { JSX } from 'preact';
@@ -58,6 +58,10 @@ import { type LibDndDropResult } from '../lib/libDnd';
 
 type RightPanelMode = 'library' | 'editor' | 'empty';
 
+/**
+ * Shows the current board: deck rail, the grid of the current deck (or All pads) and the
+ * library / pad editor panel; reopens the board in the view it was left in.
+ */
 export function BoardScreen(): JSX.Element {
   const board = currentBoard.value;
   /** All pads view: the whole pool instead of a deck (ADR-0048) — no deck is active then. */

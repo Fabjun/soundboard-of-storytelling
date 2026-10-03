@@ -1,12 +1,12 @@
 // @vitest-environment jsdom
-// ─────────────────────────────────────────────────────────────────────────────
-// padDnd — unit tests: applySwap / applyInsert, and the pointer drag flow
-//
-// The drag flow runs in jsdom with a stubbed geometry (4×4 cells of 100 px): the E2E tests
-// (pad-dnd.spec.ts) prove the real pointer wiring, these tests pin the boundaries the E2E
-// tests never hit — drag threshold, edge zones, cell borders (T11c: mutation testing showed
-// them unguarded). Cases chosen by boundary value analysis.
-// ─────────────────────────────────────────────────────────────────────────────
+/**
+ * @fileoverview padDnd — unit tests: applySwap / applyInsert, and the pointer drag flow
+ *
+ * The drag flow runs in jsdom with a stubbed geometry (4×4 cells of 100 px): the E2E tests
+ * (pad-dnd.spec.ts) prove the real pointer wiring, these tests pin the boundaries the E2E
+ * tests never hit — drag threshold, edge zones, cell borders (T11c: mutation testing showed
+ * them unguarded). Cases chosen by boundary value analysis.
+ */
 
 import type { PadPosition, Placement } from '../../src/types';
 import { afterEach, beforeEach, vi } from 'vitest';

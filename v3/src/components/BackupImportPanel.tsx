@@ -1,9 +1,9 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// BackupImportPanel — import a V1 or V3 backup file (Slice 10, D2 / D5, ADR-0061)
-//
-// Reading → summary for confirmation (import rules) → import with progress → result.
-// Minimal first version on the board list; look and place follow with the layout (Slice 13).
-// ─────────────────────────────────────────────────────────────────────────────
+/**
+ * @fileoverview BackupImportPanel — import a V1 or V3 backup file (Slice 10, D2 / D5, ADR-0061)
+ *
+ * Reading → summary for confirmation (import rules) → import with progress → result.
+ * Minimal first version on the board list; look and place follow with the layout (Slice 13).
+ */
 
 import { useEffect, useState } from 'preact/hooks';
 import type { JSX } from 'preact';
@@ -50,6 +50,10 @@ function noteLines(r: ImportResult): string[] {
   ].filter((l): l is string => typeof l === 'string');
 }
 
+/**
+ * Imports the chosen backup `file`: reads it for a summary, imports on confirmation with
+ * progress, then lists what was added and what could not be taken over.
+ */
 export function BackupImportPanel({
   file,
   onClose,

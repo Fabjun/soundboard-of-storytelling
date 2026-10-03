@@ -1,6 +1,10 @@
-// Commit messages follow Conventional Commits 1.0.0 (https://www.conventionalcommits.org) — the
-// rules of @commitlint/config-conventional. Checked by .husky/commit-msg and, for pull requests,
-// in CI (ADR-0060). Exceptions follow ADR-0053: rule + reason.
+/**
+ * @fileoverview commitlint configuration — the commit message scheme (ADR-0060)
+ *
+ * Commit messages follow Conventional Commits 1.0.0 (https://www.conventionalcommits.org) — the
+ * rules of @commitlint/config-conventional. Checked by .husky/commit-msg and, for pull requests,
+ * in CI. Exceptions follow ADR-0053: rule + reason.
+ */
 export default {
   extends: ['@commitlint/config-conventional'],
   rules: {

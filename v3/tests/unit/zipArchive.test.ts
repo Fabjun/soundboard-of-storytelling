@@ -1,12 +1,12 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// zipArchive — the backup container, read after PKWARE APPNOTE 6.3.10
-// (docs/architecture/0061-backup-file-format-and-streaming-import.md#3-v3s-own-backup-file-d1d2)
-// Edge-case checklist: no / one / many entries, empty entry, data that contains the data
-// descriptor signature (the case a signature-scanning reader cuts short), an archive comment,
-// archives from another writer (fflate zipSync: no data descriptors), and every refusal —
-// not a ZIP, split, ZIP64, encrypted, compressed, cut off, broken headers.
-// Property: any set of entries written by createZipWriter reads back byte for byte.
-// ─────────────────────────────────────────────────────────────────────────────
+/**
+ * @fileoverview zipArchive — the backup container, read after PKWARE APPNOTE 6.3.10
+ * (docs/architecture/0061-backup-file-format-and-streaming-import.md#3-v3s-own-backup-file-d1d2)
+ * Edge-case checklist: no / one / many entries, empty entry, data that contains the data
+ * descriptor signature (the case a signature-scanning reader cuts short), an archive comment,
+ * archives from another writer (fflate zipSync: no data descriptors), and every refusal —
+ * not a ZIP, split, ZIP64, encrypted, compressed, cut off, broken headers.
+ * Property: any set of entries written by createZipWriter reads back byte for byte.
+ */
 
 import { fc, test as propTest } from '@fast-check/vitest';
 import { zipSync } from 'fflate';

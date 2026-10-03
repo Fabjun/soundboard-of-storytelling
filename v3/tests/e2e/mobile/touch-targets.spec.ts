@@ -1,18 +1,18 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// Mobile E2E — Touch Target Sizes (Playwright WebKit, iPhone 13 Pro profile)
-//
-// SCOPE: Verifies that interactive elements meet the iOS minimum touch target
-// of 44×44px on a 390×844 viewport. Failing elements print a descriptive
-// message. Elements that are known to be intentionally smaller are marked
-// test.fixme with an explicit reason.
-//
-// The global CSS enforces `min-height: 44px; min-width: 44px` on all button /
-// [role='button'] elements. This test catches regressions and layout contexts
-// where that rule is overridden (e.g., overflow: hidden clipping, flex shrink).
-//
-// OUT OF SCOPE (see docs/development/manual-iphone-checklist.md):
-//   File upload, audio output, Ringer Switch, backgrounding.
-// ─────────────────────────────────────────────────────────────────────────────
+/**
+ * @fileoverview Mobile E2E — Touch Target Sizes (Playwright WebKit, iPhone 13 Pro profile)
+ *
+ * SCOPE: Verifies that interactive elements meet the iOS minimum touch target
+ * of 44×44px on a 390×844 viewport. Failing elements print a descriptive
+ * message. Elements that are known to be intentionally smaller are marked
+ * test.fixme with an explicit reason.
+ *
+ * The global CSS enforces `min-height: 44px; min-width: 44px` on all button /
+ * [role='button'] elements. This test catches regressions and layout contexts
+ * where that rule is overridden (e.g., overflow: hidden clipping, flex shrink).
+ *
+ * OUT OF SCOPE (see docs/development/manual-iphone-checklist.md):
+ *   File upload, audio output, Ringer Switch, backgrounding.
+ */
 
 import { test, expect, type Locator } from '@playwright/test';
 import { goToBoardList, createBoardAndNavigate, createDeck } from '../helpers';

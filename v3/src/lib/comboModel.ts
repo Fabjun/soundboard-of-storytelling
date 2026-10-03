@@ -1,11 +1,11 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// Combo model — steps of a combo and protection against cycles (Slice 11,
-// docs/product/README.md#combos--decided)
-//
-// Pure functions. Combos are building blocks: a step may start pads and other combos from any
-// deck of the board. A combo must never reach itself through its steps — the engine would start
-// it again and again (unbounded recursion).
-// ─────────────────────────────────────────────────────────────────────────────
+/**
+ * @fileoverview Combo model — steps of a combo and protection against cycles (Slice 11,
+ * docs/product/README.md#combos--decided)
+ *
+ * Pure functions. Combos are building blocks: a step may start pads and other combos from any
+ * deck of the board. A combo must never reach itself through its steps — the engine would start
+ * it again and again (unbounded recursion).
+ */
 
 import type { Board, ComboStep } from '../types';
 
@@ -42,8 +42,10 @@ export function combosInCycles(board: Board): string[] {
 
 // ── Step operations (return new arrays; nothing is mutated) ─────────────────
 
+/** Appends an empty step. */
 export const addStep = (steps: ComboStep[]): ComboStep[] => [...steps, { padIds: [] }];
 
+/** Removes the step at `index`; the later steps move up. */
 export const removeStep = (steps: ComboStep[], index: number): ComboStep[] =>
   steps.filter((_, i) => i !== index);
 
@@ -56,6 +58,7 @@ export const addPadToStep = (steps: ComboStep[], index: number, padId: string): 
     s.padIds.includes(padId) ? s : { ...s, padIds: [...s.padIds, padId] },
   );
 
+/** Removes a pad from the step at `index`. */
 export const removePadFromStep = (steps: ComboStep[], index: number, padId: string) =>
   withStep(steps, index, (s) => ({ ...s, padIds: s.padIds.filter((id) => id !== padId) }));
 

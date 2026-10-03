@@ -1,8 +1,8 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// padUtils — unit tests
-//
-// All functions are pure: no IDB, no signals, no DOM. No mocks needed.
-// ─────────────────────────────────────────────────────────────────────────────
+/**
+ * @fileoverview padUtils — unit tests
+ *
+ * All functions are pure: no IDB, no signals, no DOM. No mocks needed.
+ */
 
 import type { Pad, PadPosition, Placement, SinglePad } from '../../src/types';
 import {

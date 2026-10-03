@@ -1,8 +1,8 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// StatusBar — fixed bottom bar showing mode, board, and info
-//
-// Source: design-sources/2026-05-25/v2-screens.jsx StatusBarV2
-// ─────────────────────────────────────────────────────────────────────────────
+/**
+ * @fileoverview StatusBar — fixed bottom bar showing mode, board, and info
+ *
+ * Source: design-sources/2026-05-25/v2-screens.jsx StatusBarV2
+ */
 
 import type { ComponentChildren, JSX } from 'preact';
 import type { AppMode } from '../types';
@@ -14,6 +14,7 @@ interface StatusBarProps {
   right?: ComponentChildren;
 }
 
+/** Shows the mode (LIVE in GAME, EDIT in SETUP), the board name, an info text and a right slot. */
 export function StatusBar({ mode, boardName, infoText, right }: StatusBarProps): JSX.Element {
   const modeColor = mode === 'play' ? 'var(--gold)' : 'var(--mode-setup)';
   const modeLabel = mode === 'play' ? 'LIVE' : 'EDIT';

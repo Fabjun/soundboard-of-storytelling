@@ -1,6 +1,6 @@
 #!/usr/bin/env tsx
 /**
- * sync-tests.ts
+ * @fileoverview sync-tests.ts
  *
  * Writes the test inventory into docs/development/testing.md between AUTO-GENERATED markers:
  * which spec runs in which Playwright project (from v3/tests/e2e/projects.ts),

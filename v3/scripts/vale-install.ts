@@ -1,6 +1,6 @@
 #!/usr/bin/env tsx
 /**
- * vale-install.ts
+ * @fileoverview vale-install.ts
  *
  * Installs the Vale prose linter (https://vale.sh) into v3/node_modules/.bin/vale — pinned
  * version, downloaded from the official GitHub release and verified against SHA-256 hashes
@@ -27,6 +27,7 @@ import { tmpdir } from 'os';
 import { dirname, join, resolve } from 'path';
 import { fileURLToPath } from 'url';
 
+/** The pinned Vale release; the weekly check reports newer ones. */
 export const VALE_VERSION = '3.23.0';
 
 /** SHA-256 of the release archives (from vale_3.23.0_checksums.txt, verified 2026-09-30). */

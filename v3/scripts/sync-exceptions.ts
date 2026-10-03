@@ -1,6 +1,6 @@
 #!/usr/bin/env tsx
 /**
- * sync-exceptions.ts
+ * @fileoverview sync-exceptions.ts
  *
  * Generates docs/development/exceptions.md — the register of every deliberate exception to a
  * project rule (ADR-0053). Collected from the places where exceptions live, so the register
@@ -22,6 +22,7 @@ import { fileURLToPath } from 'url';
 import { writeGenerated } from './lib/write-generated';
 import { escapeCell } from './lib/markdown';
 import { repoFiles } from './lib/repo-files';
+import { findQuarantineMarkers } from './lib/test-markers';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(__dirname, '..', '..');
@@ -88,18 +89,15 @@ for (const [file, ls] of lines) {
 }
 
 // ── Test quarantine ──────────────────────────────────────────────────────────
-const MARKER = /\b(?:test|it|describe)(?:\.describe)?\.(skip|fixme|todo|fails)\s*\(/;
-const REF = /BACKLOG "([^"]+)"/;
+// The same marker scan as the testGuards check (scripts/lib/test-markers.ts)
 const quarantineRows: string[] = [];
 for (const [file, ls] of lines) {
   if (!rel(file).startsWith('v3/tests/') || !/\.(test|spec)\.ts$/.test(file)) continue;
-  ls.forEach((line, i) => {
-    if (line.trim().startsWith('//')) return;
-    const m = MARKER.exec(line);
-    if (!m) return;
-    const ref = REF.exec(ls.slice(Math.max(0, i - 8), i + 1).join('\n'))?.[1] ?? '—';
-    quarantineRows.push(`| \`${rel(file)}:${i + 1}\` | \`${m[1]}\` | BACKLOG "${esc(ref)}" |`);
-  });
+  for (const m of findQuarantineMarkers(ls)) {
+    quarantineRows.push(
+      `| \`${rel(file)}:${m.line}\` | \`${m.kind}\` | BACKLOG "${esc(m.ref ?? '—')}" |`,
+    );
+  }
 }
 
 // ── Modules without unit test (EXEMPT) ───────────────────────────────────────

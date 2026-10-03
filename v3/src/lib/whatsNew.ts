@@ -1,12 +1,12 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// What's new — the release notes the app shows (ADR-0063)
-//
-// Written by hand for the people who use the app: only changes they can notice, in plain words,
-// saying what they can now do. Grouped per version as New / Improved / Fixed / Removed, newest
-// first. Internal work (tests, documentation, tooling) never appears here — it is recorded in
-// src/lib/changelog.ts, from which CHANGELOG.md is generated.
-// Checked by tests/unit/whatsNew.test.ts.
-// ─────────────────────────────────────────────────────────────────────────────
+/**
+ * @fileoverview What's new — the release notes the app shows (ADR-0063)
+ *
+ * Written by hand for the people who use the app: only changes they can notice, in plain words,
+ * saying what they can now do. Grouped per version as New / Improved / Fixed / Removed, newest
+ * first. Internal work (tests, documentation, tooling) never appears here — it is recorded in
+ * src/lib/changelog.ts, from which CHANGELOG.md is generated.
+ * Checked by tests/unit/whatsNew.test.ts.
+ */
 
 /** One version's notes; every group is optional, but an entry has at least one sentence. */
 export interface WhatsNewEntry {
@@ -32,6 +32,7 @@ export const WHATS_NEW_GROUPS = [
   ['removed', 'Removed'],
 ] as const;
 
+/** The release notes the start screen shows, newest first (checked by whatsNew.test.ts). */
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
     version: '3.0.145',

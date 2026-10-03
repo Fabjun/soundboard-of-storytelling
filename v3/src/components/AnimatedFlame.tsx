@@ -1,17 +1,17 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// AnimatedFlame — interactive pixel fire (StartScreen), hybrid of two designs
-//
-// Idle:   design-sources/2026-05-25/v13-animated-flame.jsx (tip flicker 12fps, sway,
-//         breath, tongue lick, embers, heart pulse) + V3 additions (core-ring glow,
-//         heart flicker with a dimmer corner).
-// Freeze: design-sources/2026-09-28/…/flame-engine.jsx + flame-themes.jsx "Hearth":
-//         idle → transform → hold (4 s) → revert; frost creeps in from the edge,
-//         falling frost, cracks, glinting facets, ice shards, steam, drips, re-ignite.
-//         Idle crackle and rare embers from Hearth as well.
-// Drawn on a canvas (Hearth engine); glow is a drop-shadow that follows the pixel
-// silhouette. Colours come from design tokens, read once at mount.
-// Import record: docs/design/imports/animated-flame.md
-// ─────────────────────────────────────────────────────────────────────────────
+/**
+ * @fileoverview AnimatedFlame — interactive pixel fire (StartScreen), hybrid of two designs
+ *
+ * Idle:   design-sources/2026-05-25/v13-animated-flame.jsx (tip flicker 12fps, sway,
+ *         breath, tongue lick, embers, heart pulse) + V3 additions (core-ring glow,
+ *         heart flicker with a dimmer corner).
+ * Freeze: design-sources/2026-09-28/…/flame-engine.jsx + flame-themes.jsx "Hearth":
+ *         idle → transform → hold (4 s) → revert; frost creeps in from the edge,
+ *         falling frost, cracks, glinting facets, ice shards, steam, drips, re-ignite.
+ *         Idle crackle and rare embers from Hearth as well.
+ * Drawn on a canvas (Hearth engine); glow is a drop-shadow that follows the pixel
+ * silhouette. Colours come from design tokens, read once at mount.
+ * Import record: docs/design/imports/animated-flame.md
+ */
 
 import { useEffect, useRef } from 'preact/hooks';
 import type { JSX } from 'preact';
@@ -114,6 +114,10 @@ function makeParticle(p: Partial<Particle> & Pick<Particle, 'kind' | 'x' | 'y'>)
   };
 }
 
+/**
+ * Draws the start screen's animated pixel flame on a canvas (the flame `size` CSS pixels wide).
+ * When `interactive`, a tap makes it spark and freeze; left alone, it thaws and lights again.
+ */
 export function AnimatedFlame({ size = 120, interactive = true }: AnimatedFlameProps): JSX.Element {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const paletteRef = useRef<FlamePalette | null>(null);

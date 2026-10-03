@@ -1,34 +1,35 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// Pad Drag-and-Drop — pointer-events-based, SETUP mode only
-//
-// Ported from V1 (index.html onPadPointerDown / onDragMove / onDragEnd) and
-// adapted for V3's coordinate model: a deck's placements (padId + position, ADR-0048).
-//
-// V1 algorithm:         Array-index-based INSERT/SWAP
-// V3 algorithm:         Row-major index for position arithmetic, then
-//                       convert back to {col, row} coordinates.
-//
-// DROP MODES (per docs/design/design-notes.md user decision):
-//   SWAP   — cursor in center (~50%) of target cell → swap positions
-//   INSERT — cursor in edge zone (~25% each side) → shift row-major range
-//
-// EDGE ZONE: Math.min(cellWidth * 0.25, 22) px on left and right edge.
-//
-// Assumptions:
-//   - Grid is always 4 columns wide (Slice 3; Slice 8 may generalise).
-//   - All pad positions are non-null in Slice 3.
-//   - No combo-step remapping needed (Slice 4+).
-// ─────────────────────────────────────────────────────────────────────────────
+/**
+ * @fileoverview Pad Drag-and-Drop — pointer-events-based, SETUP mode only
+ *
+ * Ported from V1 (index.html onPadPointerDown / onDragMove / onDragEnd) and
+ * adapted for V3's coordinate model: a deck's placements (padId + position, ADR-0048).
+ *
+ * V1 algorithm:         Array-index-based INSERT/SWAP
+ * V3 algorithm:         Row-major index for position arithmetic, then
+ *                       convert back to `{col, row}` coordinates.
+ *
+ * DROP MODES (per docs/design/design-notes.md user decision):
+ *   SWAP   — cursor in center (~50%) of target cell → swap positions
+ *   INSERT — cursor in edge zone (~25% each side) → shift row-major range
+ *
+ * EDGE ZONE: Math.min(cellWidth * 0.25, 22) px on left and right edge.
+ *
+ * Assumptions:
+ *   - The grid size comes from the deck (`configureDnd`, called by PadGrid from gridConfig).
+ *   - Every placement has a position (the type requires it).
+ *   - Moving pads needs no combo-step remapping: steps name pad ids, not cells (ADR-0048).
+ */
 
 import type { PadPosition, Placement } from '../types';
 import { posToIndex, indexToPos } from './padUtils';
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
+/** The state of the one pad drag that can run at a time. */
 export interface DndState {
-  /** Grid COLS — always 4 in Slice 3. */
+  /** Columns of the deck's grid (`configureDnd`). */
   cols: number;
-  /** Grid ROWS — always 4 in Slice 3. */
+  /** Rows of the deck's grid (`configureDnd`). */
   rows: number;
   /** ID of the pad being dragged. */
   srcId: string | null;
@@ -120,6 +121,10 @@ export function startDrag(
 
 // ── Result types ─────────────────────────────────────────────────────────────
 
+/**
+ * How a pad drag ended: swap with the pad at `tgtPos` (or move there when it is empty), insert at
+ * the row-major index `toIndex`, or cancel.
+ */
 export type DndDropResult =
   | { kind: 'swap'; srcId: string; tgtPos: PadPosition }
   | { kind: 'insert'; srcId: string; toIndex: number }
@@ -264,6 +269,7 @@ function _applySourceClass(on: boolean): void {
 
 /** The deck's placements, injected by PadGrid on every render; read per move. */
 let _placementsRef: Placement[] = [];
+/** Gives the drag the deck's current placements; PadGrid calls it on every render. */
 export function setPlacementsRef(placements: Placement[]): void {
   _placementsRef = placements;
 }
@@ -327,10 +333,10 @@ export function applySwap(pads: Placement[], srcId: string, tgtPos: PadPosition)
  * Apply an INSERT: move the source pad to a row-major index, shifting
  * the pads between the old and new positions by one slot (coordinate-based).
  *
- * Adapts V1's array-index shift to V3's {col, row} coordinate model:
+ * Adapts V1's array-index shift to V3's `{col, row}` coordinate model:
  *   - Convert all positions to row-major indices
  *   - Perform the same shift logic V1 used (shift ±1 on intermediate pads)
- *   - Convert indices back to {col, row}
+ *   - Convert indices back to `{col, row}`
  *
  * Returns a new pads array (immutable).
  */

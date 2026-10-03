@@ -1,11 +1,11 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// Backup export — everything in one file (D1; format in
-// docs/architecture/0061-backup-file-format-and-streaming-import.md#3-v3s-own-backup-file-d1d2)
-//
-// A ZIP archive (owner decision B1): every audio file as it is, under audio/, and the manifest
-// backup.json — boards and the library list — as the last entry. iPhone memory rule 4: one audio
-// file is read from IndexedDB at a time and copied into the archive's Blob parts before the next.
-// ─────────────────────────────────────────────────────────────────────────────
+/**
+ * @fileoverview Backup export — everything in one file (D1; format in
+ * docs/architecture/0061-backup-file-format-and-streaming-import.md#3-v3s-own-backup-file-d1d2)
+ *
+ * A ZIP archive (owner decision B1): every audio file as it is, under audio/, and the manifest
+ * backup.json — boards and the library list — as the last entry. iPhone memory rule 4: one audio
+ * file is read from IndexedDB at a time and copied into the archive's Blob parts before the next.
+ */
 
 import { boardGetAll, libGet, libGetAllMeta } from '../db/idb';
 import { APP_VERSION } from './changelog';
@@ -34,7 +34,7 @@ const AUDIO_EXTENSIONS: Record<string, string> = {
   'audio/webm': '.webm',
 };
 
-/** Where an audio file sits in the archive: audio/<content hash><extension of its type>. */
+/** Where an audio file sits in the archive: `audio/<content hash><extension of its type>`. */
 export function audioPath(id: string, type: string): string {
   return `audio/${id}${AUDIO_EXTENSIONS[type] ?? ''}`;
 }

@@ -1,11 +1,11 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// Audio buffer LRU — property-based tests (T11b)
-//
-// iOS memory rule 7 (CLAUDE.md): the decoded-buffer cache stays below 150 MB — for EVERY
-// sequence of inserts and deletes. On failure fast-check prints the seed and the shrunk
-// counterexample; pass `{ seed, path }` as fc options to reproduce it.
-// Example-based tests: lru.test.ts.
-// ─────────────────────────────────────────────────────────────────────────────
+/**
+ * @fileoverview Audio buffer LRU — property-based tests (T11b)
+ *
+ * iOS memory rule 7 (CLAUDE.md): the decoded-buffer cache stays below 150 MB — for EVERY
+ * sequence of inserts and deletes. On failure fast-check prints the seed and the shrunk
+ * counterexample; pass `{ seed, path }` as fc options to reproduce it.
+ * Example-based tests: lru.test.ts.
+ */
 
 import { fc, test } from '@fast-check/vitest';
 import { beforeEach, describe, expect } from 'vitest';

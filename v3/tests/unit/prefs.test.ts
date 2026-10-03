@@ -1,9 +1,9 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// prefs — UI preferences in IndexedDB (ADR-0062; owner decision 2026-10-02)
-// Real IndexedDB semantics via fake-indexeddb. Cases: nothing stored, round trip incl. a reload
-// (loadPrefs), per-board keys, unknown values, clear, writes counted in pendingSaves, a failing
-// database never breaks the app.
-// ─────────────────────────────────────────────────────────────────────────────
+/**
+ * @fileoverview prefs — UI preferences in IndexedDB (ADR-0062; owner decision 2026-10-02)
+ * Real IndexedDB semantics via fake-indexeddb. Cases: nothing stored, round trip incl. a reload
+ * (loadPrefs), per-board keys, unknown values, clear, writes counted in pendingSaves, a failing
+ * database never breaks the app.
+ */
 
 import { IDBFactory } from 'fake-indexeddb';
 import { _resetDB, kvGetAll, kvPut } from '../../src/db/idb';
