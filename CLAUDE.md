@@ -299,6 +299,10 @@ and has diverged). Never hardcode colors, fonts, or spacing.
   pad name from the chosen file) is computed on render — never written into the same state as a
   value the user typed or picked, so it can neither overwrite a choice nor pass for one
   ([docs/design/design-notes.md](docs/design/design-notes.md), A2 Suggestion vs. pick).
+- **Delayed writes are flushed, never dropped** (2026-10-02): a write that waits (auto-save
+  debounce) goes through `v3/src/lib/debouncedSave.ts` and is written at once when its context
+  ends — the editor closes or switches pad, the page is hidden (Chrome Page Lifecycle: persist
+  unsaved state on hidden). Every file with a timer is listed with its reason (guarded by `codeGuards`: "timers are listed with their reason").
 - **JSX safety**: Preact auto-escapes children. Do not bypass this
   with `dangerouslySetInnerHTML` unless absolutely required and
   approved.

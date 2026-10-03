@@ -17,9 +17,16 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.143';
+export const APP_VERSION = '3.0.144';
 
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.144',
+    date: '2026-10-03',
+    items: [
+      'fix(pads): a waiting auto-save is written when the editor closes, switches pad or the page is hidden — never dropped (PR #40, squash of editor-flush)',
+    ],
+  },
   {
     version: '3.0.143',
     date: '2026-10-03',
@@ -191,6 +198,13 @@ export const CHANGELOG: ChangelogEntry[] = [
     date: '2026-10-02',
     items: [
       'docs: review log — the Single default fix on main and PR #40 (a waiting auto-save is written, never dropped)',
+    ],
+  },
+  {
+    version: '3.0.112',
+    date: '2026-10-02',
+    items: [
+      'fix(pads): a pad name typed just before the next pad opens, or before switching apps, is saved — the waiting auto-save is written, never dropped',
     ],
   },
   {

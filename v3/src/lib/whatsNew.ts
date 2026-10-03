@@ -34,6 +34,13 @@ export const WHATS_NEW_GROUPS = [
 
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
+    version: '3.0.144',
+    date: '2026-10-03',
+    fixed: [
+      'A change you make in the pad editor is saved even when you open the next pad, close the editor or switch to another app right after typing.',
+    ],
+  },
+  {
     version: '3.0.143',
     date: '2026-10-03',
     new: [

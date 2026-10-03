@@ -7,6 +7,12 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.144 — 2026-10-03
+
+### Fixed
+
+- fix(pads): a waiting auto-save is written when the editor closes, switches pad or the page is hidden — never dropped (PR #40, squash of editor-flush)
+
 ## 3.0.143 — 2026-10-03
 
 ### Added
@@ -167,6 +173,12 @@ release notes the app shows are written separately for its users (`v3/src/lib/wh
 ### Internal
 
 - docs: review log — the Single default fix on main and PR #40 (a waiting auto-save is written, never dropped)
+
+## 3.0.112 — 2026-10-02
+
+### Fixed
+
+- fix(pads): a pad name typed just before the next pad opens, or before switching apps, is saved — the waiting auto-save is written, never dropped
 
 ## 3.0.111 — 2026-10-02
 

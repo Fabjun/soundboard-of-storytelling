@@ -396,6 +396,7 @@ export function BoardScreen(): JSX.Element {
             )}
             {rightPanel === 'editor' && selectedPad && (
               <PadEditorPanel
+                key={selectedPad.id}
                 pad={selectedPad}
                 deck={deck}
                 board={board}
