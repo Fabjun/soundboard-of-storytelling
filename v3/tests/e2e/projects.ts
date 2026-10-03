@@ -29,6 +29,7 @@ export const FULL_TESTS = [
   'pad-dnd',
   'pad-pool',
   'combo-editor',
+  'combo-probe',
   'backup',
   'game-mode',
   'audio',
@@ -51,6 +52,7 @@ export const FULL_WEBKIT_TESTS = [
   'pad-dnd',
   'pad-pool',
   'combo-editor',
+  'combo-probe',
   'system-gestures',
 ];
 

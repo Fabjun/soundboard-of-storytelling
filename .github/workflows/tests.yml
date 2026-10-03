@@ -162,7 +162,8 @@ jobs:
 
       - name: Run full E2E tests (Chromium + WebKit subset)
         working-directory: v3
-        run: npm run test:e2e:full
+        # probe only: the suspect combo test, 15 times each way, WebKit
+        run: npx playwright test tests/e2e/combo-editor.spec.ts tests/e2e/combo-probe.spec.ts --project=full-webkit -g "keeps its steps" --repeat-each=15 --retries=0
 
       - uses: actions/upload-artifact@v7
         if: always()
