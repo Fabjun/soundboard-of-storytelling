@@ -9,7 +9,7 @@ import { IDBFactory } from 'fake-indexeddb';
 import type { Board } from '../../src/types';
 import { boardGet, _resetDB } from '../../src/db/idb';
 import { boards, pendingSaves } from '../../src/state/store';
-import { applyBoardChange, createBoard, updateBoard } from '../../src/state/boardWrites';
+import { applyBoardChange, createBoard, updateBoard, whenSaved } from '../../src/state/boardWrites';
 
 const board = (): Board => ({
   id: 'b',
@@ -112,5 +112,24 @@ describe('applyBoardChange', () => {
     await createBoard(board());
     expect(applyBoardChange('b', (b) => b).board).toBeNull();
     expect(await applyBoardChange('nope', (b) => ({ ...b, name: 'x' })).saved).toBeNull();
+  });
+});
+
+describe('whenSaved', () => {
+  it('resolves at once when no save runs', async () => {
+    await expect(whenSaved()).resolves.toBeUndefined();
+  });
+
+  it('waits for a running save — the board is stored when it resolves', async () => {
+    await createBoard(board());
+    const { saved } = applyBoardChange('b', (b) => ({ ...b, name: 'Later' }));
+    let settled = false;
+    const waiting = whenSaved().then(() => (settled = true));
+    await Promise.resolve();
+    expect(settled).toBe(false);
+    await waiting;
+    expect(pendingSaves.value).toBe(0);
+    expect((await boardGet('b'))!.name).toBe('Later');
+    await saved;
   });
 });

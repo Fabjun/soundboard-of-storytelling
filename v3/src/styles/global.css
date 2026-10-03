@@ -27,6 +27,21 @@ body.sb {
   text-size-adjust: 100%;
 }
 
+/* ─── System gestures off (ADR-0067, owner decision 2026-10-03) ── */
+/* The app, not the browser, owns touch: no double-tap or pinch zoom (pinch: exception to WCAG
+   1.4.4, ADR-0067), no text selection, iOS callout menu or drag of text and images on long
+   press — in text fields too (owner decision; checked on the iPhone). touch-action is not
+   inherited (W3C Pointer Events: it is read per element up to the nearest scroll container), so
+   it applies to every element; a class may set its own value (e.g. `none` for drag handles). */
+* {
+  touch-action: pan-x pan-y;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-user-drag: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
 /* ─── Scroll containers ──────────────────────────────────────── */
 /* Apply .sb-scroll to any overflow-y:auto element */
 .sb-scroll {

@@ -62,6 +62,20 @@ None.
 **Copy the woff2 files into `public/` by hand:** no version tracking, license files would be a
 hand copy. Rejected.
 
+## Amendments
+
+**2026-10-03:** The license notices are read from the bundle, not from `package.json` (owner
+decision 2026-10-03; industry practice: rollup-plugin-license). The update prompt (ADR-0066)
+ships `workbox-window` through vite-plugin-pwa's virtual module: as a runtime `dependency` knip
+flagged it unused in production mode, as a dev dependency the old generator left out its
+license. The generator in `v3/vite.config.ts` now takes every package whose modules Rollup
+bundled, plus their runtime dependencies transitively — a prebuilt package can carry its
+dependencies inside (workbox-window's file contains workbox-core, measured by its
+`workbox:core` marker). Same list as before for the current build, minus nothing; `pwa.spec.ts`
+checks `workbox-window` and `workbox-core` in the notices. Not covered yet: the service worker
+runtime that vite-plugin-pwa builds separately (`dist/workbox-*.js`: workbox-precaching,
+-routing, -strategies) — BACKLOG "License notices of the service worker".
+
 ## Related
 
 - **Files:** `v3/src/main.tsx`, `v3/src/styles/global.css`, `v3/vite.config.ts`,

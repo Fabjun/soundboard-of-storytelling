@@ -31,6 +31,7 @@ export const FULL_TESTS = [
   'backup',
   'game-mode',
   'audio',
+  'system-gestures',
 ];
 
 /**
@@ -48,6 +49,7 @@ export const FULL_WEBKIT_TESTS = [
   'pad-dnd',
   'pad-pool',
   'combo-editor',
+  'system-gestures',
 ];
 
 /** tests/e2e/mobile/<name>.spec.ts — audio-free, WebKit / iPhone 13 Pro (real Safari engine path). */

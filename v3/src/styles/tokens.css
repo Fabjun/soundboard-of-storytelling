@@ -1168,12 +1168,11 @@
   -webkit-tap-highlight-color: transparent;
 }
 .sb-animated-flame-canvas {
-  /* @inventory: AnimatedFlame canvas — 32×40-cell field overflowing the flame box (room for sparks, steam, shards); pixelated; no double-tap zoom. Size, offset, cursor and glow filter set inline (computed). */
+  /* @inventory: AnimatedFlame canvas — 32×40-cell field overflowing the flame box (room for sparks, steam, shards); pixelated; no zoom gestures (global rule, ADR-0067). Size, offset, cursor and glow filter set inline (computed). */
   position: absolute;
   display: block;
   image-rendering: pixelated;
   image-rendering: crisp-edges;
-  touch-action: manipulation;
 }
 .sb-start-title {
   /* @inventory: Layout additions for the sb-display hero title on StartScreen — xl font-size, centered, bottom margin. 1-use. */
@@ -1879,9 +1878,9 @@
   border: 1px solid var(--border-soft);
 }
 
-/* ── Undo Toast ── anchored above status bar ─────────────────────── */
-.sb-undo-toast {
-  /* @inventory: Fixed notification toast above the status bar shown after deck deletion. */
+/* ── Toast ── anchored above status bar (undo, update) ───────────── */
+.sb-toast {
+  /* @inventory: Fixed notification toast above the status bar — one base for every toast (Material Snackbar / Carbon Toast): the undo after a deck deletion, the update prompt. */
   position: fixed;
   bottom: 28px; /* just above 24px StatusBar */
   left: 50%;
@@ -1900,16 +1899,16 @@
   /* Progress bar sits at the bottom */
   overflow: hidden;
 }
-.sb-undo-toast-progress {
-  /* @inventory: Animated gold progress bar at the bottom of the undo toast (linear shrink). */
+.sb-toast-progress {
+  /* @inventory: Animated gold progress bar at the bottom of a timed toast (linear shrink over --toast-duration). */
   position: absolute;
   bottom: 0;
   left: 0;
   height: 2px;
   background: var(--gold);
-  animation: sb-undo-shrink var(--undo-duration, 6s) linear forwards;
+  animation: sb-toast-shrink var(--toast-duration, 6s) linear forwards;
 }
-@keyframes sb-undo-shrink {
+@keyframes sb-toast-shrink {
   from {
     width: 100%;
   }
@@ -1918,14 +1917,14 @@
   }
 }
 
-.sb-undo-message {
-  /* @inventory: Message text span inside the undo toast — mono 13px (sub-token between xs/sm, intentional toast sizing), dim colour. */
+.sb-toast-message {
+  /* @inventory: Message text span inside a toast — mono 13px (sub-token between xs/sm, intentional toast sizing), dim colour. */
   font-family: var(--font-mono);
   font-size: 13px; /* sub-token: deliberate — between fs-xs and fs-sm for toast context */
   color: var(--text-dim);
 }
-.sb-undo-btn {
-  /* @inventory: UNDO action button inside the undo toast — tight 2px vertical padding (sub-token, space-3 horizontal), no-shrink to stay visible. */
+.sb-toast-btn {
+  /* @inventory: Action button inside a toast (UNDO, RELOAD, LATER) — tight 2px vertical padding (sub-token, space-3 horizontal), no-shrink to stay visible. */
   padding: 2px var(--space-3); /* 2px top/bottom: deliberate sub-token — tight pill sizing */
   flex-shrink: 0;
 }
@@ -2025,6 +2024,12 @@
   font-size: var(--fs-sm);
   line-height: 1.55;
 }
+.sb-whats-new-details-toggle {
+  /* @inventory: The <summary> that folds out a version's developer details in What's new — 44px touch target (iOS minimum). Use as class="sb-whats-new-group sb-whats-new-details-toggle". */
+  min-height: 44px; /* sub-token: iOS minimum touch target */
+  line-height: 44px; /* one line, centred — display stays list-item so the disclosure marker shows */
+  cursor: pointer;
+}
 
 .sb-text-input {
   /* @inventory: Pixel-style text input — sunk background, bordered, VT323 uppercase. For pad name and form fields. */
@@ -2040,13 +2045,13 @@
   outline: none;
 }
 .sb-search-input {
-  /* @inventory: Transparent search input inside a bordered container — no background, no border, mono xs font. Use with sb-flex-1 when input shares a flex row with other elements. */
+  /* @inventory: Transparent search input inside a bordered container — no background, no border, mono md font (16px: iOS zooms into a field with smaller text). Use with sb-flex-1 when input shares a flex row with other elements. */
   width: 100%;
   background: none;
   border: none;
   outline: none;
   font-family: var(--font-mono);
-  font-size: var(--fs-xs);
+  font-size: var(--fs-md);
   color: var(--text);
 }
 .sb-section-header-row {

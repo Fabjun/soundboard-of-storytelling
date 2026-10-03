@@ -477,6 +477,7 @@ describe('guard: timers are listed with their reason (delayed writes use debounc
     'audio/engine.ts': 'V1 audio engine: fades, combo steps, pause timers (ADR-0044)',
     'components/LibraryPanel.tsx': 'long press starts the library drag',
     'components/ModeToggle.tsx': 'removes the spark elements after their animation',
+    'components/UpdatePrompt.tsx': 'asks the server for a new version every hour (ADR-0066)',
     'components/UndoToast.tsx': 'hides the toast; the deletion itself is already saved',
     'lib/backupExport.ts': 'revokes the download URL once the browser has taken the file',
     'lib/debouncedSave.ts': 'the delayed write itself — flushed, never dropped',

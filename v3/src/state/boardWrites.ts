@@ -55,6 +55,22 @@ export async function createBoard(board: Board): Promise<Board | null> {
   return save(board);
 }
 
+/**
+ * Resolves once no save is running (`pendingSaves` is 0) — at once when none runs. Used before
+ * the page reloads for a new version, so a running save is not cut off.
+ */
+export function whenSaved(): Promise<void> {
+  return new Promise((resolve) => {
+    let done = false;
+    const stop = pendingSaves.subscribe((count) => {
+      if (count > 0 || done) return;
+      done = true;
+      resolve();
+      queueMicrotask(() => stop()); // `stop` exists by then, also after the first, synchronous call
+    });
+  });
+}
+
 async function save(board: Board): Promise<Board | null> {
   pendingSaves.value++; // synchronously, before the first await — callers see it at once
   try {

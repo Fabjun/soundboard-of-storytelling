@@ -62,6 +62,19 @@ Versions are one per push (3.0.N) — not Semantic Versioning, stated in `CHANGE
 - **Changing the format of `changelog.ts`:** would break the merge of every stacked branch — not
   taken.
 
+## Amendments
+
+**2026-10-03:** Every version has an entry, each with its details (owner decision 2026-10-03,
+after What's new jumped from 3.0.149 to 3.0.157). Keep a Changelog: "There should be an entry
+for every single version." From the cutover (3.0.135) on, every version in the changelog has a
+What's new entry; a version without a visible change says in plain words under the new group
+**Behind the scenes** what was done. Each version also folds out its full developer changelog
+under **Details** (HTML disclosure element) — the owner chose this over plain entries only, a
+partial deviation from Keep a Changelog's advice against commit lists for readers, accepted
+because the list shows only on request. `whatsNew.test.ts` now requires an entry for every
+version from the cutover on (it required one only for versions with a user-facing change). The
+112 versions before the cutover stay condensed into one entry.
+
 ## Related
 
 - **Files:** `v3/src/lib/whatsNew.ts`, `v3/src/lib/changelog.ts`, `v3/scripts/sync-changelog.ts`,

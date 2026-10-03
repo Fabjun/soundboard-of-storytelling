@@ -146,3 +146,23 @@ because Playwright runs against a simulated environment:
   - Action: Rotate the device while using the app.
   - Expected: Layout reflows correctly in both orientations. No elements off-screen.
   - Why manual: Orientation change events and viewport resize require a real device.
+
+- [ ] **Browser gestures are off** _(3.0.159, ADR-0067)_
+  - Action: On the board and in the library: double-tap, pinch with two fingers, long-press a pad
+    name and a label; tap into the library search field.
+  - Expected: No zoom, no text selection, no iOS menu, no grey tap flash; the search field does not
+    zoom in when tapped.
+  - Why manual: The iOS long-press menu and focus zoom exist only on iOS.
+
+- [ ] **Typing in text fields still works** _(3.0.159 — selection is off in fields too)_
+  - Action: Rename a pad in the PAD editor, type in the library search, type a trim value.
+  - Expected: Typing works in every field. If a field takes no input, report it — selection in
+    text fields then comes back (BACKLOG "Text fields with selection off").
+  - Why manual: The WebKit fault (selection off blocks typing) shows only on the device.
+
+- [ ] **Update prompt** _(3.0.159, ADR-0066)_
+  - Action: Keep the app open while a new version is published (or open it after one), wait a
+    moment.
+  - Expected: "A new version is ready." appears; LATER hides it; RELOAD reloads, and the version
+    in the start screen footer is the new one.
+  - Why manual: A real deploy and the installed app on the phone.

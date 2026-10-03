@@ -7,6 +7,27 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.159 — 2026-10-03
+
+### Added
+
+- feat(pwa): update prompt — a new version waits until RELOAD (after running saves) or LATER, registerType prompt without skipWaiting / clientsClaim, hourly check while online (ADR-0066; owner report: the phone showed an old version until the second reload)
+- feat(ui): browser gestures off on every element — no double-tap or pinch zoom, no selection, long-press menu, drag or tap flash (ADR-0067, owner decisions; pinch zoom and selection in text fields are recorded exceptions)
+- feat(whats-new): every version from 3.0.135 has an entry, the missing ten under 'Behind the scenes'; each version folds out its developer changelog under Details (ADR-0063 amendment)
+
+### Changed
+
+- refactor(ui): one toast base (sb-toast) for the undo toast and the update prompt
+
+### Fixed
+
+- fix(library): the search field has 16 px text — iOS zoomed into it on focus
+
+### Internal
+
+- build(licenses): third-party-licenses.txt is read from the bundle plus the runtime dependencies of each bundled package, not from package.json (ADR-0057 amendment) — covers workbox-window (dev dependency, shipped through the virtual module) and the workbox-core inside it
+- test: update prompt against the production build (simulated deploy), gestures on five screens in Chromium and WebKit, every version in What's new, Details in E2E, whenSaved — all counter-checked
+
 ## 3.0.158 — 2026-10-03
 
 ### Added

@@ -13,12 +13,32 @@ import preact from '@preact/preset-vite';
 import { VitePWA } from 'vite-plugin-pwa';
 
 /**
- * Ships the license text of every production dependency — direct and transitive — as
- * dist/third-party-licenses.txt. MIT/ISC require the notice in copies; the self-hosted fonts'
- * OFL requires the license alongside the font files (audit A2). Derived from package.json at
- * build time; a package without a license file fails the build instead of shipping silently.
+ * Returns the root folder of the package a bundled module comes from — the folder after the last
+ * `node_modules/` in its id (scoped names keep their scope) — or null for the app's own code and
+ * virtual modules. Nested package.json files (e.g. preact/hooks) do not count as packages.
+ */
+function packageRootOf(id: string): string | null {
+  const path = id.replace(/^\0/, '').split('?')[0];
+  const marker = '/node_modules/';
+  const at = path.lastIndexOf(marker);
+  if (at < 0) return null;
+  const [first, second] = path.slice(at + marker.length).split('/');
+  return path.slice(0, at + marker.length) + (first.startsWith('@') ? `${first}/${second}` : first);
+}
+
+/**
+ * Ships the license text of every package whose code is in the bundle as
+ * dist/third-party-licenses.txt. The packages are read from the modules Rollup bundled, as
+ * rollup-plugin-license does — so a package reached through a virtual module (workbox-window via
+ * virtual:pwa-register/preact) is covered and an unused dependency is not — plus their runtime
+ * dependencies, transitively: a package may ship a prebuilt file with its dependencies inside
+ * (workbox-window carries workbox-core), which no module id shows; listing one too many costs
+ * nothing, one too few breaks a license. MIT/ISC require the notice in copies; the self-hosted
+ * fonts' OFL requires the license alongside the font files (audit A2). A package without a
+ * license file fails the build instead of shipping silently.
  */
 function licenseNotices(): Plugin {
+  /** Folder of `name` as Node resolves it from `from`: nested first, then the top level. */
   const pkgDir = (name: string, from: string): string => {
     const nested = join(from, 'node_modules', name);
     return existsSync(nested) ? nested : join('node_modules', name);
@@ -26,10 +46,9 @@ function licenseNotices(): Plugin {
   return {
     name: 'license-notices',
     apply: 'build',
-    generateBundle() {
+    generateBundle(_options, bundle) {
       const seen = new Map<string, string>();
-      const visit = (name: string, from: string): void => {
-        const dir = pkgDir(name, from);
+      const visit = (dir: string): void => {
         const meta = JSON.parse(readFileSync(join(dir, 'package.json'), 'utf8')) as {
           name: string;
           version: string;
@@ -44,12 +63,15 @@ function licenseNotices(): Plugin {
           key,
           `${key} — ${meta.license ?? 'see text'}\n\n${readFileSync(join(dir, file), 'utf8').trim()}`,
         );
-        for (const dep of Object.keys(meta.dependencies ?? {})) visit(dep, dir);
+        for (const dep of Object.keys(meta.dependencies ?? {})) visit(pkgDir(dep, dir));
       };
-      const own = JSON.parse(readFileSync('package.json', 'utf8')) as {
-        dependencies: Record<string, string>;
-      };
-      for (const dep of Object.keys(own.dependencies)) visit(dep, '.');
+      for (const output of Object.values(bundle)) {
+        if (output.type !== 'chunk') continue;
+        for (const id of Object.keys(output.modules)) {
+          const root = packageRootOf(id);
+          if (root) visit(root);
+        }
+      }
       const texts = [...seen.keys()].sort().map((k) => seen.get(k));
       this.emitFile({
         type: 'asset',
@@ -74,10 +96,11 @@ export default defineConfig(({ command }) => ({
     preact(),
     licenseNotices(),
     VitePWA({
-      registerType: 'autoUpdate',
+      // A new version waits until the user taps RELOAD (src/components/UpdatePrompt.tsx,
+      // ADR-0066) — never a reload in the middle of a game. Hence no skipWaiting / clientsClaim:
+      // the prompt appears while the new service worker is waiting.
+      registerType: 'prompt',
       workbox: {
-        clientsClaim: true,
-        skipWaiting: true,
         // woff2: the self-hosted fonts must be there offline (audit A2); every supported
         // browser reads woff2, so the woff fallbacks are not precached.
         globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],

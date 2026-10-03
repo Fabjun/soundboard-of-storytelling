@@ -3,7 +3,7 @@
  *
  * What's new is for the people who use the app (plain sentences, no technical terms); the
  * changelog is the per-push developer record (every item starts with a commit type). From the
- * cutover on, every user-facing change in the changelog has a What's new entry for its version.
+ * cutover on, every version in the changelog has a What's new entry (owner decision 2026-10-03).
  */
 
 import { CHANGELOG } from '../../src/lib/changelog';
@@ -28,8 +28,6 @@ const sentences = (e: WhatsNewEntry): string[] => WHATS_NEW_GROUPS.flatMap(([key
 /** Commit types (ADR-0060) plus the two older prefixes the history uses. */
 const COMMIT_TYPE =
   /^(feat|fix|perf|refactor|docs|test|ci|build|chore|style|revert|a11y|security)(\([^)]+\))?!?: /;
-/** Changes people notice — the scopes after them are internal even for a fix. */
-const USER_FACING = /^(feat|fix|perf|a11y)(?!\((test|ci|docs|build)\))(\([^)]+\))?!?: /;
 /** Personal address — documents never speak to the reader (owner rule 2026-10-03). */
 const PERSONAL = /\b(you|your|yours|yourself)\b/i;
 /** A sentence that opens with a command speaks to the reader too ("Sort …", "Drag …"). */
@@ -82,13 +80,15 @@ describe("What's new (in the app)", () => {
     expect(order).toEqual([...order].sort((a, b) => compare(b, a)));
   });
 
-  it("from the cutover on, every user-facing change has a What's new entry for its version", () => {
+  it("from the cutover on, every version has a What's new entry — no gaps (Keep a Changelog)", () => {
     const covered = new Set(WHATS_NEW.map((e) => e.version));
     const missing = CHANGELOG.filter((c) => compare(c.version, CUTOVER) >= 0)
-      .filter((c) => c.items.some((i) => USER_FACING.test(i)))
       .filter((c) => !covered.has(c.version))
       .map((c) => c.version);
-    expect(missing, 'add an entry to src/lib/whatsNew.ts').toEqual([]);
+    expect(
+      missing,
+      'add an entry to src/lib/whatsNew.ts ("Behind the scenes" if nothing visible changed)',
+    ).toEqual([]);
   });
 });
 

@@ -128,7 +128,8 @@
 - **Preferences**: IndexedDB too — key-value store `keyval`, loaded before the first render
   (`v3/src/state/prefs.ts`); no Web Storage anywhere (ADR-0062, owner decision 2026-10-02).
 - **PWA**: managed via `vite-plugin-pwa`. No hand-written service worker (V1 had one). Auto-
-  generated SHELL list, auto-bumped version on build.
+  generated SHELL list, auto-bumped version on build. A new version waits until the user taps
+  RELOAD in the update prompt — never an automatic reload (ADR-0066).
 - **No third-party origins at runtime** (ADR-0057): fonts and all other assets are
   self-hosted and precached; every build ships `third-party-licenses.txt` with the license
   of each production dependency. Guarded by `v3/tests/e2e/pwa.spec.ts`.
@@ -282,6 +283,10 @@ and has diverged). Never hardcode colors, fonts, or spacing.
   error messages say in plain words what happened and what to do (Nielsen heuristic 9) — owner
   decision 2026-10-02; the existing screens get an audit (BACKLOG "Tab access and plain errors")
 - Minimum touch target on all interactive elements: 44px (iOS guideline)
+- The browser's own gestures are off — no zoom, no selection, no long-press menu (global rule in
+  `v3/src/styles/global.css`, ADR-0067); a gesture the app needs is built with Pointer Events and
+  has a non-gesture alternative; text fields have at least 16px text (iOS focus zoom); guarded by
+  `v3/tests/e2e/system-gestures.spec.ts`
 - `overscroll-behavior: none` on all fixed overlay panels
 - `-webkit-overflow-scrolling: touch` on all scroll containers
 

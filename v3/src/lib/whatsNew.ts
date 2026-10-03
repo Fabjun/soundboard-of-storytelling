@@ -1,11 +1,14 @@
 /**
  * @fileoverview What's new — the release notes the app shows (ADR-0063)
  *
- * Written by hand for the people who use the app: only changes they can notice, in plain words,
- * saying what the app can do now. Grouped per version as New / Improved / Fixed / Removed, newest
- * first. The notes never address the reader — no "you", no commands; the app or the feature is the
- * subject (owner rule 2026-10-03). Internal work (tests, documentation, tooling) never appears
- * here — it is recorded in src/lib/changelog.ts, from which CHANGELOG.md is generated.
+ * Written by hand for the people who use the app, in plain words, saying what the app can do now.
+ * Every version from 3.0.135 on has an entry (Keep a Changelog: "There should be an entry for every
+ * single version"; owner decision 2026-10-03); earlier history is condensed. Grouped per version as
+ * New / Improved / Fixed / Removed, newest first; a version without a visible change says in
+ * "Behind the scenes" what was done, in plain words. The technical detail stays in
+ * src/lib/changelog.ts (CHANGELOG.md is generated from it); the app folds it out per version
+ * under "Details" (ADR-0063 amendment). The notes never address the reader —
+ * no "you", no commands; the app or the feature is the subject (owner rule 2026-10-03).
  * Checked by tests/unit/whatsNew.test.ts.
  */
 
@@ -23,6 +26,8 @@ export interface WhatsNewEntry {
   fixed?: string[];
   /** Things that are gone. */
   removed?: string[];
+  /** Work that changes nothing visible (checks, documentation, plans), in plain words. */
+  behindTheScenes?: string[];
 }
 
 /** The headings of the groups, in the order the app shows them. */
@@ -31,12 +36,14 @@ export const WHATS_NEW_GROUPS = [
   ['improved', 'Improved'],
   ['fixed', 'Fixed'],
   ['removed', 'Removed'],
+  ['behindTheScenes', 'Behind the scenes'],
 ] as const;
 
 /**
  * Returns the line at the top of What's new: the running version, and — when the newest notes
- * belong to an earlier version — which one, because versions without visible changes (tests,
- * documentation) have no notes (owner question 2026-10-03: "155 shown, notes end at 149").
+ * belong to an earlier version — which one (owner question 2026-10-03: "155 shown, notes end at
+ * 149"). Since every version has notes (ADR-0063 amendment, checked by whatsNew.test.ts), the
+ * second form shows only if the notes of the running version were missing.
  */
 export function versionLine(appVersion: string, entries: readonly WhatsNewEntry[]): string {
   const latest = entries[0]?.version;
@@ -47,6 +54,19 @@ export function versionLine(appVersion: string, entries: readonly WhatsNewEntry[
 
 /** The release notes the start screen shows, newest first (checked by whatsNew.test.ts). */
 export const WHATS_NEW: WhatsNewEntry[] = [
+  {
+    version: '3.0.159',
+    date: '2026-10-03',
+    new: [
+      'When a new version of the app is ready, a notice offers to reload; the app reloads only on request, never in the middle of a game.',
+      "Every version in What's new folds out the full list of its changes under Details.",
+    ],
+    improved: [
+      'Double tap, two-finger zoom and long press no longer zoom the page or select text; the app can use these gestures for itself later.',
+      "What's new lists every version, also those that changed nothing visible.",
+    ],
+    fixed: ['On iPhone, tapping into the library search no longer zooms the page in.'],
+  },
   {
     version: '3.0.158',
     date: '2026-10-03',
@@ -68,10 +88,78 @@ export const WHATS_NEW: WhatsNewEntry[] = [
     ],
   },
   {
+    version: '3.0.156',
+    date: '2026-10-03',
+    behindTheScenes: [
+      'The plan for the PAD editor was laid out in four steps: preview and trimming, several files per pad, repeats, and icons; pad templates move to the library.',
+    ],
+  },
+  {
+    version: '3.0.155',
+    date: '2026-10-03',
+    behindTheScenes: [
+      'A test on a real Android phone was planned for before the app is shared with other people.',
+    ],
+  },
+  {
+    version: '3.0.154',
+    date: '2026-10-03',
+    behindTheScenes: [
+      'A correction was recorded: the backup was tested on a MacBook, not yet on an iPhone — the iPhone test is still open.',
+    ],
+  },
+  {
+    version: '3.0.153',
+    date: '2026-10-03',
+    behindTheScenes: [
+      'The backup test was recorded and the public project description was brought up to date; the device of the test was corrected in 3.0.154.',
+    ],
+  },
+  {
+    version: '3.0.152',
+    date: '2026-10-03',
+    behindTheScenes: [
+      'An idea was noted: built-in sample sounds that may be shared freely, for the first launch.',
+    ],
+  },
+  {
+    version: '3.0.151',
+    date: '2026-10-03',
+    behindTheScenes: [
+      'All documents and these notes were rewritten so that they never address the reader; an automatic check keeps it that way.',
+    ],
+  },
+  {
+    version: '3.0.150',
+    date: '2026-10-03',
+    behindTheScenes: [
+      'The checklist for manual tests on the iPhone gained the steps for saving and restoring a backup.',
+    ],
+  },
+  {
     version: '3.0.149',
     date: '2026-10-03',
     fixed: [
       'On a narrow screen, adding a pad to an empty cell no longer shows a wrong cell name in the title.',
+    ],
+  },
+  {
+    version: '3.0.148',
+    date: '2026-10-03',
+    behindTheScenes: [
+      'The structure of the project was reviewed: outdated plan names and notes were removed, and the automatic checks now demand more test coverage.',
+    ],
+  },
+  {
+    version: '3.0.147',
+    date: '2026-10-03',
+    behindTheScenes: ['The remaining descriptions in the code were completed.'],
+  },
+  {
+    version: '3.0.146',
+    date: '2026-10-03',
+    behindTheScenes: [
+      'Every part of the code now carries a description in one common form, checked automatically; three unused definitions were removed.',
     ],
   },
   {

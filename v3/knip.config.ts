@@ -17,10 +17,6 @@ const config: KnipConfig = {
   project: ['src/**/*.{ts,tsx}!', 'scripts/**/*.ts', 'tests/**/*.ts'],
   // A symbol exported for its signature and used in its own file is not dead code
   ignoreExportsUsedInFile: true,
-  ignoreIssues: {
-    // The developer log is read by scripts/sync-changelog.ts (CHANGELOG.md), not by the app
-    'src/lib/changelog.ts': ['exports'],
-  },
   // Code kept for a later slice or a parked feature (ADR-0064, codeGuards)
   tags: ['-reserved'],
   ignoreDependencies: [

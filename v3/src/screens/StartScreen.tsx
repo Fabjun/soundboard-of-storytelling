@@ -15,14 +15,38 @@ import { PixelIcon } from '../components/PixelIcon';
 import { AnimatedFlame } from '../components/AnimatedFlame';
 import { audioContextState, currentScreen } from '../state/store';
 import { initAudio } from '../audio/index';
-import { APP_VERSION } from '../lib/changelog';
+import { APP_VERSION, CHANGELOG } from '../lib/changelog';
 import { versionLine, WHATS_NEW, WHATS_NEW_GROUPS } from '../lib/whatsNew';
 
 declare const __BUILD_DATE__: string;
 
+/** The developer changelog items of each version, shown under "Details" (owner decision 2026-10-03). */
+const DETAILS = new Map(CHANGELOG.map((c) => [c.version, c.items]));
+
 // ── WhatsNewOverlay ───────────────────────────────────────────────────────────
 
-/** The release notes for the people who use the app, newest version first (ADR-0063). */
+/** Folds out every change of one version, as recorded for developers; nothing if none is. */
+function VersionDetails({ version }: { version: string }): JSX.Element | null {
+  const items = DETAILS.get(version);
+  if (!items?.length) return null;
+  return (
+    <details data-testid={`start-screen-whats-new-details-region-${version}`}>
+      <summary class="sb-whats-new-group sb-whats-new-details-toggle">Details</summary>
+      <ul class="sb-whats-new-items">
+        {items.map((item) => (
+          <li key={item} class="sb-mono sb-whats-new-item">
+            {item}
+          </li>
+        ))}
+      </ul>
+    </details>
+  );
+}
+
+/**
+ * The release notes for the people who use the app, newest version first (ADR-0063); each version
+ * folds out its full developer changelog under "Details" (HTML disclosure element).
+ */
 function WhatsNewOverlay({ onClose }: { onClose: () => void }): JSX.Element {
   return (
     <div class="sb-overlay" data-testid="start-screen-whats-new-region">
@@ -65,6 +89,8 @@ function WhatsNewOverlay({ onClose }: { onClose: () => void }): JSX.Element {
                 </div>
               );
             })}
+
+            <VersionDetails version={entry.version} />
           </section>
         ))}
       </div>

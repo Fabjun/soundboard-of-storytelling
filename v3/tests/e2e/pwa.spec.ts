@@ -9,7 +9,7 @@
  * Run: `npm run test:e2e:prod` (builds, then serves dist/ via vite preview).
  */
 
-import { readFileSync } from 'node:fs';
+import { readFileSync, writeFileSync } from 'node:fs';
 import { test, expect, type Page } from '@playwright/test';
 import { createBoardAndNavigate, goToBoardList, reloadApp, waitForSaves } from './helpers';
 
@@ -21,7 +21,8 @@ async function loadControlled(page: Page): Promise<void> {
   await page.evaluate(async () => {
     await navigator.serviceWorker.ready;
   });
-  // clientsClaim: the active worker takes control; a reload guarantees a controlled load.
+  // The first worker activates at once but controls only pages loaded after it (no clientsClaim,
+  // ADR-0066); the reload is such a page.
   await reloadApp(page);
   await expect
     .poll(() => page.evaluate(() => navigator.serviceWorker.controller !== null))
@@ -63,12 +64,49 @@ test('ships the license notices of every production dependency', async ({ page }
   const text = await res.text();
   for (const dep of Object.keys(pkg.dependencies)) expect(text, dep).toContain(`${dep}@`);
   expect(text).toContain('SIL Open Font License');
+  // Read from the bundle: a dev dependency that ships through a virtual module, and what its
+  // prebuilt file carries inside (ADR-0066)
+  expect(text).toContain('workbox-window@');
+  expect(text).toContain('workbox-core@');
 });
 
 test('service worker installs and controls the page', async ({ page }) => {
   await loadControlled(page);
   const scope = await page.evaluate(async () => (await navigator.serviceWorker.ready).scope);
   expect(scope).toMatch(/\/soundboard-of-storytelling\/$/);
+});
+
+test('a new version waits until RELOAD, then takes over (ADR-0066)', async ({ page }) => {
+  await loadControlled(page);
+  // A deploy, simulated: dist/sw.js gets other bytes. Playwright's routes do not reach the
+  // browser's fetch of a service worker script (measured 2026-10-03: 0 requests routed), so the
+  // file itself changes — one character, same length (the preview server knows each file's
+  // size) — and is restored afterwards. The pwa project runs one test at a time (workers: 1).
+  const swFile = new URL('../../dist/sw.js', import.meta.url);
+  const original = readFileSync(swFile, 'utf8');
+  const at = original.indexOf('revision:"') + 'revision:"'.length;
+  const flipped = (parseInt(original[at], 16) ^ 1).toString(16); // another hex digit, always
+  writeFileSync(swFile, original.slice(0, at) + flipped + original.slice(at + 1));
+  try {
+    await page.evaluate(async () => {
+      await (await navigator.serviceWorker.getRegistration())?.update();
+    });
+
+    // The new version waits; the page is not reloaded on its own
+    await expect(page.getByTestId('update-prompt')).toBeVisible();
+    // A mark on this document: it is gone once the page has reloaded
+    await page.evaluate(() => document.documentElement.setAttribute('data-old-page', ''));
+    const waiting = () =>
+      page.evaluate(async () => !!(await navigator.serviceWorker.getRegistration())?.waiting);
+    expect(await waiting()).toBe(true);
+
+    await page.getByTestId('update-prompt-reload-button').click();
+    await expect(page.locator('html')).not.toHaveAttribute('data-old-page'); // reloaded
+    await expect(page.getByTestId('update-prompt')).toBeHidden();
+    await expect.poll(waiting).toBe(false); // the new version took over
+  } finally {
+    writeFileSync(swFile, original);
+  }
 });
 
 test('manifest is linked with the app name and start URL', async ({ page }) => {

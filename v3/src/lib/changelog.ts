@@ -17,10 +17,23 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.158';
+export const APP_VERSION = '3.0.159';
 
 /** The developer log, newest first; CHANGELOG.md is generated from it (sync-changelog). */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.159',
+    date: '2026-10-03',
+    items: [
+      'feat(pwa): update prompt — a new version waits until RELOAD (after running saves) or LATER, registerType prompt without skipWaiting / clientsClaim, hourly check while online (ADR-0066; owner report: the phone showed an old version until the second reload)',
+      'build(licenses): third-party-licenses.txt is read from the bundle plus the runtime dependencies of each bundled package, not from package.json (ADR-0057 amendment) — covers workbox-window (dev dependency, shipped through the virtual module) and the workbox-core inside it',
+      'feat(ui): browser gestures off on every element — no double-tap or pinch zoom, no selection, long-press menu, drag or tap flash (ADR-0067, owner decisions; pinch zoom and selection in text fields are recorded exceptions)',
+      'fix(library): the search field has 16 px text — iOS zoomed into it on focus',
+      "feat(whats-new): every version from 3.0.135 has an entry, the missing ten under 'Behind the scenes'; each version folds out its developer changelog under Details (ADR-0063 amendment)",
+      'refactor(ui): one toast base (sb-toast) for the undo toast and the update prompt',
+      "test: update prompt against the production build (simulated deploy), gestures on five screens in Chromium and WebKit, every version in What's new, Details in E2E, whenSaved — all counter-checked",
+    ],
+  },
   {
     version: '3.0.158',
     date: '2026-10-03',

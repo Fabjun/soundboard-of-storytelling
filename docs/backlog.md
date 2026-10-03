@@ -88,6 +88,46 @@ decoded loops. The owner has no Android device (2026-10-03); options: a real-dev
 `docs/development/manual-iphone-checklist.md`.
 **When:** before the app is released to other people.
 
+### App gestures
+
+The browser's own gestures are off (ADR-0067), so the app can use them. Owner idea 2026-10-03:
+two fingers on the pad overview set the size of the pads (pad zoom, `docs/design/components/pad.md`);
+further candidates: double tap or long press on a pad. Every gesture needs a non-gesture way too
+(WCAG 2.5.1 Pointer Gestures) and is built with Pointer Events. Pad zoom also gives back part of
+what the pinch-zoom exception of ADR-0067 takes.
+**When:** discussed with the owner with Slice 13 (owner decision 2026-10-03).
+
+### Text fields with selection off
+
+ADR-0067 switches text selection off in text fields too (owner decision). WebKit has known faults
+where `user-select: none` keeps a field from taking input (bugs 82692, 156518). If the iPhone
+check of 3.0.159 shows a field that takes no typing, selection comes back for text fields
+(`input, textarea { user-select: text }`).
+**When:** the owner's first iPhone check of 3.0.159.
+
+### Reload right after an edit
+
+RELOAD in the update prompt (ADR-0066) waits for running saves, but an edit typed less than half a
+second before still waits in the PAD editor's auto-save; it is written when the page is hidden,
+and the browser does not promise that a write started during unload finishes. Option: the
+editor's pending save registers with the save counter, so RELOAD waits for it too.
+**When:** with Slice 12 (live control) or when a lost edit is seen.
+
+### GitHub runner image change
+
+CI annotation 2026-10-03: "The ubuntu-latest label will migrate to Ubuntu 26 beginning October
+19, 2026" (actions/runner-images#14748). Check the CI runs on the new image (browsers, fonts).
+**When:** at the next structure review, before 2026-10-19.
+
+### License notices of the service worker
+
+`third-party-licenses.txt` is read from the app bundle (ADR-0057 amendment). The service worker
+runtime that vite-plugin-pwa builds separately (`dist/workbox-*.js`) ships workbox-precaching,
+workbox-routing and workbox-strategies (measured by their `workbox:<name>:` markers, 2026-10-03);
+their licenses are not in the notices — a gap that existed before the change. Option: after the
+build, read the markers of the generated file and add those packages.
+**When:** waits for the owner's approval (proposed 2026-10-03).
+
 ### Backup reminder threshold as a setting
 
 Owner decision B5 (2026-10-02): the board list reminds after seven days without a backup
