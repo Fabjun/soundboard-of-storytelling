@@ -27,8 +27,8 @@ Inline: `// eslint-disable-next-line <rule> -- <reason>` (enforced by `require-d
 
 | Location                                       | Rule                                      | Reason                                                                                       |
 | ---------------------------------------------- | ----------------------------------------- | -------------------------------------------------------------------------------------------- |
-| `v3/src/components/PadEditorPanel.tsx:92`      | `react-hooks/exhaustive-deps`             | reset only when a different pad is opened (pad.id), not on every auto-save                   |
-| `v3/src/screens/BoardScreen.tsx:77`            | `react-hooks/exhaustive-deps`             | auto-select only on board identity change, never override the user's deck choice             |
+| `v3/src/components/PadEditorPanel.tsx:98`      | `react-hooks/exhaustive-deps`             | reset only when a different pad is opened (pad.id), not on every auto-save                   |
+| `v3/src/screens/BoardScreen.tsx:86`            | `react-hooks/exhaustive-deps`             | auto-select only on board identity change, never override the user's deck choice             |
 | `v3/tests/e2e/deck-crud.spec.ts:76`            | `playwright/no-skipped-test`              | quarantine: feature not built (BACKLOG "Deck reorder")                                       |
 | `v3/tests/e2e/mobile/overflow.spec.ts:30`      | `playwright/no-skipped-test`              | quarantine: mobile layout not built until Slice 13 (BACKLOG "Re-enable mobile layout tests") |
 | `v3/tests/e2e/mobile/touch-targets.spec.ts:34` | `playwright/no-skipped-test`              | quarantine: mobile layout not built until Slice 13 (BACKLOG "Re-enable mobile layout tests") |
@@ -107,7 +107,7 @@ Historical docs excluded in `.vale.ini`, and passages marked `<!-- vale … = NO
 | `.vale.ini`                                            | `docs/product/v1-v2-inventory.md` | historical record — keeps the names valid at its time                             |
 | `.vale.ini`                                            | `CHANGELOG.md`                    | historical record — keeps the names valid at its time                             |
 | `.vale.ini`                                            | `docs/development/exceptions.md`  | historical record — keeps the names valid at its time                             |
-| `CLAUDE.md:693`                                        | `SoS.SupersededTerms` off         | historical slice records keep the names valid at the time (Scene before Slice 9b) |
+| `CLAUDE.md:694`                                        | `SoS.SupersededTerms` off         | historical slice records keep the names valid at the time (Scene before Slice 9b) |
 | `docs/architecture/0056-documentation-freshness.md:32` | `SoS.SupersededTerms` off         | …                                                                                 |
 | `docs/architecture/concept-brief.md:75`                | `SoS.SupersededTerms` off         | explains the rename                                                               |
 | `docs/product/README.md:108`                           | `SoS.SupersededTerms` off         | records the rename decision                                                       |

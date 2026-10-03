@@ -30,7 +30,13 @@ import { PixelIcon } from './PixelIcon';
 import { Waveform } from './Waveform';
 import { PadTypeConfirmDialog } from './PadTypeConfirmDialog';
 import { ComboStepsEditor } from './ComboStepsEditor';
-import { padTypeColor, padTypeLabel, applyTypeChange, padMigrationMatrix } from '../lib/padUtils';
+import {
+  padBaseOf,
+  padTypeColor,
+  padTypeLabel,
+  applyTypeChange,
+  padMigrationMatrix,
+} from '../lib/padUtils';
 import { libraryItems } from '../state/store';
 import { updateBoard } from '../state/boardWrites';
 import { deckCount, placeInDeck, removeFromDeck, updatePad } from '../lib/boardModel';
@@ -108,14 +114,14 @@ export function PadEditorPanel({
   // filesOverride: when the files state hasn't committed yet (handleLibrarySelect)
   function buildCurrentPad(filesOverride?: string[], stepsOverride?: ComboStep[]): Pad {
     const effectiveFiles = filesOverride ?? files;
+    // Everything the pad has, with the edited fields on top; an edit is a modification
     const base: PadBase = {
-      id: pad.id,
+      ...padBaseOf(pad),
       name,
-      iconRef: pad.iconRef,
-      color: pad.color,
       volume,
       fadeIn,
       fadeOut,
+      modifiedAt: Date.now(),
     };
     if (type === 'combo') return { ...base, type, steps: stepsOverride ?? steps };
     // Order and trim are not edited here yet — keep what the pad has

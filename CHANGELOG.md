@@ -7,6 +7,12 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.143 — 2026-10-03
+
+### Added
+
+- feat(decks): All pads sorting remembered per board, duplicated deck after its original; refactor(prefs): UI preferences in IndexedDB, ADR-0062 (PR #39, squash of review-changes)
+
 ## 3.0.142 — 2026-10-03
 
 ### Added
@@ -173,6 +179,17 @@ release notes the app shows are written separately for its users (`v3/src/lib/wh
 ### Internal
 
 - docs: review log — the review session with the owner and PR #39
+
+## 3.0.109 — 2026-10-02
+
+### Added
+
+- feat(decks): a duplicated deck appears directly after its original (owner decision D4 after research)
+- feat(decks): All pads can be sorted — name, date added, date modified, kind, not in a deck first, duration, last played — each reversible and remembered per board (owner decision E1)
+
+### Changed
+
+- refactor(prefs): UI preferences (last view, last backup) live in IndexedDB instead of Web Storage (owner decision L1 after research); DB v6 only adds a store
 
 ## 3.0.108 — 2026-10-02
 

@@ -17,9 +17,16 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.142';
+export const APP_VERSION = '3.0.143';
 
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.143',
+    date: '2026-10-03',
+    items: [
+      'feat(decks): All pads sorting remembered per board, duplicated deck after its original; refactor(prefs): UI preferences in IndexedDB, ADR-0062 (PR #39, squash of review-changes)',
+    ],
+  },
   {
     version: '3.0.142',
     date: '2026-10-03',
@@ -197,6 +204,15 @@ export const CHANGELOG: ChangelogEntry[] = [
     version: '3.0.110',
     date: '2026-10-02',
     items: ['docs: review log — the review session with the owner and PR #39'],
+  },
+  {
+    version: '3.0.109',
+    date: '2026-10-02',
+    items: [
+      'feat(decks): a duplicated deck appears directly after its original (owner decision D4 after research)',
+      'refactor(prefs): UI preferences (last view, last backup) live in IndexedDB instead of Web Storage (owner decision L1 after research); DB v6 only adds a store',
+      'feat(decks): All pads can be sorted — name, date added, date modified, kind, not in a deck first, duration, last played — each reversible and remembered per board (owner decision E1)',
+    ],
   },
   {
     version: '3.0.108',

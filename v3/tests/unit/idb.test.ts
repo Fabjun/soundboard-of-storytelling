@@ -23,6 +23,9 @@ import {
   libGetAllMeta,
   libRename,
   _resetDB,
+  kvDelete,
+  kvGetAll,
+  kvPut,
 } from '../../src/db/idb';
 import { newPad } from '../../src/lib/padUtils';
 
@@ -293,5 +296,29 @@ describe('DB upgrade to v5', () => {
     await boardPut(b);
     _resetDB();
     expect(await boardGet('b5')).toEqual(b);
+  });
+});
+
+// ── Upgrade v5 → v6 (key-value store for preferences, 2026-10-02) ─────────────
+
+describe('DB upgrade to v6', () => {
+  test('only adds the key-value store — boards and library audio stay', async () => {
+    const v5 = await openDB('sos-v3', 5, {
+      upgrade(db) {
+        db.createObjectStore('library', { keyPath: 'id' });
+        db.createObjectStore('boards', { keyPath: 'id' });
+      },
+    });
+    const board = { ...makeBoard('KEEP'), pads: [], quickAccess: [] };
+    await v5.put('boards', board);
+    await v5.put('library', makeLibraryItem('HASH1', 'keep.mp3'));
+    v5.close();
+
+    expect(await boardGetAll()).toEqual([board]);
+    expect((await libGetAllMeta()).map((m) => m.id)).toEqual(['HASH1']);
+    await kvPut('last-backup', 1);
+    expect(await kvGetAll()).toEqual([['last-backup', 1]]);
+    await kvDelete('last-backup');
+    expect(await kvGetAll()).toEqual([]);
   });
 });

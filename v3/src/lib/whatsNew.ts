@@ -34,6 +34,17 @@ export const WHATS_NEW_GROUPS = [
 
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
+    version: '3.0.143',
+    date: '2026-10-03',
+    new: [
+      'Sort All pads by name, date added, date modified, kind, duration or last played, or show the pads that are in no deck first — each order can be reversed, and every board remembers its choice.',
+    ],
+    improved: [
+      'A duplicated deck appears directly after its original.',
+      'The app keeps its settings in the same storage as your boards. After this update every board opens once in its first deck, and the board list shows "No backup yet" until your next export.',
+    ],
+  },
+  {
     version: '3.0.142',
     date: '2026-10-03',
     new: [

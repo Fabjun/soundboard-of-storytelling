@@ -227,3 +227,18 @@ test('a new deck after deleting a middle one: badges stay 1, 2, 3; the name fill
   // Badge = position in the rail; the new deck is appended and named after the free number
   expect(labels).toEqual(['1 Deck 1', '2 Deck 3', '3 Deck 2']);
 });
+
+test('a duplicated deck appears directly after its original', async ({ page }) => {
+  const tabs = page.locator('[data-testid^="deck-rail-deck-tab-"]');
+  await page.getByTestId('deck-rail-new-button').click();
+  await page.getByTestId('deck-rail-new-button').click();
+  await expect(tabs).toHaveCount(2);
+  await tabs.first().hover();
+  await tabs.first().locator('[data-testid^="deck-rail-copy-button-"]').click();
+  await expect(tabs).toHaveCount(3);
+  // Badge (position) and name of each tab: the copy sits between Deck 1 and Deck 2
+  const labels = await tabs.evaluateAll((els) =>
+    els.map((el) => `${el.children[0]?.textContent} ${el.children[1]?.textContent}`),
+  );
+  expect(labels).toEqual(['1 Deck 1', '2 Deck 1 · 2', '3 Deck 2']);
+});

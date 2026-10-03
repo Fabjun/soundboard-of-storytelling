@@ -159,11 +159,11 @@ export function poolByName(board: Board): Pad[] {
 }
 
 /**
- * The pool laid out for the All pads view: sorted by name, row-major in `cols` columns without
- * gaps. The placements exist only for rendering — no key, never stored.
+ * Pads laid out for the All pads view in the order given (padSort.ts), row-major in `cols`
+ * columns without gaps. The placements exist only for rendering — no key, never stored.
  */
-export function poolLayout(board: Board, cols: number): PlacedPad[] {
-  return poolByName(board).map((pad, i) => ({
+export function poolLayout(pads: readonly Pad[], cols: number): PlacedPad[] {
+  return pads.map((pad, i) => ({
     pad,
     placement: { padId: pad.id, position: { col: i % cols, row: Math.floor(i / cols) } },
   }));
@@ -221,7 +221,7 @@ export function addDeck(board: Board, deck: Omit<Deck, 'order' | 'placements'>):
 }
 
 /**
- * Duplicates a deck and appends the copy at the end (as before Slice 9c). The copy places the
+ * Duplicates a deck; the copy comes directly after the original. The copy places the
  * SAME pads (same ids, same positions and keys) — no pad copies (docs/architecture/0048-pad-pool-decks.md#2-behavior-final-not-provisional).
  */
 export function duplicateDeck(
@@ -232,14 +232,19 @@ export function duplicateDeck(
 ): Board {
   const source = findDeck(board, deckId);
   if (!source) return board;
+  // Directly after the original (industry standard: Figma pages, PowerPoint slides; owner
+  // 2026-10-02) — every deck after it moves one place on.
   const copy: Deck = {
     ...source,
     id: copyId,
     name: copyName,
-    order: nextDeckOrder(board),
+    order: source.order + 1,
     placements: source.placements.map((p) => ({ ...p, position: { ...p.position } })),
   };
-  return { ...board, decks: [...board.decks, copy] };
+  const shifted = board.decks.map((d) =>
+    d.order > source.order ? { ...d, order: d.order + 1 } : d,
+  );
+  return { ...board, decks: [...shifted, copy] };
 }
 
 /** Renames a deck. */
@@ -324,6 +329,7 @@ function isPad(v: unknown): v is Pad {
   if (!isRec(v) || !isStr(v.id) || !isStr(v.name)) return false;
   if (!isNum(v.volume) || !isNum(v.fadeIn) || !isNum(v.fadeOut)) return false;
   if (!optional(v.iconRef, isStr) || !optional(v.color, isStr)) return false;
+  if (!optional(v.addedAt, isNum) || !optional(v.modifiedAt, isNum)) return false;
   if (v.type === 'combo') return Array.isArray(v.steps) && v.steps.every(isStep);
   return (
     (v.type === 'single' || v.type === 'loop') &&

@@ -10,7 +10,7 @@ import { useEffect, useState } from 'preact/hooks';
 import type { JSX } from 'preact';
 import { backupFileName, buildBackup, saveBackupFile } from '../lib/backupExport';
 import { formatBytes } from '../lib/upload';
-import { setLastBackup } from '../db/prefs';
+import { setLastBackup } from '../state/prefs';
 
 type Step =
   | { kind: 'building'; done: number; total: number }

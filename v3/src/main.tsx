@@ -7,7 +7,9 @@ import '@fontsource/vt323';
 import '@fontsource/share-tech-mono';
 import './styles/global.css';
 import { initAudioBridge } from './audio/index';
-import { pendingBoardSaves } from './state/boardWrites';
+import { pendingSaves } from './state/store';
+import { loadPrefs } from './state/prefs';
+import { startPlayHistory } from './state/playHistory';
 import { loadStoredState } from './state/boot';
 
 // Apply the design-system root class to <body>.
@@ -21,9 +23,16 @@ initAudioBridge();
 // `data-saving` on <html> while a board save runs — a change shows before it is stored, so
 // whatever must not lose it (E2E reloads, a future "Saving…" hint) waits for it to go away.
 effect(() => {
-  document.documentElement.toggleAttribute('data-saving', pendingBoardSaves.value > 0);
+  document.documentElement.toggleAttribute('data-saving', pendingSaves.value > 0);
 });
 
-// First render only once the stored state is loaded: nothing the user creates can be replaced
-// by a late load (src/state/boot.ts).
-void loadStoredState().finally(() => render(<App />, document.getElementById('app')!));
+// Remember when each pad was last played ("Last played" sort in All pads).
+startPlayHistory();
+
+// First render only once the stored state (src/state/boot.ts) and the preferences
+// (src/state/prefs.ts) are loaded: nothing the user creates can be replaced by a late load, and
+// no screen shows a default first and then jumps. allSettled, not all: one failing load must not
+// let the app render before the other has finished.
+void Promise.allSettled([loadStoredState(), loadPrefs()]).then(() =>
+  render(<App />, document.getElementById('app')!),
+);

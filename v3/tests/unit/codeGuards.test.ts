@@ -22,8 +22,8 @@
 //    reacts to a change uses applyBoardChange (at once), never `if (await updateBoard(`.
 // 8. No internal plan names ("Slice 8", "BACKLOG") in what the app shows — text and attributes of
 //    components and screens; code comments may name them.
-// 9. localStorage only in src/db/prefs.ts (keys `sos-v3:<name>[:<id>]`, ADR-0014) — V1 shares
-//    the origin, so an unprefixed key elsewhere could collide with V1's data.
+// 9. No localStorage / sessionStorage anywhere (owner decision 2026-10-02, ADR-0062): small
+//    UI state lives in IndexedDB (src/state/prefs.ts) — web.dev advises against localStorage.
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { readdirSync, readFileSync } from 'node:fs';
@@ -359,7 +359,7 @@ describe('guard: the app shows no internal plan names', () => {
   });
 });
 
-describe('guard: localStorage only through src/db/prefs.ts (ADR-0014)', () => {
+describe('guard: no localStorage or sessionStorage (ADR-0062)', () => {
   const walkSrc = (dir: string): string[] =>
     readdirSync(dir, { withFileTypes: true }).flatMap((e) =>
       e.isDirectory() ? walkSrc(join(dir, e.name)) : [join(dir, e.name)],
@@ -370,11 +370,10 @@ describe('guard: localStorage only through src/db/prefs.ts (ADR-0014)', () => {
     expect(files.length).toBeGreaterThan(30);
   });
 
-  it('no other file touches localStorage or sessionStorage', () => {
+  it('no source file uses localStorage or sessionStorage', () => {
     const bad = files
-      .filter((f) => relative(SRC, f) !== join('db', 'prefs.ts'))
       .filter((f) => /\b(localStorage|sessionStorage)\b/.test(readFileSync(f, 'utf8')))
       .map((f) => relative(SRC, f));
-    expect(bad, 'add a typed function with an sos-v3: key to src/db/prefs.ts').toEqual([]);
+    expect(bad, 'keep UI state in IndexedDB: a typed function in src/state/prefs.ts').toEqual([]);
   });
 });

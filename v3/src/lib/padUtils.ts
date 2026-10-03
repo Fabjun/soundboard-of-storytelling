@@ -62,11 +62,38 @@ export const DEFAULT_PAD_VOLUME = 80;
  * A new pad with the default settings — the one place that knows them (ADD PAD, library drop,
  * creation popover). `files` are library item hashes; a Combo starts with no steps.
  */
-export function newPad(id: string, type: PadType, name: string, files: string[] = []): Pad {
-  const base: PadBase = { id, name, volume: DEFAULT_PAD_VOLUME, fadeIn: 0, fadeOut: 0 };
+export function newPad(
+  id: string,
+  type: PadType,
+  name: string,
+  files: string[] = [],
+  addedAt?: number,
+): Pad {
+  const base: PadBase = {
+    id,
+    name,
+    volume: DEFAULT_PAD_VOLUME,
+    fadeIn: 0,
+    fadeOut: 0,
+    ...(addedAt === undefined ? {} : { addedAt }),
+  };
   return type === 'combo'
     ? { ...base, type, steps: [] }
     : { ...base, type, files, order: 'sequential' };
+}
+
+/**
+ * The fields every pad type shares — everything except the type and its own fields. Built by
+ * taking those away, never by listing the shared fields, so a field added to PadBase later
+ * (e.g. addedAt) can never be lost on a type change or an edit.
+ */
+export function padBaseOf(pad: Pad): PadBase {
+  if (pad.type === 'combo') {
+    const { type: _t, steps: _s, ...base } = pad;
+    return base;
+  }
+  const { type: _t, files: _f, order: _o, trimStart: _ts, trimEnd: _te, ...base } = pad;
+  return base;
 }
 
 // ── Pad type-change migration ────────────────────────────────────────────────
@@ -123,15 +150,7 @@ function universalFields(): string[] {
  * Caller is responsible for showing PadTypeConfirmDialog before calling this.
  */
 export function applyTypeChange(pad: Pad, newType: PadType): Pad {
-  const base: PadBase = {
-    id: pad.id,
-    name: pad.name,
-    iconRef: pad.iconRef,
-    color: pad.color,
-    volume: pad.volume,
-    fadeIn: pad.fadeIn,
-    fadeOut: pad.fadeOut,
-  };
+  const base = padBaseOf(pad);
 
   if (newType === 'combo') {
     return { ...base, type: 'combo', steps: isComboPad(pad) ? pad.steps : [] };

@@ -121,7 +121,8 @@
   store added for Board documents (decks and pads embedded as JSON, ADR-0010).
   Pad sets (`Board.sets`) exist in the model only; they are replaced by the
   quick-access bar (ADR-0048).
-- **Preferences**: `localStorage` (small UI state, theme choice, etc.)
+- **Preferences**: IndexedDB too — key-value store `keyval`, loaded before the first render
+  (`v3/src/state/prefs.ts`); no Web Storage anywhere (ADR-0062, owner decision 2026-10-02).
 - **PWA**: managed via `vite-plugin-pwa`. No hand-written service worker (V1 had one). Auto-
   generated SHELL list, auto-bumped version on build.
 - **No third-party origins at runtime** (ADR-0057): fonts and all other assets are

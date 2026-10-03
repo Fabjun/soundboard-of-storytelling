@@ -15,6 +15,7 @@ import {
   padTypeColor,
   padTypeGlow,
   newPad,
+  padBaseOf,
   DEFAULT_PAD_VOLUME,
 } from '../../src/lib/padUtils';
 
@@ -268,5 +269,39 @@ describe('padTypeGlow', () => {
     expect(padTypeGlow('single')).toBe('var(--pad-single-glow)');
     expect(padTypeGlow('loop')).toBe('var(--pad-loop-glow)');
     expect(padTypeGlow('combo')).toBe('var(--pad-combo-glow)');
+  });
+});
+
+describe('padBaseOf / timestamps (E1)', () => {
+  it('keeps every shared field — also added / modified times — and drops only the type fields', () => {
+    const pad = makePad('p', {
+      files: ['a'],
+      trimStart: 1,
+      addedAt: 5,
+      modifiedAt: 9,
+      iconRef: 'owl',
+      color: 'red',
+    });
+    expect(padBaseOf(pad)).toEqual({
+      id: 'p',
+      name: 'Pad p',
+      volume: 80,
+      fadeIn: 0,
+      fadeOut: 0,
+      addedAt: 5,
+      modifiedAt: 9,
+      iconRef: 'owl',
+      color: 'red',
+    });
+    const combo = applyTypeChange(pad, 'combo');
+    expect(padBaseOf(combo)).toEqual(padBaseOf(pad));
+  });
+
+  it('a type change keeps the times; newPad stamps the time it is given', () => {
+    const pad = makePad('p', { addedAt: 5, modifiedAt: 9 });
+    expect(applyTypeChange(pad, 'loop')).toMatchObject({ addedAt: 5, modifiedAt: 9 });
+    expect(applyTypeChange(pad, 'combo')).toMatchObject({ addedAt: 5, modifiedAt: 9 });
+    expect(newPad('n', 'single', 'N', [], 42)).toMatchObject({ addedAt: 42 });
+    expect('addedAt' in newPad('n', 'single', 'N')).toBe(false);
   });
 });

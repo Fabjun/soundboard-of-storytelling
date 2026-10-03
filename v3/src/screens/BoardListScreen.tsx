@@ -21,7 +21,7 @@ import {
   removeBoardFromStore,
 } from '../state/store';
 import { boardDelete } from '../db/idb';
-import { clearLastView, getLastBackup } from '../db/prefs';
+import { clearLastView, getLastBackup } from '../state/prefs';
 import { createBoard, updateBoard } from '../state/boardWrites';
 import type { Board } from '../types';
 import { nanoid } from '../lib/nanoid';

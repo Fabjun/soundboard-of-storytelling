@@ -25,7 +25,15 @@ import {
   libraryItems,
 } from '../state/store';
 import { applyBoardChange, updateBoard } from '../state/boardWrites';
-import { getLastView, setLastView } from '../db/prefs';
+import {
+  getLastPlayed,
+  getLastView,
+  getPadSort,
+  prefsVersion,
+  setLastView,
+  setPadSort,
+} from '../state/prefs';
+import { PAD_SORT_KEYS, PAD_SORT_LABELS, sortPads } from '../lib/padSort';
 import { BoardTopBar } from '../components/BoardTopBar';
 import { DeckRail } from '../components/DeckRail';
 import { PadGrid } from '../components/PadGrid';
@@ -41,6 +49,7 @@ import {
   addDeck,
   addPadToFreeCell,
   addPadToPool,
+  deckCount,
   deletePad,
   nextDeckName,
   removeFromDeck,
@@ -91,7 +100,7 @@ export function BoardScreen(): JSX.Element {
     if (!board || (!deck && !poolView)) return;
     const deckId = deck?.id;
     // No file yet: the editor opens to choose one
-    const pad = newPad(nanoid(), DEFAULT_PAD_TYPE, '');
+    const pad = newPad(nanoid(), DEFAULT_PAD_TYPE, '', [], Date.now());
     // All pads: the pad goes to the pool only (owner decision 2026-10-02). In a deck the cell is
     // chosen on the latest board: a held or double-pressed A key adds pads to different cells.
     // Null = grid full (or save failed) — nothing to open.
@@ -156,7 +165,7 @@ export function BoardScreen(): JSX.Element {
     const item = libraryItems.value.find((m) => m.id === itemId);
     if (!item) return;
 
-    const pad = newPad(nanoid(), DEFAULT_PAD_TYPE, item.name, [itemId]);
+    const pad = newPad(nanoid(), DEFAULT_PAD_TYPE, item.name, [itemId], Date.now());
 
     // Deck: on the target cell; when it is taken, on the next free one (nothing when the grid is
     // full). All pads: into the pool, the drop position does not matter there.
@@ -204,6 +213,19 @@ export function BoardScreen(): JSX.Element {
       setRightPanel('empty');
     }
   }
+
+  // ── All pads order (E1) ────────────────────────────────────────────────────
+
+  void prefsVersion.value; // re-render when a preference changes (sort choice, last played)
+  const padSort = getPadSort(board.id);
+  const durations = new Map(libraryItems.value.map((m) => [m.id, m.duration]));
+  const sortedPool = poolView
+    ? sortPads(board.pads, padSort, {
+        deckCount: (id) => deckCount(board, id),
+        fileDuration: (id) => durations.get(id),
+        lastPlayed: getLastPlayed,
+      })
+    : [];
 
   // ── Empty Board state ──────────────────────────────────────────────────────
 
@@ -264,14 +286,47 @@ export function BoardScreen(): JSX.Element {
                 No pads yet. Add one with ADD PAD or drop a file from the library.
               </div>
             ) : (
-              <PadGrid
-                deck={null}
-                board={board}
-                mode={mode}
-                selectedPadId={selectedPadId}
-                onPadSelect={handlePadSelect}
-                placeMode={null}
-              />
+              <>
+                {/* Sort, Finder-style: a key with its natural direction, reversible; per board */}
+                <div class="sb-pool-toolbar">
+                  <select
+                    class="sb-text-input"
+                    data-testid="board-screen-sort-input"
+                    aria-label="Sort pads by"
+                    value={padSort.key}
+                    onChange={(e) => {
+                      const key = PAD_SORT_KEYS.find((k) => k === e.currentTarget.value);
+                      if (key) setPadSort(board.id, { key, reversed: false });
+                    }}
+                  >
+                    {PAD_SORT_KEYS.map((k) => (
+                      <option key={k} value={k}>
+                        {PAD_SORT_LABELS[k]}
+                      </option>
+                    ))}
+                  </select>
+                  <button
+                    class="sb-btn sb-btn-sm sb-btn-ghost"
+                    data-testid="board-screen-reverse-button"
+                    aria-label="Reverse the order"
+                    aria-pressed={padSort.reversed}
+                    onClick={() =>
+                      setPadSort(board.id, { ...padSort, reversed: !padSort.reversed })
+                    }
+                  >
+                    {padSort.reversed ? '↑' : '↓'}
+                  </button>
+                </div>
+                <PadGrid
+                  deck={null}
+                  poolOrder={sortedPool}
+                  board={board}
+                  mode={mode}
+                  selectedPadId={selectedPadId}
+                  onPadSelect={handlePadSelect}
+                  placeMode={null}
+                />
+              </>
             )
           ) : !hasDecks ? (
             <EmptyBoardState
