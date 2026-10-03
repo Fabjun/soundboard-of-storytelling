@@ -7,6 +7,12 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.150 — 2026-10-03
+
+### Internal
+
+- docs(testing): manual iPhone checklist — backup export / import steps for the ZIP format and a V1 import check, with the texts the app shows (they still said "Slice 7 — skip")
+
 ## 3.0.149 — 2026-10-03
 
 ### Fixed

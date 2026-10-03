@@ -87,15 +87,26 @@ because Playwright runs against a simulated environment:
   - Expected: Same result.
   - Why manual: Same MIME type handling.
 
-- [ ] **Backup export** _(Slice 7 — skip until implemented)_
-  - Action: Export a board template/backup.
-  - Expected: iOS system share sheet appears, file can be saved to Files app. File is not empty.
+- [ ] **Backup export** _(Slice 10)_
+  - Action: board list → EXPORT → wait for "Backup ready: soundboard-backup-YYYY-MM-DD.zip (…)" →
+    SAVE → in the share sheet choose "Save to Files".
+  - Expected: the share sheet opens on SAVE; the ZIP file is in Files with a size above zero; the
+    panel says "Backup saved." and the board list "Last backup: today".
   - Why manual: iOS share sheet / file system access is not testable in Playwright.
 
-- [ ] **Backup import** _(Slice 7 — skip until implemented)_
-  - Action: Import an exported backup file.
-  - Expected: Board and pads are restored. No crash. (V1 had a crash here — regression risk.)
+- [ ] **Backup import** _(Slice 10)_
+  - Action: board list → IMPORT → choose the ZIP saved above → IMPORT.
+  - Expected: the summary counts the boards, pads and audio files of the backup ("… — N already in
+    the library"); after IMPORT "Done: … added"; the board appears in the list — on the same
+    device as a copy "Name (2)" with every audio file "already there" — and, opened, its pads
+    play. No crash. (V1 had a crash here — regression risk.)
   - Why manual: Same file system access. V1 crash was iOS-specific memory issue.
+
+- [ ] **V1 backup import** _(Slice 10)_
+  - Action: board list → IMPORT → choose a V1 backup (`.json.gz`) → IMPORT.
+  - Expected: the summary starts "Backup from the old app (V1)."; afterwards the board is there
+    and its pads play. No crash, also with the full library (about 227 MB).
+  - Why manual: the largest file the app reads; memory limits only show on a device.
 
 ---
 
