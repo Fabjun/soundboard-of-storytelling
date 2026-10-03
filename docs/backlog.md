@@ -77,6 +77,17 @@ stays small (a few MB).
 sounds"); a licence register (file, source, licence) next to `third-party-licenses.txt`.
 **When:** with Slice 17 (help & onboarding), discussed with the owner before any plan.
 
+### Test on a real Android device
+
+Android Chrome 100+ is a supported platform (CLAUDE.md "Supported Platforms"), but no test runs on
+an Android device: Chrome on Android uses the same engine (Chromium) as the desktop and E2E runs,
+and the `mobile-chromium` project emulates a phone's viewport and touch — not its memory. The
+risk left is a low-memory phone during a large import (the 227 MB V1 library) or with many
+decoded loops. The owner has no Android device (2026-10-03); options: a real-device cloud
+(e.g. BrowserStack, paid) or a borrowed phone, walking through
+`docs/development/manual-iphone-checklist.md`.
+**When:** before the app is released to other people.
+
 ### Backup reminder threshold as a setting
 
 Owner decision B5 (2026-10-02): the board list reminds after seven days without a backup

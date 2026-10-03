@@ -7,6 +7,12 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.155 — 2026-10-03
+
+### Internal
+
+- docs(backlog): test on a real Android device before the app is released to other people (no device at hand; Chromium is covered, phone memory is not)
+
 ## 3.0.154 — 2026-10-03
 
 ### Internal

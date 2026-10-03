@@ -17,10 +17,17 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.154';
+export const APP_VERSION = '3.0.155';
 
 /** The developer log, newest first; CHANGELOG.md is generated from it (sync-changelog). */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.155',
+    date: '2026-10-03',
+    items: [
+      'docs(backlog): test on a real Android device before the app is released to other people (no device at hand; Chromium is covered, phone memory is not)',
+    ],
+  },
   {
     version: '3.0.154',
     date: '2026-10-03',
