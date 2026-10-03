@@ -117,7 +117,11 @@ editor's pending save registers with the save counter, so RELOAD waits for it to
 
 CI annotation 2026-10-03: "The ubuntu-latest label will migrate to Ubuntu 26 beginning October
 19, 2026" (actions/runner-images#14748). Check the CI runs on the new image (browsers, fonts).
-**When:** at the next structure review, before 2026-10-19.
+**Probe 2026-10-04** (draft PRs #41, #42 on ubuntu-26.04, closed without merging): `npm ci`
+failed — `v3/scripts/vale-install.ts` renamed a file from /tmp, another file system there
+(EXDEV); fixed in 3.0.164 (copy instead). Result of the full workflow on ubuntu-26.04: see the
+3.0.164 changelog item and PR #42.
+**When:** done once the probe workflow is green; nothing else changes on 2026-10-19.
 
 ### License notices of the service worker ✅ Done (3.0.160)
 

@@ -17,10 +17,17 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.163';
+export const APP_VERSION = '3.0.164';
 
 /** The developer log, newest first; CHANGELOG.md is generated from it (sync-changelog). */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.164',
+    date: '2026-10-04',
+    items: [
+      'fix(scripts): vale-install copies the binary instead of renaming it — on ubuntu-26.04 runners /tmp is another file system and rename failed with EXDEV, which broke npm ci; found by a probe run before ubuntu-latest moves to Ubuntu 26 (actions/runner-images#14748)',
+    ],
+  },
   {
     version: '3.0.163',
     date: '2026-10-03',

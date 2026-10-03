@@ -7,6 +7,12 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.164 — 2026-10-04
+
+### Fixed
+
+- fix(scripts): vale-install copies the binary instead of renaming it — on ubuntu-26.04 runners /tmp is another file system and rename failed with EXDEV, which broke npm ci; found by a probe run before ubuntu-latest moves to Ubuntu 26 (actions/runner-images#14748)
+
 ## 3.0.163 — 2026-10-03
 
 ### Added
