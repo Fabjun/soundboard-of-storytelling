@@ -17,10 +17,20 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.148';
+export const APP_VERSION = '3.0.149';
 
 /** The developer log, newest first; CHANGELOG.md is generated from it (sync-changelog). */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.149',
+    date: '2026-10-03',
+    items: [
+      'fix(pads): the ADD PAD sheet on a narrow window says "Add Pad" — its cell name was wrong from the second row on ("E5" instead of "B1"); audit A16',
+      'build(lint): knip reports unused files, exports and dependencies in pre-push and CI; eslint-config-prettier, installed but never used, now ends the ESLint config (audit A18)',
+      'docs(adr): ADR-0064 §4 — code kept for a later slice is marked @reserved, never deleted (owner decision); seven reservations, guarded by codeGuards and knip, listed in the exception register',
+      'docs: the foundation analysis of 2026-06-05 is a dated snapshot (audit A22); stale store comments fixed',
+    ],
+  },
   {
     version: '3.0.148',
     date: '2026-10-03',

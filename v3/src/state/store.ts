@@ -43,7 +43,11 @@ export const currentMode = signal<AppMode>('play');
 
 // ── Theme ────────────────────────────────────────────────────────────────────
 
-/** Active theme ID — maps to a CSS class applied to the root element. */
+/**
+ * Active theme ID — will map to a CSS class on the root element; nothing reads it yet.
+ *
+ * @reserved Slice 14 — themes
+ */
 export const activeTheme = signal<string>('hearth');
 
 // ── Playback state ───────────────────────────────────────────────────────────
@@ -64,21 +68,21 @@ export function addPlayingPad(id: string): void {
   playingPads.value = next;
 }
 
-/** Remove a pad from the playing set (playback ended). */
+/** Removes a pad from the playing set (playback ended). */
 export function removePlayingPad(id: string): void {
   const next = new globalThis.Set(playingPads.value);
   next.delete(id);
   playingPads.value = next;
 }
 
-/** Mark a pad as looping. */
+/** Marks a pad as looping. */
 export function addLoopingPad(id: string): void {
   const next = new globalThis.Set(loopingPads.value);
   next.add(id);
   loopingPads.value = next;
 }
 
-/** Remove a pad from the looping set. */
+/** Removes a pad from the looping set. */
 export function removeLoopingPad(id: string): void {
   const next = new globalThis.Set(loopingPads.value);
   next.delete(id);
@@ -87,7 +91,11 @@ export function removeLoopingPad(id: string): void {
 
 // ── Master volume ────────────────────────────────────────────────────────────
 
-/** Master volume 0–100. Mirrors the master GainNode's value × 100. */
+/**
+ * Master volume 0–100 — meant to drive the engine's master gain; nothing reads or sets it yet.
+ *
+ * @reserved Parked — master volume (docs/product/README.md#pad-options)
+ */
 export const masterVolume = signal<number>(80);
 
 // ── Library ──────────────────────────────────────────────────────────────────
@@ -103,24 +111,25 @@ export const libraryItems = signal<LibraryItemMeta[]>([]);
  */
 export const uploadStatus = signal<UploadResult | null>(null);
 
-/** Add a newly uploaded entry to the in-memory list. */
+/** Adds a newly uploaded entry to the in-memory list. */
 export function addLibraryItemMeta(meta: LibraryItemMeta): void {
   libraryItems.value = [...libraryItems.value, meta];
 }
 
-/** Remove an entry from the in-memory list (after IDB delete). */
+/** Removes an entry from the in-memory list (after IDB delete). */
 export function removeLibraryItemMeta(id: string): void {
   libraryItems.value = libraryItems.value.filter((m) => m.id !== id);
 }
 
-/** Patch the name of an in-memory entry (after IDB rename). */
+/** Patches the name of an in-memory entry (after IDB rename). */
 export function renameLibraryItemMeta(id: string, newName: string): void {
   libraryItems.value = libraryItems.value.map((m) => (m.id === id ? { ...m, name: newName } : m));
 }
 
 // ── Boards ───────────────────────────────────────────────────────────────────
 // boards[] is the source of truth for all Board, Deck, and Pad data in RAM.
-// IDB is the persistence layer — always call boardPut() after mutating boards.
+// IDB is the persistence layer — boards change only through src/state/boardWrites.ts, which
+// updates this signal and saves (codeGuards: "board writes go through boardWrites").
 // currentBoard and currentDeck are derived signals (no extra state needed).
 
 /** All boards, loaded from IDB at app boot. */
@@ -142,7 +151,7 @@ export const currentDeck = computed<Deck | null>(
   () => currentBoard.value?.decks.find((s) => s.id === currentDeckId.value) ?? null,
 );
 
-/** Replace or insert a board in the signal (after IDB boardPut). */
+/** Replaces or inserts a board in the signal (after IDB boardPut). */
 export function upsertBoard(board: Board): void {
   const existing = boards.value.findIndex((b) => b.id === board.id);
   if (existing >= 0) {
@@ -154,7 +163,7 @@ export function upsertBoard(board: Board): void {
   }
 }
 
-/** Remove a board from the signal (after IDB boardDelete). */
+/** Removes a board from the signal (after IDB boardDelete). */
 export function removeBoardFromStore(id: string): void {
   boards.value = boards.value.filter((b) => b.id !== id);
 }

@@ -36,11 +36,16 @@
  *    CLAUDE.md "Re-plan 2026-09-28"): "deferred to Slice 8" says nothing about today's plan. Seven
  *    such statements were stale on 2026-10-03; the version history (src/lib/changelog.ts) is
  *    exempt — it records what was true then.
+ * 13. Code kept for a later implementation carries `@reserved Slice N — …` or
+ *    `@reserved Parked — …` (ADR-0064; owner decision 2026-10-03: such code is never deleted). The
+ *    slice exists in CLAUDE.md's slice table and is not complete — a finished slice that left its
+ *    reserved code unused is reported, so a reservation cannot go stale.
  */
 
 import { readdirSync, readFileSync } from 'node:fs';
 import { basename, join, relative } from 'node:path';
 import ts from 'typescript';
+import { findReservations, RESERVED_TAG } from '../../scripts/lib/reserved-code';
 
 const V3 = join(__dirname, '..', '..');
 const SRC = join(V3, 'src');
@@ -491,5 +496,70 @@ describe('guard: code names no slice of the superseded May plan (Slices 5–8)',
         .flatMap((line, i) => (MAY_PLAN.test(line) ? [`${f}:${i + 1}`] : [])),
     );
     expect(bad, 'the May plan is superseded (CLAUDE.md "Re-plan 2026-09-28")').toEqual([]);
+  });
+});
+
+describe('guard: reserved code names an open slice or a parked decision (ADR-0064)', () => {
+  const walk = (dir: string): string[] =>
+    readdirSync(dir, { withFileTypes: true }).flatMap((e) =>
+      e.isDirectory() ? walk(join(dir, e.name)) : [join(dir, e.name)],
+    );
+  /** Slice number → status cell, from CLAUDE.md's slice table. */
+  const slices = new Map(
+    [
+      ...readFileSync(join(V3, '..', 'CLAUDE.md'), 'utf8').matchAll(
+        /^\| (\d+) +\|[^|]+\|([^|]+)\|/gm,
+      ),
+    ].map((m) => [Number(m[1]), m[2].trim()]),
+  );
+  const files = ['src', 'scripts']
+    .flatMap((d) => walk(join(V3, d)))
+    .filter((f) => /\.tsx?$/.test(f));
+  const rel = (f: string) => relative(V3, f).split('\\').join('/');
+  // The same tag scan as the exception register (scripts/lib/reserved-code.ts)
+  const reservations = files.flatMap((f) =>
+    findReservations(readFileSync(f, 'utf8').split('\n')).map((r) => ({
+      at: `${rel(f)}:${r.line}`,
+      text: r.text,
+    })),
+  );
+
+  it('reads the slice table and finds the reservations (sanity)', () => {
+    expect(slices.get(12)).toContain('Pending');
+    expect(reservations.length).toBeGreaterThanOrEqual(5);
+  });
+
+  it('a @reserved tag stands at the start of a doc comment line, where tools find it', () => {
+    // A tag elsewhere in a doc comment (e.g. on a one-line /** … */) would be honoured by knip
+    // but missed by this guard and the register; prose names the tag in backticks
+    const bad = files.flatMap((f) =>
+      readFileSync(f, 'utf8')
+        .split('\n')
+        .flatMap((line, i) =>
+          /^\s*(\/\*\*|\*).*(?<!`)@reserved\b/.test(line) && !RESERVED_TAG.test(line)
+            ? [`${rel(f)}:${i + 1}`]
+            : [],
+        ),
+    );
+    expect(bad, 'put @reserved on its own line of the doc comment').toEqual([]);
+  });
+
+  it('every @reserved says "Slice N — …" or "Parked — …"', () => {
+    const bad = reservations
+      .filter((r) => !/^(Slice \d+|Parked) — \S/.test(r.text))
+      .map((r) => `${r.at}: ${r.text}`);
+    expect(bad, 'write @reserved Slice N — <what for>, or @reserved Parked — <what>').toEqual([]);
+  });
+
+  it('the slice exists and is not complete — a finished slice must use or release its code', () => {
+    const bad = reservations.flatMap((r) => {
+      const n = /^Slice (\d+)/.exec(r.text)?.[1];
+      if (!n) return [];
+      const status = slices.get(Number(n));
+      return status && !status.includes('Complete') && !status.includes('Superseded')
+        ? []
+        : [`${r.at}: Slice ${n} is ${status ?? 'not in the slice table'}`];
+    });
+    expect(bad).toEqual([]);
   });
 });

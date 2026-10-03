@@ -12,6 +12,7 @@ import playwrightPlugin from 'eslint-plugin-playwright';
 import eslintComments from '@eslint-community/eslint-plugin-eslint-comments/configs';
 import jsdocPlugin from 'eslint-plugin-jsdoc';
 import tsdocPlugin from 'eslint-plugin-tsdoc';
+import eslintConfigPrettier from 'eslint-config-prettier';
 
 // Rules tsc already enforces in every tsconfig (noUnusedLocals / noUnusedParameters, checked by
 // testGuards): turned off so the same finding is not reported twice. Each switch names its
@@ -164,6 +165,11 @@ export default [
       'tsdoc/syntax': 'error',
     },
   },
+
+  // ── Prettier owns formatting (ADR-0058) ──────────────────────────────────────
+  // Last, so it turns off every rule above that would fight Prettier (Prettier docs:
+  // "Integrating with Linters"); today none does, but a plugin update could add one.
+  eslintConfigPrettier,
 
   // ── Global ignores — generated output only (ADR-0053: every entry has a reason) ──
   {

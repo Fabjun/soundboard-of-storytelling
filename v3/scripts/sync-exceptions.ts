@@ -9,7 +9,8 @@
  *   - prettier-ignore comments (reason = comment line directly above)
  *   - test quarantine markers (skip / fixme / todo / fails + BACKLOG reference)
  *   - modules without a unit test (EXEMPT list in tests/unit/testGuards.test.ts)
- *   - tool ignore lists (.prettierignore, ESLint global ignores, docsGuards SKIP)
+ *   - tool ignore lists (.prettierignore, ESLint global ignores, docsGuards SKIP, knip ignores)
+ *   - code reserved for a later slice (`@reserved`, ADR-0064)
  *   - "## Exceptions" tables in ADRs
  *   - to-do markers with BACKLOG reference
  *
@@ -23,6 +24,7 @@ import { writeGenerated } from './lib/write-generated';
 import { escapeCell } from './lib/markdown';
 import { repoFiles } from './lib/repo-files';
 import { findQuarantineMarkers } from './lib/test-markers';
+import { findReservations } from './lib/reserved-code';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(__dirname, '..', '..');
@@ -160,6 +162,29 @@ for (const [file, label] of [
   });
 }
 
+// ── knip: ignored dependencies, binaries and issues (reason = the comment above the entry) ──
+{
+  const lines = readFileSync(join(V3, 'knip.config.ts'), 'utf8').split('\n');
+  let list = '';
+  let reason = '';
+  for (const line of lines) {
+    const open = /^\s*(ignoreDependencies|ignoreBinaries|ignoreIssues): [[{]/.exec(line);
+    if (open) {
+      list = open[1];
+      continue;
+    }
+    if (!list) continue;
+    if (/^\s*[\]}],?\s*$/.test(line)) {
+      list = '';
+      continue;
+    }
+    const comment = /^\s*\/\/\s*(.+)$/.exec(line);
+    if (comment) reason = comment[1];
+    const entry = /^\s*'([^']+)'/.exec(line);
+    if (entry) toolRows.push(`| knip ${list} | \`${esc(entry[1])}\` | ${esc(reason)} |`);
+  }
+}
+
 // ── Vale: historical docs and marked historical passages ───────────────────────
 const valeRows: string[] = [];
 {
@@ -213,6 +238,16 @@ for (const [file, ls] of lines) {
     const m = TODO.exec(line);
     if (m) todoRows.push(`| \`${rel(file)}:${i + 1}\` | ${m[1]} | ${esc(m[2])} |`);
   });
+}
+
+// ── Reserved code: unused today, kept for a later slice (ADR-0064, guarded by codeGuards) ──
+// The same tag scan as the codeGuards check (scripts/lib/reserved-code.ts)
+const reservedRows: string[] = [];
+for (const [file, ls] of lines) {
+  if (!/^v3\/(src|scripts)\/.*\.tsx?$/.test(rel(file))) continue;
+  for (const r of findReservations(ls)) {
+    reservedRows.push(`| \`${rel(file)}:${r.line}\` | \`${r.symbol ?? '?'}\` | ${esc(r.text)} |`);
+  }
 }
 
 // ── Render ───────────────────────────────────────────────────────────────────
@@ -278,9 +313,16 @@ const out = [
   ),
   ...section(
     'Tool ignore lists',
-    'Paths excluded from formatting, linting or doc guards.',
+    'Paths, dependencies and issues excluded from formatting, linting, knip or doc guards.',
     '| Tool | Pattern | Reason |',
     toolRows,
+  ),
+  ...section(
+    'Reserved code',
+    'Unused today, kept for a later slice or a parked feature (`@reserved`, ADR-0064); the slice ' +
+      'is the review trigger — `codeGuards` reports a reservation whose slice is complete.',
+    '| Location | Symbol | Waits for |',
+    reservedRows,
   ),
   ...section(
     'Prose lint exceptions (Vale)',
@@ -303,6 +345,7 @@ const total =
   quarantineRows.length +
   exemptRows.length +
   toolRows.length +
+  reservedRows.length +
   valeRows.length +
   todoRows.length;
 if (await writeGenerated(TARGET, out)) {

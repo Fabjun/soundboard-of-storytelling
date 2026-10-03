@@ -165,11 +165,13 @@ Updated at each slice completion (per CLAUDE.md Workflow Rule 14).
 
 ### `docs/analysis/foundation-analysis.md`
 
-Foundation audit of the documentation set (2026-06-05). Inventories all project documents,
-records drift findings (critical / important / cosmetic), and maintains the **Document
-Coupling Map** ([§6](analysis/foundation-analysis.md#6-document-coupling-map)) — the authoritative record of which concepts must stay in sync across
-documents when a source of truth changes.
-**Source of truth for:** Cross-document consistency findings; the Document Coupling Map.
+Foundation audit of the documentation set — a **snapshot of 2026-06-05**, not maintained
+(structure audit A22, 2026-10-03). Inventories the documents of that day, records drift findings
+(critical / important / cosmetic) and a **Document Coupling Map**
+([§6](analysis/foundation-analysis.md#6-document-coupling-map)) of which concepts had to stay in
+sync. Cross-document consistency is checked by tools now — docsGuards, `link:check` and Vale
+(ADR-0056); open points live in [docs/backlog.md](backlog.md).
+**Source of truth for:** nothing current — historical record.
 
 ---
 

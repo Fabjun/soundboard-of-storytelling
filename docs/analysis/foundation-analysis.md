@@ -1,7 +1,9 @@
 # Foundation Analysis — Pass 1: Codebase Map + Prioritized Problem Areas
 
 **Date:** 2026-06-05
-**Status:** Living document — Pass 1 complete. Deep-dive passes TBD.
+**Status:** Snapshot of 2026-06-05 — not maintained (structure audit A22, owner decision
+2026-10-03). Its findings describe the code of that day; open points are tracked in
+[docs/backlog.md](../backlog.md). Later commits only translated, formatted and renamed paths.
 **Scope:** Living v3 code under `v3/` and repo-wide tooling/docs machinery. `v1-reference/` and `design-sources/2026-05-25/` are out of scope for health assessment (read-only reference/archive).
 **Context:** Analysis triggered immediately after Session 3 (CSS class discipline migration, 177 Path-D violations → 0) and after ADR-0045 (two-axis adaptive model). Slices 1–4 complete; Slices 5–8 pending.
 

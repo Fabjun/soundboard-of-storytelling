@@ -53,6 +53,15 @@ npm run size || {
 }
 printf '✅ Bundle size OK.\n\n'
 
+printf '🧹 Pre-push: unused files, exports and dependencies (knip)...\n'
+npm run knip || {
+  printf '\n❌ knip found unused code or dependencies — push aborted.\n'
+  printf '   Code kept for a later slice: mark it @reserved (ADR-0064) — never delete it unasked.\n'
+  printf '   A tool knip cannot see goes into v3/knip.config.ts with its reason (ADR-0053).\n\n'
+  exit 1
+}
+printf '✅ Nothing unused.\n\n'
+
 printf '🎭 Pre-push: full E2E suite (all dev-server projects) for CI parity...\n'
 printf '   Estimated: ~2-3 min. Bypass with: git push --no-verify\n\n'
 

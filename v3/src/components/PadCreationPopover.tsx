@@ -16,7 +16,7 @@
 
 import { useState, useEffect } from 'preact/hooks';
 import type { JSX } from 'preact';
-import type { LibraryItemMeta, Pad, PadPosition, PadType } from '../types';
+import type { LibraryItemMeta, Pad, PadType } from '../types';
 import { PixelIcon } from './PixelIcon';
 import { Waveform } from './Waveform';
 import { libraryItems } from '../state/store';
@@ -30,9 +30,7 @@ export type CreationResult =
   | { action: 'cancel' };
 
 interface PadCreationPopoverProps {
-  /** Grid slot this popover is anchored to. */
-  position: PadPosition;
-  /** Bounding rect of the cell DOM element (for positioning). */
+  /** Bounding rect of the empty cell the pad goes into (for positioning). */
   cellRect: DOMRect;
   onResult: (result: CreationResult) => void;
 }
@@ -42,14 +40,10 @@ type SourceTab = 'RECENT' | 'BROWSE';
 const PAD_TYPES: PadType[] = ['single', 'loop', 'combo'];
 
 /**
- * Creates a pad in the empty cell `position`: pick an audio file (recent or searched), a name
- * and a type, then ADD PAD — or hand over to the PAD editor for more options.
+ * Creates a pad for an empty cell: pick an audio file (recent or searched), a name and a type,
+ * then ADD PAD — or hand over to the PAD editor for more options. The caller places the pad.
  */
-export function PadCreationPopover({
-  position,
-  cellRect,
-  onResult,
-}: PadCreationPopoverProps): JSX.Element {
+export function PadCreationPopover({ cellRect, onResult }: PadCreationPopoverProps): JSX.Element {
   const isMobile = typeof window !== 'undefined' && window.innerWidth < 600;
 
   const allAudio = libraryItems.value.filter((m) => m.type === 'audio');
@@ -226,10 +220,7 @@ export function PadCreationPopover({
       <>
         <div class="sb-creation-sheet-backdrop" onClick={() => onResult({ action: 'cancel' })} />
         <div class="sb-creation-sheet is-creation" data-testid="pad-creation-popover">
-          <div class="sb-sheet-header">
-            Add Pad — {String.fromCharCode(64 + (position.row * 4 + position.col + 1))}
-            {position.row * 4 + position.col + 1}
-          </div>
+          <div class="sb-sheet-header">Add Pad</div>
           {content}
         </div>
       </>

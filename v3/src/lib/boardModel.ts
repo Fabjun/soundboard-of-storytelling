@@ -102,7 +102,11 @@ export function updatePad(board: Board, pad: Pad): Board {
   return { ...board, pads: board.pads.map((p) => (p.id === pad.id ? pad : p)) };
 }
 
-/** Sets or clears a pad's key in one deck (keys belong to the placement). */
+/**
+ * Sets or clears a pad's key in one deck (keys belong to the placement).
+ *
+ * @reserved Slice 12 — keys play pads (docs/product/README.md#6-platforms--input)
+ */
 export function setPlacementHotkey(
   board: Board,
   deckId: string,

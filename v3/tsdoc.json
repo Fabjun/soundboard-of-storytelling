@@ -4,6 +4,10 @@
     {
       "tagName": "@fileoverview",
       "syntaxKind": "block"
+    },
+    {
+      "tagName": "@reserved",
+      "syntaxKind": "block"
     }
   ]
 }

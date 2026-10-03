@@ -205,11 +205,7 @@ export function PadGrid({
 
       {/* Path A Popover */}
       {popoverPos && popoverCellRect && (
-        <PadCreationPopover
-          position={popoverPos}
-          cellRect={popoverCellRect}
-          onResult={handleCreationResult}
-        />
+        <PadCreationPopover cellRect={popoverCellRect} onResult={handleCreationResult} />
       )}
     </>
   );

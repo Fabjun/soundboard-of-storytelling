@@ -55,14 +55,36 @@ a platform quirk, a memory rule, a decision — not what the next line does. A c
 lines is several `//` lines, never `/* … */` (Google). A comment that no longer matches the code is
 a defect: whoever changes the code updates or removes the comment in the same commit.
 
-### 4. Checked mechanically
+### 4. Code kept for a later implementation is marked, never deleted
+
+Code that nothing uses today but a later slice or a parked feature needs is **kept** (owner
+decision 2026-10-03, structure audit A17) and carries a TSDoc block tag in its doc comment:
+
+```ts
+/**
+ * Sets or clears a pad's key in one deck (keys belong to the placement).
+ *
+ * @reserved Slice 12 — keys play pads (docs/product/README.md#6-platforms--input)
+ */
+```
+
+The text starts with `Slice N —` or `Parked —` and says what for. `v3/tsdoc.json` declares the
+tag. knip (structure audit A18, https://knip.dev) skips tagged exports (`--tags=-reserved`) and,
+in production mode, reports a tag on code the app does use — a stale reservation; `codeGuards`
+checks the form and that the slice exists and is not complete; the exception register lists every
+reservation with its slice as the review trigger.
+
+### 5. Checked mechanically
 
 - `eslint-plugin-jsdoc` `require-jsdoc` (`publicOnly`, with the TypeScript contexts) on `src/` and
   `scripts/`: an export without a doc comment fails lint. `jsdoc/no-types`: no types in tags.
 - `eslint-plugin-tsdoc` `tsdoc/syntax` on `src/` and `scripts/`; `v3/tsdoc.json` declares
-  `@fileoverview`, which TSDoc does not define itself.
+  `@fileoverview` and `@reserved`, which TSDoc does not define itself.
 - `v3/tests/unit/codeGuards.test.ts` ("every TypeScript file opens with a file overview"): the
-  first comment is a `/** @fileoverview` block and no file opens with a `─` box.
+  first comment is a `/** @fileoverview` block and no file opens with a `─` box; ("reserved code
+  names an open slice or a parked decision") the form of every `@reserved`.
+- `npm run knip` (pre-push and CI): unused files, exports and dependencies; `@reserved` code and
+  the ignores in `v3/knip.config.ts` (each with its reason, ADR-0053) excepted.
 
 Tests are not under `require-jsdoc`: a test's name says what it checks, and the file overview
 lists the cases.
@@ -97,7 +119,8 @@ lists the cases.
 
 ## Related
 
-- **Files:** v3/eslint.config.js, v3/tsdoc.json, v3/tests/unit/codeGuards.test.ts
+- **Files:** v3/eslint.config.js, v3/tsdoc.json, v3/knip.config.ts,
+  v3/tests/unit/codeGuards.test.ts
 - **ADRs:** ADR-0053 (exception scheme), ADR-0056 (documentation checked by tools)
 - **Sources:**
   - https://tsdoc.org/ — TSDoc, the doc comment standard for TypeScript (Microsoft)
@@ -109,3 +132,5 @@ lists the cases.
   - https://github.com/gajus/eslint-plugin-jsdoc/blob/main/docs/rules/require-jsdoc.md —
     `publicOnly`, `require`, `contexts`
   - https://github.com/microsoft/tsdoc/tree/main/eslint-plugin — `tsdoc/syntax`
+  - https://knip.dev/reference/jsdoc-tsdoc-tags — custom tags exclude tagged exports
+    (`--tags=-<tag>`), tag hints report tags that are no longer needed

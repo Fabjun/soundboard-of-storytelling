@@ -130,12 +130,20 @@ export function stop(padId: string, immediate = false, fadeOut = 0): void {
   stopPad(padId, immediate, fadeOut);
 }
 
-/** Stops everything that plays, at once. */
+/**
+ * Stops everything that plays, at once.
+ *
+ * @reserved Slice 12 — STOP ALL, K9 / K16 (docs/product/README.md#input-keyboard--numpad)
+ */
 export function stopAll(): void {
   stopAllInternal();
 }
 
-/** Fades everything that plays out over `duration` seconds; running combos stop at once. */
+/**
+ * Fades everything that plays out over `duration` seconds; running combos stop at once.
+ *
+ * @reserved Slice 12 — STOP ALL in two stages, the first fades, K16 (docs/product/README.md#input-keyboard--numpad)
+ */
 export function fadeOutAll(duration: number): void {
   fadeOutAllInternal(duration);
 }
@@ -146,9 +154,10 @@ export function isPlaying(padId: string): boolean {
 }
 
 /**
- * Stops `from` and starts `to` — a stub, not yet a crossfade (built in Slice 4, unused so far).
- * A simultaneous crossfade has no slice assigned. Signature uses Pad object (not just ID) —
- * consistent with play().
+ * Stops `from` and starts `to` — a stub, not yet a crossfade (built in Slice 4, nothing calls it
+ * yet). Signature uses Pad object (not just ID) — consistent with play().
+ *
+ * @reserved Parked — crossfade between pads (docs/product/README.md#pad-options)
  */
 export function crossfade(from: string, to: Pad, _duration: number): void {
   stopPad(from, true);

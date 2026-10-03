@@ -1556,19 +1556,23 @@ Fixed by agreed rules, open items await the owner's decision.
   files for quarantine markers; the new block-comment headers made both count a marker named in a
   comment. Both use `v3/scripts/lib/test-markers.ts` now (counter-checked: break → both red).
 - ✅ **A15 Coverage floors** — raised to the measured values (three identical runs).
-- **A16 Bug: cell name in the narrow-window ADD PAD sheet (Open — owner)** — the sheet title
-  computes `String.fromCharCode(64 + index)` with 4 columns fixed
-  (`v3/src/components/PadCreationPopover.tsx`): the first cell of the second row reads "E5", not
-  "B1". The wide-window popover shows no cell name. Recommended: drop the code from the title like
-  the popover (one form, nothing to get wrong); alternative: row letter + column number from the
-  deck's own column count.
-- **A17 Code nothing uses (Open — owner)** — `activeTheme` and `masterVolume` (store) and the
-  `crossfade` stub (audio facade) are used nowhere; `padTypeGlow` and `setPlacementHotkey` only by
-  their tests. Recommended: remove now and build them with their slices (themes 14, keys 12) —
-  YAGNI; unused code has to be kept correct without anyone noticing when it is wrong.
-- **A18 Unused code found by a tool (Open — owner)** — A17 came from a hand-written scan. knip
-  (ISC, https://knip.dev) reports unused files, exports and dependencies; as a CI step it turns
-  this into a fitness function. Recommended: adopt, with its ignore list under ADR-0053.
+- ✅ **A16 Bug: cell name in the narrow-window ADD PAD sheet** — the sheet title computed
+  `String.fromCharCode(64 + index)` with 4 columns fixed: the first cell of the second row read
+  "E5", not "B1". Owner decision 2026-10-03: the title is "Add Pad" without a cell name, like the
+  wide-window popover; the popover no longer takes the cell position at all.
+- ✅ **A17 Code nothing uses** — `activeTheme`, `masterVolume`, the `crossfade` stub, and
+  `padTypeGlow` / `setPlacementHotkey` (only their tests use them). Recommended was removal; the
+  **owner decided to keep code a later implementation may need** (2026-10-03) — it is marked
+  `@reserved Slice N — …` / `@reserved Parked — …` instead (ADR-0064 §4), and so are `stopAll` and
+  `fadeOutAll` (Slice 12), which knip found. Stale comments fixed on the way (`masterVolume` did not
+  mirror the master gain; `store.ts` asked for `boardPut` after every board change).
+- ✅ **A18 Unused code found by a tool** — knip adopted (owner decision 2026-10-03):
+  `npm run knip` in pre-push and CI, default mode (tests count as users) and production mode (the
+  app alone; a `@reserved` tag on code the app uses fails). Ignores in `v3/knip.config.ts` with
+  reasons, listed in the exception register. Its first run found an ESLint config package that was
+  installed in May but never wired in (`eslint-config-prettier`, now last in the config as
+  Prettier's docs advise). Counter-checked: an unused export, a removed `@reserved` and a stale
+  `@reserved` each fail.
 - **A19 npm cache owned by root (owner action, open since 2026-09-30)** — 5 entries in `~/.npm`
   belong to root; `npm install` and `npm outdated` fail unless a private cache is passed (hit three
   times on 2026-10-03, once silently: an outdated report came back empty). Fix:
@@ -1578,9 +1582,9 @@ Fixed by agreed rules, open items await the owner's decision.
   2026-10-05.
 - **A21 TypeScript 7 and @types/node 26 (Parked)** — new majors; TypeScript 7 is the native
   compiler. **When:** an upgrade spike after Slice 12, not before the first game night.
-- **A22 `docs/analysis/foundation-analysis.md` (Open — owner)** — marked "Living document", but its
-  analysis is dated 2026-06-05; later commits only translated, formatted and renamed paths.
-  Recommended: mark it a dated snapshot; its open points live in this backlog.
+- ✅ **A22 `docs/analysis/foundation-analysis.md`** — marked "Living document", but its analysis is
+  dated 2026-06-05. Owner decision 2026-10-03: a dated snapshot, not maintained; the docs index no
+  longer calls it a source of truth.
 - **A23 Slice completion checklists 9, 10, 11 open** — README "Available now", the backlog pass
   and, for Slice 10 (file handling), the manual iPhone checklist: EXPORT now hands a ZIP to the
   share sheet, which only a device can confirm (`docs/development/manual-iphone-checklist.md`).

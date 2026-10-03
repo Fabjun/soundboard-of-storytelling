@@ -7,6 +7,18 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.149 — 2026-10-03
+
+### Fixed
+
+- fix(pads): the ADD PAD sheet on a narrow window says "Add Pad" — its cell name was wrong from the second row on ("E5" instead of "B1"); audit A16
+
+### Internal
+
+- build(lint): knip reports unused files, exports and dependencies in pre-push and CI; eslint-config-prettier, installed but never used, now ends the ESLint config (audit A18)
+- docs(adr): ADR-0064 §4 — code kept for a later slice is marked @reserved, never deleted (owner decision); seven reservations, guarded by codeGuards and knip, listed in the exception register
+- docs: the foundation analysis of 2026-06-05 is a dated snapshot (audit A22); stale store comments fixed
+
 ## 3.0.148 — 2026-10-03
 
 ### Internal

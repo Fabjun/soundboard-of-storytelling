@@ -309,6 +309,10 @@ and has diverged). Never hardcode colors, fonts, or spacing.
   box of `─` lines; line comments explain why, not what; a comment that no longer matches the
   code is fixed in the same commit. Guarded by ESLint (`jsdoc/require-jsdoc`, `tsdoc/syntax`) and
   `codeGuards` ("every TypeScript file opens with a file overview").
+- **Code kept for later is marked, never deleted** (owner decision 2026-10-03): unused code that a
+  later slice or a parked feature needs carries `@reserved Slice N — …` or `@reserved Parked — …`
+  (ADR-0064). Never remove such code unasked. `npm run knip` (pre-push, CI) reports everything else
+  that is unused; a stale or malformed reservation fails `codeGuards` or knip.
 - **JSX safety**: Preact auto-escapes children. Do not bypass this
   with `dangerouslySetInnerHTML` unless absolutely required and
   approved.

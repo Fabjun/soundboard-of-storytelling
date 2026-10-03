@@ -35,6 +35,13 @@ export const WHATS_NEW_GROUPS = [
 /** The release notes the start screen shows, newest first (checked by whatsNew.test.ts). */
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
+    version: '3.0.149',
+    date: '2026-10-03',
+    fixed: [
+      'On a narrow screen, adding a pad to an empty cell no longer shows a wrong cell name in the title.',
+    ],
+  },
+  {
     version: '3.0.145',
     date: '2026-10-03',
     improved: [
