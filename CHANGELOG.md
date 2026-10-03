@@ -7,11 +7,17 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.154 — 2026-10-03
+
+### Internal
+
+- docs: correction — the owner tested the backup on a MacBook (Brave), not on an iPhone; Slices 9 and 10 stay open until the manual iPhone checklist is done (Chromium on macOS, WebKit on iOS); Slice 11 stays complete
+
 ## 3.0.153 — 2026-10-03
 
 ### Internal
 
-- docs: Slices 9, 10 and 11 complete — owner device test of the backup passed (V1 import, ZIP export, re-import on iPhone / Brave); README "Available now" and "Planned next" updated; stale review notes in the backlog closed
+- docs: Slices 9, 10 and 11 marked complete after the owner test of the backup (V1 import, ZIP export, re-import) — recorded as an iPhone test by mistake, corrected in 3.0.154; README "Available now" and "Planned next" updated; stale review notes in the backlog closed
 
 ## 3.0.152 — 2026-10-03
 

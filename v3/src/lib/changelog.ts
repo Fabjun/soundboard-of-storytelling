@@ -17,15 +17,22 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.153';
+export const APP_VERSION = '3.0.154';
 
 /** The developer log, newest first; CHANGELOG.md is generated from it (sync-changelog). */
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.0.154',
+    date: '2026-10-03',
+    items: [
+      'docs: correction — the owner tested the backup on a MacBook (Brave), not on an iPhone; Slices 9 and 10 stay open until the manual iPhone checklist is done (Chromium on macOS, WebKit on iOS); Slice 11 stays complete',
+    ],
+  },
+  {
     version: '3.0.153',
     date: '2026-10-03',
     items: [
-      'docs: Slices 9, 10 and 11 complete — owner device test of the backup passed (V1 import, ZIP export, re-import on iPhone / Brave); README "Available now" and "Planned next" updated; stale review notes in the backlog closed',
+      'docs: Slices 9, 10 and 11 marked complete after the owner test of the backup (V1 import, ZIP export, re-import) — recorded as an iPhone test by mistake, corrected in 3.0.154; README "Available now" and "Planned next" updated; stale review notes in the backlog closed',
     ],
   },
   {

@@ -1599,10 +1599,17 @@ Fixed by agreed rules, open items await the owner's decision.
 - ✅ **A22 `docs/analysis/foundation-analysis.md`** — marked "Living document", but its analysis is
   dated 2026-06-05. Owner decision 2026-10-03: a dated snapshot, not maintained; the docs index no
   longer calls it a source of truth.
-- ✅ **A23 Slice completion checklists 9, 10, 11** — device test by the owner on 2026-10-03
-  (iPhone, Brave): the V1 backup with its full library imported, the boards exported as ZIP and
-  that ZIP imported again — all working. README "Available now" updated, stale "review pending"
-  passages in this backlog closed, Slices 9–11 marked complete.
+- **A23 Slice completion checklists 9, 10, 11 (iPhone part open)** — owner test on 2026-10-03 on a
+  **MacBook (Brave)**: the V1 backup with its full library imported, the boards exported as ZIP
+  and that ZIP imported again — all working. README "Available now" updated, stale "review
+  pending" passages in this backlog closed, Slice 11 complete (it touches neither `src/audio` nor
+  `src/db`). **Still open for Slices 9 and 10:** the manual iPhone checklist
+  (`docs/development/manual-iphone-checklist.md`) — Brave on macOS runs Chromium, on iOS WebKit,
+  and the iPhone-only risks are untested: the memory limit during the 227 MB V1 import (V1's iOS
+  crash) and the share sheet / download on EXPORT; the WebKit E2E projects cannot cover the
+  import (headless WebKit decodes no audio). Correction: an earlier version of this entry and of
+  the 3.0.153 changelog said "iPhone" — an assumption, not what the owner reported.
+  **When:** before the first game night (Slice 12).
 
 ### Role-based E2E locators
 
