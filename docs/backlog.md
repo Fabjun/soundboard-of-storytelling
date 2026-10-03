@@ -1539,6 +1539,52 @@ Owner decisions 2026-09-30: A1–A3 as recommended.
   (option+value in one variable; unquoted `--include=*.ts`). Rule for the agent: measurements
   run via bash with quoted globs; "0 hits" counts only after a positive probe.
 
+### Structure audit 2026-10-03
+
+Owner request 2026-10-02 ("check what we can design better in general"), run after the release
+notes (ADR-0063) and the code comments (ADR-0064), with the review stack #31–#40 on main.
+Fixed by agreed rules, open items await the owner's decision.
+
+- ✅ **A11 Code comments** — ADR-0064: TSDoc on every export, one file overview form, lint and
+  guard (114 missing doc comments, 34 TSDoc syntax errors, four header forms measured before).
+- ✅ **A12 Comments naming the superseded May plan** — seven statements ("deferred to Slice 8",
+  "Slice 4 playback stub", "4×4 grid") were stale; rewritten to today's slices, and `codeGuards`
+  rejects Slices 5–8 in `src/` and `scripts/` (counter-checked).
+- ✅ **A13 Two section divider forms** — 26 boxes of `// ----` lines in 7 files next to 215
+  one-line `// ── Title ──` dividers; converted, guarded (counter-checked).
+- ✅ **A14 One check written twice** — testGuards and the exception register each scanned test
+  files for quarantine markers; the new block-comment headers made both count a marker named in a
+  comment. Both use `v3/scripts/lib/test-markers.ts` now (counter-checked: break → both red).
+- ✅ **A15 Coverage floors** — raised to the measured values (three identical runs).
+- **A16 Bug: cell name in the narrow-window ADD PAD sheet (Open — owner)** — the sheet title
+  computes `String.fromCharCode(64 + index)` with 4 columns fixed
+  (`v3/src/components/PadCreationPopover.tsx`): the first cell of the second row reads "E5", not
+  "B1". The wide-window popover shows no cell name. Recommended: drop the code from the title like
+  the popover (one form, nothing to get wrong); alternative: row letter + column number from the
+  deck's own column count.
+- **A17 Code nothing uses (Open — owner)** — `activeTheme` and `masterVolume` (store) and the
+  `crossfade` stub (audio facade) are used nowhere; `padTypeGlow` and `setPlacementHotkey` only by
+  their tests. Recommended: remove now and build them with their slices (themes 14, keys 12) —
+  YAGNI; unused code has to be kept correct without anyone noticing when it is wrong.
+- **A18 Unused code found by a tool (Open — owner)** — A17 came from a hand-written scan. knip
+  (ISC, https://knip.dev) reports unused files, exports and dependencies; as a CI step it turns
+  this into a fitness function. Recommended: adopt, with its ignore list under ADR-0053.
+- **A19 npm cache owned by root (owner action, open since 2026-09-30)** — 5 entries in `~/.npm`
+  belong to root; `npm install` and `npm outdated` fail unless a private cache is passed (hit three
+  times on 2026-10-03, once silently: an outdated report came back empty). Fix:
+  `sudo chown -R $(id -u):$(id -g) ~/.npm`.
+- **A20 Mutation testing covers 25 modules from the next weekly run** (15 new on main since
+  2026-10-03) — runtime and `thresholds.break` to be read after the run. **When:** weekly run
+  2026-10-05.
+- **A21 TypeScript 7 and @types/node 26 (Parked)** — new majors; TypeScript 7 is the native
+  compiler. **When:** an upgrade spike after Slice 12, not before the first game night.
+- **A22 `docs/analysis/foundation-analysis.md` (Open — owner)** — marked "Living document", but its
+  analysis is dated 2026-06-05; later commits only translated, formatted and renamed paths.
+  Recommended: mark it a dated snapshot; its open points live in this backlog.
+- **A23 Slice completion checklists 9, 10, 11 open** — README "Available now", the backlog pass
+  and, for Slice 10 (file handling), the manual iPhone checklist: EXPORT now hands a ZIP to the
+  share sheet, which only a device can confirm (`docs/development/manual-iphone-checklist.md`).
+
 ### Role-based E2E locators
 
 Temporary exception from ADR-0054: many E2E tests still locate controls by test ID although a

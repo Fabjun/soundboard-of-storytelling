@@ -30,7 +30,12 @@
  * 11. Every TypeScript file (src, tests, scripts, configuration files) opens with a
  *    `/** @fileoverview …` block — only a shebang or a tool directive may come first — and none
  *    opens with a box of `─` lines (ADR-0064; Google TypeScript style guide). Four header forms
- *    were in use before (measured 2026-10-03).
+ *    were in use before (measured 2026-10-03). A section divider is one line, `// ── Title ──…`,
+ *    never a box of `// ----` lines (26 boxes in 7 files, converted 2026-10-03).
+ * 12. Code and its comments (src, scripts) name no slice of the superseded May plan (Slices 5–8,
+ *    CLAUDE.md "Re-plan 2026-09-28"): "deferred to Slice 8" says nothing about today's plan. Seven
+ *    such statements were stale on 2026-10-03; the version history (src/lib/changelog.ts) is
+ *    exempt — it records what was true then.
  */
 
 import { readdirSync, readFileSync } from 'node:fs';
@@ -445,5 +450,46 @@ describe('guard: every TypeScript file opens with a file overview (ADR-0064)', (
       .filter((f) => !/^\/\*\*\n \* @fileoverview \S/.test(opening(readFileSync(f, 'utf8'))))
       .map((f) => relative(V3, f).split('\\').join('/'));
     expect(bad, 'open the file with /**\\n * @fileoverview <what the file is for>').toEqual([]);
+  });
+
+  it('section dividers are one line (// ── Title ──…), never a box of // ---- lines', () => {
+    const bad = files.flatMap((f) =>
+      readFileSync(f, 'utf8')
+        .split('\n')
+        .flatMap((line, i) =>
+          /^\s*\/\/ -{20,}\s*$/.test(line)
+            ? [`${relative(V3, f).split('\\').join('/')}:${i + 1}`]
+            : [],
+        ),
+    );
+    expect(bad, 'write the divider as // ── Title ───').toEqual([]);
+  });
+});
+
+describe('guard: code names no slice of the superseded May plan (Slices 5–8)', () => {
+  const walk = (dir: string): string[] =>
+    readdirSync(dir, { withFileTypes: true }).flatMap((e) =>
+      e.isDirectory() ? walk(join(dir, e.name)) : [join(dir, e.name)],
+    );
+  /** The version history records what was true then. */
+  const EXEMPT = new Set(['src/lib/changelog.ts']);
+  const files = ['src', 'scripts']
+    .flatMap((d) => walk(join(V3, d)))
+    .filter((f) => /\.(tsx?|css)$/.test(f))
+    .map((f) => relative(V3, f).split('\\').join('/'))
+    .filter((f) => !EXEMPT.has(f));
+  const MAY_PLAN = /\bSlices? [5-8](?![0-9])/;
+
+  it('scans source, styles and scripts (sanity)', () => {
+    expect(files).toEqual(expect.arrayContaining(['src/styles/tokens.css', 'src/main.tsx']));
+  });
+
+  it('no file names Slice 5, 6, 7 or 8 — say which slice of today’s plan, or none', () => {
+    const bad = files.flatMap((f) =>
+      readFileSync(join(V3, f), 'utf8')
+        .split('\n')
+        .flatMap((line, i) => (MAY_PLAN.test(line) ? [`${f}:${i + 1}`] : [])),
+    );
+    expect(bad, 'the May plan is superseded (CLAUDE.md "Re-plan 2026-09-28")').toEqual([]);
   });
 });

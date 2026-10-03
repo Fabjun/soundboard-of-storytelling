@@ -17,9 +17,7 @@ import { libPut } from '../db/idb';
 import { addLibraryItemMeta, libraryItems, uploadStatus } from '../state/store';
 import type { LibraryItemMeta, UploadResult } from '../types';
 
-// ---------------------------------------------------------------------------
-// Hash
-// ---------------------------------------------------------------------------
+// ── Hash ─────────────────────────────────────────────────────────────────────
 
 /**
  * Computes the SHA-256 hex digest of a raw file buffer.
@@ -33,9 +31,7 @@ export function computeHash(buf: ArrayBuffer): string {
   return bytesToHex(sha256(new Uint8Array(buf)));
 }
 
-// ---------------------------------------------------------------------------
-// Peak extraction (ported from V1 _computePeaks)
-// ---------------------------------------------------------------------------
+// ── Peak extraction (ported from V1 _computePeaks) ───────────────────────────
 
 /**
  * Extracts N amplitude peaks from a decoded AudioBuffer.
@@ -63,9 +59,7 @@ export function computePeaks(decoded: AudioBuffer, N = 30): number[] {
   return peaks;
 }
 
-// ---------------------------------------------------------------------------
-// Serial upload pipeline
-// ---------------------------------------------------------------------------
+// ── Serial upload pipeline ───────────────────────────────────────────────────
 
 /** What happened to one audio file: added, already in the library, or not usable. */
 export type AddAudioResult =
@@ -173,9 +167,7 @@ export async function processFilesSerial(files: File[]): Promise<void> {
   uploadStatus.value = result;
 }
 
-// ---------------------------------------------------------------------------
-// Helpers
-// ---------------------------------------------------------------------------
+// ── Helpers ──────────────────────────────────────────────────────────────────
 
 /** Format bytes as human-readable string (e.g. "1.4 MB", "240 KB"). */
 export function formatBytes(bytes: number): string {

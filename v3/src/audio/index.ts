@@ -146,9 +146,9 @@ export function isPlaying(padId: string): boolean {
 }
 
 /**
- * Crossfade stub (Slice 4): stops `from` and starts `to`.
- * Simultaneous audio crossfade is a future feature (Slice 8+).
- * Signature uses Pad object (not just ID) — consistent with play().
+ * Stops `from` and starts `to` — a stub, not yet a crossfade (built in Slice 4, unused so far).
+ * A simultaneous crossfade has no slice assigned. Signature uses Pad object (not just ID) —
+ * consistent with play().
  */
 export function crossfade(from: string, to: Pad, _duration: number): void {
   stopPad(from, true);

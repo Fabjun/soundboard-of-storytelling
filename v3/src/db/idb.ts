@@ -26,9 +26,7 @@
 import { openDB, type IDBPDatabase } from 'idb';
 import type { Board, LibraryItem, LibraryItemMeta } from '../types';
 
-// ---------------------------------------------------------------------------
-// DB singleton
-// ---------------------------------------------------------------------------
+// ── DB singleton ─────────────────────────────────────────────────────────────
 
 const DB_NAME = 'sos-v3';
 const DB_VERSION = 6;
@@ -75,9 +73,7 @@ async function getDB(): Promise<IDBPDatabase> {
   return _db;
 }
 
-// ---------------------------------------------------------------------------
-// Public API
-// ---------------------------------------------------------------------------
+// ── Public API ───────────────────────────────────────────────────────────────
 
 /**
  * Enumerate all library entries — metadata only, blob excluded.
@@ -188,9 +184,7 @@ export async function boardDelete(id: string): Promise<void> {
   await db.delete('boards', id);
 }
 
-// ---------------------------------------------------------------------------
-// Key-value store (preferences, per-pad stats) — small values only, never audio or boards
-// ---------------------------------------------------------------------------
+// ── Key-value store (preferences, per-pad stats) — small values only, never audio or boards ───
 
 /** Every key-value entry — small, so read in one go at app start (src/state/prefs.ts). */
 export async function kvGetAll(): Promise<[string, unknown][]> {

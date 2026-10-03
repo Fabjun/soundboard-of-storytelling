@@ -27,16 +27,12 @@ import {
 import { processFilesSerial, formatBytes, totalLibraryBytes } from '../lib/upload';
 import { libDelete, libRename } from '../db/idb';
 
-// ---------------------------------------------------------------------------
-// Constants
-// ---------------------------------------------------------------------------
+// ── Constants ────────────────────────────────────────────────────────────────
 
 type LibTab = 'AUDIO' | 'ICONS' | 'PADS' | 'BOARDS';
 const TABS: LibTab[] = ['AUDIO', 'ICONS', 'PADS', 'BOARDS'];
 
-// ---------------------------------------------------------------------------
-// EmptyState — generic empty placeholder
-// ---------------------------------------------------------------------------
+// ── EmptyState — generic empty placeholder ───────────────────────────────────
 
 function EmptyState({ label }: { label: string }): JSX.Element {
   return (
@@ -47,9 +43,7 @@ function EmptyState({ label }: { label: string }): JSX.Element {
   );
 }
 
-// ---------------------------------------------------------------------------
-// UploadStatusBar — one-liner feedback after batch upload
-// ---------------------------------------------------------------------------
+// ── UploadStatusBar — one-liner feedback after batch upload ──────────────────
 
 function UploadStatusBar(): JSX.Element | null {
   const status = uploadStatus.value;
@@ -76,9 +70,7 @@ function UploadStatusBar(): JSX.Element | null {
   );
 }
 
-// ---------------------------------------------------------------------------
-// LibraryScreen
-// ---------------------------------------------------------------------------
+// ── LibraryScreen ────────────────────────────────────────────────────────────
 
 /** Shows the audio library: upload files (one at a time), search, rename and delete them. */
 export function LibraryScreen(): JSX.Element {

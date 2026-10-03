@@ -18,9 +18,7 @@ interface AudioRowProps {
   onRename: (newName: string) => void;
 }
 
-// ---------------------------------------------------------------------------
-// RenameField — inline <input> toggle (no contentEditable — iOS Safari issues)
-// ---------------------------------------------------------------------------
+// ── RenameField — inline <input> toggle (no contentEditable — iOS Safari issues) ───
 
 interface RenameFieldProps {
   name: string;
@@ -92,9 +90,7 @@ function RenameField({ name, onCommit }: RenameFieldProps) {
   );
 }
 
-// ---------------------------------------------------------------------------
-// AudioRow
-// ---------------------------------------------------------------------------
+// ── AudioRow ─────────────────────────────────────────────────────────────────
 
 /**
  * Shows one audio file of the library: name (tap to rename), waveform, duration, size and a

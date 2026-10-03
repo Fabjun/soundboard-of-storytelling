@@ -4,9 +4,7 @@
  * decisions: docs/architecture/0048-pad-pool-decks.md#1-data-model
  */
 
-// ---------------------------------------------------------------------------
-// Data model
-// ---------------------------------------------------------------------------
+// ── Data model ───────────────────────────────────────────────────────────────
 
 /** A board: the pads of one game setup, the decks that place them and the quick-access bar. */
 export type Board = {
@@ -167,9 +165,7 @@ export type UploadResult = {
   errors: string[]; // per-file error messages, e.g. "thunder.wav: decode failed"
 };
 
-// ---------------------------------------------------------------------------
-// App state values — the runtime store itself lives in src/state/store.ts (Preact Signals)
-// ---------------------------------------------------------------------------
+// ── App state values — the runtime store itself lives in src/state/store.ts (Preact Signals) ───
 
 /** The app mode: `play` is GAME (pads play), `edit` is SETUP (pads are arranged and edited). */
 export type AppMode = 'play' | 'edit';

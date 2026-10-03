@@ -16,16 +16,12 @@ import type {
   UploadResult,
 } from '../types';
 
-// ---------------------------------------------------------------------------
-// Audio context
-// ---------------------------------------------------------------------------
+// ── Audio context ────────────────────────────────────────────────────────────
 
 /** Lifecycle state of the Web Audio API context. */
 export const audioContextState = signal<AudioContextState>('locked');
 
-// ---------------------------------------------------------------------------
-// Navigation / routing
-// ---------------------------------------------------------------------------
+// ── Navigation / routing ─────────────────────────────────────────────────────
 
 /** The app's top-level screens. */
 export type AppScreen = 'start' | 'library' | 'board-list' | 'board';
@@ -40,27 +36,20 @@ export const currentDeckId = signal<string | null>(null);
 /** The All pads view (the whole pool, first entry of the deck rail, ADR-0048) instead of a deck. */
 export const allPadsView = signal(false);
 
-// ---------------------------------------------------------------------------
-// Mode
-// ---------------------------------------------------------------------------
+// ── Mode ─────────────────────────────────────────────────────────────────────
 
 /** GAME (play) vs SETUP (edit) mode — the primary UI bifurcation. */
 export const currentMode = signal<AppMode>('play');
 
-// ---------------------------------------------------------------------------
-// Theme
-// ---------------------------------------------------------------------------
+// ── Theme ────────────────────────────────────────────────────────────────────
 
 /** Active theme ID — maps to a CSS class applied to the root element. */
 export const activeTheme = signal<string>('hearth');
 
-// ---------------------------------------------------------------------------
-// Playback state
-//
+// ── Playback state ───────────────────────────────────────────────────────────
 // globalThis.Set: explicit built-in Set (the code base used to have a PadSet type).
 // ReadonlySet in the type signature prevents callers from mutating directly;
 // mutations go through the helpers below.
-// ---------------------------------------------------------------------------
 
 /** Ids of every pad that is playing now — loops included (fed by the audio bridge). */
 export const playingPads = signal<ReadonlySet<string>>(new globalThis.Set<string>());
@@ -96,19 +85,14 @@ export function removeLoopingPad(id: string): void {
   loopingPads.value = next;
 }
 
-// ---------------------------------------------------------------------------
-// Master volume
-// ---------------------------------------------------------------------------
+// ── Master volume ────────────────────────────────────────────────────────────
 
 /** Master volume 0–100. Mirrors the master GainNode's value × 100. */
 export const masterVolume = signal<number>(80);
 
-// ---------------------------------------------------------------------------
-// Library
-//
+// ── Library ──────────────────────────────────────────────────────────────────
 // libraryItems holds LibraryItemMeta only — never a Blob.
 // The blob lives exclusively in IndexedDB; use libGet(id) for playback.
-// ---------------------------------------------------------------------------
 
 /** All library entries, metadata only. Loaded before the first render (src/state/boot.ts). */
 export const libraryItems = signal<LibraryItemMeta[]>([]);
@@ -134,13 +118,10 @@ export function renameLibraryItemMeta(id: string, newName: string): void {
   libraryItems.value = libraryItems.value.map((m) => (m.id === id ? { ...m, name: newName } : m));
 }
 
-// ---------------------------------------------------------------------------
-// Boards
-//
+// ── Boards ───────────────────────────────────────────────────────────────────
 // boards[] is the source of truth for all Board, Deck, and Pad data in RAM.
 // IDB is the persistence layer — always call boardPut() after mutating boards.
 // currentBoard and currentDeck are derived signals (no extra state needed).
-// ---------------------------------------------------------------------------
 
 /** All boards, loaded from IDB at app boot. */
 export const boards = signal<Board[]>([]);
@@ -178,9 +159,7 @@ export function removeBoardFromStore(id: string): void {
   boards.value = boards.value.filter((b) => b.id !== id);
 }
 
-// ---------------------------------------------------------------------------
-// Saves in flight
-// ---------------------------------------------------------------------------
+// ── Saves in flight ──────────────────────────────────────────────────────────
 
 /**
  * Writes to IndexedDB still running (boards, preferences). A change shows before it is stored, so

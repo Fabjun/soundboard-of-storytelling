@@ -4,6 +4,11 @@ Started 2026-10-01 on the owner's instruction (translated from German): _"Could 
 decisions on your own for now, and afterwards we go through everything you built together and
 rework it? … The main thing is that everything is logged."_
 
+> **Closed 2026-10-03.** Every pull request below was decided by the owner and squash-merged to
+> `main` (commits in the table); the owner changes to #37 (B1, B8, B9) followed on main the same
+> day. Work after that is recorded in the backlog and the changelog; new work done while the owner
+> is away starts a new log.
+
 ## How to review
 
 - **Provisional decisions** (new schemes, feature and slice work, product behaviour) live on their

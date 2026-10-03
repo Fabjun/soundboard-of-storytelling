@@ -7,6 +7,14 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.148 — 2026-10-03
+
+### Internal
+
+- docs: structure audit 2026-10-03 (A11–A23) in the backlog; review log closed — the whole review stack is on main
+- test(guards): code names no slice of the superseded May plan; section dividers are one line — seven stale statements and 26 divider boxes fixed
+- test(coverage): floors raised to the measured values (lines 92, statements 91, functions 94, branches 89)
+
 ## 3.0.147 — 2026-10-03
 
 ### Internal

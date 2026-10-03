@@ -17,10 +17,19 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.147';
+export const APP_VERSION = '3.0.148';
 
 /** The developer log, newest first; CHANGELOG.md is generated from it (sync-changelog). */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.148',
+    date: '2026-10-03',
+    items: [
+      'docs: structure audit 2026-10-03 (A11–A23) in the backlog; review log closed — the whole review stack is on main',
+      'test(guards): code names no slice of the superseded May plan; section dividers are one line — seven stale statements and 26 divider boxes fixed',
+      'test(coverage): floors raised to the measured values (lines 92, statements 91, functions 94, branches 89)',
+    ],
+  },
   {
     version: '3.0.147',
     date: '2026-10-03',

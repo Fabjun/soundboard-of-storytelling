@@ -5,7 +5,7 @@
  *
  * Slice 3 scope:
  *   - Source modes: RECENT (last 5) + BROWSE (searchable) implemented
- *   - DROP HERE: not built yet (placeholder shown; superseded May-plan Slice 8)
+ *   - DROP HERE: not built yet (placeholder shown; no slice assigned)
  *   - "More options →" handoff to PadEditorPanel
  *   - Type pills: SINGLE until the user picks another type (DEFAULT_PAD_TYPE)
  *

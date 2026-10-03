@@ -870,7 +870,7 @@
 
 /* ── Slider ───────────────────────────────────────────────── */
 .sb-slider {
-  /* @inventory: Horizontal range track bar for volume and trim controls; Slice 8+ feature. [unused-css] */
+  /* @inventory: Horizontal range track bar for volume and trim controls; for the PAD editor (Slice 15). [unused-css] */
   position: relative;
   height: 6px;
   background: var(--sunk);
@@ -878,13 +878,13 @@
   overflow: hidden;
 }
 .sb-slider-fill {
-  /* @inventory: Active filled portion of the slider track; width set by inline style. Slice 8+ feature. [unused-css] */
+  /* @inventory: Active filled portion of the slider track; width set by inline style. For the PAD editor (Slice 15). [unused-css] */
   position: absolute;
   inset: 0 auto 0 0;
   background: var(--gold);
 }
 .sb-slider-thumb {
-  /* @inventory: Draggable thumb on the slider track with gold glow. Slice 8+ feature. [unused-css] */
+  /* @inventory: Draggable thumb on the slider track with gold glow. For the PAD editor (Slice 15). [unused-css] */
   position: absolute;
   top: 50%;
   width: 12px;
@@ -2298,7 +2298,7 @@
   padding: 4px 10px 8px;
 }
 .sb-category-item {
-  /* @inventory: Active category row in filter rail — gold left border indicator, flex space-between, VT323 font. Slice 3 has only "All"; gains more uses in Slice 5+. */
+  /* @inventory: Active category row in filter rail — gold left border indicator, flex space-between, VT323 font. Only "All" so far; library groups and folders add more (Slice 16). */
   padding: 6px 10px;
   border-left: 2px solid var(--gold);
   font-family: var(--font-ui);
@@ -2583,7 +2583,7 @@
 /* ── AudioRow (Session 3g) ───────────────────────────────────────── */
 
 .sb-audio-row {
-  /* @inventory: Main container grid for AudioRow — 5-column table layout (name 160px | waveform 1fr | duration 70px | size 90px | delete 44px). Cursor + userSelect for row click; background and borderLeft set inline for selected state. NOTE: fixed columns (364px) + gaps (48px) = 412px min — overflows 390px mobile viewport; pre-existing design, deferred to Slice 8 responsive pass. */
+  /* @inventory: Main container grid for AudioRow — 5-column table layout (name 160px | waveform 1fr | duration 70px | size 90px | delete 44px). Cursor + userSelect for row click; background and borderLeft set inline for selected state. NOTE: fixed columns (364px) + gaps (48px) = 412px min — overflows 390px mobile viewport; pre-existing design, for the adaptive layout (Slice 13). */
   display: grid;
   grid-template-columns: 160px 1fr 70px 90px 44px;
   gap: var(--space-3);

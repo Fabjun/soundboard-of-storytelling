@@ -8,9 +8,7 @@
 
 import type { CSSProperties, JSX } from 'preact';
 
-// ---------------------------------------------------------------------------
-// Icon data (verbatim from foundations.jsx, typed)
-// ---------------------------------------------------------------------------
+// ── Icon data (verbatim from foundations.jsx, typed) ─────────────────────────
 
 const PIXEL_ICONS = {
   // ── UI icons ─────────────────────────────────────────────────────────────
@@ -1175,9 +1173,7 @@ const PIXEL_ICONS = {
 /** The names of the pixel icons `PixelIcon` can draw. */
 export type PixelIconName = keyof typeof PIXEL_ICONS;
 
-// ---------------------------------------------------------------------------
-// Component
-// ---------------------------------------------------------------------------
+// ── Component ────────────────────────────────────────────────────────────────
 
 interface PixelIconProps {
   name: PixelIconName;
