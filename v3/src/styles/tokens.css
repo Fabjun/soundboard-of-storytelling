@@ -1077,8 +1077,8 @@
   border-bottom: 1px solid var(--border-soft);
 }
 
-.sb-deck-check-row {
-  /* @inventory: One deck in the PAD editor's deck checklist — label row with a checkbox, 44px touch target (Slice 9e). */
+.sb-check-row {
+  /* @inventory: A row with a checkbox and its label — 44px touch target; the whole row toggles. Used for the PAD editor's deck checklist and a combo step's "stop everything first" (Slice 9e / 11). */
   display: flex;
   align-items: center;
   gap: var(--space-2);
@@ -1087,6 +1087,14 @@
   font-family: var(--font-mono);
   font-size: var(--fs-sm);
   color: var(--text);
+}
+.sb-combo-step {
+  /* @inventory: One step of a combo in the PAD editor — bordered block, its parts stacked with a small gap (Slice 11). */
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-2);
+  border: 1px solid var(--border-soft);
 }
 
 /* Numeric input chip (Premiere-style scrubber) */

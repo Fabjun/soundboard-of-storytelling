@@ -24,11 +24,12 @@
 
 import { useState, useRef, useEffect } from 'preact/hooks';
 import type { JSX } from 'preact';
-import type { Board, Pad, PadBase, PadType, Deck } from '../types';
+import type { Board, ComboStep, Pad, PadBase, PadType, Deck } from '../types';
 import { isComboPad } from '../types';
 import { PixelIcon } from './PixelIcon';
 import { Waveform } from './Waveform';
 import { PadTypeConfirmDialog } from './PadTypeConfirmDialog';
+import { ComboStepsEditor } from './ComboStepsEditor';
 import { padTypeColor, padTypeLabel, applyTypeChange, padMigrationMatrix } from '../lib/padUtils';
 import { libraryItems } from '../state/store';
 import { updateBoard } from '../state/boardWrites';
@@ -61,6 +62,8 @@ export function PadEditorPanel({
   const [type, setType] = useState<PadType>(pad.type);
   /** Audio files of a Single / Loop pad (ADR-0048); empty for a Combo. */
   const [files, setFiles] = useState<string[]>(isComboPad(pad) ? [] : pad.files);
+  /** Steps of a Combo pad (Slice 11); empty for Single / Loop. Saved with the rest of the pad. */
+  const [steps, setSteps] = useState<ComboStep[]>(isComboPad(pad) ? pad.steps : []);
   const [volume, setVolume] = useState(pad.volume);
   const [fadeIn, setFadeIn] = useState(pad.fadeIn);
   const [fadeOut, setFadeOut] = useState(pad.fadeOut);
@@ -82,6 +85,7 @@ export function PadEditorPanel({
     setName(pad.name);
     setType(pad.type);
     setFiles(isComboPad(pad) ? [] : pad.files);
+    setSteps(isComboPad(pad) ? pad.steps : []);
     setVolume(pad.volume);
     setFadeIn(pad.fadeIn);
     setFadeOut(pad.fadeOut);
@@ -102,7 +106,7 @@ export function PadEditorPanel({
 
   // libraryRefOverride: when the libraryRef state hasn't committed yet (handleLibrarySelect)
   // filesOverride: when the files state hasn't committed yet (handleLibrarySelect)
-  function buildCurrentPad(filesOverride?: string[]): Pad {
+  function buildCurrentPad(filesOverride?: string[], stepsOverride?: ComboStep[]): Pad {
     const effectiveFiles = filesOverride ?? files;
     const base: PadBase = {
       id: pad.id,
@@ -113,7 +117,7 @@ export function PadEditorPanel({
       fadeIn,
       fadeOut,
     };
-    if (type === 'combo') return { ...base, type, steps: isComboPad(pad) ? pad.steps : [] };
+    if (type === 'combo') return { ...base, type, steps: stepsOverride ?? steps };
     // Order and trim are not edited here yet — keep what the pad has
     const kept = isComboPad(pad)
       ? { order: 'sequential' as const }
@@ -166,6 +170,7 @@ export function PadEditorPanel({
     const migrated = applyTypeChange(buildCurrentPad(), newType);
     setType(migrated.type);
     setFiles(isComboPad(migrated) ? [] : migrated.files);
+    setSteps(isComboPad(migrated) ? migrated.steps : []);
     scheduleAutoSave(migrated);
     setPendingType(null);
   }
@@ -265,6 +270,19 @@ export function PadEditorPanel({
           ))}
         </div>
       </div>
+
+      {/* Combo: its steps (Slice 11) */}
+      {type === 'combo' && (
+        <ComboStepsEditor
+          comboId={pad.id}
+          steps={steps}
+          board={board}
+          onChange={(next) => {
+            setSteps(next);
+            scheduleAutoSave(buildCurrentPad(undefined, next));
+          }}
+        />
+      )}
 
       {/* Audio source — Single and Loop only; a Combo plays other pads */}
       {type !== 'combo' && (
@@ -398,7 +416,7 @@ export function PadEditorPanel({
           const full =
             !placed && nextFreeSlot(d.placements, d.gridConfig.cols, d.gridConfig.rows) === null;
           return (
-            <label key={d.id} class="sb-deck-check-row">
+            <label key={d.id} class="sb-check-row">
               <input
                 type="checkbox"
                 data-testid={`pad-editor-panel-deck-input-${d.id}`}

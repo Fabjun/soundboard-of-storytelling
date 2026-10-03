@@ -16,6 +16,7 @@ import type {
   QuickAccessEntry,
 } from '../types';
 import { nextFreeSlot } from './padUtils';
+import { combosInCycles } from './comboModel';
 
 /** A pad as one deck shows it: the pad from the pool plus its placement in that deck. */
 export type PlacedPad = { pad: Pad; placement: Placement };
@@ -416,5 +417,7 @@ export function boardProblems(board: Board): string[] {
       for (const step of pad.steps)
         for (const id of step.padIds)
           if (!ids.has(id)) problems.push(`combo ${pad.id}: step references unknown pad ${id}`);
+  // A combo that reaches itself would make the engine start it again and again
+  for (const id of combosInCycles(board)) problems.push(`combo ${id}: starts itself (cycle)`);
   return problems;
 }

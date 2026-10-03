@@ -19,7 +19,7 @@ import type { JSX } from 'preact';
 import type { Deck, Board } from '../types';
 import { PixelIcon } from './PixelIcon';
 import { UndoToast } from './UndoToast';
-import { updateBoard } from '../state/boardWrites';
+import { applyBoardChange, updateBoard } from '../state/boardWrites';
 import {
   DEFAULT_GRID,
   addDeck as addDeckTo,
@@ -121,7 +121,7 @@ export function DeckRail({
     if (pendingDeleteId === deck.id) {
       // Second tap: execute. Undo keeps only the deck — not a copy of the whole board, which
       // would undo every other change made while the toast is shown.
-      const updatedBoard = await updateBoard(board.id, (b) => deleteDeck(b, deck.id));
+      const { board: updatedBoard } = applyBoardChange(board.id, (b) => deleteDeck(b, deck.id));
       if (updatedBoard) {
         setDeletedDeck({
           deck,
@@ -151,10 +151,10 @@ export function DeckRail({
     const id = nanoid();
     // Smallest unused "Deck N" (never the deck count — after a delete the count can repeat a
     // name still in use); addDeck appends it at the end.
-    const saved = await updateBoard(board.id, (b) =>
+    const { board: added } = applyBoardChange(board.id, (b) =>
       addDeckTo(b, { id, name: nextDeckName(b), gridConfig: { ...DEFAULT_GRID } }),
     );
-    if (saved) onDeckSelect(id);
+    if (added) onDeckSelect(id);
   }
 
   // ── Render ────────────────────────────────────────────────────────────────

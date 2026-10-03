@@ -9,7 +9,12 @@ import { IDBFactory } from 'fake-indexeddb';
 import type { Board } from '../../src/types';
 import { boardGet, _resetDB } from '../../src/db/idb';
 import { boards } from '../../src/state/store';
-import { createBoard, pendingBoardSaves, updateBoard } from '../../src/state/boardWrites';
+import {
+  applyBoardChange,
+  createBoard,
+  pendingBoardSaves,
+  updateBoard,
+} from '../../src/state/boardWrites';
 
 const board = (): Board => ({
   id: 'b',
@@ -94,5 +99,23 @@ describe('updateBoard', () => {
     await updateBoard('b', (b) => Object.assign({ ...b }, { bad: () => 0 }));
     expect(pendingBoardSaves.value).toBe(0);
     error.mockRestore();
+  });
+});
+
+describe('applyBoardChange', () => {
+  it('returns the shown board at once; the save settles later', async () => {
+    await createBoard(board());
+    const { board: now, saved } = applyBoardChange('b', (b) => ({ ...b, name: 'Now' }));
+    expect(now?.name).toBe('Now');
+    expect(stored()).toBe(now);
+    expect(pendingBoardSaves.value).toBe(1);
+    expect(await saved).toEqual(now);
+    expect((await boardGet('b'))!.name).toBe('Now');
+  });
+
+  it('board is null when nothing changed or the board is unknown', async () => {
+    await createBoard(board());
+    expect(applyBoardChange('b', (b) => b).board).toBeNull();
+    expect(await applyBoardChange('nope', (b) => ({ ...b, name: 'x' })).saved).toBeNull();
   });
 });

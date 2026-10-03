@@ -26,6 +26,7 @@ export const FULL_TESTS = [
   'whats-new',
   'pad-dnd',
   'pad-pool',
+  'combo-editor',
   'backup',
   'game-mode',
   'audio',
@@ -45,6 +46,7 @@ export const FULL_WEBKIT_TESTS = [
   'whats-new',
   'pad-dnd',
   'pad-pool',
+  'combo-editor',
 ];
 
 /** tests/e2e/mobile/<name>.spec.ts — audio-free, WebKit / iPhone 13 Pro (real Safari engine path). */

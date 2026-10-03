@@ -35,12 +35,26 @@ export async function updateBoard(
   boardId: string,
   change: (board: Board) => Board,
 ): Promise<Board | null> {
+  return applyBoardChange(boardId, change).saved;
+}
+
+/**
+ * Like updateBoard, but tells AT ONCE whether the change applied: `board` is the new board now
+ * shown (null when the board is unknown or nothing changed), `saved` settles when it is stored.
+ * Use it when the screen reacts to the change (select the new pad, close the editor …) — a change
+ * shows before it is saved (owner decision 2026-10-02), so the reaction must not wait for the save
+ * either: something typed in between would land in the wrong place.
+ */
+export function applyBoardChange(
+  boardId: string,
+  change: (board: Board) => Board,
+): { board: Board | null; saved: Promise<Board | null> } {
   const latest = boards.value.find((b) => b.id === boardId);
-  if (!latest) return null;
+  if (!latest) return { board: null, saved: Promise.resolve(null) };
   const next = change(latest);
-  if (next === latest) return null;
+  if (next === latest) return { board: null, saved: Promise.resolve(null) };
   upsertBoard(next);
-  return save(next);
+  return { board: next, saved: save(next) };
 }
 
 /** Adds a new board to the store and saves it. Returns null when the save failed. */

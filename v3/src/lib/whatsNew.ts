@@ -34,6 +34,17 @@ export const WHATS_NEW_GROUPS = [
 
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
+    version: '3.0.142',
+    date: '2026-10-03',
+    new: [
+      'Edit a combo in the pad editor: add steps, choose the pads that start together in each step, set the wait before the next step, and let a step stop everything first.',
+    ],
+    improved: [
+      'A combo can no longer start itself, directly or through another combo — the editor only offers pads that cannot lead back to it.',
+    ],
+    fixed: ['A name typed right after ADD PAD now goes to the new pad, not to the one before.'],
+  },
+  {
     version: '3.0.141',
     date: '2026-10-03',
     new: [

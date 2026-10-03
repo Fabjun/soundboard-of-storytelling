@@ -24,7 +24,7 @@ import {
   allPadsView,
   libraryItems,
 } from '../state/store';
-import { updateBoard } from '../state/boardWrites';
+import { applyBoardChange, updateBoard } from '../state/boardWrites';
 import { getLastView, setLastView } from '../db/prefs';
 import { BoardTopBar } from '../components/BoardTopBar';
 import { DeckRail } from '../components/DeckRail';
@@ -95,10 +95,11 @@ export function BoardScreen(): JSX.Element {
     // All pads: the pad goes to the pool only (owner decision 2026-10-02). In a deck the cell is
     // chosen on the latest board: a held or double-pressed A key adds pads to different cells.
     // Null = grid full (or save failed) — nothing to open.
-    const saved = await updateBoard(board.id, (b) =>
+    const { board: added } = applyBoardChange(board.id, (b) =>
       deckId ? addPadToFreeCell(b, deckId, pad) : addPadToPool(b, pad),
     );
-    if (saved) {
+    // Open the new pad at once, not after the save — a name typed meanwhile belongs to it
+    if (added) {
       setSelectedPadId(pad.id);
       setRightPanel('editor');
     }
@@ -188,7 +189,7 @@ export function BoardScreen(): JSX.Element {
   async function handlePadDelete(padId: string) {
     if (!board) return;
     // Delete pad (ADR-0048): from the pool, every deck, quick access and combo steps.
-    if (await updateBoard(board.id, (b) => deletePad(b, padId))) {
+    if (applyBoardChange(board.id, (b) => deletePad(b, padId)).board) {
       setSelectedPadId(null);
       setRightPanel('empty');
     }
@@ -198,7 +199,7 @@ export function BoardScreen(): JSX.Element {
     if (!deck || !board) return;
     // Remove from deck (ADR-0048): only this placement; the pad stays in the pool and other decks.
     const deckId = deck.id;
-    if (await updateBoard(board.id, (b) => removeFromDeck(b, deckId, padId))) {
+    if (applyBoardChange(board.id, (b) => removeFromDeck(b, deckId, padId)).board) {
       setSelectedPadId(null);
       setRightPanel('empty');
     }
@@ -276,10 +277,10 @@ export function BoardScreen(): JSX.Element {
             <EmptyBoardState
               onAddDeck={async () => {
                 const id = nanoid();
-                const saved = await updateBoard(board.id, (b) =>
+                const { board: added } = applyBoardChange(board.id, (b) =>
                   addDeck(b, { id, name: nextDeckName(b), gridConfig: { ...DEFAULT_GRID } }),
                 );
-                if (saved) currentDeckId.value = id;
+                if (added) currentDeckId.value = id;
               }}
             />
           ) : !deck ? (

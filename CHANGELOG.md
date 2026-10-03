@@ -7,6 +7,12 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.142 — 2026-10-03
+
+### Added
+
+- feat(combo): combo editor (minimal first version), combo step model with cycle protection; a new pad or deck is selected at once (PR #38, squash of slice-11-combo-editor)
+
 ## 3.0.141 — 2026-10-03
 
 ### Added
@@ -185,6 +191,17 @@ release notes the app shows are written separately for its users (`v3/src/lib/wh
 ### Internal
 
 - docs: review log — Slice 11 pull request (#38)
+
+## 3.0.105 — 2026-10-02
+
+### Added
+
+- feat(combo): combo steps model and protection against combos that start themselves (Slice 11); an imported V1 combo that would do so loses that step reference
+- feat(combo): combo editor in the PAD editor — steps with the pads that start together, the wait and "stop everything first"; only pads that cannot start the combo itself are offered
+
+### Fixed
+
+- fix(board): a new pad or deck is selected at once, not after it is saved — a name typed right after ADD PAD went to the previous pad
 
 ## 3.0.104 — 2026-10-02
 
