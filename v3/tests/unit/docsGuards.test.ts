@@ -23,10 +23,9 @@
  *    Markdown link targets are checked by remark-validate-links.
  * 8. Every GFM table row has as many cells as its header — GitHub drops extra cells silently.
  * 9. Code blocks in active docs use no superseded term (Vale skips code).
- * 10. The API list in CLAUDE.md names functions that idb.ts / upload.ts export.
- * 11. Every feature in the V1 / V2 inventory carries a decision — a slice, Parked or Rejected, never
+ * 10. Every feature in the V1 / V2 inventory carries a decision — a slice, Parked or Rejected, never
  *    Open (principle P8, docs/product/README.md#7-design-principles).
- * 12. Guard rules are referred to by name, never by their number: the numbers shift when
+ * 11. Guard rules are referred to by name, never by their number: the numbers shift when
  *    branches add rules, and a numbered reference then points at another rule (2026-10-03:
  *    CLAUDE.md cited number 7 for plan names, which was number 8 on the stack). The review log
  *    is exempt — its dated entries record what was true at the time.
@@ -507,27 +506,6 @@ describe('guard: code blocks in active docs are current (audit A7)', () => {
       ),
     );
     expect(bad).toEqual([]);
-  });
-});
-
-describe('guard: the API list in CLAUDE.md names real exports (audit A7)', () => {
-  const claude = readFileSync(join(ROOT, 'CLAUDE.md'), 'utf8');
-  const section = claude.split(/^## V3 audio\/IDB API$/m)[1]?.split(/^## /m)[0] ?? '';
-  const listed = [...section.matchAll(/^(\w+)\(/gm)].map((m) => m[1]);
-  const exported = new Set(
-    ['v3/src/db/idb.ts', 'v3/src/lib/upload.ts'].flatMap((f) =>
-      [...readFileSync(join(ROOT, f), 'utf8').matchAll(/^export (?:async )?function (\w+)/gm)].map(
-        (m) => m[1],
-      ),
-    ),
-  );
-
-  it('finds the listed functions (sanity)', () => {
-    expect(listed.length).toBeGreaterThanOrEqual(10);
-  });
-
-  it('every listed function is exported by idb.ts or upload.ts', () => {
-    expect(listed.filter((name) => !exported.has(name))).toEqual([]);
   });
 });
 

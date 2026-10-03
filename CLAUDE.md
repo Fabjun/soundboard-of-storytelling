@@ -498,6 +498,7 @@ style test`; checked by the `commit-msg` hook and for pull requests in CI.
     - [docs/development/testing.md §CI integration](docs/development/testing.md#ci-integration) (CI, pre-commit and pre-push steps) — via `npm run sync:steps`
     - `CHANGELOG.md` (whole file, from `v3/src/lib/changelog.ts`) — via `npm run sync:changelog`
     - `docs/development/exceptions.md` (exception register, whole file) — via `npm run sync:exceptions`
+    - [CLAUDE.md §V3 audio/IDB API](#v3-audioidb-api) (exported functions with their TSDoc) — via `npm run sync:api`
       The pre-commit hook runs `sync:docs` and stages the results. To refresh manually:
       `cd v3 && npm run sync:docs`. Document new `sb-*` classes with
       `/* @inventory: description */` at the CSS selector. New tokens take their description
@@ -653,67 +654,209 @@ See `docs/development/testing.md` for the full test architecture and conventions
 
 ## V3 audio/IDB API
 
-Canonical entry points for the IDB layer (`src/db/idb.ts`).
-Use only these functions — never raw IDB transactions outside `src/db/`.
+Canonical entry points of the storage layer, the upload pipeline, the audio facade and the PAD
+editor's preview. Use only the IDB functions below — never raw IDB transactions outside `src/db/`.
+The list is generated from the exports and their TSDoc (`npm run sync:api`, part of
+`sync:docs`) — change the doc comment in the code, never the list.
+
+<!-- AUTO-GENERATED:api START — do not edit by hand (npm run sync:api) -->
+
+### `v3/src/db/idb.ts`
 
 ```typescript
-// ── Library (src/db/idb.ts) ───────────────────────────────────────────────
 libGetAllMeta(): Promise<LibraryItemMeta[]>
-  // Cursor-based enumeration — blob never loaded, iOS-safe for any library size.
-  // Call at app boot; populates libraryItems signal.
+  // Lists all library entries — metadata only, blob excluded. Read at app start (src/state/boot.ts,
+  // fills the library list) and for the backup export.
+  //
+  // Memory safety: uses a cursor and destructures only scalar/array fields from cursor.value. The
+  // blob field is never referenced, so the Blob object is GC-eligible after each cursor.continue().
+  // At most one IDB record is loaded at a time, regardless of library size.
 
 libGet(id: string): Promise<LibraryItem | null>
-  // Returns full entry including Blob. Only when the audio itself is needed (playback,
-  // backup export, rename), one entry at a time. Caller must release reference after use.
+  // Loads a single full entry including its Blob. Only call this when the audio data itself is
+  // needed (playback, backup export, rename, fine peaks), one entry at a time. The caller is
+  // responsible for releasing the Blob reference after use.
 
 libPut(item: LibraryItem): Promise<void>
-  // Upsert. Called once per file during upload (after peaks computed).
+  // Adds or updates a complete library entry (upsert). Called once per file during upload, after
+  // peaks/duration are computed, and to write an entry back whole (rename, fine peaks) — IndexedDB
+  // has no partial update.
 
 libDelete(id: string): Promise<void>
-  // Delete by SHA-256 hash-id.
+  // Deletes a library entry by id (SHA-256 hash).
 
 libRename(id: string, newName: string): Promise<void>
-  // Reads full entry (Blob briefly in RAM), patches name, re-puts.
-  // IDB has no partial-update; this is the correct pattern.
-```
+  // Renames a library entry.
+  //
+  // Note: IDB has no partial-update — this reads the full entry (including Blob), patches the name,
+  // and writes it back. The Blob is held in RAM only for the duration of this call and released
+  // when the function returns. This is intentional; the alternative (separate name store) adds
+  // schema complexity not justified by a single-field patch.
 
-Upload pipeline (`src/lib/upload.ts`):
-
-```typescript
-processFilesSerial(files: File[]): Promise<void>
-  // Serial decode (never parallel). Calls addLibraryItemMeta() per file
-  // for live UI progress. Sets uploadStatus signal on completion.
-
-computeHash(buf: ArrayBuffer): string
-  // SHA-256 via @noble/hashes (no Secure Context required — works on iPhone LAN).
-
-computePeaks(decoded: AudioBuffer, N?: number): number[]
-  // N = PEAK_COUNT (256, src/lib/peaks.ts, ADR-0065) peaks from channel 0. Call before nulling
-  // the decoded buffer. Lists draw LIST_BARS (30) via downsamplePeaks.
-
-ensureFinePeaks(id: string): Promise<number[] | null>
-  // Backfills the fine peaks of an entry stored before ADR-0065: one decode in an
-  // OfflineAudioContext, written back with the entry. Calls are queued — never two decodes at once.
-```
-
-```typescript
-// ── Boards (src/db/idb.ts) ───────────────────────────────────────────────
 boardGetAll(): Promise<Board[]>
-  // Load all boards (JSON-only documents, no blobs). Called at app boot;
-  // populates boards signal. iOS-safe: boards contain no audio data.
+  // Loads all boards from IDB — read at app start (src/state/boot.ts, fills the board list) and for
+  // the backup export. Safe to call at any library size — Board documents contain no blobs. Older
+  // board formats never arrive here: the v4 upgrade clears them (ADR-0048), so no migration code is
+  // kept.
 
 boardGet(id: string): Promise<Board | null>
-  // Load a single board by ID. Used for optimistic reads before edits.
+  // Loads a single board by id — the stored version, which src/state/boardWrites.ts shows again
+  // after a save failed.
 
 boardPut(board: Board): Promise<void>
-  // Upsert entire board document (Board + embedded decks + pads).
-  // TRADE-OFF: any pad/deck edit rewrites the full ~50KB document.
-  // Acceptable at 5×16 pads; see docs/design/design-notes.md "Slice 8 / Performance"
-  // for optimisation path if measured to be a bottleneck.
+  // Adds or updates a board (upsert). Always writes the complete Board document — trade-off: any
+  // pad or deck edit rewrites the whole document, about 50 KB at 5 decks × 16 pads (BOARD
+  // PERSISTENCE TRADE-OFF at the top of this file, ADR-0010). Called through
+  // src/state/boardWrites.ts after any change.
 
 boardDelete(id: string): Promise<void>
-  // Delete board and all embedded decks/pads in one operation.
+  // Deletes a board by id — with its decks and pads, which live inside the board document.
+
+kvGetAll(): Promise<[string, unknown][]>
+  // Every key-value entry — small, so read in one go at app start (src/state/prefs.ts).
+
+kvPut(key: string, value: unknown): Promise<void>
+  // Stores one key-value entry (a preference), replacing an earlier value.
+
+kvDelete(key: string): Promise<void>
+  // Deletes one key-value entry; a missing key is not an error.
 ```
+
+### `v3/src/lib/upload.ts`
+
+```typescript
+computeHash(buf: ArrayBuffer): string
+  // Computes the SHA-256 hex digest of a raw file buffer.
+  //
+  // Uses `@noble/hashes` instead of Web Crypto API because Web Crypto requires a Secure Context
+  // (HTTPS or localhost). The dev server accessed from an iPhone on the local network
+  // (http://192.168.x.x:5173) is NOT a Secure Context. `@noble/hashes` has no such requirement and
+  // produces identical output.
+
+computePeaks(decoded: AudioBuffer, N?: number): number[]
+  // Extracts N amplitude peaks from a decoded AudioBuffer.
+  //
+  // Channel 0 only. Divides the buffer into N equal windows, records the maximum absolute sample
+  // value per window. Returns an array of N values in [0, 1]. Ported directly from V1's
+  // _computePeaks function. Lists draw `LIST_BARS` (30) of them through `downsamplePeaks`
+  // (src/lib/peaks.ts); the PAD editor draws all.
+
+analyseAudio(buf: ArrayBuffer): Promise<{ duration: number; peaks: number[]; }>
+  // Decodes one file and returns its duration and `PEAK_COUNT` peaks (ADR-0065). The decoded buffer
+  // is released before this returns (iPhone memory rules); call it for one file at a time.
+  //
+  // Throws: When the bytes are not audio the browser can decode.
+
+ensureFinePeaks(id: string): Promise<number[] | null>
+  // Gives a library entry stored before ADR-0065 (30 peaks) its fine peaks: decodes its audio once,
+  // stores the peaks with the entry and in the library list. Entries that have them already are
+  // left alone. Resolves with the entry's peaks, or null when it is missing or cannot be decoded.
+  // Calls wait for each other, so two entries are never decoded at the same time (memory rule 2).
+
+addAudioFile(file: File, { tags }?: { tags?: string[]; }): Promise<AddAudioResult>
+  // Adds ONE audio file to the library — the single path for uploads and backup imports. Hash →
+  // duplicate check → serial decode (duration, peaks) → IDB → signal. The decoded buffer is
+  // released before the function returns (iPhone memory rules); call it for one file at a time.
+  // `tags` are stored with a new entry (a backup import restores them); an entry already in the
+  // library keeps its own.
+
+processFilesSerial(files: File[]): Promise<void>
+  // Processes an array of audio files one at a time.
+  //
+  // For each file:
+  // 1. Read raw bytes
+  // 2. Compute SHA-256 hash (= id)
+  // 3. Skip if already in library (duplicate by content)
+  // 4. Decode audio SERIALLY — await each decode before starting the next
+  // 5. Extract peaks; null the AudioBuffer (decoded in an OfflineAudioContext)
+  // 6. Persist full entry (with Blob) to IndexedDB
+  // 7. Immediately update the libraryItems Signal — live progress in UI
+  //
+  // Sets uploadStatus signal to null at start, then to the result when done. Errors are collected
+  // per-file; the pipeline continues on individual failures.
+
+formatBytes(bytes: number): string
+  // Format bytes as human-readable string (e.g. "1.4 MB", "240 KB").
+
+formatDuration(seconds: number): string
+  // Format seconds as MM:SS string.
+
+totalLibraryBytes(items: LibraryItemMeta[]): number
+  // Total byte size of all library items combined.
+```
+
+### `v3/src/audio/index.ts`
+
+```typescript
+initAudioBridge(): void
+  // Wires the audio engine's pad-started/stopped events to Preact Signal setters. Must be called
+  // once before the first play().
+
+toEnginePad(pad: Pad): EnginePad
+  // Maps an app pad (ADR-0048: Single / Loop with `files` + `order`) to the shape V1's engine
+  // plays: Single → one file per trigger; Loop with one file → seamless loop; Loop with several
+  // files → the engine's playlist (repeats the list alone; plays it once inside a combo).
+
+play(padId: string, pad: Pad): Promise<void>
+  // Plays a pad the way its type says: a Single once (the next or a random file), a Loop until it
+  // is stopped (several files one after another), a Combo step by step. `padId` names the playing
+  // instance for `stop` and the playing signals.
+
+stop(padId: string, immediate?: boolean, fadeOut?: number): void
+  // Stops a pad, fading it out over `fadeOut` seconds (callers pass the pad's own fade-out);
+  // `immediate` cuts it off regardless. A running combo stops at once.
+
+stopAll(): void
+  // Stops everything that plays, at once.
+  //
+  // Reserved: Slice 12 — STOP ALL, K9 / K16 (docs/product/README.md#input-keyboard--numpad)
+
+fadeOutAll(duration: number): void
+  // Fades everything that plays out over `duration` seconds; running combos stop at once.
+  //
+  // Reserved: Slice 12 — STOP ALL in two stages, the first fades, K16
+  // (docs/product/README.md#input-keyboard--numpad)
+
+isPlaying(padId: string): boolean
+  // Tells whether the pad is playing now.
+
+previewFile(pad: SinglePad | LoopPad, file: string, from: number): Promise<void>
+  // Plays `file` the way the pad plays it — with its volume and fades, from its trim start to its
+  // trim end; a Loop repeats its region. The preview may start later, at `from` (a tap into the
+  // waveform), and then starts at full volume; a Loop still repeats its whole region afterwards.
+  // Restarts a preview that runs; it plays under `PREVIEW_ID`.
+
+stopPreview(): void
+  // Stops the preview at once (nothing happens when none runs).
+
+crossfade(from: string, to: Pad, _duration: number): void
+  // Stops `from` and starts `to` — a stub, not yet a crossfade (built in Slice 4, nothing calls it
+  // yet). Signature uses Pad object (not just ID) — consistent with play().
+  //
+  // Reserved: Parked — crossfade between pads (docs/product/README.md#pad-options)
+```
+
+### `v3/src/lib/preview.ts`
+
+```typescript
+positionAt(r: PreviewRun, nowMs: number): number
+  // Returns the playhead of a run at clock time `nowMs`, in seconds of the file: a Single stops at
+  // its region end, a Loop wraps back to its region start.
+
+startPreview(pad: SinglePad | LoopPad, file: string, from: number, regionEnd: number, now?: () => number): Promise<void>
+  // Starts the preview of `file` as `pad` would play it, from `from` seconds (not before its trim
+  // start). `regionEnd` is the trim end — the file's duration when it is not trimmed. Resolves once
+  // the engine has started it — or could not (file missing or undecodable: `previewPlaying` stays
+  // false). The clock restarts then, as loading the file takes time the playhead must not count.
+
+stopPreview(): void
+  // Stops the preview; nothing happens when none runs.
+
+previewPosition(now?: () => number): number | null
+  // Returns the playhead in seconds of the file, or null while no preview plays.
+```
+
+<!-- AUTO-GENERATED:api END -->
 
 ---
 

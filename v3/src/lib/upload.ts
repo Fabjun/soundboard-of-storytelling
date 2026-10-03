@@ -50,7 +50,8 @@ export function computeHash(buf: ArrayBuffer): string {
  *
  * Channel 0 only. Divides the buffer into N equal windows, records the
  * maximum absolute sample value per window. Returns an array of N values
- * in [0, 1]. Ported directly from V1's _computePeaks function.
+ * in [0, 1]. Ported directly from V1's _computePeaks function. Lists draw `LIST_BARS` (30) of
+ * them through `downsamplePeaks` (src/lib/peaks.ts); the PAD editor draws all.
  *
  * @param decoded - The decoded audio; the caller releases it right after this returns.
  * @param N - Number of peaks (default `PEAK_COUNT`, ADR-0065; V1 used 30).

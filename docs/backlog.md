@@ -1121,9 +1121,13 @@ documents stay authoritative until their content is transferred and confirmed.
    move superseded documents to `docs/archive/`, reduce `docs/backlog.md` to open work.
    **Source:** Session 2026-09-28.
 
-### Generate the API list in CLAUDE.md
+### Generate the API list in CLAUDE.md ✅ Done (3.0.162)
 
-The section "V3 audio/IDB API" in CLAUDE.md is typed by hand; a guard only checks that each
+`v3/scripts/sync-api.ts` writes the section; the notes only the hand list had went into the
+TSDoc first (one hand claim about `boardGet` was wrong, one reference pointed to a missing
+section). The guard on the hand list is replaced by the generator and the CI sync check.
+
+The section "V3 audio/IDB API" in CLAUDE.md was typed by hand; a guard only checked that each
 listed function is exported by `v3/src/db/idb.ts` or `v3/src/lib/upload.ts`. Owner decision
 2026-10-03: a generator (run by `npm run sync:docs`) writes the section from the exports and their
 TSDoc summaries of the named modules — `idb.ts`, `upload.ts`, `v3/src/audio/index.ts`,

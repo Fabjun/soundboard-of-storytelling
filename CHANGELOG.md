@@ -7,6 +7,14 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.162 — 2026-10-03
+
+### Internal
+
+- docs(api): the API list in CLAUDE.md is generated — scripts/sync-api.ts writes every exported function of idb.ts, upload.ts, audio/index.ts and preview.ts with its signature and TSDoc (part of sync:docs; owner decision, industry practice: generated API reports)
+- docs: notes only the hand list had moved into the TSDoc; corrected on the way — boardGet is used to show the stored board after a failed save (not 'optimistic reads'), the boardPut trade-off points to ADR-0010 (the cited design-notes section does not exist), the idb.ts header names version DB_VERSION and the keyval store
+- test(guards): the guard on the hand-typed API list is replaced by the generator and the CI sync check (counter-checked: a doc change reaches the list)
+
 ## 3.0.161 — 2026-10-03
 
 ### Added

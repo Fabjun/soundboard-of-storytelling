@@ -1,15 +1,17 @@
 /**
  * @fileoverview V3.0 IndexedDB Layer
  *
- * Database: 'sos-v3', version 2
+ * Database: 'sos-v3', version `DB_VERSION` (see the upgrade steps below)
  * Object stores:
  *   'library'  (keyPath: 'id')  — LibraryItem entries (includes blob) [since v1]
  *   'boards'   (keyPath: 'id')  — Board documents (JSON, no blobs)    [since v2]
+ *   'keyval'   (out-of-line keys) — small preferences and stats       [since v6]
  *
  * MEMORY SAFETY RULES (carried over from V1 — see CLAUDE.md#iphone--ios-safari--memory--stability-rules-critical):
  *   - libGetAllMeta() uses a cursor and NEVER references cursor.value.blob.
  *     At most one full record is in RAM at a time during enumeration.
- *   - libGet() loads one full entry (with blob) — only call for playback.
+ *   - libGet() loads one full entry (with blob) — only when the audio itself is needed
+ *     (playback, backup export, rename, fine peaks), one entry at a time.
  *   - libRename() briefly holds one Blob in RAM (IDB has no partial-update;
  *     it must read the full entry, patch the name, and re-put). The Blob is
  *     released as soon as libRename() returns. This is intentional and safe.
@@ -76,7 +78,8 @@ async function getDB(): Promise<IDBPDatabase> {
 // ── Public API ───────────────────────────────────────────────────────────────
 
 /**
- * Enumerate all library entries — metadata only, blob excluded.
+ * Lists all library entries — metadata only, blob excluded. Read at app start
+ * (src/state/boot.ts, fills the library list) and for the backup export.
  *
  * Memory safety: uses a cursor and destructures only scalar/array fields from
  * cursor.value. The blob field is never referenced, so the Blob object is
@@ -99,8 +102,8 @@ export async function libGetAllMeta(): Promise<LibraryItemMeta[]> {
 
 /**
  * Loads a single full entry including its Blob.
- * Only call this when the audio data itself is needed (playback, backup export, rename), one
- * entry at a time. The caller is responsible for releasing the Blob reference after use.
+ * Only call this when the audio data itself is needed (playback, backup export, rename, fine
+ * peaks), one entry at a time. The caller is responsible for releasing the Blob reference after use.
  */
 export async function libGet(id: string): Promise<LibraryItem | null> {
   const db = await getDB();
@@ -110,7 +113,8 @@ export async function libGet(id: string): Promise<LibraryItem | null> {
 
 /**
  * Adds or updates a complete library entry (upsert).
- * Called once per file during upload, after peaks/duration are computed.
+ * Called once per file during upload, after peaks/duration are computed, and to write an entry
+ * back whole (rename, fine peaks) — IndexedDB has no partial update.
  */
 export async function libPut(item: LibraryItem): Promise<void> {
   const db = await getDB();
@@ -147,7 +151,8 @@ export async function libRename(id: string, newName: string): Promise<void> {
 // See the BOARD PERSISTENCE TRADE-OFF comment at the top of this file.
 
 /**
- * Loads all boards from IDB.
+ * Loads all boards from IDB — read at app start (src/state/boot.ts, fills the board list) and
+ * for the backup export.
  * Safe to call at any library size — Board documents contain no blobs. Older board formats never
  * arrive here: the v4 upgrade clears them (ADR-0048), so no migration code is kept.
  */
@@ -158,7 +163,8 @@ export async function boardGetAll(): Promise<Board[]> {
 }
 
 /**
- * Loads a single board by id.
+ * Loads a single board by id — the stored version, which src/state/boardWrites.ts shows again
+ * after a save failed.
  */
 export async function boardGet(id: string): Promise<Board | null> {
   const db = await getDB();
@@ -168,8 +174,9 @@ export async function boardGet(id: string): Promise<Board | null> {
 
 /**
  * Adds or updates a board (upsert).
- * Always writes the complete Board document. Called after any mutation
- * (deck add/remove/reorder, pad add/edit/delete).
+ * Always writes the complete Board document — trade-off: any pad or deck edit rewrites the whole
+ * document, about 50 KB at 5 decks × 16 pads (BOARD PERSISTENCE TRADE-OFF at the top of this
+ * file, ADR-0010). Called through src/state/boardWrites.ts after any change.
  */
 export async function boardPut(board: Board): Promise<void> {
   const db = await getDB();
@@ -177,7 +184,7 @@ export async function boardPut(board: Board): Promise<void> {
 }
 
 /**
- * Deletes a board by id.
+ * Deletes a board by id — with its decks and pads, which live inside the board document.
  */
 export async function boardDelete(id: string): Promise<void> {
   const db = await getDB();

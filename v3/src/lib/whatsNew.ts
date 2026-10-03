@@ -89,6 +89,13 @@ export function withEarlyVersions(
 /** The release notes the start screen shows, newest first (checked by whatsNew.test.ts). */
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
+    version: '3.0.162',
+    date: '2026-10-03',
+    behindTheScenes: [
+      'The overview of the code’s main building blocks for developers is now written from the code itself, so it can no longer fall out of date.',
+    ],
+  },
+  {
     version: '3.0.161',
     date: '2026-10-03',
     improved: [
