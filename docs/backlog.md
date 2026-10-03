@@ -1150,14 +1150,12 @@ comments with "sub-token: deliberate" justification notes.
 ### Playlist → Loop merge (data model)
 
 Decided 2026-09-28 ([docs/product/README.md §5 Pads](product/README.md#pads)): three pad types — Single, Loop, Combo. Loop and Single accept several files (Loop: in order / shuffle; Single: random / in turn). Requires an ADR superseding the `PadType` part of ADR-0042, a migration of stored `playlist` pads, and engine/editor changes (engine change needs explicit approval).
-**Built on branch `slice-9d-pad-files` (Slice 9d, review pending — contains an audio dispatch
-change that needs the owner's approval):** `Pad = Single | Loop | Combo`; Single / Loop hold
-`files` + `order`; stored boards are cleared by DB v5 (ADR-0048 §3 — no migration, only test
-data). The engine is unchanged apart from its type imports; `toEnginePad` in
-`v3/src/audio/index.ts` maps the new pads to its shapes. Still open: choosing several files and the
-order in the PAD editor (Slice 11, ADR-0048); a Loop with several files reports "not looping"
-(no is-looping glow) and plays its list once inside a combo — engine behaviour of the former
-playlist, kept for now.
+✅ **Done (PR #36, squash-merged 2026-10-03 as `36ba75c`):** `Pad = Single | Loop | Combo`;
+Single / Loop hold `files` + `order`; stored boards are cleared by DB v5 (ADR-0048 §3 — no
+migration, only test data); `toEnginePad` in `v3/src/audio/index.ts` maps the new pads to the
+engine's shapes. Owner decisions on #36: a Loop with several files glows like any loop and runs
+in the background of a combo; the engine change passed the owner's playback check (2026-10-03).
+Still open: choosing several files and their order in the PAD editor — Slice 15.
 **When:** review of the Slice 9d PR; file list editing in Slice 11.
 
 ### Theme flames: Verdant, Neon, Crimson
@@ -1388,7 +1386,7 @@ Root cause: board changes are written as finished boards (`boardPut(updatedBoard
 the `board` a component rendered with. Standard remedy: apply each change as a function to the
 latest board at write time (the "updater function" pattern), through one save helper, and guard
 that components do not call `boardPut` directly. A new scheme → proposed on its own branch.
-**Fix (branch `board-writes`, stacked on Slice 9e, review pending):** `v3/src/state/boardWrites.ts`
+✅ **Fixed (PR #33, squash-merged 2026-10-03 as `e341d7a`):** `v3/src/state/boardWrites.ts`
 (`updateBoard`, `createBoard`) — all 16 writers use it; codeGuards forbids `boardPut` /
 `upsertBoard` in components and screens. Owner decision 2026-10-02: show at once, then save; a
 failed save shows the stored board again. Further instances of the class found and fixed there:
@@ -1463,7 +1461,7 @@ approval per stage; guard tests keep each scheme from drifting back.
 | S3    | Exception scheme (ADR-0053, sources cited): permanent = rule + reason, temporary = + `BACKLOG "…"`; ESLint `require-description` / `no-unlimited-disable` / unused directives = error; prettier-ignore and to-do markers guarded in `testGuards`; config files linted, unnecessary `*.config` Prettier exclusion removed; ADR `## Exceptions` tables; generated register `docs/development/exceptions.md` (35 entries)                           | ✅ Done (see git log: "…(S3)")                |
 | S4    | Test locators and IDs (ADR-0054, sources cited; supersedes ADR-0038): role/label/text first, test IDs as fallback, never CSS classes (≈30 class locators/assertions replaced); state via `aria-pressed` (pads in GAME, pad type buttons); test ID scheme `<component>-<element>-<kind>` applied to all 35+ IDs; spec files without folder prefix, `helpers.ts`, visual baselines moved (not regenerated); guards in `codeGuards` / `e2eProjects` | ✅ Done (see git log: "…(S4)")                |
 | S5    | English only: tool/hook/CI messages, generator texts, ADR categories and template, `testing.md` (stale facts corrected), CLAUDE.md, backlog/design/analysis passages, all ADRs 0001–0045 translated faithfully (fidelity check: code spans, links, headings identical except renamed section references); uniform ADR headers; guards in `docsGuards` (ADR header order + category, no German words — threshold calibrated to 1)                 | ✅ Done (see git log: "…(S5 1/4)"–"(S5 4/4)") |
-| S6    | Commit message convention (ADR-0060, **Proposed** — provisional, review pending): Conventional Commits checked by commitlint in a `commit-msg` hook and for pull requests in CI; `subject-case` off (proper nouns). Branch `s6-commit-convention`                                                                                                                                                                                                | ⏳ Branch + PR, review pending                |
+| S6    | Commit message convention (ADR-0060, **Accepted** 2026-10-02): Conventional Commits checked by commitlint in a `commit-msg` hook and for pull requests in CI; `subject-case` off (proper nouns). PR #30                                                                                                                                                                                                                                          | ✅ Squash-merged                              |
 
 **Deferred to Slice 13:** re-evaluate the ADR-0028 exception for the two top bars (`TopBar` on
 Library/Board list, `BoardTopBar` on Board — deliberately separate per ADR-0026) and merge them
@@ -1589,10 +1587,10 @@ Fixed by agreed rules, open items await the owner's decision.
   installed in May but never wired in (`eslint-config-prettier`, now last in the config as
   Prettier's docs advise). Counter-checked: an unused export, a removed `@reserved` and a stale
   `@reserved` each fail.
-- **A19 npm cache owned by root (owner action, open since 2026-09-30)** — 5 entries in `~/.npm`
-  belong to root; `npm install` and `npm outdated` fail unless a private cache is passed (hit three
-  times on 2026-10-03, once silently: an outdated report came back empty). Fix:
-  `sudo chown -R $(id -u):$(id -g) ~/.npm`.
+- ✅ **A19 npm cache owned by root** — 5 entries in `~/.npm` belonged to root; `npm install` and
+  `npm outdated` failed unless a private cache was passed (hit three times on 2026-10-03, once
+  silently: an outdated report came back empty). Fixed by the owner on 2026-10-03 with
+  `sudo chown -R $(id -u):$(id -g) ~/.npm`; no entry belongs to root any more (measured).
 - **A20 Mutation testing covers 25 modules from the next weekly run** (15 new on main since
   2026-10-03) — runtime and `thresholds.break` to be read after the run. **When:** weekly run
   2026-10-05.
@@ -1601,9 +1599,10 @@ Fixed by agreed rules, open items await the owner's decision.
 - ✅ **A22 `docs/analysis/foundation-analysis.md`** — marked "Living document", but its analysis is
   dated 2026-06-05. Owner decision 2026-10-03: a dated snapshot, not maintained; the docs index no
   longer calls it a source of truth.
-- **A23 Slice completion checklists 9, 10, 11 open** — README "Available now", the backlog pass
-  and, for Slice 10 (file handling), the manual iPhone checklist: EXPORT now hands a ZIP to the
-  share sheet, which only a device can confirm (`docs/development/manual-iphone-checklist.md`).
+- ✅ **A23 Slice completion checklists 9, 10, 11** — device test by the owner on 2026-10-03
+  (iPhone, Brave): the V1 backup with its full library imported, the boards exported as ZIP and
+  that ZIP imported again — all working. README "Available now" updated, stale "review pending"
+  passages in this backlog closed, Slices 9–11 marked complete.
 
 ### Role-based E2E locators
 

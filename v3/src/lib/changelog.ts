@@ -17,10 +17,17 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.152';
+export const APP_VERSION = '3.0.153';
 
 /** The developer log, newest first; CHANGELOG.md is generated from it (sync-changelog). */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.153',
+    date: '2026-10-03',
+    items: [
+      'docs: Slices 9, 10 and 11 complete — owner device test of the backup passed (V1 import, ZIP export, re-import on iPhone / Brave); README "Available now" and "Planned next" updated; stale review notes in the backlog closed',
+    ],
+  },
   {
     version: '3.0.152',
     date: '2026-10-03',

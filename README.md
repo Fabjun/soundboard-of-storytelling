@@ -18,19 +18,23 @@ an earlier prototype.
 Available now:
 
 - Audio library with import, renaming, deletion and waveform preview
-- Boards organised into decks of pads
-- Pads for one-shot sounds, loops, playlists and combinations of other pads
+- Boards with a shared pad pool; decks are hand-picked views of it, and an overview lists every
+  pad of a board, sortable
+- Three pad types: one-shot sounds and loops, each with one or several files, and combos that
+  start other pads in steps
+- Combo editor for building sequences from existing pads
+- Backup and restore of all boards and audio in a single file, including migration from the
+  prototype
 - Separate modes for preparing a board (SETUP) and for playing during a session (GAME)
 - Installable, offline-capable web app
 
 Planned next:
 
-- A shared pad pool per board, with decks as hand-picked views of it
-- Backup and restore in a single file, including migration from the prototype
-- Combo editor for building sequences from existing pads
+- Full pad editor: preview, trim, repeat, icons, templates and several files per pad
 - Live control via numeric keypad, stop all and pause
 - Layout for smartphones of all sizes
 - Settings and themes
+- Library at the prototype's full scope, help on first launch, undo and redo
 
 ## Technology
 
