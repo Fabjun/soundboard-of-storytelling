@@ -60,13 +60,14 @@ file. Format: `docs/architecture/_template.md`.
 
 ### Audio engine & iOS memory
 
-| #                                                 | Title                                                     | Status   | Slice         | Date       |
-| ------------------------------------------------- | --------------------------------------------------------- | -------- | ------------- | ---------- |
-| [ADR-0018](0018-v1-audio-engine.md)               | V1 audio engine copied 1:1 — no rebuild                   | Accepted | Slice 4       | 2026-05-27 |
-| [ADR-0019](0019-ios-memory-safety.md)             | iOS memory safety rules (150 MB LRU cache, serial decode) | Accepted | cross-cutting | 2026-05-27 |
-| [ADR-0020](0020-audiocontext-lifecycle.md)        | AudioContext lifecycle — TAP TO UNLOCK + visibilitychange | Accepted | Slice 4       | 2026-05-27 |
-| [ADR-0043](0043-audiocontext-timing.md)           | AudioContext Timing — Synchronous in Click Handler        | Accepted | Slice 4       | 2026-05-28 |
-| [ADR-0044](0044-audio-engine-module-structure.md) | Audio Engine Module Structure                             | Accepted | Slice 4       | 2026-05-28 |
+| #                                                 | Title                                                                    | Status   | Slice         | Date       |
+| ------------------------------------------------- | ------------------------------------------------------------------------ | -------- | ------------- | ---------- |
+| [ADR-0018](0018-v1-audio-engine.md)               | V1 audio engine copied 1:1 — no rebuild                                  | Accepted | Slice 4       | 2026-05-27 |
+| [ADR-0019](0019-ios-memory-safety.md)             | iOS memory safety rules (150 MB LRU cache, serial decode)                | Accepted | cross-cutting | 2026-05-27 |
+| [ADR-0020](0020-audiocontext-lifecycle.md)        | AudioContext lifecycle — TAP TO UNLOCK + visibilitychange                | Accepted | Slice 4       | 2026-05-27 |
+| [ADR-0043](0043-audiocontext-timing.md)           | AudioContext Timing — Synchronous in Click Handler                       | Accepted | Slice 4       | 2026-05-28 |
+| [ADR-0044](0044-audio-engine-module-structure.md) | Audio Engine Module Structure                                            | Accepted | Slice 4       | 2026-05-28 |
+| [ADR-0065](0065-waveform-peaks-resolution.md)     | Waveform peaks — 256 per file, computed once, backfilled for old entries | Accepted | Slice 15      | 2026-10-03 |
 
 ### UI architecture
 

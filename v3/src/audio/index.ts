@@ -5,7 +5,7 @@
  * engine.ts internals are never imported directly from components.
  */
 
-import type { Pad, SinglePad } from '../types';
+import type { LoopPad, Pad, SinglePad } from '../types';
 import type { EnginePad } from './types';
 import {
   playOnce,
@@ -24,7 +24,11 @@ import {
   removePlayingPad,
   addLoopingPad,
   removeLoopingPad,
+  previewPlaying,
 } from '../state/store';
+
+/** The engine id the PAD editor's preview plays under — never a pad id (nanoid has no "_"). */
+export const PREVIEW_ID = '__preview__';
 
 // ── Signal bridge (call once at app boot in main.tsx) ─────────────────────────
 
@@ -35,12 +39,21 @@ import {
 export function initAudioBridge(): void {
   configureCallbacks({
     onPadStarted: (id, isLoop) => {
+      // The PAD editor's preview is no pad playing: no glow, no "last played"
+      if (id === PREVIEW_ID) {
+        previewPlaying.value = true;
+        return;
+      }
       addPlayingPad(id);
       // A Loop with several files plays as the engine's playlist, which reports isLoop = false:
       // the glow follows the pad type (owner decision 2026-10-02, PR #36).
       if (isLoop || findPad(id)?.type === 'loop') addLoopingPad(id);
     },
     onPadStopped: (id) => {
+      if (id === PREVIEW_ID) {
+        previewPlaying.value = false;
+        return;
+      }
       removePlayingPad(id);
       removeLoopingPad(id);
     },
@@ -151,6 +164,43 @@ export function fadeOutAll(duration: number): void {
 /** Tells whether the pad is playing now. */
 export function isPlaying(padId: string): boolean {
   return isPlayingInternal(padId);
+}
+
+// ── Preview (PAD editor, Slice 15a) ──────────────────────────────────────────
+
+/**
+ * Plays `file` the way the pad plays it — with its volume and fades, from its trim start to its
+ * trim end; a Loop repeats its region. The preview may start later, at `from` (a tap into the
+ * waveform), and then starts at full volume; a Loop still repeats its whole region afterwards.
+ * Restarts a preview that runs; it plays under `PREVIEW_ID`.
+ */
+export function previewFile(pad: SinglePad | LoopPad, file: string, from: number): Promise<void> {
+  stopPad(PREVIEW_ID, true);
+  const trimStart = pad.trimStart ?? 0;
+  const start = Math.max(from, trimStart);
+  if (pad.type === 'loop') {
+    const { files: _files, order: _order, ...loop } = pad;
+    return playLoop(PREVIEW_ID, {
+      ...loop,
+      id: PREVIEW_ID,
+      libraryItemRef: file,
+      startAt: start,
+      fadeIn: start > trimStart ? 0 : pad.fadeIn,
+    });
+  }
+  const { files: _files, order: _order, ...single } = pad;
+  return playOnce(PREVIEW_ID, {
+    ...single,
+    id: PREVIEW_ID,
+    libraryItemRef: file,
+    trimStart: start,
+    fadeIn: start > trimStart ? 0 : pad.fadeIn,
+  });
+}
+
+/** Stops the preview at once (nothing happens when none runs). */
+export function stopPreview(): void {
+  stopPad(PREVIEW_ID, true);
 }
 
 /**

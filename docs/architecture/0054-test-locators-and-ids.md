@@ -71,6 +71,20 @@ guidance and leaves accessibility gaps. Rejected.
 **Migrate every locator to roles now:** most controls lack accessible names; would be redone in
 Slice 13. Deferred via the exception above.
 
+## Amendments
+
+**2026-10-03:** Values inserted into a test ID are checked by type (owner decision 2026-10-03).
+`waveform-editor-${handle}-slider` inserted `trimEnd` — not kebab-case — and passed the scheme
+check, which sees `${…}` only as a placeholder. `codeGuards.test.ts` now asks the TypeScript type
+checker what each `${…}` inserts: a fixed value (literal or union of literals, e.g.
+`'pause' | 'play'`) must be kebab-case; a free value (an id, an index) may only follow the element
+kind, as an instance id. The regex-based ESLint rule `consistent-data-testid`
+(eslint-plugin-testing-library) cannot see inserted values; a check in the DOM at run time was
+considered and rejected: instance ids (nanoid) contain capitals, and it sees only the screens the
+tests visit. In the same change, the PAD editor's playback position became a seek slider located
+by role and name (WAI-ARIA APG Media Seek Slider) instead of getting a test ID with a new element
+kind — the element kinds above stay unchanged.
+
 ## Related
 
 - **Files:** `v3/tests/e2e/**`, `v3/tests/unit/codeGuards.test.ts`,

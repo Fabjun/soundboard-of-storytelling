@@ -89,6 +89,12 @@ export function removeLoopingPad(id: string): void {
   loopingPads.value = next;
 }
 
+/**
+ * Whether the PAD editor's preview is playing. Kept apart from `playingPads`: a preview is no pad
+ * playing — it neither glows in the grid nor counts as "last played".
+ */
+export const previewPlaying = signal(false);
+
 // ── Master volume ────────────────────────────────────────────────────────────
 
 /**
@@ -124,6 +130,11 @@ export function removeLibraryItemMeta(id: string): void {
 /** Patches the name of an in-memory entry (after IDB rename). */
 export function renameLibraryItemMeta(id: string, newName: string): void {
   libraryItems.value = libraryItems.value.map((m) => (m.id === id ? { ...m, name: newName } : m));
+}
+
+/** Patches the peaks of an in-memory entry (after its fine peaks were stored, ADR-0065). */
+export function setLibraryItemPeaks(id: string, peaks: number[]): void {
+  libraryItems.value = libraryItems.value.map((m) => (m.id === id ? { ...m, peaks } : m));
 }
 
 // ── Boards ───────────────────────────────────────────────────────────────────

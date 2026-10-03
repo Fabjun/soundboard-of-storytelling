@@ -48,9 +48,10 @@ because Playwright runs against a simulated environment:
   - Expected: Sound stops cleanly (no cut-off artifact). is-hot / is-looping removed.
   - Why manual: Fade-out behaviour requires audible verification.
 
-- [ ] **Ringer Switch — mute is expected behaviour**
+- [ ] **Ringer Switch — pads play on silent**
   - Action: Set the physical Ringer Switch to silent, then tap a pad.
-  - Expected: No sound plays. This is correct (V1 behaviour — iOS platform limit, not a bug).
+  - Expected: The pad is heard, like a music app (owner decision 2026-10-03, since 3.0.157: the
+    audio session type is `playback`; before iOS 17 a looping silent clip).
   - Why manual: Hardware switch, cannot be simulated. Document each time to confirm it has not regressed.
 
 - [ ] **Tab switch + return**
@@ -67,6 +68,20 @@ because Playwright runs against a simulated environment:
   - Action: Upload a very short clip (< 0.5s), configure as SINGLE, tap rapidly.
   - Expected: No crash, no double-play artefacts.
   - Why manual: Edge case in the `onended` handler lifecycle.
+
+- [ ] **Trimmed Loop repeats only its trimmed part** _(Slice 15a)_
+  - Action: In the PAD editor, make a Loop pad, move the trim start and end inward, then play the
+    pad in GAME mode.
+  - Expected: Each repeat starts at the trim start and ends at the trim end — nothing from before
+    or after is heard.
+  - Why manual: The loop region is an engine change (owner approval); only hearing proves it.
+
+- [ ] **Preview in the PAD editor** _(Slice 15a)_
+  - Action: Open a Single or Loop pad in the PAD editor, tap ▶, then ⏸, ▶ again, ⏹; tap the
+    waveform somewhere and tap ▶; close the editor while a Loop preview plays.
+  - Expected: The preview sounds like the pad (trim, fades, volume); ⏸ holds the position, ▶ goes
+    on from there; a tap on the waveform starts it there; closing the editor stops the sound.
+  - Why manual: Audible playback and the touch drag of the handles need a real device.
 
 ---
 

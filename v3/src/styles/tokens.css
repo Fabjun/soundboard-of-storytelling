@@ -2654,6 +2654,90 @@
   border-radius: 1px; /* sub-token: 1px — design-specific subtle rounding */
 }
 
+/* ── Waveform editor — Slice 15a (functional; styling comes later) ── */
+.sb-wave-editor {
+  /* @inventory: PAD editor waveform with trim and fade handles — two 44px handle lanes (fade above, trim below) over the waveform; a tap outside a handle sets the preview start. */
+  position: relative;
+  height: 88px; /* sub-token: two 44px touch-target lanes (iOS minimum) */
+  background: var(--deep);
+  border: 1px solid var(--border);
+}
+.sb-wave-editor-track {
+  /* @inventory: Waveform layer of sb-wave-editor — fills the editor, waveform vertically centred. */
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  pointer-events: none;
+}
+.sb-wave-editor-dim {
+  /* @inventory: Dims what the trim cuts off in sb-wave-editor — is-start from the left edge, is-end from the right; width set inline (trim values). */
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  background: var(--night);
+  opacity: 0.7;
+  pointer-events: none;
+}
+.sb-wave-editor-dim.is-start {
+  left: 0;
+}
+.sb-wave-editor-dim.is-end {
+  right: 0;
+}
+.sb-wave-editor-fade {
+  /* @inventory: Fade-in / fade-out zone in sb-wave-editor; left and width set inline (fade values). */
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  background: var(--fade-soft);
+  pointer-events: none;
+}
+.sb-wave-editor-playhead {
+  /* @inventory: Playback position of sb-wave-editor — a seek slider drawn as a gold line (APG Media Seek Slider); keyboard-focusable, taps go to the editor beneath; left set inline. */
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 2px; /* sub-token: playhead line */
+  background: var(--gold);
+  pointer-events: none;
+}
+.sb-wave-editor-playhead:focus-visible {
+  outline: 2px solid var(--gold);
+}
+.sb-wave-editor-handle {
+  /* @inventory: Trim or fade handle of sb-wave-editor — 44px slider hit area centred on its position (is-fade upper lane, is-trim lower lane); left set inline. */
+  position: absolute;
+  width: 44px; /* sub-token: iOS minimum touch target */
+  height: 44px; /* sub-token: iOS minimum touch target */
+  transform: translateX(-50%);
+  touch-action: none;
+  cursor: ew-resize;
+}
+.sb-wave-editor-handle::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 3px; /* sub-token: handle line */
+  transform: translateX(-50%);
+  background: var(--mode-setup);
+}
+.sb-wave-editor-handle.is-fade {
+  top: 0;
+}
+.sb-wave-editor-handle.is-fade::before {
+  background: var(--fade);
+}
+.sb-wave-editor-handle.is-trim {
+  bottom: 0;
+}
+.sb-wave-editor-handle:focus-visible {
+  outline: 2px solid var(--gold);
+}
+
 /* ── PixelIcon — Session 3h ───────────────────────────────────────── */
 .sb-pixel-icon {
   /* @inventory: SVG display fix for PixelIcon — block display prevents inline baseline gap. Applied as hardcoded base class inside PixelIcon component; callers' class prop is appended after. */

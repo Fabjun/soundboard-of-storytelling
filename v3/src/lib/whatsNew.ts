@@ -48,6 +48,15 @@ export function versionLine(appVersion: string, entries: readonly WhatsNewEntry[
 /** The release notes the start screen shows, newest first (checked by whatsNew.test.ts). */
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
+    version: '3.0.158',
+    date: '2026-10-03',
+    new: [
+      'The PAD editor shows the waveform of a Single or Loop pad with handles for the trim start and end and for the fade-in and fade-out; each handle also moves with the keyboard, and the trim also has number fields.',
+      'A preview plays the pad as it will sound — with its trim, fades and volume, a Loop within its trimmed part — with play, pause and stop and a moving playback position; a tap on the waveform or the arrow keys set where it starts.',
+    ],
+    fixed: ['A trimmed Loop repeats only its trimmed part.'],
+  },
+  {
     version: '3.0.157',
     date: '2026-10-03',
     fixed: [

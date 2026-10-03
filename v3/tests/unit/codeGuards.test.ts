@@ -6,7 +6,8 @@
  * 2. CSS class selectors in src/styles: `sb` / `sb-*` / `sb-theme-*`, states `is-*` / `has-*`.
  * 3. npm scripts that run `tsx scripts/<file>.ts`: file name = script name with ':' → '-'.
  * 4. Test IDs and locators (ADR-0054): every data-testid starts with the kebab-case name of
- *    its component file and ends with an element kind (root: the component name alone);
+ *    its component file and ends with an element kind (root: the component name alone); a value
+ *    inserted with `${…}` is, by its type, a kebab-case literal or a free value at the end;
  *    E2E tests never locate by CSS class; spec files are kebab-case without a folder prefix,
  *    helper files are named helpers.ts.
  *    Numbered E2E titles (`N — …`) are the Slice-3 verification points 1–22, each used once.
@@ -136,6 +137,17 @@ const kebab = (name: string): string => name.replace(/([a-z0-9])([A-Z])/g, '$1-$
 /** Element kinds a non-root test ID may end with (before instance placeholders). */
 const KINDS = ['button', 'input', 'slider', 'tab', 'row', 'item', 'text', 'slot', 'region'];
 
+/** The app's TypeScript program — built once, for the guards that need the type checker. */
+let appProgram: ts.Program | undefined;
+function getAppProgram(): ts.Program {
+  if (!appProgram) {
+    const { config } = ts.readConfigFile(join(V3, 'tsconfig.app.json'), ts.sys.readFile);
+    const parsed = ts.parseJsonConfigFileContent(config, ts.sys, V3);
+    appProgram = ts.createProgram(parsed.fileNames, parsed.options);
+  }
+  return appProgram;
+}
+
 describe('guard: data-testid scheme (ADR-0054)', () => {
   const ids: { file: string; id: string }[] = [];
   for (const f of componentFiles) {
@@ -162,6 +174,72 @@ describe('guard: data-testid scheme (ADR-0054)', () => {
       bad.map((b) => `${b.file}: ${b.id}`),
       `use <component>-<element>-<${KINDS.join('|')}>`,
     ).toEqual([]);
+  });
+});
+
+describe('guard: values inserted into test IDs (ADR-0054)', () => {
+  // The scheme above sees `${…}` only as a placeholder; the type checker tells what it inserts.
+  // A fixed value (a union of literals, e.g. 'pause' | 'play') must be kebab-case; a free value
+  // (an id, an index) may only come after the element kind, as an instance id. `${handle}`
+  // inserting 'trimEnd' passed the scheme above unseen (2026-10-03).
+  const KEBAB = /^[a-z0-9]+(-[a-z0-9]+)*$/;
+  let inserts = 0;
+  const bad: string[] = [];
+  // Building the type checker is one-off setup, shared with the inline-style guard
+  beforeAll(() => {
+    const program = getAppProgram();
+    const checker = program.getTypeChecker();
+    /** The values of a literal type or union of literals; null for a free type (string, number). */
+    const literals = (t: ts.Type): string[] | null => {
+      const parts = t.isUnion() ? t.types : [t];
+      return parts.every((p) => p.isStringLiteral() || p.isNumberLiteral())
+        ? parts.map((p) => String((p as ts.LiteralType).value))
+        : null;
+    };
+    for (const sf of program.getSourceFiles()) {
+      if (!sf.fileName.startsWith(SRC) || !sf.fileName.endsWith('.tsx')) continue;
+      const visit = (node: ts.Node): void => {
+        if (
+          ts.isJsxAttribute(node) &&
+          node.name.getText(sf) === 'data-testid' &&
+          node.initializer &&
+          ts.isJsxExpression(node.initializer) &&
+          node.initializer.expression &&
+          ts.isTemplateExpression(node.initializer.expression)
+        ) {
+          const spans = node.initializer.expression.templateSpans;
+          const { line } = sf.getLineAndCharacterOfPosition(node.getStart(sf));
+          const where = `${relative(V3, sf.fileName)}:${line + 1}`;
+          spans.forEach((span, i) => {
+            inserts++;
+            const values = literals(checker.getTypeAtLocation(span.expression));
+            const inserted = span.expression.getText(sf);
+            if (values) {
+              const off = values.filter((v) => !KEBAB.test(v));
+              if (off.length)
+                bad.push(`${where} \${${inserted}}: ${off.join(', ')} not kebab-case`);
+              return;
+            }
+            // Free value: only `-${…}` may follow it
+            const rest = spans.slice(i);
+            const trailing = rest.every((s, j) =>
+              j === rest.length - 1 ? s.literal.text === '' : s.literal.text === '-',
+            );
+            if (!trailing) bad.push(`${where} \${${inserted}}: free value before the element kind`);
+          });
+        }
+        ts.forEachChild(node, visit);
+      };
+      visit(sf);
+    }
+  }, 30_000);
+
+  it('finds inserted values (sanity)', () => {
+    expect(inserts).toBeGreaterThan(15);
+  });
+
+  it('fixed values are kebab-case, free values only at the end', () => {
+    expect(bad, 'insert kebab-case literals; ids and indices go last').toEqual([]);
   });
 });
 
@@ -258,9 +336,7 @@ describe('guard: inline style lengths carry a unit (Preact 11 upgrade)', () => {
   // Building the type checker and scanning all components is one-off setup (~0.5 s, more
   // under coverage), not the test itself.
   beforeAll(() => {
-    const { config } = ts.readConfigFile(join(V3, 'tsconfig.app.json'), ts.sys.readFile);
-    const parsed = ts.parseJsonConfigFileContent(config, ts.sys, V3);
-    program = ts.createProgram(parsed.fileNames, parsed.options);
+    program = getAppProgram();
     found = numericStyles();
   }, 30_000);
 

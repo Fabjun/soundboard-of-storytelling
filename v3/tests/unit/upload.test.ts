@@ -9,12 +9,14 @@
  */
 
 import { IDBFactory } from 'fake-indexeddb';
-import { _resetDB, libGetAllMeta } from '../../src/db/idb';
+import { _resetDB, libGet, libGetAllMeta, libPut } from '../../src/db/idb';
 import { libraryItems, uploadStatus } from '../../src/state/store';
+import { PEAK_COUNT } from '../../src/lib/peaks';
 import {
   addAudioFile,
   computeHash,
   computePeaks,
+  ensureFinePeaks,
   formatBytes,
   formatDuration,
   processFilesSerial,
@@ -151,7 +153,7 @@ describe('processFilesSerial — behaviour', () => {
     await processFilesSerial([audioFile('a.wav', [1]), audioFile('b.wav', [2])]);
     const stored = await libGetAllMeta();
     expect(stored.map((m) => m.name).sort()).toEqual(['a.wav', 'b.wav']);
-    expect(stored[0].peaks).toHaveLength(30);
+    expect(stored[0].peaks).toHaveLength(PEAK_COUNT); // fine enough for the PAD editor (ADR-0065)
     expect(stored[0].duration).toBe(2.5);
   });
 
@@ -180,6 +182,59 @@ describe('processFilesSerial — behaviour', () => {
     expect(uploadStatus.value).toBeNull();
     await run;
     expect(uploadStatus.value?.imported).toBe(1);
+  });
+});
+
+// ── Fine peaks for entries stored before ADR-0065 ─────────────────────────────
+
+describe('ensureFinePeaks', () => {
+  /** Stores an entry the old way — 30 peaks — and lists it. */
+  async function oldEntry(id: string, firstByte: number) {
+    const meta = {
+      id,
+      type: 'audio' as const,
+      name: `${id}.wav`,
+      size: 2,
+      tags: ['keep'],
+      addedAt: 1,
+      duration: 2.5,
+      peaks: new Array(30).fill(0.2),
+    };
+    await libPut({ ...meta, blob: new Blob([new Uint8Array([firstByte, 1])]) });
+    libraryItems.value = [...libraryItems.value, meta];
+  }
+
+  it('decodes an old entry once and stores its fine peaks with the entry and in the list', async () => {
+    await oldEntry('old', 1);
+    const peaks = await ensureFinePeaks('old');
+    expect(peaks).toHaveLength(PEAK_COUNT);
+    expect((await libGet('old'))!.peaks).toEqual(peaks);
+    expect((await libGet('old'))!.tags).toEqual(['keep']); // the rest of the entry is unchanged
+    expect(libraryItems.value[0].peaks).toEqual(peaks);
+    expect(FakeOfflineAudioContext.log).toEqual(['decode-start:1', 'decode-end:1']);
+  });
+
+  it('leaves an entry with fine peaks alone — no decode', async () => {
+    await oldEntry('old', 1);
+    await ensureFinePeaks('old');
+    FakeOfflineAudioContext.reset();
+    expect(await ensureFinePeaks('old')).toHaveLength(PEAK_COUNT);
+    expect(FakeOfflineAudioContext.log).toEqual([]);
+  });
+
+  it('decodes one entry at a time when asked for several at once', async () => {
+    await oldEntry('a', 1);
+    await oldEntry('b', 2);
+    const both = await Promise.all([ensureFinePeaks('a'), ensureFinePeaks('b')]);
+    expect(both.map((p) => p?.length)).toEqual([PEAK_COUNT, PEAK_COUNT]);
+    expect(FakeOfflineAudioContext.maxActive).toBe(1);
+  });
+
+  it('resolves null for an unknown entry and for audio that cannot be decoded — nothing changes', async () => {
+    expect(await ensureFinePeaks('missing')).toBeNull();
+    await oldEntry('broken', 0xff);
+    expect(await ensureFinePeaks('broken')).toBeNull();
+    expect((await libGet('broken'))!.peaks).toHaveLength(30);
   });
 });
 

@@ -7,6 +7,22 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.158 — 2026-10-03
+
+### Added
+
+- feat(pad-editor): Slice 15a — waveform editor with trim start / end and fade handles (WAI-ARIA sliders, Pointer Events drag, keyboard), trim number fields; the trim and fades always fit the file (src/lib/trimRange.ts)
+- feat(pad-editor): preview ▶ / ⏸ / ⏹ through the engine under its own id (no pad glow); the playback position is a seek slider (WAI-ARIA APG Media Seek Slider), set by tap or keys
+- feat(library): 256 waveform peaks per entry, lists draw 30; entries stored before are backfilled once, one decode at a time (ADR-0065)
+
+### Fixed
+
+- fix(audio): a trimmed Loop repeats only its trimmed region (loopStart / loopEnd; start() counted the duration across loop passes) — engine change approved by the owner; a Loop preview can start mid-region
+
+### Internal
+
+- test(guards): values inserted into test IDs are checked by type — fixed values kebab-case, free values only at the end (ADR-0054 amendment)
+
 ## 3.0.157 — 2026-10-03
 
 ### Added

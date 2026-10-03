@@ -17,10 +17,21 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.157';
+export const APP_VERSION = '3.0.158';
 
 /** The developer log, newest first; CHANGELOG.md is generated from it (sync-changelog). */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.158',
+    date: '2026-10-03',
+    items: [
+      'feat(pad-editor): Slice 15a — waveform editor with trim start / end and fade handles (WAI-ARIA sliders, Pointer Events drag, keyboard), trim number fields; the trim and fades always fit the file (src/lib/trimRange.ts)',
+      'feat(pad-editor): preview ▶ / ⏸ / ⏹ through the engine under its own id (no pad glow); the playback position is a seek slider (WAI-ARIA APG Media Seek Slider), set by tap or keys',
+      'fix(audio): a trimmed Loop repeats only its trimmed region (loopStart / loopEnd; start() counted the duration across loop passes) — engine change approved by the owner; a Loop preview can start mid-region',
+      'feat(library): 256 waveform peaks per entry, lists draw 30; entries stored before are backfilled once, one decode at a time (ADR-0065)',
+      'test(guards): values inserted into test IDs are checked by type — fixed values kebab-case, free values only at the end (ADR-0054 amendment)',
+    ],
+  },
   {
     version: '3.0.157',
     date: '2026-10-03',

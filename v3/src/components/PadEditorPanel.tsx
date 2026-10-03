@@ -13,23 +13,27 @@
  * Fields:
  *   - Name (required)
  *   - Type (with PadTypeConfirmDialog on change)
- *   - Single / Loop: library source (search + pick from libraryItems) and its waveform; a pad
- *     with several files shows their number and order — editing several files is Slice 15
+ *   - Single / Loop: library source (search + pick from libraryItems); a pad with several files
+ *     shows their number and order — editing several files is Slice 15b
+ *   - Single / Loop with a file: the waveform editor (trim and fade handles, WaveformEditor),
+ *     trim start / end number fields and the preview ▶ / ⏸ / ⏹ (Slice 15a, src/lib/preview.ts);
+ *     the trim and fades always fit the file (src/lib/trimRange.ts)
  *   - Combo: the steps (ComboStepsEditor)
  *   - Volume slider (0-100)
- *   - Fade In / Fade Out sliders (0-10s)
+ *   - Fade In / Fade Out sliders (0-10s, shorter when the trimmed region is)
  *   - Hotkey display (read-only; assigning keys comes with Slice 12) — deck view only, keys belong to a placement
  *   - Decks checklist: place the pad in other decks or remove it (Slice 9e, ADR-0048)
  *   - Remove from deck (2-tap confirm, deck view only) — the pad stays in the pool
  *   - Delete button (2-tap confirm) — shows in how many decks the pad is used
  */
 
-import { useState, useEffect, useLayoutEffect } from 'preact/hooks';
+import { useState, useEffect, useLayoutEffect, useRef } from 'preact/hooks';
 import type { JSX } from 'preact';
 import type { Board, ComboStep, Pad, PadBase, PadType, Deck } from '../types';
 import { isComboPad } from '../types';
 import { PixelIcon } from './PixelIcon';
 import { Waveform } from './Waveform';
+import { WaveformEditor } from './WaveformEditor';
 import { PadTypeConfirmDialog } from './PadTypeConfirmDialog';
 import { ComboStepsEditor } from './ComboStepsEditor';
 import {
@@ -39,11 +43,14 @@ import {
   applyTypeChange,
   padMigrationMatrix,
 } from '../lib/padUtils';
-import { libraryItems } from '../state/store';
+import { libraryItems, previewPlaying } from '../state/store';
 import { updateBoard } from '../state/boardWrites';
 import { deckCount, placeInDeck, removeFromDeck, updatePad } from '../lib/boardModel';
 import { nextFreeSlot } from '../lib/padUtils';
 import { debouncedSave } from '../lib/debouncedSave';
+import { fromPad, moveHandle, toPad, type Handle, type TrimValues } from '../lib/trimRange';
+import { previewPosition, startPreview, stopPreview } from '../lib/preview';
+import { ensureFinePeaks } from '../lib/upload';
 
 interface PadEditorPanelProps {
   pad: Pad;
@@ -81,6 +88,14 @@ export function PadEditorPanel({
   const [volume, setVolume] = useState(pad.volume);
   const [fadeIn, setFadeIn] = useState(pad.fadeIn);
   const [fadeOut, setFadeOut] = useState(pad.fadeOut);
+  /** Trimmed region of a Single / Loop as the pad stores it (undefined = from the start / to the end). */
+  const [trimStart, setTrimStart] = useState(isComboPad(pad) ? undefined : pad.trimStart);
+  const [trimEnd, setTrimEnd] = useState(isComboPad(pad) ? undefined : pad.trimEnd);
+  /** Where the next preview starts, in seconds; null = at the trim start. */
+  const [cursor, setCursor] = useState<number | null>(null);
+  /** The preview was started and not yet stopped or ended. */
+  const [previewOn, setPreviewOn] = useState(false);
+  const [playhead, setPlayhead] = useState<number | null>(null);
   const [pendingType, setPendingType] = useState<PadType | null>(null);
   const [deleteConfirm, setDeleteConfirm] = useState(false);
   const [removeConfirm, setRemoveConfirm] = useState(false);
@@ -113,6 +128,36 @@ export function PadEditorPanel({
     return () => document.removeEventListener('visibilitychange', onVisibility);
   }, [autoSave]);
 
+  // The preview belongs to this editor: it stops when the editor closes or switches pad
+  useLayoutEffect(() => () => stopPreview(), []);
+
+  // An entry stored before ADR-0065 gets its fine peaks once, for the waveform editor
+  const firstFile = files[0];
+  useEffect(() => {
+    if (firstFile) void ensureFinePeaks(firstFile);
+  }, [firstFile]);
+
+  // While the preview runs, the playhead follows it; when it ends, the next one starts at the
+  // trim start again
+  const seenPlaying = useRef(false);
+  /** Counts preview starts and stops, so a late answer of an old start changes nothing. */
+  const previewRun = useRef(0);
+  useEffect(() => {
+    if (!previewOn) return;
+    let frame = 0;
+    const tick = () => {
+      if (previewPlaying.value) seenPlaying.current = true;
+      else if (seenPlaying.current) {
+        endPreview(null);
+        return;
+      }
+      setPlayhead(previewPosition());
+      frame = requestAnimationFrame(tick);
+    };
+    frame = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(frame);
+  }, [previewOn]);
+
   // ── Auto-save with 500ms debounce ────────────────────────────────────────
 
   function scheduleAutoSave(updatedPad: Pad) {
@@ -133,11 +178,47 @@ export function PadEditorPanel({
       modifiedAt: Date.now(),
     };
     if (type === 'combo') return { ...base, type, steps: stepsOverride ?? steps };
-    // Order and trim are not edited here yet — keep what the pad has
-    const kept = isComboPad(pad)
-      ? { order: 'sequential' as const }
-      : { order: pad.order, trimStart: pad.trimStart, trimEnd: pad.trimEnd };
-    return { ...base, type, files: effectiveFiles, ...kept };
+    // The order is not edited here yet — keep what the pad has
+    const order = isComboPad(pad) ? ('sequential' as const) : pad.order;
+    // Trim and fades fit the first file — also a newly chosen one
+    const duration = durationOf(effectiveFiles[0]);
+    const trim = { trimStart, trimEnd, fadeIn, fadeOut };
+    const fitted = duration > 0 ? toPad(fromPad(trim, duration), duration) : trim;
+    return { ...base, type, files: effectiveFiles, order, ...fitted };
+  }
+
+  /** Length of a library file in seconds; 0 when unknown. */
+  function durationOf(id: string | undefined): number {
+    return libraryItems.value.find((m) => m.id === id)?.duration ?? 0;
+  }
+
+  /** Takes the trim and fades of a pad into the editor's state. */
+  function takeTrim(p: Pad) {
+    setFadeIn(p.fadeIn);
+    setFadeOut(p.fadeOut);
+    setTrimStart(isComboPad(p) ? undefined : p.trimStart);
+    setTrimEnd(isComboPad(p) ? undefined : p.trimEnd);
+  }
+
+  /** The trim values of a Single / Loop with a file of known length; null otherwise. */
+  function currentTrim(): { values: TrimValues; duration: number } | null {
+    const duration = durationOf(files[0]);
+    if (type === 'combo' || duration <= 0) return null;
+    return { values: fromPad({ trimStart, trimEnd, fadeIn, fadeOut }, duration), duration };
+  }
+
+  /**
+   * Moves a trim or fade handle; the rules of src/lib/trimRange.ts decide where it lands. Returns
+   * the new values (null without a file of known length).
+   */
+  function handleTrimMove(handle: Handle, position: number): TrimValues | null {
+    const trim = currentTrim();
+    if (!trim || !Number.isFinite(position)) return null;
+    const moved = moveHandle(trim.values, handle, position, trim.duration);
+    const updated = { ...buildCurrentPad(), ...toPad(moved, trim.duration) };
+    takeTrim(updated);
+    scheduleAutoSave(updated);
+    return moved;
   }
 
   function handleNameChange(newName: string) {
@@ -150,21 +231,91 @@ export function PadEditorPanel({
     scheduleAutoSave({ ...buildCurrentPad(), volume: v });
   }
 
+  /** A fade slider: with a file, a fade handle move (the fades fit the trimmed region). */
   function handleFadeInChange(v: number) {
+    const trim = currentTrim();
+    if (trim) {
+      handleTrimMove('fadeIn', trim.values.trimStart + v);
+      return;
+    }
     setFadeIn(v);
     scheduleAutoSave({ ...buildCurrentPad(), fadeIn: v });
   }
 
+  /** A fade slider: with a file, a fade handle move (the fades fit the trimmed region). */
   function handleFadeOutChange(v: number) {
+    const trim = currentTrim();
+    if (trim) {
+      handleTrimMove('fadeOut', trim.values.trimEnd - v);
+      return;
+    }
     setFadeOut(v);
     scheduleAutoSave({ ...buildCurrentPad(), fadeOut: v });
   }
 
-  /** Choosing a file sets the pad's only file (several files: editing UI in Slice 11). */
+  /**
+   * Choosing a file sets the pad's only file (several files: editing UI in Slice 15b); the trim
+   * and fades are fitted to it.
+   */
   function handleLibrarySelect(id: string) {
+    endPreview(null);
     setFiles([id]);
     setLibPickerOpen(false);
-    scheduleAutoSave(buildCurrentPad([id]));
+    const updated = buildCurrentPad([id]);
+    takeTrim(updated);
+    scheduleAutoSave(updated);
+  }
+
+  // ── Preview ──────────────────────────────────────────────────────────────
+
+  /** ▶ — plays the file as the pad would, from the cursor (default: the trim start). */
+  function handlePreviewPlay() {
+    const trim = currentTrim();
+    const current = buildCurrentPad();
+    if (!trim || isComboPad(current)) return;
+    seenPlaying.current = false;
+    setPreviewOn(true);
+    const run = ++previewRun.current;
+    const from = cursor ?? trim.values.trimStart;
+    void startPreview(current, files[0], from, trim.values.trimEnd).then(() => {
+      // Could not start (file missing or undecodable): nothing plays, ▶ shows again
+      if (run === previewRun.current && !previewPlaying.value) endPreview(cursor);
+    });
+  }
+
+  /** ⏸ — stops the preview; the next ▶ goes on where it stopped. */
+  function handlePreviewPause() {
+    endPreview(previewPosition() ?? cursor);
+  }
+
+  /** Stops the preview; the next ▶ starts at `nextCursor` (null = the trim start). */
+  function endPreview(nextCursor: number | null) {
+    previewRun.current++;
+    // A frame may still run before the playhead loop is cancelled: it must not take this stop
+    // for the end of the file (and move the cursor back to the trim start)
+    seenPlaying.current = false;
+    stopPreview();
+    setPreviewOn(false);
+    setPlayhead(null);
+    setCursor(nextCursor);
+  }
+
+  /**
+   * The playback position moved (tap or key): the next preview starts there, a running preview
+   * jumps there. Kept within the trimmed region, in hundredths of a second.
+   */
+  function handleSeek(position: number) {
+    const trim = currentTrim();
+    if (!trim) return;
+    const inRegion = Math.min(Math.max(position, trim.values.trimStart), trim.values.trimEnd);
+    const at = Math.round(inRegion * 100) / 100;
+    setCursor(at);
+    if (previewOn) {
+      const current = buildCurrentPad();
+      if (isComboPad(current)) return;
+      seenPlaying.current = false;
+      void startPreview(current, files[0], at, trim.values.trimEnd);
+    }
   }
 
   // ── Type change ──────────────────────────────────────────────────────────
@@ -182,10 +333,12 @@ export function PadEditorPanel({
   }
 
   function applyTypeSwitch(newType: PadType) {
+    endPreview(null);
     const migrated = applyTypeChange(buildCurrentPad(), newType);
     setType(migrated.type);
     setFiles(isComboPad(migrated) ? [] : migrated.files);
     setSteps(isComboPad(migrated) ? migrated.steps : []);
+    takeTrim(migrated);
     scheduleAutoSave(migrated);
     setPendingType(null);
   }
@@ -227,9 +380,12 @@ export function PadEditorPanel({
     : allAudio;
   const libraryRef = files[0];
   const selectedItem = allAudio.find((m) => m.id === libraryRef);
-  /** Several files (e.g. from an import): shown, not edited here until the file list (Slice 11). */
+  /** Several files (e.g. from an import): shown, not edited here until the file list (Slice 15b). */
   const severalFiles = files.length > 1;
   const orderText = !isComboPad(pad) && pad.order === 'shuffle' ? 'shuffled' : 'in order';
+  const trim = currentTrim();
+  /** Seconds shown next to the preview buttons: the playhead, else where ▶ starts. */
+  const previewAt = playhead ?? cursor ?? trim?.values.trimStart ?? 0;
 
   // ── Render ───────────────────────────────────────────────────────────────
 
@@ -318,7 +474,9 @@ export function PadEditorPanel({
           {selectedItem ? (
             <div class="sb-lib-browser">
               <div class="sb-lib-browser-item-name">{selectedItem.name}</div>
-              {selectedItem.peaks.length > 0 && <Waveform peaks={selectedItem.peaks} height={24} />}
+              {!trim && selectedItem.peaks.length > 0 && (
+                <Waveform peaks={selectedItem.peaks} height={24} />
+              )}
             </div>
           ) : (
             <div class="sb-lib-browser-empty">No source selected</div>
@@ -326,6 +484,56 @@ export function PadEditorPanel({
           {severalFiles && (
             <div class="sb-hint-text" data-testid="pad-editor-panel-files-text">
               {files.length} files, {orderText}
+            </div>
+          )}
+
+          {/* Waveform editor, preview and trim fields — a file of known length is needed */}
+          {selectedItem && trim && (
+            <div class="sb-col">
+              <WaveformEditor
+                peaks={selectedItem.peaks}
+                duration={trim.duration}
+                values={trim.values}
+                onMove={handleTrimMove}
+                playhead={playhead}
+                cursor={cursor ?? trim.values.trimStart}
+                onSeek={handleSeek}
+              />
+              <div class="sb-row-sm">
+                <button
+                  class="sb-btn sb-btn-ghost"
+                  data-testid={`pad-editor-panel-preview-${previewOn ? 'pause' : 'play'}-button`}
+                  aria-label={previewOn ? 'Pause the preview' : 'Play a preview'}
+                  onClick={previewOn ? handlePreviewPause : handlePreviewPlay}
+                >
+                  {previewOn ? '⏸' : '▶'}
+                </button>
+                <button
+                  class="sb-btn sb-btn-ghost"
+                  data-testid="pad-editor-panel-preview-stop-button"
+                  aria-label="Stop the preview"
+                  onClick={() => endPreview(null)}
+                >
+                  ⏹
+                </button>
+                <span class="sb-value-text" data-testid="pad-editor-panel-preview-text">
+                  {previewAt.toFixed(1)}s / {trim.duration.toFixed(1)}s
+                </span>
+              </div>
+              <div class="sb-row-sm">
+                <TrimField
+                  label="Start (s)"
+                  value={trim.values.trimStart}
+                  testid="pad-editor-panel-trim-start-input"
+                  onCommit={(v) => handleTrimMove('trimStart', v)?.trimStart}
+                />
+                <TrimField
+                  label="End (s)"
+                  value={trim.values.trimEnd}
+                  testid="pad-editor-panel-trim-end-input"
+                  onCommit={(v) => handleTrimMove('trimEnd', v)?.trimEnd}
+                />
+              </div>
             </div>
           )}
 
@@ -491,6 +699,44 @@ export function PadEditorPanel({
         />
       )}
     </div>
+  );
+}
+
+// ── TrimField ────────────────────────────────────────────────────────────────
+
+/**
+ * A number field for a trim handle — the way to set it without dragging (WCAG 2.2 SC 2.5.7).
+ * The value is taken when the field is left or Enter is pressed; the field then shows where the
+ * handle landed, also when the rules moved it.
+ */
+function TrimField({
+  label,
+  value,
+  testid,
+  onCommit,
+}: {
+  label: string;
+  value: number;
+  testid: string;
+  /** Applies a typed value; returns where the handle landed, undefined when nothing changed. */
+  onCommit: (v: number) => number | undefined;
+}): JSX.Element {
+  return (
+    <label class="sb-check-row">
+      {label}
+      <input
+        class="sb-text-input"
+        type="number"
+        min="0"
+        step="0.01"
+        data-testid={testid}
+        value={value}
+        onChange={(e) => {
+          const landed = onCommit(parseFloat(e.currentTarget.value));
+          e.currentTarget.value = String(landed ?? value);
+        }}
+      />
+    </label>
   );
 }
 

@@ -23,6 +23,8 @@ export type EngineLoopPad = PadBase & {
   libraryItemRef?: string;
   trimStart?: number;
   trimEnd?: number;
+  /** Second of the file the first pass starts at, inside the trimmed region (PAD editor preview). */
+  startAt?: number;
 };
 
 /** Several files one after another (alone: repeats the list; in a combo: plays it once). */

@@ -56,6 +56,8 @@ type FakeBuffer = { tag: string; length: number; numberOfChannels: number; durat
 class FakeSource {
   buffer: FakeBuffer | null = null;
   loop = false;
+  loopStart = 0;
+  loopEnd = 0;
   onended: (() => void) | null = null;
   started: { when: number; offset?: number; dur?: number } | null = null;
   /** Buffer tag at start time (the engine may release .buffer later). */
@@ -325,6 +327,68 @@ describe('loop', () => {
     expect(started).toHaveLength(1);
   });
 
+  test('a trimmed loop repeats its region: loopStart / loopEnd mark it, start() gets no duration', async () => {
+    // A duration in start() counts every pass of the loop (Web Audio spec), so the region played
+    // once and fell silent until 2026-10-03
+    await audio.play('l', loop('l', 'h1', { trimStart: 0.25, trimEnd: 0.75 }));
+    await flush();
+    const s = ctx.sources[0];
+    expect([s.loop, s.loopStart, s.loopEnd]).toEqual([true, 0.25, 0.75]);
+    expect(s.started).toEqual({ when: 0, offset: 0.25, dur: undefined });
+  });
+
+  test('a loop trimmed only at the start loops from there to the end of the file', async () => {
+    await audio.play('l', loop('l', 'h1', { trimStart: 0.25 }));
+    await flush();
+    const s = ctx.sources[0];
+    expect([s.loopStart, s.loopEnd]).toEqual([0.25, 1]); // fake buffers last 1 s
+  });
+});
+
+// ── Preview (PAD editor, Slice 15a) ──────────────────────────────────────────
+
+describe('preview', () => {
+  test('a Single previews from the tapped second at full volume, to its trim end', async () => {
+    await audio.previewFile(
+      single('p', '', { trimStart: 0.2, trimEnd: 0.8, fadeIn: 1 }),
+      'h1',
+      0.5,
+    );
+    await flush();
+    const s = ctx.sources[0];
+    expect(s.startedTag).toBe('h1');
+    expect(s.started?.offset).toBe(0.5);
+    expect(s.started?.dur).toBeCloseTo(0.3); // from 0.5 to the trim end 0.8
+    expect(ctx.gains.at(-1)!.gain.events[0]).toEqual(['set', 0.8, 0]); // no fade-in mid-file
+  });
+
+  test('a Loop previews from the tapped second and then repeats its whole region', async () => {
+    await audio.previewFile(loop('p', '', { trimStart: 0.2, trimEnd: 0.8 }), 'h1', 0.5);
+    await flush();
+    const s = ctx.sources[0];
+    expect([s.loopStart, s.loopEnd, s.started?.offset]).toEqual([0.2, 0.8, 0.5]);
+  });
+
+  test('a tap before the trim start previews from the trim start, with the fade-in', async () => {
+    await audio.previewFile(loop('p', '', { trimStart: 0.2, fadeIn: 1 }), 'h1', 0);
+    await flush();
+    expect(ctx.sources[0].started?.offset).toBe(0.2);
+    expect(ctx.gains.at(-1)!.gain.events[0]).toEqual(['set', 0, 0]);
+  });
+
+  test('the preview is no pad playing: no playing / looping pad, previewPlaying instead', async () => {
+    const store = await import('../../../src/state/store');
+    audio.initAudioBridge();
+    await audio.previewFile(loop('p', ''), 'h1', 0);
+    await flush();
+    expect(store.previewPlaying.value).toBe(true);
+    expect([...store.playingPads.value, ...store.loopingPads.value]).toEqual([]);
+    audio.stopPreview();
+    expect(store.previewPlaying.value).toBe(false);
+  });
+});
+
+describe('loop (continued)', () => {
   test('fade-in ramps from 0 to the pad volume', async () => {
     await audio.play('l', loop('l', 'h1', { fadeIn: 2, volume: 50 }));
     await flush();
@@ -666,12 +730,14 @@ describe('combo children', () => {
     expect(ctx.sources[0].started).toEqual({ when: 0, offset: 0, dur: undefined });
   });
 
-  test('a loop child loops its trim window', async () => {
+  test('a loop child loops its trim window — region in loopStart / loopEnd, no total duration', async () => {
     pads.set('bg', loop('bg', 'h3', { trimStart: 1, trimEnd: 4 }));
     audio.play('c', combo('c', [{ padIds: ['bg'], duration: 9 }]));
     await flush();
-    expect(ctx.sources[0].loop).toBe(true);
-    expect(ctx.sources[0].started).toEqual({ when: 0, offset: 1, dur: 3 });
+    const s = ctx.sources[0];
+    expect(s.loop).toBe(true);
+    expect([s.loopStart, s.loopEnd]).toEqual([1, 4]);
+    expect(s.started).toEqual({ when: 0, offset: 1, dur: undefined });
   });
 
   test('a child uses its own volume and fade-in on its own gain', async () => {

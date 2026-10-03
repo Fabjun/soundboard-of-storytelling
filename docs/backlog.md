@@ -1082,6 +1082,18 @@ documents stay authoritative until their content is transferred and confirmed.
    move superseded documents to `docs/archive/`, reduce `docs/backlog.md` to open work.
    **Source:** Session 2026-09-28.
 
+### Generate the API list in CLAUDE.md
+
+The section "V3 audio/IDB API" in CLAUDE.md is typed by hand; a guard only checks that each
+listed function is exported by `v3/src/db/idb.ts` or `v3/src/lib/upload.ts`. Owner decision
+2026-10-03: a generator (run by `npm run sync:docs`) writes the section from the exports and their
+TSDoc summaries of the named modules — `idb.ts`, `upload.ts`, `v3/src/audio/index.ts`,
+`v3/src/lib/preview.ts` — like the other generated inventories (industry standard: generated API
+reports, e.g. Microsoft API Extractor, https://api-extractor.com/). The PAD editor's preview
+functions (Slice 15a) are listed only once the generator exists.
+**When:** the next step after Slice 15a is pushed, before 15b.
+**Source:** Slice 15a, guard "the API list in CLAUDE.md names real exports".
+
 ### docs/design/design-system.md §1–§5 write out
 
 Sections §1–§5 currently exist but are stubs or placeholder content. Need to be filled with

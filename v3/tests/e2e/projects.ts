@@ -22,6 +22,7 @@ export const FULL_TESTS = [
   'deck-crud',
   'pad-creation',
   'pad-editing',
+  'pad-editor-preview',
   'layout-reach',
   'whats-new',
   'pad-dnd',

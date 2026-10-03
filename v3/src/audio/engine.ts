@@ -118,6 +118,29 @@ function isHalted(c: AudioContext): boolean {
   return state === 'suspended' || state === 'interrupted';
 }
 
+/**
+ * Starts a looping source on its trimmed region. loopStart / loopEnd mark the region, and no
+ * duration is passed: in start() a duration counts every pass of the loop (Web Audio spec,
+ * AudioBufferSourceNode.start: "including any whole or partial loop iterations"), so a trimmed
+ * loop played its region once and fell silent — V1 had the same (owner-approved fix 2026-10-03).
+ * Without a trim end the region runs to the end of the buffer: a loopEnd of 0 would loop the
+ * whole buffer from its start, ignoring trimStart. `startAt` begins the first pass inside the
+ * region (the PAD editor's preview, owner-approved 2026-10-03); it defaults to the region start.
+ */
+function startLoopSource(
+  s: AudioBufferSourceNode,
+  tStart: number,
+  tEnd: number,
+  hasDur: boolean,
+  startAt?: number,
+): void {
+  s.loop = true;
+  s.loopStart = tStart;
+  s.loopEnd = hasDur ? tEnd : (s.buffer?.duration ?? 0);
+  const offset = startAt === undefined ? tStart : Math.min(Math.max(startAt, tStart), s.loopEnd);
+  s.start(0, offset);
+}
+
 // ── Callback bridge ───────────────────────────────────────────────────────────
 
 function onPadStarted(id: string, isLoop: boolean): void {
@@ -273,7 +296,6 @@ export async function playLoop(padId: string, pad: LoopPad): Promise<void> {
   const tStart = pad.trimStart ?? 0;
   const tEnd = pad.trimEnd ?? 0;
   const hasDur = tEnd > tStart;
-  const dur = hasDur ? tEnd - tStart : undefined;
 
   const g = ctx.createGain();
   fadeInGain(g, vol, fi);
@@ -282,10 +304,8 @@ export async function playLoop(padId: string, pad: LoopPad): Promise<void> {
 
   const s = ctx.createBufferSource();
   s.buffer = buf;
-  s.loop = true;
   s.connect(g);
-  if (hasDur) s.start(0, tStart, dur);
-  else s.start(0, tStart);
+  startLoopSource(s, tStart, tEnd, hasDur, pad.startAt);
   srcs[padId] = [s];
 
   onPadStarted(padId, true);
@@ -545,11 +565,9 @@ function createPadInstance(
           }
           const s = ctx!.createBufferSource();
           s.buffer = b;
-          s.loop = true;
           s.connect(g);
           active.push(s);
-          if (hasDur) s.start(0, tStart, dur);
-          else s.start(0, tStart);
+          startLoopSource(s, tStart, tEnd, hasDur);
           // infinite loop — onEnded fires only when instance.stop() is called
         } catch (e) {
           console.warn('Combo loop load:', e);

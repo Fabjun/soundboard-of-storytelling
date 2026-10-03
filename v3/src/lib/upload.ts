@@ -7,14 +7,20 @@
  *     reclaim PCM memory before the next file's decode begins. Decoding uses an
  *     OfflineAudioContext, which never touches the audio hardware or iOS's audio session.
  *   - Raw audio (buf / Blob) is never stored in Signals or working arrays.
- *   - Peaks (30 numbers × 8 bytes = 240 bytes) are the only audio-derived
- *     data kept in memory after upload.
+ *   - Peaks (`PEAK_COUNT` = 256 numbers, about 2 KB per file, ADR-0065) are the only
+ *     audio-derived data kept in memory after upload.
  */
 
 import { sha256 } from '@noble/hashes/sha2.js';
 import { bytesToHex } from '@noble/hashes/utils.js';
-import { libPut } from '../db/idb';
-import { addLibraryItemMeta, libraryItems, uploadStatus } from '../state/store';
+import { libGet, libPut } from '../db/idb';
+import {
+  addLibraryItemMeta,
+  libraryItems,
+  setLibraryItemPeaks,
+  uploadStatus,
+} from '../state/store';
+import { needsFinePeaks, PEAK_COUNT } from './peaks';
 import type { LibraryItemMeta, UploadResult } from '../types';
 
 /**
@@ -47,9 +53,9 @@ export function computeHash(buf: ArrayBuffer): string {
  * in [0, 1]. Ported directly from V1's _computePeaks function.
  *
  * @param decoded - The decoded audio; the caller releases it right after this returns.
- * @param N - Number of peaks (default 30, as in V1).
+ * @param N - Number of peaks (default `PEAK_COUNT`, ADR-0065; V1 used 30).
  */
-export function computePeaks(decoded: AudioBuffer, N = 30): number[] {
+export function computePeaks(decoded: AudioBuffer, N = PEAK_COUNT): number[] {
   const data = decoded.getChannelData(0);
   const step = Math.max(1, Math.floor(data.length / N));
   const peaks: number[] = [];
@@ -63,6 +69,65 @@ export function computePeaks(decoded: AudioBuffer, N = 30): number[] {
     peaks.push(+max.toFixed(3));
   }
   return peaks;
+}
+
+// ── Analysis (one decode path for uploads and for older entries) ──────────────
+
+/**
+ * Decodes one file and returns its duration and `PEAK_COUNT` peaks (ADR-0065). The decoded buffer
+ * is released before this returns (iPhone memory rules); call it for one file at a time.
+ *
+ * @throws When the bytes are not audio the browser can decode.
+ */
+export async function analyseAudio(
+  buf: ArrayBuffer,
+): Promise<{ duration: number; peaks: number[] }> {
+  // An OfflineAudioContext decodes without touching the audio hardware or iOS's audio session
+  // (MDN: it "doesn't render the audio to the device hardware") — a real AudioContext per file
+  // meant 99 contexts opened and closed next to the engine's during a V1 import.
+  const ctx = new OfflineAudioContext(1, 1, DECODE_SAMPLE_RATE);
+  // buf.slice() prevents detaching: decodeAudioData may transfer ownership of the ArrayBuffer,
+  // but callers still need it (to store the Blob).
+  let decoded: AudioBuffer | null = await ctx.decodeAudioData(buf.slice());
+  const result = { duration: decoded.duration, peaks: computePeaks(decoded, PEAK_COUNT) };
+  // Explicit null — releases PCM memory now, not at GC time (critical on iOS Safari, where heap
+  // pressure kills the tab).
+  decoded = null;
+  return result;
+}
+
+/**
+ * Gives a library entry stored before ADR-0065 (30 peaks) its fine peaks: decodes its audio once,
+ * stores the peaks with the entry and in the library list. Entries that have them already are left
+ * alone. Resolves with the entry's peaks, or null when it is missing or cannot be decoded. Calls
+ * wait for each other, so two entries are never decoded at the same time (memory rule 2).
+ */
+export function ensureFinePeaks(id: string): Promise<number[] | null> {
+  const next = finePeaksQueue.then(() => backfillPeaks(id));
+  finePeaksQueue = next.catch(() => null); // a failed run must not stop the ones after it
+  return next;
+}
+
+/** The last fine-peaks run; the next one starts after it. */
+let finePeaksQueue: Promise<unknown> = Promise.resolve();
+
+/** One fine-peaks run of `ensureFinePeaks`. */
+async function backfillPeaks(id: string): Promise<number[] | null> {
+  const known = libraryItems.value.find((m) => m.id === id);
+  if (known && !needsFinePeaks(known.peaks)) return known.peaks;
+  let item = await libGet(id);
+  if (!item) return null;
+  try {
+    const { peaks } = await analyseAudio(await item.blob.arrayBuffer());
+    // IDB has no partial update: the entry is written back whole, as libRename does
+    await libPut({ ...item, peaks });
+    setLibraryItemPeaks(id, peaks);
+    return peaks;
+  } catch {
+    return null;
+  } finally {
+    item = null; // release the Blob reference now (memory rule 6)
+  }
 }
 
 // ── Serial upload pipeline ───────────────────────────────────────────────────
@@ -99,26 +164,11 @@ export async function addAudioFile(
   if (libraryItems.value.some((m) => m.id === id)) return { kind: 'skipped', id };
 
   // Steps 4–5 — serial decode + peaks
-  let decoded: AudioBuffer | null = null;
-  let peaks: number[] = [];
-  let duration = 0;
-
+  let peaks: number[];
+  let duration: number;
   try {
-    // An OfflineAudioContext decodes without touching the audio hardware or iOS's audio session
-    // (MDN: it "doesn't render the audio to the device hardware") — a real AudioContext per file
-    // meant 99 contexts opened and closed next to the engine's during a V1 import.
-    const ctx = new OfflineAudioContext(1, 1, DECODE_SAMPLE_RATE);
-    // buf.slice() prevents detaching: decodeAudioData may transfer ownership of
-    // the ArrayBuffer, but we still need buf below to create the Blob.
-    decoded = await ctx.decodeAudioData(buf.slice());
-    peaks = computePeaks(decoded, 30);
-    duration = decoded.duration;
-
-    // Explicit null — releases PCM memory now, not at GC time.
-    // This is critical on iOS Safari where heap pressure causes tab kills.
-    decoded = null;
+    ({ duration, peaks } = await analyseAudio(buf));
   } catch (e) {
-    decoded = null;
     return { kind: 'error', error: `${file.name}: decode failed (${String(e)})` };
   }
 
