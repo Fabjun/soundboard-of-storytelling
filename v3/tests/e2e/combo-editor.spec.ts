@@ -16,6 +16,7 @@ import {
   createBoardAndNavigate,
   enterSetupMode,
   reopenFirstBoard,
+  waitForSaves,
 } from './helpers';
 
 const choose = (page: Page, step: number, label: string) =>
@@ -41,8 +42,9 @@ test('a combo keeps its steps: pads, wait and "stop everything first"', async ({
   await page.getByTestId('combo-steps-editor-wait-input-0').blur();
   await page.getByTestId('combo-steps-editor-add-button').click();
   await page.getByTestId('combo-steps-editor-stop-all-input-1').check();
-  await page.waitForTimeout(1000); // the editor saves 500 ms after the last change
 
+  // reopenFirstBoard waits for the saves, the waiting auto-save included — a fixed wait of 1 s
+  // was too short on ubuntu-26.04 runners, 1 run in 3 (2026-10-04)
   await reopenFirstBoard(page);
   await enterSetupMode(page);
   await page.getByTestId(`pad-grid-cell-${day}`).click();
@@ -61,7 +63,7 @@ test('a combo is never offered itself or a combo that starts it', async ({ page 
   // Dusk starts Dawn
   await page.getByTestId('combo-steps-editor-add-button').click();
   await choose(page, 0, 'Dawn');
-  await page.waitForTimeout(1000);
+  await waitForSaves(page);
 
   // In Dawn, Dusk would close a cycle and Dawn is itself: only Owl is offered
   await page.getByTestId(`pad-grid-cell-${a}`).click();

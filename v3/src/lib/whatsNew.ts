@@ -89,6 +89,13 @@ export function withEarlyVersions(
 /** The release notes the start screen shows, newest first (checked by whatsNew.test.ts). */
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
+    version: '3.0.165',
+    date: '2026-10-04',
+    fixed: [
+      'An edit made just before tapping RELOAD in the update notice is saved before the app reloads.',
+    ],
+  },
+  {
     version: '3.0.164',
     date: '2026-10-04',
     behindTheScenes: [

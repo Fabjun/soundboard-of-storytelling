@@ -54,10 +54,9 @@ test('17 — change pad name in editor → persists after page reload', async ({
   // Change the name
   const nameInput = page.getByTestId('pad-editor-panel-name-input');
   await nameInput.fill('Renamed Pad');
-  // Wait for auto-save debounce (500ms) + some buffer
-  await page.waitForTimeout(800);
 
-  // Reload page and navigate back to the board
+  // Reload page and navigate back to the board — reloadApp waits for the saves, the waiting
+  // auto-save included (src/lib/debouncedSave.ts)
   await reloadApp(page);
   await page.getByRole('button', { name: 'BOARD' }).click();
   // Board should still exist

@@ -17,10 +17,18 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.164';
+export const APP_VERSION = '3.0.165';
 
 /** The developer log, newest first; CHANGELOG.md is generated from it (sync-changelog). */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.165',
+    date: '2026-10-04',
+    items: [
+      'fix(save): a waiting auto-save counts as a running save from the moment it is scheduled (debouncedSave → pendingSaves), so RELOAD in the update prompt and the E2E save marker wait for it — a reload half a second after an edit cut the last save off (owner decision; ubuntu-26.04 probe: the combo test lost its wait value 1 run in 3, with blur and with Tab alike)',
+      'test(e2e): the specs wait for the saves instead of a fixed time (pad-editing, combo-editor, pad-pool); debouncedSave counting counter-checked',
+    ],
+  },
   {
     version: '3.0.164',
     date: '2026-10-04',

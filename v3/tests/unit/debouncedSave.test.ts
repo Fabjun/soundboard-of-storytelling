@@ -4,9 +4,11 @@
 
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 import { debouncedSave } from '../../src/lib/debouncedSave';
+import { pendingSaves } from '../../src/state/store';
 
 beforeEach(() => {
   vi.useFakeTimers();
+  pendingSaves.value = 0;
 });
 afterEach(() => {
   vi.useRealTimers();
@@ -62,5 +64,40 @@ describe('debouncedSave', () => {
     save.schedule('');
     save.flush();
     expect(write.mock.calls).toEqual([['']]);
+  });
+});
+
+describe('debouncedSave — a waiting value counts as a running save', () => {
+  test('counts once from the first schedule until it is written, however often it is rescheduled', () => {
+    const { save } = setup();
+    save.schedule('a');
+    expect(pendingSaves.value).toBe(1);
+    save.schedule('ab');
+    expect(pendingSaves.value).toBe(1);
+    vi.advanceTimersByTime(500);
+    expect(pendingSaves.value).toBe(0);
+  });
+
+  test('the count never drops to 0 between waiting and saving — the write counts itself first', () => {
+    const seen: number[] = [];
+    const save = debouncedSave(() => {
+      pendingSaves.value++; // as a board save does, synchronously
+      seen.push(pendingSaves.value);
+    }, 500);
+    save.schedule('x');
+    save.flush();
+    expect(seen).toEqual([2]); // the waiting value and the save
+    expect(pendingSaves.value).toBe(1); // the save still runs
+  });
+
+  test('a flush with nothing waiting and a write that throws leave the count right', () => {
+    const save = debouncedSave(() => {
+      throw new Error('disk full');
+    }, 500);
+    save.flush();
+    expect(pendingSaves.value).toBe(0);
+    save.schedule('x');
+    expect(() => save.flush()).toThrow('disk full');
+    expect(pendingSaves.value).toBe(0);
   });
 });

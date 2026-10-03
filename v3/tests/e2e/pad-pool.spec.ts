@@ -132,8 +132,7 @@ test('a rename and a deck checkbox right after it both survive a reload', async 
   // Rename (saved after a 500 ms debounce) and check the second deck before that save runs
   await page.getByTestId('pad-editor-panel-name-input').fill('Rain');
   await page.getByTestId(`pad-editor-panel-deck-input-${deck2}`).check();
-  // Let the debounced rename save run (500 ms) before the reload
-  await page.waitForTimeout(1000);
+  // reopenFirstBoard waits for the debounced rename save too (src/lib/debouncedSave.ts)
 
   await reopenFirstBoard(page);
   await tabs(page).nth(1).click();

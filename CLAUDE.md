@@ -311,7 +311,9 @@ and has diverged). Never hardcode colors, fonts, or spacing.
 - **Delayed writes are flushed, never dropped** (2026-10-02): a write that waits (auto-save
   debounce) goes through `v3/src/lib/debouncedSave.ts` and is written at once when its context
   ends — the editor closes or switches pad, the page is hidden (Chrome Page Lifecycle: persist
-  unsaved state on hidden). Every file with a timer is listed with its reason (guarded by `codeGuards`: "timers are listed with their reason").
+  unsaved state on hidden). A waiting write counts as a running save (`pendingSaves`) from the
+  moment it is scheduled, so RELOAD and the E2E save marker wait for it (2026-10-04); E2E specs
+  wait for the saves, never a fixed time. Every file with a timer is listed with its reason (guarded by `codeGuards`: "timers are listed with their reason").
 - **Code comments** (ADR-0064, owner decision 2026-10-03): every export of `src/` and `scripts/`
   has a TSDoc comment that says what a caller needs to know (functions start with a verb phrase;
   no types in tags); every TypeScript file opens with a `/** @fileoverview … */` block, never a

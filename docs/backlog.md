@@ -105,13 +105,13 @@ check of 3.0.159 shows a field that takes no typing, selection comes back for te
 (`input, textarea { user-select: text }`).
 **When:** the owner's first iPhone check of 3.0.159.
 
-### Reload right after an edit
+### Reload right after an edit ✅ Done (3.0.165)
 
 RELOAD in the update prompt (ADR-0066) waits for running saves, but an edit typed less than half a
-second before still waits in the PAD editor's auto-save; it is written when the page is hidden,
-and the browser does not promise that a write started during unload finishes. Option: the
-editor's pending save registers with the save counter, so RELOAD waits for it too.
-**When:** with Slice 12 (live control) or when a lost edit is seen.
+second before still waited in the PAD editor's auto-save. A lost edit was seen on 2026-10-04: on
+ubuntu-26.04 runners the combo E2E test reloaded before its last auto-save (1 run in 3). Owner
+decision: `debouncedSave` counts a waiting value as a running save from the moment it is
+scheduled, so RELOAD and the E2E save marker wait for it; the fixed waits in the specs are gone.
 
 ### GitHub runner image change
 

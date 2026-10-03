@@ -6,7 +6,14 @@
  * closes, or the page is hidden — "persist any unsaved application state" on hidden
  * (developer.chrome.com/docs/web-platform/page-lifecycle-api). Dropping it lost a typed pad
  * name when the next pad was edited within the delay (2026-10-02).
+ *
+ * A value that waits counts as a running save (`pendingSaves`) from the moment it is scheduled —
+ * not only once it is written — so whatever waits for the saves (RELOAD in the update prompt, the
+ * `data-saving` marker E2E tests wait for) also waits for it. A reload half a second after an edit
+ * cut the last save off (ubuntu-26.04 probe, 2026-10-04; BACKLOG "Reload right after an edit").
  */
+
+import { pendingSaves } from '../state/store';
 
 /** A delayed write that can be flushed: the handle `debouncedSave` returns. */
 export interface DebouncedSave<T> {
@@ -33,11 +40,16 @@ export function debouncedSave<T>(write: (value: T) => void, delayMs: number): De
     if (pending === null) return;
     const { value } = pending;
     pending = null;
-    write(value);
+    try {
+      write(value); // a write that saves counts itself from here on …
+    } finally {
+      pendingSaves.value--; // … so the count never drops to 0 in between, nor stays up on a throw
+    }
   }
 
   return {
     schedule(value) {
+      if (pending === null) pendingSaves.value++;
       pending = { value };
       if (timer !== null) clearTimeout(timer);
       timer = setTimeout(flush, delayMs);

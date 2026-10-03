@@ -7,6 +7,16 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.165 — 2026-10-04
+
+### Fixed
+
+- fix(save): a waiting auto-save counts as a running save from the moment it is scheduled (debouncedSave → pendingSaves), so RELOAD in the update prompt and the E2E save marker wait for it — a reload half a second after an edit cut the last save off (owner decision; ubuntu-26.04 probe: the combo test lost its wait value 1 run in 3, with blur and with Tab alike)
+
+### Internal
+
+- test(e2e): the specs wait for the saves instead of a fixed time (pad-editing, combo-editor, pad-pool); debouncedSave counting counter-checked
+
 ## 3.0.164 — 2026-10-04
 
 ### Fixed
