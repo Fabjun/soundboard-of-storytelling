@@ -15,7 +15,7 @@ import { V3_BACKUP_FORMAT } from '../../src/lib/backupReader';
 import { computeHash } from '../../src/lib/upload';
 import { boardProblems } from '../../src/lib/boardModel';
 
-class FakeAudioContext {
+class FakeOfflineAudioContext {
   decodeAudioData(buf: ArrayBuffer): Promise<AudioBuffer> {
     if (new Uint8Array(buf)[0] === 0xff) return Promise.reject(new Error('corrupt'));
     const data = new Float32Array(100).fill(0.5);
@@ -31,7 +31,7 @@ beforeEach(() => {
   _resetDB();
   libraryItems.value = [];
   boards.value = [];
-  vi.stubGlobal('AudioContext', FakeAudioContext);
+  vi.stubGlobal('OfflineAudioContext', FakeOfflineAudioContext);
 });
 afterEach(() => vi.unstubAllGlobals());
 

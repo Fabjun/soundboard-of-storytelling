@@ -106,6 +106,18 @@ function fadeInGain(g: GainNode, targetVol: number, fadeIn: number): void {
   }
 }
 
+// ── Context state ─────────────────────────────────────────────────────────────
+
+/**
+ * Tells whether the context waits to be resumed: `suspended`, or WebKit's `interrupted` (iOS:
+ * after a phone call, another app's audio or a system sheet). The DOM types list only
+ * `suspended`, so an iOS context that was interrupted used to stay silent (2026-10-03).
+ */
+function isHalted(c: AudioContext): boolean {
+  const state: string = c.state;
+  return state === 'suspended' || state === 'interrupted';
+}
+
 // ── Callback bridge ───────────────────────────────────────────────────────────
 
 function onPadStarted(id: string, isLoop: boolean): void {
@@ -127,12 +139,19 @@ function onPadStopped(id: string): void {
 export function initAudio(): void {
   if (ctx) return;
 
-  // AVAudioSession fix: playing a silent audio element upgrades iOS's audio
-  // session category from 'ambient' to 'playback', so Web Audio API output is
-  // NOT muted by the ringer switch. Must run synchronously in the user-gesture
+  // iOS plays Web Audio on the "ambient" channel, which the ring/silent switch mutes (owner device
+  // test 2026-10-03: pads ran but were silent). iOS 17+ offers the Audio Session API: "playback"
+  // makes the page a playback app, like a music player (owner decision: sound with the switch on).
+  const session = navigator.audioSession;
+  if (session) session.type = 'playback';
+
+  // AVAudioSession fix for iOS before 17: a playing audio element moves the session to
+  // 'playback'. It has to keep playing — a one-shot clip lets the session fall back — so it
+  // loops where the Audio Session API is missing. Must run synchronously in the user-gesture
   // handler — same event loop tick as the click, before any await.
   const sil = Object.assign(document.createElement('audio'), {
     src: 'data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA',
+    loop: !session,
   });
   sil.setAttribute('playsinline', '');
   // play() returns a Promise in modern browsers, undefined in old WebKit.
@@ -156,7 +175,7 @@ export function initAudio(): void {
   // Resume AudioContext when the tab becomes visible after backgrounding.
   // iOS suspends it automatically on tab switch; this restores it.
   document.addEventListener('visibilitychange', () => {
-    if (document.visibilityState === 'visible' && ctx?.state === 'suspended') {
+    if (document.visibilityState === 'visible' && ctx && isHalted(ctx)) {
       ctx.resume().catch(() => {});
     }
   });
@@ -177,7 +196,7 @@ export async function playOnce(padId: string, pad: SinglePad): Promise<void> {
   // Awaiting resume() creates an async gap during which iOS WebKit can cancel
   // running source nodes in other pads. The source scheduled below will play
   // once the context is running.
-  if (ctx.state === 'suspended') ctx.resume().catch(() => {});
+  if (isHalted(ctx)) ctx.resume().catch(() => {});
 
   try {
     await ensureLibBuf(hash);
@@ -237,7 +256,7 @@ export async function playLoop(padId: string, pad: LoopPad): Promise<void> {
 
   const hash = pad.libraryItemRef;
   // Fire-and-forget resume — avoids async gap that can cancel other pads on iOS.
-  if (ctx.state === 'suspended') ctx.resume().catch(() => {});
+  if (isHalted(ctx)) ctx.resume().catch(() => {});
 
   try {
     await ensureLibBuf(hash);
@@ -281,7 +300,7 @@ export async function playLoop(padId: string, pad: LoopPad): Promise<void> {
 export function playPlaylist(padId: string, pad: PlaylistPad): void {
   if (!ctx || !pad.files.length) return;
   if (srcs[padId]) return; // defensive
-  if (ctx.state === 'suspended') ctx.resume().catch(() => {});
+  if (isHalted(ctx)) ctx.resume().catch(() => {});
 
   srcs[padId] = []; // sentinel: truthy so guard in playNextTrack passes
   onPadStarted(padId, false);
@@ -414,7 +433,7 @@ export function stopAllInternal(): void {
  * once (their gain nodes are not reachable for a fade). Does nothing while audio is suspended.
  */
 export function fadeOutAllInternal(duration: number): void {
-  if (!ctx || ctx.state === 'suspended') return;
+  if (!ctx || isHalted(ctx)) return;
 
   // Stop combos immediately — their GainNodes are local to createPadInstance,
   // not in the module-level gains dict, so we can't fade them gracefully.
@@ -614,7 +633,7 @@ function createPadInstance(
  */
 export function playCombo(padId: string, pad: ComboPad): void {
   if (!ctx) return;
-  if (ctx.state === 'suspended') ctx.resume().catch(() => {});
+  if (isHalted(ctx)) ctx.resume().catch(() => {});
   if (comboState[padId]) stopCombo(padId); // retrigger: stop then restart
   const state: ComboRuntimeState = {
     stopped: false,
@@ -741,7 +760,7 @@ function stopCombo(padId: string): void {
 }
 
 function fadeOutAllExcept(exceptPadId: string, duration: number): void {
-  if (!ctx || ctx.state === 'suspended') return;
+  if (!ctx || isHalted(ctx)) return;
 
   for (const cid of Object.keys(comboState)) {
     if (cid !== exceptPadId) stopCombo(cid);

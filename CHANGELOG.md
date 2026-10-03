@@ -7,6 +7,18 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.157 — 2026-10-03
+
+### Added
+
+- feat(whats-new): the window names the running version and, if newer than the latest notes, the version with the latest visible changes
+
+### Fixed
+
+- fix(audio): sound on iPhone with the ring/silent switch on — the unlock sets navigator.audioSession.type to playback (iOS 17+); before iOS 17 the silent clip loops (owner device test: pads ran silently; owner approved the engine change)
+- fix(audio): the engine resumes WebKit's 'interrupted' context state too, on play and when the app becomes visible again
+- fix(library): decoding on upload and import uses an OfflineAudioContext — no real AudioContext per file next to the engine
+
 ## 3.0.156 — 2026-10-03
 
 ### Internal

@@ -17,10 +17,20 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.156';
+export const APP_VERSION = '3.0.157';
 
 /** The developer log, newest first; CHANGELOG.md is generated from it (sync-changelog). */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.157',
+    date: '2026-10-03',
+    items: [
+      'fix(audio): sound on iPhone with the ring/silent switch on — the unlock sets navigator.audioSession.type to playback (iOS 17+); before iOS 17 the silent clip loops (owner device test: pads ran silently; owner approved the engine change)',
+      "fix(audio): the engine resumes WebKit's 'interrupted' context state too, on play and when the app becomes visible again",
+      'fix(library): decoding on upload and import uses an OfflineAudioContext — no real AudioContext per file next to the engine',
+      'feat(whats-new): the window names the running version and, if newer than the latest notes, the version with the latest visible changes',
+    ],
+  },
   {
     version: '3.0.156',
     date: '2026-10-03',

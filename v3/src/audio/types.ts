@@ -57,6 +57,24 @@ export type PadInstance = {
   stop: () => void;
 };
 
+// ── Audio Session API (W3C draft; WebKit since iOS 17) ───────────────────────
+// Not in TypeScript's DOM types yet. https://w3c.github.io/audio-session/
+
+/** How the page's audio is meant to be used (Audio Session API, AudioSessionType). */
+export type AudioSessionType =
+  'auto' | 'playback' | 'transient' | 'transient-solo' | 'ambient' | 'play-and-record';
+
+declare global {
+  /** The page's audio session — `type: 'playback'` lets audio play with the ring/silent switch on. */
+  interface AudioSession extends EventTarget {
+    type: AudioSessionType;
+  }
+  interface Navigator {
+    /** Present where the browser implements the Audio Session API (iOS 17+), absent elsewhere. */
+    readonly audioSession?: AudioSession;
+  }
+}
+
 /** Per-combo runtime state stored in comboState[padId]. */
 export type ComboRuntimeState = {
   stopped: boolean;

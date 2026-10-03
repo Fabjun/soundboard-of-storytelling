@@ -3,8 +3,9 @@
  *
  * CLAUDE.md#iphone--ios-safari--memory--stability-rules-critical: never decode in parallel; release decoded buffers;
  * never keep raw audio in working state. processFilesSerial is tested against a
- * fake AudioContext that records how many decodes run at the same time and in
- * which order decodes and context closes happen. IDB is fake-indexeddb.
+ * fake OfflineAudioContext that records how many decodes run at the same time and in
+ * which order they happen; a real AudioContext must never be created for decoding (it
+ * touches iOS's audio session). IDB is fake-indexeddb.
  */
 
 import { IDBFactory } from 'fake-indexeddb';
@@ -20,11 +21,11 @@ import {
   totalLibraryBytes,
 } from '../../src/lib/upload';
 
-// ── Fake AudioContext ─────────────────────────────────────────────────────────
+// ── Fake OfflineAudioContext ──────────────────────────────────────────────────
 
 type Event = string;
 
-class FakeAudioContext {
+class FakeOfflineAudioContext {
   static active = 0;
   static maxActive = 0;
   static log: Event[] = [];
@@ -32,19 +33,22 @@ class FakeAudioContext {
   private readonly n: number;
 
   constructor() {
-    this.n = ++FakeAudioContext.seq;
+    this.n = ++FakeOfflineAudioContext.seq;
   }
 
   decodeAudioData(buf: ArrayBuffer): Promise<AudioBuffer> {
     const n = this.n;
-    FakeAudioContext.active++;
-    FakeAudioContext.maxActive = Math.max(FakeAudioContext.maxActive, FakeAudioContext.active);
-    FakeAudioContext.log.push(`decode-start:${n}`);
+    FakeOfflineAudioContext.active++;
+    FakeOfflineAudioContext.maxActive = Math.max(
+      FakeOfflineAudioContext.maxActive,
+      FakeOfflineAudioContext.active,
+    );
+    FakeOfflineAudioContext.log.push(`decode-start:${n}`);
     const first = new Uint8Array(buf)[0];
     return new Promise((resolve, reject) => {
       setTimeout(() => {
-        FakeAudioContext.active--;
-        FakeAudioContext.log.push(`decode-end:${n}`);
+        FakeOfflineAudioContext.active--;
+        FakeOfflineAudioContext.log.push(`decode-end:${n}`);
         if (first === 0xff) {
           reject(new Error('corrupt'));
           return;
@@ -55,16 +59,11 @@ class FakeAudioContext {
     });
   }
 
-  close(): Promise<void> {
-    FakeAudioContext.log.push(`close:${this.n}`);
-    return Promise.resolve();
-  }
-
   static reset(): void {
-    FakeAudioContext.active = 0;
-    FakeAudioContext.maxActive = 0;
-    FakeAudioContext.log = [];
-    FakeAudioContext.seq = 0;
+    FakeOfflineAudioContext.active = 0;
+    FakeOfflineAudioContext.maxActive = 0;
+    FakeOfflineAudioContext.log = [];
+    FakeOfflineAudioContext.seq = 0;
   }
 }
 
@@ -77,8 +76,17 @@ beforeEach(() => {
   _resetDB();
   libraryItems.value = [];
   uploadStatus.value = null;
-  FakeAudioContext.reset();
-  vi.stubGlobal('AudioContext', FakeAudioContext);
+  FakeOfflineAudioContext.reset();
+  vi.stubGlobal('OfflineAudioContext', FakeOfflineAudioContext);
+  // Decoding must never open a real AudioContext (it touches iOS's audio session)
+  vi.stubGlobal(
+    'AudioContext',
+    class {
+      constructor() {
+        throw new Error('decoding opened a real AudioContext');
+      }
+    },
+  );
 });
 
 afterEach(() => {
@@ -107,24 +115,22 @@ describe('processFilesSerial — memory safety', () => {
   test('never decodes two files at the same time', async () => {
     const files = [1, 2, 3, 4, 5].map((i) => audioFile(`f${i}.wav`, [i, i, i]));
     await processFilesSerial(files);
-    expect(FakeAudioContext.maxActive).toBe(1);
+    expect(FakeOfflineAudioContext.maxActive).toBe(1);
     expect(uploadStatus.value?.imported).toBe(5);
   });
 
-  test('closes each AudioContext before the next decode starts', async () => {
+  test('each decode ends before the next one starts, in an offline context of its own', async () => {
     const files = [1, 2, 3].map((i) => audioFile(`f${i}.wav`, [i]));
     await processFilesSerial(files);
-    expect(FakeAudioContext.log).toEqual([
+    expect(FakeOfflineAudioContext.log).toEqual([
       'decode-start:1',
       'decode-end:1',
-      'close:1',
       'decode-start:2',
       'decode-end:2',
-      'close:2',
       'decode-start:3',
       'decode-end:3',
-      'close:3',
     ]);
+    expect(uploadStatus.value?.imported).toBe(3); // no real AudioContext was needed
   });
 
   test('keeps only metadata in working state — never the audio blob', async () => {
@@ -152,7 +158,7 @@ describe('processFilesSerial — behaviour', () => {
   test('skips duplicates by content, even under another name', async () => {
     await processFilesSerial([audioFile('a.wav', [9, 9]), audioFile('copy-of-a.wav', [9, 9])]);
     expect(uploadStatus.value).toEqual({ imported: 1, skipped: 1, errors: [] });
-    expect(FakeAudioContext.maxActive).toBe(1);
+    expect(FakeOfflineAudioContext.maxActive).toBe(1);
   });
 
   test('reports a corrupt file and still imports the others', async () => {

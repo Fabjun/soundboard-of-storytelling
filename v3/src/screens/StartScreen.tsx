@@ -16,7 +16,7 @@ import { AnimatedFlame } from '../components/AnimatedFlame';
 import { audioContextState, currentScreen } from '../state/store';
 import { initAudio } from '../audio/index';
 import { APP_VERSION } from '../lib/changelog';
-import { WHATS_NEW, WHATS_NEW_GROUPS } from '../lib/whatsNew';
+import { versionLine, WHATS_NEW, WHATS_NEW_GROUPS } from '../lib/whatsNew';
 
 declare const __BUILD_DATE__: string;
 
@@ -38,6 +38,9 @@ function WhatsNewOverlay({ onClose }: { onClose: () => void }): JSX.Element {
       </div>
 
       <div class="sb-overlay-body">
+        <div class="sb-caption" data-testid="start-screen-whats-new-version-text">
+          {versionLine(APP_VERSION, WHATS_NEW)}
+        </div>
         {WHATS_NEW.map((entry) => (
           <section key={entry.version} aria-label={`Version ${entry.version}`}>
             <div class="sb-row sb-whats-new-entry-header">

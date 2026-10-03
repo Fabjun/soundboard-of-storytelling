@@ -33,8 +33,31 @@ export const WHATS_NEW_GROUPS = [
   ['removed', 'Removed'],
 ] as const;
 
+/**
+ * Returns the line at the top of What's new: the running version, and — when the newest notes
+ * belong to an earlier version — which one, because versions without visible changes (tests,
+ * documentation) have no notes (owner question 2026-10-03: "155 shown, notes end at 149").
+ */
+export function versionLine(appVersion: string, entries: readonly WhatsNewEntry[]): string {
+  const latest = entries[0]?.version;
+  return !latest || latest === appVersion
+    ? `Version ${appVersion}.`
+    : `Version ${appVersion} — the latest visible changes came with ${latest}.`;
+}
+
 /** The release notes the start screen shows, newest first (checked by whatsNew.test.ts). */
 export const WHATS_NEW: WhatsNewEntry[] = [
+  {
+    version: '3.0.157',
+    date: '2026-10-03',
+    fixed: [
+      'On iPhone, pads can be heard with the ring/silent switch set to silent, like a music app.',
+      'On iPhone, sound comes back after a call or another app has interrupted it.',
+    ],
+    improved: [
+      "What's new names the running version and, when it brought no visible changes, the version with the latest ones.",
+    ],
+  },
   {
     version: '3.0.149',
     date: '2026-10-03',

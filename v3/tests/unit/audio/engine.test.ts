@@ -77,7 +77,8 @@ class FakeSource {
 
 class FakeAudioContext {
   static last: FakeAudioContext | null = null;
-  state: 'running' | 'suspended' = 'running';
+  /** 'interrupted' is WebKit's state on iOS (call, other app's audio, system sheet). */
+  state: 'running' | 'suspended' | 'interrupted' = 'running';
   currentTime = 0;
   destination = {};
   sources: FakeSource[] = [];
@@ -551,6 +552,60 @@ describe('before initAudio()', () => {
     await flush();
     expect(FakeAudioContext.last).toBeNull();
     expect(s).toEqual([]);
+  });
+});
+
+// ── iOS: silent switch and interruptions (owner device test 2026-10-03) ─────────
+
+describe('iOS: silent switch and interrupted audio', () => {
+  /** A fresh engine unlocked once; returns the silent clip it played and the session it set. */
+  async function unlock(withSession: boolean) {
+    vi.resetModules();
+    const played: HTMLMediaElement[] = [];
+    Object.defineProperty(window.HTMLMediaElement.prototype, 'play', {
+      configurable: true,
+      value(this: HTMLMediaElement) {
+        played.push(this);
+        return Promise.resolve();
+      },
+    });
+    const session = { type: 'auto' };
+    if (withSession)
+      Object.defineProperty(navigator, 'audioSession', { configurable: true, value: session });
+    try {
+      const fresh = await import('../../../src/audio/engine');
+      fresh.initAudio();
+    } finally {
+      if (withSession) Reflect.deleteProperty(navigator, 'audioSession');
+    }
+    return { played, session };
+  }
+
+  test('with the Audio Session API (iOS 17+), unlocking makes the page a playback app', async () => {
+    const { played, session } = await unlock(true);
+    expect(session.type).toBe('playback');
+    expect(played).toHaveLength(1);
+    expect(played[0].loop).toBe(false); // the session keeps playback; no endless clip needed
+  });
+
+  test('without it (iOS before 17), the silent clip keeps looping to hold the playback session', async () => {
+    const { played } = await unlock(false);
+    expect(played).toHaveLength(1);
+    expect(played[0].loop).toBe(true);
+  });
+
+  test('a context that iOS interrupted is resumed when a pad plays', async () => {
+    ctx.state = 'interrupted';
+    await audio.play('s', single('s', 'h1'));
+    await flush();
+    expect(ctx.state).toBe('running');
+    expect(started).toEqual([['s', false]]);
+  });
+
+  test('a context that iOS interrupted is resumed when the app becomes visible again', () => {
+    ctx.state = 'interrupted';
+    document.dispatchEvent(new Event('visibilitychange'));
+    expect(ctx.state).toBe('running');
   });
 });
 

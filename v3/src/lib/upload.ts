@@ -3,9 +3,9 @@
  *
  * MEMORY SAFETY RULES (see CLAUDE.md#iphone--ios-safari--memory--stability-rules-critical):
  *   - Files are processed SERIALLY. Never Promise.all over multiple files.
- *   - Each AudioBuffer is explicitly null'd after peak extraction, before
- *     AudioContext.close(). This ensures the GC can reclaim PCM memory
- *     before the next file's decode begins.
+ *   - Each AudioBuffer is explicitly null'd after peak extraction. This ensures the GC can
+ *     reclaim PCM memory before the next file's decode begins. Decoding uses an
+ *     OfflineAudioContext, which never touches the audio hardware or iOS's audio session.
  *   - Raw audio (buf / Blob) is never stored in Signals or working arrays.
  *   - Peaks (30 numbers × 8 bytes = 240 bytes) are the only audio-derived
  *     data kept in memory after upload.
@@ -16,6 +16,12 @@ import { bytesToHex } from '@noble/hashes/utils.js';
 import { libPut } from '../db/idb';
 import { addLibraryItemMeta, libraryItems, uploadStatus } from '../state/store';
 import type { LibraryItemMeta, UploadResult } from '../types';
+
+/**
+ * Sample rate of the decoding context. decodeAudioData resamples to it; duration and peaks do not
+ * depend on it, and 44.1 kHz is the CD / MP3 standard rate.
+ */
+const DECODE_SAMPLE_RATE = 44_100;
 
 // ── Hash ─────────────────────────────────────────────────────────────────────
 
@@ -98,17 +104,19 @@ export async function addAudioFile(
   let duration = 0;
 
   try {
-    const ctx = new AudioContext();
+    // An OfflineAudioContext decodes without touching the audio hardware or iOS's audio session
+    // (MDN: it "doesn't render the audio to the device hardware") — a real AudioContext per file
+    // meant 99 contexts opened and closed next to the engine's during a V1 import.
+    const ctx = new OfflineAudioContext(1, 1, DECODE_SAMPLE_RATE);
     // buf.slice() prevents detaching: decodeAudioData may transfer ownership of
     // the ArrayBuffer, but we still need buf below to create the Blob.
     decoded = await ctx.decodeAudioData(buf.slice());
     peaks = computePeaks(decoded, 30);
     duration = decoded.duration;
 
-    // Explicit null BEFORE ctx.close() — releases PCM memory now, not at GC time.
+    // Explicit null — releases PCM memory now, not at GC time.
     // This is critical on iOS Safari where heap pressure causes tab kills.
     decoded = null;
-    await ctx.close();
   } catch (e) {
     decoded = null;
     return { kind: 'error', error: `${file.name}: decode failed (${String(e)})` };
@@ -145,7 +153,7 @@ export async function addAudioFile(
  *   2. Compute SHA-256 hash (= id)
  *   3. Skip if already in library (duplicate by content)
  *   4. Decode audio SERIALLY — await each decode before starting the next
- *   5. Extract peaks; null the AudioBuffer; close the AudioContext
+ *   5. Extract peaks; null the AudioBuffer (decoded in an OfflineAudioContext)
  *   6. Persist full entry (with Blob) to IndexedDB
  *   7. Immediately update the libraryItems Signal — live progress in UI
  *

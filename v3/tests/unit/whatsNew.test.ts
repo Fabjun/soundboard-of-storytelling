@@ -7,7 +7,12 @@
  */
 
 import { CHANGELOG } from '../../src/lib/changelog';
-import { WHATS_NEW, WHATS_NEW_GROUPS, type WhatsNewEntry } from '../../src/lib/whatsNew';
+import {
+  versionLine,
+  WHATS_NEW,
+  WHATS_NEW_GROUPS,
+  type WhatsNewEntry,
+} from '../../src/lib/whatsNew';
 
 /** First version written under ADR-0063 — earlier history is condensed, not checked item by item. */
 const CUTOVER = '3.0.135';
@@ -84,6 +89,28 @@ describe("What's new (in the app)", () => {
       .filter((c) => !covered.has(c.version))
       .map((c) => c.version);
     expect(missing, 'add an entry to src/lib/whatsNew.ts').toEqual([]);
+  });
+});
+
+describe("versionLine (top of What's new)", () => {
+  const entry = (version: string): WhatsNewEntry => ({
+    version,
+    date: '2026-10-03',
+    fixed: ['X.'],
+  });
+
+  it('names only the version when the newest notes belong to it', () => {
+    expect(versionLine('3.0.149', [entry('3.0.149'), entry('3.0.145')])).toBe('Version 3.0.149.');
+  });
+
+  it('names the version with the latest visible changes when later versions changed nothing visible', () => {
+    expect(versionLine('3.0.155', [entry('3.0.149')])).toBe(
+      'Version 3.0.155 — the latest visible changes came with 3.0.149.',
+    );
+  });
+
+  it('names only the version when there are no notes at all', () => {
+    expect(versionLine('3.0.1', [])).toBe('Version 3.0.1.');
   });
 });
 

@@ -22,7 +22,7 @@ import { readZipDirectory, zipEntryBlob } from '../../src/lib/zipArchive';
 import { newPad } from '../../src/lib/padUtils';
 import type { Board } from '../../src/types';
 
-class FakeAudioContext {
+class FakeOfflineAudioContext {
   decodeAudioData(): Promise<AudioBuffer> {
     const data = new Float32Array(100).fill(0.5);
     return Promise.resolve({ duration: 1, getChannelData: () => data } as unknown as AudioBuffer);
@@ -41,7 +41,7 @@ function freshApp() {
 
 beforeEach(() => {
   freshApp();
-  vi.stubGlobal('AudioContext', FakeAudioContext);
+  vi.stubGlobal('OfflineAudioContext', FakeOfflineAudioContext);
 });
 afterEach(() => vi.unstubAllGlobals());
 
