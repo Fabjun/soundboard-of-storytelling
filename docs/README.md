@@ -1,7 +1,7 @@
 # Documentation Map — Soundboard of Storytelling
 
 This file describes the role and scope of every documentation locus in the project.
-When you are unsure where something belongs or where to look something up, start here.
+It is the starting point for finding where something belongs or where to look something up.
 
 ---
 

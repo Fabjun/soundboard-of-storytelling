@@ -25,6 +25,11 @@ const COMMIT_TYPE =
   /^(feat|fix|perf|refactor|docs|test|ci|build|chore|style|revert|a11y|security)(\([^)]+\))?!?: /;
 /** Changes people notice — the scopes after them are internal even for a fix. */
 const USER_FACING = /^(feat|fix|perf|a11y)(?!\((test|ci|docs|build)\))(\([^)]+\))?!?: /;
+/** Personal address — documents never speak to the reader (owner rule 2026-10-03). */
+const PERSONAL = /\b(you|your|yours|yourself)\b/i;
+/** A sentence that opens with a command speaks to the reader too ("Sort …", "Drag …"). */
+const COMMAND =
+  /^(Add|Choose|Drag|Drop|Edit|Find|Go|Make|Move|Open|Pick|Press|Select|Set|Sort|Switch|Tap|Tick|Try|Turn|Use)\b/;
 /** Words that belong to the workshop, not to release notes. */
 const JARGON =
   /\b(slice|ADR|backlog|E2E|CI|PR|refactor|guard|IndexedDB|IDB|signals?|Preact|Vite|TypeScript|commit|token|engine)\b/i;
@@ -47,6 +52,22 @@ describe("What's new (in the app)", () => {
         .map((t) => `${e.version}: ${t}`),
     );
     expect(bad, 'write what the user can now do, as a sentence').toEqual([]);
+  });
+
+  it('no sentence addresses the reader — no "you", no command; the app or the feature is the subject', () => {
+    const bad = WHATS_NEW.flatMap((e) =>
+      sentences(e)
+        .filter((t) => PERSONAL.test(t) || COMMAND.test(t))
+        .map((t) => `${e.version}: ${t}`),
+    );
+    expect(bad, 'e.g. "All pads can be sorted …" instead of "Sort All pads …"').toEqual([]);
+  });
+
+  it('no changelog item addresses the reader either', () => {
+    const bad = CHANGELOG.flatMap((e) =>
+      e.items.filter((t) => PERSONAL.test(t)).map((t) => `${e.version}: ${t}`),
+    );
+    expect(bad).toEqual([]);
   });
 
   it('versions exist in the changelog and come newest first', () => {

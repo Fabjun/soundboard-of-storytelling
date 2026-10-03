@@ -1,8 +1,8 @@
 # Review log — work done while the owner was away
 
-Started 2026-10-01 on the owner's instruction (translated from German): _"Could you take these
-decisions on your own for now, and afterwards we go through everything you built together and
-rework it? … The main thing is that everything is logged."_
+Started 2026-10-01 on the owner's instruction: decisions are taken provisionally while the owner
+is away, everything built is gone through together afterwards and reworked, and above all,
+everything is logged.
 
 > **Closed 2026-10-03.** Every pull request below was decided by the owner and squash-merged to
 > `main` (commits in the table); the owner changes to #37 (B1, B8, B9) followed on main the same

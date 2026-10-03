@@ -1,7 +1,7 @@
 # Soundboard of Storytelling — Design System Cheatsheet
 
 > **Reminder, not replacement.** `docs/design/design-system.md` is the source of truth.
-> This page is the print-out you keep next to the keyboard. When this sheet
+> This page is the print-out to keep next to the keyboard. When this sheet
 > and the main document disagree, the main document wins.
 
 ---
@@ -85,4 +85,4 @@ layout-primitives list = [§5a](design-system.md#5a-layout-primitives), inventor
 
 ---
 
-_One page. If you needed more, you needed `docs/design/design-system.md`._
+_One page. Anything more is in `docs/design/design-system.md`._

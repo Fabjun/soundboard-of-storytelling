@@ -17,10 +17,18 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.150';
+export const APP_VERSION = '3.0.151';
 
 /** The developer log, newest first; CHANGELOG.md is generated from it (sync-changelog). */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.151',
+    date: '2026-10-03',
+    items: [
+      "docs: no document addresses the reader any more (owner decision) — What's new rewritten without personal address and without commands, 14 places in the docs and one changelog item neutral; quotations stay verbatim",
+      'test(guards): docsGuards checks every Markdown document and whatsNew.test.ts every release note and changelog item for personal address (counter-checked)',
+    ],
+  },
   {
     version: '3.0.150',
     date: '2026-10-03',
@@ -266,7 +274,7 @@ export const CHANGELOG: ChangelogEntry[] = [
     version: '3.0.111',
     date: '2026-10-02',
     items: [
-      'fix(pads): a new pad is Single unless you pick another type — no Loop guessed from long files; the suggested name follows the chosen file',
+      'fix(pads): a new pad is Single unless another type is picked — no Loop guessed from long files; the suggested name follows the chosen file',
     ],
   },
   {

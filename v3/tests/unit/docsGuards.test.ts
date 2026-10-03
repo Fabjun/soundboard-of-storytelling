@@ -251,6 +251,38 @@ describe('guard: project language is English (CLAUDE.md)', () => {
   });
 });
 
+describe('guard: documents never address the reader (owner rule 2026-10-03)', () => {
+  // Every Markdown document, historical ones included. Verbatim quotations ("…"), code, and link
+  // targets are not the document speaking, so they are removed before the check.
+  const PERSONAL = /\b(you|your|yours|yourself)\b/i;
+  /** Blanks a match but keeps its line breaks, so line numbers and later quotes stay in place. */
+  const blank = (m: string): string => m.replace(/[^\n]/g, '');
+  const prose = (text: string): string =>
+    text
+      .replace(/```[\s\S]*?```/g, blank)
+      .replace(/`[^`\n]*`/g, '')
+      .replace(/\]\([^)]*\)/g, ']')
+      .replace(/https?:\/\/\S+/g, '')
+      .replace(/"[^"]*"/g, blank) // a quotation may run over a line break
+      .replace(/“[^”]*”/g, blank);
+  const docs = walkMd(ROOT);
+
+  it('scans every Markdown document (sanity)', () => {
+    expect(docs.map(rel)).toEqual(expect.arrayContaining(['CLAUDE.md', 'docs/backlog.md']));
+  });
+
+  it('no "you" or "your" outside quotations, code and links', () => {
+    const bad = docs.flatMap((f) =>
+      prose(readFileSync(f, 'utf8'))
+        .split('\n')
+        .flatMap((line, i) =>
+          PERSONAL.test(line) ? [`${rel(f)}:${i + 1}: ${line.trim().slice(0, 80)}`] : [],
+        ),
+    );
+    expect(bad, 'write with the product or the subject as subject, not the reader').toEqual([]);
+  });
+});
+
 // Historical docs = the .vale.ini section that switches Vale off (single source of truth).
 const HISTORICAL = (
   /^\[\{([^}]+)\}\]\s*\nBasedOnStyles =\s*$/m.exec(

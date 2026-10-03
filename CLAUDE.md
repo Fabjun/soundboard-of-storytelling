@@ -4,8 +4,8 @@
 > project-specific guidelines. Claude Code must keep it up to date
 > autonomously — update it whenever new permanent standards emerge,
 > existing rules are revised, or important architectural decisions are
-> made. Do not wait to be asked. If you change something that implies
-> a new rule, write it here immediately.
+> made. Do not wait to be asked. A change that implies a new rule is
+> written here immediately.
 
 ---
 
@@ -23,6 +23,10 @@
 - **Project language**: **English only** — app UI, code, comments, docs, commit messages,
   tool/hook/CI messages (user decision 2026-09-29; German legacy text is translated in the
   structure clean-up, stage 4)
+- **No personal address in documents** (owner decision 2026-10-03): What's new, the changelog,
+  docs, ADRs, the backlog and this file never say "you" / "your" to the reader, and What's new
+  uses no commands — the app or the subject is the subject. Verbatim quotations stay as quoted;
+  app UI texts may address the user. Guarded by `docsGuards` and `whatsNew.test.ts`.
 - **Chat with the user**: German only
 - **License and status**: V3 is a private tool under an "All Rights Reserved" license (see `LICENSE`). A potential commercial product in the long term. No open-source contributions planned. When adding code, make sure no open-source licenses are violated. Contact: soundboard_of_storytelling@pm.me
 
@@ -60,7 +64,7 @@
   in the plan; deviate only with a stated reason. This holds for **every** decision, large or
   small, whether it is put to the owner or taken by Claude: the recommended option is the
   researched most professional solution, with its source (user decision 2026-10-02).
-- **Try to refute your own draft** — critically review every plan and result, including the
+- **Try to refute every draft** — critically review every plan and result, including the
   counter-check itself (can it be vacuous or cause harm?), and improve it before presenting.
 - **A repeated error is a pattern** — when an error class occurs a second time, stop fixing
   instances: find the root cause, search the whole project for further instances, remove the
@@ -372,7 +376,7 @@ and has diverged). Never hardcode colors, fonts, or spacing.
 - **Inline-style audit:** `npm run audit:inline-styles` reports all `style={}` blocks
   classified against the four-path rule (pure-layout / structural / mixed / dynamic /
   custom-setter / unclassified). Non-blocking; runs in CI as informational. Use it to
-  measure inline-style drift after any migration pass, or any time you want to check
+  measure inline-style drift after any migration pass, or to check at any time
   whether new violations crept in. Post-Session-3 baseline (2026-06-05):
   0 Path-D violations (2 unclassified remain).
 

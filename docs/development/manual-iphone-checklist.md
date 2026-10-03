@@ -30,7 +30,7 @@ because Playwright runs against a simulated environment:
 
 - [ ] **Unlock audio context**
   - Action: Open the app, tap TAP TO UNLOCK.
-  - Expected: Button disappears, you land on the board list. No "audio context suspended" message in the footer.
+  - Expected: Button disappears, the board list opens. No "audio context suspended" message in the footer.
   - Why manual: AudioContext init from a user gesture requires the real iOS user-gesture window.
 
 - [ ] **Single pad plays sound**

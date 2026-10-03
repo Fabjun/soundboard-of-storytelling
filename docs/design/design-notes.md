@@ -125,8 +125,8 @@ Key patterns:
 7. Separate module-level state per DnD type — never share state between
    `padDnd.ts` and `libDnd.ts` to avoid conflicts
 
-**Plan-deviation lesson:** If a Slice plan says "Pointer Events" and you
-implement HTML5 DnD instead, that's a deviation — declare it explicitly in the
+**Plan-deviation lesson:** If a Slice plan says "Pointer Events" and the
+implementation uses HTML5 DnD instead, that's a deviation — it is declared explicitly in the
 Slice summary with a rationale. Undeclared drift causes bugs that are hard to
 trace later (e.g., "why doesn't drag work on iPhone?").
 
@@ -155,7 +155,7 @@ setting, every board.
 Slice-3 hardcodes 4×4 for every new scene. In Slice 8, a Settings
 → Display option lets the user change this default.
 **Pre-disposition · yes, expose the override.** Then 4×4 becomes
-"default until you change it once". Power users with consistent
+the default until it is changed once. Power users with consistent
 session styles (always 6×4 wide-screen) shouldn't have to retype.
 
 ### A4 · Unplaced pads remember their desired position

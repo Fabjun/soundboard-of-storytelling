@@ -2,9 +2,10 @@
  * @fileoverview What's new — the release notes the app shows (ADR-0063)
  *
  * Written by hand for the people who use the app: only changes they can notice, in plain words,
- * saying what they can now do. Grouped per version as New / Improved / Fixed / Removed, newest
- * first. Internal work (tests, documentation, tooling) never appears here — it is recorded in
- * src/lib/changelog.ts, from which CHANGELOG.md is generated.
+ * saying what the app can do now. Grouped per version as New / Improved / Fixed / Removed, newest
+ * first. The notes never address the reader — no "you", no commands; the app or the feature is the
+ * subject (owner rule 2026-10-03). Internal work (tests, documentation, tooling) never appears
+ * here — it is recorded in src/lib/changelog.ts, from which CHANGELOG.md is generated.
  * Checked by tests/unit/whatsNew.test.ts.
  */
 
@@ -14,7 +15,7 @@ export interface WhatsNewEntry {
   version: string;
   /** ISO date (YYYY-MM-DD). */
   date: string;
-  /** Things you can do that you could not do before. */
+  /** Things the app can do that it could not do before. */
   new?: string[];
   /** Things that work better or differently. */
   improved?: string[];
@@ -45,34 +46,34 @@ export const WHATS_NEW: WhatsNewEntry[] = [
     version: '3.0.145',
     date: '2026-10-03',
     improved: [
-      'EXPORT now saves a ZIP file that holds your audio files as they are, so you can open its sounds in any player.',
+      'EXPORT now saves a ZIP file that holds the audio files as they are, so its sounds open in any player.',
       'Backups from the old app (V1) now import on iPhones with iOS 15 or an iOS 16 before 16.4 too.',
-      'Importing a backup keeps the tags of your audio files; folders from the old app become tags.',
+      'Importing a backup keeps the tags of the audio files; folders from the old app become tags.',
     ],
   },
   {
     version: '3.0.144',
     date: '2026-10-03',
     fixed: [
-      'A change you make in the pad editor is saved even when you open the next pad, close the editor or switch to another app right after typing.',
+      'A change in the pad editor is saved even when the next pad opens, the editor closes or the app goes to the background right after typing.',
     ],
   },
   {
     version: '3.0.143',
     date: '2026-10-03',
     new: [
-      'Sort All pads by name, date added, date modified, kind, duration or last played, or show the pads that are in no deck first — each order can be reversed, and every board remembers its choice.',
+      'All pads can be sorted by name, date added, date modified, kind, duration or last played, or with the pads that are in no deck first — each order can be reversed, and every board remembers its choice.',
     ],
     improved: [
       'A duplicated deck appears directly after its original.',
-      'The app keeps its settings in the same storage as your boards. After this update every board opens once in its first deck, and the board list shows "No backup yet" until your next export.',
+      'The app keeps its settings in the same storage as the boards. After this update every board opens once in its first deck, and the board list shows "No backup yet" until the next export.',
     ],
   },
   {
     version: '3.0.142',
     date: '2026-10-03',
     new: [
-      'Edit a combo in the pad editor: add steps, choose the pads that start together in each step, set the wait before the next step, and let a step stop everything first.',
+      'The pad editor edits combos: steps can be added, each step names the pads that start together and the wait before the next step, and a step can stop everything first.',
     ],
     improved: [
       'A combo can no longer start itself, directly or through another combo — the editor only offers pads that cannot lead back to it.',
@@ -83,10 +84,10 @@ export const WHATS_NEW: WhatsNewEntry[] = [
     version: '3.0.141',
     date: '2026-10-03',
     new: [
-      'EXPORT on the board list saves all your boards and audio files in one backup file — on the iPhone through the share sheet, elsewhere as a download.',
-      'IMPORT on the board list reads a backup from this app or from version 1: you see a summary first, then the progress, and afterwards what could not be taken over.',
-      'Importing adds boards and audio files and never changes or removes what you already have.',
-      'The board list shows when you last made a backup and reminds you after a week without one.',
+      'EXPORT on the board list saves all boards and audio files in one backup file — on the iPhone through the share sheet, elsewhere as a download.',
+      'IMPORT on the board list reads a backup from this app or from version 1: a summary comes first, then the progress, and afterwards a list of what could not be taken over.',
+      'Importing adds boards and audio files and never changes or removes anything that is already there.',
+      'The board list shows when the last backup was made and reminds after a week without one.',
     ],
     improved: [
       'The app asks the browser to keep its stored data, so boards and audio are not cleared when the device runs low on space.',
@@ -96,7 +97,7 @@ export const WHATS_NEW: WhatsNewEntry[] = [
     version: '3.0.140',
     date: '2026-10-03',
     new: [
-      'A Single can hold several files and plays the next one, or a random one, each time you tap it.',
+      'A Single can hold several files and plays the next one, or a random one, on each tap.',
       'A Loop can hold several files and plays them one after another, in order or shuffled.',
     ],
     improved: [
@@ -105,16 +106,16 @@ export const WHATS_NEW: WhatsNewEntry[] = [
       'A Loop with several files glows like any other Loop while it plays.',
     ],
     removed: [
-      'Boards from earlier test versions are cleared once more by this update; your audio library stays.',
+      'Boards from earlier test versions are cleared once more by this update; the audio library stays.',
     ],
   },
   {
     version: '3.0.139',
     date: '2026-10-03',
     new: [
-      'In All pads you can add pads that are in no deck yet — with ADD PAD or by dropping a file from the library.',
+      'All pads can add pads that are in no deck yet — with ADD PAD or by dropping a file from the library.',
     ],
-    improved: ['A board opens again in the view you left it in.'],
+    improved: ['A board opens again in the view it was left in.'],
   },
   {
     version: '3.0.138',
@@ -124,7 +125,7 @@ export const WHATS_NEW: WhatsNewEntry[] = [
       'A new deck takes the lowest free name, so after deleting "Deck 2" the next new deck is "Deck 2" again.',
     ],
     fixed: [
-      'Undoing a deleted deck no longer throws away changes you made in the meantime.',
+      'Undoing a deleted deck no longer throws away changes made in the meantime.',
       'Changes made quickly one after another are all kept.',
     ],
   },
@@ -133,36 +134,36 @@ export const WHATS_NEW: WhatsNewEntry[] = [
     date: '2026-10-03',
     new: [
       'All pads shows every pad of a board in one place, including pads that are in no deck.',
-      'You can take a pad out of one deck and keep it, or delete it from all decks at once.',
-      'In the pad editor, tick the decks a pad should appear in.',
+      'A pad can be taken out of one deck and kept, or deleted from all decks at once.',
+      'The pad editor has a checklist of the decks a pad appears in.',
     ],
   },
   {
     version: '3.0.136',
     date: '2026-10-03',
     improved: [
-      'A pad now belongs to its board, and a deck places it — a duplicated deck shares its pads, so a pad you rename shows its new name in every deck.',
+      'A pad now belongs to its board, and a deck places it — a duplicated deck shares its pads, so a renamed pad shows its new name in every deck.',
     ],
     removed: [
-      'Boards from earlier test versions are cleared once by this update; your audio library stays.',
+      'Boards from earlier test versions are cleared once by this update; the audio library stays.',
     ],
   },
   {
     version: '3.0.135',
     date: '2026-10-03',
     improved: [
-      'This list now tells you what changed for you, in plain words, grouped into new, improved, fixed and removed.',
+      'This list now describes what changed in the app, in plain words, grouped into new, improved, fixed and removed.',
     ],
   },
   {
     version: '3.0.131',
     date: '2026-10-02',
     fixed: [
-      'When a deck has more pads than fit on the screen, you can now scroll to reach all of them.',
+      'When a deck has more pads than fit on the screen, the grid now scrolls to reach all of them.',
       'In a small window, the start screen no longer hides the BOARD and LIBRARY buttons.',
       'The pad editor no longer shows internal planning labels.',
     ],
-    removed: ['The A key no longer adds a pad — use the ADD PAD button.'],
+    removed: ['The A key no longer adds a pad — the ADD PAD button does.'],
   },
   {
     version: '3.0.120',
@@ -174,16 +175,16 @@ export const WHATS_NEW: WhatsNewEntry[] = [
   {
     version: '3.0.115',
     date: '2026-10-02',
-    fixed: ['A board you create right after opening the app no longer disappears.'],
+    fixed: ['A board created right after opening the app no longer disappears.'],
   },
   {
     version: '3.0.111',
     date: '2026-10-02',
     improved: [
-      'A new pad is a Single unless you choose another type — a long file no longer turns it into a Loop by itself.',
+      'A new pad is a Single unless another type is chosen — a long file no longer turns it into a Loop by itself.',
     ],
     fixed: [
-      'When you choose a different file while adding a pad, the suggested name now follows that file; a name you typed stays.',
+      'When a different file is chosen while adding a pad, the suggested name now follows that file; a typed name stays.',
     ],
   },
   {
@@ -212,15 +213,13 @@ export const WHATS_NEW: WhatsNewEntry[] = [
     version: '3.0.38',
     date: '2026-09-29',
     new: [
-      'The start screen shows an animated pixel flame — tap it to make it spark and freeze; left alone, it thaws and lights again.',
+      'The start screen shows an animated pixel flame — a tap makes it spark and freeze; left alone, it thaws and lights again.',
     ],
   },
   {
     version: '3.0.29',
     date: '2026-06-18',
-    improved: [
-      'When you rename a deck, the app tells you at once if another deck already has that name.',
-    ],
+    improved: ['Renaming a deck shows at once when another deck already has that name.'],
   },
   {
     version: '3.0.7',
@@ -235,10 +234,10 @@ export const WHATS_NEW: WhatsNewEntry[] = [
     version: '3.0.4',
     date: '2026-05-28',
     new: [
-      'The first playable version: a library for your audio files, boards with decks of pads, and pads that play once, loop, play a list or start other pads in steps.',
-      'Add a pad by tapping an empty cell, dragging a file from the library, or with ADD PAD.',
-      'Drag a pad onto another to swap them, or onto the edge of a cell to insert it there.',
-      'Switch between SETUP, where you arrange and edit, and GAME, where you play.',
+      'The first playable version: a library for audio files, boards with decks of pads, and pads that play once, loop, play a list or start other pads in steps.',
+      'A pad is added by tapping an empty cell, by dragging a file from the library, or with ADD PAD.',
+      'A pad dragged onto another swaps with it; dropped on the edge of a cell, it is inserted there.',
+      'SETUP is for arranging and editing, GAME for playing; a toggle switches between them.',
       'Each audio file shows its waveform.',
     ],
   },

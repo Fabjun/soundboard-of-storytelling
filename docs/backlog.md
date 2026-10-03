@@ -243,7 +243,7 @@ multiplies the variation space without much real benefit.
 ### Default new-scene grid as user preference
 
 Currently hardcoded 4×4 for every new scene. Expose an override in Settings → Display.
-Then 4×4 becomes "default until you change it once."
+Then 4×4 becomes the default until it is changed once.
 **When:** Slice 8.
 **Source:** docs/design/design-notes.md §Slice 8 — A4 Default new-scene grid.
 
@@ -472,7 +472,7 @@ This is the responsive axis (CSS breakpoints). Crucially, dock-edge position dep
 FORMAT, not on input type — a phone driven by a mouse keeps its bar at the bottom because a
 side-rail is awkward in portrait format, not because it is touch.
 
-**Axis 2 — Input type** governs additive capabilities (what you can do), WITHOUT changing the
+**Axis 2 — Input type** governs additive capabilities (what the input allows), WITHOUT changing the
 spatial layout. Touch is always the base (works everywhere). When a mouse/keyboard is present,
 ADDITIONAL capabilities layer on top: hover tooltips, right-click context menus, keyboard
 shortcuts. Progressive enhancement, not a separate version.
@@ -957,7 +957,7 @@ These came from Claude Design's critique within already-decided scope and are ac
 
 ### SETUP sheet-shrink during active tuning _(settled refinement)_
 
-The SETUP live-preview sheet must not cover the grid it previews. On a phone, a bottom-sheet holding size/gap/columns/font controls covers 40–50% of the grid — you'd tune columns while seeing only the top rows reflow. **Resolution:** while a control is actively being dragged, the sheet collapses to a single thin strip (just that control + its live value) so the grid is almost fully visible during the moment that matters; release → sheet returns. The SETUP sidebar is a partial sheet (grid visible behind) that further shrinks during active tuning.
+The SETUP live-preview sheet must not cover the grid it previews. On a phone, a bottom-sheet holding size/gap/columns/font controls covers 40–50% of the grid — columns would be tuned while only the top rows reflow in view. **Resolution:** while a control is actively being dragged, the sheet collapses to a single thin strip (just that control + its live value) so the grid is almost fully visible during the moment that matters; release → sheet returns. The SETUP sidebar is a partial sheet (grid visible behind) that further shrinks during active tuning.
 **→ Cross-reference:** [C10](#c10--variable-grid-gap-preserving-reflow-gesture-based-scroll-protection-settings-architecture) (the column/size controls live in the SETUP sidebar; sheet behavior is the interaction layer on top of C10's display settings) · [2d — Sidebar as reusable building block](#2d--sidebar-as-reusable-building-block) (the sidebar shell that houses these controls).
 
 ### FLIP re-wrap animation for column-change _(settled refinement)_
@@ -981,7 +981,7 @@ Mode legibility must not lean on color alone. Since atmosphere is provisional, t
 
 ### D1 — Gap creation in SETUP: empty slots are tappable cells _(settled decision)_
 
-In **SETUP mode**, empty slots are visible, tappable cells: tapping an empty slot creates a pad there, exactly as the existing "Add PAD" button does — reusing the existing pad-creation mechanism, with the empty cell itself as the new trigger location. In **GAME mode**, an empty slot is simply empty space (not rendered as a cell). This makes "deliberately leaving a gap" well-defined: a gap is an unfilled slot; you fill it by tapping it.
+In **SETUP mode**, empty slots are visible, tappable cells: tapping an empty slot creates a pad there, exactly as the existing "Add PAD" button does — reusing the existing pad-creation mechanism, with the empty cell itself as the new trigger location. In **GAME mode**, an empty slot is simply empty space (not rendered as a cell). This makes "deliberately leaving a gap" well-defined: a gap is an unfilled slot; a tap on it fills it.
 **→ Cross-reference:** [C10 point 3](#c10--variable-grid-gap-preserving-reflow-gesture-based-scroll-protection-settings-architecture) (free placement with gaps allowed — this decision gives gaps their creation mechanic).
 
 ### D2 — Swipe and mode-switch are two different interactions _(settled decision — consolidates B8)_
@@ -2076,7 +2076,7 @@ At the start of each file session, **before touching any code:**
    breakdown; derive this split locally, because it informs the migration approach: mixed blocks
    require combining a layout primitive + structural class; pure-structural blocks need only one class.
 3. **Batch Path A/B decisions for every violation at once** — do not decide one-by-one while
-   editing. Context collapses when you alternate between reading and writing.
+   editing. Context collapses when reading and writing alternate.
 4. **For each Path B class:** grep §6 for similar function before creating. If the same structural
    need appears multiple times in the file, create ONE class used N times.
 
