@@ -17,10 +17,17 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.155';
+export const APP_VERSION = '3.0.156';
 
 /** The developer log, newest first; CHANGELOG.md is generated from it (sync-changelog). */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.156',
+    date: '2026-10-03',
+    items: [
+      "docs: Slice 15 plan — steps 15a preview / waveform / trim / fades, 15b several files, 15c REPEAT, 15d icons from V1's pack once its licence is confirmed; pad templates move to the library, Slice 16 (owner decisions)",
+    ],
+  },
   {
     version: '3.0.155',
     date: '2026-10-03',

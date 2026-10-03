@@ -7,6 +7,12 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.156 — 2026-10-03
+
+### Internal
+
+- docs: Slice 15 plan — steps 15a preview / waveform / trim / fades, 15b several files, 15c REPEAT, 15d icons from V1's pack once its licence is confirmed; pad templates move to the library, Slice 16 (owner decisions)
+
 ## 3.0.155 — 2026-10-03
 
 ### Internal

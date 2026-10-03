@@ -173,14 +173,14 @@ never guesses a type from the file (e.g. Loop for a long file). **Decided** 2026
 
 #### Pad options
 
-| Statement                                                                                                             | Status                                                                             |
-| --------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
-| Per-pad volume, fade in, fade out.                                                                                    | **Decided** (built)                                                                |
-| PREVIEW in the PAD editor.                                                                                            | **Decided** — Slice 15 ([§3](#3-app-modes-game-and-setup)), _not yet built_        |
-| Trim start / end in the PAD editor (engine support exists).                                                           | **Decided** — Slice 15 (owner 2026-10-02: no longer low priority), _not yet built_ |
-| REPEAT: a loop plays N times or endlessly (as in V1); engine change under the owner's control.                        | **Decided** — Slice 15, _not yet built_                                            |
-| The PAD editor has at least V1's functions: waveform + PREVIEW, trim, REPEAT, icons (up to 4 per pad), pad templates. | **Decided** 2026-10-02 — Slice 15                                                  |
-| Audio ducking, master volume, crossfade between pads, level meter, quick volume via long-press.                       | **Parked**                                                                         |
+| Statement                                                                                                             | Status                                                                                         |
+| --------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| Per-pad volume, fade in, fade out.                                                                                    | **Decided** (built)                                                                            |
+| PREVIEW in the PAD editor.                                                                                            | **Decided** — Slice 15 ([§3](#3-app-modes-game-and-setup)), _not yet built_                    |
+| Trim start / end in the PAD editor (engine support exists).                                                           | **Decided** — Slice 15 (owner 2026-10-02: no longer low priority), _not yet built_             |
+| REPEAT: a loop plays N times or endlessly (as in V1); engine change under the owner's control.                        | **Decided** — Slice 15, _not yet built_                                                        |
+| The PAD editor has at least V1's functions: waveform + PREVIEW, trim, REPEAT, icons (up to 4 per pad), pad templates. | **Decided** 2026-10-02 — Slice 15; pad templates with the library, Slice 16 (owner 2026-10-03) |
+| Audio ducking, master volume, crossfade between pads, level meter, quick volume via long-press.                       | **Parked**                                                                                     |
 
 #### Open
 
