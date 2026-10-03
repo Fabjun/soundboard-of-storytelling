@@ -17,9 +17,16 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.135';
+export const APP_VERSION = '3.0.136';
 
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.136',
+    date: '2026-10-03',
+    items: [
+      'feat(model): pad pool — pads belong to the board, decks place them; DB v4 clears test boards (PR #31, squash of slice-9c-pad-pool)',
+    ],
+  },
   {
     version: '3.0.135',
     date: '2026-10-03',
@@ -181,6 +188,13 @@ export const CHANGELOG: ChangelogEntry[] = [
     version: '3.0.97',
     date: '2026-10-02',
     items: ['docs: review log — owner decisions O1–O8 of 2026-10-02 and the new pull requests'],
+  },
+  {
+    version: '3.0.93',
+    date: '2026-10-01',
+    items: [
+      'feat(model): pad pool — pads belong to the board, decks place them with position and key; duplicated decks share their pads; quick-access model; DB v4 (Slice 9c, ADR-0048)',
+    ],
   },
   {
     version: '3.0.92',

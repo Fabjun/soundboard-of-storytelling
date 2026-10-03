@@ -41,12 +41,11 @@ export function initAudioBridge(): void {
       removePlayingPad(id);
       removeLoopingPad(id);
     },
+    // Combo steps reference pads of the board's pool (ADR-0048) — lookup only, engine unchanged.
     getPad: (id) => {
       for (const board of boards.value) {
-        for (const deck of board.decks) {
-          const pad = deck.pads.find((p) => p.id === id);
-          if (pad) return pad;
-        }
+        const pad = board.pads.find((p) => p.id === id);
+        if (pad) return pad;
       }
       return null;
     },

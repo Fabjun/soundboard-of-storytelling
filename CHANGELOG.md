@@ -7,6 +7,12 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.136 — 2026-10-03
+
+### Added
+
+- feat(model): pad pool — pads belong to the board, decks place them; DB v4 clears test boards (PR #31, squash of slice-9c-pad-pool)
+
 ## 3.0.135 — 2026-10-03
 
 ### Added
@@ -163,6 +169,12 @@ release notes the app shows are written separately for its users (`v3/src/lib/wh
 ### Internal
 
 - docs: review log — owner decisions O1–O8 of 2026-10-02 and the new pull requests
+
+## 3.0.93 — 2026-10-01
+
+### Added
+
+- feat(model): pad pool — pads belong to the board, decks place them with position and key; duplicated decks share their pads; quick-access model; DB v4 (Slice 9c, ADR-0048)
 
 ## 3.0.92 — 2026-10-01
 

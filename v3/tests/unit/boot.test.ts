@@ -28,9 +28,9 @@ const board: Board = {
   id: 'b1',
   name: 'Night',
   themeId: 'hearth',
-  settings: { quickAccessLayout: 'hidden', quickAccessSetCount: 1 },
+  pads: [],
   decks: [],
-  sets: [],
+  quickAccess: [],
 };
 
 const item: LibraryItem = {

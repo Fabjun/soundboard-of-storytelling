@@ -4,7 +4,7 @@
 // All functions are pure: no IDB, no signals, no DOM. No mocks needed.
 // ─────────────────────────────────────────────────────────────────────────────
 
-import type { Pad, PadPosition, SinglePad } from '../../src/types';
+import type { Pad, PadPosition, Placement, SinglePad } from '../../src/types';
 import {
   nextFreeSlot,
   posToIndex,
@@ -18,21 +18,13 @@ import {
 
 // ── Test factory ──────────────────────────────────────────────────────────────
 
-function makePad(
-  id: string,
-  pos: PadPosition | null,
-  overrides?: Partial<Omit<SinglePad, 'type'>>,
-): SinglePad {
-  return {
-    id,
-    type: 'single',
-    name: `Pad ${id}`,
-    position: pos,
-    volume: 80,
-    fadeIn: 0,
-    fadeOut: 0,
-    ...overrides,
-  };
+function makePad(id: string, overrides?: Partial<Omit<SinglePad, 'type'>>): SinglePad {
+  return { id, type: 'single', name: `Pad ${id}`, volume: 80, fadeIn: 0, fadeOut: 0, ...overrides };
+}
+
+/** A placement in a deck (position and key belong to the placement, ADR-0048). */
+function makePlacement(id: string, pos: PadPosition): Placement {
+  return { padId: id, position: pos };
 }
 
 // ── nextFreeSlot ──────────────────────────────────────────────────────────────
@@ -43,34 +35,32 @@ describe('nextFreeSlot', () => {
   });
 
   test('full grid returns null', () => {
-    const pads: Pad[] = [];
+    const placements: Placement[] = [];
     for (let row = 0; row < 4; row++) {
       for (let col = 0; col < 4; col++) {
-        pads.push(makePad(`${col}-${row}`, { col, row }));
+        placements.push(makePlacement(`${col}-${row}`, { col, row }));
       }
     }
-    expect(nextFreeSlot(pads, 4, 4)).toBeNull();
+    expect(nextFreeSlot(placements, 4, 4)).toBeNull();
   });
 
   test('row-major scan: skips occupied slots, returns first free', () => {
     // Occupy (0,0) and (1,0), first free should be (2,0)
-    const pads = [makePad('a', { col: 0, row: 0 }), makePad('b', { col: 1, row: 0 })];
-    expect(nextFreeSlot(pads, 4, 4)).toEqual({ col: 2, row: 0 });
+    const placements = [
+      makePlacement('a', { col: 0, row: 0 }),
+      makePlacement('b', { col: 1, row: 0 }),
+    ];
+    expect(nextFreeSlot(placements, 4, 4)).toEqual({ col: 2, row: 0 });
   });
 
   test('wraps to next row when first row is full', () => {
-    const pads = [
-      makePad('a', { col: 0, row: 0 }),
-      makePad('b', { col: 1, row: 0 }),
-      makePad('c', { col: 2, row: 0 }),
-      makePad('d', { col: 3, row: 0 }),
+    const placements = [
+      makePlacement('a', { col: 0, row: 0 }),
+      makePlacement('b', { col: 1, row: 0 }),
+      makePlacement('c', { col: 2, row: 0 }),
+      makePlacement('d', { col: 3, row: 0 }),
     ];
-    expect(nextFreeSlot(pads, 4, 4)).toEqual({ col: 0, row: 1 });
-  });
-
-  test('pads with position null are ignored (not counted as occupied)', () => {
-    const pads = [makePad('unplaced', null)];
-    expect(nextFreeSlot(pads, 4, 4)).toEqual({ col: 0, row: 0 });
+    expect(nextFreeSlot(placements, 4, 4)).toEqual({ col: 0, row: 1 });
   });
 });
 
@@ -202,26 +192,18 @@ describe('padMigrationMatrix — combo source always resets', () => {
 
 describe('applyTypeChange', () => {
   test('RESET case: clears libraryItemRef', () => {
-    const pad = makePad(
-      'p1',
-      { col: 0, row: 0 },
-      {
-        libraryItemRef: 'abc123',
-      },
-    );
+    const pad = makePad('p1', {
+      libraryItemRef: 'abc123',
+    });
     const result = applyTypeChange(pad, 'combo'); // single→combo = reset
     expect(result.type).toBe('combo');
     expect(result).not.toHaveProperty('libraryItemRef');
   });
 
   test('non-RESET case (ADD): preserves libraryItemRef', () => {
-    const pad = makePad(
-      'p1',
-      { col: 0, row: 0 },
-      {
-        libraryItemRef: 'abc123',
-      },
-    );
+    const pad = makePad('p1', {
+      libraryItemRef: 'abc123',
+    });
     const result = applyTypeChange(pad, 'loop'); // single→loop = add
     expect(result.type).toBe('loop');
     expect(result).toHaveProperty('libraryItemRef', 'abc123');
@@ -233,7 +215,6 @@ describe('applyTypeChange', () => {
       id: 'p1',
       type: 'playlist',
       name: 'Pad p1',
-      position: { col: 0, row: 0 },
       volume: 80,
       fadeIn: 0,
       fadeOut: 0,
@@ -245,13 +226,9 @@ describe('applyTypeChange', () => {
   });
 
   test('immutable: original pad is unchanged', () => {
-    const pad = makePad(
-      'p1',
-      { col: 0, row: 0 },
-      {
-        libraryItemRef: 'abc123',
-      },
-    );
+    const pad = makePad('p1', {
+      libraryItemRef: 'abc123',
+    });
     applyTypeChange(pad, 'combo');
     expect(pad.type).toBe('single');
     expect(pad.libraryItemRef).toBe('abc123');

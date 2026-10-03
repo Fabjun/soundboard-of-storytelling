@@ -12,12 +12,11 @@ export type Board = {
   id: string;
   name: string;
   themeId: string;
-  settings: {
-    quickAccessLayout: 'tabs' | 'stack' | 'hidden';
-    quickAccessSetCount: number; // default 1
-  };
+  /** Pad pool: every pad of the board, placed in any number of decks or in none (ADR-0048). */
+  pads: Pad[];
   decks: Deck[];
-  sets: PadSet[];
+  /** Board-wide quick-access bar (model since Slice 9c, UI in Slice 13). */
+  quickAccess: QuickAccessEntry[];
 };
 
 export type Deck = {
@@ -30,18 +29,20 @@ export type Deck = {
     gap: number;
     padSize: string;
   };
-  pads: Pad[];
+  /** Which pads of the pool this deck shows, where, and with which key. */
+  placements: Placement[];
 };
 
-/**
- * A named quick-access collection of Pads.
- * Named "PadSet" (not "Set") to avoid collision with TypeScript built-in Set<T>.
- */
-export type PadSet = {
-  id: string;
-  name: string;
-  order: number;
-  pads: Pad[];
+/** A pad of the pool placed in a deck. Position and key belong to the placement, not the pad. */
+export type Placement = {
+  padId: string;
+  position: PadPosition;
+  hotkey?: string;
+};
+
+export type QuickAccessEntry = {
+  padId: string;
+  hotkey?: string;
 };
 
 export type PadType = 'single' | 'loop' | 'playlist' | 'combo';
@@ -55,9 +56,6 @@ export type PadPosition = {
 export type PadBase = {
   id: string;
   name: string;
-  /** Grid position; null = unplaced (Slice 8+). Slice 3 always assigns a real position. */
-  position: PadPosition | null;
-  hotkey?: string;
   iconRef?: string;
   color?: string;
   volume: number; // 0–100
@@ -67,7 +65,7 @@ export type PadBase = {
 
 /** One step in a combo sequence. */
 export type ComboStep = {
-  /** UUIDs of pads on the same board to trigger simultaneously. */
+  /** Ids of pads in the board's pool to trigger simultaneously. */
   padIds: string[];
   /** How long to wait before advancing to the next step (seconds). */
   duration?: number;
@@ -167,7 +165,6 @@ export interface AppState {
   currentDeckId: string | null;
   currentMode: AppMode;
   activeTheme: string;
-  activeSetIds: string[];
   /** IDs of pads currently in one-shot playback */
   playingPads: ReadonlySet<string>;
   /** IDs of pads currently looping */

@@ -34,6 +34,16 @@ export const WHATS_NEW_GROUPS = [
 
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
+    version: '3.0.136',
+    date: '2026-10-03',
+    improved: [
+      'A pad now belongs to its board, and a deck places it — a duplicated deck shares its pads, so a pad you rename shows its new name in every deck.',
+    ],
+    removed: [
+      'Boards from earlier test versions are cleared once by this update; your audio library stays.',
+    ],
+  },
+  {
     version: '3.0.135',
     date: '2026-10-03',
     improved: [

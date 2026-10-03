@@ -82,7 +82,6 @@ export function PadCreationPopover({
     const base = {
       id,
       name: padName.trim() || (selectedItem?.name ?? 'New Pad'),
-      position,
       volume: 80,
       fadeIn: 0,
       fadeOut: 0,

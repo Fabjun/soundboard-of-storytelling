@@ -17,6 +17,8 @@ import { playingPads, loopingPads } from '../state/store';
 
 interface PadGridCellProps {
   pad: Pad | null;
+  /** The pad's key in this deck (keys belong to the placement, ADR-0048). */
+  hotkey?: string;
   mode: AppMode;
   selected: boolean;
   /** Grid position of this cell (used as data-pos attribute for drag-over). */
@@ -34,6 +36,7 @@ interface PadGridCellProps {
 
 export function PadGridCell({
   pad,
+  hotkey,
   mode,
   selected,
   col,
@@ -132,7 +135,7 @@ export function PadGridCell({
         <div class="sb-pad-title">{p.name || '—'}</div>
 
         {/* Hotkey badge */}
-        {p.hotkey && <div class="sb-pad-key">{p.hotkey}</div>}
+        {hotkey && <div class="sb-pad-key">{hotkey}</div>}
 
         {/* SETUP: drag handle indicator */}
         {isSetup && (

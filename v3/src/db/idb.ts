@@ -24,14 +24,14 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { openDB, type IDBPDatabase } from 'idb';
-import type { Board, Pad, LibraryItem, LibraryItemMeta } from '../types';
+import type { Board, LibraryItem, LibraryItemMeta } from '../types';
 
 // ---------------------------------------------------------------------------
 // DB singleton
 // ---------------------------------------------------------------------------
 
 const DB_NAME = 'sos-v3';
-const DB_VERSION = 3;
+const DB_VERSION = 4;
 
 let _db: IDBPDatabase | null = null;
 
@@ -55,7 +55,11 @@ async function getDB(): Promise<IDBPDatabase> {
       // v3: Board field `scenes` renamed to `decks` (ADR-0048, Slice 9b). Stored boards
       // are old-format test data → clear ONLY the boards store. The library store (audio)
       // is untouched, and no other database (e.g. V1's 'botc' on the same origin) is touched.
-      if (oldVersion >= 2 && oldVersion < 3) {
+      // v4: pad pool — pads move from the decks into Board.pads, decks hold placements, sets are
+      // replaced by Board.quickAccess (ADR-0048, Slice 9c). Same rule as v3: clear ONLY the boards
+      // store (old-format test data); library and other databases untouched. One clear covers
+      // both steps when a v2 database is upgraded straight to v4.
+      if (oldVersion >= 2 && oldVersion < 4) {
         void tx.objectStore('boards').clear();
       }
     },
@@ -132,47 +136,6 @@ export async function libRename(id: string, newName: string): Promise<void> {
   await libPut({ ...entry, name: newName });
 }
 
-// ── Pad migration ─────────────────────────────────────────────────────────────
-//
-// Converts old flat Pad objects (Slice 3 format) to the Discriminated Union
-// format (Slice 4+). Called at IDB read time so legacy boards load correctly.
-//
-// Slice-3 storage:
-//   playlist pads: had `libraryItemRef?: string`, no `files`
-//   combo pads:    had `libraryItemRef?: string`, no `steps`
-//
-// After migration:
-//   playlist pads: `files = [libraryItemRef]` (or [] if no ref)
-//   combo pads:    `steps = []`
-
-function migratePad(raw: unknown): Pad {
-  const p = raw as Record<string, unknown>;
-  if (p.type === 'playlist') {
-    const hasFiles = Array.isArray(p.files);
-    const files = hasFiles
-      ? (p.files as string[])
-      : typeof p.libraryItemRef === 'string' && p.libraryItemRef
-        ? [p.libraryItemRef]
-        : [];
-    return { ...(p as Pad), type: 'playlist', files } as Pad;
-  }
-  if (p.type === 'combo') {
-    const steps = Array.isArray(p.steps) ? p.steps : [];
-    return { ...(p as Pad), type: 'combo', steps } as Pad;
-  }
-  return p as Pad;
-}
-
-function migrateBoard(board: Board): Board {
-  return {
-    ...board,
-    decks: board.decks.map((deck) => ({
-      ...deck,
-      pads: deck.pads.map(migratePad),
-    })),
-  };
-}
-
 // ── Board API ─────────────────────────────────────────────────────────────────
 //
 // Boards are stored as complete JSON documents (Board contains Decks and Pads).
@@ -181,23 +144,22 @@ function migrateBoard(board: Board): Board {
 
 /**
  * Load all boards from IDB.
- * Applies pad migration for Slice-3 legacy data (playlist→files, combo→steps).
- * Safe to call at any library size — Board documents contain no blobs.
+ * Safe to call at any library size — Board documents contain no blobs. Older board formats never
+ * arrive here: the v4 upgrade clears them (ADR-0048), so no migration code is kept.
  */
 export async function boardGetAll(): Promise<Board[]> {
   const db = await getDB();
   const raw = (await db.getAll('boards')) as Board[];
-  return raw.map(migrateBoard);
+  return raw;
 }
 
 /**
  * Load a single board by id.
- * Applies pad migration for Slice-3 legacy data.
  */
 export async function boardGet(id: string): Promise<Board | null> {
   const db = await getDB();
   const entry = (await db.get('boards', id)) as Board | undefined;
-  return entry ? migrateBoard(entry) : null;
+  return entry ?? null;
 }
 
 /**

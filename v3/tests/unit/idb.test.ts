@@ -32,9 +32,9 @@ function makeBoard(id: string, name = 'Test Board'): Board {
     id,
     name,
     themeId: 'hearth',
-    settings: { quickAccessLayout: 'hidden', quickAccessSetCount: 1 },
+    pads: [],
     decks: [],
-    sets: [],
+    quickAccess: [],
   };
 }
 
@@ -74,7 +74,8 @@ describe('boardPut → boardGet', () => {
     expect(fetched?.name).toBe('My Board');
     expect(fetched?.themeId).toBe('hearth');
     expect(fetched?.decks).toHaveLength(0);
-    expect(fetched?.sets).toHaveLength(0);
+    expect(fetched?.pads).toHaveLength(0);
+    expect(fetched?.quickAccess).toHaveLength(0);
   });
 
   test('boardGet returns null for non-existent id', async () => {
@@ -221,5 +222,37 @@ describe('DB upgrade to v3', () => {
     const v1Again = await openDB('botc', 2);
     expect(await v1Again.get('lib', 'V1HASH')).toEqual({ hash: 'V1HASH', name: 'v1.mp3' });
     v1Again.close();
+  });
+});
+
+// ── Upgrade v3 → v4 (ADR-0048, Slice 9c) ──────────────────────────────────────
+
+describe('DB upgrade to v4', () => {
+  test('clears only the boards store (decks with pads inside); library audio is untouched', async () => {
+    // A v3 database: decks still carry their own pads (format before the pad pool)
+    const v3 = await openDB('sos-v3', 3, {
+      upgrade(db) {
+        db.createObjectStore('library', { keyPath: 'id' });
+        db.createObjectStore('boards', { keyPath: 'id' });
+      },
+    });
+    await v3.put('boards', {
+      id: 'OLD',
+      name: 'Old board',
+      decks: [{ id: 'd', pads: [] }],
+      sets: [],
+    });
+    await v3.put('library', makeLibraryItem('HASH1', 'keep.mp3'));
+    v3.close();
+
+    expect(await boardGetAll()).toEqual([]);
+    expect((await libGetAllMeta()).map((m) => m.id)).toEqual(['HASH1']);
+  });
+
+  test('a board in the v4 format survives a reopen', async () => {
+    const b = { ...makeBoard('b4'), pads: [], quickAccess: [] };
+    await boardPut(b);
+    _resetDB();
+    expect(await boardGet('b4')).toEqual(b);
   });
 });
