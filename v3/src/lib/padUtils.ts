@@ -4,6 +4,7 @@
 
 import type { Pad, PadBase, PadPosition, PadType } from '../types';
 import { isComboPad } from '../types';
+import { padFile } from './padFiles';
 
 // ── Slot scanning ────────────────────────────────────────────────────────────
 
@@ -60,13 +61,14 @@ export const DEFAULT_PAD_VOLUME = 80;
 
 /**
  * A new pad with the default settings — the one place that knows them (ADD PAD, library drop,
- * creation popover). `files` are library item hashes; a Combo starts with no steps.
+ * creation popover). `hashes` are library item ids — each becomes an untrimmed file (ADR-0068); a
+ * Combo starts with no steps.
  */
 export function newPad(
   id: string,
   type: PadType,
   name: string,
-  files: string[] = [],
+  hashes: string[] = [],
   addedAt?: number,
 ): Pad {
   const base: PadBase = {
@@ -79,7 +81,7 @@ export function newPad(
   };
   return type === 'combo'
     ? { ...base, type, steps: [] }
-    : { ...base, type, files, order: 'sequential' };
+    : { ...base, type, files: hashes.map(padFile), order: 'sequential' };
 }
 
 /**
@@ -92,7 +94,7 @@ export function padBaseOf(pad: Pad): PadBase {
     const { type: _t, steps: _s, ...base } = pad;
     return base;
   }
-  const { type: _t, files: _f, order: _o, trimStart: _ts, trimEnd: _te, ...base } = pad;
+  const { type: _t, files: _f, order: _o, ...base } = pad;
   return base;
 }
 
@@ -120,7 +122,7 @@ export interface MigrationResult {
  *
  * Universal fields (always preserved): name, hotkey, volume, fadeIn, fadeOut, color, iconRef.
  *
- *   SINGLE ↔ LOOP:  ADD   (both keep files, order and trim — one building block, P5)
+ *   SINGLE ↔ LOOP:  ADD   (both keep files with their trim, and order — one building block, P5)
  *   SINGLE/LOOP → COMBO, COMBO → SINGLE/LOOP:  RESET (audio files ↔ combo steps)
  *
  * The dialog is shown only when the verdict is RESET.
@@ -148,8 +150,8 @@ function universalFields(): string[] {
 
 /**
  * Applies a type change to a pad, following the migration policy.
- * Returns a new Pad (immutable). Single ↔ Loop keep files, order and trim; a change to or from
- * Combo starts the new content empty.
+ * Returns a new Pad (immutable). Single ↔ Loop keep files (with their trim) and order; a change to
+ * or from Combo starts the new content empty.
  *
  * Caller is responsible for showing PadTypeConfirmDialog before calling this.
  */
@@ -160,8 +162,7 @@ export function applyTypeChange(pad: Pad, newType: PadType): Pad {
     return { ...base, type: 'combo', steps: isComboPad(pad) ? pad.steps : [] };
   }
   if (isComboPad(pad)) return { ...base, type: newType, files: [], order: 'sequential' };
-  const { files, order, trimStart, trimEnd } = pad;
-  return { ...base, type: newType, files, order, trimStart, trimEnd };
+  return { ...base, type: newType, files: pad.files, order: pad.order };
 }
 
 // ── Pad type tokens ──────────────────────────────────────────────────────────

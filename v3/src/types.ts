@@ -90,27 +90,36 @@ export type ComboStep = {
 export type FileOrder = 'sequential' | 'shuffle';
 
 /**
+ * One audio file of a Single / Loop pad with its own trim (ADR-0068) — files differ in length, so
+ * each keeps its own start and end, as clips in audio software do. Seconds of the file; no
+ * `trimStart` = from the start, no `trimEnd` = to the end.
+ */
+export interface PadFile {
+  /** The library item's id (SHA-256 of the audio). */
+  hash: string;
+  trimStart?: number;
+  trimEnd?: number;
+}
+
+/**
  * Plays once. With several files each trigger plays one of them — the next in turn
- * (`sequential`) or a random one (`shuffle`). `files` are library item hashes; may be empty.
+ * (`sequential`) or a random one (`shuffle`), each with its own trim. `files` may be empty.
  */
 export type SinglePad = PadBase & {
   type: 'single';
-  files: string[];
+  files: PadFile[];
   order: FileOrder;
-  trimStart?: number;
-  trimEnd?: number;
 };
 
 /**
  * Runs until stopped. One file repeats seamlessly; several files play one after another, in
- * order or shuffled (the former Playlist type, ADR-0048). `files` may be empty.
+ * order or shuffled (the former Playlist type, ADR-0048), each with its own trim. `files` may be
+ * empty.
  */
 export type LoopPad = PadBase & {
   type: 'loop';
-  files: string[];
+  files: PadFile[];
   order: FileOrder;
-  trimStart?: number;
-  trimEnd?: number;
 };
 
 /** Combo sequence: a chain of steps, each triggering one or more pads. */

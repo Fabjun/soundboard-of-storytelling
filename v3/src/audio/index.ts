@@ -5,7 +5,7 @@
  * engine.ts internals are never imported directly from components.
  */
 
-import type { LoopPad, Pad, SinglePad } from '../types';
+import type { LoopPad, Pad, PadFile, SinglePad } from '../types';
 import type { EnginePad } from './types';
 import {
   playOnce,
@@ -81,11 +81,16 @@ export { initAudio } from './engine';
 
 // ── App pads → engine shapes (ADR-0048) ─────────────────────────────────────
 
+/** The trim of a file as the engine's one-file shapes take it — nothing for no file. */
+function trimOf(file: PadFile | undefined): { trimStart?: number; trimEnd?: number } {
+  return { trimStart: file?.trimStart, trimEnd: file?.trimEnd };
+}
+
 /** Next file index per Single pad with `sequential` order ("the next one in turn"). */
 const singleTurn = new Map<string, number>();
 
-/** The file a Single pad plays on this trigger: the next in turn, or a random one. */
-function pickSingleFile(pad: SinglePad): string | undefined {
+/** The file a Single pad plays on this trigger, with its trim: the next in turn, or a random one. */
+function pickSingleFile(pad: SinglePad): PadFile | undefined {
   if (pad.files.length === 0) return undefined;
   if (pad.order === 'shuffle') return pad.files[Math.floor(Math.random() * pad.files.length)];
   const i = (singleTurn.get(pad.id) ?? 0) % pad.files.length;
@@ -96,17 +101,20 @@ function pickSingleFile(pad: SinglePad): string | undefined {
 /**
  * Maps an app pad (ADR-0048: Single / Loop with `files` + `order`) to the shape V1's engine
  * plays: Single → one file per trigger; Loop with one file → seamless loop; Loop with several
- * files → the engine's playlist (repeats the list alone; plays it once inside a combo).
+ * files → the engine's playlist (repeats the list alone; plays it once inside a combo). Each file
+ * plays within its own trim (ADR-0068).
  */
 export function toEnginePad(pad: Pad): EnginePad {
   switch (pad.type) {
     case 'single': {
       const { files: _files, order: _order, ...rest } = pad;
-      return { ...rest, libraryItemRef: pickSingleFile(pad) };
+      const file = pickSingleFile(pad);
+      return { ...rest, ...trimOf(file), libraryItemRef: file?.hash };
     }
     case 'loop': {
-      const { files, order, trimStart, trimEnd, ...rest } = pad;
-      if (files.length <= 1) return { ...rest, libraryItemRef: files[0], trimStart, trimEnd };
+      const { files, order, ...rest } = pad;
+      if (files.length <= 1)
+        return { ...rest, ...trimOf(files[0]), libraryItemRef: files[0]?.hash };
       return { ...rest, type: 'playlist', files, shuffle: order === 'shuffle', loop: true };
     }
     case 'combo':
@@ -169,33 +177,27 @@ export function isPlaying(padId: string): boolean {
 // ── Preview (PAD editor, Slice 15a) ──────────────────────────────────────────
 
 /**
- * Plays `file` the way the pad plays it — with its volume and fades, from its trim start to its
- * trim end; a Loop repeats its region. The preview may start later, at `from` (a tap into the
- * waveform), and then starts at full volume; a Loop still repeats its whole region afterwards.
- * Restarts a preview that runs; it plays under `PREVIEW_ID`.
+ * Plays one `file` of the pad the way the pad plays it — with the pad's volume and fades, from the
+ * file's trim start to its trim end (ADR-0068); a Loop repeats the region. The preview may start
+ * later, at `from` (a tap into the waveform), and then starts at full volume; a Loop still repeats
+ * its whole region afterwards. Restarts a preview that runs; it plays under `PREVIEW_ID`.
  */
-export function previewFile(pad: SinglePad | LoopPad, file: string, from: number): Promise<void> {
+export function previewFile(pad: SinglePad | LoopPad, file: PadFile, from: number): Promise<void> {
   stopPad(PREVIEW_ID, true);
-  const trimStart = pad.trimStart ?? 0;
+  const trimStart = file.trimStart ?? 0;
   const start = Math.max(from, trimStart);
-  if (pad.type === 'loop') {
-    const { files: _files, order: _order, ...loop } = pad;
-    return playLoop(PREVIEW_ID, {
-      ...loop,
-      id: PREVIEW_ID,
-      libraryItemRef: file,
-      startAt: start,
-      fadeIn: start > trimStart ? 0 : pad.fadeIn,
-    });
-  }
-  const { files: _files, order: _order, ...single } = pad;
-  return playOnce(PREVIEW_ID, {
-    ...single,
+  const { files: _files, order: _order, ...rest } = pad;
+  const shared = {
+    ...rest,
     id: PREVIEW_ID,
-    libraryItemRef: file,
-    trimStart: start,
+    libraryItemRef: file.hash,
+    trimEnd: file.trimEnd,
     fadeIn: start > trimStart ? 0 : pad.fadeIn,
-  });
+  };
+  if (rest.type === 'loop') {
+    return playLoop(PREVIEW_ID, { ...shared, type: 'loop', trimStart, startAt: start });
+  }
+  return playOnce(PREVIEW_ID, { ...shared, type: 'single', trimStart: start });
 }
 
 /** Stops the preview at once (nothing happens when none runs). */

@@ -25,13 +25,14 @@
  *   Do not optimise until the problem is observed and quantified.
  */
 
-import { openDB, type IDBPDatabase } from 'idb';
+import { openDB, type IDBPDatabase, type IDBPObjectStore } from 'idb';
 import type { Board, LibraryItem, LibraryItemMeta } from '../types';
+import { migrateBoard } from '../lib/padFiles';
 
 // ── DB singleton ─────────────────────────────────────────────────────────────
 
 const DB_NAME = 'sos-v3';
-const DB_VERSION = 6;
+const DB_VERSION = 7;
 
 let _db: IDBPDatabase | null = null;
 
@@ -70,9 +71,30 @@ async function getDB(): Promise<IDBPDatabase> {
       if (oldVersion < 6) {
         db.createObjectStore('keyval');
       }
+      // v7: every file of a Single / Loop pad has its own trim (ADR-0068). The boards are the
+      // owner's real data now — CONVERTED in place, never cleared (`migrateBoard` keeps how each
+      // pad sounded). Inside the upgrade transaction, so a failure leaves the old version intact.
+      if (oldVersion >= 5 && oldVersion < 7) {
+        void migrateStoredBoards(tx.objectStore('boards'));
+      }
     },
   });
   return _db;
+}
+
+/**
+ * Converts every stored board to the file shape of ADR-0068, one board at a time through a cursor
+ * (boards are small JSON documents — no audio is read). Only awaits requests of the upgrade
+ * transaction, so the transaction stays open until the last board is written.
+ */
+async function migrateStoredBoards(
+  store: IDBPObjectStore<unknown, string[], 'boards', 'versionchange'>,
+): Promise<void> {
+  let cursor = await store.openCursor();
+  while (cursor) {
+    await cursor.update(migrateBoard(cursor.value as Board));
+    cursor = await cursor.continue();
+  }
 }
 
 // ── Public API ───────────────────────────────────────────────────────────────

@@ -546,10 +546,8 @@ describe('parseBoard (untrusted boards from a backup file)', () => {
         fadeOut: 1,
         iconRef: 'owl',
         color: 'red',
-        files: ['h1'],
+        files: [{ hash: 'h1', trimStart: 1, trimEnd: 2 }],
         order: 'sequential',
-        trimStart: 1,
-        trimEnd: 2,
       },
       {
         id: 'l',
@@ -590,6 +588,11 @@ describe('parseBoard (untrusted boards from a backup file)', () => {
     expect(parseBoard({ ...valid(), extra: 1 })).toEqual(valid());
   });
 
+  it('accepts a pad stored before ADR-0068 and returns it converted', () => {
+    const legacy = withPad(valid(), 0, { files: ['h1'], trimStart: 1, trimEnd: 2 });
+    expect(parseBoard(legacy)).toEqual(valid());
+  });
+
   /** The board with one pad changed — the others stay, so only that pad's field is wrong. */
   const withPad = (b: ReturnType<typeof valid>, i: number, patch: Record<string, unknown>) => ({
     ...b,
@@ -618,10 +621,14 @@ describe('parseBoard (untrusted boards from a backup file)', () => {
     ['pad modifiedAt', (b) => withPad(b, 0, { modifiedAt: null })],
     ['pad type', (b) => withPad(b, 0, { type: 'playlist' })],
     ['pad files', (b) => withPad(b, 0, { files: ['h1', 2] })],
+    ['pad files mixed shapes', (b) => withPad(b, 0, { files: ['h1', { hash: 'h2' }] })],
     ['pad files missing', (b) => withPad(b, 0, { files: undefined })],
     ['pad order', (b) => withPad(b, 0, { order: 'random' })],
-    ['pad trimStart', (b) => withPad(b, 0, { trimStart: '1' })],
-    ['pad trimEnd', (b) => withPad(b, 0, { trimEnd: null })],
+    ['file hash', (b) => withPad(b, 0, { files: [{ trimStart: 1 }] })],
+    ['file trimStart', (b) => withPad(b, 0, { files: [{ hash: 'h1', trimStart: '1' }] })],
+    ['file trimEnd', (b) => withPad(b, 0, { files: [{ hash: 'h1', trimEnd: null }] })],
+    ['old pad trimStart', (b) => withPad(b, 0, { files: ['h1'], trimStart: '1' })],
+    ['old pad trimEnd', (b) => withPad(b, 0, { files: ['h1'], trimEnd: null })],
     ['loop files', (b) => withPad(b, 1, { files: 'h' })],
     ['combo steps', (b) => withPad(b, 2, { steps: undefined })],
     ['combo step', (b) => withPad(b, 2, { steps: [5] })],

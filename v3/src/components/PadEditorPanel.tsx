@@ -13,11 +13,12 @@
  * Fields:
  *   - Name (required)
  *   - Type (with PadTypeConfirmDialog on change)
- *   - Single / Loop: library source (search + pick from libraryItems); a pad with several files
- *     shows their number and order — editing several files is Slice 15b
- *   - Single / Loop with a file: the waveform editor (trim and fade handles, WaveformEditor),
- *     trim start / end number fields and the preview ▶ / ⏸ / ⏹ (Slice 15a, src/lib/preview.ts);
- *     the trim and fades always fit the file (src/lib/trimRange.ts)
+ *   - Single / Loop: the file list (PadFileList — select, ▲ / ▼, 2-tap remove, in order /
+ *     shuffled) and the library picker that adds several ticked files at once (Slice 15b)
+ *   - Single / Loop with a file: the waveform editor of the selected file (its own trim handles,
+ *     the pad's fade handles — ADR-0068), trim start / end number fields and the preview
+ *     ▶ / ⏸ / ⏹ of that file (Slice 15a, src/lib/preview.ts); the trim and fades always fit the
+ *     file (src/lib/trimRange.ts)
  *   - Combo: the steps (ComboStepsEditor)
  *   - Volume slider (0-100)
  *   - Fade In / Fade Out sliders (0-10s, shorter when the trimmed region is)
@@ -29,11 +30,13 @@
 
 import { useState, useEffect, useLayoutEffect, useRef } from 'preact/hooks';
 import type { JSX } from 'preact';
-import type { Board, ComboStep, Pad, PadBase, PadType, Deck } from '../types';
+import type { Board, ComboStep, Deck, FileOrder, Pad, PadBase, PadFile, PadType } from '../types';
 import { isComboPad } from '../types';
 import { PixelIcon } from './PixelIcon';
 import { Waveform } from './Waveform';
 import { WaveformEditor } from './WaveformEditor';
+import { PadFileList } from './PadFileList';
+import { addFiles, moveFile, removeFile, setFileTrim } from '../lib/padFiles';
 import { PadTypeConfirmDialog } from './PadTypeConfirmDialog';
 import { ComboStepsEditor } from './ComboStepsEditor';
 import {
@@ -81,16 +84,18 @@ export function PadEditorPanel({
   // Local state mirrors the pad; auto-saved on change
   const [name, setName] = useState(pad.name);
   const [type, setType] = useState<PadType>(pad.type);
-  /** Audio files of a Single / Loop pad (ADR-0048); empty for a Combo. */
-  const [files, setFiles] = useState<string[]>(isComboPad(pad) ? [] : pad.files);
+  /** Audio files of a Single / Loop pad, each with its own trim (ADR-0068); empty for a Combo. */
+  const [files, setFiles] = useState<PadFile[]>(isComboPad(pad) ? [] : pad.files);
+  const [order, setOrder] = useState<FileOrder>(isComboPad(pad) ? 'sequential' : pad.order);
+  /** The file the waveform editor and the preview work on (index into `files`). */
+  const [selectedIndex, setSelectedIndex] = useState(0);
+  /** Library files ticked in the picker, added together with ADD. */
+  const [picked, setPicked] = useState<string[]>([]);
   /** Steps of a Combo pad (Slice 11); empty for Single / Loop. Saved with the rest of the pad. */
   const [steps, setSteps] = useState<ComboStep[]>(isComboPad(pad) ? pad.steps : []);
   const [volume, setVolume] = useState(pad.volume);
   const [fadeIn, setFadeIn] = useState(pad.fadeIn);
   const [fadeOut, setFadeOut] = useState(pad.fadeOut);
-  /** Trimmed region of a Single / Loop as the pad stores it (undefined = from the start / to the end). */
-  const [trimStart, setTrimStart] = useState(isComboPad(pad) ? undefined : pad.trimStart);
-  const [trimEnd, setTrimEnd] = useState(isComboPad(pad) ? undefined : pad.trimEnd);
   /** Where the next preview starts, in seconds; null = at the trim start. */
   const [cursor, setCursor] = useState<number | null>(null);
   /** The preview was started and not yet stopped or ended. */
@@ -131,11 +136,14 @@ export function PadEditorPanel({
   // The preview belongs to this editor: it stops when the editor closes or switches pad
   useLayoutEffect(() => () => stopPreview(), []);
 
+  /** Index of the selected file, kept inside the list (files can be removed). */
+  const selected = Math.min(selectedIndex, Math.max(0, files.length - 1));
+  const selectedHash = files[selected]?.hash;
+
   // An entry stored before ADR-0065 gets its fine peaks once, for the waveform editor
-  const firstFile = files[0];
   useEffect(() => {
-    if (firstFile) void ensureFinePeaks(firstFile);
-  }, [firstFile]);
+    if (selectedHash) void ensureFinePeaks(selectedHash);
+  }, [selectedHash]);
 
   // While the preview runs, the playhead follows it; when it ends, the next one starts at the
   // trim start again
@@ -164,11 +172,15 @@ export function PadEditorPanel({
     autoSave.schedule({ boardId: board.id, pad: updatedPad });
   }
 
-  // libraryRefOverride: when the libraryRef state hasn't committed yet (handleLibrarySelect)
-  // filesOverride: when the files state hasn't committed yet (handleLibrarySelect)
-  function buildCurrentPad(filesOverride?: string[], stepsOverride?: ComboStep[]): Pad {
-    const effectiveFiles = filesOverride ?? files;
-    // Everything the pad has, with the edited fields on top; an edit is a modification
+  /**
+   * The pad as edited: everything it has, with the edited fields on top (an edit is a
+   * modification). The overrides carry values whose state has not committed yet.
+   */
+  function buildCurrentPad(
+    filesOverride?: PadFile[],
+    stepsOverride?: ComboStep[],
+    orderOverride?: FileOrder,
+  ): Pad {
     const base: PadBase = {
       ...padBaseOf(pad),
       name,
@@ -178,13 +190,20 @@ export function PadEditorPanel({
       modifiedAt: Date.now(),
     };
     if (type === 'combo') return { ...base, type, steps: stepsOverride ?? steps };
-    // The order is not edited here yet — keep what the pad has
-    const order = isComboPad(pad) ? ('sequential' as const) : pad.order;
-    // Trim and fades fit the first file — also a newly chosen one
-    const duration = durationOf(effectiveFiles[0]);
-    const trim = { trimStart, trimEnd, fadeIn, fadeOut };
-    const fitted = duration > 0 ? toPad(fromPad(trim, duration), duration) : trim;
-    return { ...base, type, files: effectiveFiles, order, ...fitted };
+    return {
+      ...base,
+      type,
+      files: (filesOverride ?? files).map(fitFile),
+      order: orderOverride ?? order,
+    };
+  }
+
+  /** A file with its trim pulled into the file's length (no change while the length is unknown). */
+  function fitFile(file: PadFile): PadFile {
+    const duration = durationOf(file.hash);
+    if (duration <= 0) return file;
+    const t = toPad(fromPad({ ...file, fadeIn: 0, fadeOut: 0 }, duration), duration);
+    return setFileTrim([file], 0, t)[0];
   }
 
   /** Length of a library file in seconds; 0 when unknown. */
@@ -192,32 +211,29 @@ export function PadEditorPanel({
     return libraryItems.value.find((m) => m.id === id)?.duration ?? 0;
   }
 
-  /** Takes the trim and fades of a pad into the editor's state. */
-  function takeTrim(p: Pad) {
-    setFadeIn(p.fadeIn);
-    setFadeOut(p.fadeOut);
-    setTrimStart(isComboPad(p) ? undefined : p.trimStart);
-    setTrimEnd(isComboPad(p) ? undefined : p.trimEnd);
-  }
-
-  /** The trim values of a Single / Loop with a file of known length; null otherwise. */
+  /** The trim values of the selected file of a Single / Loop when its length is known; else null. */
   function currentTrim(): { values: TrimValues; duration: number } | null {
-    const duration = durationOf(files[0]);
-    if (type === 'combo' || duration <= 0) return null;
-    return { values: fromPad({ trimStart, trimEnd, fadeIn, fadeOut }, duration), duration };
+    const file = files[selected];
+    const duration = durationOf(file?.hash);
+    if (type === 'combo' || !file || duration <= 0) return null;
+    return { values: fromPad({ ...file, fadeIn, fadeOut }, duration), duration };
   }
 
   /**
-   * Moves a trim or fade handle; the rules of src/lib/trimRange.ts decide where it lands. Returns
-   * the new values (null without a file of known length).
+   * Moves a trim handle of the selected file or a fade handle of the pad; the rules of
+   * src/lib/trimRange.ts decide where it lands. Returns the new values (null without a file of
+   * known length).
    */
   function handleTrimMove(handle: Handle, position: number): TrimValues | null {
     const trim = currentTrim();
     if (!trim || !Number.isFinite(position)) return null;
     const moved = moveHandle(trim.values, handle, position, trim.duration);
-    const updated = { ...buildCurrentPad(), ...toPad(moved, trim.duration) };
-    takeTrim(updated);
-    scheduleAutoSave(updated);
+    const t = toPad(moved, trim.duration);
+    const nextFiles = setFileTrim(files, selected, t);
+    setFiles(nextFiles);
+    setFadeIn(t.fadeIn);
+    setFadeOut(t.fadeOut);
+    scheduleAutoSave({ ...buildCurrentPad(nextFiles), fadeIn: t.fadeIn, fadeOut: t.fadeOut });
     return moved;
   }
 
@@ -253,17 +269,44 @@ export function PadEditorPanel({
     scheduleAutoSave({ ...buildCurrentPad(), fadeOut: v });
   }
 
-  /**
-   * Choosing a file sets the pad's only file (several files: editing UI in Slice 15b); the trim
-   * and fades are fitted to it.
-   */
-  function handleLibrarySelect(id: string) {
-    endPreview(null);
-    setFiles([id]);
+  // ── File list (Slice 15b, ADR-0068) ──────────────────────────────────────
+
+  /** Saves a changed file list (and order) and selects the file at `select`. */
+  function changeFiles(next: PadFile[], select: number, nextOrder = order) {
+    setFiles(next);
+    setSelectedIndex(Math.max(0, Math.min(select, next.length - 1)));
+    scheduleAutoSave(buildCurrentPad(next, undefined, nextOrder));
+  }
+
+  /** ADD — the files ticked in the picker go to the end of the list; the first new one is selected. */
+  function handleAddPicked() {
+    const next = addFiles(files, picked);
+    setPicked([]);
     setLibPickerOpen(false);
-    const updated = buildCurrentPad([id]);
-    takeTrim(updated);
-    scheduleAutoSave(updated);
+    if (next.length !== files.length) changeFiles(next, files.length);
+  }
+
+  function handleSelectFile(index: number) {
+    if (index === selected) return;
+    endPreview(null);
+    setSelectedIndex(index);
+  }
+
+  /** ▲ / ▼ — the selection moves with the file it is on. */
+  function handleMoveFile(index: number, step: -1 | 1) {
+    const next = moveFile(files, index, step);
+    const follow = selected === index ? index + step : selected === index + step ? index : selected;
+    changeFiles(next, follow);
+  }
+
+  function handleRemoveFile(index: number) {
+    if (index === selected) endPreview(null);
+    changeFiles(removeFile(files, index), index < selected ? selected - 1 : selected);
+  }
+
+  function handleOrderChange(next: FileOrder) {
+    setOrder(next);
+    changeFiles(files, selected, next);
   }
 
   // ── Preview ──────────────────────────────────────────────────────────────
@@ -277,7 +320,7 @@ export function PadEditorPanel({
     setPreviewOn(true);
     const run = ++previewRun.current;
     const from = cursor ?? trim.values.trimStart;
-    void startPreview(current, files[0], from, trim.values.trimEnd).then(() => {
+    void startPreview(current, current.files[selected], from, trim.values.trimEnd).then(() => {
       // Could not start (file missing or undecodable): nothing plays, ▶ shows again
       if (run === previewRun.current && !previewPlaying.value) endPreview(cursor);
     });
@@ -314,7 +357,7 @@ export function PadEditorPanel({
       const current = buildCurrentPad();
       if (isComboPad(current)) return;
       seenPlaying.current = false;
-      void startPreview(current, files[0], at, trim.values.trimEnd);
+      void startPreview(current, current.files[selected], at, trim.values.trimEnd);
     }
   }
 
@@ -337,8 +380,8 @@ export function PadEditorPanel({
     const migrated = applyTypeChange(buildCurrentPad(), newType);
     setType(migrated.type);
     setFiles(isComboPad(migrated) ? [] : migrated.files);
+    setOrder(isComboPad(migrated) ? 'sequential' : migrated.order);
     setSteps(isComboPad(migrated) ? migrated.steps : []);
-    takeTrim(migrated);
     scheduleAutoSave(migrated);
     setPendingType(null);
   }
@@ -378,11 +421,7 @@ export function PadEditorPanel({
   const filteredAudio = libSearch.trim()
     ? allAudio.filter((m) => m.name.toLowerCase().includes(libSearch.toLowerCase()))
     : allAudio;
-  const libraryRef = files[0];
-  const selectedItem = allAudio.find((m) => m.id === libraryRef);
-  /** Several files (e.g. from an import): shown, not edited here until the file list (Slice 15b). */
-  const severalFiles = files.length > 1;
-  const orderText = !isComboPad(pad) && pad.order === 'shuffle' ? 'shuffled' : 'in order';
+  const selectedItem = allAudio.find((m) => m.id === selectedHash);
   const trim = currentTrim();
   /** Seconds shown next to the preview buttons: the playhead, else where ▶ starts. */
   const previewAt = playhead ?? cursor ?? trim?.values.trimStart ?? 0;
@@ -459,32 +498,32 @@ export function PadEditorPanel({
       {type !== 'combo' && (
         <div class="sb-inspector-section">
           <div class="sb-section-header-row">
-            <label class="sb-field-label">AUDIO SOURCE</label>
-            {!severalFiles && (
-              <button
-                class="sb-btn sb-btn-xs sb-btn-ghost"
-                onClick={() => setLibPickerOpen((o) => !o)}
-              >
-                {libPickerOpen ? 'CLOSE' : 'BROWSE'}
-              </button>
-            )}
+            <label class="sb-field-label">AUDIO FILES</label>
+            <button
+              class="sb-btn sb-btn-xs sb-btn-ghost"
+              data-testid="pad-editor-panel-browse-button"
+              onClick={() => {
+                setPicked([]);
+                setLibPickerOpen((o) => !o);
+              }}
+            >
+              {libPickerOpen ? 'CLOSE' : 'BROWSE'}
+            </button>
           </div>
 
-          {/* Current source */}
-          {selectedItem ? (
-            <div class="sb-lib-browser">
-              <div class="sb-lib-browser-item-name">{selectedItem.name}</div>
-              {!trim && selectedItem.peaks.length > 0 && (
-                <Waveform peaks={selectedItem.peaks} height={24} />
-              )}
-            </div>
-          ) : (
-            <div class="sb-lib-browser-empty">No source selected</div>
-          )}
-          {severalFiles && (
-            <div class="sb-hint-text" data-testid="pad-editor-panel-files-text">
-              {files.length} files, {orderText}
-            </div>
+          {/* The pad's files: select, reorder, remove; how several of them play */}
+          <PadFileList
+            files={files}
+            names={(hash) => allAudio.find((m) => m.id === hash)?.name}
+            selected={selected}
+            order={order}
+            onSelect={handleSelectFile}
+            onMove={handleMoveFile}
+            onRemove={handleRemoveFile}
+            onOrderChange={handleOrderChange}
+          />
+          {selectedItem && !trim && selectedItem.peaks.length > 0 && (
+            <Waveform peaks={selectedItem.peaks} height={24} />
           )}
 
           {/* Waveform editor, preview and trim fields — a file of known length is needed */}
@@ -537,7 +576,7 @@ export function PadEditorPanel({
             </div>
           )}
 
-          {/* Inline library picker */}
+          {/* Library picker — tick several files, add them together (V1 v120 multi-select) */}
           {libPickerOpen && (
             <div class="sb-lib-browser-list">
               <div class="sb-lib-browser-search">
@@ -550,22 +589,36 @@ export function PadEditorPanel({
                   autoFocus
                 />
               </div>
-              {filteredAudio.slice(0, 50).map((item) => (
-                <div
-                  key={item.id}
-                  class="sb-lib-browser-item"
-                  onClick={() => handleLibrarySelect(item.id)}
-                  style={{
-                    color: libraryRef === item.id ? 'var(--gold)' : 'var(--text-dim)',
-                    background: libraryRef === item.id ? 'var(--raised)' : 'none',
-                  }}
-                >
-                  {item.name}
-                </div>
-              ))}
+              {filteredAudio.slice(0, 50).map((item) => {
+                const inPad = files.some((f) => f.hash === item.id);
+                return (
+                  <label key={item.id} class="sb-check-row sb-lib-browser-item">
+                    <input
+                      type="checkbox"
+                      data-testid={`pad-editor-panel-pick-input-${item.id}`}
+                      checked={inPad || picked.includes(item.id)}
+                      disabled={inPad}
+                      onChange={(e) => {
+                        const on = (e.target as HTMLInputElement).checked;
+                        setPicked((p) => (on ? [...p, item.id] : p.filter((h) => h !== item.id)));
+                      }}
+                    />
+                    <span class="sb-flex-trunc">{item.name}</span>
+                    {inPad && <span class="sb-hint-text">(in this pad)</span>}
+                  </label>
+                );
+              })}
               {filteredAudio.length === 0 && (
                 <div class="sb-lib-browser-no-results">No files found</div>
               )}
+              <button
+                class="sb-btn sb-btn-primary sb-btn-block"
+                data-testid="pad-editor-panel-add-files-button"
+                disabled={picked.length === 0}
+                onClick={handleAddPicked}
+              >
+                {picked.length === 1 ? 'ADD 1 FILE' : `ADD ${picked.length} FILES`}
+              </button>
             </div>
           )}
         </div>

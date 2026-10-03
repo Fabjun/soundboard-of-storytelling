@@ -92,8 +92,8 @@ describe('runImport — V1', () => {
     expect(board.name).toBe('Night');
     expect(boardProblems(board)).toEqual([]);
     const [owl, rain, day] = board.pads as [SinglePad, LoopPad, ComboPad];
-    expect(owl.files).toEqual([hash(A)]);
-    expect(rain).toMatchObject({ type: 'loop', files: [hash(B)] });
+    expect(owl.files).toEqual([{ hash: hash(A) }]);
+    expect(rain).toMatchObject({ type: 'loop', files: [{ hash: hash(B) }] });
     expect(day.steps).toEqual([{ padIds: [owl.id, rain.id], duration: 2 }]);
     expect(board.decks[0].placements[0]).toMatchObject({ padId: owl.id, hotkey: 'Numpad1' });
     expect(boards.value).toHaveLength(1); // shown, not only stored
@@ -120,7 +120,7 @@ describe('runImport — V1', () => {
     expect(result.audioFailed).toEqual([expect.stringContaining('broken.wav: decode failed')]);
     expect(result.notes.missingFiles).toBe(1);
     const [board] = await boardGetAll();
-    expect((board.pads[0] as SinglePad).files).toEqual([hash(A)]);
+    expect((board.pads[0] as SinglePad).files).toEqual([{ hash: hash(A) }]);
   });
 
   it('an entry without audio data or with broken base64 is reported, not fatal', async () => {
@@ -162,7 +162,7 @@ describe('runImport — V3', () => {
         volume: 80,
         fadeIn: 0,
         fadeOut: 0,
-        files: [hash(A)],
+        files: [{ hash: hash(A), trimStart: 0.5 }],
         order: 'sequential',
       },
       {
@@ -204,7 +204,7 @@ describe('runImport — V3', () => {
     expect(stored.name).toBe('Night (2)');
     expect(stored.id).not.toBe('b');
     const [owl, day] = stored.pads as [SinglePad, ComboPad];
-    expect(owl).toMatchObject({ name: 'Owl', files: [hash(A)] });
+    expect(owl).toMatchObject({ name: 'Owl', files: [{ hash: hash(A), trimStart: 0.5 }] });
     expect(owl.id).not.toBe('p');
     expect(day.steps[0].padIds).toEqual([owl.id]);
     expect(stored.decks[0].placements[0]).toMatchObject({ padId: owl.id, hotkey: 'K1' });
@@ -222,6 +222,21 @@ describe('runImport — V3', () => {
     const result = await runImport(f, await planImport(f));
     expect(result).toMatchObject({ boardsAdded: 0, boardsSkipped: 3 });
     expect(await boardGetAll()).toEqual([]);
+  });
+
+  it('imports a backup made before ADR-0068 — the pad-wide trim moves to the file', async () => {
+    const old = v3Board();
+    const [owl] = old.pads;
+    // The stored shape before ADR-0068: hashes, one trim for the whole pad
+    const legacyOwl = { ...owl, files: [hash(A)], trimStart: 1.5, trimEnd: 3 };
+    const f = file(v3Backup([{ ...old, pads: [legacyOwl, old.pads[1]] }]));
+    const result = await runImport(f, await planImport(f));
+    expect(result).toMatchObject({ boardsAdded: 1, boardsSkipped: 0 });
+    const [stored] = await boardGetAll();
+    expect(stored.pads[0]).toMatchObject({
+      files: [{ hash: hash(A), trimStart: 1.5, trimEnd: 3 }],
+    });
+    expect(stored.pads[0]).not.toHaveProperty('trimStart');
   });
 });
 
@@ -301,7 +316,7 @@ describe('backup import — entry types, hashes and progress', () => {
     const f = file(doc);
     await runImport(f, await planImport(f));
     const [board] = await boardGetAll();
-    expect((board.pads[0] as SinglePad).files).toEqual([hash(A)]);
+    expect((board.pads[0] as SinglePad).files).toEqual([{ hash: hash(A) }]);
   });
 
   it('the same bytes twice under two hashes: stored once, both references resolve', async () => {
@@ -312,7 +327,7 @@ describe('backup import — entry types, hashes and progress', () => {
     const result = await runImport(f, await planImport(f));
     expect(result).toMatchObject({ audioAdded: 1, audioSkipped: 1 });
     const [board] = await boardGetAll();
-    expect((board.pads[0] as SinglePad).files).toEqual([hash(A), hash(A)]);
+    expect((board.pads[0] as SinglePad).files).toEqual([{ hash: hash(A) }, { hash: hash(A) }]);
   });
 
   it('a pad may point at audio that was in the library before (not in the file)', async () => {
@@ -325,7 +340,7 @@ describe('backup import — entry types, hashes and progress', () => {
     doc.boards[0].pads = [{ name: 'Rain', mode: 'loop', files: [hash(B)] }];
     const result = await runImport(file(doc), await planImport(file(doc)));
     const [board] = await boardGetAll();
-    expect((board.pads[0] as LoopPad).files).toEqual([hash(B)]);
+    expect((board.pads[0] as LoopPad).files).toEqual([{ hash: hash(B) }]);
     expect(result.notes.missingFiles).toBe(0);
   });
 
@@ -379,7 +394,7 @@ describe('backup import — entry types, hashes and progress', () => {
     const [stored] = await boardGetAll();
     expect(stored.pads[0]).toMatchObject({
       type: 'loop',
-      files: [hash(A), hash(A)],
+      files: [{ hash: hash(A) }, { hash: hash(A) }],
       order: 'shuffle',
     });
     expect(stored.pads[1]).toMatchObject({ type: 'combo', steps: [] });

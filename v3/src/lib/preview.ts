@@ -10,7 +10,7 @@
 
 import { previewFile, stopPreview as stopEnginePreview } from '../audio/index';
 import { previewPlaying } from '../state/store';
-import type { LoopPad, SinglePad } from '../types';
+import type { LoopPad, PadFile, SinglePad } from '../types';
 
 /** One preview run: what plays, from where, since when, and the region it may cover. */
 export interface PreviewRun {
@@ -39,19 +39,20 @@ export function positionAt(r: PreviewRun, nowMs: number): number {
 }
 
 /**
- * Starts the preview of `file` as `pad` would play it, from `from` seconds (not before its trim
- * start). `regionEnd` is the trim end — the file's duration when it is not trimmed. Resolves once
- * the engine has started it — or could not (file missing or undecodable: `previewPlaying` stays
- * false). The clock restarts then, as loading the file takes time the playhead must not count.
+ * Starts the preview of one `file` of `pad` as the pad would play it, from `from` seconds (not
+ * before the file's trim start, ADR-0068). `regionEnd` is the trim end — the file's duration when
+ * it is not trimmed. Resolves once the engine has started it — or could not (file missing or
+ * undecodable: `previewPlaying` stays false). The clock restarts then, as loading the file takes
+ * time the playhead must not count.
  */
 export function startPreview(
   pad: SinglePad | LoopPad,
-  file: string,
+  file: PadFile,
   from: number,
   regionEnd: number,
   now: () => number = () => performance.now(),
 ): Promise<void> {
-  const regionStart = pad.trimStart ?? 0;
+  const regionStart = file.trimStart ?? 0;
   const loop = pad.type === 'loop';
   const started: PreviewRun = {
     from: Math.min(Math.max(from, regionStart), regionEnd),

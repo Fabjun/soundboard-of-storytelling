@@ -322,3 +322,71 @@ describe('DB upgrade to v6', () => {
     expect(await kvGetAll()).toEqual([]);
   });
 });
+
+// ── Upgrade v6 → v7 (a trim per file, ADR-0068, 2026-10-03) ──────────────────
+
+describe('DB upgrade to v7', () => {
+  /** Pads in the shape stored before ADR-0068: hashes, one trim per pad. */
+  const legacyPads = [
+    {
+      ...base('s'),
+      type: 'single',
+      files: ['A', 'B'],
+      order: 'sequential',
+      trimStart: 1,
+      trimEnd: 3,
+    },
+    { ...base('l'), type: 'loop', files: ['A', 'B'], order: 'shuffle', trimStart: 2 },
+    { ...base('c'), type: 'combo', steps: [{ padIds: ['s'] }] },
+  ];
+  function base(id: string) {
+    return { id, name: id, volume: 80, fadeIn: 0, fadeOut: 0 };
+  }
+
+  test('converts the stored boards in place — never clears them; library and preferences stay', async () => {
+    const v6 = await openDB('sos-v3', 6, {
+      upgrade(db) {
+        db.createObjectStore('library', { keyPath: 'id' });
+        db.createObjectStore('boards', { keyPath: 'id' });
+        db.createObjectStore('keyval');
+      },
+    });
+    await v6.put('boards', { ...makeBoard('MINE'), pads: legacyPads });
+    await v6.put('library', makeLibraryItem('A', 'keep.mp3'));
+    await v6.put('keyval', 7, 'last-backup');
+    v6.close();
+
+    const [board] = await boardGetAll();
+    expect(board.id).toBe('MINE');
+    expect(board.pads).toEqual([
+      {
+        ...base('s'),
+        type: 'single',
+        order: 'sequential',
+        files: [
+          { hash: 'A', trimStart: 1, trimEnd: 3 },
+          { hash: 'B', trimStart: 1, trimEnd: 3 },
+        ],
+      },
+      // A Loop with several files played them whole: no file gets the trim
+      { ...base('l'), type: 'loop', order: 'shuffle', files: [{ hash: 'A' }, { hash: 'B' }] },
+      legacyPads[2],
+    ]);
+    expect((await libGetAllMeta()).map((m) => m.id)).toEqual(['A']);
+    expect(await kvGetAll()).toEqual([['last-backup', 7]]);
+  });
+
+  test('a v5 database is converted too (v5 → v7 in one upgrade)', async () => {
+    const v5 = await openDB('sos-v3', 5, {
+      upgrade(db) {
+        db.createObjectStore('library', { keyPath: 'id' });
+        db.createObjectStore('boards', { keyPath: 'id' });
+      },
+    });
+    await v5.put('boards', { ...makeBoard('MINE'), pads: [legacyPads[0]] });
+    v5.close();
+
+    const [board] = await boardGetAll();
+    expect(board.pads[0]).toMatchObject({ files: [{ hash: 'A', trimStart: 1 }, { hash: 'B' }] });
+  });
+});

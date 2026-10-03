@@ -31,10 +31,18 @@ const base = {
 const single = (o: Partial<SinglePad> = {}): SinglePad => ({
   ...base,
   type: 'single',
-  files: ['h'],
+  files: [{ hash: 'h' }],
   ...o,
 });
-const loop = (o: Partial<LoopPad> = {}): LoopPad => ({ ...base, type: 'loop', files: ['h'], ...o });
+const loop = (o: Partial<LoopPad> = {}): LoopPad => ({
+  ...base,
+  type: 'loop',
+  files: [{ hash: 'h' }],
+  ...o,
+});
+/** A file of the pad with its own trim (ADR-0068). */
+const file = (trimStart?: number) =>
+  trimStart === undefined ? { hash: 'h' } : { hash: 'h', trimStart };
 
 beforeEach(() => {
   previewFile.mockClear();
@@ -64,8 +72,8 @@ describe('positionAt', () => {
 describe('startPreview / stopPreview / previewPosition', () => {
   it('starts the engine preview and reports the playhead only while it plays', () => {
     let now = 0;
-    startPreview(single({ trimStart: 1 }), 'h', 3, 8, () => now);
-    expect(previewFile).toHaveBeenCalledWith(expect.objectContaining({ id: 'p' }), 'h', 3);
+    startPreview(single(), file(1), 3, 8, () => now);
+    expect(previewFile).toHaveBeenCalledWith(expect.objectContaining({ id: 'p' }), file(1), 3);
     expect(previewPosition(() => now)).toBeNull(); // not yet reported as playing
     previewPlaying.value = true;
     now = 1000;
@@ -77,7 +85,7 @@ describe('startPreview / stopPreview / previewPosition', () => {
 
   it('restarts the clock once the engine has started — loading the file does not move the playhead', async () => {
     let now = 0;
-    const started = startPreview(single(), 'h', 0, 8, () => now);
+    const started = startPreview(single(), file(), 0, 8, () => now);
     now = 700; // the file loads
     await started;
     previewPlaying.value = true;
@@ -85,11 +93,11 @@ describe('startPreview / stopPreview / previewPosition', () => {
     expect(previewPosition(() => now)).toBe(1);
   });
 
-  it('pulls the start into the region — before the trim start, after the trim end', () => {
+  it("pulls the start into the file's region — before its trim start, after its trim end", () => {
     previewPlaying.value = true;
-    startPreview(loop({ trimStart: 2 }), 'h', 0, 6, () => 0);
+    startPreview(loop(), file(2), 0, 6, () => 0);
     expect(previewPosition(() => 0)).toBe(2);
-    startPreview(single(), 'h', 9, 6, () => 0);
+    startPreview(single(), file(), 9, 6, () => 0);
     expect(previewPosition(() => 0)).toBe(6);
   });
 });

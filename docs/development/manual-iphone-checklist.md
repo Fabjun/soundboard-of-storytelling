@@ -83,6 +83,14 @@ because Playwright runs against a simulated environment:
     on from there; a tap on the waveform starts it there; closing the editor stops the sound.
   - Why manual: Audible playback and the touch drag of the handles need a real device.
 
+- [ ] **Several files, each with its own trim** _(Slice 15b, engine change ADR-0068)_
+  - Action: Before the update, export a backup. After it: open a Loop pad, BROWSE, tick two or
+    three files, ADD; trim the first file shorter than the second; play the pad in GAME mode.
+    Also open an existing pad from the V1 import and play it.
+  - Expected: The Loop plays its files one after another, each only within its own trim; a file
+    without a trim plays whole. The existing pads sound as before the update.
+  - Why manual: The playlist trim is an engine change (owner approval); only hearing proves it.
+
 ---
 
 ## Section 2 — File System

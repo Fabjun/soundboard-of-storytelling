@@ -7,7 +7,7 @@
  * Every field is checked — a malformed pad is mapped with defaults, never crashes the import.
  */
 
-import type { Board, ComboStep, FileOrder, Pad, PadBase, Placement } from '../types';
+import type { Board, ComboStep, FileOrder, Pad, PadBase, PadFile, Placement } from '../types';
 import { DEFAULT_GRID } from './boardModel';
 import { DEFAULT_PAD_VOLUME, indexToPos } from './padUtils';
 import { breakCycles } from './comboModel';
@@ -122,21 +122,24 @@ function mapPad(
     ...(num(p.trimStart) ? { trimStart: num(p.trimStart) } : {}),
     ...(num(p.trimEnd) ? { trimEnd: num(p.trimEnd) } : {}),
   };
-  const files = mapFiles(p.files, ctx);
+  const hashes = mapFiles(p.files, ctx);
+  // Each file keeps the pad's trim where V1 applied it; V1 played playlist files whole (ADR-0068)
+  const trimmed: PadFile[] = hashes.map((hash) => ({ hash, ...trim }));
+  const whole: PadFile[] = hashes.map((hash) => ({ hash }));
   const shuffled: FileOrder = p.shuffle === true || p.mode === 'random' ? 'shuffle' : 'sequential';
   switch (p.mode) {
     case 'loop':
       if ((num(p.loopCount) ?? 0) > 0) ctx.notes.loopCounts++;
-      return { ...base, type: 'loop', files, order: 'sequential', ...trim };
+      return { ...base, type: 'loop', files: trimmed, order: 'sequential' };
     case 'playlist':
     case 'chain':
     case 'random':
-      return { ...base, type: 'loop', files, order: shuffled, ...trim };
+      return { ...base, type: 'loop', files: whole, order: shuffled };
     case 'once':
-      return { ...base, type: 'single', files, order: 'sequential', ...trim };
+      return { ...base, type: 'single', files: trimmed, order: 'sequential' };
     default:
       ctx.notes.unknownModes++;
-      return { ...base, type: 'single', files, order: 'sequential', ...trim };
+      return { ...base, type: 'single', files: trimmed, order: 'sequential' };
   }
 }
 

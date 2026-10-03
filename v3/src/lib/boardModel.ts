@@ -11,12 +11,14 @@ import type {
   ComboStep,
   Deck,
   Pad,
+  PadFile,
   PadPosition,
   Placement,
   QuickAccessEntry,
 } from '../types';
 import { nextFreeSlot } from './padUtils';
 import { combosInCycles } from './comboModel';
+import { migratePad, type StoredPad } from './padFiles';
 
 /** A pad as one deck shows it: the pad from the pool plus its placement in that deck. */
 export type PlacedPad = { pad: Pad; placement: Placement };
@@ -331,18 +333,26 @@ function isStep(v: unknown): v is ComboStep {
   );
 }
 
-function isPad(v: unknown): v is Pad {
+function isPadFile(v: unknown): v is PadFile {
+  return isRec(v) && isStr(v.hash) && optional(v.trimStart, isNum) && optional(v.trimEnd, isNum);
+}
+
+/**
+ * A pad in the current shape (files with their own trim, ADR-0068) or in the shape stored before
+ * it (hashes, one trim for the pad) — `migratePad` turns the latter into the former.
+ */
+function isStoredPad(v: unknown): v is StoredPad {
   if (!isRec(v) || !isStr(v.id) || !isStr(v.name)) return false;
   if (!isNum(v.volume) || !isNum(v.fadeIn) || !isNum(v.fadeOut)) return false;
   if (!optional(v.iconRef, isStr) || !optional(v.color, isStr)) return false;
   if (!optional(v.addedAt, isNum) || !optional(v.modifiedAt, isNum)) return false;
   if (v.type === 'combo') return Array.isArray(v.steps) && v.steps.every(isStep);
+  const current = Array.isArray(v.files) && v.files.every(isPadFile);
+  const legacy = isStrArray(v.files) && optional(v.trimStart, isNum) && optional(v.trimEnd, isNum);
   return (
     (v.type === 'single' || v.type === 'loop') &&
-    isStrArray(v.files) &&
-    (v.order === 'sequential' || v.order === 'shuffle') &&
-    optional(v.trimStart, isNum) &&
-    optional(v.trimEnd, isNum)
+    (current || legacy) &&
+    (v.order === 'sequential' || v.order === 'shuffle')
   );
 }
 
@@ -377,14 +387,16 @@ function isQuickAccessEntry(v: unknown): v is QuickAccessEntry {
 
 /**
  * A board read from a file (untrusted JSON), if it has the board's shape AND passes the model's
- * consistency rules — otherwise null. Only the board's own fields are kept.
+ * consistency rules — otherwise null. Only the board's own fields are kept; pads stored before
+ * ADR-0068 come back converted (`migratePad`), so an older backup imports like a new one.
  */
 export function parseBoard(v: unknown): Board | null {
   if (!isRec(v) || !isStr(v.id) || !isStr(v.name) || !isStr(v.themeId)) return null;
-  const { pads, decks, quickAccess } = v;
-  if (!Array.isArray(pads) || !pads.every(isPad)) return null;
+  const { decks, quickAccess } = v;
+  if (!Array.isArray(v.pads) || !v.pads.every(isStoredPad)) return null;
   if (!Array.isArray(decks) || !decks.every(isDeck)) return null;
   if (!Array.isArray(quickAccess) || !quickAccess.every(isQuickAccessEntry)) return null;
+  const pads = v.pads.map(migratePad);
   const board: Board = { id: v.id, name: v.name, themeId: v.themeId, pads, decks, quickAccess };
   return boardProblems(board).length === 0 ? board : null;
 }

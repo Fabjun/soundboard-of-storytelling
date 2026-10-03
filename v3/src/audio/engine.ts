@@ -8,7 +8,7 @@
  */
 
 // The engine plays V1's pad shapes; index.ts maps the app's pads to them (toEnginePad).
-import type { ComboPad } from '../types';
+import type { ComboPad, PadFile } from '../types';
 import type {
   EngineLoopPad as LoopPad,
   EnginePlaylistPad as PlaylistPad,
@@ -139,6 +139,18 @@ function startLoopSource(
   s.loopEnd = hasDur ? tEnd : (s.buffer?.duration ?? 0);
   const offset = startAt === undefined ? tStart : Math.min(Math.max(startAt, tStart), s.loopEnd);
   s.start(0, offset);
+}
+
+/**
+ * Starts a source of a playlist on its file's trimmed region (ADR-0068; owner-approved engine
+ * change 2026-10-03 — V1 played every playlist file whole). Without a trim end it plays to the
+ * end of the file; a trim end not after the start counts as none, as for single files.
+ */
+function startFileSource(s: AudioBufferSourceNode, file: PadFile): void {
+  const tStart = file.trimStart ?? 0;
+  const tEnd = file.trimEnd ?? 0;
+  if (tEnd > tStart) s.start(0, tStart, tEnd - tStart);
+  else s.start(0, tStart);
 }
 
 // ── Callback bridge ───────────────────────────────────────────────────────────
@@ -330,18 +342,19 @@ export function playPlaylist(padId: string, pad: PlaylistPad): void {
 async function playNextTrack(padId: string, pad: PlaylistPad): Promise<void> {
   if (!ctx || !srcs[padId]) return;
 
-  const hashes = pad.files;
+  const files = pad.files;
   let i: number;
   if (pad.shuffle) {
-    i = Math.floor(Math.random() * hashes.length);
+    i = Math.floor(Math.random() * files.length);
   } else {
-    playPos[padId] = (playPos[padId] ?? 0) % hashes.length;
+    playPos[padId] = (playPos[padId] ?? 0) % files.length;
     i = playPos[padId];
     playPos[padId]++;
   }
 
-  const hash = hashes[i] ?? null;
-  if (!hash) {
+  const file = files[i];
+  const hash = file?.hash ?? null;
+  if (!file || !hash) {
     if (srcs[padId]) playNextTrack(padId, pad);
     return;
   }
@@ -365,7 +378,7 @@ async function playNextTrack(padId: string, pad: PlaylistPad): Promise<void> {
   s.buffer = buf;
   s.connect(g);
   g.connect(masterGain!);
-  s.start(0);
+  startFileSource(s, file);
   srcs[padId] = [s];
   gains[padId] = g;
 
@@ -596,8 +609,9 @@ function createPadInstance(
         }
         const i = pad.shuffle ? Math.floor(Math.random() * pad.files.length) : pos;
         pos++;
-        const hash = pad.files[i] ?? null;
-        if (!hash) {
+        const file = pad.files[i];
+        const hash = file?.hash ?? null;
+        if (!file || !hash) {
           nextTrack();
           return;
         }
@@ -619,8 +633,7 @@ function createPadInstance(
             lruDelete(hash);
             nextTrack();
           };
-          if (hasDur) s.start(0, tStart, dur);
-          else s.start(0, tStart);
+          startFileSource(s, file);
         } catch (e) {
           console.warn('Combo playlist decode failed:', e);
           nextTrack();

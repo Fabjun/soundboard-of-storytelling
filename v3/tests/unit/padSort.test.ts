@@ -17,6 +17,8 @@ import {
 } from '../../src/lib/padSort';
 
 const base = (id: string) => ({ id, name: id, volume: 80, fadeIn: 0, fadeOut: 0 });
+/** Untrimmed files of a pad (ADR-0068). */
+const fs = (...hashes: string[]) => hashes.map((hash) => ({ hash }));
 const pad = (id: string, extra: Partial<SinglePad> = {}): SinglePad => ({
   ...base(id),
   type: 'single',
@@ -88,9 +90,9 @@ describe('sortPads', () => {
   it('duration: shortest first; unknown durations last', () => {
     const c = ctx({ fileDuration: (f) => ({ short: 2, long: 30 })[f] });
     const pads = [
-      pad('l', { files: ['long'] }),
-      pad('u', { files: ['unknown'] }),
-      pad('s', { files: ['short'] }),
+      pad('l', { files: fs('long') }),
+      pad('u', { files: fs('unknown') }),
+      pad('s', { files: fs('short') }),
     ];
     expect(sorted(pads, 'duration', false, c)).toEqual(['s', 'l', 'u']);
     expect(sorted(pads, 'duration', true, c)).toEqual(['l', 's', 'u']);
@@ -124,8 +126,19 @@ describe('padDuration', () => {
   const c = ctx({ fileDuration: (f) => ({ a: 2, b: 5 })[f] });
 
   it('Single: its longest file; Loop: one pass through its files', () => {
-    expect(padDuration(pad('s', { files: ['a', 'b'] }), c)).toBe(5);
-    expect(padDuration(loop('l', { files: ['a', 'b'] }), c)).toBe(7);
+    expect(padDuration(pad('s', { files: fs('a', 'b') }), c)).toBe(5);
+    expect(padDuration(loop('l', { files: fs('a', 'b') }), c)).toBe(7);
+  });
+
+  it('a file counts with its trimmed length — what is heard (ADR-0068)', () => {
+    const trimmed = [
+      { hash: 'b', trimStart: 1, trimEnd: 3 },
+      { hash: 'a', trimStart: 0.5 },
+    ];
+    expect(padDuration(loop('l', { files: trimmed }), c)).toBe(2 + 1.5);
+    // A trim end beyond the file or not after the start counts as the end of the file
+    expect(padDuration(pad('s', { files: [{ hash: 'a', trimEnd: 9 }] }), c)).toBe(2);
+    expect(padDuration(pad('s', { files: [{ hash: 'b', trimStart: 2, trimEnd: 1 }] }), c)).toBe(3);
   });
 
   it('Combo: the sum of waits and fade-outs; unknown when there are none', () => {
@@ -142,8 +155,8 @@ describe('padDuration', () => {
   });
 
   it('unknown files are left out; no known file → unknown', () => {
-    expect(padDuration(pad('s', { files: ['a', 'zzz'] }), c)).toBe(2);
-    expect(padDuration(pad('s', { files: ['zzz'] }), c)).toBeUndefined();
+    expect(padDuration(pad('s', { files: fs('a', 'zzz') }), c)).toBe(2);
+    expect(padDuration(pad('s', { files: fs('zzz') }), c)).toBeUndefined();
     expect(padDuration(pad('s'), c)).toBeUndefined();
   });
 });

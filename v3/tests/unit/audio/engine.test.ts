@@ -13,7 +13,7 @@
  * as a tag. The engine keeps module-level state → fresh module per test.
  */
 
-import type { ComboPad, LoopPad, Pad, SinglePad } from '../../../src/types';
+import type { ComboPad, LoopPad, Pad, PadFile, SinglePad } from '../../../src/types';
 import type * as EngineModule from '../../../src/audio/engine';
 import type * as FacadeModule from '../../../src/audio/index';
 
@@ -118,30 +118,48 @@ async function flush(): Promise<void> {
 // ── Pad factories ─────────────────────────────────────────────────────────────
 
 // App pads (ADR-0048, Slice 9d): Single / Loop hold `files` + `order`; the facade maps them to
-// the engine's shapes (toEnginePad). An empty ref ('') means "no file".
+// the engine's shapes (toEnginePad). An empty ref ('') means "no file". A trim given here belongs
+// to the pad's one file (ADR-0068).
+type Trim = { trimStart?: number; trimEnd?: number };
 const base = { name: 'pad', volume: 80, fadeIn: 0, fadeOut: 0 };
-const single = (id: string, ref: string, extra: Partial<SinglePad> = {}): SinglePad => ({
-  ...base,
-  id,
-  type: 'single',
-  files: ref ? [ref] : [],
-  order: 'sequential',
-  ...extra,
+/** One file of a pad with the given trim (only the ends that are set). */
+const fileOf = (hash: string, { trimStart, trimEnd }: Trim = {}): PadFile => ({
+  hash,
+  ...(trimStart === undefined ? {} : { trimStart }),
+  ...(trimEnd === undefined ? {} : { trimEnd }),
 });
-const loop = (id: string, ref: string, extra: Partial<LoopPad> = {}): LoopPad => ({
-  ...base,
-  id,
-  type: 'loop',
-  files: ref ? [ref] : [],
-  order: 'sequential',
-  ...extra,
-});
+const single = (id: string, ref: string, extra: Partial<SinglePad> & Trim = {}): SinglePad => {
+  const { trimStart, trimEnd, ...rest } = extra;
+  return {
+    ...base,
+    id,
+    type: 'single',
+    files: ref ? [fileOf(ref, { trimStart, trimEnd })] : [],
+    order: 'sequential',
+    ...rest,
+  };
+};
+const loop = (id: string, ref: string, extra: Partial<LoopPad> & Trim = {}): LoopPad => {
+  const { trimStart, trimEnd, ...rest } = extra;
+  return {
+    ...base,
+    id,
+    type: 'loop',
+    files: ref ? [fileOf(ref, { trimStart, trimEnd })] : [],
+    order: 'sequential',
+    ...rest,
+  };
+};
 /** The former Playlist: a Loop with several files, in order or shuffled. */
-const playlist = (id: string, files: string[], opts: { shuffle?: boolean } = {}): LoopPad => ({
+const playlist = (
+  id: string,
+  files: (string | PadFile)[],
+  opts: { shuffle?: boolean } = {},
+): LoopPad => ({
   ...base,
   id,
   type: 'loop',
-  files,
+  files: files.map((f) => (typeof f === 'string' ? fileOf(f) : f)),
   order: opts.shuffle ? 'shuffle' : 'sequential',
 });
 const combo = (id: string, steps: ComboPad['steps']): ComboPad => ({
@@ -261,7 +279,7 @@ describe('single', () => {
 
 describe('single with several files', () => {
   test('sequential: each trigger plays the next file in turn, then starts over', async () => {
-    const pad = single('s', 'f1', { files: ['f1', 'f2', 'f3'] });
+    const pad = single('s', 'f1', { files: ['f1', 'f2', 'f3'].map((h) => fileOf(h)) });
     for (let i = 0; i < 4; i++) {
       await audio.play('s', pad);
       await flush();
@@ -271,20 +289,38 @@ describe('single with several files', () => {
   });
 
   test('the turn is kept per pad', async () => {
-    await audio.play('a', single('a', '', { files: ['a1', 'a2'] }));
+    const files = (...hashes: string[]) => hashes.map((h) => fileOf(h));
+    await audio.play('a', single('a', '', { files: files('a1', 'a2') }));
     await flush();
-    await audio.play('b', single('b', '', { files: ['b1', 'b2'] }));
+    await audio.play('b', single('b', '', { files: files('b1', 'b2') }));
     await flush();
-    await audio.play('a', single('a', '', { files: ['a1', 'a2'] }));
+    await audio.play('a', single('a', '', { files: files('a1', 'a2') }));
     await flush();
     expect(tags()).toEqual(['a1', 'b1', 'a2']);
   });
 
   test('shuffle: each trigger plays a random file', async () => {
     vi.spyOn(Math, 'random').mockReturnValue(0.99);
-    await audio.play('s', single('s', '', { files: ['f1', 'f2', 'f3'], order: 'shuffle' }));
+    const files = ['f1', 'f2', 'f3'].map((h) => fileOf(h));
+    await audio.play('s', single('s', '', { files, order: 'shuffle' }));
     await flush();
     expect(tags()).toEqual(['f3']);
+  });
+
+  test('each file plays within its own trim (ADR-0068)', async () => {
+    const files = [
+      fileOf('f1', { trimStart: 0.1, trimEnd: 0.4 }),
+      fileOf('f2', { trimStart: 0.5 }),
+    ];
+    const pad = single('s', '', { files });
+    await audio.play('s', pad);
+    await flush();
+    ctx.sources.at(-1)!.end();
+    await audio.play('s', pad);
+    await flush();
+    expect(ctx.sources[0].started?.offset).toBe(0.1);
+    expect(ctx.sources[0].started?.dur).toBeCloseTo(0.3);
+    expect(ctx.sources[1].started).toEqual({ when: 0, offset: 0.5, dur: undefined });
   });
 
   test('no file: nothing starts', async () => {
@@ -307,6 +343,25 @@ describe('loop with several files (the former playlist)', () => {
     await flush();
     expect(ctx.sources.at(-1)!.loop).toBe(true);
     expect(started.at(-1)).toEqual(['one', true]);
+  });
+
+  test('each file plays within its own trim; an untrimmed one whole (engine change, ADR-0068)', async () => {
+    // V1 played every playlist file whole: start(0) — owner-approved change 2026-10-03
+    await audio.play('p', playlist('p', [fileOf('h1', { trimStart: 0.2, trimEnd: 0.6 }), 'h2']));
+    await flush();
+    expect(ctx.sources[0].started?.offset).toBe(0.2);
+    expect(ctx.sources[0].started?.dur).toBeCloseTo(0.4);
+    ctx.sources[0].end();
+    await flush();
+    expect(ctx.sources[1].started).toEqual({ when: 0, offset: 0, dur: undefined });
+  });
+
+  test('inside a combo, each file of the list plays within its own trim too', async () => {
+    pads.set('p', playlist('p', [fileOf('h1', { trimStart: 0.3 }), 'h2']));
+    // A background child: the step needs a duration to keep the combo (and the child) running
+    void audio.play('c', combo('c', [{ padIds: ['p'], duration: 9 }]));
+    await flush();
+    expect(ctx.sources[0].started).toEqual({ when: 0, offset: 0.3, dur: undefined });
   });
 });
 
@@ -348,10 +403,10 @@ describe('loop', () => {
 // ── Preview (PAD editor, Slice 15a) ──────────────────────────────────────────
 
 describe('preview', () => {
-  test('a Single previews from the tapped second at full volume, to its trim end', async () => {
+  test("a Single previews from the tapped second at full volume, to the file's trim end", async () => {
     await audio.previewFile(
-      single('p', '', { trimStart: 0.2, trimEnd: 0.8, fadeIn: 1 }),
-      'h1',
+      single('p', '', { fadeIn: 1 }),
+      fileOf('h1', { trimStart: 0.2, trimEnd: 0.8 }),
       0.5,
     );
     await flush();
@@ -363,14 +418,14 @@ describe('preview', () => {
   });
 
   test('a Loop previews from the tapped second and then repeats its whole region', async () => {
-    await audio.previewFile(loop('p', '', { trimStart: 0.2, trimEnd: 0.8 }), 'h1', 0.5);
+    await audio.previewFile(loop('p', ''), fileOf('h1', { trimStart: 0.2, trimEnd: 0.8 }), 0.5);
     await flush();
     const s = ctx.sources[0];
     expect([s.loopStart, s.loopEnd, s.started?.offset]).toEqual([0.2, 0.8, 0.5]);
   });
 
   test('a tap before the trim start previews from the trim start, with the fade-in', async () => {
-    await audio.previewFile(loop('p', '', { trimStart: 0.2, fadeIn: 1 }), 'h1', 0);
+    await audio.previewFile(loop('p', '', { fadeIn: 1 }), fileOf('h1', { trimStart: 0.2 }), 0);
     await flush();
     expect(ctx.sources[0].started?.offset).toBe(0.2);
     expect(ctx.gains.at(-1)!.gain.events[0]).toEqual(['set', 0, 0]);
@@ -379,7 +434,7 @@ describe('preview', () => {
   test('the preview is no pad playing: no playing / looping pad, previewPlaying instead', async () => {
     const store = await import('../../../src/state/store');
     audio.initAudioBridge();
-    await audio.previewFile(loop('p', ''), 'h1', 0);
+    await audio.previewFile(loop('p', ''), fileOf('h1'), 0);
     await flush();
     expect(store.previewPlaying.value).toBe(true);
     expect([...store.playingPads.value, ...store.loopingPads.value]).toEqual([]);

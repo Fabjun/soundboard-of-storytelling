@@ -89,6 +89,18 @@ export function withEarlyVersions(
 /** The release notes the start screen shows, newest first (checked by whatsNew.test.ts). */
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
+    version: '3.0.163',
+    date: '2026-10-03',
+    new: [
+      'A Single or Loop pad can hold several audio files: the PAD editor adds several at once from the library, moves them up and down, removes one with a second tap, and plays them in order or shuffled.',
+      'Each file of a pad has its own start and end; selecting a file shows it in the waveform editor and the preview.',
+    ],
+    fixed: ['A Loop with several files plays each file only within its own trimmed part.'],
+    behindTheScenes: [
+      'Stored boards and older backups are converted to the new format automatically; existing pads sound as before.',
+    ],
+  },
+  {
     version: '3.0.162',
     date: '2026-10-03',
     behindTheScenes: [

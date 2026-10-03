@@ -17,10 +17,22 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.162';
+export const APP_VERSION = '3.0.163';
 
 /** The developer log, newest first; CHANGELOG.md is generated from it (sync-changelog). */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.163',
+    date: '2026-10-03',
+    items: [
+      'feat(pad-editor): Slice 15b — file list for Single / Loop pads: select a file for the waveform editor and the preview, ▲ / ▼ to move it (WCAG 2.5.7), ✕ with a second tap to remove it, in order / shuffled; the library picker adds several ticked files at once',
+      'feat(model): each file of a pad has its own trim — files: PadFile[] with hash, trimStart, trimEnd; the pad-wide trim is gone (ADR-0068, owner decision)',
+      'feat(db): database version 7 converts the stored boards in place — never a clear; older backups and the V1 import convert by the same rule (migratePad), keeping how each pad sounded',
+      'fix(audio): a Loop with several files plays each file within its own trim, standalone and in a combo — engine change approved by the owner (V1 played every playlist file whole)',
+      'feat(sort): the length sort counts each file with its trimmed length',
+      'test: migratePad with a property test, file list operations, IDB upgrade v6 → v7 and v5 → v7, older backups, V1 playlist trims, engine trims per file, pad-files E2E in Chromium and WebKit — all counter-checked',
+    ],
+  },
   {
     version: '3.0.162',
     date: '2026-10-03',

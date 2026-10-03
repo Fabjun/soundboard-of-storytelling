@@ -126,7 +126,7 @@ describe('posToIndex / indexToPos round-trip', () => {
 // ── newPad ────────────────────────────────────────────────────────────────────
 
 describe('newPad', () => {
-  test('a Single / Loop gets the default settings, its files and sequential order', () => {
+  test('a Single / Loop gets the default settings, its files untrimmed and sequential order', () => {
     expect(newPad('p', 'loop', 'Rain', ['h1'])).toEqual({
       id: 'p',
       type: 'loop',
@@ -134,7 +134,7 @@ describe('newPad', () => {
       volume: DEFAULT_PAD_VOLUME,
       fadeIn: 0,
       fadeOut: 0,
-      files: ['h1'],
+      files: [{ hash: 'h1' }],
       order: 'sequential',
     });
     expect(newPad('p', 'single', '')).toMatchObject({ type: 'single', files: [] });
@@ -200,8 +200,9 @@ describe('padMigrationMatrix', () => {
 // ── applyTypeChange ───────────────────────────────────────────────────────────
 
 describe('applyTypeChange', () => {
-  test('single → loop keeps files, order and trim', () => {
-    const pad = makePad('p', { files: ['a', 'b'], order: 'shuffle', trimStart: 1, trimEnd: 4 });
+  test('single → loop keeps files with their trim, and order', () => {
+    const files = [{ hash: 'a', trimStart: 1, trimEnd: 4 }, { hash: 'b' }];
+    const pad = makePad('p', { files, order: 'shuffle' });
     expect(applyTypeChange(pad, 'loop')).toEqual({
       ...pad,
       type: 'loop',
@@ -209,7 +210,7 @@ describe('applyTypeChange', () => {
   });
 
   test('→ combo drops the files and starts with no steps', () => {
-    const r = applyTypeChange(makePad('p', { files: ['a'] }), 'combo');
+    const r = applyTypeChange(makePad('p', { files: [{ hash: 'a' }] }), 'combo');
     expect(r).toMatchObject({ type: 'combo', steps: [] });
     expect('files' in r).toBe(false);
   });
@@ -239,7 +240,7 @@ describe('applyTypeChange', () => {
   });
 
   test('immutable: original pad is unchanged', () => {
-    const pad = makePad('p', { files: ['a'] });
+    const pad = makePad('p', { files: [{ hash: 'a' }] });
     const copy = structuredClone(pad);
     applyTypeChange(pad, 'combo');
     expect(pad).toEqual(copy);
@@ -275,8 +276,7 @@ describe('padTypeGlow', () => {
 describe('padBaseOf / timestamps (E1)', () => {
   it('keeps every shared field — also added / modified times — and drops only the type fields', () => {
     const pad = makePad('p', {
-      files: ['a'],
-      trimStart: 1,
+      files: [{ hash: 'a', trimStart: 1 }],
       addedAt: 5,
       modifiedAt: 9,
       iconRef: 'owl',

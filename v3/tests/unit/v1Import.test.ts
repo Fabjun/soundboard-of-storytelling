@@ -63,7 +63,11 @@ describe('mapV1Board', () => {
       context(),
     )!;
     const [once, loop, playlist, chain, random] = b.pads as (SinglePad | LoopPad)[];
-    expect([once.type, once.files, once.order]).toEqual(['single', ['id-a', 'id-b'], 'sequential']);
+    expect([once.type, once.files, once.order]).toEqual([
+      'single',
+      [{ hash: 'id-a' }, { hash: 'id-b' }],
+      'sequential',
+    ]);
     expect([loop.type, loop.order]).toEqual(['loop', 'sequential']);
     expect([playlist.type, playlist.order]).toEqual(['loop', 'shuffle']);
     expect([chain.type, chain.order]).toEqual(['loop', 'sequential']);
@@ -76,6 +80,7 @@ describe('mapV1Board', () => {
       v1Board([
         {
           mode: 'once',
+          files: ['a', 'b'],
           volume: 140,
           fadeIn: 1.5,
           fadeOut: 2,
@@ -87,14 +92,18 @@ describe('mapV1Board', () => {
       ]),
       ctx,
     )!;
+    // V1 trimmed whichever file a Single played: every file gets the trim (ADR-0068)
     expect(b.pads[0]).toMatchObject({
       volume: 100,
       fadeIn: 1.5,
       fadeOut: 2,
-      trimStart: 1,
-      trimEnd: 4,
+      files: [
+        { hash: 'id-a', trimStart: 1, trimEnd: 4 },
+        { hash: 'id-b', trimStart: 1, trimEnd: 4 },
+      ],
       iconRef: 'owl',
     });
+    expect(b.pads[0]).not.toHaveProperty('trimStart');
     expect(b.pads[1]).toMatchObject({
       name: 'Pad 2',
       volume: 80,
@@ -102,6 +111,20 @@ describe('mapV1Board', () => {
       fadeOut: 0,
       files: [],
     });
+  });
+
+  it('a playlist keeps no trim — V1 played its files whole; a loop keeps it (ADR-0068)', () => {
+    const trim = { trimStart: 1, trimEnd: 4 };
+    const b = mapV1Board(
+      v1Board([
+        { mode: 'playlist', files: ['a', 'b'], ...trim },
+        { mode: 'loop', files: ['a'], ...trim },
+      ]),
+      context(),
+    )!;
+    const [playlist, loop] = b.pads as LoopPad[];
+    expect(playlist.files).toEqual([{ hash: 'id-a' }, { hash: 'id-b' }]);
+    expect(loop.files).toEqual([{ hash: 'id-a', ...trim }]);
   });
 
   it('maps combo steps to the new pad ids, with duration, stop all and fade out all', () => {
@@ -230,7 +253,7 @@ describe('mapV1Board — malformed and boundary values', () => {
       volume: 80,
       fadeIn: 0,
       fadeOut: 0,
-      files: ['id-a'],
+      files: [{ hash: 'id-a' }],
       order: 'sequential',
     });
     expect(b.pads[1]).toMatchObject({ name: 'Pad 2', iconRef: 'bell' });
@@ -241,7 +264,7 @@ describe('mapV1Board — malformed and boundary values', () => {
   it('a file that is not available is left out of the pad and counted', () => {
     const ctx = context();
     const b = mapV1Board(v1Board([{ mode: 'loop', files: ['missing-x', 'b'] }]), ctx)!;
-    expect((b.pads[0] as LoopPad).files).toEqual(['id-b']);
+    expect((b.pads[0] as LoopPad).files).toEqual([{ hash: 'id-b' }]);
     expect(ctx.notes.missingFiles).toBe(1);
   });
 
@@ -315,7 +338,11 @@ describe('mapV1Board — malformed and boundary values', () => {
 
   it('an unknown mode becomes a sequential Single; the board uses the default theme', () => {
     const b = mapV1Board(v1Board([{ mode: 'mystery', files: ['a'] }]), context())!;
-    expect(b.pads[0]).toMatchObject({ type: 'single', order: 'sequential', files: ['id-a'] });
+    expect(b.pads[0]).toMatchObject({
+      type: 'single',
+      order: 'sequential',
+      files: [{ hash: 'id-a' }],
+    });
     expect(b.themeId).toBe('hearth');
     expect(b.quickAccess).toEqual([]);
   });

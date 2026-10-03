@@ -2,7 +2,7 @@
  * @fileoverview Audio engine — internal types
  */
 
-import type { ComboPad, PadBase } from '../types';
+import type { ComboPad, PadBase, PadFile } from '../types';
 
 // ── Pad shapes the engine plays (V1's model) ─────────────────────────────────
 // The engine is V1 code and stays unchanged (CLAUDE.md, ADR-0048 engine rule). The app's
@@ -27,10 +27,13 @@ export type EngineLoopPad = PadBase & {
   startAt?: number;
 };
 
-/** Several files one after another (alone: repeats the list; in a combo: plays it once). */
+/**
+ * Several files one after another (alone: repeats the list; in a combo: plays it once), each
+ * within its own trim (ADR-0068 — engine change approved by the owner 2026-10-03).
+ */
 export type EnginePlaylistPad = PadBase & {
   type: 'playlist';
-  files: string[];
+  files: PadFile[];
   shuffle?: boolean;
   /**
    * The list repeats until stopped — a Loop with several files (ADR-0048). In a combo such a

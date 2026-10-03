@@ -69,7 +69,8 @@ const KIND_RANK: Record<PadType, number> = { single: 0, loop: 1, combo: 2 };
 /**
  * A pad's length for sorting (provisional, 2026-10-02): Single — its longest file (it plays one
  * per trigger); Loop — one pass through its files; Combo — the sum of its steps' waits and
- * fade-outs. Undefined when nothing is known.
+ * fade-outs. A file counts with its trimmed length — what is heard (ADR-0068). Undefined when
+ * nothing is known.
  */
 export function padDuration(pad: Pad, ctx: PadSortContext): number | undefined {
   if (pad.type === 'combo') {
@@ -79,7 +80,15 @@ export function padDuration(pad: Pad, ctx: PadSortContext): number | undefined {
     );
     return total > 0 ? total : undefined;
   }
-  const known = pad.files.map(ctx.fileDuration).filter((d): d is number => d !== undefined);
+  const known = pad.files
+    .map((f) => {
+      const duration = ctx.fileDuration(f.hash);
+      if (duration === undefined) return undefined;
+      const start = f.trimStart ?? 0;
+      const end = f.trimEnd && f.trimEnd > start ? Math.min(f.trimEnd, duration) : duration;
+      return Math.max(0, end - start);
+    })
+    .filter((d): d is number => d !== undefined);
   if (known.length === 0) return undefined;
   return pad.type === 'single' ? Math.max(...known) : known.reduce((a, b) => a + b, 0);
 }

@@ -4,6 +4,7 @@
 **Date:** 2026-09-29
 **Slice:** Slice 9
 **Refines:** —
+**Refined by:** ADR-0068 (each file of a Single / Loop has its own trim)
 **Category:** Data model
 
 ## Context

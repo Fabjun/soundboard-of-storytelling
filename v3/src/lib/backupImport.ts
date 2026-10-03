@@ -132,7 +132,10 @@ async function importAudio(
   return null;
 }
 
-/** A V3 pad's files mapped to the ids the import stored (missing ones counted, left out). */
+/**
+ * A V3 pad's files mapped to the ids the import stored (missing ones counted, left out); each file
+ * keeps its trim.
+ */
 function remapFiles(
   board: Board,
   fileId: (h: string) => string | undefined,
@@ -142,10 +145,10 @@ function remapFiles(
     ...board,
     pads: board.pads.map((p) => {
       if (p.type === 'combo') return p;
-      const files = p.files.flatMap((h) => {
-        const id = fileId(h);
+      const files = p.files.flatMap((f) => {
+        const id = fileId(f.hash);
         if (!id) notes.missingFiles++;
-        return id ? [id] : [];
+        return id ? [{ ...f, hash: id }] : [];
       });
       return { ...p, files };
     }),
