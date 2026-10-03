@@ -43,13 +43,11 @@ with mouse and touch** (Pointer Events, never HTML5 DnD); alternatives remain op
 **When:** the adaptive layout in Slice 13 (not part of step 9e, whose scope ADR-0048 §5 fixes:
 All pads, remove vs delete, deck checklist).
 
-### All pads view: no library drop, no new pads (provisional)
+### All pads view: creating pads there ✅ Done (PR #34)
 
-Slice 9e (branch, review pending): the All pads view only selects, edits and plays pads. A library
-drag or place-mode tap there does nothing, the ADD PAD toolbar is hidden and the `A` key is
-ignored — new pads are created in a deck. Open for the owner: should the view create pads that
-sit in no deck, and what should a library drop there do?
-**When:** owner review of the Slice 9e PR; UI in Slice 13 at the latest.
+Decided by the owner 2026-10-02: ADD PAD and a library drop (or long press) in All pads create a
+pad that sits in no deck. Squash-merged to main with PR #34 (2026-10-03). The `A` key named in the
+decision was removed later the same day — the app has no keyboard shortcuts (product K15).
 
 ### Combo by dropping one pad onto another — idea (Open)
 

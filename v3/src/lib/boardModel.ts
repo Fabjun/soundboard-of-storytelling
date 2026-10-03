@@ -81,6 +81,11 @@ export function addPadToFreeCell(
   return position ? addPadToDeck(board, deckId, pad, position) : board;
 }
 
+/** Adds a new pad to the pool only — it sits in no deck (All pads view, owner decision 2026-10-02). */
+export function addPadToPool(board: Board, pad: Pad): Board {
+  return { ...board, pads: [...board.pads, pad] };
+}
+
 /** Replaces a pad of the pool — the change shows in every deck that places it. */
 export function updatePad(board: Board, pad: Pad): Board {
   return { ...board, pads: board.pads.map((p) => (p.id === pad.id ? pad : p)) };

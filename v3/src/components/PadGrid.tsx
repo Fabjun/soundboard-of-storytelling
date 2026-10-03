@@ -9,7 +9,8 @@
 //   - Path B: library drag handled by libDnd.ts (BoardScreen receives onLibDrop)
 //             No HTML5 DnD handlers here — iOS Brave compatibility.
 //   - All pads view (deck = null, Slice 9e): the whole pool by name, rows grow and scroll;
-//     no empty cells, no DnD, no creation popover — selecting and playing only.
+//     no empty cells, no DnD, no creation popover. New pads come from ADD PAD or a library
+//     drop onto the grid (BoardScreen, owner decision 2026-10-02).
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { useEffect, useState } from 'preact/hooks';
@@ -145,6 +146,9 @@ export function PadGrid({
           'sb-pad-grid' + (isPool ? ' sb-pad-grid-pool' : '') + (canArrange ? ' sb-grid-bg' : '')
         }
         data-testid="pad-grid"
+        // All pads: the whole grid is one library drop target (position ignored; libDnd looks
+        // for the closest [data-pos]) — a drop between pads lands here too.
+        data-pos={isPool ? '0,0' : undefined}
         style={
           {
             '--grid-cols': String(cols),

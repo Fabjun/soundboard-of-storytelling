@@ -9,9 +9,10 @@
 //    its component file and ends with an element kind (root: the component name alone);
 //    E2E tests never locate by CSS class; spec files are kebab-case without a folder prefix,
 //    helper files are named helpers.ts.
+//    Numbered E2E titles (`N — …`) are the Slice-3 verification points 1–22, each used once.
+//    Specs reload only through reloadApp, which waits for running board saves.
 // 5. Inline style lengths carry a unit (Preact 11 no longer appends px to numbers) — checked
 //    with the TypeScript type checker, so variables, ternaries and shorthands count.
-//    Numbered E2E titles (`N — …`) are the Slice-3 verification points 1–22, each used once.
 // 6. The stored state is loaded once, before the first render (src/state/boot.ts): only boot.ts
 //    and the store's own setters replace boards / libraryItems — a load that finished after the
 //    first render replaced a board created meanwhile (2026-10-02). Reading for an export is fine.
@@ -20,6 +21,8 @@
 //    (BACKLOG "Bug: board writes from an outdated board copy lose changes").
 // 8. No internal plan names ("Slice 8", "BACKLOG") in what the app shows — text and attributes of
 //    components and screens; code comments may name them.
+// 9. localStorage only in src/db/prefs.ts (keys `sos-v3:<name>[:<id>]`, ADR-0014) — V1 shares
+//    the origin, so an unprefixed key elsewhere could collide with V1's data.
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { readdirSync, readFileSync } from 'node:fs';
@@ -155,6 +158,16 @@ describe('guard: E2E locators and spec names (ADR-0054)', () => {
         : [join(dir, e.name)],
     );
   const files = walk(E2E).filter((f) => f.endsWith('.ts'));
+
+  it('reloads only through reloadApp (it waits for running board saves)', () => {
+    // A change shows before it is saved (updateBoard) — a bare reload can lose it (pad-dnd
+    // test 20 did on 2026-10-02).
+    const bad = files
+      .filter((f) => basename(f) !== 'helpers.ts')
+      .filter((f) => /\bpage\.reload\(/.test(readFileSync(f, 'utf8')))
+      .map((f) => relative(E2E, f));
+    expect(bad, 'use reloadApp(page) from helpers.ts').toEqual([]);
+  });
 
   it('numbers only the Slice-3 verification points (1–22), each once', () => {
     // `test('N — …')` marks a Slice-3 verification point; later tests carry no number
@@ -333,5 +346,25 @@ describe('guard: the app shows no internal plan names', () => {
 
   it('no component or screen shows a slice number or a backlog reference', () => {
     expect(shown, 'say what the user can do, not where it is planned').toEqual([]);
+  });
+});
+
+describe('guard: localStorage only through src/db/prefs.ts (ADR-0014)', () => {
+  const walkSrc = (dir: string): string[] =>
+    readdirSync(dir, { withFileTypes: true }).flatMap((e) =>
+      e.isDirectory() ? walkSrc(join(dir, e.name)) : [join(dir, e.name)],
+    );
+  const files = walkSrc(SRC).filter((f) => /\.tsx?$/.test(f));
+
+  it('finds source files (sanity)', () => {
+    expect(files.length).toBeGreaterThan(30);
+  });
+
+  it('no other file touches localStorage or sessionStorage', () => {
+    const bad = files
+      .filter((f) => relative(SRC, f) !== join('db', 'prefs.ts'))
+      .filter((f) => /\b(localStorage|sessionStorage)\b/.test(readFileSync(f, 'utf8')))
+      .map((f) => relative(SRC, f));
+    expect(bad, 'add a typed function with an sos-v3: key to src/db/prefs.ts').toEqual([]);
   });
 });

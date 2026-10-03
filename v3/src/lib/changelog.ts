@@ -17,9 +17,16 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.138';
+export const APP_VERSION = '3.0.139';
 
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.139',
+    date: '2026-10-03',
+    items: [
+      'feat(decks): pads without a deck from All pads; boards reopen in their last view (PR #34, squash of all-pads-owner-decisions)',
+    ],
+  },
   {
     version: '3.0.138',
     date: '2026-10-03',
@@ -200,9 +207,24 @@ export const CHANGELOG: ChangelogEntry[] = [
     ],
   },
   {
+    version: '3.0.99',
+    date: '2026-10-02',
+    items: [
+      'test: board model mutation score 92.76 % → 100 % (edge cases of free cells, keys, undo order, consistency rules); coverage floor 89/90/80/87',
+    ],
+  },
+  {
     version: '3.0.97',
     date: '2026-10-02',
     items: ['docs: review log — owner decisions O1–O8 of 2026-10-02 and the new pull requests'],
+  },
+  {
+    version: '3.0.96',
+    date: '2026-10-02',
+    items: [
+      'feat(decks): All pads can create pads that sit in no deck (ADD PAD, A key, library drop); a board reopens in the view it showed last',
+      'test: a change shows before it is saved — E2E reloads wait for running board saves (data-saving on <html>)',
+    ],
   },
   {
     version: '3.0.95',

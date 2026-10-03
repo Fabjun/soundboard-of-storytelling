@@ -11,6 +11,7 @@ import {
   addDeck,
   addPadToDeck,
   addPadToFreeCell,
+  addPadToPool,
   boardProblems,
   deckCount,
   deckPads,
@@ -293,6 +294,13 @@ describe('changes applied to the latest board (board writes)', () => {
     expect(boardProblems(b)).toEqual([]);
   });
 
+  it('a pad added to the pool only sits in no deck', () => {
+    const b = addPadToPool(emptyBoard(), single('a'));
+    expect(b.pads.map((p) => p.id)).toEqual(['a']);
+    expect(b.decks.every((d) => d.placements.length === 0)).toBe(true);
+    expect(deckCount(b, 'a')).toBe(0);
+  });
+
   it('two adds in a row on the same board never share a cell', () => {
     let b = addPadToFreeCell(emptyBoard(), 'd1', single('a'));
     b = addPadToFreeCell(b, 'd1', single('b'));
@@ -363,5 +371,97 @@ describe('changes applied to the latest board (board writes)', () => {
     expect(
       boardProblems({ ...b, decks: [b.decks[0], { ...b.decks[1], id: 'd1', order: 0 }] }),
     ).toEqual(['duplicate deck ids', 'two decks share an order number']);
+  });
+});
+
+// Cases added for surviving mutants (local mutation run 2026-10-02, boardModel 92.76 %).
+describe('edges found by mutation testing', () => {
+  it('a free preferred cell is used even when other cells are taken; cells on row/col 0 count', () => {
+    let b = addPadToDeck(emptyBoard(), 'd1', single('a'), { col: 0, row: 0 });
+    b = addPadToFreeCell(b, 'd1', single('b'), { col: 0, row: 1 }); // same column, other row
+    b = addPadToFreeCell(b, 'd1', single('c'), { col: 1, row: 0 }); // same row, other column
+    expect(findDeck(b, 'd1')!.placements.map((p) => [p.padId, p.position])).toEqual([
+      ['a', { col: 0, row: 0 }],
+      ['b', { col: 0, row: 1 }],
+      ['c', { col: 1, row: 0 }],
+    ]);
+    b = addPadToFreeCell(b, 'd1', single('d'), { col: 0, row: 4 }); // below the grid → next free
+    expect(findDeck(b, 'd1')!.placements[3].position).toEqual({ col: 2, row: 0 });
+  });
+
+  it('a free preferred cell on row 0 that is not the next free cell is used', () => {
+    // (0,0) taken: the next free cell would be (1,0) — so (3,0) proves the preference counts
+    let b = addPadToDeck(emptyBoard(), 'd1', single('a'), { col: 0, row: 0 });
+    b = addPadToFreeCell(b, 'd1', single('b'), { col: 3, row: 0 });
+    expect(findDeck(b, 'd1')!.placements[1].position).toEqual({ col: 3, row: 0 });
+  });
+
+  it('a preferred cell left of or above the grid falls back to the next free cell', () => {
+    let b = addPadToFreeCell(emptyBoard(), 'd1', single('a'), { col: -1, row: 0 });
+    b = addPadToFreeCell(b, 'd1', single('b'), { col: 0, row: -1 });
+    expect(findDeck(b, 'd1')!.placements.map((p) => p.position)).toEqual([
+      { col: 0, row: 0 },
+      { col: 1, row: 0 },
+    ]);
+    expect(boardProblems(b)).toEqual([]);
+  });
+
+  it('placing a pad that is already in a deck with other pads changes nothing', () => {
+    let b = addPadToDeck(emptyBoard(), 'd1', single('a'), { col: 0, row: 0 });
+    b = addPadToDeck(b, 'd1', single('b'), { col: 1, row: 0 });
+    expect(placeInDeck(b, 'd1', 'a')).toBe(b);
+  });
+
+  it('a key and a removal touch only their own placement', () => {
+    let b = addPadToDeck(emptyBoard(), 'd1', single('a'), { col: 0, row: 0 });
+    b = addPadToDeck(b, 'd1', single('b'), { col: 1, row: 0 });
+    b = setPlacementHotkey(b, 'd1', 'a', 'K1');
+    expect(findDeck(b, 'd1')!.placements.map((p) => p.hotkey)).toEqual(['K1', undefined]);
+    b = removeFromDeck(b, 'd1', 'a');
+    expect(findDeck(b, 'd1')!.placements.map((p) => p.padId)).toEqual(['b']);
+  });
+
+  it('undo keeps the old order number when no other deck has it', () => {
+    const b = { ...emptyBoard(), decks: [{ ...emptyBoard().decks[0], order: 5 }] };
+    const deleted = { ...emptyBoard().decks[1], order: 2 };
+    expect(findDeck(restoreDeck(b, deleted), 'd2')!.order).toBe(2);
+  });
+
+  it('boardProblems finds duplicate pad ids, cells left of / above / below the grid and combo references', () => {
+    const combo: ComboPad = {
+      ...single('c'),
+      type: 'combo',
+      steps: [{ padIds: ['ghost'] }],
+    };
+    const b: Board = {
+      ...emptyBoard(),
+      pads: [single('a'), single('a'), combo],
+      decks: [
+        {
+          id: 'd1',
+          name: 'x',
+          order: 0,
+          gridConfig: { ...grid, cols: 2, rows: 2 },
+          placements: [
+            { padId: 'a', position: { col: -1, row: 0 } },
+            { padId: 'c', position: { col: 0, row: -1 } },
+          ],
+        },
+        {
+          id: 'd2',
+          name: 'y',
+          order: 1,
+          gridConfig: { ...grid, cols: 2, rows: 2 },
+          placements: [{ padId: 'a', position: { col: 0, row: 2 } }],
+        },
+      ],
+    };
+    expect(boardProblems(b)).toEqual([
+      'duplicate pad ids in the pool',
+      'deck d1: cell -1,0 outside the 2×2 grid',
+      'deck d1: cell 0,-1 outside the 2×2 grid',
+      'deck d2: cell 0,2 outside the 2×2 grid',
+      'combo c: step references unknown pad ghost',
+    ]);
   });
 });

@@ -34,6 +34,14 @@ export const WHATS_NEW_GROUPS = [
 
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
+    version: '3.0.139',
+    date: '2026-10-03',
+    new: [
+      'In All pads you can add pads that are in no deck yet — with ADD PAD or by dropping a file from the library.',
+    ],
+    improved: ['A board opens again in the view you left it in.'],
+  },
+  {
     version: '3.0.138',
     date: '2026-10-03',
     improved: [

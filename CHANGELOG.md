@@ -7,6 +7,12 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.139 — 2026-10-03
+
+### Added
+
+- feat(decks): pads without a deck from All pads; boards reopen in their last view (PR #34, squash of all-pads-owner-decisions)
+
 ## 3.0.138 — 2026-10-03
 
 ### Fixed
@@ -180,11 +186,27 @@ release notes the app shows are written separately for its users (`v3/src/lib/wh
 
 - test: the start screen visual test hides the version footer (a longer version moved the centred line); review log: PRs #35/#36, Slice 9 structure review
 
+## 3.0.99 — 2026-10-02
+
+### Internal
+
+- test: board model mutation score 92.76 % → 100 % (edge cases of free cells, keys, undo order, consistency rules); coverage floor 89/90/80/87
+
 ## 3.0.97 — 2026-10-02
 
 ### Internal
 
 - docs: review log — owner decisions O1–O8 of 2026-10-02 and the new pull requests
+
+## 3.0.96 — 2026-10-02
+
+### Added
+
+- feat(decks): All pads can create pads that sit in no deck (ADD PAD, A key, library drop); a board reopens in the view it showed last
+
+### Internal
+
+- test: a change shows before it is saved — E2E reloads wait for running board saves (data-saving on <html>)
 
 ## 3.0.95 — 2026-10-02
 

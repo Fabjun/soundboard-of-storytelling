@@ -18,6 +18,7 @@ import {
   removeBoardFromStore,
 } from '../state/store';
 import { boardDelete } from '../db/idb';
+import { clearLastView } from '../db/prefs';
 import { createBoard, updateBoard } from '../state/boardWrites';
 import type { Board } from '../types';
 import { nanoid } from '../lib/nanoid';
@@ -121,6 +122,7 @@ function BoardRow({ board, onOpen }: { board: Board; onOpen: () => void }): JSX.
     try {
       await boardDelete(board.id);
       removeBoardFromStore(board.id);
+      clearLastView(board.id);
     } catch (e) {
       console.error('Board delete failed:', e);
     }

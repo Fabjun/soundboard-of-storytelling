@@ -11,7 +11,7 @@
 
 import { readFileSync } from 'node:fs';
 import { test, expect, type Page } from '@playwright/test';
-import { createBoardAndNavigate, goToBoardList } from './helpers';
+import { createBoardAndNavigate, goToBoardList, reloadApp, waitForSaves } from './helpers';
 
 const APP = '/soundboard-of-storytelling/';
 
@@ -22,7 +22,7 @@ async function loadControlled(page: Page): Promise<void> {
     await navigator.serviceWorker.ready;
   });
   // clientsClaim: the active worker takes control; a reload guarantees a controlled load.
-  await page.reload();
+  await reloadApp(page);
   await expect
     .poll(() => page.evaluate(() => navigator.serviceWorker.controller !== null))
     .toBe(true);
@@ -84,7 +84,7 @@ test('manifest is linked with the app name and start URL', async ({ page }) => {
 test('app starts offline after the first visit', async ({ page, context }) => {
   await loadControlled(page);
   await context.setOffline(true);
-  await page.reload();
+  await reloadApp(page);
   await expect(page.getByRole('button', { name: 'TAP TO UNLOCK' })).toBeVisible();
 });
 
@@ -96,7 +96,7 @@ test('fonts are available offline', async ({ page, context }) => {
   const cdp = await context.newCDPSession(page);
   await cdp.send('Network.clearBrowserCache');
   await context.setOffline(true);
-  await page.reload();
+  await reloadApp(page);
   for (const family of FONTS) expect(await fontLoaded(page, family), family).toBe(true);
 });
 
@@ -104,6 +104,7 @@ test('stored boards are still there offline', async ({ page, context }) => {
   await loadControlled(page);
   await goToBoardList(page);
   await createBoardAndNavigate(page);
+  await waitForSaves(page); // the new board shows before it is stored
 
   await context.setOffline(true);
   await page.goto(APP);

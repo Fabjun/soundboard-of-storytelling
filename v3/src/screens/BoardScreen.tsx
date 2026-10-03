@@ -25,6 +25,7 @@ import {
   libraryItems,
 } from '../state/store';
 import { updateBoard } from '../state/boardWrites';
+import { getLastView, setLastView } from '../db/prefs';
 import { BoardTopBar } from '../components/BoardTopBar';
 import { DeckRail } from '../components/DeckRail';
 import { PadGrid } from '../components/PadGrid';
@@ -39,6 +40,7 @@ import {
   DEFAULT_GRID,
   addDeck,
   addPadToFreeCell,
+  addPadToPool,
   deletePad,
   nextDeckName,
   removeFromDeck,
@@ -59,13 +61,16 @@ export function BoardScreen(): JSX.Element {
   /** Mobile Place-Mode: non-null while user is tapping a slot to place a library item. */
   const [placeMode, setPlaceMode] = useState<{ itemId: string } | null>(null);
 
-  // Select first deck if none selected.
+  // Open the board in the view it showed last (owner decision 2026-10-02): a deck that still
+  // exists, or All pads; otherwise the first deck.
   // Dep is board?.id intentionally — we only auto-select on BOARD IDENTITY change,
   // not on every board mutation (which would re-override a user deck selection).
   useEffect(() => {
-    // A board always opens in a deck view, not in All pads.
-    allPadsView.value = false;
-    if (board && !currentDeckId.value && board.decks.length > 0) {
+    const last = board ? getLastView(board.id) : null;
+    allPadsView.value = last?.kind === 'all-pads';
+    if (last?.kind === 'deck' && board?.decks.some((d) => d.id === last.deckId)) {
+      currentDeckId.value = last.deckId;
+    } else if (board && !currentDeckId.value && board.decks.length > 0) {
       const first = [...board.decks].sort((a, b) => a.order - b.order)[0];
       currentDeckId.value = first.id;
     }
@@ -83,8 +88,8 @@ export function BoardScreen(): JSX.Element {
   // Path C — ADD PAD. No keyboard shortcut: the app is operated by its buttons (owner decision
   // 2026-10-02 — keyboard control of the app is Parked; pad keys in GAME are Slice 12).
   async function handleAddPad() {
-    if (!deck || !board) return;
-    const deckId = deck.id;
+    if (!board || (!deck && !poolView)) return;
+    const deckId = deck?.id;
     const newPad: Pad = {
       id: nanoid(),
       type: 'single',
@@ -94,9 +99,12 @@ export function BoardScreen(): JSX.Element {
       fadeOut: 0,
       // libraryItemRef intentionally absent: editor opens to fill it in
     };
-    // The cell is chosen on the latest board: a held or double-pressed A key adds pads to
-    // different cells. Null = grid full (or save failed) — nothing to open.
-    const saved = await updateBoard(board.id, (b) => addPadToFreeCell(b, deckId, newPad));
+    // All pads: the pad goes to the pool only (owner decision 2026-10-02). In a deck the cell is
+    // chosen on the latest board: a held or double-pressed A key adds pads to different cells.
+    // Null = grid full (or save failed) — nothing to open.
+    const saved = await updateBoard(board.id, (b) =>
+      deckId ? addPadToFreeCell(b, deckId, newPad) : addPadToPool(b, newPad),
+    );
     if (saved) {
       setSelectedPadId(newPad.id);
       setRightPanel('editor');
@@ -147,9 +155,9 @@ export function BoardScreen(): JSX.Element {
   // ── Path B — Library drop (Pointer Events via libDnd.ts) ──────────────────
 
   async function handleLibDrop(result: LibDndDropResult) {
-    if (result.kind === 'cancel' || !deck || !board) return;
+    if (result.kind === 'cancel' || !board || (!deck && !poolView)) return;
     const { itemId, targetPos } = result;
-    const deckId = deck.id;
+    const deckId = deck?.id;
 
     const item = libraryItems.value.find((m) => m.id === itemId);
     if (!item) return;
@@ -164,13 +172,21 @@ export function BoardScreen(): JSX.Element {
       fadeOut: 0,
     };
 
-    // On the target cell; when it is taken, on the next free one (nothing when the grid is full).
-    await updateBoard(board.id, (b) => addPadToFreeCell(b, deckId, newPad, targetPos));
+    // Deck: on the target cell; when it is taken, on the next free one (nothing when the grid is
+    // full). All pads: into the pool, the drop position does not matter there.
+    await updateBoard(board.id, (b) =>
+      deckId ? addPadToFreeCell(b, deckId, newPad, targetPos) : addPadToPool(b, newPad),
+    );
   }
 
   // ── Path B Mobile — Place-Mode ─────────────────────────────────────────────
 
   function handleEnterPlaceMode(itemId: string) {
+    if (poolView) {
+      // All pads has no cells to choose — the pad goes straight into the pool.
+      void handleLibDrop({ kind: 'drop', itemId, targetPos: { col: 0, row: 0 } });
+      return;
+    }
     setPlaceMode({ itemId });
     setRightPanel('empty'); // close library panel so the grid is fully visible
   }
@@ -240,11 +256,13 @@ export function BoardScreen(): JSX.Element {
           onDeckSelect={(id) => {
             allPadsView.value = false;
             currentDeckId.value = id;
+            setLastView(board.id, { kind: 'deck', deckId: id });
             setSelectedPadId(null);
           }}
           allPadsActive={poolView}
           onAllPadsSelect={() => {
             allPadsView.value = true;
+            setLastView(board.id, { kind: 'all-pads' });
             setSelectedPadId(null);
             setPlaceMode(null);
             if (rightPanel === 'editor') setRightPanel('empty');
@@ -255,7 +273,10 @@ export function BoardScreen(): JSX.Element {
         <main class="sb-board-main">
           {poolView ? (
             board.pads.length === 0 ? (
-              <div class="sb-center-placeholder">No pads yet. Pads are created in a deck.</div>
+              // data-pos: a library drop lands here too (libDnd targets the closest [data-pos])
+              <div class="sb-center-placeholder" data-pos="0,0">
+                No pads yet. Add one with ADD PAD or drop a file from the library.
+              </div>
             ) : (
               <PadGrid
                 deck={null}
@@ -312,7 +333,7 @@ export function BoardScreen(): JSX.Element {
           )}
 
           {/* SETUP toolbar — ADD PAD button */}
-          {mode === 'edit' && deck && (
+          {mode === 'edit' && (deck || poolView) && (
             <div class="sb-setup-toolbar">
               <button class="sb-btn sb-btn-sm sb-btn-primary" onClick={handleAddPad}>
                 <PixelIcon name="sparkle" size={11} />
