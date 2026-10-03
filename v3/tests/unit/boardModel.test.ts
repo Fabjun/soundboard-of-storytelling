@@ -51,6 +51,8 @@ function emptyBoard(): Board {
 const single = (id: string): SinglePad => ({
   id,
   type: 'single',
+  files: [],
+  order: 'sequential',
   name: id,
   volume: 80,
   fadeIn: 0,

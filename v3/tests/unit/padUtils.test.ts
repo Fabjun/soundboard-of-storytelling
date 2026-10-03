@@ -14,12 +14,24 @@ import {
   padTypeLabel,
   padTypeColor,
   padTypeGlow,
+  newPad,
+  DEFAULT_PAD_VOLUME,
 } from '../../src/lib/padUtils';
 
 // ── Test factory ──────────────────────────────────────────────────────────────
 
 function makePad(id: string, overrides?: Partial<Omit<SinglePad, 'type'>>): SinglePad {
-  return { id, type: 'single', name: `Pad ${id}`, volume: 80, fadeIn: 0, fadeOut: 0, ...overrides };
+  return {
+    id,
+    type: 'single',
+    name: `Pad ${id}`,
+    volume: 80,
+    fadeIn: 0,
+    fadeOut: 0,
+    files: [],
+    order: 'sequential',
+    ...overrides,
+  };
 }
 
 /** A placement in a deck (position and key belong to the placement, ADR-0048). */
@@ -110,144 +122,135 @@ describe('posToIndex / indexToPos round-trip', () => {
   });
 });
 
-// ── padMigrationMatrix ────────────────────────────────────────────────────────
+// ── newPad ────────────────────────────────────────────────────────────────────
 
-describe('padMigrationMatrix — same type', () => {
-  test('single → single = add, no drops', () => {
+describe('newPad', () => {
+  test('a Single / Loop gets the default settings, its files and sequential order', () => {
+    expect(newPad('p', 'loop', 'Rain', ['h1'])).toEqual({
+      id: 'p',
+      type: 'loop',
+      name: 'Rain',
+      volume: DEFAULT_PAD_VOLUME,
+      fadeIn: 0,
+      fadeOut: 0,
+      files: ['h1'],
+      order: 'sequential',
+    });
+    expect(newPad('p', 'single', '')).toMatchObject({ type: 'single', files: [] });
+  });
+
+  test('a Combo starts with no steps and no files', () => {
+    expect(newPad('c', 'combo', 'Day', ['ignored'])).toEqual({
+      id: 'c',
+      type: 'combo',
+      name: 'Day',
+      volume: DEFAULT_PAD_VOLUME,
+      fadeIn: 0,
+      fadeOut: 0,
+      steps: [],
+    });
+  });
+});
+
+// ── padMigrationMatrix (three types, ADR-0048) ───────────────────────────────
+
+describe('padMigrationMatrix', () => {
+  test('same type = add, nothing changes', () => {
     const r = padMigrationMatrix('single', 'single');
     expect(r.verdict).toBe('add');
-    expect(r.drops).toHaveLength(0);
-  });
-});
-
-describe('padMigrationMatrix — single source', () => {
-  test('single → loop = add (loop point added, source preserved)', () => {
-    const r = padMigrationMatrix('single', 'loop');
-    expect(r.verdict).toBe('add');
-    expect(r.keeps).toContain('audio source');
-    expect(r.drops).toHaveLength(0);
+    expect(r.drops).toEqual([]);
   });
 
-  test('single → playlist = migrate (source becomes item 1)', () => {
-    const r = padMigrationMatrix('single', 'playlist');
-    expect(r.verdict).toBe('migrate');
-    expect(r.migrates).toContain('audio source → playlist item 1');
+  test('single ↔ loop = add: both keep the audio files', () => {
+    for (const [from, to] of [
+      ['single', 'loop'],
+      ['loop', 'single'],
+    ] as const) {
+      const r = padMigrationMatrix(from, to);
+      expect(r.verdict).toBe('add');
+      expect(r.keeps).toContain('audio files');
+      expect(r.drops).toEqual([]);
+    }
   });
 
-  test('single → combo = reset', () => {
-    expect(padMigrationMatrix('single', 'combo').verdict).toBe('reset');
-  });
-});
-
-describe('padMigrationMatrix — loop source', () => {
-  test('loop → single = drop (loop point dropped)', () => {
-    const r = padMigrationMatrix('loop', 'single');
-    expect(r.verdict).toBe('drop');
-    expect(r.drops).toContain('loop point');
-    expect(r.keeps).toContain('audio source');
+  test('single / loop → combo = reset: the audio files are dropped', () => {
+    for (const from of ['single', 'loop'] as const) {
+      const r = padMigrationMatrix(from, 'combo');
+      expect(r.verdict).toBe('reset');
+      expect(r.drops).toEqual(['audio files']);
+    }
   });
 
-  test('loop → playlist = migrate', () => {
-    const r = padMigrationMatrix('loop', 'playlist');
-    expect(r.verdict).toBe('migrate');
-    expect(r.drops).toContain('loop point');
+  test('combo → single / loop = reset: the combo steps are dropped', () => {
+    for (const to of ['single', 'loop'] as const) {
+      const r = padMigrationMatrix('combo', to);
+      expect(r.verdict).toBe('reset');
+      expect(r.drops).toEqual(['combo steps']);
+    }
   });
 
-  test('loop → combo = reset', () => {
-    expect(padMigrationMatrix('loop', 'combo').verdict).toBe('reset');
-  });
-});
-
-describe('padMigrationMatrix — playlist source', () => {
-  test('playlist → single = lossy (items 2+ dropped)', () => {
-    const r = padMigrationMatrix('playlist', 'single');
-    expect(r.verdict).toBe('lossy');
-    expect(r.drops).toContain('playlist items 2+');
-  });
-
-  test('playlist → loop = lossy', () => {
-    const r = padMigrationMatrix('playlist', 'loop');
-    expect(r.verdict).toBe('lossy');
-    expect(r.drops).toContain('playlist items 2+');
-  });
-
-  test('playlist → combo = reset', () => {
-    expect(padMigrationMatrix('playlist', 'combo').verdict).toBe('reset');
-  });
-});
-
-describe('padMigrationMatrix — combo source always resets', () => {
-  test('combo → single = reset', () => {
-    expect(padMigrationMatrix('combo', 'single').verdict).toBe('reset');
-  });
-  test('combo → loop = reset', () => {
-    expect(padMigrationMatrix('combo', 'loop').verdict).toBe('reset');
-  });
-  test('combo → playlist = reset', () => {
-    expect(padMigrationMatrix('combo', 'playlist').verdict).toBe('reset');
+  test('the universal fields are always kept', () => {
+    expect(padMigrationMatrix('combo', 'loop').keeps).toEqual(
+      expect.arrayContaining(['name', 'volume', 'fade in', 'fade out', 'hotkey', 'color', 'icon']),
+    );
   });
 });
 
 // ── applyTypeChange ───────────────────────────────────────────────────────────
 
 describe('applyTypeChange', () => {
-  test('RESET case: clears libraryItemRef', () => {
-    const pad = makePad('p1', {
-      libraryItemRef: 'abc123',
+  test('single → loop keeps files, order and trim', () => {
+    const pad = makePad('p', { files: ['a', 'b'], order: 'shuffle', trimStart: 1, trimEnd: 4 });
+    expect(applyTypeChange(pad, 'loop')).toEqual({
+      ...pad,
+      type: 'loop',
     });
-    const result = applyTypeChange(pad, 'combo'); // single→combo = reset
-    expect(result.type).toBe('combo');
-    expect(result).not.toHaveProperty('libraryItemRef');
   });
 
-  test('non-RESET case (ADD): preserves libraryItemRef', () => {
-    const pad = makePad('p1', {
-      libraryItemRef: 'abc123',
-    });
-    const result = applyTypeChange(pad, 'loop'); // single→loop = add
-    expect(result.type).toBe('loop');
-    expect(result).toHaveProperty('libraryItemRef', 'abc123');
+  test('→ combo drops the files and starts with no steps', () => {
+    const r = applyTypeChange(makePad('p', { files: ['a'] }), 'combo');
+    expect(r).toMatchObject({ type: 'combo', steps: [] });
+    expect('files' in r).toBe(false);
   });
 
-  test('LOSSY case: preserves libraryItemRef (item 1 survives)', () => {
-    // PlaylistPad requires files: string[]; first file becomes libraryItemRef on conversion
-    const pad: Pad = {
-      id: 'p1',
-      type: 'playlist',
-      name: 'Pad p1',
-      volume: 80,
-      fadeIn: 0,
-      fadeOut: 0,
-      files: ['xyz789'],
+  test('combo → single starts with no files, sequential order', () => {
+    const combo: Pad = {
+      ...newPad('c', 'combo', 'Day'),
+      type: 'combo',
+      steps: [{ padIds: ['x'] }],
     };
-    const result = applyTypeChange(pad, 'single'); // playlist→single = lossy
-    expect(result.type).toBe('single');
-    expect(result).toHaveProperty('libraryItemRef', 'xyz789');
+    expect(applyTypeChange(combo, 'single')).toMatchObject({
+      type: 'single',
+      files: [],
+      order: 'sequential',
+    });
+  });
+
+  test('combo → combo keeps its steps; universal fields always kept', () => {
+    const combo: Pad = {
+      ...newPad('c', 'combo', 'Day'),
+      type: 'combo',
+      steps: [{ padIds: ['x'] }],
+      color: 'red',
+      volume: 30,
+    };
+    expect(applyTypeChange(combo, 'combo')).toEqual(combo);
   });
 
   test('immutable: original pad is unchanged', () => {
-    const pad = makePad('p1', {
-      libraryItemRef: 'abc123',
-    });
+    const pad = makePad('p', { files: ['a'] });
+    const copy = structuredClone(pad);
     applyTypeChange(pad, 'combo');
-    expect(pad.type).toBe('single');
-    expect(pad.libraryItemRef).toBe('abc123');
+    expect(pad).toEqual(copy);
   });
 });
 
-// ── padTypeLabel / padTypeColor / padTypeGlow ─────────────────────────────────
+// ── Pad type tokens ───────────────────────────────────────────────────────────
 
 describe('padTypeLabel', () => {
-  test('single → SGL', () => {
+  test('one label per type', () => {
     expect(padTypeLabel('single')).toBe('SGL');
-  });
-  test('loop → LOOP', () => {
     expect(padTypeLabel('loop')).toBe('LOOP');
-  });
-  test('playlist → LIST', () => {
-    expect(padTypeLabel('playlist')).toBe('LIST');
-  });
-  test('combo → COMBO', () => {
     expect(padTypeLabel('combo')).toBe('COMBO');
   });
 });
@@ -256,7 +259,6 @@ describe('padTypeColor', () => {
   test('returns var() token for each type', () => {
     expect(padTypeColor('single')).toBe('var(--pad-single)');
     expect(padTypeColor('loop')).toBe('var(--pad-loop)');
-    expect(padTypeColor('playlist')).toBe('var(--pad-playlist)');
     expect(padTypeColor('combo')).toBe('var(--pad-combo)');
   });
 });
@@ -265,7 +267,6 @@ describe('padTypeGlow', () => {
   test('returns glow token for each type', () => {
     expect(padTypeGlow('single')).toBe('var(--pad-single-glow)');
     expect(padTypeGlow('loop')).toBe('var(--pad-loop-glow)');
-    expect(padTypeGlow('playlist')).toBe('var(--pad-playlist-glow)');
     expect(padTypeGlow('combo')).toBe('var(--pad-combo-glow)');
   });
 });

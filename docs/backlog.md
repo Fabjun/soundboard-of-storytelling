@@ -1116,7 +1116,15 @@ comments with "sub-token: deliberate" justification notes.
 ### Playlist → Loop merge (data model)
 
 Decided 2026-09-28 ([docs/product/README.md §5 Pads](product/README.md#pads)): three pad types — Single, Loop, Combo. Loop and Single accept several files (Loop: in order / shuffle; Single: random / in turn). Requires an ADR superseding the `PadType` part of ADR-0042, a migration of stored `playlist` pads, and engine/editor changes (engine change needs explicit approval).
-**When:** Slice 9 (data model), together with the board pad pool below.
+**Built on branch `slice-9d-pad-files` (Slice 9d, review pending — contains an audio dispatch
+change that needs the owner's approval):** `Pad = Single | Loop | Combo`; Single / Loop hold
+`files` + `order`; stored boards are cleared by DB v5 (ADR-0048 §3 — no migration, only test
+data). The engine is unchanged apart from its type imports; `toEnginePad` in
+`v3/src/audio/index.ts` maps the new pads to its shapes. Still open: choosing several files and the
+order in the PAD editor (Slice 11, ADR-0048); a Loop with several files reports "not looping"
+(no is-looping glow) and plays its list once inside a combo — engine behaviour of the former
+playlist, kept for now.
+**When:** review of the Slice 9d PR; file list editing in Slice 11.
 
 ### Theme flames: Verdant, Neon, Crimson
 

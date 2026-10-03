@@ -19,7 +19,7 @@ import type { LibraryItemMeta, Pad, PadPosition, PadType } from '../types';
 import { PixelIcon } from './PixelIcon';
 import { Waveform } from './Waveform';
 import { libraryItems } from '../state/store';
-import { DEFAULT_PAD_TYPE, padTypeColor, padTypeLabel } from '../lib/padUtils';
+import { DEFAULT_PAD_TYPE, newPad, padTypeColor, padTypeLabel } from '../lib/padUtils';
 import { nanoid } from '../lib/nanoid';
 
 export type CreationResult =
@@ -37,7 +37,7 @@ interface PadCreationPopoverProps {
 
 type SourceTab = 'RECENT' | 'BROWSE';
 
-const PAD_TYPES: PadType[] = ['single', 'loop', 'playlist', 'combo'];
+const PAD_TYPES: PadType[] = ['single', 'loop', 'combo'];
 
 export function PadCreationPopover({
   position,
@@ -79,23 +79,8 @@ export function PadCreationPopover({
   }, [onResult]);
 
   function buildPad(id: string): Pad {
-    const base = {
-      id,
-      name: padName.trim() || (selectedItem?.name ?? 'New Pad'),
-      volume: 80,
-      fadeIn: 0,
-      fadeOut: 0,
-    };
-    switch (padType) {
-      case 'single':
-        return { ...base, type: 'single', libraryItemRef: selectedItemId ?? undefined };
-      case 'loop':
-        return { ...base, type: 'loop', libraryItemRef: selectedItemId ?? undefined };
-      case 'playlist':
-        return { ...base, type: 'playlist', files: selectedItemId ? [selectedItemId] : [] };
-      case 'combo':
-        return { ...base, type: 'combo', steps: [] };
-    }
+    const name = padName.trim() || (selectedItem?.name ?? 'New Pad');
+    return newPad(id, padType, name, selectedItemId ? [selectedItemId] : []);
   }
 
   function handleCreate() {

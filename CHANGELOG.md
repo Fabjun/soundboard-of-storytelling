@@ -7,6 +7,12 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.140 — 2026-10-03
+
+### Added
+
+- feat(model): Single and Loop hold several files with an order; Playlist merges into Loop; a multi-file Loop runs in the background of a combo; DB v5 (PR #36, squash of slice-9d-pad-files)
+
 ## 3.0.139 — 2026-10-03
 
 ### Added
@@ -89,6 +95,12 @@ release notes the app shows are written separately for its users (`v3/src/lib/wh
 ### Internal
 
 - docs: review log — #36 decisions built; decisions for #37, #38, #39 and the P8 slice proposal prepared with sources
+
+## 3.0.126 — 2026-10-02
+
+### Added
+
+- feat(pads): a Loop with several files runs in the background of a combo and its list repeats; it glows like any loop; the old Playlist colours are gone (owner decisions on PR #36; engine change awaits the playback check)
 
 ## 3.0.124 — 2026-10-02
 
@@ -185,6 +197,16 @@ release notes the app shows are written separately for its users (`v3/src/lib/wh
 ### Internal
 
 - test: the start screen visual test hides the version footer (a longer version moved the centred line); review log: PRs #35/#36, Slice 9 structure review
+
+## 3.0.100 — 2026-10-02
+
+### Added
+
+- feat(model): three pad types — Single and Loop hold several files with an order, Playlist merges into Loop; a Single with several files plays the next one in turn or a random one; DB v5 (Slice 9d, ADR-0048)
+
+### Internal
+
+- test: the start screen visual test hides the version footer — a longer version moved the centred line and failed it
 
 ## 3.0.99 — 2026-10-02
 

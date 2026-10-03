@@ -13,7 +13,7 @@
 // as a tag. The engine keeps module-level state → fresh module per test.
 // ─────────────────────────────────────────────────────────────────────────────
 
-import type { ComboPad, LoopPad, Pad, PlaylistPad, SinglePad } from '../../../src/types';
+import type { ComboPad, LoopPad, Pad, SinglePad } from '../../../src/types';
 import type * as EngineModule from '../../../src/audio/engine';
 import type * as FacadeModule from '../../../src/audio/index';
 
@@ -114,27 +114,32 @@ async function flush(): Promise<void> {
 
 // ── Pad factories ─────────────────────────────────────────────────────────────
 
-const base = { name: 'pad', position: null, volume: 80, fadeIn: 0, fadeOut: 0 };
+// App pads (ADR-0048, Slice 9d): Single / Loop hold `files` + `order`; the facade maps them to
+// the engine's shapes (toEnginePad). An empty ref ('') means "no file".
+const base = { name: 'pad', volume: 80, fadeIn: 0, fadeOut: 0 };
 const single = (id: string, ref: string, extra: Partial<SinglePad> = {}): SinglePad => ({
   ...base,
   id,
   type: 'single',
-  libraryItemRef: ref,
+  files: ref ? [ref] : [],
+  order: 'sequential',
   ...extra,
 });
 const loop = (id: string, ref: string, extra: Partial<LoopPad> = {}): LoopPad => ({
   ...base,
   id,
   type: 'loop',
-  libraryItemRef: ref,
+  files: ref ? [ref] : [],
+  order: 'sequential',
   ...extra,
 });
-const playlist = (id: string, files: string[], extra: Partial<PlaylistPad> = {}): PlaylistPad => ({
+/** The former Playlist: a Loop with several files, in order or shuffled. */
+const playlist = (id: string, files: string[], opts: { shuffle?: boolean } = {}): LoopPad => ({
   ...base,
   id,
-  type: 'playlist',
+  type: 'loop',
   files,
-  ...extra,
+  order: opts.shuffle ? 'shuffle' : 'sequential',
 });
 const combo = (id: string, steps: ComboPad['steps']): ComboPad => ({
   ...base,
@@ -176,7 +181,11 @@ beforeEach(async () => {
   engine.configureCallbacks({
     onPadStarted: (id, isLoop) => started.push([id, isLoop]),
     onPadStopped: (id) => stopped.push(id),
-    getPad: (id) => pads.get(id) ?? null,
+    // Same mapping as the facade's bridge (index.ts): app pads → engine shapes
+    getPad: (id) => {
+      const pad = pads.get(id);
+      return pad ? audio.toEnginePad(pad) : null;
+    },
   });
   engine.initAudio();
   ctx = FakeAudioContext.last!;
@@ -244,6 +253,59 @@ describe('single', () => {
 });
 
 // ── LOOP ──────────────────────────────────────────────────────────────────────
+
+// ── Several files (ADR-0048, Slice 9d) ────────────────────────────────────────
+
+describe('single with several files', () => {
+  test('sequential: each trigger plays the next file in turn, then starts over', async () => {
+    const pad = single('s', 'f1', { files: ['f1', 'f2', 'f3'] });
+    for (let i = 0; i < 4; i++) {
+      await audio.play('s', pad);
+      await flush();
+      ctx.sources.at(-1)!.end();
+    }
+    expect(tags()).toEqual(['f1', 'f2', 'f3', 'f1']);
+  });
+
+  test('the turn is kept per pad', async () => {
+    await audio.play('a', single('a', '', { files: ['a1', 'a2'] }));
+    await flush();
+    await audio.play('b', single('b', '', { files: ['b1', 'b2'] }));
+    await flush();
+    await audio.play('a', single('a', '', { files: ['a1', 'a2'] }));
+    await flush();
+    expect(tags()).toEqual(['a1', 'b1', 'a2']);
+  });
+
+  test('shuffle: each trigger plays a random file', async () => {
+    vi.spyOn(Math, 'random').mockReturnValue(0.99);
+    await audio.play('s', single('s', '', { files: ['f1', 'f2', 'f3'], order: 'shuffle' }));
+    await flush();
+    expect(tags()).toEqual(['f3']);
+  });
+
+  test('no file: nothing starts', async () => {
+    await audio.play('s', single('s', ''));
+    await flush();
+    expect(ctx.sources).toHaveLength(0);
+  });
+});
+
+describe('loop with several files (the former playlist)', () => {
+  test('plays its files one after another; a single file loops seamlessly instead', async () => {
+    await audio.play('p', playlist('p', ['h1', 'h2']));
+    await flush();
+    expect(ctx.sources[0].loop).toBe(false);
+    ctx.sources[0].end();
+    await flush();
+    expect(tags()).toEqual(['h1', 'h2']);
+
+    await audio.play('one', playlist('one', ['h9']));
+    await flush();
+    expect(ctx.sources.at(-1)!.loop).toBe(true);
+    expect(started.at(-1)).toEqual(['one', true]);
+  });
+});
 
 describe('loop', () => {
   test('loops the buffer and reports started as loop', async () => {
@@ -514,6 +576,22 @@ describe('initAudioBridge', () => {
     expect(tags()).toEqual(['h1']);
     expect(store.playingPads.value.has('c')).toBe(true);
   });
+
+  test('a Loop with several files glows like a loop; a Single does not', async () => {
+    const store = await import('../../../src/state/store');
+    const many = playlist('many', ['h1', 'h2']);
+    const once = single('once', 'h3');
+    store.boards.value = [
+      { id: 'b', name: 'B', themeId: 'hearth', pads: [many, once], decks: [], quickAccess: [] },
+    ];
+    audio.initAudioBridge();
+    await audio.play('many', many);
+    await audio.play('once', once);
+    await flush();
+    expect(store.loopingPads.value.has('many')).toBe(true);
+    expect(store.loopingPads.value.has('once')).toBe(false);
+    expect(store.playingPads.value.has('once')).toBe(true);
+  });
 });
 
 // ── Combo children in detail (T11c: mutation testing left createPadInstance unguarded) ─
@@ -571,22 +649,41 @@ describe('combo children', () => {
     expect(tags()).toEqual(['h2']);
   });
 
-  test('a playlist child plays its files in order, releases each, then the combo continues', async () => {
+  // A Loop with several files runs in the background of a combo, like a one-file loop, and its
+  // list repeats until the combo stops (owner decision 2026-10-02, PR #36).
+  test('a Loop with several files runs in the background: the next step starts at once, the list repeats', async () => {
     pads.set('pl', playlist('pl', ['a', 'b']));
     pads.set('s2', single('s2', 'h2'));
     audio.play('c', combo('c', [{ padIds: ['pl'] }, { padIds: ['s2'] }]));
     await flush();
-    expect(tags()).toEqual(['a']);
+    expect(tags()).toEqual(['a', 'h2']);
     ctx.sources[0].end();
     await flush();
-    expect(tags()).toEqual(['a', 'b']);
+    expect(tags()).toEqual(['a', 'h2', 'b']);
     expect(engine.libBufs['a']).toBeUndefined(); // released after it ended (iOS memory rule)
-    ctx.sources[1].end();
+    ctx.sources[2].end();
     await flush();
-    expect(tags()).toEqual(['a', 'b', 'h2']);
+    expect(tags()).toEqual(['a', 'h2', 'b', 'a']); // starts over
   });
 
-  test('an empty playlist child counts as finished at once', async () => {
+  test('a looping list whose files are all missing stops instead of spinning', async () => {
+    missing.add('m1');
+    missing.add('m2');
+    pads.set('pl', playlist('pl', ['m1', 'm2']));
+    pads.set('s2', single('s2', 'h2'));
+    audio.play('c', combo('c', [{ padIds: ['pl'] }, { padIds: ['s2'] }]));
+    await flush();
+    expect(tags()).toEqual(['h2']);
+    const idb = await import('../../../src/db/idb');
+    const tries = vi.mocked(idb.libGet).mock.calls.filter(([h]) => h === 'm1').length;
+    expect(tries).toBe(1); // one round, then it gave up — no endless retry
+  });
+
+  // Slice 9d behaviour change: a Loop with no file is mapped to the engine's loop (not to an
+  // empty playlist), i.e. a silent background child — so the next step starts once, at once.
+  // Before 9d the empty playlist was a foreground child that ended at once (and hit the
+  // double-start bug).
+  test('an empty loop child does not hold up the combo', async () => {
     pads.set('pl', playlist('pl', []));
     pads.set('s2', single('s2', 'h2'));
     audio.play('c', combo('c', [{ padIds: ['pl'] }, { padIds: ['s2'] }]));
@@ -630,7 +727,8 @@ describe('combo children', () => {
   test('a shuffled playlist child picks its file with Math.random', async () => {
     vi.spyOn(Math, 'random').mockReturnValue(0.99);
     pads.set('pl', playlist('pl', ['a', 'b', 'z'], { shuffle: true }));
-    audio.play('c', combo('c', [{ padIds: ['pl'] }]));
+    // A background child: the step needs a duration to keep the combo (and the child) running
+    audio.play('c', combo('c', [{ padIds: ['pl'], duration: 9 }]));
     await flush();
     expect(tags()).toEqual(['z']);
   });

@@ -4,7 +4,7 @@
 // 16. Tap pad in SETUP → PadEditorPanel opens
 // 17. Change pad name → auto-saved (persists after reload)
 // 18. Trivial type change (single→loop) → no dialog, type updates
-// 19. Lossy type change (playlist→single) → PadTypeConfirmDialog appears
+// 19. Lossy type change (single→combo drops the audio files) → PadTypeConfirmDialog appears
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { test, expect } from '@playwright/test';
@@ -100,27 +100,31 @@ test('18 — trivial type change (single→loop) → no confirmation dialog', as
 // ── Test 19: Lossy type change → PadTypeConfirmDialog appears ────────────────
 
 test('19 — lossy type change → PadTypeConfirmDialog appears', async ({ page }) => {
-  // First set the pad type to playlist (requires: open editor, click playlist)
   const padCell = page
     .locator('[data-testid^="pad-grid-cell-"]:not([data-testid^="pad-grid-cell-empty-slot-"])')
     .first();
   await padCell.click();
   await page.getByTestId('pad-editor-panel').waitFor();
 
-  // single→playlist is a 'migrate' change (padMigrationMatrix) of a pad with name and source:
-  // the dialog always appears — confirm it.
-  await page.getByTestId('pad-editor-panel-type-button-playlist').click();
+  // single→combo drops the audio files (padMigrationMatrix 'reset', ADR-0048): the dialog appears
   const dialog = page.getByTestId('pad-type-confirm-dialog');
+  await page.getByTestId('pad-editor-panel-type-button-combo').click();
   await expect(dialog).toBeVisible();
+
+  // Cancel: the type stays SINGLE
+  await page.getByTestId('pad-type-confirm-dialog-cancel-button').click();
+  await expect(dialog).not.toBeVisible({ timeout: 2000 });
+  await expect(page.getByTestId('pad-editor-panel-type-button-single')).toHaveAttribute(
+    'aria-pressed',
+    'true',
+  );
+
+  // Confirm: the pad becomes a COMBO
+  await page.getByTestId('pad-editor-panel-type-button-combo').click();
   await page.getByTestId('pad-type-confirm-dialog-switch-button').click();
   await expect(dialog).not.toBeVisible({ timeout: 2000 });
-  // Now switch back: playlist→single (lossy: drops playlist sources)
-  await page.getByTestId('pad-editor-panel-type-button-single').click();
-  // Confirmation dialog should appear
-  await expect(page.getByTestId('pad-type-confirm-dialog')).toBeVisible();
-  // Cancel: type should NOT change
-  await page.getByTestId('pad-type-confirm-dialog-cancel-button').click();
-  await expect(page.getByTestId('pad-type-confirm-dialog')).not.toBeVisible({
-    timeout: 2000,
-  });
+  await expect(page.getByTestId('pad-editor-panel-type-button-combo')).toHaveAttribute(
+    'aria-pressed',
+    'true',
+  );
 });

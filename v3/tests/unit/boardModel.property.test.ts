@@ -9,7 +9,7 @@
 
 import { fc, test } from '@fast-check/vitest';
 import { describe, expect } from 'vitest';
-import type { Board, ComboPad, Pad } from '../../src/types';
+import type { Board, Pad } from '../../src/types';
 import {
   addDeck,
   addPadToDeck,
@@ -25,7 +25,7 @@ import {
   setPlacementHotkey,
   updatePad,
 } from '../../src/lib/boardModel';
-import { indexToPos } from '../../src/lib/padUtils';
+import { indexToPos, newPad } from '../../src/lib/padUtils';
 
 const grid = { cols: 3, rows: 2, gap: 4, padSize: 'md' }; // small grid: full decks happen often
 
@@ -76,15 +76,12 @@ function apply(b: Board, o: Op, n: number): Board {
         (i) => !taken.has(i),
       );
       if (free === undefined) return b;
-      const base = { id: `p${n}`, name: `Pad ${n}`, volume: 80, fadeIn: 0, fadeOut: 0 };
-      const newPad: Pad = o.combo
-        ? ({
-            ...base,
-            type: 'combo',
-            steps: [{ padIds: b.pads.slice(0, 2).map((p) => p.id) }],
-          } as ComboPad)
-        : { ...base, type: 'single' };
-      return addPadToDeck(b, deck.id, newPad, indexToPos(free, grid.cols));
+      const created = newPad(`p${n}`, o.combo ? 'combo' : 'single', `Pad ${n}`);
+      const pad: Pad =
+        created.type === 'combo'
+          ? { ...created, steps: [{ padIds: b.pads.slice(0, 2).map((p) => p.id) }] }
+          : created;
+      return addPadToDeck(b, deck.id, pad, indexToPos(free, grid.cols));
     }
     case 'delete':
       return pad ? deletePad(b, pad.id) : b;
@@ -104,15 +101,8 @@ function apply(b: Board, o: Op, n: number): Board {
       return deck && pad ? placeInDeck(b, deck.id, pad.id) : b;
     case 'addFree': {
       if (!deck) return b;
-      const newPad: Pad = {
-        id: `p${n}`,
-        name: `Pad ${n}`,
-        volume: 80,
-        fadeIn: 0,
-        fadeOut: 0,
-        type: 'single',
-      };
-      return addPadToFreeCell(b, deck.id, newPad, { col: o.col, row: o.row });
+      const created = newPad(`p${n}`, 'single', `Pad ${n}`);
+      return addPadToFreeCell(b, deck.id, created, { col: o.col, row: o.row });
     }
     case 'undoDeck': {
       if (!deck) return b;

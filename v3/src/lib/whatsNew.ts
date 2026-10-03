@@ -34,6 +34,22 @@ export const WHATS_NEW_GROUPS = [
 
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
+    version: '3.0.140',
+    date: '2026-10-03',
+    new: [
+      'A Single can hold several files and plays the next one, or a random one, each time you tap it.',
+      'A Loop can hold several files and plays them one after another, in order or shuffled.',
+    ],
+    improved: [
+      'Three pad types instead of four: the Playlist became a Loop with several files.',
+      'In a combo, a Loop with several files plays in the background, so the next step starts at once.',
+      'A Loop with several files glows like any other Loop while it plays.',
+    ],
+    removed: [
+      'Boards from earlier test versions are cleared once more by this update; your audio library stays.',
+    ],
+  },
+  {
     version: '3.0.139',
     date: '2026-10-03',
     new: [

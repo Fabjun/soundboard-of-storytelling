@@ -25,24 +25,17 @@ interface PadTypeConfirmDialogProps {
 
 const VERDICT_LABELS: Record<MigrationVerdict, string> = {
   add: 'ADDS',
-  migrate: 'MIGRATES',
-  drop: 'DROPS',
-  lossy: 'LOSSY',
   reset: 'RESET',
 };
 
 const VERDICT_COLORS: Record<MigrationVerdict, string> = {
   add: 'var(--mode-setup)',
-  migrate: 'var(--gold)',
-  drop: 'var(--warning)',
-  lossy: 'var(--blood-bright)',
   reset: 'var(--blood-bright)',
 };
 
 const TYPE_LABELS: Record<PadType, string> = {
   single: 'SINGLE',
   loop: 'LOOP',
-  playlist: 'PLAYLIST',
   combo: 'COMBO',
 };
 
@@ -53,7 +46,7 @@ export function PadTypeConfirmDialog({
   onCancel,
 }: PadTypeConfirmDialogProps): JSX.Element {
   const { verdict, keeps, migrates, drops } = padMigrationMatrix(fromType, toType);
-  const isDangerous = verdict === 'reset' || verdict === 'lossy';
+  const isDangerous = verdict === 'reset';
 
   // Close on Escape
   useEffect(() => {

@@ -35,7 +35,7 @@ import { StatusBar } from '../components/StatusBar';
 import { PixelIcon } from '../components/PixelIcon';
 import type { AppMode, Pad, PadPosition } from '../types';
 import { nanoid } from '../lib/nanoid';
-import { DEFAULT_PAD_TYPE } from '../lib/padUtils';
+import { DEFAULT_PAD_TYPE, newPad } from '../lib/padUtils';
 import {
   DEFAULT_GRID,
   addDeck,
@@ -90,23 +90,16 @@ export function BoardScreen(): JSX.Element {
   async function handleAddPad() {
     if (!board || (!deck && !poolView)) return;
     const deckId = deck?.id;
-    const newPad: Pad = {
-      id: nanoid(),
-      type: 'single',
-      name: '',
-      volume: 80,
-      fadeIn: 0,
-      fadeOut: 0,
-      // libraryItemRef intentionally absent: editor opens to fill it in
-    };
+    // No file yet: the editor opens to choose one
+    const pad = newPad(nanoid(), DEFAULT_PAD_TYPE, '');
     // All pads: the pad goes to the pool only (owner decision 2026-10-02). In a deck the cell is
     // chosen on the latest board: a held or double-pressed A key adds pads to different cells.
     // Null = grid full (or save failed) — nothing to open.
     const saved = await updateBoard(board.id, (b) =>
-      deckId ? addPadToFreeCell(b, deckId, newPad) : addPadToPool(b, newPad),
+      deckId ? addPadToFreeCell(b, deckId, pad) : addPadToPool(b, pad),
     );
     if (saved) {
-      setSelectedPadId(newPad.id);
+      setSelectedPadId(pad.id);
       setRightPanel('editor');
     }
   }
@@ -162,20 +155,12 @@ export function BoardScreen(): JSX.Element {
     const item = libraryItems.value.find((m) => m.id === itemId);
     if (!item) return;
 
-    const newPad: Pad = {
-      id: nanoid(),
-      type: DEFAULT_PAD_TYPE,
-      name: item.name,
-      libraryItemRef: itemId,
-      volume: 80,
-      fadeIn: 0,
-      fadeOut: 0,
-    };
+    const pad = newPad(nanoid(), DEFAULT_PAD_TYPE, item.name, [itemId]);
 
     // Deck: on the target cell; when it is taken, on the next free one (nothing when the grid is
     // full). All pads: into the pool, the drop position does not matter there.
     await updateBoard(board.id, (b) =>
-      deckId ? addPadToFreeCell(b, deckId, newPad, targetPos) : addPadToPool(b, newPad),
+      deckId ? addPadToFreeCell(b, deckId, pad, targetPos) : addPadToPool(b, pad),
     );
   }
 

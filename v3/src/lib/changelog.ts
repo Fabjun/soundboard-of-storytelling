@@ -17,9 +17,16 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.139';
+export const APP_VERSION = '3.0.140';
 
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.140',
+    date: '2026-10-03',
+    items: [
+      'feat(model): Single and Loop hold several files with an order; Playlist merges into Loop; a multi-file Loop runs in the background of a combo; DB v5 (PR #36, squash of slice-9d-pad-files)',
+    ],
+  },
   {
     version: '3.0.139',
     date: '2026-10-03',
@@ -100,6 +107,13 @@ export const CHANGELOG: ChangelogEntry[] = [
     date: '2026-10-02',
     items: [
       'docs: review log — #36 decisions built; decisions for #37, #38, #39 and the P8 slice proposal prepared with sources',
+    ],
+  },
+  {
+    version: '3.0.126',
+    date: '2026-10-02',
+    items: [
+      'feat(pads): a Loop with several files runs in the background of a combo and its list repeats; it glows like any loop; the old Playlist colours are gone (owner decisions on PR #36; engine change awaits the playback check)',
     ],
   },
   {
@@ -204,6 +218,14 @@ export const CHANGELOG: ChangelogEntry[] = [
     date: '2026-10-02',
     items: [
       'test: the start screen visual test hides the version footer (a longer version moved the centred line); review log: PRs #35/#36, Slice 9 structure review',
+    ],
+  },
+  {
+    version: '3.0.100',
+    date: '2026-10-02',
+    items: [
+      'feat(model): three pad types — Single and Loop hold several files with an order, Playlist merges into Loop; a Single with several files plays the next one in turn or a random one; DB v5 (Slice 9d, ADR-0048)',
+      'test: the start screen visual test hides the version footer — a longer version moved the centred line and failed it',
     ],
   },
   {
