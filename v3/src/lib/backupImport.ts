@@ -50,6 +50,15 @@ const entryHash = (e: Entry): string | undefined => {
   return typeof h === 'string' && h !== '' ? h : undefined;
 };
 
+/**
+ * The library tags to restore (owner decision B9): `tags` in V3 files, V1's `folder` as one tag —
+ * the library groups of Slice 16 build on them.
+ */
+export const entryTags = (e: Entry): string[] => {
+  if (Array.isArray(e.tags)) return e.tags.filter((t): t is string => typeof t === 'string');
+  return typeof e.folder === 'string' && e.folder !== '' ? [e.folder] : [];
+};
+
 /** Audio — not a V1 pad template (`type: 'pad'`) or an image, which are not imported. */
 const isAudioEntry = (e: Entry): boolean => {
   return (
@@ -74,7 +83,7 @@ export async function planImport(file: Blob): Promise<ImportPlan> {
     onBoards: (b) => {
       fileBoards = b;
     },
-    onLibraryEntry: (e) => {
+    onLibraryEntry: ({ fields: e }) => {
       if (!isAudioEntry(e)) {
         otherEntries++;
         return;
@@ -94,12 +103,32 @@ export async function planImport(file: Blob): Promise<ImportPlan> {
   };
 }
 
-/** base64 → bytes, without building anything bigger than the result (iPhone memory rule 6). */
-export function base64ToBytes(b64: string): Uint8Array<ArrayBuffer> {
-  const bin = atob(b64);
-  const out = new Uint8Array(bin.length);
-  for (let i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i);
-  return out;
+/**
+ * Adds one entry's audio to the library through the upload pipeline, with its tags. Records the
+ * stored id under the backup's hash. Returns a message when the audio could not be added.
+ */
+async function importAudio(
+  e: Entry,
+  name: string,
+  audio: () => Promise<Blob | null>,
+  hash: string | undefined,
+  stored: Map<string, string>,
+  result: ImportResult,
+): Promise<string | null> {
+  let data: Blob | null;
+  try {
+    data = await audio();
+  } catch {
+    return `${name}: the audio data in the backup is damaged`;
+  }
+  if (!data) return `${name}: the backup holds no audio for this file`;
+  const type = typeof e.type === 'string' && e.type.startsWith('audio/') ? e.type : '';
+  const r = await addAudioFile(new File([data], name, { type }), { tags: entryTags(e) });
+  if (r.kind === 'error') return r.error;
+  if (hash) stored.set(hash, r.id);
+  if (r.kind === 'imported') result.audioAdded++;
+  else result.audioSkipped++;
+  return null;
 }
 
 /** A V3 pad's files mapped to the ids the import stored (missing ones counted, left out). */
@@ -144,34 +173,16 @@ export async function runImport(
   let done = 0;
 
   await readBackup(file, {
-    onLibraryEntry: async (e) => {
+    onLibraryEntry: async ({ fields: e, audio }) => {
       if (!isAudioEntry(e)) return;
       const h = entryHash(e);
       const name = typeof e.name === 'string' && e.name !== '' ? e.name : 'imported audio';
       if (h && libraryItems.value.some((m) => m.id === h)) {
         stored.set(h, h);
         result.audioSkipped++;
-      } else if (typeof e.data === 'string') {
-        let bytes: Uint8Array<ArrayBuffer> | null = null;
-        try {
-          bytes = base64ToBytes(e.data);
-        } catch {
-          result.audioFailed.push(`${name}: not valid base64`);
-        }
-        e.data = null; // free the base64 string now, not at GC time (memory rule 6)
-        if (bytes) {
-          const type = typeof e.type === 'string' && e.type.startsWith('audio/') ? e.type : '';
-          const r = await addAudioFile(new File([bytes], name, { type }));
-          bytes = null;
-          if (r.kind === 'error') result.audioFailed.push(r.error);
-          else {
-            if (h) stored.set(h, r.id);
-            if (r.kind === 'imported') result.audioAdded++;
-            else result.audioSkipped++;
-          }
-        }
       } else {
-        result.audioFailed.push(`${name}: no audio data`);
+        const failure = await importAudio(e, name, audio, h, stored, result);
+        if (failure) result.audioFailed.push(failure);
       }
       onProgress?.(++done);
     },

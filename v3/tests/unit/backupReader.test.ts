@@ -1,13 +1,24 @@
 // ─────────────────────────────────────────────────────────────────────────────
 // backupReader — reads V1 and V3 backups piece by piece (D6, ADR-0061)
-// Edge-case checklist: nothing / one / many entries, V1 vs V3 header, gzip, chunks split anywhere
-// (also inside strings and escapes), invalid input, entries handled one at a time.
+// Edge-case checklist: nothing / one / many entries, V1 vs V3 header, ZIP / gzip / plain JSON
+// (told apart by bytes), gzip without DecompressionStream (B8), chunks split anywhere (also inside
+// strings and escapes), invalid input, entries handled one at a time, audio on demand (base64
+// decoded and freed; ZIP slice; missing → null; damaged → rejects).
 // Property: for random backups and random chunk boundaries the reader hands over exactly what
 // JSON.parse would see.
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { fc, test as propTest } from '@fast-check/vitest';
-import { BackupError, readBackup, V3_BACKUP_FORMAT } from '../../src/lib/backupReader';
+import { zipSync } from 'fflate';
+import {
+  BACKUP_MANIFEST,
+  BackupError,
+  base64ToBytes,
+  readBackup,
+  V3_BACKUP_FORMAT,
+  type BackupLibraryEntry,
+} from '../../src/lib/backupReader';
+import { createZipWriter } from '../../src/lib/zipArchive';
 
 /** A Blob whose stream() delivers the bytes in the given chunk sizes (last chunk: the rest). */
 class ChunkedBlob extends Blob {
@@ -49,11 +60,47 @@ async function readAll(file: Blob) {
   const header = await readBackup(file, {
     onBoards: (b) => boards.push(b),
     onLibraryEntry: (e) => {
-      entries.push(e);
+      entries.push(e.fields);
     },
   });
   return { header, boards, entries };
 }
+
+/** Reads the file and asks every entry for its audio: name → bytes, or null / 'damaged'. */
+async function readAudio(file: Blob) {
+  const audio: Record<string, number[] | null | string> = {};
+  await readBackup(file, {
+    onLibraryEntry: async (e: BackupLibraryEntry) => {
+      const name = String(e.fields.name);
+      try {
+        const blob = await e.audio();
+        audio[name] = blob ? Array.from(new Uint8Array(await blob.arrayBuffer())) : null;
+      } catch (err) {
+        audio[name] = err instanceof BackupError ? err.kind : String(err);
+      }
+    },
+  });
+  return audio;
+}
+
+/** A V3 backup archive: the given audio files and a manifest. */
+function zipBackup(audio: [string, Uint8Array][], manifest: unknown): Blob {
+  const zip = createZipWriter();
+  for (const [path, bytes] of audio) zip.add(path, bytes);
+  zip.add(BACKUP_MANIFEST, encode(manifest));
+  return zip.finish('application/zip');
+}
+
+const zipManifest = {
+  format: V3_BACKUP_FORMAT,
+  formatVersion: 2,
+  boards: [{ id: 'b', name: 'Board' }],
+  library: [
+    { id: 'h1', name: 'one.mp3', file: 'audio/h1.mp3' },
+    { id: 'h2', name: 'gone.mp3', file: 'audio/h2.mp3' },
+    { id: 'h3', name: 'none.mp3' },
+  ],
+};
 
 const v3Doc = {
   format: V3_BACKUP_FORMAT,
@@ -112,7 +159,7 @@ describe('readBackup', () => {
         active++;
         maxActive = Math.max(maxActive, active);
         await new Promise((r) => setTimeout(r, 1));
-        seen.push(e.id);
+        seen.push(e.fields.id);
         active--;
       },
     });
@@ -120,21 +167,23 @@ describe('readBackup', () => {
     expect(seen).toEqual(['h1', 'h2']);
   });
 
-  it('rejects invalid JSON, a cut-off file and a broken gzip stream as invalid-json', async () => {
+  it('rejects invalid JSON, cut-off files and a broken gzip stream as damaged', async () => {
     const bytes = encode(v3Doc);
+    const gz = new Uint8Array(await (await gzip(bytes)).arrayBuffer());
     for (const file of [
       new Blob(['{"boards": [}']),
       new Blob([bytes.slice(0, bytes.length - 5)]),
       new Blob([new Uint8Array([0x1f, 0x8b, 1, 2, 3, 4, 5])]),
+      new Blob([gz.slice(0, gz.length - 12)]),
     ]) {
-      await expect(readBackup(file, {})).rejects.toEqual(new BackupError('invalid-json'));
+      await expect(readBackup(file, {})).rejects.toEqual(new BackupError('damaged'));
     }
   });
 
   it('stops reading a broken file at the error instead of reading it to the end', async () => {
     const bytes = new TextEncoder().encode('{"boards": [}' + ' '.repeat(1000));
     const file = new ChunkedBlob(bytes, Array(2000).fill(1));
-    await expect(readBackup(file, {})).rejects.toMatchObject({ kind: 'invalid-json' });
+    await expect(readBackup(file, {})).rejects.toMatchObject({ kind: 'damaged' });
     expect(file.stats.pulls).toBeLessThan(50);
   });
 
@@ -144,15 +193,85 @@ describe('readBackup', () => {
     });
   });
 
-  it('refuses a gzipped file where the browser cannot unpack it (iOS < 16.4)', async () => {
+  it('reads a gzipped file where the browser cannot unpack gzip itself (iOS < 16.4, B8)', async () => {
     vi.stubGlobal('DecompressionStream', undefined);
     try {
-      await expect(readBackup(await gzip(encode(v3Doc)), {})).rejects.toMatchObject({
-        kind: 'gzip-unsupported',
-      });
+      const { header, entries } = await readAll(await gzip(encode(v3Doc)));
+      expect(header.kind).toBe('v3');
+      expect(entries).toEqual(v3Doc.library);
     } finally {
       vi.unstubAllGlobals();
     }
+  });
+
+  it('JSON audio: base64 decoded on demand and freed; missing → null; broken → damaged', async () => {
+    const doc = {
+      version: 1,
+      library: [
+        { hash: 'a', name: 'ok', data: btoa('\x01\x02') },
+        { hash: 'b', name: 'missing' },
+        { hash: 'c', name: 'broken', data: '%%%' },
+      ],
+    };
+    expect(await readAudio(new Blob([encode(doc)]))).toEqual({
+      ok: [1, 2],
+      missing: null,
+      broken: 'damaged',
+    });
+    let fields: Record<string, unknown> = {};
+    await readBackup(new Blob([encode(doc)]), {
+      onLibraryEntry: async (e) => {
+        if (e.fields.name !== 'ok') return;
+        await e.audio();
+        fields = e.fields;
+      },
+    });
+    expect(fields.data).toBeNull(); // the base64 text is not kept once decoded
+  });
+});
+
+describe('readBackup — ZIP (V3 format 2)', () => {
+  it('reads the manifest and hands each entry its audio file from the archive', async () => {
+    const file = zipBackup([['audio/h1.mp3', new Uint8Array([1, 2, 3])]], zipManifest);
+    const { header, boards, entries } = await readAll(file);
+    expect(header).toEqual({ kind: 'v3', formatVersion: 2 });
+    expect(boards).toEqual([zipManifest.boards]);
+    expect(entries).toEqual(zipManifest.library);
+    // A file the manifest names but the archive lacks, and an entry naming none → no audio
+    expect(await readAudio(file)).toEqual({
+      'one.mp3': [1, 2, 3],
+      'gone.mp3': null,
+      'none.mp3': null,
+    });
+  });
+
+  it('refuses a ZIP without a manifest, a cut-off ZIP and a repacked (compressed) one', async () => {
+    const other = createZipWriter();
+    other.add('photo.jpg', new Uint8Array([1]));
+    const full = zipBackup([], zipManifest);
+    const repacked = new Blob([
+      zipSync({ [BACKUP_MANIFEST]: [encode(zipManifest), { level: 6 }] }),
+    ]);
+    const cases: [string, Blob, string][] = [
+      ['no manifest', other.finish('application/zip'), 'not-a-backup'],
+      ['cut off', full.slice(0, full.size - 30), 'damaged'],
+      ['repacked', repacked, 'unsupported-zip'],
+    ];
+    for (const [label, file, kind] of cases) {
+      const got = await readBackup(file, {}).then(
+        () => 'resolved',
+        (e: unknown) => (e instanceof BackupError ? e.kind : String(e)),
+      );
+      expect([label, got]).toEqual([label, kind]);
+    }
+  });
+});
+
+describe('base64ToBytes', () => {
+  it('decodes, and throws on invalid input', () => {
+    expect(Array.from(base64ToBytes(btoa('\x04\x05\x06\x07')))).toEqual([4, 5, 6, 7]);
+    expect(Array.from(base64ToBytes(''))).toEqual([]);
+    expect(() => base64ToBytes('%%%')).toThrow();
   });
 });
 

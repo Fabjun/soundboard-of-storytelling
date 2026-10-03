@@ -32,8 +32,7 @@ export function BackupExportPanel({
     let cancelled = false;
     buildBackup((done, total) => !cancelled && setStep({ kind: 'building', done, total }))
       .then(
-        ({ blob, gzip }) =>
-          !cancelled && setStep({ kind: 'ready', blob, name: backupFileName(new Date(), gzip) }),
+        (blob) => !cancelled && setStep({ kind: 'ready', blob, name: backupFileName(new Date()) }),
       )
       .catch(
         (e: unknown) =>

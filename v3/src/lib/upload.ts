@@ -77,8 +77,13 @@ export type AddAudioResult =
  * Adds ONE audio file to the library — the single path for uploads and backup imports.
  * Hash → duplicate check → serial decode (duration, peaks) → IDB → signal. The decoded buffer is
  * released before the function returns (iPhone memory rules); call it for one file at a time.
+ * `tags` are stored with a new entry (a backup import restores them); an entry already in the
+ * library keeps its own.
  */
-export async function addAudioFile(file: File): Promise<AddAudioResult> {
+export async function addAudioFile(
+  file: File,
+  { tags = [] }: { tags?: string[] } = {},
+): Promise<AddAudioResult> {
   // Step 1 — read raw bytes
   let buf: ArrayBuffer;
   try {
@@ -121,7 +126,7 @@ export async function addAudioFile(file: File): Promise<AddAudioResult> {
     type: 'audio',
     name: file.name,
     size: buf.byteLength,
-    tags: [],
+    tags,
     addedAt: Date.now(),
     duration,
     peaks,

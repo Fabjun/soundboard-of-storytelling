@@ -10,7 +10,7 @@ import { IDBFactory } from 'fake-indexeddb';
 import type { Board, ComboPad, LoopPad, SinglePad } from '../../src/types';
 import { _resetDB, boardGetAll, libGet, libGetAllMeta } from '../../src/db/idb';
 import { boards, libraryItems } from '../../src/state/store';
-import { base64ToBytes, planImport, runImport } from '../../src/lib/backupImport';
+import { entryTags, planImport, runImport } from '../../src/lib/backupImport';
 import { V3_BACKUP_FORMAT } from '../../src/lib/backupReader';
 import { computeHash } from '../../src/lib/upload';
 import { boardProblems } from '../../src/lib/boardModel';
@@ -132,8 +132,8 @@ describe('runImport — V1', () => {
     const f = file(doc);
     const result = await runImport(f, await planImport(f));
     expect(result.audioFailed).toEqual([
-      'empty.wav: no audio data',
-      'garbled.wav: not valid base64',
+      'empty.wav: the backup holds no audio for this file',
+      'garbled.wav: the audio data in the backup is damaged',
     ]);
     expect(result.audioAdded).toBe(0); // nothing half-decoded slips in
     expect(result.boardsAdded).toBe(1);
@@ -143,7 +143,7 @@ describe('runImport — V1', () => {
     const text = JSON.stringify(v1Backup());
     const cut = new Blob([text.slice(0, text.indexOf('"rain.wav"') + 5)]);
     const plan = await planImport(file(v1Backup()));
-    await expect(runImport(cut, plan)).rejects.toMatchObject({ kind: 'invalid-json' });
+    await expect(runImport(cut, plan)).rejects.toMatchObject({ kind: 'damaged' });
     expect(await boardGetAll()).toEqual([]);
     expect((await libGetAllMeta()).map((m) => m.name)).toEqual(['owl.wav']);
   });
@@ -225,10 +225,36 @@ describe('runImport — V3', () => {
   });
 });
 
-describe('base64ToBytes', () => {
-  it('decodes, and throws on invalid input', () => {
-    expect(Array.from(base64ToBytes(b64(B)))).toEqual([4, 5, 6, 7]);
-    expect(() => base64ToBytes('%%%')).toThrow();
+describe('library tags (owner decision B9)', () => {
+  it('restores V3 tags and turns a V1 folder into a tag', async () => {
+    const doc = {
+      version: 1,
+      boards: [],
+      library: [
+        { ...v1Entry(A, 'owl.wav'), folder: 'Forest' },
+        { id: hash(B), name: 'rain.wav', tags: ['Weather', 'Night'], data: b64(B) },
+      ],
+    };
+    await runImport(file(doc), await planImport(file(doc)));
+    const tags = Object.fromEntries((await libGetAllMeta()).map((m) => [m.name, m.tags]));
+    expect(tags).toEqual({ 'owl.wav': ['Forest'], 'rain.wav': ['Weather', 'Night'] });
+  });
+
+  it('audio already in the library keeps its own tags (the import changes nothing existing)', async () => {
+    const first = { version: 1, library: [{ ...v1Entry(A, 'owl.wav'), folder: 'Forest' }] };
+    await runImport(file(first), await planImport(file(first)));
+    const again = { version: 1, library: [{ ...v1Entry(A, 'owl.wav'), folder: 'Elsewhere' }] };
+    await runImport(file(again), await planImport(file(again)));
+    expect((await libGetAllMeta()).map((m) => m.tags)).toEqual([['Forest']]);
+  });
+
+  it('entryTags: tags win over a folder, non-strings are dropped, nothing → no tags', () => {
+    expect(entryTags({ tags: ['a', 3, null, 'b'], folder: 'f' })).toEqual(['a', 'b']);
+    expect(entryTags({ tags: [], folder: 'f' })).toEqual([]);
+    expect(entryTags({ folder: 'f' })).toEqual(['f']);
+    expect(entryTags({ folder: '' })).toEqual([]);
+    expect(entryTags({ folder: 7, tags: 'x' })).toEqual([]);
+    expect(entryTags({})).toEqual([]);
   });
 });
 

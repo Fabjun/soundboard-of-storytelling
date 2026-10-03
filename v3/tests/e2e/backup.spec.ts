@@ -4,8 +4,8 @@
 // - A V1 backup (gzip, as V1 writes it) → summary → IMPORT → the board with its pads and the
 //   audio are there and the pad plays
 // - A file that is not a backup → a clear message, nothing imported
-// - EXPORT → SAVE downloads one file; "last backup" shows today; that file restores the board and
-//   its audio in a fresh browser (round trip)
+// - EXPORT → SAVE downloads one ZIP file; "last backup" shows today; that file restores the board
+//   and its audio in a fresh browser (round trip)
 //
 // Chromium only: headless WebKit cannot decode audio, and the import decodes every file.
 // Synthetic backups built from the test WAV — the owner's real backup is never committed.
@@ -134,7 +134,7 @@ test('a file that is not a backup is refused with a message', async ({ page }) =
     buffer: Buffer.from('{"shopping": ["milk"]}'),
   });
   await expect(page.getByTestId('backup-import-panel-error-text')).toHaveText(
-    'This file is not a Soundboard backup.',
+    'This file is not a Soundboard backup. Choose a file saved by EXPORT or by the old app (V1).',
   );
   await page.getByTestId('backup-import-panel-close-button').click();
   await expect(page.locator('[data-testid^="board-list-screen-row-"]')).toHaveCount(0);
@@ -160,12 +160,12 @@ test('EXPORT saves one file that restores the board and its audio in a fresh bro
 
   await page.getByTestId('board-list-screen-export-button').click();
   await expect(page.getByTestId('backup-export-panel-ready-text')).toContainText(
-    /soundboard-backup-\d{4}-\d{2}-\d{2}\.json\.gz/,
+    /soundboard-backup-\d{4}-\d{2}-\d{2}\.zip/,
   );
   const downloading = page.waitForEvent('download');
   await page.getByTestId('backup-export-panel-save-button').click();
   const download = await downloading;
-  expect(download.suggestedFilename()).toMatch(/^soundboard-backup-.*\.json\.gz$/);
+  expect(download.suggestedFilename()).toMatch(/^soundboard-backup-\d{4}-\d{2}-\d{2}\.zip$/);
   const path = await download.path();
   await expect(page.getByTestId('backup-export-panel-saved-text')).toBeVisible();
   await expect(page.getByTestId('board-list-screen-backup-text')).toHaveText('Last backup: today');

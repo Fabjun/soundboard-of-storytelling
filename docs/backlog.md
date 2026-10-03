@@ -61,6 +61,20 @@ merged icons need an icon concept first. Minimal-first: the Combo editor (Slice 
 first, gestures later.
 **When:** after Slice 11, discussed with the owner before any plan.
 
+### Backup reminder threshold as a setting
+
+Owner decision B5 (2026-10-02): the board list reminds after seven days without a backup
+(`BACKUP_REMINDER_DAYS` in `v3/src/lib/backupExport.ts`); the number becomes a setting.
+**When:** Slice 14 (Settings screen).
+
+### Import: date added and original file name from a backup
+
+An import adds each audio file with today's date and the backup's display name: a V3 entry's
+`addedAt` and a V1 entry's `added` and `origName` are not restored (tags are — owner decision B9).
+Sort by date added (All pads) and the original filename (V1 library feature, P8) would use them.
+The V3 library has no field for the original name yet.
+**When:** Slice 16 (Library), with the original-filename feature; decided with the owner.
+
 > **Slice numbers in this section refer to the May plan** (Slices 5–8, superseded 2026-09-28).
 > Mapping to the new plan (Slices 9–14): `CLAUDE.md §Slice progress`. Items are re-triaged when
 > the respective new slice is planned.
@@ -108,9 +122,9 @@ memory safety; 150–300 MB string would OOM older iPhones). **V1 had memory-rel
 on import/export that were solved by streaming.** V3 must port the V1 streaming pattern, not
 re-invent it. Read `v1-reference/index.html` export/import code before designing Slice 7 —
 same discipline as reading the V1 audio engine before Slice 4.
-**Built on branch `slice-10-backup` (Slice 10, review pending; ADR-0061 Proposed):** import reads
-the file as a stream (one library entry in memory at a time, two passes, audio first and boards
-last); export writes one Blob part per entry. V1 itself still read imports whole
+**Built on main (Slice 10, ADR-0061 Accepted 2026-10-03):** import reads the file as a stream
+(one library entry in memory at a time, two passes, audio first and boards last); export writes a
+ZIP archive one audio file at a time (owner decision B1). V1 itself still read imports whole
 (`file.text()` + `JSON.parse`) — V3 does not port that part.
 **Why deferred:** Same as above.
 **When:** Slice 7.

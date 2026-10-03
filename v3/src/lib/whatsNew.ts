@@ -34,6 +34,15 @@ export const WHATS_NEW_GROUPS = [
 
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
+    version: '3.0.145',
+    date: '2026-10-03',
+    improved: [
+      'EXPORT now saves a ZIP file that holds your audio files as they are, so you can open its sounds in any player.',
+      'Backups from the old app (V1) now import on iPhones with iOS 15 or an iOS 16 before 16.4 too.',
+      'Importing a backup keeps the tags of your audio files; folders from the old app become tags.',
+    ],
+  },
+  {
     version: '3.0.144',
     date: '2026-10-03',
     fixed: [

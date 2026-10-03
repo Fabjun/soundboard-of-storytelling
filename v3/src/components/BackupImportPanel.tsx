@@ -18,10 +18,12 @@ type Step =
   | { kind: 'error'; message: string };
 
 const ERROR_TEXT: Record<BackupErrorKind, string> = {
-  'gzip-unsupported':
-    'This backup is compressed (.gz) and this browser cannot unpack it. Unpack it on a computer and import the .json file.',
-  'invalid-json': 'This file is damaged or not a complete backup.',
-  'not-a-backup': 'This file is not a Soundboard backup.',
+  damaged:
+    'This file is damaged or not a complete backup. Import the backup file exactly as it was saved.',
+  'not-a-backup':
+    'This file is not a Soundboard backup. Choose a file saved by EXPORT or by the old app (V1).',
+  'unsupported-zip':
+    'This ZIP file was changed after the export — packed again, encrypted or split. Import the file exactly as EXPORT saved it.',
 };
 
 const plural = (n: number, word: string) => `${n} ${word}${n === 1 ? '' : 's'}`;

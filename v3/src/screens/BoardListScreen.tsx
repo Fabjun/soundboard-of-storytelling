@@ -63,7 +63,7 @@ export function BoardListScreen(): JSX.Element {
         ref={importInputRef}
         type="file"
         data-testid="board-list-screen-import-input"
-        accept=".json,.gz,application/json,application/gzip"
+        accept=".zip,.json,.gz,application/zip,application/json,application/gzip"
         class="sb-hidden"
         onChange={(e) => {
           const input = e.currentTarget;

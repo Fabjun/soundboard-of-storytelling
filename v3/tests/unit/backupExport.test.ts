@@ -1,6 +1,7 @@
 // ─────────────────────────────────────────────────────────────────────────────
-// backupExport — everything in one file (D1); the round trip export → import into an empty app
-// restores boards and audio (D2). fake-indexeddb + a fake decoder; synthetic data.
+// backupExport — everything in one ZIP file (D1, B1); the round trip export → import into an
+// empty app restores boards, audio and tags (D2, B9). fake-indexeddb + a fake decoder; synthetic
+// data.
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { IDBFactory } from 'fake-indexeddb';
@@ -9,14 +10,15 @@ import { boards, libraryItems } from '../../src/state/store';
 import { createBoard } from '../../src/state/boardWrites';
 import { addAudioFile, computeHash } from '../../src/lib/upload';
 import {
+  audioPath,
   BACKUP_REMINDER_DAYS,
   backupFileName,
   buildBackup,
-  bytesToBase64,
   describeBackupAge,
 } from '../../src/lib/backupExport';
-import { base64ToBytes, planImport, runImport } from '../../src/lib/backupImport';
-import { readBackup } from '../../src/lib/backupReader';
+import { planImport, runImport } from '../../src/lib/backupImport';
+import { BACKUP_MANIFEST } from '../../src/lib/backupReader';
+import { readZipDirectory, zipEntryBlob } from '../../src/lib/zipArchive';
 import { newPad } from '../../src/lib/padUtils';
 import type { Board } from '../../src/types';
 
@@ -49,7 +51,7 @@ const hash = (b: Uint8Array) => computeHash(b.slice().buffer);
 
 /** One board with a deck, a Single on A, a Loop on A + B and a combo; both files in the library. */
 async function seed(): Promise<Board> {
-  await addAudioFile(new File([A], 'owl.mp3', { type: 'audio/mpeg' }));
+  await addAudioFile(new File([A], 'owl.mp3', { type: 'audio/mpeg' }), { tags: ['Forest'] });
   await addAudioFile(new File([B], 'rain.wav', { type: 'audio/wav' }));
   const owl = newPad('p1', 'single', 'Owl', [hash(A)]);
   const rain = { ...newPad('p2', 'loop', 'Rain', [hash(A), hash(B)]), order: 'shuffle' as const };
@@ -82,9 +84,8 @@ describe('buildBackup', () => {
   it('round trip: export, then import into an empty app restores boards and audio', async () => {
     const original = await seed();
     const progress: string[] = [];
-    const { blob, gzip } = await buildBackup((d, t) => progress.push(`${d}/${t}`));
-    expect(gzip).toBe(true);
-    expect(blob.type).toBe('application/gzip'); // the share sheet / download name the type
+    const blob = await buildBackup((d, t) => progress.push(`${d}/${t}`));
+    expect(blob.type).toBe('application/zip'); // the share sheet / download name the type
     expect(progress).toEqual(['1/2', '2/2']);
 
     freshApp();
@@ -93,12 +94,12 @@ describe('buildBackup', () => {
     const result = await runImport(blob, plan);
     expect(result).toMatchObject({ audioAdded: 2, boardsAdded: 1, audioFailed: [] });
 
-    // Audio: same content (ids are hashes), names and types kept
+    // Audio: same content (ids are hashes), names, tags and types kept
     const metas = await libGetAllMeta();
-    expect(metas.map((m) => [m.id, m.name]).sort()).toEqual(
+    expect(metas.map((m) => [m.id, m.name, m.tags]).sort()).toEqual(
       [
-        [hash(A), 'owl.mp3'],
-        [hash(B), 'rain.wav'],
+        [hash(A), 'owl.mp3', ['Forest']],
+        [hash(B), 'rain.wav', []],
       ].sort(),
     );
     expect((await libGet(hash(A)))!.blob.type).toBe('audio/mpeg');
@@ -123,20 +124,29 @@ describe('buildBackup', () => {
     expect(restored.id).not.toBe(original.id);
   });
 
-  it('without CompressionStream the backup is plain JSON in the V3 format', async () => {
+  it('the archive holds each audio file as it is and the manifest, which names them', async () => {
     await seed();
-    vi.stubGlobal('CompressionStream', undefined);
-    const { blob, gzip } = await buildBackup();
-    expect(gzip).toBe(false);
-    expect(blob.type).toBe('application/json');
-    const text = await blob.text();
-    expect(text.startsWith('{"format":"sos-v3-backup","formatVersion":1,')).toBe(true);
-    const entries: Record<string, unknown>[] = [];
-    await readBackup(blob, { onLibraryEntry: (e) => void entries.push(e) });
-    expect(entries.map((e) => e.name).sort()).toEqual(['owl.mp3', 'rain.wav']);
-    expect(Object.keys(entries[0]).sort()).toEqual([
+    const blob = await buildBackup();
+    const entries = await readZipDirectory(blob);
+    const owl = audioPath(hash(A), 'audio/mpeg');
+    const rain = audioPath(hash(B), 'audio/wav');
+    // Audio in library order (by id), the manifest last
+    expect([...entries.keys()]).toEqual([...[owl, rain].sort(), BACKUP_MANIFEST]);
+    const bytes = async (name: string) =>
+      Array.from(
+        new Uint8Array(await (await zipEntryBlob(blob, entries.get(name)!)).arrayBuffer()),
+      );
+    expect(await bytes(owl)).toEqual(Array.from(A)); // no base64, no compression
+    expect(await bytes(rain)).toEqual(Array.from(B));
+
+    const manifest = JSON.parse(
+      await (await zipEntryBlob(blob, entries.get(BACKUP_MANIFEST)!)).text(),
+    ) as { format: string; formatVersion: number; library: Record<string, unknown>[] };
+    expect(manifest).toMatchObject({ format: 'sos-v3-backup', formatVersion: 2 });
+    expect(manifest.library.map((e) => e.file)).toEqual([owl, rain].sort());
+    expect(Object.keys(manifest.library[0]).sort()).toEqual([
       'addedAt',
-      'data',
+      'file',
       'id',
       'name',
       'tags',
@@ -145,25 +155,26 @@ describe('buildBackup', () => {
   });
 
   it('an empty app exports a valid backup with no boards and no audio', async () => {
-    const { blob } = await buildBackup();
+    const blob = await buildBackup();
     const plan = await planImport(blob);
     expect(plan).toMatchObject({ kind: 'v3', boards: [], audio: 0 });
   });
 });
 
-describe('bytesToBase64', () => {
-  it('round-trips with base64ToBytes, also across its 32 KiB slices and for nothing', () => {
-    const big = new Uint8Array(100_000).map((_, i) => (i * 7) % 256);
-    expect(Array.from(base64ToBytes(bytesToBase64(big)))).toEqual(Array.from(big));
-    expect(bytesToBase64(new Uint8Array())).toBe('');
-    expect(bytesToBase64(new Uint8Array([104, 105]))).toBe(btoa('hi'));
+describe('audioPath', () => {
+  it('audio/<hash> with the extension of a known type, none for an unknown or missing type', () => {
+    expect(audioPath('h', 'audio/mpeg')).toBe('audio/h.mp3');
+    expect(audioPath('h', 'audio/x-wav')).toBe('audio/h.wav');
+    expect(audioPath('h', 'audio/x-m4a')).toBe('audio/h.m4a');
+    expect(audioPath('h', 'audio/unknown')).toBe('audio/h');
+    expect(audioPath('h', '')).toBe('audio/h');
   });
 });
 
 describe('backupFileName', () => {
-  it('uses the local date, padded, and .gz only when compressed', () => {
-    expect(backupFileName(new Date(2026, 0, 5), true)).toBe('soundboard-backup-2026-01-05.json.gz');
-    expect(backupFileName(new Date(2026, 10, 25), false)).toBe('soundboard-backup-2026-11-25.json');
+  it('uses the local date, padded, as a .zip', () => {
+    expect(backupFileName(new Date(2026, 0, 5))).toBe('soundboard-backup-2026-01-05.zip');
+    expect(backupFileName(new Date(2026, 10, 25))).toBe('soundboard-backup-2026-11-25.zip');
   });
 });
 

@@ -17,9 +17,19 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.144';
+export const APP_VERSION = '3.0.145';
 
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.145',
+    date: '2026-10-03',
+    items: [
+      'feat(backup): EXPORT writes a ZIP archive — every audio file as it is plus the manifest backup.json (owner decision B1); our own ZIP reader after PKWARE APPNOTE 6.3.10 slices the audio out of the file',
+      'feat(backup): gzip backups are unpacked by fflate on every browser, so V1 backups import on iOS before 16.4 too (owner decision B8)',
+      'feat(backup): an import restores library tags — V3 tags, a V1 folder as one tag (owner decision B9)',
+      'docs(adr): ADR-0061 accepted with the owner answers B1–B9; review log records the landed stack #31–#40',
+    ],
+  },
   {
     version: '3.0.144',
     date: '2026-10-03',

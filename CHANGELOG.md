@@ -7,6 +7,18 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.145 — 2026-10-03
+
+### Added
+
+- feat(backup): EXPORT writes a ZIP archive — every audio file as it is plus the manifest backup.json (owner decision B1); our own ZIP reader after PKWARE APPNOTE 6.3.10 slices the audio out of the file
+- feat(backup): gzip backups are unpacked by fflate on every browser, so V1 backups import on iOS before 16.4 too (owner decision B8)
+- feat(backup): an import restores library tags — V3 tags, a V1 folder as one tag (owner decision B9)
+
+### Internal
+
+- docs(adr): ADR-0061 accepted with the owner answers B1–B9; review log records the landed stack #31–#40
+
 ## 3.0.144 — 2026-10-03
 
 ### Fixed

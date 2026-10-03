@@ -55,7 +55,7 @@ file. Format: `docs/architecture/_template.md`.
 | [ADR-0015](0015-db-name.md)                                 | DB name `sos-v3` (separate from V1)                                 | Accepted               | Slice 1                                     | 2026-05-27 |
 | [ADR-0016](0016-idb-library.md)                             | `idb` library as the IDB wrapper                                    | Accepted               | Slice 2                                     | 2026-05-27 |
 | [ADR-0017](0017-idb-schema-versioning.md)                   | IDB schema versioning with upgrade paths                            | Accepted               | Slice 2 (v1: library), Slice 3 (v2: boards) | 2026-05-27 |
-| [ADR-0061](0061-backup-file-format-and-streaming-import.md) | Backup file format and piecewise import                             | Proposed               | Slice 10                                    | 2026-10-02 |
+| [ADR-0061](0061-backup-file-format-and-streaming-import.md) | Backup file format and piecewise import                             | Accepted               | Slice 10                                    | 2026-10-02 |
 | [ADR-0062](0062-indexeddb-for-all-persistence.md)           | IndexedDB for all persistence, UI preferences included              | Accepted               | cross-cutting                               | 2026-10-02 |
 
 ### Audio engine & iOS memory
