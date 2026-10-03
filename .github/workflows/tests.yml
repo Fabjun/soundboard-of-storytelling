@@ -142,7 +142,6 @@ jobs:
 
   e2e-full:
     runs-on: ubuntu-26.04 # probe only, never merged
-    needs: unit-build-lint
     steps:
       - uses: actions/checkout@v7
 
