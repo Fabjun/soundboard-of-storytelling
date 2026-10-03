@@ -8,7 +8,7 @@ on:
 
 jobs:
   unit-build-lint:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04 # probe only, never merged
     steps:
       - uses: actions/checkout@v7
         with:
@@ -79,7 +79,7 @@ jobs:
         continue-on-error: true
 
   e2e-smoke:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04 # probe only, never merged
     needs: unit-build-lint
     steps:
       - uses: actions/checkout@v7
@@ -110,7 +110,7 @@ jobs:
           retention-days: 7
 
   e2e-mobile:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04 # probe only, never merged
     needs: unit-build-lint
     steps:
       - uses: actions/checkout@v7
@@ -141,7 +141,7 @@ jobs:
           retention-days: 7
 
   e2e-full:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04 # probe only, never merged
     needs: unit-build-lint
     steps:
       - uses: actions/checkout@v7
@@ -172,7 +172,7 @@ jobs:
           retention-days: 7
 
   e2e-prod:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04 # probe only, never merged
     needs: unit-build-lint
     steps:
       - uses: actions/checkout@v7
