@@ -17,10 +17,17 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.146';
+export const APP_VERSION = '3.0.147';
 
 /** The developer log, newest first; CHANGELOG.md is generated from it (sync-changelog). */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.147',
+    date: '2026-10-03',
+    items: [
+      'docs: the remaining 19 function doc comments start in the third person (ADR-0064); libGet is documented for export and rename too, in idb.ts and CLAUDE.md',
+    ],
+  },
   {
     version: '3.0.146',
     date: '2026-10-03',

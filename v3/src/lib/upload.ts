@@ -22,7 +22,7 @@ import type { LibraryItemMeta, UploadResult } from '../types';
 // ---------------------------------------------------------------------------
 
 /**
- * Compute the SHA-256 hex digest of a raw file buffer.
+ * Computes the SHA-256 hex digest of a raw file buffer.
  *
  * Uses `@noble/hashes` instead of Web Crypto API because Web Crypto requires a
  * Secure Context (HTTPS or localhost). The dev server accessed from an iPhone
@@ -38,7 +38,7 @@ export function computeHash(buf: ArrayBuffer): string {
 // ---------------------------------------------------------------------------
 
 /**
- * Extract N amplitude peaks from a decoded AudioBuffer.
+ * Extracts N amplitude peaks from a decoded AudioBuffer.
  *
  * Channel 0 only. Divides the buffer into N equal windows, records the
  * maximum absolute sample value per window. Returns an array of N values
@@ -144,7 +144,7 @@ export async function addAudioFile(
 }
 
 /**
- * Process an array of audio files one at a time.
+ * Processes an array of audio files one at a time.
  *
  * For each file:
  *   1. Read raw bytes

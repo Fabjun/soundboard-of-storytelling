@@ -8,7 +8,7 @@ import { isComboPad } from '../types';
 // ── Slot scanning ────────────────────────────────────────────────────────────
 
 /**
- * Find the first free `{col, row}` slot in row-major order (top-left).
+ * Finds the first free `{col, row}` slot in row-major order (top-left).
  * Returns null if the grid is completely full.
  *
  * Pre-disposition (docs/design/design-notes.md A2): row-major top-left scan.
@@ -30,7 +30,7 @@ export function nextFreeSlot(
 }
 
 /**
- * Convert a `{col, row}` position to a row-major linear index.
+ * Converts a `{col, row}` position to a row-major linear index.
  * Used by the INSERT DnD algorithm.
  */
 export function posToIndex(pos: PadPosition, cols: number): number {
@@ -38,7 +38,7 @@ export function posToIndex(pos: PadPosition, cols: number): number {
 }
 
 /**
- * Convert a row-major linear index back to `{col, row}`.
+ * Converts a row-major linear index back to `{col, row}`.
  * Inverse of posToIndex.
  */
 export function indexToPos(index: number, cols: number): PadPosition {
@@ -116,7 +116,7 @@ export interface MigrationResult {
 }
 
 /**
- * Compute the migration verdict and field summary for a type change (ADR-0048: three types).
+ * Computes the migration verdict and field summary for a type change (ADR-0048: three types).
  *
  * Universal fields (always preserved): name, hotkey, volume, fadeIn, fadeOut, color, iconRef.
  *
@@ -147,7 +147,7 @@ function universalFields(): string[] {
 }
 
 /**
- * Apply a type change to a pad, following the migration policy.
+ * Applies a type change to a pad, following the migration policy.
  * Returns a new Pad (immutable). Single ↔ Loop keep files, order and trim; a change to or from
  * Combo starts the new content empty.
  *

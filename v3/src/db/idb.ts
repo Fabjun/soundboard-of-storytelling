@@ -102,9 +102,9 @@ export async function libGetAllMeta(): Promise<LibraryItemMeta[]> {
 }
 
 /**
- * Load a single full entry including its Blob.
- * Only call this when the audio data is actually needed (Slice 4+ playback).
- * The caller is responsible for releasing the Blob reference after use.
+ * Loads a single full entry including its Blob.
+ * Only call this when the audio data itself is needed (playback, backup export, rename), one
+ * entry at a time. The caller is responsible for releasing the Blob reference after use.
  */
 export async function libGet(id: string): Promise<LibraryItem | null> {
   const db = await getDB();
@@ -113,7 +113,7 @@ export async function libGet(id: string): Promise<LibraryItem | null> {
 }
 
 /**
- * Add or update a complete library entry (upsert).
+ * Adds or updates a complete library entry (upsert).
  * Called once per file during upload, after peaks/duration are computed.
  */
 export async function libPut(item: LibraryItem): Promise<void> {
@@ -122,7 +122,7 @@ export async function libPut(item: LibraryItem): Promise<void> {
 }
 
 /**
- * Delete a library entry by id (SHA-256 hash).
+ * Deletes a library entry by id (SHA-256 hash).
  */
 export async function libDelete(id: string): Promise<void> {
   const db = await getDB();
@@ -130,7 +130,7 @@ export async function libDelete(id: string): Promise<void> {
 }
 
 /**
- * Rename a library entry.
+ * Renames a library entry.
  *
  * Note: IDB has no partial-update — this reads the full entry (including Blob),
  * patches the name, and writes it back. The Blob is held in RAM only for the
@@ -151,7 +151,7 @@ export async function libRename(id: string, newName: string): Promise<void> {
 // See the BOARD PERSISTENCE TRADE-OFF comment at the top of this file.
 
 /**
- * Load all boards from IDB.
+ * Loads all boards from IDB.
  * Safe to call at any library size — Board documents contain no blobs. Older board formats never
  * arrive here: the v4 upgrade clears them (ADR-0048), so no migration code is kept.
  */
@@ -162,7 +162,7 @@ export async function boardGetAll(): Promise<Board[]> {
 }
 
 /**
- * Load a single board by id.
+ * Loads a single board by id.
  */
 export async function boardGet(id: string): Promise<Board | null> {
   const db = await getDB();
@@ -171,7 +171,7 @@ export async function boardGet(id: string): Promise<Board | null> {
 }
 
 /**
- * Add or update a board (upsert).
+ * Adds or updates a board (upsert).
  * Always writes the complete Board document. Called after any mutation
  * (deck add/remove/reorder, pad add/edit/delete).
  */
@@ -181,7 +181,7 @@ export async function boardPut(board: Board): Promise<void> {
 }
 
 /**
- * Delete a board by id.
+ * Deletes a board by id.
  */
 export async function boardDelete(id: string): Promise<void> {
   const db = await getDB();

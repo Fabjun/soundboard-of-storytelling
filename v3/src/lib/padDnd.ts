@@ -303,7 +303,7 @@ function _reset(): void {
 // ── Mutation helpers ──────────────────────────────────────────────────────────
 
 /**
- * Apply a SWAP: exchange the positions of two pads.
+ * Applies a SWAP: exchanges the positions of two pads.
  * Returns a new pads array (immutable).
  */
 export function applySwap(pads: Placement[], srcId: string, tgtPos: PadPosition): Placement[] {
@@ -330,7 +330,7 @@ export function applySwap(pads: Placement[], srcId: string, tgtPos: PadPosition)
 }
 
 /**
- * Apply an INSERT: move the source pad to a row-major index, shifting
+ * Applies an INSERT: moves the source pad to a row-major index, shifting
  * the pads between the old and new positions by one slot (coordinate-based).
  *
  * Adapts V1's array-index shift to V3's `{col, row}` coordinate model:

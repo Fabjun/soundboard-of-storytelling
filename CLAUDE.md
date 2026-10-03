@@ -650,8 +650,8 @@ libGetAllMeta(): Promise<LibraryItemMeta[]>
   // Call at app boot; populates libraryItems signal.
 
 libGet(id: string): Promise<LibraryItem | null>
-  // Returns full entry including Blob. Only call for playback (Slice 4+).
-  // Caller must release reference after use.
+  // Returns full entry including Blob. Only when the audio itself is needed (playback,
+  // backup export, rename), one entry at a time. Caller must release reference after use.
 
 libPut(item: LibraryItem): Promise<void>
   // Upsert. Called once per file during upload (after peaks computed).

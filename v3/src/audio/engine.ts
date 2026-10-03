@@ -343,7 +343,7 @@ async function playNextTrack(padId: string, pad: PlaylistPad): Promise<void> {
 // ── STOP ──────────────────────────────────────────────────────────────────────
 
 /**
- * Stop a pad. fadeOut is the per-pad fadeOut setting in seconds (0 = immediate
+ * Stops a pad. fadeOut is the per-pad fadeOut setting in seconds (0 = immediate
  * cut). immediate=true always overrides to instant stop regardless of fadeOut.
  */
 export function stopPad(padId: string, immediate = false, fadeOut = 0): void {

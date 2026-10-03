@@ -7,6 +7,12 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.147 — 2026-10-03
+
+### Internal
+
+- docs: the remaining 19 function doc comments start in the third person (ADR-0064); libGet is documented for export and rename too, in idb.ts and CLAUDE.md
+
 ## 3.0.146 — 2026-10-03
 
 ### Changed

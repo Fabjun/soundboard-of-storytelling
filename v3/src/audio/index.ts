@@ -29,7 +29,7 @@ import {
 // ── Signal bridge (call once at app boot in main.tsx) ─────────────────────────
 
 /**
- * Wire the audio engine's pad-started/stopped events to Preact Signal setters.
+ * Wires the audio engine's pad-started/stopped events to Preact Signal setters.
  * Must be called once before the first play().
  */
 export function initAudioBridge(): void {
