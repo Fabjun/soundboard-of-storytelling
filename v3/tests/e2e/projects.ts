@@ -26,6 +26,7 @@ export const FULL_TESTS = [
   'whats-new',
   'pad-dnd',
   'pad-pool',
+  'backup',
   'game-mode',
   'audio',
 ];

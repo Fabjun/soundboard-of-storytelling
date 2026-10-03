@@ -108,6 +108,10 @@ memory safety; 150–300 MB string would OOM older iPhones). **V1 had memory-rel
 on import/export that were solved by streaming.** V3 must port the V1 streaming pattern, not
 re-invent it. Read `v1-reference/index.html` export/import code before designing Slice 7 —
 same discipline as reading the V1 audio engine before Slice 4.
+**Built on branch `slice-10-backup` (Slice 10, review pending; ADR-0061 Proposed):** import reads
+the file as a stream (one library entry in memory at a time, two passes, audio first and boards
+last); export writes one Blob part per entry. V1 itself still read imports whole
+(`file.text()` + `JSON.parse`) — V3 does not port that part.
 **Why deferred:** Same as above.
 **When:** Slice 7.
 **Correction (2026-09-28):** only V1's _export_ streamed. V1's _import_ reads the whole file and parses it at once (`v1-reference/index.html:5795` `decompressData(...)`, `:5799` `JSON.parse(jsonStr)`) — V3 needs a genuinely piecewise import (data-backup.md D6); there is no V1 pattern to port for it.

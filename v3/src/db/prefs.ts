@@ -46,3 +46,23 @@ export function clearLastView(boardId: string): void {
     // nothing stored that could be removed
   }
 }
+
+const LAST_BACKUP_KEY = `${PREFIX}last-backup`;
+
+/** When the last backup was saved (ms since epoch), or null when there was none (D3). */
+export function getLastBackup(): number | null {
+  try {
+    const n = Number(localStorage.getItem(LAST_BACKUP_KEY));
+    return Number.isFinite(n) && n > 0 ? n : null;
+  } catch {
+    return null;
+  }
+}
+
+export function setLastBackup(when: number): void {
+  try {
+    localStorage.setItem(LAST_BACKUP_KEY, String(when));
+  } catch {
+    // unavailable or full — the reminder then keeps asking for a backup
+  }
+}

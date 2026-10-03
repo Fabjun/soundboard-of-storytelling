@@ -11,6 +11,7 @@ import { IDBFactory } from 'fake-indexeddb';
 import { _resetDB, libGetAllMeta } from '../../src/db/idb';
 import { libraryItems, uploadStatus } from '../../src/state/store';
 import {
+  addAudioFile,
   computeHash,
   computePeaks,
   formatBytes,
@@ -82,6 +83,22 @@ beforeEach(() => {
 
 afterEach(() => {
   vi.unstubAllGlobals();
+});
+
+// ── One file (shared by uploads and backup imports) ──────────────────────────
+
+describe('addAudioFile', () => {
+  it('reports the id it stored, the id it skipped as a duplicate, and an unusable file', async () => {
+    const bytes = [1, 2, 3];
+    const id = computeHash(new Uint8Array(bytes).buffer);
+    expect(await addAudioFile(audioFile('a.wav', bytes))).toEqual({ kind: 'imported', id });
+    expect(libraryItems.value.map((m) => m.id)).toEqual([id]);
+    expect(await addAudioFile(audioFile('copy.wav', bytes))).toEqual({ kind: 'skipped', id });
+    const bad = await addAudioFile(audioFile('bad.wav', [0xff]));
+    expect(bad).toMatchObject({ kind: 'error' });
+    expect(bad.kind === 'error' && bad.error).toContain('bad.wav: decode failed');
+    expect(libraryItems.value).toHaveLength(1);
+  });
 });
 
 // ── Serial decode (the core iPhone rule) ──────────────────────────────────────

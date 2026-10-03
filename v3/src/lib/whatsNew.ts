@@ -34,6 +34,19 @@ export const WHATS_NEW_GROUPS = [
 
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
+    version: '3.0.141',
+    date: '2026-10-03',
+    new: [
+      'EXPORT on the board list saves all your boards and audio files in one backup file — on the iPhone through the share sheet, elsewhere as a download.',
+      'IMPORT on the board list reads a backup from this app or from version 1: you see a summary first, then the progress, and afterwards what could not be taken over.',
+      'Importing adds boards and audio files and never changes or removes what you already have.',
+      'The board list shows when you last made a backup and reminds you after a week without one.',
+    ],
+    improved: [
+      'The app asks the browser to keep its stored data, so boards and audio are not cleared when the device runs low on space.',
+    ],
+  },
+  {
     version: '3.0.140',
     date: '2026-10-03',
     new: [

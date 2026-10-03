@@ -1,0 +1,180 @@
+// ─────────────────────────────────────────────────────────────────────────────
+// V1 → V3 mapping (D5, docs/product/features/data-backup.md; mapping table in
+// docs/architecture/0061-backup-file-format-and-streaming-import.md#2-v1--v3-mapping-d5)
+//
+// Pure functions: a V1 board (untrusted JSON from a backup file) becomes a new V3 board with one
+// deck holding all its pads. Nothing here touches storage; the import (backupImport.ts) saves.
+// Every field is checked — a malformed pad is mapped with defaults, never crashes the import.
+// ─────────────────────────────────────────────────────────────────────────────
+
+import type { Board, ComboStep, FileOrder, Pad, PadBase, Placement } from '../types';
+import { DEFAULT_GRID } from './boardModel';
+import { DEFAULT_PAD_VOLUME, indexToPos } from './padUtils';
+
+/** V1 used a fade-out-all step's `dur` as the fade time, 2.5 s when not set. */
+export const V1_FADE_OUT_ALL_DEFAULT = 2.5;
+
+/** What the mapping dropped or could not resolve — shown in the import summary. */
+export type V1ImportNotes = {
+  /** Loop pads with a loop count (V3 loops run until stopped). */
+  loopCounts: number;
+  /** Combo steps with per-pad volume / fade options (not in the V3 model yet). */
+  comboPadOptions: number;
+  /** Combo step references to pads that do not exist in the board. */
+  missingStepPads: number;
+  /** Pads with a mode V1 no longer knows — imported as Single. */
+  unknownModes: number;
+  /** Pad files whose audio is not in the backup or the library. */
+  missingFiles: number;
+};
+
+export const emptyNotes = (): V1ImportNotes => ({
+  loopCounts: 0,
+  comboPadOptions: 0,
+  missingStepPads: 0,
+  unknownModes: 0,
+  missingFiles: 0,
+});
+
+type Json = Record<string, unknown>;
+const isRecord = (v: unknown): v is Json =>
+  typeof v === 'object' && v !== null && !Array.isArray(v);
+const num = (v: unknown): number | undefined =>
+  typeof v === 'number' && Number.isFinite(v) ? v : undefined;
+const str = (v: unknown): string | undefined => (typeof v === 'string' && v !== '' ? v : undefined);
+
+/** "Name", or "Name (2)", "Name (3)" … — the first one not in `taken` (import rules). */
+export function uniqueBoardName(name: string, taken: ReadonlySet<string>): string {
+  if (!taken.has(name)) return name;
+  let n = 2;
+  while (taken.has(`${name} (${n})`)) n++;
+  return `${name} (${n})`;
+}
+
+export interface V1MapContext {
+  /** New ids for the board, its deck and its pads. */
+  newId: () => string;
+  /** The V3 library id for a V1 file hash, or undefined when that audio is not available. */
+  fileId: (v1Hash: string) => string | undefined;
+  /** Board names already used — the new board gets a suffix if its name is taken. */
+  takenNames: ReadonlySet<string>;
+  /** Counts what was dropped; updated in place. */
+  notes: V1ImportNotes;
+}
+
+function mapFiles(v: unknown, ctx: V1MapContext): string[] {
+  if (!Array.isArray(v)) return [];
+  return v.flatMap((h) => {
+    if (typeof h !== 'string') return [];
+    const id = ctx.fileId(h);
+    if (!id) ctx.notes.missingFiles++;
+    return id ? [id] : [];
+  });
+}
+
+function mapSteps(v: unknown, padIds: ReadonlyMap<number, string>, ctx: V1MapContext): ComboStep[] {
+  if (!Array.isArray(v)) return [];
+  return v.filter(isRecord).map((s) => {
+    const refs = Array.isArray(s.pads) ? s.pads : [];
+    const ids = refs.flatMap((r) => {
+      const id = typeof r === 'number' ? padIds.get(r) : undefined;
+      if (!id) ctx.notes.missingStepPads++;
+      return id ? [id] : [];
+    });
+    if (Array.isArray(s.chipOpts) && s.chipOpts.some((o) => isRecord(o) && Object.keys(o).length))
+      ctx.notes.comboPadOptions++;
+    const dur = num(s.dur);
+    const step: ComboStep = { padIds: ids };
+    if (s.stopAll === true) step.stopAll = true;
+    if (s.fadeOutAll === true) step.fadeOutAll = dur && dur > 0 ? dur : V1_FADE_OUT_ALL_DEFAULT;
+    else if (dur && dur > 0) step.duration = dur;
+    return step;
+  });
+}
+
+function mapPad(
+  p: Json,
+  index: number,
+  id: string,
+  padIds: ReadonlyMap<number, string>,
+  ctx: V1MapContext,
+): Pad {
+  const volume = num(p.volume);
+  const base: PadBase = {
+    id,
+    name: str(p.name) ?? `Pad ${index + 1}`,
+    volume: volume === undefined ? DEFAULT_PAD_VOLUME : Math.min(100, Math.max(0, volume)),
+    fadeIn: Math.max(0, num(p.fadeIn) ?? 0),
+    fadeOut: Math.max(0, num(p.fadeOut) ?? 0),
+  };
+  const icon = Array.isArray(p.icons) ? str(p.icons[0]) : str(p.icon);
+  if (icon) base.iconRef = icon;
+
+  if (p.mode === 'combo') return { ...base, type: 'combo', steps: mapSteps(p.steps, padIds, ctx) };
+
+  const trim = {
+    ...(num(p.trimStart) ? { trimStart: num(p.trimStart) } : {}),
+    ...(num(p.trimEnd) ? { trimEnd: num(p.trimEnd) } : {}),
+  };
+  const files = mapFiles(p.files, ctx);
+  const shuffled: FileOrder = p.shuffle === true || p.mode === 'random' ? 'shuffle' : 'sequential';
+  switch (p.mode) {
+    case 'loop':
+      if ((num(p.loopCount) ?? 0) > 0) ctx.notes.loopCounts++;
+      return { ...base, type: 'loop', files, order: 'sequential', ...trim };
+    case 'playlist':
+    case 'chain':
+    case 'random':
+      return { ...base, type: 'loop', files, order: shuffled, ...trim };
+    case 'once':
+      return { ...base, type: 'single', files, order: 'sequential', ...trim };
+    default:
+      ctx.notes.unknownModes++;
+      return { ...base, type: 'single', files, order: 'sequential', ...trim };
+  }
+}
+
+/** A V1 board as a new V3 board with one deck holding all its pads (D5), or null if it is none. */
+export function mapV1Board(v1: unknown, ctx: V1MapContext): Board | null {
+  if (!isRecord(v1)) return null;
+  const v1Pads = Array.isArray(v1.pads) ? v1.pads : [];
+
+  // V1 pad ids are array indexes (also used by combo steps) — give each real pad a V3 id first
+  const padIds = new Map<number, string>();
+  v1Pads.forEach((p, i) => {
+    if (isRecord(p)) padIds.set(i, ctx.newId());
+  });
+
+  const pads: Pad[] = [];
+  const placements: Placement[] = [];
+  const cols = DEFAULT_GRID.cols;
+  v1Pads.forEach((p, i) => {
+    const id = padIds.get(i);
+    if (!id || !isRecord(p)) return;
+    pads.push(mapPad(p, i, id, padIds, ctx));
+    const hotkey = str(p.key);
+    placements.push({
+      padId: id,
+      position: indexToPos(placements.length, cols),
+      ...(hotkey ? { hotkey } : {}),
+    });
+  });
+
+  const rows = Math.max(DEFAULT_GRID.rows, Math.ceil(placements.length / cols));
+  return {
+    id: ctx.newId(),
+    name: uniqueBoardName(str(v1.name) ?? 'Imported board', ctx.takenNames),
+    themeId: 'hearth',
+    pads,
+    decks: [
+      {
+        id: ctx.newId(),
+        name: 'Deck 1',
+        order: 0,
+        gridConfig: { ...DEFAULT_GRID, rows },
+        placements,
+      },
+    ],
+    quickAccess: [],
+  };
+}

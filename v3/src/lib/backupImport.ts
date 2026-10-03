@@ -1,0 +1,210 @@
+// ─────────────────────────────────────────────────────────────────────────────
+// Backup import — V1 and V3 backup files (D2, D5; ADR-0061)
+//
+// Two passes over the file (backupReader, one library entry in memory at a time):
+//   1. planImport — what the file holds, for the confirmation summary (import rules).
+//   2. runImport  — audio first (one file at a time through the upload pipeline), boards last;
+//      an abort leaves no board pointing at missing audio.
+// An import never changes or deletes existing data: audio already in the library is skipped,
+// boards are always added as new boards (new ids, a name suffix when the name is taken).
+// ─────────────────────────────────────────────────────────────────────────────
+
+import type { Board } from '../types';
+import { boards as boardsSignal, libraryItems } from '../state/store';
+import { createBoard } from '../state/boardWrites';
+import { readBackup } from './backupReader';
+import { parseBoard, withNewIds } from './boardModel';
+import { nanoid } from './nanoid';
+import { addAudioFile } from './upload';
+import { emptyNotes, mapV1Board, uniqueBoardName, type V1ImportNotes } from './v1Import';
+
+/** What a backup file holds, measured against the current library. */
+export type ImportPlan = {
+  kind: 'v1' | 'v3';
+  boards: unknown[];
+  /** Pads over all boards in the file. */
+  pads: number;
+  audio: number;
+  /** Audio entries already in the library — skipped. */
+  audioPresent: number;
+  /** V1 pad templates and other non-audio entries — not imported. */
+  otherEntries: number;
+};
+
+export type ImportResult = {
+  audioAdded: number;
+  audioSkipped: number;
+  /** One message per audio file that could not be decoded or stored. */
+  audioFailed: string[];
+  boardsAdded: number;
+  /** Boards in the file that are not valid boards — skipped. */
+  boardsSkipped: number;
+  notes: V1ImportNotes;
+};
+
+type Entry = Record<string, unknown>;
+
+/** The content hash an entry carries: `hash` in V1 files, `id` in V3 files. */
+const entryHash = (e: Entry): string | undefined => {
+  const h = e.hash ?? e.id;
+  return typeof h === 'string' && h !== '' ? h : undefined;
+};
+
+/** Audio — not a V1 pad template (`type: 'pad'`) or an image, which are not imported. */
+const isAudioEntry = (e: Entry): boolean => {
+  return (
+    typeof e.type !== 'string' || e.type === '' || e.type === 'audio' || e.type.startsWith('audio/')
+  );
+};
+
+const isRecord = (v: unknown): v is Record<string, unknown> =>
+  typeof v === 'object' && v !== null && !Array.isArray(v);
+
+const countPads = (b: unknown): number =>
+  isRecord(b) && Array.isArray(b.pads) ? b.pads.filter(isRecord).length : 0;
+
+/** Pass 1: what the file holds (D2 summary). Holds the boards (small), never the audio. */
+export async function planImport(file: Blob): Promise<ImportPlan> {
+  const present = new Set(libraryItems.value.map((m) => m.id));
+  let fileBoards: unknown[] = [];
+  let audio = 0;
+  let audioPresent = 0;
+  let otherEntries = 0;
+  const header = await readBackup(file, {
+    onBoards: (b) => {
+      fileBoards = b;
+    },
+    onLibraryEntry: (e) => {
+      if (!isAudioEntry(e)) {
+        otherEntries++;
+        return;
+      }
+      audio++;
+      const h = entryHash(e);
+      if (h && present.has(h)) audioPresent++;
+    },
+  });
+  return {
+    kind: header.kind,
+    boards: fileBoards,
+    pads: fileBoards.reduce<number>((n, b) => n + countPads(b), 0),
+    audio,
+    audioPresent,
+    otherEntries,
+  };
+}
+
+/** base64 → bytes, without building anything bigger than the result (iPhone memory rule 6). */
+export function base64ToBytes(b64: string): Uint8Array<ArrayBuffer> {
+  const bin = atob(b64);
+  const out = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i);
+  return out;
+}
+
+/** A V3 pad's files mapped to the ids the import stored (missing ones counted, left out). */
+function remapFiles(
+  board: Board,
+  fileId: (h: string) => string | undefined,
+  notes: V1ImportNotes,
+): Board {
+  return {
+    ...board,
+    pads: board.pads.map((p) => {
+      if (p.type === 'combo') return p;
+      const files = p.files.flatMap((h) => {
+        const id = fileId(h);
+        if (!id) notes.missingFiles++;
+        return id ? [id] : [];
+      });
+      return { ...p, files };
+    }),
+  };
+}
+
+/**
+ * Pass 2: imports the file — audio first, boards last (import rules). `onProgress` gets the
+ * number of audio entries handled so far.
+ */
+export async function runImport(
+  file: Blob,
+  plan: ImportPlan,
+  onProgress?: (audioDone: number) => void,
+): Promise<ImportResult> {
+  const result: ImportResult = {
+    audioAdded: 0,
+    audioSkipped: 0,
+    audioFailed: [],
+    boardsAdded: 0,
+    boardsSkipped: 0,
+    notes: emptyNotes(),
+  };
+  /** File hash in the backup → library id the bytes were stored under. */
+  const stored = new Map<string, string>();
+  let done = 0;
+
+  await readBackup(file, {
+    onLibraryEntry: async (e) => {
+      if (!isAudioEntry(e)) return;
+      const h = entryHash(e);
+      const name = typeof e.name === 'string' && e.name !== '' ? e.name : 'imported audio';
+      if (h && libraryItems.value.some((m) => m.id === h)) {
+        stored.set(h, h);
+        result.audioSkipped++;
+      } else if (typeof e.data === 'string') {
+        let bytes: Uint8Array<ArrayBuffer> | null = null;
+        try {
+          bytes = base64ToBytes(e.data);
+        } catch {
+          result.audioFailed.push(`${name}: not valid base64`);
+        }
+        e.data = null; // free the base64 string now, not at GC time (memory rule 6)
+        if (bytes) {
+          const type = typeof e.type === 'string' && e.type.startsWith('audio/') ? e.type : '';
+          const r = await addAudioFile(new File([bytes], name, { type }));
+          bytes = null;
+          if (r.kind === 'error') result.audioFailed.push(r.error);
+          else {
+            if (h) stored.set(h, r.id);
+            if (r.kind === 'imported') result.audioAdded++;
+            else result.audioSkipped++;
+          }
+        }
+      } else {
+        result.audioFailed.push(`${name}: no audio data`);
+      }
+      onProgress?.(++done);
+    },
+  });
+
+  // Boards last — every file they can point at is in the library by now
+  const inLibrary = new Set(libraryItems.value.map((m) => m.id));
+  const fileId = (h: string) => stored.get(h) ?? (inLibrary.has(h) ? h : undefined);
+  const taken = new Set(boardsSignal.value.map((b) => b.name));
+  for (const raw of plan.boards) {
+    let board: Board | null;
+    if (plan.kind === 'v1') {
+      board = mapV1Board(raw, { newId: nanoid, fileId, takenNames: taken, notes: result.notes });
+    } else {
+      const parsed = parseBoard(raw);
+      board = parsed
+        ? remapFiles(
+            { ...withNewIds(parsed, nanoid), name: uniqueBoardName(parsed.name, taken) },
+            fileId,
+            result.notes,
+          )
+        : null;
+    }
+    if (!board) {
+      result.boardsSkipped++;
+      continue;
+    }
+    if (await createBoard(board)) {
+      taken.add(board.name);
+      result.boardsAdded++;
+    } else {
+      result.boardsSkipped++;
+    }
+  }
+  return result;
+}

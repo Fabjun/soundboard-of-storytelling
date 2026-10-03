@@ -17,9 +17,16 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.140';
+export const APP_VERSION = '3.0.141';
 
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.141',
+    date: '2026-10-03',
+    items: [
+      'feat(backup): export everything into one file, import V1 and V3 backups piece by piece, persistent storage, last-backup reminder (PR #37, squash of slice-10-backup)',
+    ],
+  },
   {
     version: '3.0.140',
     date: '2026-10-03',
@@ -212,6 +219,18 @@ export const CHANGELOG: ChangelogEntry[] = [
     version: '3.0.103',
     date: '2026-10-02',
     items: ['docs: review log — Slice 10 pull request (#37)'],
+  },
+  {
+    version: '3.0.102',
+    date: '2026-10-02',
+    items: [
+      'feat(backup): the app asks the browser for persistent storage at start (Slice 10, D4); ADR-0061 proposes the backup file format and piecewise import',
+      'feat(backup): backup files (V1 and V3, gzip or plain) are read piece by piece — one library entry in memory at a time',
+      'feat(backup): V1 boards map to V3 boards with one deck — all pad modes, combos with their steps, keys, volume and fades',
+      'feat(backup): importing a backup — summary first, then audio one file at a time and boards last; nothing existing changes',
+      'feat(backup): IMPORT on the board list — choose a V1 or V3 backup, confirm the summary, follow the progress, read what was dropped',
+      'feat(backup): EXPORT saves all boards and audio in one file (share sheet on the iPhone, download elsewhere); the board list shows when the last backup was made and reminds after a week',
+    ],
   },
   {
     version: '3.0.101',

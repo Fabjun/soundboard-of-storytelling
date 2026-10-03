@@ -67,6 +67,77 @@ export function computePeaks(decoded: AudioBuffer, N = 30): number[] {
 // Serial upload pipeline
 // ---------------------------------------------------------------------------
 
+/** What happened to one audio file: added, already in the library, or not usable. */
+export type AddAudioResult =
+  | { kind: 'imported'; id: string }
+  | { kind: 'skipped'; id: string }
+  | { kind: 'error'; error: string };
+
+/**
+ * Adds ONE audio file to the library — the single path for uploads and backup imports.
+ * Hash → duplicate check → serial decode (duration, peaks) → IDB → signal. The decoded buffer is
+ * released before the function returns (iPhone memory rules); call it for one file at a time.
+ */
+export async function addAudioFile(file: File): Promise<AddAudioResult> {
+  // Step 1 — read raw bytes
+  let buf: ArrayBuffer;
+  try {
+    buf = await file.arrayBuffer();
+  } catch (e) {
+    return { kind: 'error', error: `${file.name}: could not read file (${String(e)})` };
+  }
+
+  // Step 2 — hash (synchronous, @noble/hashes)
+  const id = computeHash(buf);
+
+  // Step 3 — duplicate check
+  if (libraryItems.value.some((m) => m.id === id)) return { kind: 'skipped', id };
+
+  // Steps 4–5 — serial decode + peaks
+  let decoded: AudioBuffer | null = null;
+  let peaks: number[] = [];
+  let duration = 0;
+
+  try {
+    const ctx = new AudioContext();
+    // buf.slice() prevents detaching: decodeAudioData may transfer ownership of
+    // the ArrayBuffer, but we still need buf below to create the Blob.
+    decoded = await ctx.decodeAudioData(buf.slice());
+    peaks = computePeaks(decoded, 30);
+    duration = decoded.duration;
+
+    // Explicit null BEFORE ctx.close() — releases PCM memory now, not at GC time.
+    // This is critical on iOS Safari where heap pressure causes tab kills.
+    decoded = null;
+    await ctx.close();
+  } catch (e) {
+    decoded = null;
+    return { kind: 'error', error: `${file.name}: decode failed (${String(e)})` };
+  }
+
+  // Step 6 — persist to IDB
+  const meta: LibraryItemMeta = {
+    id,
+    type: 'audio',
+    name: file.name,
+    size: buf.byteLength,
+    tags: [],
+    addedAt: Date.now(),
+    duration,
+    peaks,
+  };
+
+  try {
+    await libPut({ ...meta, blob: new Blob([buf], { type: file.type }) });
+  } catch (e) {
+    return { kind: 'error', error: `${file.name}: could not save to library (${String(e)})` };
+  }
+
+  // Step 7 — update signal immediately (live progress)
+  addLibraryItemMeta(meta);
+  return { kind: 'imported', id };
+}
+
 /**
  * Process an array of audio files one at a time.
  *
@@ -88,69 +159,10 @@ export async function processFilesSerial(files: File[]): Promise<void> {
   const result: UploadResult = { imported: 0, skipped: 0, errors: [] };
 
   for (const file of files) {
-    // Step 1 — read raw bytes
-    let buf: ArrayBuffer;
-    try {
-      buf = await file.arrayBuffer();
-    } catch (e) {
-      result.errors.push(`${file.name}: could not read file (${String(e)})`);
-      continue;
-    }
-
-    // Step 2 — hash (synchronous, @noble/hashes)
-    const id = computeHash(buf);
-
-    // Step 3 — duplicate check
-    if (libraryItems.value.some((m) => m.id === id)) {
-      result.skipped++;
-      continue;
-    }
-
-    // Steps 4–5 — serial decode + peaks
-    let decoded: AudioBuffer | null = null;
-    let peaks: number[] = [];
-    let duration = 0;
-
-    try {
-      const ctx = new AudioContext();
-      // buf.slice() prevents detaching: decodeAudioData may transfer ownership of
-      // the ArrayBuffer, but we still need buf below to create the Blob.
-      decoded = await ctx.decodeAudioData(buf.slice());
-      peaks = computePeaks(decoded, 30);
-      duration = decoded.duration;
-
-      // Explicit null BEFORE ctx.close() — releases PCM memory now, not at GC time.
-      // This is critical on iOS Safari where heap pressure causes tab kills.
-      decoded = null;
-      await ctx.close();
-    } catch (e) {
-      decoded = null;
-      result.errors.push(`${file.name}: decode failed (${String(e)})`);
-      continue;
-    }
-
-    // Step 6 — persist to IDB
-    const meta: LibraryItemMeta = {
-      id,
-      type: 'audio',
-      name: file.name,
-      size: buf.byteLength,
-      tags: [],
-      addedAt: Date.now(),
-      duration,
-      peaks,
-    };
-
-    try {
-      await libPut({ ...meta, blob: new Blob([buf], { type: file.type }) });
-    } catch (e) {
-      result.errors.push(`${file.name}: could not save to library (${String(e)})`);
-      continue;
-    }
-
-    // Step 7 — update signal immediately (live progress)
-    addLibraryItemMeta(meta);
-    result.imported++;
+    const r = await addAudioFile(file); // serial: one file at a time, never Promise.all
+    if (r.kind === 'imported') result.imported++;
+    else if (r.kind === 'skipped') result.skipped++;
+    else result.errors.push(r.error);
   }
 
   uploadStatus.value = result;
