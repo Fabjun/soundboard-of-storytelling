@@ -16,10 +16,10 @@ import { execFileSync } from 'child_process';
 import { createHash } from 'crypto';
 import {
   chmodSync,
+  copyFileSync,
   existsSync,
   mkdirSync,
   mkdtempSync,
-  renameSync,
   rmSync,
   writeFileSync,
 } from 'fs';
@@ -85,7 +85,9 @@ async function main(): Promise<void> {
     writeFileSync(join(work, asset), archive);
     execFileSync('tar', ['-xzf', join(work, asset), '-C', work, 'vale']);
     mkdirSync(BIN_DIR, { recursive: true });
-    renameSync(join(work, 'vale'), TARGET);
+    // Copy, not rename: the temporary folder may be on another file system (Ubuntu 26.04 runners
+    // mount /tmp separately), where rename fails with EXDEV (Node fs.rename); `work` is removed below
+    copyFileSync(join(work, 'vale'), TARGET);
     chmodSync(TARGET, 0o755);
   } finally {
     rmSync(work, { recursive: true, force: true });
