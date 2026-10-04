@@ -32,6 +32,7 @@ export const FULL_TESTS = [
   'combo-editor',
   'backup',
   'game-mode',
+  'wake-lock',
   'audio',
   'system-gestures',
 ];
@@ -49,6 +50,7 @@ export const FULL_WEBKIT_TESTS = [
   'pad-files',
   'pad-icons',
   'layout-reach',
+  'wake-lock',
   'whats-new',
   'pad-dnd',
   'pad-pool',

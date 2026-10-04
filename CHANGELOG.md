@@ -7,6 +7,16 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.173 — 2026-10-04
+
+### Added
+
+- feat(game): the screen stays on in GAME on a board (docs/product/README.md K11; built early from Slice 12 for a game night, owner decision 2026-10-04) — Screen Wake Lock API as in V1 and the Chrome guide: requested in try/catch, taken again on visibilitychange, released in SETUP and off the board; not switchable; the status bar shows SCREEN ON. src/lib/wakeLock.ts (screen keeper with the API passed in), App wires it to currentScreen and currentMode
+
+### Internal
+
+- test: unit tests for the screen keeper (held, released, taken again after the page was hidden, refused, no API, released when GAME ends during the request); E2E wake-lock with a recorded navigator.wakeLock in Chromium and WebKit (counter-checked: lock kept in SETUP — red; no re-request after hidden — red); iPhone checklist "Screen stays on in GAME"
+
 ## 3.0.172 — 2026-10-04
 
 ### Internal

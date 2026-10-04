@@ -171,6 +171,14 @@ because Playwright runs against a simulated environment:
   - Expected: App icon appears, app opens in standalone mode without browser chrome.
   - Why manual: PWA install / standalone mode cannot be simulated.
 
+- [ ] **Screen stays on in GAME** _(3.0.173, docs/product/README.md K11)_
+  - Action: Set the iPhone's Auto-Lock to 30 seconds. Open a board in GAME and wait 2 minutes
+    without touching it; switch to another app and back, wait again; then switch to SETUP and wait.
+  - Expected: In GAME the status bar shows SCREEN ON and the screen does not dim or lock, also
+    after coming back from another app; in SETUP SCREEN ON is gone and the screen locks after
+    the Auto-Lock time. (In Brave from iOS 16.4; as a home-screen app from iOS 18.4.)
+  - Why manual: Headless browsers have no real screen timeout; only the device shows it.
+
 - [ ] **Portrait and landscape orientation**
   - Action: Rotate the device while using the app.
   - Expected: Layout reflows correctly in both orientations. No elements off-screen.

@@ -89,6 +89,13 @@ export function withEarlyVersions(
 /** The release notes the start screen shows, newest first (checked by whatsNew.test.ts). */
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
+    version: '3.0.173',
+    date: '2026-10-04',
+    new: [
+      'In GAME the screen stays on, so it never goes dark during a game. The bottom bar shows SCREEN ON while it does. On iPhone this needs iOS 16.4 or newer; as an app on the home screen, iOS 18.4 or newer.',
+    ],
+  },
+  {
     version: '3.0.172',
     date: '2026-10-04',
     behindTheScenes: [
