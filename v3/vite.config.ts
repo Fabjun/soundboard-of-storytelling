@@ -141,6 +141,18 @@ export default defineConfig(({ command }) => ({
     ),
   },
   base: '/soundboard-of-storytelling/',
+  build: {
+    rollupOptions: {
+      output: {
+        // The pad icon data (ADR-0070) loads on demand and has its own size budget
+        // (.size-limit.json): its chunks go to assets/icons/, apart from the app's code.
+        chunkFileNames: (chunk) =>
+          chunk.facadeModuleId?.includes('/src/icons/')
+            ? 'assets/icons/[name]-[hash].js'
+            : 'assets/[name]-[hash].js',
+      },
+    },
+  },
   plugins: [
     preact(),
     licenseNotices(),

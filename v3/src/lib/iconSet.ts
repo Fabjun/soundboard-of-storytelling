@@ -31,6 +31,7 @@ export const ICON_CATEGORIES = [
   'symbols',
   'interface',
 ] as const;
+/** One category of the fixed list. */
 export type IconCategory = (typeof ICON_CATEGORIES)[number];
 
 /** The part of IconifyJSON this app writes and reads. */
@@ -53,8 +54,8 @@ export type IconSetJson = {
 /** Search words and original reference of one icon, by key. */
 export type IconCatalog = Record<string, { tags: string[]; source: string }>;
 
-/** What it takes to draw an icon: the SVG body and its viewBox size. */
-export type IconDrawing = { body: string; size: number };
+/** What it takes to draw an icon: its path data and its viewBox size. */
+export type IconDrawing = { d: string; size: number };
 
 const NAME = '[a-z0-9]+(?:-[a-z0-9]+)*';
 const KEY = new RegExp(`^(${NAME}):(${NAME})$`);
@@ -101,12 +102,17 @@ export function loadIconSetsFor(keys: readonly string[]): Promise<void> {
   return loadIconSets([...prefixes]);
 }
 
-/** The drawing of a key whose pack is loaded; undefined when unknown or not loaded yet. */
+/**
+ * The drawing of a key whose pack is loaded; undefined when unknown or not loaded yet. The body is
+ * one `<path fill="currentColor" d="…"/>` (checked by iconGuards), so the path data is enough to
+ * draw it as a Preact element — no HTML string is inserted.
+ */
 export function getIconDrawing(key: string): IconDrawing | undefined {
   const parsed = parseIconKey(key);
   const set = parsed ? loaded.get(parsed.prefix) : undefined;
   const icon = parsed && set?.icons[parsed.name];
-  return icon && set ? { body: icon.body, size: set.width } : undefined;
+  const d = icon && / d="([^"]+)"/.exec(icon.body)?.[1];
+  return d && set ? { d, size: set.width } : undefined;
 }
 
 /** The category of a key whose pack is loaded. */

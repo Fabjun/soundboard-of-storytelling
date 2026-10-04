@@ -43,61 +43,68 @@ describe('icon packs', () => {
     expect([...ICON_SET_PREFIXES].sort()).toEqual(sets.map((s) => s.prefix).sort());
   });
 
+  // Each check collects its problems per pack, so a failure names the pack and what is wrong
   it('each pack records its name, version, author and license; MIT ships its text', () => {
-    for (const s of sets) {
-      const { info } = s;
-      expect(KEBAB.test(s.prefix), s.prefix).toBe(true);
-      expect(info.name && info.version && info.author.name, s.prefix).toBeTruthy();
-      expect(info.author.url, s.prefix).toMatch(/^https:\/\//);
-      expect(LICENSES.has(info.license.spdx), `${s.prefix}: ${info.license.spdx}`).toBe(true);
-      expect(info.license.url, s.prefix).toMatch(/^https:\/\//);
-      const text = join(DIR, 'sets', `${s.prefix}.LICENSE.txt`);
-      expect(existsSync(text), `${s.prefix}.LICENSE.txt`).toBe(
-        LICENSES_WITH_TEXT.has(info.license.spdx),
-      );
-    }
+    const problems = sets.flatMap(({ prefix, info }) => {
+      const textShips = existsSync(join(DIR, 'sets', `${prefix}.LICENSE.txt`));
+      return [
+        !KEBAB.test(prefix) && `${prefix}: prefix not kebab-case`,
+        !(info.name && info.version && info.author.name) &&
+          `${prefix}: name, version or author missing`,
+        !/^https:\/\//.test(info.author.url) && `${prefix}: author url`,
+        !LICENSES.has(info.license.spdx) && `${prefix}: license ${info.license.spdx} not allowed`,
+        !/^https:\/\//.test(info.license.url) && `${prefix}: license url`,
+        textShips !== LICENSES_WITH_TEXT.has(info.license.spdx) &&
+          `${prefix}: ${prefix}.LICENSE.txt ${textShips ? 'not needed' : 'missing'}`,
+      ].filter((p): p is string => typeof p === 'string');
+    });
+    expect(problems).toEqual([]);
   });
 
   it('names are kebab-case and info.total counts them', () => {
-    for (const s of sets) {
+    const problems = sets.flatMap((s) => {
       const names = Object.keys(s.icons);
-      expect(
-        names.filter((n) => !KEBAB.test(n)),
-        s.prefix,
-      ).toEqual([]);
-      expect(s.info.total, s.prefix).toBe(names.length);
-    }
+      return [
+        ...names.filter((n) => !KEBAB.test(n)).map((n) => `${s.prefix}:${n} not kebab-case`),
+        ...(s.info.total === names.length ? [] : [`${s.prefix}: info.total ${s.info.total}`]),
+      ];
+    });
+    expect(problems).toEqual([]);
   });
 
   it('a drawing is one path of pixel rectangles inside the grid, filled with currentColor', () => {
     const PATH = /^<path fill="currentColor" d="((?:M\d+ \d+h\d+v1H\d+z)+)"\/>$/;
-    for (const s of sets) {
-      const bad = Object.entries(s.icons).filter(([, { body }]) => {
-        const d = PATH.exec(body)?.[1];
-        if (!d) return true;
-        return [...d.matchAll(/M(\d+) (\d+)h(\d+)/g)].some(
-          ([, x, y, w]) => +x + +w > s.width || +y >= s.height,
-        );
-      });
-      expect(
-        bad.map(([n]) => n),
-        s.prefix,
-      ).toEqual([]);
-    }
+    const bad = sets.flatMap((s) =>
+      Object.entries(s.icons)
+        .filter(([, { body }]) => {
+          const d = PATH.exec(body)?.[1];
+          if (!d) return true;
+          return [...d.matchAll(/M(\d+) (\d+)h(\d+)/g)].some(
+            ([, x, y, w]) => +x + +w > s.width || +y >= s.height,
+          );
+        })
+        .map(([n]) => `${s.prefix}:${n}`),
+    );
+    expect(bad).toEqual([]);
   });
 
   it('every icon has exactly one category from the fixed list', () => {
-    for (const s of sets) {
-      expect(
-        Object.keys(s.categories).filter(
-          (c) => !(ICON_CATEGORIES as readonly string[]).includes(c),
-        ),
-        s.prefix,
-      ).toEqual([]);
+    const known: readonly string[] = ICON_CATEGORIES;
+    const problems = sets.flatMap((s) => {
       const listed = Object.values(s.categories).flat();
-      expect(listed.length, `${s.prefix}: an icon in two categories`).toBe(new Set(listed).size);
-      expect([...listed].sort(), s.prefix).toEqual(Object.keys(s.icons).sort());
-    }
+      const unlisted = Object.keys(s.icons).filter((n) => !listed.includes(n));
+      return [
+        ...Object.keys(s.categories)
+          .filter((c) => !known.includes(c))
+          .map((c) => `${s.prefix}: unknown category ${c}`),
+        ...listed
+          .filter((n, i) => listed.indexOf(n) !== i)
+          .map((n) => `${s.prefix}:${n} in two categories`),
+        ...unlisted.map((n) => `${s.prefix}:${n} in no category`),
+        ...listed.filter((n) => !s.icons[n]).map((n) => `${s.prefix}:${n} listed, no icon`),
+      ];
+    });
+    expect(problems).toEqual([]);
   });
 });
 

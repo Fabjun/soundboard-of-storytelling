@@ -20,7 +20,7 @@ describe('keys', () => {
   it('a key is set:name in lower case with single hyphens', () => {
     expect(isIconKey('nikoichu:dragon')).toBe(true);
     expect(isIconKey('kenney-1bit:dice-6')).toBe(true);
-    for (const bad of [
+    const bad = [
       'dragon',
       'Nikoichu:dragon',
       'nikoichu:dragon--red',
@@ -30,9 +30,8 @@ describe('keys', () => {
       'nikoichu:',
       7,
       undefined,
-    ]) {
-      expect(isIconKey(bad), String(bad)).toBe(false);
-    }
+    ];
+    expect(bad.filter(isIconKey)).toEqual([]);
   });
 
   it('parseIconKey splits a key and refuses a malformed one', () => {
@@ -46,7 +45,8 @@ describe('loading on demand', () => {
     expect(getIconDrawing('pixelarticons:heart')).toBeUndefined();
     await loadIconSetsFor(['pixelarticons:heart', 'not a key']);
     expect(getIconDrawing('pixelarticons:heart')).toMatchObject({ size: 24 });
-    expect(getIconDrawing('pixelarticons:heart')?.body).toMatch(/^<path fill="currentColor" d="M/);
+    // The path data alone, read from the one-path body — drawn as an element, no HTML string
+    expect(getIconDrawing('pixelarticons:heart')?.d).toMatch(/^M\d+ \d+h\d+v1H\d+z/);
     expect(getIconDrawing('nikoichu:dragon')).toBeUndefined(); // another pack, not loaded yet
   });
 

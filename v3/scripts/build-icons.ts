@@ -10,7 +10,7 @@
  *   - src/icons/sets/<prefix>.LICENSE.txt  the license text where the license requires it (MIT)
  *   - src/icons/v1-map.json         V1's icon id → key, for the V1 import and pads it stored
  *
- * Run (from v3/): npm run build:icons -- [--from <work folder>] [--v1 <V1 icons.js>]
+ * Run (from v3/): npm run build:icons -- [--from WORK_FOLDER] [--v1 V1_ICONS_JS]
  * Default work folder: ~/dev/archive/icon-sources/work-2026-10-04 (see its README.md); default
  * V1 icon list: ~/dev/archive/botc-soundboard/icons.js (V1 stored `{b: "<id>"}` per pad icon).
  * The output is checked by tests/unit/iconGuards.test.ts; run it again after any change.
