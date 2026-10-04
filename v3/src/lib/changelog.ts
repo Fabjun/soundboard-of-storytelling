@@ -17,10 +17,18 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.166';
+export const APP_VERSION = '3.0.167';
 
 /** The developer log, newest first; CHANGELOG.md is generated from it (sync-changelog). */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.167',
+    date: '2026-10-04',
+    items: [
+      'fix(hooks): the pre-commit lint runs ESLint where its config lives — lint-staged called it from the root with --config v3/eslint.config.js, so ESLint matched its file patterns against the root, none matched under v3/ and most rules never ran at commit time (a lint error in a unit test passed the hook, exit 0; CI caught it later). Now v3/.lintstagedrc.json lints v3/ with its tasks running in v3/ (lint-staged README, monorepos), the root config formats the rest; the hook runs `npx --prefix v3 lint-staged` from the root (v3 tools for both configs). Verified with probes: lint error blocked (exit 1), Markdown outside v3/ still formatted, clean run exit 0; sync-steps shows npx --prefix in the step table',
+      'test(guards): testGuards "lint-staged runs ESLint where its config lives" — every lint-staged config with an ESLint task sits next to eslint.config.js and passes no --config; the hook lets lint-staged find its configs (counter-checked: 3 planted errors)',
+    ],
+  },
   {
     version: '3.0.166',
     date: '2026-10-04',
