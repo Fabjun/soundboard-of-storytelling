@@ -1986,6 +1986,12 @@
   flex-direction: column;
   gap: var(--space-6);
 }
+.sb-overlay-body > * {
+  /* The body scrolls its content: a child keeps its full height. In a flex column a child with
+     min-height 0 (sb-col) or no in-flow content (a virtualized grid) would shrink to fit and
+     overlap the next one (icon picker categories, 2026-10-04). */
+  flex-shrink: 0;
+}
 
 /* ── What's new (children of sb-overlay, ADR-0063) ─────────────────── */
 .sb-whats-new-entry-header {
