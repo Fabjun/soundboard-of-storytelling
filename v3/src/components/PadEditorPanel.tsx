@@ -379,7 +379,7 @@ export function PadEditorPanel({
   /** Stops the preview; the next ▶ starts at `nextCursor` (null = the trim start). */
   function endPreview(nextCursor: number | null) {
     previewRun.current++;
-    // A frame may still run before the playhead loop is cancelled: it must not take this stop
+    // A frame may still run before the playhead loop is canceled: it must not take this stop
     // for the end of the file (and move the cursor back to the trim start)
     seenPlaying.current = false;
     stopPreview();

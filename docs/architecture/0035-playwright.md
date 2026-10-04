@@ -40,8 +40,8 @@ self-contained (every test starts with an empty IDB via a fresh browser context)
 
 **Negative / Trade-offs:**
 
-- Pointer events drag in Playwright is hard to stabilise. Tests 9, 14, 20, 21 are marked
-  `test.skip` — to be activated in phase 3 (after the drag sequence is stabilised).
+- Pointer events drag in Playwright is hard to stabilize. Tests 9, 14, 20, 21 are marked
+  `test.skip` — to be activated in phase 3 (after the drag sequence is stabilized).
 - E2E full (~90s) is too slow for the pre-commit hook (runs only in CI).
 
 ## Alternatives considered

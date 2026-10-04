@@ -20,7 +20,7 @@ The 2026-09-28 v13-only import (SVG) is superseded by this hybrid. Hearth's sibl
 ## Fidelity check
 
 Machine-compared: `FLAME_TIP` (4) and `FLAME_BODY` (98) are identical in v13, Hearth and V3;
-the Hearth palette (8 colours) is identical to the v13 palette and to the tokens.
+the Hearth palette (8 colors) is identical to the v13 palette and to the tokens.
 
 **From v13, values unchanged:** tip flicker 12 fps + reach-up extension, sway (0.4), breath
 (±3 %), tongue lick, two rising embers, heart pulse, `flicker = 1 − charge × 1.4`.
@@ -52,8 +52,8 @@ particle physics and fades, ~45 fps ticker cap (22 ms).
 | --- | ------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------- | ---------- |
 | X1  | Hybrid: v13 idle + Hearth freeze on one canvas                                                                                       | Product owner choice (best of both)                                 | 2026-09-29 |
 | X2  | Body motion is v13's whole-body sway + breath (not Hearth's per-row sway) and v13's tip flicker (not Hearth's noise tip / tip-dance) | Part of the v13 idle                                                | 2026-09-29 |
-| X3  | Core-ring glow: core pixels glide towards heart / mid colour (3 targets/s, max 22 %)                                                 | Product owner request                                               | 2026-09-29 |
-| X4  | Heart as four pixels: 5 fps jitter (±15 %), occasional lit neighbour, one random corner at 65 %                                      | Product owner request                                               | 2026-09-29 |
+| X3  | Core-ring glow: core pixels glide towards heart / mid color (3 targets/s, max 22 %)                                                  | Product owner request                                               | 2026-09-29 |
+| X4  | Heart as four pixels: 5 fps jitter (±15 %), occasional lit neighbor, one random corner at 65 %                                       | Product owner request                                               | 2026-09-29 |
 | X5  | Canvas `touch-action: manipulation` (Hearth: `none`), root without tap highlight                                                     | Page stays scrollable on phones; no iOS tap flash / double-tap zoom | 2026-09-29 |
 | X6  | Facets drawn with the body offset (sway/shiver)                                                                                      | Keeps glints aligned with the pixels                                | 2026-09-29 |
 
@@ -64,7 +64,7 @@ Not imported from Hearth: `hearthTexture` / `hearthAccent` (defined but unused i
 
 ## Tests
 
-- `v3/tests/unit/flameMath.test.ts` — shape data, colours and glow, freeze front, phase
+- `v3/tests/unit/flameMath.test.ts` — shape data, colors and glow, freeze front, phase
   automaton, particles, core flicker.
 - `start-screen.spec.ts` — the flame well **and** the larger canvas field are masked
   (continuous animation); the rest of the StartScreen stays pixel-compared.

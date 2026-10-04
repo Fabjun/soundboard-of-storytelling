@@ -356,7 +356,7 @@ export function applyInsert(
   const fromIndex = posToIndex(srcPad.position, cols);
   if (fromIndex === clampedTo) return pads;
 
-  // Normalise to element (not gap-after): same logic as V1
+  // Normalize to element (not gap-after): same logic as V1
   const insertIdx = fromIndex < clampedTo ? clampedTo - 1 : clampedTo;
   if (insertIdx === fromIndex) return pads;
 

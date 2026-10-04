@@ -89,6 +89,13 @@ export function withEarlyVersions(
 /** The release notes the start screen shows, newest first (checked by whatsNew.test.ts). */
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
+    version: '3.0.172',
+    date: '2026-10-04',
+    behindTheScenes: [
+      'All texts use one spelling, American English, and a check keeps it that way.',
+    ],
+  },
+  {
     version: '3.0.171',
     date: '2026-10-04',
     behindTheScenes: [

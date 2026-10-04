@@ -8,7 +8,7 @@
  *
  * Scrolled the way a person scrolls — the mouse wheel over the area — and then each control must
  * be WHOLLY visible (ratio 1; clipping by a parent counts). Two weaker versions of this test
- * stayed green against the bug: a click only needs the centre visible, and Playwright's
+ * stayed green against the bug: a click only needs the center visible, and Playwright's
  * scrollIntoView also scrolls an `overflow: hidden` box that no person can scroll.
  */
 

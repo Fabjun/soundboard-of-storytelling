@@ -31,7 +31,7 @@ and behavior: [docs/product/README.md §5 Pads](../../product/README.md#pads).
 | Shape              | **Card format:** a slightly portrait rectangle.                                                                                                                              | **Decided** — _not yet built_                                                    |
 | Picture area (top) | Shows the pad's icon(s) — 1 to 4 in V1's arrangement. A pad without its own icon shows the **placeholder icon of its type** (Single, Loop, Combo), so all pads look uniform. | **Decided** — built in Slice 15d (ADR-0070); appearance reviewed with the design |
 | Info area (bottom) | **Name** (always visible) and the **assigned key** ([product §6 K10](../../product/README.md#input-keyboard--numpad)).                                                       | **Decided** — _not yet built_                                                    |
-| Type spine         | Coloured bar on the left edge showing the pad type (current code, ADR-0027).                                                                                                 | **Open** — current code, review pending                                          |
+| Type spine         | Colored bar on the left edge showing the pad type (current code, ADR-0027).                                                                                                  | **Open** — current code, review pending                                          |
 
 ## Variants
 
@@ -46,7 +46,7 @@ reviewed as part of this spec.
 
 | State        | Trigger             | Appearance (current code)                                                           | Status                    |
 | ------------ | ------------------- | ----------------------------------------------------------------------------------- | ------------------------- |
-| `is-hot`     | Pad is playing      | Spine widens to the perimeter; glow in pad type colour                              | **Open** — review pending |
+| `is-hot`     | Pad is playing      | Spine widens to the perimeter; glow in pad type color                               | **Open** — review pending |
 | `is-looping` | Loop pad is running | Class is set (`PadGridCell.tsx:104`) but has **no style** yet — looks like `is-hot` | **Open** — review pending |
 | `is-setup`   | SETUP mode          | Dashed border (drag-ready)                                                          | **Open** — review pending |
 
@@ -89,7 +89,7 @@ _Pending._
 Names only — no values.
 
 - Tokens: `--pad-single`, `--pad-loop`, `--pad-combo` (and `-soft` / `-glow` variants) — current
-  code. The Playlist colour tokens were removed with the Playlist → Loop merge (owner decision
+  code. The Playlist color tokens were removed with the Playlist → Loop merge (owner decision
   2026-10-02, PR #36; [product §5](../../product/README.md#5-core-concepts)).
 - Classes: `sb-pad`, `sb-pad-grid`, `sb-pad-grid-cell`, `sb-pad-icons` (picture area) — current
   code.
@@ -97,7 +97,7 @@ Names only — no values.
 ## Accessibility
 
 Touch target min. 44 px at every zoom level (CLAUDE.md UI rules). Pad type must stay readable
-without colour (current: spine position; to be reviewed). _Further details pending._
+without color (current: spine position; to be reviewed). _Further details pending._
 
 ## Open questions
 
@@ -114,7 +114,7 @@ without colour (current: spine position; to be reviewed). _Further details pendi
   zoom controls, detail levels).
 - Product context: [docs/product/README.md §3](../../product/README.md#3-app-modes-game-and-setup),
   [§5](../../product/README.md#5-core-concepts), [§6](../../product/README.md#6-platforms--input).
-- ADRs: ADR-0027 (pad type colours), ADR-0045 (two-axis adaptive model).
+- ADRs: ADR-0027 (pad type colors), ADR-0045 (two-axis adaptive model).
 - Earlier related idea: docs/backlog.md "2b — Library form" (tiles stack details by display size).
 - Design explorations (proposals, not binding): `design-sources/2026-05-25/v15-pad-depth.jsx` (depth
   treatments → current DepthPad), `v17-pad-appearance.jsx` (Settings → pad appearance with live

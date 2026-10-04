@@ -9,7 +9,7 @@
  *         falling frost, cracks, glinting facets, ice shards, steam, drips, re-ignite.
  *         Idle crackle and rare embers from Hearth as well.
  * Drawn on a canvas (Hearth engine); glow is a drop-shadow that follows the pixel
- * silhouette. Colours come from design tokens, read once at mount.
+ * silhouette. Colors come from design tokens, read once at mount.
  * Import record: docs/design/imports/animated-flame.md
  */
 
@@ -407,7 +407,7 @@ export function AnimatedFlame({ size = 120, interactive = true }: AnimatedFlameP
       ctx.fillRect(px(x), py(y), CELL, ph);
     }
 
-    // Heart (v13 pulse + V3 flicker, dim corner, lit neighbour)
+    // Heart (v13 pulse + V3 flicker, dim corner, lit neighbor)
     if (charge < 0.85) {
       const heartColor = lerpColor(W.heart, C.heart, charge);
       const heart = 0.7 + 0.3 * Math.sin(t * 4) * flicker;
@@ -525,7 +525,7 @@ export function AnimatedFlame({ size = 120, interactive = true }: AnimatedFlameP
           ctx.fillRect(Math.round(X + S), Math.round(Y), S, S);
           break;
         case 'steam': {
-          // Thin, translucent vapour: a few pixel lobes of varying size
+          // Thin, translucent vapor: a few pixel lobes of varying size
           const baseA = Math.max(0, Math.min(1, a * 0.3));
           const grow = 1 + (p.maxLife - p.life) * 0.18;
           const rise = (p.maxLife - p.life) * 0.5;

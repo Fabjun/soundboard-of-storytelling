@@ -46,7 +46,7 @@ because Playwright runs against a simulated environment:
 - [ ] **Stop pad stops playback**
   - Action: Tap a playing pad again.
   - Expected: Sound stops cleanly (no cut-off artifact). is-hot / is-looping removed.
-  - Why manual: Fade-out behaviour requires audible verification.
+  - Why manual: Fade-out behavior requires audible verification.
 
 - [ ] **Ringer Switch — pads play on silent**
   - Action: Set the physical Ringer Switch to silent, then tap a pad.
@@ -62,11 +62,11 @@ because Playwright runs against a simulated environment:
 - [ ] **Simultaneous loops**
   - Action: Start 3+ loop pads at the same time.
   - Expected: All loops play simultaneously without dropout or crash.
-  - Why manual: Memory + audio pipeline behaviour under load requires a real device.
+  - Why manual: Memory + audio pipeline behavior under load requires a real device.
 
 - [ ] **Short clip (< 0.5s)**
   - Action: Upload a very short clip (< 0.5s), configure as SINGLE, tap rapidly.
-  - Expected: No crash, no double-play artefacts.
+  - Expected: No crash, no double-play artifacts.
   - Why manual: Edge case in the `onended` handler lifecycle.
 
 - [ ] **Trimmed Loop repeats only its trimmed part** _(Slice 15a)_
@@ -179,7 +179,7 @@ because Playwright runs against a simulated environment:
 - [ ] **Browser gestures are off** _(3.0.159, ADR-0067)_
   - Action: On the board and in the library: double-tap, pinch with two fingers, long-press a pad
     name and a label; tap into the library search field.
-  - Expected: No zoom, no text selection, no iOS menu, no grey tap flash; the search field does not
+  - Expected: No zoom, no text selection, no iOS menu, no gray tap flash; the search field does not
     zoom in when tapped.
   - Why manual: The iOS long-press menu and focus zoom exist only on iOS.
 

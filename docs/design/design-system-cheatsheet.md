@@ -25,7 +25,7 @@ Need to style something.
 │
 ├── Does it have the stepped pixel-frame shape?
 │     YES → use sb-pix / sb-card / sb-pad / sb-btn / sb-pill / sb-menu-row
-│           customise via --pix-bg / --pix-border / --pix-step
+│           customize via --pix-bg / --pix-border / --pix-step
 │     NO  → continue
 │
 ├── Is the difference from the base a one-axis tweak?

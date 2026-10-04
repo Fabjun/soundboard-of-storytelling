@@ -67,13 +67,13 @@ export function BackupImportPanel({
 
   // Pass 1 whenever a new file is chosen
   useEffect(() => {
-    let cancelled = false;
+    let canceled = false;
     setStep({ kind: 'reading' });
     planImport(file)
-      .then((plan) => !cancelled && setStep({ kind: 'confirm', plan }))
-      .catch((e: unknown) => !cancelled && setStep({ kind: 'error', message: errorText(e) }));
+      .then((plan) => !canceled && setStep({ kind: 'confirm', plan }))
+      .catch((e: unknown) => !canceled && setStep({ kind: 'error', message: errorText(e) }));
     return () => {
-      cancelled = true;
+      canceled = true;
     };
   }, [file]);
 

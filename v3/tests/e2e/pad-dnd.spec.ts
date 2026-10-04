@@ -1,7 +1,7 @@
 /**
  * @fileoverview Full E2E — Pad Drag & Drop (verification points 20–21)
  *
- * 20. SWAP:   drag a pad onto another pad's centre → the two exchange positions
+ * 20. SWAP:   drag a pad onto another pad's center → the two exchange positions
  * 21. INSERT: drag a pad onto a cell's left edge → it is inserted there, the pads
  *             in between shift by one slot
  *
@@ -72,7 +72,7 @@ function padHandle(page: Page, padId: string) {
 
 // ── Test 20: SWAP ─────────────────────────────────────────────────────────────
 
-test('20 — SWAP: drag pad onto another pad centre → the two exchange positions', async ({
+test('20 — SWAP: drag pad onto another pad center → the two exchange positions', async ({
   page,
 }) => {
   const { a, b, c } = await setupThreePads(page);

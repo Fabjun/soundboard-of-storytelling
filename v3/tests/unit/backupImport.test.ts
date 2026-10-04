@@ -67,7 +67,7 @@ const v1Backup = () => ({
 });
 
 describe('planImport', () => {
-  it('summarises a V1 file: boards, pads, audio (new / present), other entries', async () => {
+  it('summarizes a V1 file: boards, pads, audio (new / present), other entries', async () => {
     await runImport(file({ ...v1Backup(), boards: [] }), await planImport(file(v1Backup())));
     // A is now in the library — a second plan sees it as present
     const plan = await planImport(file(v1Backup()));

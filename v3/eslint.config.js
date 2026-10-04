@@ -178,7 +178,7 @@ export default [
       'node_modules/**', // installed dependencies
       'coverage/**', // generated coverage report
       'playwright-report/**', // generated E2E report
-      'test-results/**', // generated E2E artefacts
+      'test-results/**', // generated E2E artifacts
       '.stryker-tmp/**', // Stryker sandbox copies of the project during a mutation run
       'reports/**', // generated mutation report
     ],

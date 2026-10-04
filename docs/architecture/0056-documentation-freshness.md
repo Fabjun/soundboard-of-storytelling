@@ -4,6 +4,7 @@
 **Date:** 2026-09-30
 **Slice:** infrastructure
 **Refines:** ADR-0047
+**Refined by:** ADR-0073 (American spelling, a Vale rule plus a code guard)
 **Category:** Test infrastructure & workflow
 
 ## Context

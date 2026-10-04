@@ -33,7 +33,7 @@ and in `docs/design/design-notes.md`:
 
 > _BOARD PERSISTENCE TRADE-OFF: Boards are stored as complete JSON documents.
 > Any pad edit rewrites the full ~50KB document. Acceptable at 5×16 pads;
-> see docs/design/design-notes.md "Slice 8 / Performance" for optimisation path if
+> see docs/design/design-notes.md "Slice 8 / Performance" for optimization path if
 > measured to be a bottleneck._
 
 ## Consequences
@@ -55,7 +55,7 @@ and in `docs/design/design-notes.md`:
 - No partial update in IDB (IDB has no UPDATE operator). The document always has to be fully
   read → changed → written.
 
-**Optimisation path (only if measured):**
+**Optimization path (only if measured):**
 introduce a separate `scenes` store; the board holds only `sceneIds: string[]`. Only once a
 performance problem is quantified — not speculatively.
 

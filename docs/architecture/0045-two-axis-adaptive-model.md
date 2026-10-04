@@ -92,7 +92,7 @@ denser layouts are ever wanted, they belong to axis 1, large screen — not buil
 
 - The exact breakpoint thresholds (from which point the sidebar moves from the bottom to the
   left) are not fixed yet — empirical calibration on real devices is needed.
-- Existing code and design artefacts that imply the old split have to be adapted step by step
+- Existing code and design artifacts that imply the old split have to be adapted step by step
   (work that starts when the mobile prototype grows into the app).
 
 ## Alternatives considered

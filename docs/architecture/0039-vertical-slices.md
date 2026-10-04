@@ -8,7 +8,7 @@
 
 ## Context
 
-V3 is a rewrite with a clearly defined feature set. The question: how is the work organised?
+V3 is a rewrite with a clearly defined feature set. The question: how is the work organized?
 Horizontally (layers: UI base first, then state, then persistence) or vertically (features:
 every slice is a complete feature)?
 

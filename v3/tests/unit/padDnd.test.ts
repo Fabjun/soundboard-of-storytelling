@@ -107,7 +107,7 @@ describe('applyInsert', () => {
       makePad('c', { col: 2, row: 0 }), // index 2
       makePad('d', { col: 3, row: 0 }), // index 3
     ];
-    // Insert 'a' at gap after index 3 → normalises to insertIdx = 2
+    // Insert 'a' at gap after index 3 → normalizes to insertIdx = 2
     // (fromIndex=0 < clampedTo=3, so insertIdx = 3-1 = 2)
     const result = applyInsert(pads, 'a', 3, 4, 4);
 
@@ -144,14 +144,14 @@ describe('applyInsert', () => {
 
   test('toIndex clamped to total-1 when out of range', () => {
     const pads = [makePad('a', { col: 0, row: 0 }), makePad('b', { col: 1, row: 0 })];
-    // toIndex=99, grid is 4×4=16, clamps to 15, then normalises
+    // toIndex=99, grid is 4×4=16, clamps to 15, then normalizes
     // Should not throw
     expect(() => applyInsert(pads, 'a', 99, 4, 4)).not.toThrow();
   });
 
-  test('from === to after normalise → returns same array reference', () => {
+  test('from === to after normalize → returns same array reference', () => {
     const pads = [makePad('a', { col: 1, row: 0 })]; // index 1
-    // Insert at index 2 — after normalise: fromIndex=1, clampedTo=2, insertIdx=2-1=1 = fromIndex → no-op
+    // Insert at index 2 — after normalize: fromIndex=1, clampedTo=2, insertIdx=2-1=1 = fromIndex → no-op
     const result = applyInsert(pads, 'a', 2, 4, 4);
     expect(result).toBe(pads);
   });
@@ -228,7 +228,7 @@ describe('drag flow (startDrag)', () => {
   const up = (): void => {
     document.dispatchEvent(new PointerEvent('pointerup'));
   };
-  /** Press on cell (col,row) at its centre (or the given point). */
+  /** Press on cell (col,row) at its center (or the given point). */
   const press = (col: number, row: number, x = col * CELL + 50, y = row * CELL + 50): void => {
     const el = cells.get(`${col},${row}`)!;
     startDrag(
@@ -272,7 +272,7 @@ describe('drag flow (startDrag)', () => {
     expect(cells.get('0,0')!.classList.contains('is-drag-source')).toBe(true);
   });
 
-  it('the ghost has the source size and follows the pointer centred', () => {
+  it('the ghost has the source size and follows the pointer centered', () => {
     press(0, 0);
     move(58, 50);
     move(250, 170);
@@ -285,7 +285,7 @@ describe('drag flow (startDrag)', () => {
   it('pointer up removes ghost, source marker and drop indicators', () => {
     press(0, 0);
     move(58, 50);
-    move(250, 150); // centre of cell (2,1) → swap indicator
+    move(250, 150); // center of cell (2,1) → swap indicator
     expect(cells.get('2,1')!.classList.contains('is-drag-swap')).toBe(true);
     up();
     expect(ghost()).toBeNull();
@@ -293,7 +293,7 @@ describe('drag flow (startDrag)', () => {
     expect(cells.get('2,1')!.classList.contains('is-drag-swap')).toBe(false);
   });
 
-  it('centre of another cell → swap with that cell', () => {
+  it('center of another cell → swap with that cell', () => {
     press(0, 0);
     move(58, 50);
     move(250, 150);
@@ -404,7 +404,7 @@ describe('drag flow (startDrag)', () => {
     move(350, 358);
     move(0, 50); // left border of cell (0,0) → its left edge zone
     expect(cells.get('0,0')!.classList.contains('is-insert-before')).toBe(true);
-    move(150, 0); // top border of cell (1,0), centre column → swap
+    move(150, 0); // top border of cell (1,0), center column → swap
     expect(cells.get('1,0')!.classList.contains('is-drag-swap')).toBe(true);
   });
 

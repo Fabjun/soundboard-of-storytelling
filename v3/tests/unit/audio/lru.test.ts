@@ -53,7 +53,7 @@ describe('lruSet — basic add', () => {
   test('new hash is tracked; byte counter increases', () => {
     libBufs['a'] = mockBuf(100, 1);
     lruSet('a');
-    // byte counter is module-private, but eviction behaviour proves it works
+    // byte counter is module-private, but eviction behavior proves it works
     // (tested in eviction tests). Here we just verify no crash and the buf stays.
     expect(libBufs['a']).toBeDefined();
   });

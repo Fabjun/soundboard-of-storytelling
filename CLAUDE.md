@@ -22,7 +22,9 @@
 - **Secondary**: laptop/desktop
 - **Project language**: **English only** — app UI, code, comments, docs, commit messages,
   tool/hook/CI messages (user decision 2026-09-29; German legacy text is translated in the
-  structure clean-up, stage 4)
+  structure clean-up, stage 4). **American spelling** everywhere, history included (owner
+  decision 2026-10-04, ADR-0073): `color`, `behavior`, `license`, `center` — checked by Vale
+  (`SoS.AmericanSpelling`) in Markdown and by `codeGuards` in every other file
 - **No personal address in documents** (owner decision 2026-10-03): What's new, the changelog,
   docs, ADRs, the backlog and this file never say "you" / "your" to the reader, and What's new
   uses no commands — the app or the subject is the subject. Verbatim quotations stay as quoted;
@@ -632,7 +634,7 @@ Before committing a slice, also:
    plan, or work that follows directly from agreed rules — are committed **and pushed**
    autonomously once all gates are green; report the result with `git show --stat` and name
    any file outside the plan's file list. Stop and ask when a genuine decision is open
-   (product behaviour, a new scheme or convention, trade-offs, anything irreversible or
+   (product behavior, a new scheme or convention, trade-offs, anything irreversible or
    outward-facing beyond a normal push).
 
 ---

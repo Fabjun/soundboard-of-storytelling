@@ -55,7 +55,7 @@ browser context.
 which would block testing on the primary target.
 
 **Conditional:** `crypto.subtle` when available, otherwise a fallback. Would produce different
-behaviour in dev and production — not good engineering practice (invariants should be the
+behavior in dev and production — not good engineering practice (invariants should be the
 same in every context).
 
 **CRC32 / MD5:** would be faster, but are not cryptographic hashes. Collision resistance

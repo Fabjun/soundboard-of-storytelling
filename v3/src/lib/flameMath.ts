@@ -1,5 +1,5 @@
 /**
- * @fileoverview flameMath — shape data, colour maths, freeze state machine and particles
+ * @fileoverview flameMath — shape data, color math, freeze state machine and particles
  * for <AnimatedFlame /> (hybrid flame).
  *
  * Sources (Claude Design):
@@ -7,7 +7,7 @@
  *     core-ring glow, heart flicker)
  *   • Freeze / hold / thaw, particles, glow — design-sources/2026-09-28/…/flame-engine.jsx
  *     and flame-themes.jsx ("Hearth"), values unchanged.
- * Colours are never hardcoded here: the palette is read from design tokens at runtime
+ * Colors are never hardcoded here: the palette is read from design tokens at runtime
  * and passed in. Import record: docs/design/imports/animated-flame.md
  */
 
@@ -56,7 +56,7 @@ export const HEART_PIXELS: GridPos[] = [
   [7, 9], [8, 9], [7, 10], [8, 10],
 ];
 
-/** Neighbours of the 2×2 heart that can briefly light up. V3 addition. */
+/** Neighbors of the 2×2 heart that can briefly light up. V3 addition. */
 // Formatting: keep the pixel table aligned row by row (Prettier would reflow it).
 // prettier-ignore
 export const HEART_NEIGHBOURS: GridPos[] = [
@@ -92,16 +92,16 @@ export const CELL = 10;
 
 // ── Timing (v13 idle + V3 additions) ────────────────────────────────────────
 
-/** Heart flicker frame rate (jitter, dim corner, neighbour) — V3 addition. */
+/** Heart flicker frame rate (jitter, dim corner, neighbor) — V3 addition. */
 export const CORE_FLICKER_FPS = 5;
 /** New glow targets per second for the core ring — pixels glide between them. V3 addition. */
 export const RING_GLOW_FPS = 3;
-/** Max. share the core ring moves towards the heart (brighter) or mid colour (darker). */
+/** Max. share the core ring moves towards the heart (brighter) or mid color (darker). */
 export const RING_GLOW_STRENGTH = 0.22;
 /** How much the randomly chosen dim heart corner loses (0.35 → shines at 65 %). */
 export const HEART_CORNER_DIM = 0.35;
 
-// ── Hearth behaviour (values 1:1) ───────────────────────────────────────────
+// ── Hearth behavior (values 1:1) ───────────────────────────────────────────
 
 /**
  * How taps freeze the flame: each tap adds `chargePerTap` (frozen at 1). Frozen, it holds for
@@ -117,10 +117,10 @@ export const HEARTH = {
 
 // ── Palette ─────────────────────────────────────────────────────────────────
 
-/** One temperature family of the flame (warm = GAME colours, cold = SETUP ice). */
+/** One temperature family of the flame (warm = GAME colors, cold = SETUP ice). */
 export type FlameFamily = { outer: string; mid: string; core: string; heart: string };
 
-/** Full palette, resolved from design tokens. All values are 6-digit hex colours. */
+/** Full palette, resolved from design tokens. All values are 6-digit hex colors. */
 export type FlamePalette = {
   warm: FlameFamily;
   cold: FlameFamily;
@@ -134,7 +134,7 @@ export type FlamePalette = {
   highlight: string;
 };
 
-// ── Colour maths ────────────────────────────────────────────────────────────
+// ── Color math ────────────────────────────────────────────────────────────
 
 /** Returns the value `t` of the way from `a` to `b` (linear interpolation; t from 0 to 1). */
 export function lerp(a: number, b: number, t: number): number {
@@ -150,21 +150,21 @@ export function hexToRgb(color: string): [number, number, number] {
   return [parseInt(h.slice(0, 2), 16), parseInt(h.slice(2, 4), 16), parseInt(h.slice(4, 6), 16)];
 }
 
-/** Linear blend of two colours ('#rrggbb' or 'rgb(r,g,b)') → 'rgb(r,g,b)'. */
+/** Linear blend of two colors ('#rrggbb' or 'rgb(r,g,b)') → 'rgb(r,g,b)'. */
 export function lerpColor(c1: string, c2: string, t: number): string {
   const [r1, g1, b1] = hexToRgb(c1);
   const [r2, g2, b2] = hexToRgb(c2);
   return `rgb(${Math.round(lerp(r1, r2, t))},${Math.round(lerp(g1, g2, t))},${Math.round(lerp(b1, b2, t))})`;
 }
 
-/** Colour of a layer (0 outer · 1 mid · 2 core) within one family. */
+/** Color of a layer (0 outer · 1 mid · 2 core) within one family. */
 export function layerOf(family: FlameFamily, layer: number): string {
   if (layer === 0) return family.outer;
   if (layer === 1) return family.mid;
   return family.core;
 }
 
-/** Glow colour for the canvas drop-shadow (Hearth: alpha 0.5, warm → cold with charge). */
+/** Glow color for the canvas drop-shadow (Hearth: alpha 0.5, warm → cold with charge). */
 export function glowColorAt(charge: number, palette: FlamePalette): string {
   const [r1, g1, b1] = hexToRgb(palette.glowWarm);
   const [r2, g2, b2] = hexToRgb(palette.glowCold);
@@ -180,10 +180,10 @@ export function glowBlurAt(charge: number): number {
 
 /**
  * Freeze threshold per pixel: LOW at the edge and top (freezes first), HIGH in the core
- * bottom-centre (freezes last). Thawing reverses it — warmth spreads from the inside out.
+ * bottom-center (freezes last). Thawing reverses it — warmth spreads from the inside out.
  */
 export function freezeThreshold(x: number, y: number): number {
-  const edge = Math.abs(x - 7.5) / 4.5; // 0 centre … 1 edge
+  const edge = Math.abs(x - 7.5) / 4.5; // 0 center … 1 edge
   return (1 - edge) * 0.5 + (y / 15) * 0.28;
 }
 
@@ -341,8 +341,8 @@ export function smoothNoise(pos: number, i: number): number {
 }
 
 /**
- * Colour of one core-ring pixel: brighter towards the heart or darker towards the mid
- * colour, by at most `strength`, scaled by the flame's flicker (a frozen flame is still).
+ * Color of one core-ring pixel: brighter towards the heart or darker towards the mid
+ * color, by at most `strength`, scaled by the flame's flicker (a frozen flame is still).
  */
 export function coreFlickerColor(
   core: string,

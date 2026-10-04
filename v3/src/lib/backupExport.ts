@@ -102,7 +102,7 @@ export function describeBackupAge(
 /**
  * Hands the backup to the user: the share sheet where the browser can share files (iPhone: save to
  * Files), otherwise a download. Must run in a tap handler (share needs a user gesture). Resolves
- * true when the file was handed over, false when the user cancelled the share sheet.
+ * true when the file was handed over, false when the user canceled the share sheet.
  */
 export async function saveBackupFile(blob: Blob, name: string): Promise<boolean> {
   const file = new File([blob], name, { type: blob.type });

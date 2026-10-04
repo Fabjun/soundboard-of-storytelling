@@ -186,7 +186,7 @@ export function padTypeColor(type: PadType): string {
 /**
  * Returns the CSS glow token for a pad type.
  *
- * @reserved Slice 13 — a playing pad glows in its type colour (docs/design/components/pad.md)
+ * @reserved Slice 13 — a playing pad glows in its type color (docs/design/components/pad.md)
  */
 export function padTypeGlow(type: PadType): string {
   switch (type) {

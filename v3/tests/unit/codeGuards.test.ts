@@ -41,12 +41,17 @@
  *    `@reserved Parked — …` (ADR-0064; owner decision 2026-10-03: such code is never deleted). The
  *    slice exists in CLAUDE.md's slice table and is not complete — a finished slice that left its
  *    reserved code unused is reported, so a reservation cannot go stale.
+ * 14. American spelling in every file that is not Markdown — code, comments, styles, test names,
+ *    configuration (owner decision 2026-10-04). The word list is the Vale rule
+ *    .vale/styles/SoS/AmericanSpelling.yml, which checks the Markdown files; the exceptions below
+ *    name their reason (verbatim third-party material, deliberate search words).
  */
 
 import { readdirSync, readFileSync } from 'node:fs';
 import { basename, join, relative } from 'node:path';
 import ts from 'typescript';
 import { findReservations, RESERVED_TAG } from '../../scripts/lib/reserved-code';
+import { repoFiles } from '../../scripts/lib/repo-files';
 
 const V3 = join(__dirname, '..', '..');
 const SRC = join(V3, 'src');
@@ -607,7 +612,7 @@ describe('guard: reserved code names an open slice or a parked decision (ADR-006
   });
 
   it('a @reserved tag stands at the start of a doc comment line, where tools find it', () => {
-    // A tag elsewhere in a doc comment (e.g. on a one-line /** … */) would be honoured by knip
+    // A tag elsewhere in a doc comment (e.g. on a one-line /** … */) would be honored by knip
     // but missed by this guard and the register; prose names the tag in backticks
     const bad = files.flatMap((f) =>
       readFileSync(f, 'utf8')
@@ -637,6 +642,48 @@ describe('guard: reserved code names an open slice or a parked decision (ADR-006
         ? []
         : [`${r.at}: Slice ${n} is ${status ?? 'not in the slice table'}`];
     });
+    expect(bad).toEqual([]);
+  });
+});
+
+describe('guard: American spelling outside Markdown (owner decision 2026-10-04)', () => {
+  const ROOT = join(V3, '..');
+  const RULE = '.vale/styles/SoS/AmericanSpelling.yml';
+  const swap = new Map(
+    [...readFileSync(join(ROOT, RULE), 'utf8').matchAll(/^ {2}([a-z]+): ([a-z]+)$/gm)].map(
+      (m) => [m[1], m[2]] as const,
+    ),
+  );
+  /** Files that keep their spelling, each with its reason (ADR-0053). */
+  const KEEP: [RegExp, string][] = [
+    [/\.md$/, 'Markdown is checked by Vale with the same rule'],
+    [/^design-sources\//, 'Claude Design downloads, kept as delivered (CLAUDE.md)'],
+    [/^v3\/src\/icons\/catalog\.json$/, 'search words: British forms are deliberate synonyms'],
+    [/^v3\/src\/icons\/v1-map\.json$/, "V1's icon ids, an external format"],
+    [/^v3\/src\/icons\/sets\/.*\.LICENSE\.txt$/, 'third-party license texts, verbatim'],
+    [/^\.vale\/styles\/SoS\/AmericanSpelling\.yml$/, 'the word list itself'],
+    [/(^|\/)package-lock\.json$/, 'names and texts of third-party packages'],
+    [/\.(png|jpe?g|gif|ico|svg|woff2?|ttf|gz|zip|wav|mp3|ogg|webp|pdf)$/, 'binary or image files'],
+  ];
+
+  it('reads the word list of the Vale rule (sanity)', () => {
+    expect(swap.size).toBeGreaterThan(50);
+    expect([...swap].filter(([british, american]) => british === american)).toEqual([]);
+  });
+
+  it('no British spelling in code, comments, styles, test names or configuration', () => {
+    const word = new RegExp(`\\b(${[...swap.keys()].join('|')})\\b`, 'gi');
+    const bad = repoFiles(ROOT)
+      .filter((f) => !KEEP.some(([re]) => re.test(f)))
+      .flatMap((f) =>
+        readFileSync(join(ROOT, f), 'utf8')
+          .split('\n')
+          .flatMap((line, i) =>
+            [...line.matchAll(word)].map(
+              (m) => `${f}:${i + 1}: ${m[0]} → ${swap.get(m[0].toLowerCase())}`,
+            ),
+          ),
+      );
     expect(bad).toEqual([]);
   });
 });

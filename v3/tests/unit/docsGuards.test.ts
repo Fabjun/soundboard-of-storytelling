@@ -223,7 +223,7 @@ describe('guard: project language is English (CLAUDE.md)', () => {
     'dist', // build output
     'coverage', // generated coverage report
     'playwright-report', // generated E2E report
-    'test-results', // generated E2E artefacts
+    'test-results', // generated E2E artifacts
     'design-sources', // Claude Design downloads, kept exactly as delivered (ADR-0050)
   ]);
   const walkText = (dir: string): string[] =>

@@ -34,7 +34,7 @@ Owner-only (account level, not readable with the CLI token): two-factor authenti
 e-mail notification for failed workflow runs (needed for the weekly check).
 
 `SECURITY.md` lives in `.github/` — the repository root is reserved for the four standard
-files (ADR-0050); GitHub recognises both locations.
+files (ADR-0050); GitHub recognizes both locations.
 
 **Verify:**
 `gh api repos/Fabjun/soundboard-of-storytelling --jq .security_and_analysis`,

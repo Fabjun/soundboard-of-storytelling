@@ -36,14 +36,14 @@ but structure code so a future i18n pass is feasible."
 
 **Negative / Trade-offs:**
 
-- A future localisation requires introducing i18n retroactively. The "named constants"
+- A future localization requires introducing i18n retroactively. The "named constants"
   structure reduces the effort but does not remove it.
 - If the tool ever becomes commercial (CLAUDE.md: "A potential commercial product in the long
   term"), i18n follow-up work is foreseeable.
 
 ## Alternatives considered
 
-**i18n infrastructure from the start:** a cleaner architecture for future localisation. But
+**i18n infrastructure from the start:** a cleaner architecture for future localization. But
 overhead for a use case that does not exist at the moment. YAGNI: not now.
 
 **German:** German as the app language. The user uses English primarily for code and tool UI;

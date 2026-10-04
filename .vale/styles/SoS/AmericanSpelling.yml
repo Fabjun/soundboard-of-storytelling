@@ -1,0 +1,115 @@
+# American English everywhere (owner decision 2026-10-04): British forms get the American one.
+# Verbatim quotations and third-party texts keep their spelling (mark them with
+# <!-- vale SoS.AmericanSpelling = NO --> … = YES). This list is also read by
+# v3/tests/unit/codeGuards.test.ts for every tracked file that is not Markdown.
+extends: substitution
+message: "American spelling: use '%s' instead of '%s'."
+level: error
+ignorecase: true
+matchcase: true
+swap:
+  acknowledgement: acknowledgment
+  acknowledgements: acknowledgments
+  analyse: analyze
+  analysed: analyzed
+  analysing: analyzing
+  armour: armor
+  artefact: artifact
+  artefacts: artifacts
+  behaviour: behavior
+  behavioural: behavioral
+  behaviours: behaviors
+  cancelled: canceled
+  cancelling: canceling
+  catalogue: catalog
+  catalogues: catalogs
+  centralise: centralize
+  centralised: centralized
+  centre: center
+  centred: centered
+  centres: centers
+  centring: centering
+  colour: color
+  coloured: colored
+  colourful: colorful
+  colouring: coloring
+  colours: colors
+  customisation: customization
+  customise: customize
+  customised: customized
+  defence: defense
+  deserialisation: deserialization
+  deserialise: deserialize
+  emphasise: emphasize
+  emphasised: emphasized
+  emphasises: emphasizes
+  favour: favor
+  favourite: favorite
+  favourites: favorites
+  flavour: flavor
+  flavoured: flavored
+  flavours: flavors
+  grey: gray
+  honour: honor
+  honoured: honored
+  honours: honors
+  initialisation: initialization
+  initialise: initialize
+  initialised: initialized
+  initialises: initializes
+  initialising: initializing
+  judgement: judgment
+  labelled: labeled
+  labelling: labeling
+  licence: license
+  licences: licenses
+  localisation: localization
+  maths: math
+  modelled: modeled
+  modelling: modeling
+  neighbour: neighbor
+  neighbouring: neighboring
+  neighbours: neighbors
+  normalisation: normalization
+  normalise: normalize
+  normalised: normalized
+  normalises: normalizes
+  normalising: normalizing
+  optimisation: optimization
+  optimise: optimize
+  optimised: optimized
+  optimises: optimizes
+  organisation: organization
+  organise: organize
+  organised: organized
+  organises: organizes
+  prioritise: prioritize
+  prioritised: prioritized
+  programme: program
+  recognise: recognize
+  recognised: recognized
+  recognises: recognizes
+  recolour: recolor
+  recolours: recolors
+  reorganise: reorganize
+  reorganises: reorganizes
+  serialisation: serialization
+  serialise: serialize
+  serialises: serializes
+  signalled: signaled
+  signalling: signaling
+  stabilise: stabilize
+  stabilised: stabilized
+  summarise: summarize
+  summarised: summarized
+  summarises: summarizes
+  theatre: theater
+  tokenisation: tokenization
+  travelled: traveled
+  travelling: traveling
+  tyre: tire
+  tyres: tires
+  vapour: vapor
+  visualisation: visualization
+  visualise: visualize
+  visualiser: visualizer

@@ -5,7 +5,7 @@ v3/dist/
 node_modules/
 # Generated coverage report
 v3/coverage/
-# Generated E2E report and artefacts
+# Generated E2E report and artifacts
 v3/playwright-report/
 v3/test-results/
 # Claude Design downloads, kept exactly as delivered (ADR-0050)

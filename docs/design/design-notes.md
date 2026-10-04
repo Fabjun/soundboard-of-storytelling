@@ -197,10 +197,10 @@ screen regions and don't compete).
    `EDIT` / `LIVE` text. Cheap polish, anchors the bottom of the
    screen. Skip only if the status bar is being redesigned anyway.
 3. **Edge tint** — 2 px inset outline on the workspace in the active
-   mode colour. Pure peripheral cue, ambient. Pair with #1 or #2 if the
+   mode color. Pure peripheral cue, ambient. Pair with #1 or #2 if the
    mode still feels under-communicated.
 4. **Spine saturation** — pad type-spines dim to 45% opacity in SETUP.
-   **Risk: the spine already carries pad TYPE colour.** Layering mode
+   **Risk: the spine already carries pad TYPE color.** Layering mode
    dimming onto a pixel-region that already encodes a different
    semantic invites confusion ("why is my Loop pad pale?"). Ship last,
    only if the first three are not enough.
@@ -232,14 +232,14 @@ A pad that will fire on the next downbeat (combo scheduling, ducking
 release window) needs a third visual state distinct from idle and
 `is-hot`. Today `hot` is a single boolean.
 **Suggestion · `is-scheduled` state in §3.** Visual: a softer outline
-in the pad-type colour without the inset fill that `is-hot` carries.
+in the pad-type color without the inset fill that `is-hot` carries.
 **Open until Slice 4 lands and we can see real combo timing in the
 UI.** Speculative tokens are cruft; revisit when the audio engine
 surfaces the scheduling lifecycle for real.
 
 ### C2 · `--pad-soft-outline` token family (depends on C1)
 
-The `is-scheduled` visual needs a colour value that's softer than the
+The `is-scheduled` visual needs a color value that's softer than the
 existing `--pad-*-glow` family — outline only, no fill. Would land as
 `--pad-single-soft-outline`, `--pad-loop-soft-outline`, etc. **Hold
 until C1 is approved.** Adding the token before the state has a use
@@ -267,11 +267,11 @@ implemented and we can see real cross-scene set usage.
 
 Surface during A3; final calls happen at implementation:
 
-- **Delete-last-scene behaviour** — drop back to Empty Board (recommended)
+- **Delete-last-scene behavior** — drop back to Empty Board (recommended)
   vs. block. Recommendation argues from the data-model angle: zero scenes
   is a legal Board state, and Empty Board UX is already good.
   _(SETTLED — recommendation implemented: `SceneRail.tsx` `requestDelete()` has no guard on
-  `scenes.length`. See docs/backlog.md: Delete-last-scene behaviour ✅ SETTLED (Slice 3).)_
+  `scenes.length`. See docs/backlog.md: Delete-last-scene behavior ✅ SETTLED (Slice 3).)_
 - **Rename name conflicts** — allow duplicates (scenes are ID-referenced,
   name is display-only) vs. enforce unique. Strict-unique adds friction
   without benefit.
@@ -375,8 +375,8 @@ comes from. Faded `--text-mute` mono.
 Typing in the tag field surfaces matching existing tags from the project's
 tag pool (case-insensitive, fuzzy on substring). `↵` commits, `⌫` on empty
 input removes the last chip. Chips render as `sb-pill` in the pad type's
-colour family if a known semantic mapping exists (`rain` → loop teal etc.),
-otherwise default pill grey.
+color family if a known semantic mapping exists (`rain` → loop teal etc.),
+otherwise default pill gray.
 
 ### Folder picker is a tree
 
@@ -439,7 +439,7 @@ Landed via the `.sb-pad.is-deep` opt-in state. The migration also forced
 four small system changes, all on the same commit as the state:
 
 - `--pix-bg-layer` escape hatch on the `sb-pix`-family background (allows
-  multi-layer gradients without breaking the solid-colour `--pix-bg`
+  multi-layer gradients without breaking the solid-color `--pix-bg`
   contract — fully backwards-compatible) _(token subsequently removed from tokens.css)_
 - `--pad-filter-base` plumbing on `sb-pad` so `is-hot`'s glow stacks
   onto whatever base filter `is-deep` (or any future treatment) sets,
@@ -450,7 +450,7 @@ four small system changes, all on the same commit as the state:
   escape-hatch content is moot — `--pix-bg-layer` removed; box-shadow rule lives in §5)_,
   §A (Pad surface row + Elevation token added)
 
-v18-pad-depth-migration.jsx is kept as the design-history artefact
+v18-pad-depth-migration.jsx is kept as the design-history artifact
 showing what the contract carried and what it didn't.
 
 ### Glow tokens for "currently scheduled" vs "currently playing"
@@ -521,7 +521,7 @@ toggle, right help/fullscreen). Replaces the small `sb-mode-badge` in
 that one position; `sb-mode-badge` stays for compact/secondary surfaces.
 State flip triggers a directional pixel-spark animation
 (SETUP→GAME = gold sparks left-to-right, GAME→SETUP = teal sparks
-right-to-left, ~420 ms total, ~10 sparks staggered). Honours
+right-to-left, ~420 ms total, ~10 sparks staggered). Honors
 `prefers-reduced-motion` with a 220 ms drop-shadow flash instead of
 flying particles. Mobile uses `is-compact` modifier (smaller font, 6
 sparks).

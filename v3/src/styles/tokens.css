@@ -38,7 +38,7 @@
      pressed-in even against the toolbar.                              */
   --sunk: #060614;
 
-  /* ── BORDERS ── widen by tone, not by colour. Sit on the violet
+  /* ── BORDERS ── widen by tone, not by color. Sit on the violet
      axis so they read as part of the atmosphere, not steel.           */
   --border: #383868; /* default 1px hairline · L* ~0.116        */
   --border-soft: #232348; /* dividers inside dense lists            */
@@ -132,7 +132,7 @@
   --info: #9d7fc7; /* violet for hints / metadata                   */
 
   /* ── MODE ── SETUP vs GAME. Differentiation is multi-cue
-     (see components.jsx PadShell + screens.jsx Board). The colour token
+     (see components.jsx PadShell + screens.jsx Board). The color token
      here is just for accents — borders/badges/panel chrome.
 
      Each mode has THREE alpha tiers, mirroring the pad-type pattern
@@ -301,7 +301,7 @@
 
 /* Verdant — fantasy / forest / leather-bound book */
 .sb-theme-verdant {
-  /* @inventory: Theme override (unused until Slice 14 settings) — green fantasy palette; re-declares colour tokens. */
+  /* @inventory: Theme override (unused until Slice 14 settings) — green fantasy palette; re-declares color tokens. */
   --night: #07120d;
   --deep: #0b1e16;
   --surface: #102a20;
@@ -337,7 +337,7 @@
 
 /* Neon — sci-fi / cyberpunk */
 .sb-theme-neon {
-  /* @inventory: Theme override (unused until Slice 14 settings) — neon sci-fi palette; re-declares colour tokens. */
+  /* @inventory: Theme override (unused until Slice 14 settings) — neon sci-fi palette; re-declares color tokens. */
   --night: #050816;
   --deep: #0a1228;
   --surface: #111e40;
@@ -370,7 +370,7 @@
 
 /* Crimson — horror / gothic */
 .sb-theme-crimson {
-  /* @inventory: Theme override (unused until Slice 14 settings) — crimson horror palette; re-declares colour tokens. */
+  /* @inventory: Theme override (unused until Slice 14 settings) — crimson horror palette; re-declares color tokens. */
   --night: #0a0606;
   --deep: #16090a;
   --surface: #20121a;
@@ -534,7 +534,7 @@
   gap: var(--space-1);
 }
 .sb-row-fill {
-  /* @inventory: Centred fill row — fills flex parent (flex:1) and centres content both axes. Use for empty-state containers. */
+  /* @inventory: Centered fill row — fills flex parent (flex:1) and centers content both axes. Use for empty-state containers. */
   display: flex;
   flex: 1;
   align-items: center;
@@ -562,7 +562,7 @@
 /* ════════════════════════════════════════════════════════════════════
    PIXEL FRAMES — the chunky stepped-corner look. Implementation:
    clip-path cuts a stepped silhouette; a `padding-box / border-box`
-   background gradient fakes a flat-colour border across the full
+   background gradient fakes a flat-color border across the full
    transparent-border thickness. Shadows / glows must use
    filter:drop-shadow (clip-path eats box-shadow).
    ════════════════════════════════════════════════════════════════════ */
@@ -629,7 +629,7 @@
   position: relative;
 }
 .sb-icon {
-  /* @inventory: Icon slot in a board-list menu row — fixed 28px width, gold colour. */
+  /* @inventory: Icon slot in a board-list menu row — fixed 28px width, gold color. */
   flex: 0 0 28px;
   color: var(--gold);
 }
@@ -714,12 +714,12 @@
   padding: 3px var(--space-3);
 }
 
-/* ── PAD ── shared shell. Type colour is supplied via --pad-color
-   on the element by the React layer; idle states keep the colour as
+/* ── PAD ── shared shell. Type color is supplied via --pad-color
+   on the element by the React layer; idle states keep the color as
    a thin left-edge bar, "hot" (playing) states bring the full border
    + a filter drop-shadow glow.                                       */
 .sb-pad {
-  /* @inventory: Base pad shell — pixel-frame, type-colour left spine, is-hot glow, is-setup dashed border. */
+  /* @inventory: Base pad shell — pixel-frame, type-color left spine, is-hot glow, is-setup dashed border. */
   --pix-step: 5px;
   --pad-color: var(--gold);
   --pad-glow: var(--pad-single-glow);
@@ -736,7 +736,7 @@
     --pix-border 0.15s,
     transform 0.15s;
 }
-/* The type "spine": 4-px-wide bar of pad colour painted along the
+/* The type "spine": 4-px-wide bar of pad color painted along the
    LEFT edge of every pad. Idle pads show only this — that's the
    passive cue that says "this is a Single / Loop / Combo". When
    the pad becomes hot, the spine widens to the full perimeter.       */
@@ -812,7 +812,7 @@
   opacity: 0.8;
 }
 .sb-pad .sb-pad-drag-handle {
-  /* Session 3h: drag handle indicator in SETUP mode — absolute bottom-right, mono 10px (sub-token), border-strong colour, grab cursor. */
+  /* Session 3h: drag handle indicator in SETUP mode — absolute bottom-right, mono 10px (sub-token), border-strong color, grab cursor. */
   position: absolute;
   bottom: 4px; /* sub-token pixel literal — tight corner positioning */
   right: 6px; /* sub-token pixel literal — tight corner positioning */
@@ -826,7 +826,7 @@
 
 /* ── Pill ───────────────────────────────────────────────────── */
 .sb-pill {
-  /* @inventory: Compact pixel-frame badge; type-colour variants via is-on, is-loop, is-combo. */
+  /* @inventory: Compact pixel-frame badge; type-color variants via is-on, is-loop, is-combo. */
   --pix-step: 3px;
   display: inline-flex;
   align-items: center;
@@ -932,7 +932,7 @@
   border-bottom: 1px solid var(--border);
 }
 .sb-tab {
-  /* @inventory: Individual tab in a tab bar; is-active shows gold underline and label colour. */
+  /* @inventory: Individual tab in a tab bar; is-active shows gold underline and label color. */
   background: none;
   border: none;
   font-family: var(--font-ui);
@@ -1037,7 +1037,7 @@
 }
 
 /* Mode badge — sits in the top bar. Visually distinct between SETUP/GAME
-   beyond colour: SETUP uses a hatched fill, GAME uses solid amber. */
+   beyond color: SETUP uses a hatched fill, GAME uses solid amber. */
 .sb-mode-badge {
   /* @inventory: Compact inline SETUP/GAME badge for top-bar surfaces — flex-shrink:0 prevents badge from shrinking in flex topbar context. */
   display: inline-flex;
@@ -1137,7 +1137,7 @@
 
 /* ── StartScreen ─────────────────────────────────────────────────── */
 .sb-start-screen {
-  /* @inventory: Centered splash container for StartScreen — full-viewport flex column with 3-stop flame gradient; the content is centred by equal auto margins of the first child and the footer, and grows (the page scrolls) when the window is too short. 1-use (StartScreen only). */
+  /* @inventory: Centered splash container for StartScreen — full-viewport flex column with 3-stop flame gradient; the content is centered by equal auto margins of the first child and the footer, and grows (the page scrolls) when the window is too short. 1-use (StartScreen only). */
   position: relative;
   display: flex;
   flex-direction: column;
@@ -1293,7 +1293,7 @@
   flex-shrink: 0;
 }
 .sb-topbar-logo {
-  /* @inventory: Flame icon wrapper in TopBar — flame colour, no-shrink. */
+  /* @inventory: Flame icon wrapper in TopBar — flame color, no-shrink. */
   color: var(--flame);
   flex-shrink: 0;
 }
@@ -1798,7 +1798,7 @@
   flex-shrink: 0;
 }
 .sb-dialog-title {
-  /* @inventory: Title text inside a dialog header — UI font, md size, 0.10em tracking, uppercase, text colour, space-2 bottom margin. */
+  /* @inventory: Title text inside a dialog header — UI font, md size, 0.10em tracking, uppercase, text color, space-2 bottom margin. */
   font-family: var(--font-ui);
   font-size: var(--fs-md);
   letter-spacing: 0.1em;
@@ -1815,11 +1815,11 @@
   font-size: var(--fs-md);
 }
 .sb-type-change-from {
-  /* @inventory: FROM-type label in the type-change confirmation row — dim colour to de-emphasise the source type. */
+  /* @inventory: FROM-type label in the type-change confirmation row — dim color to de-emphasize the source type. */
   color: var(--text-dim);
 }
 .sb-type-change-arrow {
-  /* @inventory: Arrow separator (→) in the type-change confirmation row — muted colour. */
+  /* @inventory: Arrow separator (→) in the type-change confirmation row — muted color. */
   color: var(--text-mute);
 }
 .sb-verdict-pill {
@@ -1918,7 +1918,7 @@
 }
 
 .sb-toast-message {
-  /* @inventory: Message text span inside a toast — mono 13px (sub-token between xs/sm, intentional toast sizing), dim colour. */
+  /* @inventory: Message text span inside a toast — mono 13px (sub-token between xs/sm, intentional toast sizing), dim color. */
   font-family: var(--font-mono);
   font-size: 13px; /* sub-token: deliberate — between fs-xs and fs-sm for toast context */
   color: var(--text-dim);
@@ -2033,7 +2033,7 @@
 .sb-whats-new-details-toggle {
   /* @inventory: The <summary> that folds out a version's developer details in What's new — 44px touch target (iOS minimum). Use as class="sb-whats-new-group sb-whats-new-details-toggle". */
   min-height: 44px; /* sub-token: iOS minimum touch target */
-  line-height: 44px; /* one line, centred — display stays list-item so the disclosure marker shows */
+  line-height: 44px; /* one line, centered — display stays list-item so the disclosure marker shows */
   cursor: pointer;
 }
 
@@ -2674,7 +2674,7 @@
   border: 1px solid var(--border);
 }
 .sb-wave-editor-track {
-  /* @inventory: Waveform layer of sb-wave-editor — fills the editor, waveform vertically centred. */
+  /* @inventory: Waveform layer of sb-wave-editor — fills the editor, waveform vertically centered. */
   position: absolute;
   inset: 0;
   display: flex;
@@ -2718,7 +2718,7 @@
   outline: 2px solid var(--gold);
 }
 .sb-wave-editor-handle {
-  /* @inventory: Trim or fade handle of sb-wave-editor — 44px slider hit area centred on its position (is-fade upper lane, is-trim lower lane); left set inline. */
+  /* @inventory: Trim or fade handle of sb-wave-editor — 44px slider hit area centered on its position (is-fade upper lane, is-trim lower lane); left set inline. */
   position: absolute;
   width: 44px; /* sub-token: iOS minimum touch target */
   height: 44px; /* sub-token: iOS minimum touch target */
@@ -2829,7 +2829,7 @@
   display: grid;
 }
 .sb-icon-cell {
-  /* @inventory: One collection icon as a button (picker cell, PAD editor slot) — at least 44px, glyph in text colour; is-chosen marks icons the pad has, is-empty is the "+" slot that adds one. */
+  /* @inventory: One collection icon as a button (picker cell, PAD editor slot) — at least 44px, glyph in text color; is-chosen marks icons the pad has, is-empty is the "+" slot that adds one. */
   display: grid;
   place-items: center;
   gap: var(--space-1);

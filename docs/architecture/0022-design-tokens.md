@@ -1,4 +1,4 @@
-# ADR-0022: Design tokens in `v3/src/styles/tokens.css` — no colour literals
+# ADR-0022: Design tokens in `v3/src/styles/tokens.css` — no color literals
 
 **Status:** Accepted
 **Date:** 2026-05-27
@@ -9,15 +9,15 @@
 ## Context
 
 The design system delivers `design-sources/2026-05-25/tokens.css` as a complete token system:
-colours, typography, spacing, pixel frame styles, theme overrides, animation keyframes.
+colors, typography, spacing, pixel frame styles, theme overrides, animation keyframes.
 `docs/architecture/concept-brief.md §4.7` states: "Token language follows the design system
 canonically."
 
-The alternative would be to hard-code colours/fonts/spacing directly in JSX or CSS.
+The alternative would be to hard-code colors/fonts/spacing directly in JSX or CSS.
 
 ## Decision
 
-**No colour literals, no hard-coded spacing values ≥12 px in new code.** All visual values
+**No color literals, no hard-coded spacing values ≥12 px in new code.** All visual values
 come from `tokens.css` custom properties:
 
 ```css
@@ -44,10 +44,10 @@ Theme overrides (`.sb-theme-verdant`, `.sb-theme-neon`, `.sb-theme-crimson`) are
 
 **Forbidden in new V3 code (from docs/design/design-system-cheatsheet.md):**
 
-- new colour literals
+- new color literals
 - `--sb-*` legacy aliases (only for backward-compatible references)
 - `border-radius` on the `sb-pix` family (clip-path, ADR-0024)
-- theme overrides for spacing / radius / type (only colours are theme-specific)
+- theme overrides for spacing / radius / type (only colors are theme-specific)
 
 ## Consequences
 
@@ -77,5 +77,5 @@ system. Not chosen.
 ## Related
 
 - **Files:** `v3/src/styles/tokens.css`, `design-sources/2026-05-25/tokens.css`
-- **ADRs:** ADR-0021 (CSS naming), ADR-0023 (surface hierarchy), ADR-0027 (pad type colours)
+- **ADRs:** ADR-0021 (CSS naming), ADR-0023 (surface hierarchy), ADR-0027 (pad type colors)
 - **Source documents:** `docs/architecture/concept-brief.md §4.7`, `CLAUDE.md §Design language`, `design-sources/2026-05-25/HANDOFF.md §4`

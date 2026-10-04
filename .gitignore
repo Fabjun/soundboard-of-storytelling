@@ -7,7 +7,7 @@ node_modules/
 v3/dist/
 v3/.vite/
 
-# Test artefacts (the visual snapshot baselines are committed, these are not)
+# Test artifacts (the visual snapshot baselines are committed, these are not)
 v3/coverage/
 v3/reports/
 v3/.stryker-tmp/

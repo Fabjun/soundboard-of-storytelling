@@ -126,7 +126,7 @@ to the play dispatch in `v3/src/audio/`. Rule agreed with the product owner:
 - A shared pad edited in one deck changes in all decks — intended, but must be understood.
 - `--pad-playlist*` tokens and the `is-playlist` state lose their pad type; tokens stay for now
   (design reference), the state is removed with 9d.
-- Trim with several files: `trimStart/trimEnd` apply per pad; behaviour with several files is
+- Trim with several files: `trimStart/trimEnd` apply per pad; behavior with several files is
   decided when trim gets its UI (low priority, docs/product/README.md §5).
 
 ## Alternatives considered
@@ -137,7 +137,7 @@ to the play dispatch in `v3/src/audio/`. Rule agreed with the product owner:
   migration would be code kept forever for no user.
 - **Provisional Slice 9 behavior (delete = delete everywhere, no All pads view)** — rejected:
   behavior that changes again later causes confusion.
-- **Separate `playbackOrder` fields per type** — rejected in favour of one `order` field.
+- **Separate `playbackOrder` fields per type** — rejected in favor of one `order` field.
 
 ## Related
 

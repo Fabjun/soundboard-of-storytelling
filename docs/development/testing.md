@@ -66,8 +66,8 @@ number in brackets = test cases in the file (incl. quarantine)._
 | `pwa`             | Chromium (Desktop)             | Build only  | `pwa` (8)                                                                                                                                                                                                                                                                                        |
 | `visual`          | Chromium (Desktop), macOS only | Dev         | `board-list-empty` (1), `board-list-with-board` (1), `board-screen-game` (1), `board-screen-setup` (1), `deck-rail` (1), `library-empty` (1), `mode-toggle-states` (2), `start-screen` (1)                                                                                                       |
 
-**Unit tests (Vitest):** 44 files, 580 test cases —
-`audio/engine.test.ts` (66), `audio/lru.property.test.ts` (0), `audio/lru.test.ts` (11), `backupExport.test.ts` (8), `backupImport.test.ts` (20), `backupReader.test.ts` (13), `boardModel.property.test.ts` (0), `boardModel.test.ts` (42), `boardWrites.test.ts` (11), `boot.test.ts` (3), `codeGuards.test.ts` (37), `comboModel.property.test.ts` (0), `comboModel.test.ts` (13), `debouncedSave.test.ts` (8), `deckConflict.test.ts` (9), `docsGuards.test.ts` (27), `e2eProjects.test.ts` (6), `flameMath.property.test.ts` (0), `flameMath.test.ts` (22), `iconGrid.test.ts` (7), `iconGuards.test.ts` (10), `iconSet.test.ts` (7), `idb.test.ts` (23), `nanoid.test.ts` (2), `padDnd.property.test.ts` (0), `padDnd.test.ts` (31), `padFiles.test.ts` (10), `padSort.test.ts` (14), `padUtils.property.test.ts` (0), `padUtils.test.ts` (30), `peaks.test.ts` (4), `persistentStorage.test.ts` (4), `playHistory.test.ts` (3), `prefs.test.ts` (11), `preview.test.ts` (6), `store.test.ts` (23), `testGuards.test.ts` (25), `trimRange.test.ts` (11), `upload.property.test.ts` (0), `upload.test.ts` (18), `v1Icons.test.ts` (4), `v1Import.test.ts` (18), `whatsNew.test.ts` (16), `zipArchive.test.ts` (7)
+**Unit tests (Vitest):** 44 files, 582 test cases —
+`audio/engine.test.ts` (66), `audio/lru.property.test.ts` (0), `audio/lru.test.ts` (11), `backupExport.test.ts` (8), `backupImport.test.ts` (20), `backupReader.test.ts` (13), `boardModel.property.test.ts` (0), `boardModel.test.ts` (42), `boardWrites.test.ts` (11), `boot.test.ts` (3), `codeGuards.test.ts` (39), `comboModel.property.test.ts` (0), `comboModel.test.ts` (13), `debouncedSave.test.ts` (8), `deckConflict.test.ts` (9), `docsGuards.test.ts` (27), `e2eProjects.test.ts` (6), `flameMath.property.test.ts` (0), `flameMath.test.ts` (22), `iconGrid.test.ts` (7), `iconGuards.test.ts` (10), `iconSet.test.ts` (7), `idb.test.ts` (23), `nanoid.test.ts` (2), `padDnd.property.test.ts` (0), `padDnd.test.ts` (31), `padFiles.test.ts` (10), `padSort.test.ts` (14), `padUtils.property.test.ts` (0), `padUtils.test.ts` (30), `peaks.test.ts` (4), `persistentStorage.test.ts` (4), `playHistory.test.ts` (3), `prefs.test.ts` (11), `preview.test.ts` (6), `store.test.ts` (23), `testGuards.test.ts` (25), `trimRange.test.ts` (11), `upload.property.test.ts` (0), `upload.test.ts` (18), `v1Icons.test.ts` (4), `v1Import.test.ts` (18), `whatsNew.test.ts` (16), `zipArchive.test.ts` (7)
 
 <!-- AUTO-GENERATED:test-inventory END -->
 
@@ -144,7 +144,7 @@ The following cannot be tested honestly in Playwright:
 | -------------------------- | --------------------------------------------------------------------------------------------------------- |
 | File upload via iOS picker | `setInputFiles()` bypasses the native picker — a test using it would be green while the real device fails |
 | Audio output               | Headless WebKit has no audio hardware                                                                     |
-| Ringer Switch behaviour    | Physical hardware signal                                                                                  |
+| Ringer Switch behavior     | Physical hardware signal                                                                                  |
 | Tab-switch / backgrounding | iOS lifecycle events require a real device                                                                |
 | Backup import/export       | iOS Files app integration is outside the browser sandbox                                                  |
 
@@ -378,12 +378,12 @@ cd v3 && npm run build && npm run size  # build + size check
 
 ## What we test
 
-Test behaviour that exists and **can break** ("test things that might break" — Kent Beck,
+Test behavior that exists and **can break** ("test things that might break" — Kent Beck,
 Extreme Programming). When a feature is removed or the code is reshaped so a risk no longer
 exists, no test checks the absence — there is nothing left that could break (owner decision
 2026-10-02). A repeated error class gets one guard that covers the whole class (CLAUDE.md working
 principles), not a test per instance. Tests stay current with the code: a change also reviews
-the tests of the changed behaviour — a test of removed or superseded behaviour is deleted or
+the tests of the changed behavior — a test of removed or superseded behavior is deleted or
 rewritten in the same commit.
 
 ## Test design: edge-case checklist
@@ -428,7 +428,7 @@ For every new logic function in `src/lib/` or `src/state/`:
 import { myFunction } from '../../src/lib/myModule';
 
 describe('myFunction', () => {
-  test('describes the expected behaviour', () => {
+  test('describes the expected behavior', () => {
     // Arrange
     const input = { ... };
     // Act
@@ -461,10 +461,10 @@ Example tests check chosen cases; property tests check a rule for **every** inpu
   shared generators ("arbitraries") in `tests/unit/arbitraries.ts`.
 - **Write** `test.prop([generators])('rule', (inputs) => { … })` from `@fast-check/vitest`.
   Good rules: round trips (`posToIndex(indexToPos(i)) === i`), invariants (a swap keeps every pad
-  and every cell unique), bounds (a mixed colour lies between both colours), symmetry (an
+  and every cell unique), bounds (a mixed color lies between both colors), symmetry (an
   inverted signal has the same peaks).
 - **Boundaries still need boundary value analysis:** uniform random values almost never hit the
-  few inputs where behaviour switches. Bias the generator towards the edges — `formatBytes`
+  few inputs where behavior switches. Bias the generator towards the edges — `formatBytes`
   showed "1024 KB" for 1,048,064–1,048,575 bytes, which a plain `fc.nat()` did not find in
   thousands of runs and a boundary-biased generator found at once.
 - **Reproduce a failure:** the run prints the seed and the shrunk counterexample; pass
@@ -545,7 +545,7 @@ test('describes the user flow in one sentence', async ({ page }) => {
 
 ## Updating tests
 
-- When behaviour changes: updating the tests is part of the task, not optional
+- When behavior changes: updating the tests is part of the task, not optional
 - When the UI changes (texts, structure): check and fix the E2E locators immediately
 - When a visual baseline changes intentionally: run `npm run test:e2e:update-snapshots` locally and commit the new baseline
 - Flaky tests: fixed procedure, see below.
@@ -583,7 +583,7 @@ test.fixme('…', async () => {});
 ```
 
 Known bugs in app code are recorded with Vitest `test.fails` + a precise test of the current
-behaviour + a BACKLOG entry (example: `tests/unit/audio/engine.test.ts`).
+behavior + a BACKLOG entry (example: `tests/unit/audio/engine.test.ts`).
 
 **Exception scheme (ADR-0053):** every exception — lint suppressions, `prettier-ignore`,
 to-do markers, quarantine, untested modules, tool ignore lists, ADR exceptions — names the
