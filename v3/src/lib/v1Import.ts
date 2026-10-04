@@ -12,6 +12,8 @@ import { REPEAT_MAX } from '../types';
 import { DEFAULT_GRID } from './boardModel';
 import { DEFAULT_PAD_VOLUME, indexToPos } from './padUtils';
 import { breakCycles } from './comboModel';
+import { PAD_ICONS_MAX } from './iconSet';
+import { v1IconKey } from './v1Icons';
 
 /** V1 used a fade-out-all step's `dur` as the fade time, 2.5 s when not set. */
 export const V1_FADE_OUT_ALL_DEFAULT = 2.5;
@@ -28,6 +30,10 @@ export type V1ImportNotes = {
   missingFiles: number;
   /** Combo step references removed because they would make a combo start itself. */
   cycleRefs: number;
+  /** Pad icons the user had uploaded as SVG (`{h: hash}`) — V3 has no own icons yet. */
+  customIcons: number;
+  /** Pad icons that are not in V3's icon collection. */
+  unknownIcons: number;
 };
 
 /** Returns import notes with every count at zero. */
@@ -37,6 +43,8 @@ export const emptyNotes = (): V1ImportNotes => ({
   unknownModes: 0,
   missingFiles: 0,
   cycleRefs: 0,
+  customIcons: 0,
+  unknownIcons: 0,
 });
 
 type Json = Record<string, unknown>;
@@ -76,6 +84,28 @@ function mapFiles(v: unknown, ctx: V1MapContext): string[] {
   });
 }
 
+/**
+ * A V1 pad's icons as icon keys, up to `PAD_ICONS_MAX` in V1's order. V1 stored `icons: [{b: id}]`
+ * (built-in) or `{h: hash}` (an uploaded SVG); older pads one `icon` in the same shape. A plain
+ * string id is read too. Uploaded and unknown icons are counted, not imported.
+ */
+function mapIcons(p: Json, ctx: V1MapContext): string[] {
+  const refs: unknown[] = Array.isArray(p.icons) ? p.icons : p.icon === undefined ? [] : [p.icon];
+  const keys: string[] = [];
+  for (const ref of refs) {
+    if (isRecord(ref) && str(ref.h)) {
+      ctx.notes.customIcons++;
+      continue;
+    }
+    const id = isRecord(ref) ? str(ref.b) : str(ref);
+    if (!id) continue;
+    const key = v1IconKey(id);
+    if (!key) ctx.notes.unknownIcons++;
+    else if (!keys.includes(key)) keys.push(key);
+  }
+  return keys.slice(0, PAD_ICONS_MAX);
+}
+
 function mapSteps(v: unknown, padIds: ReadonlyMap<number, string>, ctx: V1MapContext): ComboStep[] {
   if (!Array.isArray(v)) return [];
   return v.filter(isRecord).map((s) => {
@@ -111,8 +141,8 @@ function mapPad(
     fadeIn: Math.max(0, num(p.fadeIn) ?? 0),
     fadeOut: Math.max(0, num(p.fadeOut) ?? 0),
   };
-  const icon = Array.isArray(p.icons) ? str(p.icons[0]) : str(p.icon);
-  if (icon) base.iconRef = icon;
+  const icons = mapIcons(p, ctx);
+  if (icons.length) base.icons = icons;
 
   if (p.mode === 'combo') return { ...base, type: 'combo', steps: mapSteps(p.steps, padIds, ctx) };
 

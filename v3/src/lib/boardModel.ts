@@ -20,6 +20,7 @@ import { REPEAT_MAX } from '../types';
 import { nextFreeSlot } from './padUtils';
 import { combosInCycles } from './comboModel';
 import { migratePad, type StoredPad } from './padFiles';
+import { isIconKey, PAD_ICONS_MAX } from './iconSet';
 
 /** A pad as one deck shows it: the pad from the pool plus its placement in that deck. */
 export type PlacedPad = { pad: Pad; placement: Placement };
@@ -345,7 +346,8 @@ function isPadFile(v: unknown): v is PadFile {
 function isStoredPad(v: unknown): v is StoredPad {
   if (!isRec(v) || !isStr(v.id) || !isStr(v.name)) return false;
   if (!isNum(v.volume) || !isNum(v.fadeIn) || !isNum(v.fadeOut)) return false;
-  if (!optional(v.iconRef, isStr) || !optional(v.color, isStr)) return false;
+  if (!optional(v.iconRef, isStr) || !optional(v.icons, isIconList) || !optional(v.color, isStr))
+    return false;
   if (!optional(v.addedAt, isNum) || !optional(v.modifiedAt, isNum)) return false;
   if (v.type === 'combo') return Array.isArray(v.steps) && v.steps.every(isStep);
   const current = Array.isArray(v.files) && v.files.every(isPadFile);
@@ -357,6 +359,11 @@ function isStoredPad(v: unknown): v is StoredPad {
     // A Loop's repeat count (ADR-0069): a whole number 1–999; a Single has none
     (v.repeat === undefined || (v.type === 'loop' && isRepeatCount(v.repeat)))
   );
+}
+
+/** A pad's icons (ADR-0070): up to `PAD_ICONS_MAX` well-formed keys `set:name`. */
+function isIconList(v: unknown): v is string[] {
+  return Array.isArray(v) && v.length <= PAD_ICONS_MAX && v.every(isIconKey);
 }
 
 /** A Loop's repeat count: a whole number from 1 to `REPEAT_MAX`. */

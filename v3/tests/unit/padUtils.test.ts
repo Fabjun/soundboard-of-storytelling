@@ -279,7 +279,7 @@ describe('padBaseOf / timestamps (E1)', () => {
       files: [{ hash: 'a', trimStart: 1 }],
       addedAt: 5,
       modifiedAt: 9,
-      iconRef: 'owl',
+      icons: ['nikoichu:dragon', 'kenney-1bit:bat'],
       color: 'red',
     });
     expect(padBaseOf(pad)).toEqual({
@@ -290,7 +290,7 @@ describe('padBaseOf / timestamps (E1)', () => {
       fadeOut: 0,
       addedAt: 5,
       modifiedAt: 9,
-      iconRef: 'owl',
+      icons: ['nikoichu:dragon', 'kenney-1bit:bat'],
       color: 'red',
     });
     const combo = applyTypeChange(pad, 'combo');

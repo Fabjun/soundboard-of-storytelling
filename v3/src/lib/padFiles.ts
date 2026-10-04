@@ -4,14 +4,17 @@
  * Two parts:
  *   - The list operations of the PAD editor's file list: add (no file twice), remove, move one
  *     place up or down (WCAG 2.2 SC 2.5.7: buttons instead of dragging), set one file's trim.
- *   - `migratePad`: the one conversion of a pad stored before ADR-0068 (`files: string[]` plus one
- *     trim for the whole pad) — used by the database upgrade to version 7 and by the backup import,
- *     so both convert alike. It keeps how the pad sounded: a Single applied its trim to whichever
- *     file it played, so every file gets it; a Loop with one file gets it on that file; a Loop with
- *     several files ignored it (the engine played each file whole), so no file gets it.
+ *   - `migratePad`: the one conversion of a stored pad to the current shape — used by the database
+ *     upgrades (versions 7 and 8) and by the backup import, so both convert alike.
+ *     Files (ADR-0068, from `files: string[]` plus one trim for the whole pad): it keeps how the pad
+ *     sounded — a Single applied its trim to whichever file it played, so every file gets it; a
+ *     Loop with one file gets it on that file; a Loop with several files ignored it (the engine
+ *     played each file whole), so no file gets it.
+ *     Icons (ADR-0070): V1's icon id kept in `iconRef` becomes an icon key (`v1Icons`).
  */
 
 import type { Board, Pad, PadFile } from '../types';
+import { v1IconKey } from './v1Icons';
 
 /** A file of the pad, untrimmed. */
 export const padFile = (hash: string): PadFile => ({ hash });
@@ -67,22 +70,32 @@ type LegacyFilePad = Omit<Extract<Pad, { files: PadFile[] }>, 'files'> & {
   trimEnd?: number;
 };
 
-/** A pad as it may come out of storage or a backup: current or from before ADR-0068. */
-export type StoredPad = Pad | LegacyFilePad;
+/**
+ * A pad as it may come out of storage or a backup: current, from before ADR-0068, or with V1's icon
+ * id in `iconRef` (the V1 import kept it until ADR-0070).
+ */
+export type StoredPad = WithIconRef<Pad | LegacyFilePad>;
 
-/** True for a pad that still has the shape from before ADR-0068. */
-function isLegacy(pad: StoredPad): pad is LegacyFilePad {
+/** A pad that may still carry V1's icon id (before ADR-0070). */
+type WithIconRef<T> = T & { iconRef?: string };
+
+/** True for a pad that still has the file shape from before ADR-0068. */
+function isLegacy(pad: StoredPad): pad is WithIconRef<LegacyFilePad> {
   if (pad.type === 'combo') return false;
   // An old pad without files is recognised by its pad-wide trim
   return 'trimStart' in pad || 'trimEnd' in pad || pad.files.some((f) => typeof f === 'string');
 }
 
 /**
- * Returns the pad in the shape of ADR-0068; a pad that has it already comes back unchanged (the
- * same object). How it sounded is kept — see the file overview.
+ * Returns the pad in the current shape; a pad that has it already comes back unchanged (the same
+ * object). Files (ADR-0068): how it sounded is kept — see the file overview. Icons (ADR-0070): V1's
+ * id in `iconRef` becomes the icon key; an id the collection does not have is dropped.
  */
 export function migratePad(pad: StoredPad): Pad {
-  if (!isLegacy(pad)) return pad;
+  return migrateIcon(isLegacy(pad) ? migrateFiles(pad) : pad);
+}
+
+function migrateFiles(pad: WithIconRef<LegacyFilePad>): WithIconRef<Pad> {
   const { files, trimStart, trimEnd, ...rest } = pad;
   const keepTrim = pad.type === 'single' || files.length <= 1;
   const trim = {
@@ -92,7 +105,14 @@ export function migratePad(pad: StoredPad): Pad {
   return { ...rest, files: files.map((hash) => ({ hash, ...trim })) };
 }
 
-/** Returns the board with every pad in the shape of ADR-0068 (`migratePad`). */
+function migrateIcon(pad: WithIconRef<Pad>): Pad {
+  if (!('iconRef' in pad)) return pad;
+  const { iconRef, ...rest } = pad;
+  const key = iconRef === undefined ? undefined : v1IconKey(iconRef);
+  return rest.icons || !key ? rest : { ...rest, icons: [key] };
+}
+
+/** Returns the board with every pad in the current shape (`migratePad`). */
 export function migrateBoard(board: Omit<Board, 'pads'> & { pads: StoredPad[] }): Board {
   return { ...board, pads: board.pads.map(migratePad) };
 }

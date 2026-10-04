@@ -8,9 +8,11 @@
  *   - src/icons/sets/<prefix>.json  one IconifyJSON file per pack (drawing, license info, categories)
  *   - src/icons/catalog.json        search words and original reference of every icon (`set:name`)
  *   - src/icons/sets/<prefix>.LICENSE.txt  the license text where the license requires it (MIT)
+ *   - src/icons/v1-map.json         V1's icon id → key, for the V1 import and pads it stored
  *
- * Run (from v3/): npm run build:icons -- [--from <work folder>]
- * Default work folder: ~/dev/archive/icon-sources/work-2026-10-04 (see its README.md).
+ * Run (from v3/): npm run build:icons -- [--from <work folder>] [--v1 <V1 icons.js>]
+ * Default work folder: ~/dev/archive/icon-sources/work-2026-10-04 (see its README.md); default
+ * V1 icon list: ~/dev/archive/botc-soundboard/icons.js (V1 stored `{b: "<id>"}` per pad icon).
  * The output is checked by tests/unit/iconGuards.test.ts; run it again after any change.
  */
 
@@ -93,6 +95,9 @@ const WORK =
   fromArg >= 0
     ? resolve(args[fromArg + 1])
     : join(homedir(), 'dev/archive/icon-sources/work-2026-10-04');
+const v1Arg = args.indexOf('--v1');
+const V1 =
+  v1Arg >= 0 ? resolve(args[v1Arg + 1]) : join(homedir(), 'dev/archive/botc-soundboard/icons.js');
 const read = <T>(file: string): T => JSON.parse(readFileSync(join(WORK, file), 'utf8')) as T;
 
 /** The 1-bit mask as an SVG path: one rectangle per run of set pixels in a row. */
@@ -186,6 +191,41 @@ async function main(): Promise<void> {
   }
   await writeGenerated(join(OUT, 'catalog.json'), JSON.stringify(sorted(catalog)));
   console.log(`catalog: ${Object.keys(catalog).length} icons`);
+
+  // V1 ids: Nikoichu's were `px-` + the file name in lower case with hyphens; pixelarticons' were
+  // their names, which the chosen "sharp" drawings carry without `-sharp`. An exact name wins.
+  const v1Ids = new Set([...readFileSync(V1, 'utf8').matchAll(/\{id:"([^"]+)"/g)].map((m) => m[1]));
+  const v1IdOf = (source: string): string | undefined => {
+    const file = /^Sprites\/(.+)\.png$/.exec(source)?.[1];
+    const svg = /^svg\/(.+)\.svg$/.exec(source)?.[1];
+    return file ? `px-${file.toLowerCase().replace(/_/g, '-')}` : svg?.replace(/-sharp$/, '');
+  };
+  const v1Map: Record<string, string> = {};
+  for (const [key, { source }] of Object.entries(catalog)) {
+    const id = v1IdOf(source);
+    if (!id || !v1Ids.has(id)) continue;
+    if (!v1Map[id] || source === `svg/${id}.svg`) v1Map[id] = key;
+  }
+  // A V1 icon left out only as another drawing of a kept motif (variant groups, 2026-10-04) takes
+  // the kept drawing, so a V1 pad keeps its motif.
+  const keyOf = new Map(
+    chosen.map((id) => [id, `${SETS[id.slice(0, id.lastIndexOf('-'))].prefix}:${names[id].name}`]),
+  );
+  for (const group of read<{ groups: { kind: string; ids: string[]; keep?: string }[] }>(
+    'data/variants.json',
+  ).groups) {
+    if (group.kind !== 'variant') continue;
+    const kept = [group.keep, ...group.ids].find((id): id is string => !!id && keyOf.has(id));
+    if (!kept) continue;
+    for (const id of group.ids) {
+      const v1 = v1IdOf(sources.get(id) ?? '');
+      if (v1 && v1Ids.has(v1) && !v1Map[v1]) v1Map[v1] = keyOf.get(kept)!;
+    }
+  }
+  await writeGenerated(join(OUT, 'v1-map.json'), JSON.stringify(sorted(v1Map)));
+  console.log(
+    `v1-map: ${Object.keys(v1Map).length} of ${v1Ids.size} V1 icons are in the collection`,
+  );
 }
 
 main().catch((e: unknown) => {

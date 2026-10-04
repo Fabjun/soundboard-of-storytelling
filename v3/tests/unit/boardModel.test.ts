@@ -544,7 +544,7 @@ describe('parseBoard (untrusted boards from a backup file)', () => {
         volume: 80,
         fadeIn: 0,
         fadeOut: 1,
-        iconRef: 'owl',
+        icons: ['nikoichu:dragon', 'kenney-1bit:bat'],
         color: 'red',
         files: [{ hash: 'h1', trimStart: 1, trimEnd: 2 }],
         order: 'sequential',
@@ -594,6 +594,19 @@ describe('parseBoard (untrusted boards from a backup file)', () => {
     expect(parseBoard(legacy)).toEqual(valid());
   });
 
+  it("turns V1's icon id kept in iconRef into an icon key; drops an id the collection lacks (ADR-0070)", () => {
+    const { icons: _, ...noIcons } = valid().pads[0];
+    const board = (iconRef: string) => ({
+      ...valid(),
+      pads: [{ ...noIcons, iconRef }, ...valid().pads.slice(1)],
+    });
+    expect(parseBoard(board('px-rpg-creature-archetypes-dragon'))?.pads[0]).toEqual({
+      ...noIcons,
+      icons: ['nikoichu:dragon'],
+    });
+    expect(parseBoard(board('owl'))?.pads[0]).toEqual(noIcons);
+  });
+
   /** The board with one pad changed — the others stay, so only that pad's field is wrong. */
   const withPad = (b: ReturnType<typeof valid>, i: number, patch: Record<string, unknown>) => ({
     ...b,
@@ -617,6 +630,9 @@ describe('parseBoard (untrusted boards from a backup file)', () => {
     ['pad fadeIn', (b) => withPad(b, 0, { fadeIn: null })],
     ['pad fadeOut', (b) => withPad(b, 0, { fadeOut: undefined })],
     ['pad iconRef', (b) => withPad(b, 0, { iconRef: 1 })],
+    ['pad icons not an array', (b) => withPad(b, 0, { icons: 'nikoichu:dragon' })],
+    ['pad icon key malformed', (b) => withPad(b, 0, { icons: ['Dragon'] })],
+    ['pad more than 4 icons', (b) => withPad(b, 0, { icons: Array(5).fill('nikoichu:dragon') })],
     ['pad color', (b) => withPad(b, 0, { color: false })],
     ['pad addedAt', (b) => withPad(b, 0, { addedAt: 'yesterday' })],
     ['pad modifiedAt', (b) => withPad(b, 0, { modifiedAt: null })],

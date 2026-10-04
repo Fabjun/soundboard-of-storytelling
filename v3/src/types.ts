@@ -60,7 +60,8 @@ export type PadPosition = {
 export type PadBase = {
   id: string;
   name: string;
-  iconRef?: string;
+  /** Up to 4 icon keys `set:name` (ADR-0070), in the order the pad shows them. */
+  icons?: string[];
   color?: string;
   volume: number; // 0–100
   fadeIn: number; // seconds

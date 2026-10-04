@@ -74,7 +74,7 @@ describe('mapV1Board', () => {
     expect([random.type, random.order]).toEqual(['loop', 'shuffle']);
   });
 
-  it('keeps volume, fades, trim and the first icon; clamps volume; defaults what is missing', () => {
+  it('keeps volume, fades, trim and the icon; clamps volume; defaults what is missing', () => {
     const ctx = context();
     const b = mapV1Board(
       v1Board([
@@ -86,7 +86,7 @@ describe('mapV1Board', () => {
           fadeOut: 2,
           trimStart: 1,
           trimEnd: 4,
-          icons: ['owl'],
+          icons: [{ b: 'clock' }],
         },
         { mode: 'once', volume: 'loud', fadeIn: -3 },
       ]),
@@ -101,7 +101,7 @@ describe('mapV1Board', () => {
         { hash: 'id-a', trimStart: 1, trimEnd: 4 },
         { hash: 'id-b', trimStart: 1, trimEnd: 4 },
       ],
-      iconRef: 'owl',
+      icons: ['pixelarticons:clock-face'],
     });
     expect(b.pads[0]).not.toHaveProperty('trimStart');
     expect(b.pads[1]).toMatchObject({
@@ -181,6 +181,8 @@ describe('mapV1Board', () => {
       unknownModes: 1,
       missingFiles: 1,
       cycleRefs: 0,
+      customIcons: 0,
+      unknownIcons: 0,
     });
   });
 
@@ -258,7 +260,7 @@ describe('mapV1Board — malformed and boundary values', () => {
     const b = mapV1Board(
       v1Board([
         { mode: 'once', name: 42, key: '', icons: [7], files: [1, 'a', null] },
-        { mode: 'once', name: '', key: 5, icon: 'bell' },
+        { mode: 'once', name: '', key: 5, icon: 'bell-ring' },
       ]),
       ctx,
     )!;
@@ -272,7 +274,7 @@ describe('mapV1Board — malformed and boundary values', () => {
       files: [{ hash: 'id-a' }],
       order: 'sequential',
     });
-    expect(b.pads[1]).toMatchObject({ name: 'Pad 2', iconRef: 'bell' });
+    expect(b.pads[1]).toMatchObject({ name: 'Pad 2', icons: ['pixelarticons:bell-ring'] });
     expect(b.decks[0].placements.every((p) => p.hotkey === undefined)).toBe(true);
     expect(ctx.notes.missingFiles).toBe(0); // wrong types are not "missing audio"
   });
@@ -337,7 +339,7 @@ describe('mapV1Board — malformed and boundary values', () => {
     ]);
   });
 
-  it('a loop count of 0 is not reported; known modes are not "unknown"; no icon → no iconRef', () => {
+  it('a loop count of 0 is not reported; known modes are not "unknown"; no icon → no icons', () => {
     const ctx = context();
     const b = mapV1Board(
       v1Board([
@@ -349,7 +351,40 @@ describe('mapV1Board — malformed and boundary values', () => {
       ctx,
     )!;
     expect(ctx.notes).toEqual(emptyNotes());
-    expect(b.pads.every((p) => !('iconRef' in p))).toBe(true);
+    expect(b.pads.every((p) => !('icons' in p))).toBe(true);
+  });
+
+  // V1's real shape, as in a V1 backup: `icons: [{ b: "<id>" }]`, uploaded SVGs as `{ h: hash }`
+  it('pad icons: up to 4 in V1 order as icon keys, each once; uploaded and unknown ones are counted', () => {
+    const ctx = context();
+    const b = mapV1Board(
+      v1Board([
+        {
+          mode: 'once',
+          icons: [
+            { b: 'px-rpg-creature-archetypes-dragon' },
+            { h: 'svg-hash' },
+            { b: 'clock' },
+            { b: 'not-in-the-collection' },
+            { b: 'px-rpg-creature-archetypes-dragon' },
+            { b: 'wind' },
+            { b: 'fire' },
+            { b: 'sword' },
+          ],
+        },
+        // V1 before multi-icons: one `icon`, in the same shape
+        { mode: 'once', icon: { b: 'px-weather-raining-cloud-wet' } },
+      ]),
+      ctx,
+    )!;
+    expect(b.pads[0].icons).toEqual([
+      'nikoichu:dragon',
+      'pixelarticons:clock-face',
+      'pixelarticons:wind',
+      'pixelarticons:fire',
+    ]);
+    expect(b.pads[1].icons).toEqual(['nikoichu:rain']);
+    expect(ctx.notes).toMatchObject({ customIcons: 1, unknownIcons: 1 });
   });
 
   it('an unknown mode becomes a sequential Single; the board uses the default theme', () => {

@@ -390,3 +390,46 @@ describe('DB upgrade to v7', () => {
     expect(board.pads[0]).toMatchObject({ files: [{ hash: 'A', trimStart: 1 }, { hash: 'B' }] });
   });
 });
+
+// ── Upgrade v7 → v8 (up to 4 icon keys per pad, ADR-0070, 2026-10-04) ────────
+
+describe('DB upgrade to v8', () => {
+  const pad = (id: string, extra: Record<string, unknown>) => ({
+    id,
+    name: id,
+    volume: 80,
+    fadeIn: 0,
+    fadeOut: 0,
+    type: 'single',
+    files: [{ hash: 'A' }],
+    order: 'sequential',
+    ...extra,
+  });
+
+  test("V1's icon id kept in iconRef becomes an icon key; an unknown one is dropped; boards are kept", async () => {
+    const v7 = await openDB('sos-v3', 7, {
+      upgrade(db) {
+        db.createObjectStore('library', { keyPath: 'id' });
+        db.createObjectStore('boards', { keyPath: 'id' });
+        db.createObjectStore('keyval');
+      },
+    });
+    await v7.put('boards', {
+      ...makeBoard('MINE'),
+      pads: [
+        pad('known', { iconRef: 'clock' }),
+        pad('unknown', { iconRef: 'not-an-icon' }),
+        pad('none', {}),
+      ],
+    });
+    v7.close();
+
+    const [board] = await boardGetAll();
+    expect(board.id).toBe('MINE');
+    expect(board.pads).toEqual([
+      pad('known', { icons: ['pixelarticons:clock-face'] }),
+      pad('unknown', {}),
+      pad('none', {}),
+    ]);
+  });
+});
