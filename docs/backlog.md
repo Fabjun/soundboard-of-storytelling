@@ -195,14 +195,28 @@ released notes) included; only verbatim quotations and third-party license texts
 spelling.
 **When:** a separate pull request after Slice 15d: the clean-up pass and the Vale rule.
 
-### Icon picker: virtualized result grid
+### Icon picker: virtualized result grid ✅ Done (3.0.170)
 
-The icon picker draws at most 240 search results and asks to narrow the search beyond that (a
+The icon picker drew at most 240 search results and asked to narrow the search beyond that (a
 one-letter search matches thousands of icons — iPhone memory). Owner decision 2026-10-04 (review
 of PR #44): replace the limit with a virtualized grid that draws only the visible rows
 (`@tanstack/virtual-core`), keeping the W3C APG grid keys (`aria-rowcount` / `aria-rowindex` for
-rows not in the DOM).
-**When:** a separate pull request after Slice 15d.
+rows not in the DOM). Built in 3.0.170 (ADR-0071).
+
+### Icon picker loaded on demand
+
+The virtualized picker (ADR-0071) added 8.7 KB gzipped to the start bundle (measured 2026-10-04:
+107.5 → 116.2 KB of 200 KB), because `IconPicker` is imported by the PAD editor. A dynamic import
+(its own chunk, precached like the icon packs) would keep it out of the start bundle, at the
+cost of a short wait the first time the picker opens.
+**When:** owner decision (trade-off: start size vs. first opening).
+
+### Icon picker: two clear buttons in the search field
+
+The search field of the icon picker is `type="search"`; WebKit draws its own clear button next to
+the picker's × (seen on a 390 px WebKit screenshot, 2026-10-04). Other search fields may show the
+same.
+**When:** with the next change of the search fields; check every `type="search"` field then.
 
 ### Component styles out of tokens.css
 

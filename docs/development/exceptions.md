@@ -23,17 +23,18 @@ From the `## Exceptions` section of each ADR.
 | [ADR-0067](../architecture/0067-browser-gestures-off.md)          | Pinch zoom is off everywhere, against WCAG 2.2 SC 1.4.4 Resize text (AA)                        | Owner decision 2026-10-03: the app owns two-finger gestures (pad size, Slice 13); iOS Zoom (accessibility setting) still magnifies                                                   | BACKLOG "App gestures"                   | Slice 14 (text size setting)           |
 | [ADR-0067](../architecture/0067-browser-gestures-off.md)          | Text selection is off in text fields too                                                        | Owner decision 2026-10-03: no exceptions; WebKit may then refuse typing in a field (WebKit bugs 82692, 156518) — checked on the iPhone                                               | BACKLOG "Text fields with selection off" | first iPhone check of 3.0.159          |
 
-## ESLint rule suppressions (5)
+## ESLint rule suppressions (6)
 
 Inline: `// eslint-disable-next-line <rule> -- <reason>` (enforced by `require-description`). Config: `'<rule>': 'off', // <reason>` in `v3/eslint.config.js` (enforced by `testGuards.test.ts`).
 
-| Location                                       | Rule                                      | Reason                                                                                       |
-| ---------------------------------------------- | ----------------------------------------- | -------------------------------------------------------------------------------------------- |
-| `v3/src/screens/BoardScreen.tsx:90`            | `react-hooks/exhaustive-deps`             | auto-select only on board identity change, never override the user's deck choice             |
-| `v3/tests/e2e/deck-crud.spec.ts:76`            | `playwright/no-skipped-test`              | quarantine: feature not built (BACKLOG "Deck reorder")                                       |
-| `v3/tests/e2e/mobile/overflow.spec.ts:30`      | `playwright/no-skipped-test`              | quarantine: mobile layout not built until Slice 13 (BACKLOG "Re-enable mobile layout tests") |
-| `v3/tests/e2e/mobile/touch-targets.spec.ts:34` | `playwright/no-skipped-test`              | quarantine: mobile layout not built until Slice 13 (BACKLOG "Re-enable mobile layout tests") |
-| `v3/eslint.config.js:21`                       | `@typescript-eslint/no-unused-vars` (off) | tsc noUnusedLocals/noUnusedParameters report it                                              |
+| Location                                       | Rule                                      | Reason                                                                                                               |
+| ---------------------------------------------- | ----------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| `v3/src/components/IconPicker.tsx:266`         | `react-hooks/exhaustive-deps`             | measured after every layout (as TanStack's adapter updates the virtualizer); setShape runs only when a value changed |
+| `v3/src/screens/BoardScreen.tsx:90`            | `react-hooks/exhaustive-deps`             | auto-select only on board identity change, never override the user's deck choice                                     |
+| `v3/tests/e2e/deck-crud.spec.ts:76`            | `playwright/no-skipped-test`              | quarantine: feature not built (BACKLOG "Deck reorder")                                                               |
+| `v3/tests/e2e/mobile/overflow.spec.ts:30`      | `playwright/no-skipped-test`              | quarantine: mobile layout not built until Slice 13 (BACKLOG "Re-enable mobile layout tests")                         |
+| `v3/tests/e2e/mobile/touch-targets.spec.ts:34` | `playwright/no-skipped-test`              | quarantine: mobile layout not built until Slice 13 (BACKLOG "Re-enable mobile layout tests")                         |
+| `v3/eslint.config.js:21`                       | `@typescript-eslint/no-unused-vars` (off) | tsc noUnusedLocals/noUnusedParameters report it                                                                      |
 
 ## Formatting exceptions (prettier-ignore) (5)
 

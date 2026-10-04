@@ -89,6 +89,14 @@ export function withEarlyVersions(
 /** The release notes the start screen shows, newest first (checked by whatsNew.test.ts). */
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
+    version: '3.0.170',
+    date: '2026-10-04',
+    improved: [
+      'The icon list shows every icon that matches a search, however short the word — before, it stopped after 240. It draws only the icons in view, so even long lists scroll smoothly.',
+      'In the icon list, Home and End jump to the start and end of a row.',
+    ],
+  },
+  {
     version: '3.0.169',
     date: '2026-10-04',
     fixed: [
