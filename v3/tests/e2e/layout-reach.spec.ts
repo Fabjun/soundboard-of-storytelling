@@ -68,3 +68,53 @@ test("the pad editor's delete button can be reached on a short window", async ({
   await remove.click();
   await expect(remove).toContainText('CONFIRM DELETE');
 });
+
+// Found 2026-10-04: in the icon picker an open category shrank to a sliver (a child of a
+// scrolling flex column with min-height 0), its icons covered the category headers below it
+test('in the icon picker, each category can be reached and opened while others are open', async ({
+  page,
+}) => {
+  await page.getByText('ADD PAD', { exact: true }).click();
+  await page.getByTestId('pad-editor-panel-add-icon-button').click();
+  const people = page.getByTestId('icon-picker-category-button-people');
+  await people.click();
+  await people.hover(); // the wheel scrolls the area under the pointer
+  // Each header sits right below the category opened before it
+  for (const cat of ['creatures', 'animals']) {
+    const header = page.getByTestId(`icon-picker-category-button-${cat}`);
+    // Steps shorter than a header (44 px), so the wheel cannot pass it between two checks
+    await expect(async () => {
+      await page.mouse.wheel(0, 40);
+      await expect(header).toBeInViewport({ ratio: 1, timeout: 100 });
+    }).toPass({ timeout: 20_000 });
+    await header.click(); // fails when anything covers the header
+    await expect(header).toHaveAttribute('aria-expanded', 'true');
+  }
+
+  // No child of a scrolling flex column may be shorter than its content (it would overlap the next)
+  const spilled = await page.evaluate(() =>
+    [...document.querySelectorAll('*')]
+      .filter((el) => {
+        const s = getComputedStyle(el);
+        return (
+          ['auto', 'scroll'].includes(s.overflowY) &&
+          /flex/.test(s.display) &&
+          s.flexDirection === 'column'
+        );
+      })
+      .flatMap((area) => [...area.children])
+      .filter((child) => {
+        const s = getComputedStyle(child);
+        return (
+          s.overflowY === 'visible' &&
+          s.position !== 'absolute' &&
+          child.scrollHeight > child.clientHeight + 1
+        );
+      })
+      .map(
+        (child) =>
+          `${child.tagName.toLowerCase()}.${child.className}: ${child.clientHeight} of ${child.scrollHeight}px`,
+      ),
+  );
+  expect(spilled).toEqual([]);
+});
