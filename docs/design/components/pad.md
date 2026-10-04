@@ -26,12 +26,12 @@ and behavior: [docs/product/README.md §5 Pads](../../product/README.md#pads).
 
 ## Anatomy
 
-| Part               | Description                                                                                                            | Status                                  |
-| ------------------ | ---------------------------------------------------------------------------------------------------------------------- | --------------------------------------- |
-| Shape              | **Card format:** a slightly portrait rectangle.                                                                        | **Decided** — _not yet built_           |
-| Picture area (top) | Shows the pad's icon(s). A pad without its own icon shows a **placeholder icon**, so all pads look uniform.            | **Decided** — _not yet built_           |
-| Info area (bottom) | **Name** (always visible) and the **assigned key** ([product §6 K10](../../product/README.md#input-keyboard--numpad)). | **Decided** — _not yet built_           |
-| Type spine         | Coloured bar on the left edge showing the pad type (current code, ADR-0027).                                           | **Open** — current code, review pending |
+| Part               | Description                                                                                                                                                                  | Status                                                                           |
+| ------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- |
+| Shape              | **Card format:** a slightly portrait rectangle.                                                                                                                              | **Decided** — _not yet built_                                                    |
+| Picture area (top) | Shows the pad's icon(s) — 1 to 4 in V1's arrangement. A pad without its own icon shows the **placeholder icon of its type** (Single, Loop, Combo), so all pads look uniform. | **Decided** — built in Slice 15d (ADR-0070); appearance reviewed with the design |
+| Info area (bottom) | **Name** (always visible) and the **assigned key** ([product §6 K10](../../product/README.md#input-keyboard--numpad)).                                                       | **Decided** — _not yet built_                                                    |
+| Type spine         | Coloured bar on the left edge showing the pad type (current code, ADR-0027).                                                                                                 | **Open** — current code, review pending                                          |
 
 ## Variants
 
@@ -91,7 +91,8 @@ Names only — no values.
 - Tokens: `--pad-single`, `--pad-loop`, `--pad-combo` (and `-soft` / `-glow` variants) — current
   code. The Playlist colour tokens were removed with the Playlist → Loop merge (owner decision
   2026-10-02, PR #36; [product §5](../../product/README.md#5-core-concepts)).
-- Classes: `sb-pad`, `sb-pad-grid`, `sb-pad-grid-cell` — current code.
+- Classes: `sb-pad`, `sb-pad-grid`, `sb-pad-grid-cell`, `sb-pad-icons` (picture area) — current
+  code.
 
 ## Accessibility
 
@@ -100,12 +101,12 @@ without colour (current: spine position; to be reviewed). _Further details pendi
 
 ## Open questions
 
-| #   | Question                                                                                                                                                                                 | Status   |
-| --- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
-| PQ1 | Default aspect ratio (tested visually on the device).                                                                                                                                    | **Open** |
-| PQ2 | What the **small** (square) level shows: key, icon, or first letter.                                                                                                                     | **Open** |
-| PQ3 | Pad icons: V1 had ~2,300 pixel icons, up to 4 per pad ([v1-v2-inventory.md §4](../../product/v1-v2-inventory.md#4-library)). Which icon system does V3 use, and what is the placeholder? | **Open** |
-| PQ4 | Minimum zoom vs. the 44 px touch target on a phone.                                                                                                                                      | **Open** |
+| #   | Question                                                                                                                                                                                 | Status                                                                                                                                                                               |
+| --- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| PQ1 | Default aspect ratio (tested visually on the device).                                                                                                                                    | **Open**                                                                                                                                                                             |
+| PQ2 | What the **small** (square) level shows: key, icon, or first letter.                                                                                                                     | **Open**                                                                                                                                                                             |
+| PQ3 | Pad icons: V1 had ~2,300 pixel icons, up to 4 per pad ([v1-v2-inventory.md §4](../../product/v1-v2-inventory.md#4-library)). Which icon system does V3 use, and what is the placeholder? | **Decided** 2026-10-04 — a curated collection of 2,150 pixel icons as IconifyJSON sets, keys `set:name` ([ADR-0070](../../architecture/0070-pad-icons.md)); placeholder per pad type |
+| PQ4 | Minimum zoom vs. the 44 px touch target on a phone.                                                                                                                                      | **Open**                                                                                                                                                                             |
 
 ## Sources
 

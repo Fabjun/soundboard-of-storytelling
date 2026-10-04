@@ -68,4 +68,5 @@ and restore is the only safety net.
 - V1 and V3 identify audio the same way (SHA-256 of the file bytes), so duplicate detection
   works across versions.
 - A V1 → V3 import has to map: V1 pad mode `once` → `single`; numeric pad ids (also used
-  by combo steps) → V3 ids; V1 pad icons → kept on the pad (V3 has no pad icons yet).
+  by combo steps) → V3 ids; V1 pad icons (`{b: id}`, up to 4) → icon keys of the V3 collection
+  (ADR-0070); uploaded SVG icons and icons the collection lacks are counted in the summary.
