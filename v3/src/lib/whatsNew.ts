@@ -97,6 +97,13 @@ export const WHATS_NEW: WhatsNewEntry[] = [
     ],
   },
   {
+    version: '3.0.169',
+    date: '2026-10-04',
+    fixed: [
+      'In the icon list, an open category no longer covers the categories below it on narrow screens.',
+    ],
+  },
+  {
     version: '3.0.168',
     date: '2026-10-04',
     new: [

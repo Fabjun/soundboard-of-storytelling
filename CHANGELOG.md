@@ -18,6 +18,16 @@ release notes the app shows are written separately for its users (`v3/src/lib/wh
 - test: pad-icons "a short search lists every match but draws only the visible rows; arrow keys reach the rows below" at phone width, incl. five keys in one go (counter-checked: everything drawn — red; keys moving on from the old icon — 4 of 5 lost, red); unit tests for src/lib/iconGrid.ts
 - build(deps): @tanstack/virtual-core ^3.17.11 (MIT)
 
+## 3.0.169 — 2026-10-04
+
+### Fixed
+
+- fix(picker): an open category no longer covers the category headers below it — the sections of the scrolling overlay body (flex column; sb-col sets min-height 0) shrank to a sliver once the content was taller than the overlay; .sb-overlay-body > * keeps every child at full height (live since 3.0.168, found while building the virtualized picker)
+
+### Internal
+
+- test(e2e): layout-reach "in the icon picker, each category can be reached and opened while others are open" — on a short window each header below an open category is reached by the wheel and opened; plus a check that no child of a scrolling flex column is shorter than its content (counter-checked: without the rule both parts fail)
+
 ## 3.0.168 — 2026-10-04
 
 ### Added

@@ -31,6 +31,14 @@ export const CHANGELOG: ChangelogEntry[] = [
     ],
   },
   {
+    version: '3.0.169',
+    date: '2026-10-04',
+    items: [
+      'fix(picker): an open category no longer covers the category headers below it — the sections of the scrolling overlay body (flex column; sb-col sets min-height 0) shrank to a sliver once the content was taller than the overlay; .sb-overlay-body > * keeps every child at full height (live since 3.0.168, found while building the virtualized picker)',
+      'test(e2e): layout-reach "in the icon picker, each category can be reached and opened while others are open" — on a short window each header below an open category is reached by the wheel and opened; plus a check that no child of a scrolling flex column is shorter than its content (counter-checked: without the rule both parts fail)',
+    ],
+  },
+  {
     version: '3.0.168',
     date: '2026-10-04',
     items: [
