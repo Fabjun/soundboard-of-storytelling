@@ -19,6 +19,11 @@
  * 7. ESLint config rule switches name their reason inline; the tsc flags behind them stay on.
  * 8. Dependabot ignore rules carry a reason; @types/node matches the Node major in .nvmrc.
  * 9. npm overrides carry a reason; files excluded from mutation testing are EXEMPT files.
+ * 10. lint-staged runs ESLint where its config lives: every lint-staged config with an ESLint
+ *    task sits next to an eslint.config.js and passes no --config, and the pre-commit hook lets
+ *    lint-staged find its configs (no --config / --cwd). With `--config v3/eslint.config.js` from
+ *    the root, ESLint matched its file patterns against the root — none matched under v3/, most
+ *    rules never ran at commit time and errors surfaced only in CI (2026-10-04).
  */
 
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
@@ -306,5 +311,39 @@ describe('guard: mutation testing and overrides stay justified (T11c)', () => {
     const excluded = [...config.matchAll(/'!(src\/[^']+)'/g)].map((m) => m[1]);
     expect(excluded.length).toBeGreaterThanOrEqual(1);
     expect(excluded.filter((f) => !(f in EXEMPT))).toEqual([]);
+  });
+});
+
+describe('guard: lint-staged runs ESLint where its config lives (2026-10-04)', () => {
+  const ROOT = join(V3, '..');
+
+  it('a lint-staged config with an ESLint task sits next to eslint.config.js and passes no --config', () => {
+    const configs = repoFiles(ROOT).filter((f) => basename(f) === '.lintstagedrc.json');
+    expect(configs.length).toBeGreaterThanOrEqual(2); // the root's and v3's
+    const problems = configs.flatMap((file) => {
+      const tasks = Object.values(JSON.parse(readFileSync(join(ROOT, file), 'utf8')) as object)
+        .flat()
+        .map(String)
+        .filter((t) => /\beslint\b/.test(t));
+      const dir = dirname(join(ROOT, file));
+      return tasks.flatMap((t) => [
+        ...(existsSync(join(dir, 'eslint.config.js'))
+          ? []
+          : [`${file}: "${t}" runs where no eslint.config.js is`]),
+        ...(/--config\b|(^|\s)-c\s/.test(t) ? [`${file}: "${t}" passes --config`] : []),
+      ]);
+    });
+    expect(problems).toEqual([]);
+  });
+
+  it('the pre-commit hook lets lint-staged find its configs', () => {
+    const hook = readFileSync(join(ROOT, '.husky/pre-commit'), 'utf8');
+    // The lines that run lint-staged — not comments, not the echo / printf messages about it
+    const calls = hook
+      .split('\n')
+      .map((l) => l.trim())
+      .filter((l) => /\blint-staged\b/.test(l) && !/^(#|echo\b|printf\b)/.test(l));
+    expect(calls.length).toBe(1);
+    expect(calls.filter((l) => /--config|--cwd/.test(l))).toEqual([]);
   });
 });

@@ -102,6 +102,13 @@ export const WHATS_NEW: WhatsNewEntry[] = [
     ],
   },
   {
+    version: '3.0.167',
+    date: '2026-10-04',
+    behindTheScenes: [
+      'The automatic code check before each change now applies all of its rules again, so mistakes are caught earlier.',
+    ],
+  },
+  {
     version: '3.0.166',
     date: '2026-10-04',
     new: [

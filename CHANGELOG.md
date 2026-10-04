@@ -23,6 +23,16 @@ release notes the app shows are written separately for its users (`v3/src/lib/wh
 
 - build: icon data loads on demand from assets/icons/ with its own size budget; third-party-licenses.txt gets a section Icons with the MIT text of pixelarticons
 
+## 3.0.167 — 2026-10-04
+
+### Fixed
+
+- fix(hooks): the pre-commit lint runs ESLint where its config lives — lint-staged called it from the root with --config v3/eslint.config.js, so ESLint matched its file patterns against the root, none matched under v3/ and most rules never ran at commit time (a lint error in a unit test passed the hook, exit 0; CI caught it later). Now v3/.lintstagedrc.json lints v3/ with its tasks running in v3/ (lint-staged README, monorepos), the root config formats the rest; the hook runs `npx --prefix v3 lint-staged` from the root (v3 tools for both configs). Verified with probes: lint error blocked (exit 1), Markdown outside v3/ still formatted, clean run exit 0; sync-steps shows npx --prefix in the step table
+
+### Internal
+
+- test(guards): testGuards "lint-staged runs ESLint where its config lives" — every lint-staged config with an ESLint task sits next to eslint.config.js and passes no --config; the hook lets lint-staged find its configs (counter-checked: 3 planted errors)
+
 ## 3.0.166 — 2026-10-04
 
 ### Added
