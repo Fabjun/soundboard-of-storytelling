@@ -4,6 +4,7 @@
 **Date:** 2026-09-30
 **Slice:** infrastructure
 **Refines:** ADR-0005
+**Refined by:** ADR-0070 (the pad icon sets add a section "Icons" to the license notices)
 **Category:** Platform constraints
 
 ## Context

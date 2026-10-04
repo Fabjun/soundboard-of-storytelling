@@ -39,6 +39,7 @@
     "sync:exceptions": "tsx scripts/sync-exceptions.ts",
     "sync:steps": "tsx scripts/sync-steps.ts",
     "sync:api": "tsx scripts/sync-api.ts",
+    "build:icons": "tsx scripts/build-icons.ts",
     "vale:install": "tsx scripts/vale-install.ts",
     "typecheck": "tsc -b",
     "sync:docs": "npm run sync:adr && npm run sync:classes && npm run sync:tokens && npm run sync:tests && npm run sync:changelog && npm run sync:steps && npm run sync:exceptions && npm run sync:api",
