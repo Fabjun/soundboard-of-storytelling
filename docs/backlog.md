@@ -203,6 +203,14 @@ of PR #44): replace the limit with a virtualized grid that draws only the visibl
 (`@tanstack/virtual-core`), keeping the W3C APG grid keys (`aria-rowcount` / `aria-rowindex` for
 rows not in the DOM). Built in 3.0.170 (ADR-0071).
 
+### Icon picker loaded on demand
+
+The virtualized picker (ADR-0071) added 8.7 KB gzipped to the start bundle (measured 2026-10-04:
+107.5 → 116.2 KB of 200 KB), because `IconPicker` is imported by the PAD editor. A dynamic import
+(its own chunk, precached like the icon packs) would keep it out of the start bundle, at the
+cost of a short wait the first time the picker opens.
+**When:** owner decision (trade-off: start size vs. first opening).
+
 ### Icon picker: two clear buttons in the search field
 
 The search field of the icon picker is `type="search"`; WebKit draws its own clear button next to

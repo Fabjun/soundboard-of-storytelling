@@ -50,6 +50,9 @@ list that draws only the visible rows, using `@tanstack/virtual-core`.
 **Negative / Trade-offs:**
 
 - One more production dependency (listed in `third-party-licenses.txt` like every other).
+- The start bundle grows by 8.7 KB gzipped (measured 2026-10-04: 107.5 → 116.2 KB of 200 KB),
+  because the picker is part of the PAD editor's code; loading the picker on demand would keep it
+  out (BACKLOG "Icon picker loaded on demand").
 - No official Preact adapter: the small adapter is the project's own code and follows the React
   adapter by hand when TanStack changes its lifecycle.
 - The grid's height is set from the virtualizer, so its rows are out of flow: a parent that is a
