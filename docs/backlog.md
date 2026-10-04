@@ -176,11 +176,12 @@ planned with the next change of the collection.
 
 Planned as step 15d-4: the app's 24 UI icons (`PixelIcon`, coordinate lists, one `<rect>` per
 pixel) become an IconifyJSON set like the pad icons (one scheme for all icons, one path per icon).
-Held back 2026-10-04 (provisional, owner away): the UI icons are the project's own work (All
+Held back 2026-10-04 while the owner was away: the UI icons are the project's own work (All
 Rights Reserved), while the icon sets record a license that iconGuards allows only as CC0 or MIT
-and that third-party-licenses.txt lists — how an own set is labelled (SPDX `LicenseRef-…`, left
-out of the third-party notices) is a scheme decision.
-**When:** after the owner's decision; then a separate step with the visual baselines as check.
+and that third-party-licenses.txt lists. Owner decision 2026-10-04 (review of PR #44): an own set
+`sos-ui`, labelled with an SPDX `LicenseRef-…` id, left out of the third-party notices and of the
+icon picker.
+**When:** a separate pull request after Slice 15d, with the visual baselines as check.
 
 ### One English spelling variant
 
@@ -189,7 +190,27 @@ color 64 / colour 41, behavior 59 / behaviour 29, license 31 / licence 5, center
 Code identifiers are American (`color`, `license`, `LICENSE`). Proposal: American English
 throughout, as in the Google and Microsoft developer style guides and Lucide's naming rules, with a
 Vale rule that keeps it (the new Slice 15d files use it already).
-**When:** owner decision first (new scheme); then a clean-up pass and the Vale rule.
+Owner decision 2026-10-04: American English everywhere, historical records (ADRs, backlog history,
+released notes) included; only verbatim quotations and third-party license texts keep their
+spelling.
+**When:** a separate pull request after Slice 15d: the clean-up pass and the Vale rule.
+
+### Icon picker: virtualized result grid
+
+The icon picker draws at most 240 search results and asks to narrow the search beyond that (a
+one-letter search matches thousands of icons — iPhone memory). Owner decision 2026-10-04 (review
+of PR #44): replace the limit with a virtualized grid that draws only the visible rows
+(`@tanstack/virtual-core`), keeping the W3C APG grid keys (`aria-rowcount` / `aria-rowindex` for
+rows not in the DOM).
+**When:** a separate pull request after Slice 15d.
+
+### Component styles out of tokens.css
+
+The component classes (`sb-*`) live at the end of `v3/src/styles/tokens.css`, next to the tokens;
+the Slice 15d plan had named `global.css`. Owner decision 2026-10-04: keep them there for now and
+plan the split (tokens apart from component styles) as a clean-up.
+**When:** with the structure step "Relative units for sizes" before Slice 13 — it touches the same
+files.
 
 ### Visual baselines without pads
 

@@ -1,6 +1,6 @@
 # ADR-0070: Pad icons — IconifyJSON sets, `set:name` keys, up to 4 per pad
 
-**Status:** Proposed
+**Status:** Accepted
 **Date:** 2026-10-04
 **Slice:** Slice 15
 **Refines:** ADR-0057
@@ -17,12 +17,13 @@ four, and showed one to four icons in a fixed arrangement. V3 so far has a singl
 The owner chose the collection on 2026-10-04 from five free packs, on a selection page outside the
 repository: 2,150 icons from Nikoichu (1,137), Kenney's "1-Bit Pack" (622), pixelarticons (358) and
 Kacper Woźniak's "1-Bit Icons" (33); brand logos left out; Urizen set aside. Every icon got a
-name, a category and search words, checked by the owner.
+name, a category and search words, checked by the owner. One more Nikoichu icon came back later as
+the Single placeholder (decision 8).
 
 ## Decision
 
-Owner decisions 2026-10-04 (scheme, categories, keys, storage format, placeholder); the rest is
-proposed for the owner's review.
+Owner decisions 2026-10-04 (scheme, categories, keys, storage format, placeholder); the rest was
+proposed in the review of the Slice 15d pull request and accepted by the owner the same day.
 
 1. **Storage: IconifyJSON**, one file per pack in `v3/src/icons/sets/<prefix>.json`
    ([IconifyJSON](https://iconify.design/docs/types/iconify-json.html)): `prefix`, `info` (name,
@@ -48,14 +49,20 @@ proposed for the owner's review.
 6. **Loading on demand:** nothing loads at start. `v3/src/lib/iconSet.ts` imports a set as its
    own chunk when a board shows its icons or the icon picker opens; the build precaches the
    chunks for offline use (ADR-0057). The chunks go to `assets/icons/` with their own size budget
-   (`v3/.size-limit.json`): measured with the catalog, 210 KB gzipped of 240 KB; the start bundle
-   stays apart (103 KB of 200 KB).
+   (`v3/.size-limit.json`): measured 2026-10-04 with the catalog, 210 KB gzipped of 240 KB; the
+   start bundle stays apart (108 KB of 200 KB, the placeholders of decision 8 included — 0.6 KB).
 7. **License notices:** `third-party-licenses.txt` gets a section "Icons", written from the sets'
    `info` and license texts (refines ADR-0057). CC0 asks for nothing; the authors are credited
    anyway. MIT requires its notice in copies.
 8. **Pads** (owner decision 2026-10-04 — "up to 4 per pad", as V1): `PadBase.icons?: string[]`,
    up to `PAD_ICONS_MAX` = 4 keys, replacing `iconRef`. A pad without icons shows a placeholder
-   per pad type (owner decision 2026-10-04).
+   per pad type (owner decision 2026-10-04): collection icons — Single `nikoichu:shape-circle-thin`
+   (a circle), Loop `nikoichu:infinity`, Combo `nikoichu:shape-circle` (a double circle). Almost
+   every board shows placeholders, so `npm run build:icons` copies their three drawings into
+   `v3/src/icons/placeholders.json`, which is part of the start bundle; the packs still load only on
+   demand (Iconify's offline pattern: icons needed at once are bundled, the rest loads —
+   [Iconify icon bundles](https://iconify.design/docs/libraries/tools/export/icon-package.html)).
+   `iconGuards` checks that each copy equals its key's drawing in the collection.
 
 ## Consequences
 
@@ -89,6 +96,7 @@ about 93 names and more with every new pack — rejected by the owner for `set:n
   [v1-v2-inventory.md](../product/v1-v2-inventory.md)
 - **Sources:** https://iconify.design/docs/types/iconify-json.html ·
   https://iconify.design/docs/icons/icon-basics.html ·
+  https://iconify.design/docs/libraries/tools/export/icon-package.html ·
   https://lucide.dev/contribute/icons/naming-conventions ·
   https://lucide.dev/contribute/icons/metadata-conventions ·
   https://blog.fontawesome.com/icon-naming-conventions/

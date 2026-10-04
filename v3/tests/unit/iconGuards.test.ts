@@ -11,6 +11,7 @@
  * 5. The catalog has exactly the icons of the packs, each with 1–8 lower-case search words.
  * 6. No drawing appears twice in the whole collection (owner: no icon implemented twice).
  * 7. No brand logos (owner decision 2026-10-04) — names never carry a brand name.
+ * 8. The placeholder drawings in the start bundle are the collection's drawings of their keys.
  */
 import { describe, it, expect } from 'vitest';
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
@@ -140,5 +141,22 @@ describe('catalog and collection', () => {
 
   it('no icon is named after a brand (brand logos are left out)', () => {
     expect(sets.flatMap(keysOf).filter((k) => BRANDS.test(k.split(':')[1]))).toEqual([]);
+  });
+
+  it('each placeholder in the start bundle is the drawing of its key in the collection', () => {
+    const placeholders = JSON.parse(readFileSync(join(DIR, 'placeholders.json'), 'utf8')) as Record<
+      string,
+      { key: string; d: string; size: number }
+    >;
+    const problems = Object.entries(placeholders).flatMap(([type, { key, d, size }]) => {
+      const [prefix, name] = key.split(':');
+      const set = sets.find((s) => s.prefix === prefix);
+      const body = set?.icons[name]?.body;
+      return body === `<path fill="currentColor" d="${d}"/>` && set?.width === size
+        ? []
+        : [`${type}: ${key}`];
+    });
+    // Every pad type has one: PadIcons types the file as Record<PadType, …>, checked by tsc
+    expect(problems).toEqual([]);
   });
 });

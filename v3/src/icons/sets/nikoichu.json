@@ -2,7 +2,7 @@
   "prefix": "nikoichu",
   "info": {
     "name": "1-bit Pixel Icons",
-    "total": 1137,
+    "total": 1138,
     "version": "1.2",
     "author": { "name": "Nikoichu", "url": "https://nikoichu.itch.io/pixel-icons" },
     "license": {
@@ -2592,6 +2592,9 @@
     "shape-circle": {
       "body": "<path fill=\"currentColor\" d=\"M5 1h6v1H5zM3 2h3v1H3zM10 2h3v1H10zM2 3h2v1H2zM6 3h4v1H6zM12 3h2v1H12zM2 4h1v1H2zM4 4h3v1H4zM9 4h3v1H9zM13 4h1v1H13zM1 5h2v1H1zM4 5h1v1H4zM11 5h1v1H11zM13 5h2v1H13zM1 6h1v1H1zM3 6h2v1H3zM11 6h2v1H11zM14 6h1v1H14zM1 7h1v1H1zM3 7h1v1H3zM12 7h1v1H12zM14 7h1v1H14zM1 8h1v1H1zM3 8h1v1H3zM12 8h1v1H12zM14 8h1v1H14zM1 9h1v1H1zM3 9h2v1H3zM11 9h2v1H11zM14 9h1v1H14zM1 10h2v1H1zM4 10h1v1H4zM11 10h1v1H11zM13 10h2v1H13zM2 11h1v1H2zM4 11h3v1H4zM9 11h3v1H9zM13 11h1v1H13zM2 12h2v1H2zM6 12h4v1H6zM12 12h2v1H12zM3 13h3v1H3zM10 13h3v1H10zM5 14h6v1H5z\"/>"
     },
+    "shape-circle-thin": {
+      "body": "<path fill=\"currentColor\" d=\"M5 1h6v1H5zM3 2h3v1H3zM10 2h3v1H10zM2 3h2v1H2zM12 3h2v1H12zM2 4h1v1H2zM13 4h1v1H13zM1 5h2v1H1zM13 5h2v1H13zM1 6h1v1H1zM14 6h1v1H14zM1 7h1v1H1zM14 7h1v1H14zM1 8h1v1H1zM14 8h1v1H14zM1 9h1v1H1zM14 9h1v1H14zM1 10h2v1H1zM13 10h2v1H13zM2 11h1v1H2zM13 11h1v1H13zM2 12h2v1H2zM12 12h2v1H12zM3 13h3v1H3zM10 13h3v1H10zM5 14h6v1H5z\"/>"
+    },
     "shape-hexagon": {
       "body": "<path fill=\"currentColor\" d=\"M6 1h4v1H6zM4 2h3v1H4zM9 2h3v1H9zM2 3h3v1H2zM7 3h2v1H7zM11 3h3v1H11zM1 4h2v1H1zM5 4h6v1H5zM13 4h2v1H13zM1 5h1v1H1zM3 5h3v1H3zM10 5h3v1H10zM14 5h1v1H14zM1 6h1v1H1zM3 6h1v1H3zM12 6h1v1H12zM14 6h1v1H14zM1 7h1v1H1zM3 7h1v1H3zM12 7h1v1H12zM14 7h1v1H14zM1 8h1v1H1zM3 8h1v1H3zM12 8h1v1H12zM14 8h1v1H14zM1 9h1v1H1zM3 9h1v1H3zM12 9h1v1H12zM14 9h1v1H14zM1 10h1v1H1zM3 10h1v1H3zM12 10h1v1H12zM14 10h1v1H14zM1 11h1v1H1zM3 11h3v1H3zM10 11h3v1H10zM14 11h1v1H14zM1 12h2v1H1zM5 12h6v1H5zM13 12h2v1H13zM2 13h3v1H2zM7 13h2v1H7zM11 13h3v1H11zM4 14h3v1H4zM9 14h3v1H9zM6 15h4v1H6z\"/>"
     },
@@ -4405,6 +4408,7 @@
       "scales-left",
       "scales-right",
       "shape-circle",
+      "shape-circle-thin",
       "shape-hexagon",
       "shape-octagon",
       "shape-parallelogram",

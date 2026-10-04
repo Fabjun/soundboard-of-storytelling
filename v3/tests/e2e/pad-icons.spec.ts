@@ -7,6 +7,7 @@
  * the board is reopened (stored, not only shown). No playback — runs in Chromium and WebKit.
  */
 
+import { readFileSync } from 'node:fs';
 import { test, expect, type Page } from '@playwright/test';
 import {
   addNamedPad,
@@ -32,9 +33,14 @@ const slotKeys = (page: Page) =>
     .locator('[data-testid^="pad-editor-panel-icon-button-"]')
     .evaluateAll((els) => els.map((e) => e.getAttribute('title')));
 
-/** How many collection icons the first pad shows (each one an svg with a path). */
+/** How many of its own icons the first pad shows (each one an svg with a path), not counting a placeholder. */
 const padIconCount = (page: Page) =>
-  padCells(page).first().getByTestId('pad-icons').locator('svg path').count();
+  padCells(page).first().locator('[data-testid="pad-icons"]:not(.is-placeholder) svg path').count();
+
+/** The drawing of each pad type's placeholder, as the build wrote it. */
+const PLACEHOLDERS = JSON.parse(
+  readFileSync(new URL('../../src/icons/placeholders.json', import.meta.url), 'utf8'),
+) as Record<string, { d: string }>;
 
 test.beforeEach(async ({ page }) => {
   await page.goto('/soundboard-of-storytelling/');
@@ -90,9 +96,11 @@ test('an icon is removed on the second tap of its ✕; without icons the pad sho
   expect(await slotKeys(page)).toHaveLength(1);
   await remove.click();
   expect(await slotKeys(page)).toEqual([]);
-  // The placeholder is a UI icon (rects), not a collection icon (one path)
+  // No own icon left: the pad draws its type's placeholder (a Single: the circle)
   await expect.poll(() => padIconCount(page)).toBe(0);
-  await expect(padCells(page).first().getByTestId('pad-icons').locator('svg')).toHaveCount(1);
+  await expect(
+    padCells(page).first().locator('[data-testid="pad-icons"].is-placeholder svg path'),
+  ).toHaveAttribute('d', PLACEHOLDERS.single.d);
 });
 
 test('the picker lists categories that open and close, moves by arrow keys, and closes with Escape', async ({

@@ -93,7 +93,7 @@ export const WHATS_NEW: WhatsNewEntry[] = [
     date: '2026-10-04',
     new: [
       'Pads can show up to four icons, chosen in the PAD editor from a collection of more than 2,000 pixel icons. The icon list can be searched by name or by a word like "night" or "poison", or browsed by category.',
-      'A pad without its own icon shows a placeholder for its type.',
+      'A pad without its own icon shows a placeholder for its type: a circle for Single, an infinity sign for Loop, a double circle for Combo.',
     ],
     fixed: ['Pads imported from V1 keep their icons.'],
     behindTheScenes: [

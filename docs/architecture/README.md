@@ -48,7 +48,7 @@ file. Format: `docs/architecture/_template.md`.
 | [ADR-0042](0042-pad-discriminated-union.md) | Pad as a discriminated union                                   | Superseded by ADR-0048 | Slice 4  | 2026-05-28 |
 | [ADR-0048](0048-pad-pool-decks.md)          | Pad pool, decks and three pad types                            | Accepted               | Slice 9  | 2026-09-29 |
 | [ADR-0068](0068-trim-per-file.md)           | Several files per pad, each with its own trim                  | Accepted               | Slice 15 | 2026-10-03 |
-| [ADR-0070](0070-pad-icons.md)               | Pad icons — IconifyJSON sets, `set:name` keys, up to 4 per pad | Proposed               | Slice 15 | 2026-10-04 |
+| [ADR-0070](0070-pad-icons.md)               | Pad icons — IconifyJSON sets, `set:name` keys, up to 4 per pad | Accepted               | Slice 15 | 2026-10-04 |
 
 ### Persistence
 

@@ -5884,6 +5884,10 @@
     "tags": ["graphic", "design", "shapes"],
     "source": "Sprites/Tools_Crafting_Graphic_Design_Shapes_Circle.png"
   },
+  "nikoichu:shape-circle-thin": {
+    "tags": ["graphic", "design", "shapes", "ring", "round", "outline"],
+    "source": "Sprites/Tools_Crafting_Graphic_Design_Shapes_Circle_Filled.png"
+  },
   "nikoichu:shape-hexagon": {
     "tags": ["graphic", "design", "shapes"],
     "source": "Sprites/Tools_Crafting_Graphic_Design_Shapes_Hexagon.png"

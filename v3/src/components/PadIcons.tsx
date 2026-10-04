@@ -11,14 +11,14 @@ import { useEffect, useRef, useState } from 'preact/hooks';
 import type { JSX } from 'preact';
 import type { PadType } from '../types';
 import { getIconDrawing, loadIconSetsFor, type IconDrawing } from '../lib/iconSet';
-import { PixelIcon, type PixelIconName } from './PixelIcon';
+import placeholders from '../icons/placeholders.json';
 
-/** The placeholder per pad type: the UI icons that already stand for the types. */
-const PLACEHOLDER: Record<PadType, PixelIconName> = {
-  single: 'play',
-  loop: 'loop',
-  combo: 'sparkle',
-};
+/**
+ * The placeholder per pad type (owner decision 2026-10-04): a circle for Single, an infinity sign
+ * for Loop, a double circle for Combo — collection icons whose drawings build-icons copies into the
+ * start bundle, so a board draws them without loading a pack.
+ */
+const PLACEHOLDER: Record<PadType, IconDrawing & { key: string }> = placeholders;
 
 /** Draws one icon of the collection; an unknown key draws nothing. */
 export function IconGlyph({
@@ -78,7 +78,7 @@ export function PadIcons({ icons = [], type }: PadIconsProps): JSX.Element {
   if (shown.length === 0) {
     return (
       <div class="sb-pad-icons is-placeholder" aria-hidden="true" data-testid="pad-icons">
-        <PixelIcon name={PLACEHOLDER[type]} size={24} />
+        <IconGlyph drawing={PLACEHOLDER[type]} />
       </div>
     );
   }

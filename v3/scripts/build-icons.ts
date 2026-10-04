@@ -9,6 +9,7 @@
  *   - src/icons/catalog.json        search words and original reference of every icon (`set:name`)
  *   - src/icons/sets/<prefix>.LICENSE.txt  the license text where the license requires it (MIT)
  *   - src/icons/v1-map.json         V1's icon id → key, for the V1 import and pads it stored
+ *   - src/icons/placeholders.json   the drawing of each pad type's placeholder, for the start bundle
  *
  * Run (from v3/): npm run build:icons -- [--from WORK_FOLDER] [--v1 V1_ICONS_JS]
  * Default work folder: ~/dev/archive/icon-sources/work-2026-10-04 (see its README.md); default
@@ -83,6 +84,13 @@ const SETS: Record<string, SetInfo> = {
       url: 'https://creativecommons.org/publicdomain/zero/1.0/',
     },
   },
+};
+
+/** The placeholder of each pad type — collection icons (owner decision 2026-10-04). */
+const PLACEHOLDERS = {
+  single: 'nikoichu:shape-circle-thin',
+  loop: 'nikoichu:infinity',
+  combo: 'nikoichu:shape-circle',
 };
 
 type Mask = { id: string; n: number; m: string };
@@ -191,6 +199,20 @@ async function main(): Promise<void> {
   }
   await writeGenerated(join(OUT, 'catalog.json'), JSON.stringify(sorted(catalog)));
   console.log(`catalog: ${Object.keys(catalog).length} icons`);
+
+  // Almost every board shows placeholders, so their drawings go into the start bundle instead of
+  // loading the largest pack for them (Iconify: bundle the icons needed at once, load the rest)
+  const placeholders = Object.fromEntries(
+    Object.entries(PLACEHOLDERS).map(([type, key]) => {
+      const [prefix, name] = key.split(':');
+      const set = sets.get(prefix);
+      const d = set && / d="([^"]+)"/.exec(set.icons[name]?.body ?? '')?.[1];
+      if (!set || !d) throw new Error(`build-icons: placeholder ${key} is not in the collection`);
+      return [type, { key, d, size: set.size }];
+    }),
+  );
+  await writeGenerated(join(OUT, 'placeholders.json'), JSON.stringify(placeholders));
+  console.log(`placeholders: ${Object.values(PLACEHOLDERS).join(', ')}`);
 
   // V1 ids: Nikoichu's were `px-` + the file name in lower case with hyphens; pixelarticons' were
   // their names, which the chosen "sharp" drawings carry without `-sharp`. An exact name wins.
