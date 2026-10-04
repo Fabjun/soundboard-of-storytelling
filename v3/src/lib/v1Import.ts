@@ -8,6 +8,7 @@
  */
 
 import type { Board, ComboStep, FileOrder, Pad, PadBase, PadFile, Placement } from '../types';
+import { REPEAT_MAX } from '../types';
 import { DEFAULT_GRID } from './boardModel';
 import { DEFAULT_PAD_VOLUME, indexToPos } from './padUtils';
 import { breakCycles } from './comboModel';
@@ -17,8 +18,6 @@ export const V1_FADE_OUT_ALL_DEFAULT = 2.5;
 
 /** What the mapping dropped or could not resolve — shown in the import summary. */
 export type V1ImportNotes = {
-  /** Loop pads with a loop count (V3 loops run until stopped). */
-  loopCounts: number;
   /** Combo steps with per-pad volume / fade options (not in the V3 model yet). */
   comboPadOptions: number;
   /** Combo step references to pads that do not exist in the board. */
@@ -33,7 +32,6 @@ export type V1ImportNotes = {
 
 /** Returns import notes with every count at zero. */
 export const emptyNotes = (): V1ImportNotes => ({
-  loopCounts: 0,
   comboPadOptions: 0,
   missingStepPads: 0,
   unknownModes: 0,
@@ -128,9 +126,12 @@ function mapPad(
   const whole: PadFile[] = hashes.map((hash) => ({ hash }));
   const shuffled: FileOrder = p.shuffle === true || p.mode === 'random' ? 'shuffle' : 'sequential';
   switch (p.mode) {
-    case 'loop':
-      if ((num(p.loopCount) ?? 0) > 0) ctx.notes.loopCounts++;
-      return { ...base, type: 'loop', files: trimmed, order: 'sequential' };
+    case 'loop': {
+      // V1's loop count (∞ = 0 or missing) becomes the repeat count, within 1–999 (ADR-0069)
+      const count = Math.floor(num(p.loopCount) ?? 0);
+      const repeat = count > 0 ? { repeat: Math.min(count, REPEAT_MAX) } : {};
+      return { ...base, type: 'loop', files: trimmed, order: 'sequential', ...repeat };
+    }
     case 'playlist':
     case 'chain':
     case 'random':

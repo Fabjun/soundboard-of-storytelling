@@ -89,6 +89,14 @@ export function withEarlyVersions(
 /** The release notes the start screen shows, newest first (checked by whatsNew.test.ts). */
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
+    version: '3.0.166',
+    date: '2026-10-04',
+    new: [
+      'REPEAT: a Loop pad can play a set number of times (1 to 999) and then stop by itself, or loop until stopped (∞). A Loop with several files repeats its whole list.',
+    ],
+    behindTheScenes: ['Repeat counts from V1 boards are kept on import instead of being dropped.'],
+  },
+  {
     version: '3.0.165',
     date: '2026-10-04',
     fixed: [

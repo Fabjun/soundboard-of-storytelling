@@ -25,6 +25,8 @@ export type EngineLoopPad = PadBase & {
   trimEnd?: number;
   /** Second of the file the first pass starts at, inside the trimmed region (PAD editor preview). */
   startAt?: number;
+  /** Passes of the region before it stops by itself; none = until stopped (ADR-0069). */
+  repeat?: number;
 };
 
 /**
@@ -40,6 +42,8 @@ export type EnginePlaylistPad = PadBase & {
    * child runs in the background like a one-file loop (owner decision 2026-10-02, PR #36).
    */
   loop?: boolean;
+  /** With `loop`: passes through the list before it stops by itself; none = until stopped. */
+  repeat?: number;
 };
 
 /** Every shape the engine plays — V1's pad types; `toEnginePad` maps the app's pads to them. */

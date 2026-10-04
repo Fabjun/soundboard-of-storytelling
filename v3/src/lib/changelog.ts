@@ -17,10 +17,20 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.165';
+export const APP_VERSION = '3.0.166';
 
 /** The developer log, newest first; CHANGELOG.md is generated from it (sync-changelog). */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.166',
+    date: '2026-10-04',
+    items: [
+      'feat(editor): REPEAT — a Loop plays 1–999 times or until stopped (∞); the PAD editor has a ∞ button and a count field, a typed value lands in range (Slice 15c, ADR-0069, owner decision: every Loop)',
+      'feat(audio): a Loop with a count plays its region N times in one buffer source (start duration = N × region, gapless) and stops by itself; a Loop with several files ends after N passes through its list; a combo Loop child with a count stops after its passes (engine change approved by the owner)',
+      'feat(import): the V1 loopCount becomes the repeat count (capped at 999); the "loop count dropped" import note is removed',
+      'test: engine repeat cases, parseBoard range, padBaseOf, V1 import, E2E repeat field; all counter-checked',
+    ],
+  },
   {
     version: '3.0.165',
     date: '2026-10-04',

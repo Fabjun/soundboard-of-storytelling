@@ -94,6 +94,10 @@ export function padBaseOf(pad: Pad): PadBase {
     const { type: _t, steps: _s, ...base } = pad;
     return base;
   }
+  if (pad.type === 'loop') {
+    const { type: _t, files: _f, order: _o, repeat: _r, ...base } = pad;
+    return base;
+  }
   const { type: _t, files: _f, order: _o, ...base } = pad;
   return base;
 }

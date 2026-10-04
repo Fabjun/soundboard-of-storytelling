@@ -20,6 +20,7 @@
  *     ▶ / ⏸ / ⏹ of that file (Slice 15a, src/lib/preview.ts); the trim and fades always fit the
  *     file (src/lib/trimRange.ts)
  *   - Combo: the steps (ComboStepsEditor)
+ *   - Loop: REPEAT — ∞ (until stopped) or a count 1–999 (Slice 15c, ADR-0069)
  *   - Volume slider (0-100)
  *   - Fade In / Fade Out sliders (0-10s, shorter when the trimmed region is)
  *   - Hotkey display (read-only; assigning keys comes with Slice 12) — deck view only, keys belong to a placement
@@ -31,7 +32,7 @@
 import { useState, useEffect, useLayoutEffect, useRef } from 'preact/hooks';
 import type { JSX } from 'preact';
 import type { Board, ComboStep, Deck, FileOrder, Pad, PadBase, PadFile, PadType } from '../types';
-import { isComboPad } from '../types';
+import { isComboPad, REPEAT_MAX } from '../types';
 import { PixelIcon } from './PixelIcon';
 import { Waveform } from './Waveform';
 import { WaveformEditor } from './WaveformEditor';
@@ -87,6 +88,10 @@ export function PadEditorPanel({
   /** Audio files of a Single / Loop pad, each with its own trim (ADR-0068); empty for a Combo. */
   const [files, setFiles] = useState<PadFile[]>(isComboPad(pad) ? [] : pad.files);
   const [order, setOrder] = useState<FileOrder>(isComboPad(pad) ? 'sequential' : pad.order);
+  /** How often a Loop plays (ADR-0069); undefined = until stopped (∞). */
+  const [repeat, setRepeat] = useState<number | undefined>(
+    pad.type === 'loop' ? pad.repeat : undefined,
+  );
   /** The file the waveform editor and the preview work on (index into `files`). */
   const [selectedIndex, setSelectedIndex] = useState(0);
   /** Library files ticked in the picker, added together with ADD. */
@@ -190,12 +195,21 @@ export function PadEditorPanel({
       modifiedAt: Date.now(),
     };
     if (type === 'combo') return { ...base, type, steps: stepsOverride ?? steps };
-    return {
-      ...base,
-      type,
+    const fileFields = {
       files: (filesOverride ?? files).map(fitFile),
       order: orderOverride ?? order,
     };
+    if (type === 'single') return { ...base, type, ...fileFields };
+    return { ...base, type, ...fileFields, ...(repeat === undefined ? {} : { repeat }) };
+  }
+
+  /** REPEAT — ∞ (undefined) or a count; a typed count lands within 1–`REPEAT_MAX`. */
+  function handleRepeatChange(next: number | undefined) {
+    setRepeat(next);
+    const current = buildCurrentPad();
+    if (current.type !== 'loop') return;
+    const { repeat: _old, ...rest } = current;
+    scheduleAutoSave(next === undefined ? rest : { ...rest, repeat: next });
   }
 
   /** A file with its trim pulled into the file's length (no change while the length is unknown). */
@@ -381,6 +395,7 @@ export function PadEditorPanel({
     setType(migrated.type);
     setFiles(isComboPad(migrated) ? [] : migrated.files);
     setOrder(isComboPad(migrated) ? 'sequential' : migrated.order);
+    setRepeat(migrated.type === 'loop' ? migrated.repeat : undefined);
     setSteps(isComboPad(migrated) ? migrated.steps : []);
     scheduleAutoSave(migrated);
     setPendingType(null);
@@ -621,6 +636,43 @@ export function PadEditorPanel({
               </button>
             </div>
           )}
+        </div>
+      )}
+
+      {/* REPEAT — a Loop plays until stopped (∞) or a number of times, then stops (ADR-0069) */}
+      {type === 'loop' && (
+        <div class="sb-inspector-section">
+          <label class="sb-field-label">REPEAT</label>
+          <div class="sb-row-sm">
+            <button
+              class={`sb-btn sb-btn-xs ${repeat === undefined ? 'sb-btn-primary' : 'sb-btn-ghost'}`}
+              aria-pressed={repeat === undefined}
+              aria-label="Repeat until stopped"
+              data-testid="pad-editor-panel-repeat-forever-button"
+              onClick={() => handleRepeatChange(undefined)}
+            >
+              ∞
+            </button>
+            <input
+              class="sb-text-input"
+              type="number"
+              min="1"
+              max={REPEAT_MAX}
+              step="1"
+              placeholder="Count…"
+              aria-label="Repeat count"
+              data-testid="pad-editor-panel-repeat-input"
+              value={repeat ?? ''}
+              onChange={(e) => {
+                const typed = Math.floor(parseFloat(e.currentTarget.value));
+                const next = Number.isFinite(typed)
+                  ? Math.min(Math.max(typed, 1), REPEAT_MAX)
+                  : undefined;
+                handleRepeatChange(next);
+                e.currentTarget.value = next === undefined ? '' : String(next);
+              }}
+            />
+          </div>
         </div>
       )}
 

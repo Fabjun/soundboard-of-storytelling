@@ -7,6 +7,18 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.166 — 2026-10-04
+
+### Added
+
+- feat(editor): REPEAT — a Loop plays 1–999 times or until stopped (∞); the PAD editor has a ∞ button and a count field, a typed value lands in range (Slice 15c, ADR-0069, owner decision: every Loop)
+- feat(audio): a Loop with a count plays its region N times in one buffer source (start duration = N × region, gapless) and stops by itself; a Loop with several files ends after N passes through its list; a combo Loop child with a count stops after its passes (engine change approved by the owner)
+- feat(import): the V1 loopCount becomes the repeat count (capped at 999); the "loop count dropped" import note is removed
+
+### Internal
+
+- test: engine repeat cases, parseBoard range, padBaseOf, V1 import, E2E repeat field; all counter-checked
+
 ## 3.0.165 — 2026-10-04
 
 ### Fixed

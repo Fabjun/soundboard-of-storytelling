@@ -4,6 +4,7 @@
 **Date:** 2026-10-02
 **Slice:** Slice 10
 **Refines:** ADR-0062
+**Refined by:** ADR-0069 (V1 `loopCount` becomes the Loop's repeat count)
 **Category:** Persistence
 
 > **Accepted by the owner on 2026-10-02** with the review answers B1–B9
@@ -69,7 +70,7 @@ An import makes **two passes** over the file:
 | ------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
 | board                                             | a new board (name with a suffix if taken) with **one deck** holding all its pads                                  |
 | pad `mode: once`                                  | Single (`files`, order `sequential`)                                                                              |
-| pad `mode: loop`                                  | Loop (`files`); `loopCount` is dropped — V3 loops run until stopped                                               |
+| pad `mode: loop`                                  | Loop (`files`); `loopCount` → `repeat`, capped at 999 (amended 2026-10-04, ADR-0069)                              |
 | pad `mode: playlist` / `chain` / `random`         | Loop with its files; `shuffle` (or `random`) → order `shuffle`                                                    |
 | pad `mode: combo`                                 | Combo; step `pads` (V1 pad indexes) → V3 pad ids, `dur` → `duration`, `stopAll` kept                              |
 | step `fadeOutAll: true`                           | `fadeOutAll` = the step's `dur` (default 2.5 s) — V1 uses `dur` as the fade time there, so no separate `duration` |
@@ -148,6 +149,12 @@ not shown (D4: invisible).
 - **Refusing `.gz` where `DecompressionStream` is missing** (the provisional choice) — replaced by
   the owner's B8; keeping the native path next to fflate would leave one of the two untested on
   most test runs.
+
+## Amendments
+
+**2026-10-04:** V1's `loopCount` is no longer dropped: it becomes the Loop's repeat count, capped
+at 999 (ADR-0069, owner decision 2026-10-04). The import summary no longer notes dropped loop
+counts.
 
 ## Related
 

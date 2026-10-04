@@ -122,3 +122,26 @@ test('each file keeps its own trim', async ({ page }) => {
   await expect(start).toHaveValue('1');
   await expect(end).toHaveValue('3');
 });
+
+test('a Loop keeps its repeat count; ∞ sets it back to until stopped (ADR-0069)', async ({
+  page,
+}) => {
+  await page.getByTestId('pad-editor-panel-type-button-loop').click();
+  const count = page.getByTestId('pad-editor-panel-repeat-input');
+  const forever = page.getByTestId('pad-editor-panel-repeat-forever-button');
+  await expect(forever).toHaveAttribute('aria-pressed', 'true'); // a new Loop runs until stopped
+
+  await count.fill('5000');
+  await count.press('Enter');
+  await expect(count).toHaveValue('999'); // the highest count
+  await count.fill('3');
+  await count.press('Enter');
+  await expect(forever).toHaveAttribute('aria-pressed', 'false');
+
+  await reopenPad(page);
+  await expect(count).toHaveValue('3');
+  await forever.click();
+  await reopenPad(page);
+  await expect(count).toHaveValue('');
+  await expect(forever).toHaveAttribute('aria-pressed', 'true');
+});

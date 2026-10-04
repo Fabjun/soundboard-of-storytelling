@@ -126,6 +126,9 @@ function isHalted(c: AudioContext): boolean {
  * Without a trim end the region runs to the end of the buffer: a loopEnd of 0 would loop the
  * whole buffer from its start, ignoring trimStart. `startAt` begins the first pass inside the
  * region (the PAD editor's preview, owner-approved 2026-10-03); it defaults to the region start.
+ * `repeat` (ADR-0069, owner-approved 2026-10-04) makes exactly that use of the duration: the
+ * source plays `repeat` passes of the region — seamless and sample-accurate in one source, where
+ * V1 chained a new source per pass — and then ends (a first pass from `startAt` counts as one).
  */
 function startLoopSource(
   s: AudioBufferSourceNode,
@@ -133,12 +136,18 @@ function startLoopSource(
   tEnd: number,
   hasDur: boolean,
   startAt?: number,
+  repeat?: number,
 ): void {
   s.loop = true;
   s.loopStart = tStart;
   s.loopEnd = hasDur ? tEnd : (s.buffer?.duration ?? 0);
   const offset = startAt === undefined ? tStart : Math.min(Math.max(startAt, tStart), s.loopEnd);
-  s.start(0, offset);
+  if (repeat === undefined) {
+    s.start(0, offset);
+    return;
+  }
+  const region = s.loopEnd - tStart;
+  s.start(0, offset, Math.max(0, repeat * region - (offset - tStart)));
 }
 
 /**
@@ -317,8 +326,16 @@ export async function playLoop(padId: string, pad: LoopPad): Promise<void> {
   const s = ctx.createBufferSource();
   s.buffer = buf;
   s.connect(g);
-  startLoopSource(s, tStart, tEnd, hasDur, pad.startAt);
+  startLoopSource(s, tStart, tEnd, hasDur, pad.startAt, pad.repeat);
   srcs[padId] = [s];
+  // With a repeat count the source ends by itself after its passes (stopPad clears this first)
+  if (pad.repeat !== undefined) {
+    s.onended = () => {
+      onPadStopped(padId);
+      delete srcs[padId];
+      delete gains[padId];
+    };
+  }
 
   onPadStarted(padId, true);
 }
@@ -343,14 +360,18 @@ async function playNextTrack(padId: string, pad: PlaylistPad): Promise<void> {
   if (!ctx || !srcs[padId]) return;
 
   const files = pad.files;
-  let i: number;
-  if (pad.shuffle) {
-    i = Math.floor(Math.random() * files.length);
-  } else {
-    playPos[padId] = (playPos[padId] ?? 0) % files.length;
-    i = playPos[padId];
-    playPos[padId]++;
+  // playPos counts the tracks this run has started; with a repeat count (ADR-0069) the run ends
+  // after `repeat` passes through the list — in shuffle, as many tracks as that
+  const played = playPos[padId] ?? 0;
+  if (pad.repeat !== undefined && played >= pad.repeat * files.length) {
+    onPadStopped(padId);
+    delete srcs[padId];
+    delete gains[padId];
+    delete playPos[padId];
+    return;
   }
+  playPos[padId] = played + 1;
+  const i = pad.shuffle ? Math.floor(Math.random() * files.length) : played % files.length;
 
   const file = files[i];
   const hash = file?.hash ?? null;
@@ -580,8 +601,15 @@ function createPadInstance(
           s.buffer = b;
           s.connect(g);
           active.push(s);
-          startLoopSource(s, tStart, tEnd, hasDur);
-          // infinite loop — onEnded fires only when instance.stop() is called
+          const repeat = pad.repeat;
+          startLoopSource(s, tStart, tEnd, hasDur, undefined, repeat);
+          // Without a repeat count an infinite loop: onEnded fires only when instance.stop() is
+          // called; with one it ends by itself after its passes (ADR-0069)
+          if (repeat !== undefined) {
+            s.onended = () => {
+              if (!stopped) onEnded?.();
+            };
+          }
         } catch (e) {
           console.warn('Combo loop load:', e);
           onEnded?.();
@@ -594,17 +622,21 @@ function createPadInstance(
         return;
       }
       let pos = 0;
+      let round = 1;
       // A looping list starts over at its end — unless a whole round played nothing (every file
-      // missing or undecodable), so it never spins without sound.
+      // missing or undecodable), so it never spins without sound — or its repeat count is reached
+      // (ADR-0069).
       let playedThisRound = false;
       (async function nextTrack() {
         if (stopped) return;
         if (pos >= pad.files.length) {
-          if (!pad.loop || !playedThisRound) {
+          const lastRound = pad.repeat !== undefined && round >= pad.repeat;
+          if (!pad.loop || !playedThisRound || lastRound) {
             onEnded?.();
             return;
           }
           pos = 0;
+          round++;
           playedThisRound = false;
         }
         const i = pad.shuffle ? Math.floor(Math.random() * pad.files.length) : pos;

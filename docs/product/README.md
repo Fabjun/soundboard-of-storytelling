@@ -139,11 +139,11 @@ _Filled 2026-09-28 in dialogue with the product owner, informed by the V1 backup
 
 #### Pad types — **Decided**
 
-| Type       | Behavior                                                                                                                                                              | Status                                                                |
-| ---------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------- |
-| **Single** | Plays once. With several files, each trigger plays one of them — random or in turn (variation, e.g. three different sword hits).                                      | **Decided** (built, Slice 15b; each file has its own trim — ADR-0068) |
-| **Loop**   | Runs until stopped. One file repeats seamlessly; several files play one after another, **in order or shuffled** (both options are essential — e.g. background music). | **Decided** (built, Slice 15b; each file has its own trim — ADR-0068) |
-| **Combo**  | Triggers other pads in steps (see below).                                                                                                                             | **Decided**                                                           |
+| Type       | Behavior                                                                                                                                                                                                           | Status                                                                |
+| ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------- |
+| **Single** | Plays once. With several files, each trigger plays one of them — random or in turn (variation, e.g. three different sword hits).                                                                                   | **Decided** (built, Slice 15b; each file has its own trim — ADR-0068) |
+| **Loop**   | Runs until stopped, or a set number of times (REPEAT, ADR-0069). One file repeats seamlessly; several files play one after another, **in order or shuffled** (both options are essential — e.g. background music). | **Decided** (built, Slice 15b; each file has its own trim — ADR-0068) |
+| **Combo**  | Triggers other pads in steps (see below).                                                                                                                                                                          | **Decided**                                                           |
 
 The former **Playlist** type merges into Loop (resolves Q2). This changes the data model
 (`PadType`, ADR-0042): a superseding ADR and a migration of existing playlist pads are
@@ -178,7 +178,7 @@ never guesses a type from the file (e.g. Loop for a long file). **Decided** 2026
 | Per-pad volume, fade in, fade out.                                                                                    | **Decided** (built)                                                                            |
 | PREVIEW in the PAD editor.                                                                                            | **Decided** — Slice 15 ([§3](#3-app-modes-game-and-setup)), _not yet built_                    |
 | Trim start / end in the PAD editor (engine support exists).                                                           | **Decided** — Slice 15 (owner 2026-10-02: no longer low priority), _not yet built_             |
-| REPEAT: a loop plays N times or endlessly (as in V1); engine change under the owner's control.                        | **Decided** — Slice 15, _not yet built_                                                        |
+| REPEAT: a loop plays N times or endlessly (as in V1); engine change under the owner's control.                        | **Decided** (built, Slice 15c — every Loop, 1–999 or ∞; ADR-0069)                              |
 | The PAD editor has at least V1's functions: waveform + PREVIEW, trim, REPEAT, icons (up to 4 per pad), pad templates. | **Decided** 2026-10-02 — Slice 15; pad templates with the library, Slice 16 (owner 2026-10-03) |
 | Audio ducking, master volume, crossfade between pads, level meter, quick volume via long-press.                       | **Parked**                                                                                     |
 

@@ -112,15 +112,20 @@ export type SinglePad = PadBase & {
 };
 
 /**
- * Runs until stopped. One file repeats seamlessly; several files play one after another, in
- * order or shuffled (the former Playlist type, ADR-0048), each with its own trim. `files` may be
- * empty.
+ * Runs until stopped — or `repeat` times, then stops by itself (ADR-0069). One file repeats
+ * seamlessly; several files play one after another, in order or shuffled (the former Playlist
+ * type, ADR-0048), each with its own trim. `files` may be empty.
  */
 export type LoopPad = PadBase & {
   type: 'loop';
   files: PadFile[];
   order: FileOrder;
+  /** How often the loop plays (1–999, `REPEAT_MAX`); none = until stopped (∞). */
+  repeat?: number;
 };
+
+/** Highest repeat count of a Loop (V1's limit). */
+export const REPEAT_MAX = 999;
 
 /** Combo sequence: a chain of steps, each triggering one or more pads. */
 export type ComboPad = PadBase & {

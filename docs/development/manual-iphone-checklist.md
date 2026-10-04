@@ -91,6 +91,15 @@ because Playwright runs against a simulated environment:
     without a trim plays whole. The existing pads sound as before the update.
   - Why manual: The playlist trim is an engine change (owner approval); only hearing proves it.
 
+- [ ] **REPEAT** _(Slice 15c, engine change ADR-0069)_
+  - Action: Open a Loop pad with one short file, set REPEAT to 3, play it in GAME mode. Then a
+    Loop with two files, REPEAT 2. Then set ∞ and play again. Also play a combo with a Loop child
+    that has a count.
+  - Expected: The one-file Loop plays three passes without a gap and stops by itself (the pad no
+    longer shows as playing); the two-file Loop plays its list twice, then stops; ∞ plays until
+    stopped; the combo's Loop child stops after its passes.
+  - Why manual: The count is an engine change (owner approval); only hearing proves gapless passes.
+
 ---
 
 ## Section 2 — File System

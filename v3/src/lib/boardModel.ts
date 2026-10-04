@@ -16,6 +16,7 @@ import type {
   Placement,
   QuickAccessEntry,
 } from '../types';
+import { REPEAT_MAX } from '../types';
 import { nextFreeSlot } from './padUtils';
 import { combosInCycles } from './comboModel';
 import { migratePad, type StoredPad } from './padFiles';
@@ -352,8 +353,15 @@ function isStoredPad(v: unknown): v is StoredPad {
   return (
     (v.type === 'single' || v.type === 'loop') &&
     (current || legacy) &&
-    (v.order === 'sequential' || v.order === 'shuffle')
+    (v.order === 'sequential' || v.order === 'shuffle') &&
+    // A Loop's repeat count (ADR-0069): a whole number 1–999; a Single has none
+    (v.repeat === undefined || (v.type === 'loop' && isRepeatCount(v.repeat)))
   );
+}
+
+/** A Loop's repeat count: a whole number from 1 to `REPEAT_MAX`. */
+export function isRepeatCount(v: unknown): v is number {
+  return isNum(v) && Number.isInteger(v) && v >= 1 && v <= REPEAT_MAX;
 }
 
 function isPlacement(v: unknown): v is Placement {

@@ -37,8 +37,6 @@ function noteLines(r: ImportResult): string[] {
   const n = r.notes;
   return [
     n.missingFiles && `${plural(n.missingFiles, 'pad file')} not found — left out of their pads.`,
-    n.loopCounts &&
-      `${plural(n.loopCounts, 'loop')} had a repeat count — they now loop until stopped.`,
     n.comboPadOptions &&
       `${plural(n.comboPadOptions, 'combo step')} had per-pad volume or fade — not imported yet.`,
     n.missingStepPads && `${plural(n.missingStepPads, 'combo reference')} pointed at no pad.`,

@@ -158,7 +158,7 @@ describe('mapV1Board', () => {
     expect(boardProblems(b)).toEqual([]);
   });
 
-  it('counts what it drops: loop counts, per-pad combo options, unknown modes, missing files', () => {
+  it('counts what it drops: per-pad combo options, unknown modes, missing files', () => {
     const ctx = context();
     mapV1Board(
       v1Board([
@@ -174,14 +174,30 @@ describe('mapV1Board', () => {
       ]),
       ctx,
     );
+    // A loop count is no longer dropped: it becomes the repeat count (ADR-0069)
     expect(ctx.notes).toEqual({
-      loopCounts: 1,
       comboPadOptions: 1,
       missingStepPads: 0,
       unknownModes: 1,
       missingFiles: 1,
       cycleRefs: 0,
     });
+  });
+
+  it('a V1 loop count becomes the repeat count — ∞ (0 or none) stays unset, a huge one is capped', () => {
+    const b = mapV1Board(
+      v1Board([
+        { mode: 'loop', files: ['a'], loopCount: 3 },
+        { mode: 'loop', files: ['a'], loopCount: 0 },
+        { mode: 'loop', files: ['a'] },
+        { mode: 'loop', files: ['a'], loopCount: 5000 },
+        { mode: 'loop', files: ['a'], loopCount: 2.7 },
+      ]),
+      context(),
+    )!;
+    const repeats = (b.pads as LoopPad[]).map((p) => p.repeat);
+    expect(repeats).toEqual([3, undefined, undefined, 999, 2]);
+    expect(b.pads[1]).not.toHaveProperty('repeat');
   });
 
   it('a board with more pads than a 4×4 deck gets more rows; its name gets a suffix when taken', () => {

@@ -414,7 +414,7 @@ standalone mode.
 
 ### Audio Engine (Deferred from Slice 4)
 
-### Finite Loop Count (loopCount > 0)
+### Finite Loop Count (loopCount > 0) ✅ Done (3.0.166 — REPEAT, ADR-0069)
 
 Currently only infinite loops are supported. Add support for a fixed repeat count when
 the need surfaces in real play sessions.

@@ -496,6 +496,73 @@ describe('playlist', () => {
   });
 });
 
+// ── REPEAT (ADR-0069, engine change approved by the owner 2026-10-04) ───────────
+
+describe('repeat', () => {
+  test('a one-file Loop plays its region N times in ONE source — duration N × region — then stops', async () => {
+    // Web Audio: start()'s duration counts every loop pass, so one source plays exactly N passes
+    await audio.play('l', loop('l', 'h1', { trimStart: 0.25, trimEnd: 0.75, repeat: 3 }));
+    await flush();
+    const s = ctx.sources[0];
+    expect([s.loop, s.loopStart, s.loopEnd]).toEqual([true, 0.25, 0.75]);
+    expect(s.started?.offset).toBe(0.25);
+    expect(s.started?.dur).toBeCloseTo(1.5);
+    expect(ctx.sources).toHaveLength(1);
+    s.end();
+    expect(stopped).toEqual(['l']); // it stops by itself, reported like a Single
+    expect(audio.isPlaying('l')).toBe(false);
+  });
+
+  test('without a repeat count a Loop still runs until stopped (no duration)', async () => {
+    await audio.play('l', loop('l', 'h1', { trimStart: 0.25, trimEnd: 0.75 }));
+    await flush();
+    expect(ctx.sources[0].started?.dur).toBeUndefined();
+  });
+
+  test('the preview from mid-region counts that first part as one pass', async () => {
+    await audio.previewFile(
+      loop('p', '', { repeat: 2 }),
+      fileOf('h1', { trimStart: 0.2, trimEnd: 0.6 }),
+      0.5,
+    );
+    await flush();
+    // two passes of 0.4 s, minus the 0.3 s before the start point
+    expect(ctx.sources[0].started?.dur).toBeCloseTo(0.5);
+  });
+
+  test('a Loop with several files plays the list N times, then stops', async () => {
+    audio.play('p', { ...playlist('p', ['h1', 'h2']), repeat: 2 });
+    await flush();
+    for (let i = 0; i < 4; i++) {
+      ctx.sources[i].end();
+      await flush();
+    }
+    expect(tags()).toEqual(['h1', 'h2', 'h1', 'h2']);
+    expect(stopped).toEqual(['p']);
+    expect(audio.isPlaying('p')).toBe(false);
+  });
+
+  // In a combo a Loop child runs in the background — the next step starts at once (PR #36);
+  // with a count it stops by itself instead of running until the combo is stopped.
+  test('in a combo, a Loop child with a count plays N passes in one source', async () => {
+    pads.set('bg', loop('bg', 'h3', { repeat: 2 }));
+    void audio.play('c', combo('c', [{ padIds: ['bg'], duration: 9 }]));
+    await flush();
+    expect(ctx.sources[0].started?.dur).toBeCloseTo(2); // fake buffers last 1 s
+  });
+
+  test('in a combo, a list child with a count starts no track after its passes', async () => {
+    pads.set('pl', { ...playlist('pl', ['a', 'b']), repeat: 1 });
+    void audio.play('c', combo('c', [{ padIds: ['pl'], duration: 9 }]));
+    await flush();
+    ctx.sources[0].end();
+    await flush();
+    ctx.sources[1].end(); // one pass through the list is done
+    await flush();
+    expect(tags()).toEqual(['a', 'b']); // without the count it would start 'a' again
+  });
+});
+
 // ── STOP / STOP ALL / FADE OUT ALL ────────────────────────────────────────────
 
 describe('stopping', () => {

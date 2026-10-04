@@ -297,6 +297,12 @@ describe('padBaseOf / timestamps (E1)', () => {
     expect(padBaseOf(combo)).toEqual(padBaseOf(pad));
   });
 
+  it("drops a Loop's own repeat count too — a Single made from it gets none (ADR-0069)", () => {
+    const loop: Pad = { ...makePad('p'), type: 'loop', repeat: 3 };
+    expect(padBaseOf(loop)).not.toHaveProperty('repeat');
+    expect(applyTypeChange(loop, 'single')).not.toHaveProperty('repeat');
+  });
+
   it('a type change keeps the times; newPad stamps the time it is given', () => {
     const pad = makePad('p', { addedAt: 5, modifiedAt: 9 });
     expect(applyTypeChange(pad, 'loop')).toMatchObject({ addedAt: 5, modifiedAt: 9 });
