@@ -172,16 +172,15 @@ them by `npm run build:icons`.
 **When:** on the owner's request; a way back from the selection page into the repository is
 planned with the next change of the collection.
 
-### UI icons in the icon set format (Slice 15d-4)
+### UI icons in the icon set format (Slice 15d-4) ✅ Done (3.0.171)
 
 Planned as step 15d-4: the app's 24 UI icons (`PixelIcon`, coordinate lists, one `<rect>` per
 pixel) become an IconifyJSON set like the pad icons (one scheme for all icons, one path per icon).
 Held back 2026-10-04 while the owner was away: the UI icons are the project's own work (All
 Rights Reserved), while the icon sets record a license that iconGuards allows only as CC0 or MIT
 and that third-party-licenses.txt lists. Owner decision 2026-10-04 (review of PR #44): an own set
-`sos-ui`, labelled with an SPDX `LicenseRef-…` id, left out of the third-party notices and of the
-icon picker.
-**When:** a separate pull request after Slice 15d, with the visual baselines as check.
+`sos-ui`, labeled with an SPDX `LicenseRef-…` id, left out of the third-party notices and of the
+icon picker. Built in 3.0.171 (ADR-0072); pixel-identical before and after.
 
 ### One English spelling variant
 

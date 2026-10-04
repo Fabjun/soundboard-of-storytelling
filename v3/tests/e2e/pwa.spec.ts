@@ -81,15 +81,23 @@ test('ships the license notices of every production dependency', async ({ page }
   );
   expect(shipped.size).toBeGreaterThanOrEqual(3); // sanity: the markers are found
   for (const name of shipped) expect(text, name).toContain(`${name}@`);
-  // Every pad icon set names its author and license; MIT ships its text (ADR-0070)
+  // Every third-party icon set names its author and license; MIT ships its text (ADR-0070); the
+  // project's own UI set is no third party and is not listed (ADR-0072)
   const iconSets = new URL('../../src/icons/sets/', import.meta.url);
-  for (const file of readdirSync(iconSets).filter((f) => f.endsWith('.json'))) {
-    const { prefix, info } = JSON.parse(readFileSync(new URL(file, iconSets), 'utf8')) as {
-      prefix: string;
-      info: { author: { name: string }; license: { title: string } };
-    };
+  const sets = readdirSync(iconSets)
+    .filter((f) => f.endsWith('.json'))
+    .map(
+      (file) =>
+        JSON.parse(readFileSync(new URL(file, iconSets), 'utf8')) as {
+          prefix: string;
+          info: { author: { name: string }; license: { title: string; spdx: string } };
+        },
+    );
+  const own = sets.filter((s) => s.info.license.spdx === 'LicenseRef-Proprietary');
+  for (const { prefix, info } of sets.filter((s) => !own.includes(s))) {
     expect(text, prefix).toContain(`(${prefix}) by ${info.author.name} — ${info.license.title}`);
   }
+  for (const { prefix } of own) expect(text, prefix).not.toContain(`(${prefix})`);
   expect(text).toContain('Copyright (c) 2019 Gerrit Halfmann');
 });
 
