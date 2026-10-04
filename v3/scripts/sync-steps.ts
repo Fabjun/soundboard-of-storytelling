@@ -54,8 +54,10 @@ function ciTable(): string[] {
 
 const MESSAGE =
   /(?:echo|printf)\s+(['"])(?:\\n)?\S+\s+Pre-(?:commit|push):\s*(.+?)(?:\.{3})?(?:\\n)?\1/;
-// The npm / npx call of a step (flags only where they change the meaning, e.g. the audit level).
-const COMMAND = /\b(npm (?:run [\w:.-]+|ci|audit(?: --audit-level=\w+)?)|npx [\w-]+)/g;
+// The npm / npx call of a step (flags only where they change the meaning, e.g. the audit level;
+// npx's --prefix names whose tools run, e.g. `npx --prefix v3 lint-staged` from the root).
+const COMMAND =
+  /\b(npm (?:run [\w:.-]+|ci|audit(?: --audit-level=\w+)?)|npx (?:--prefix [\w./-]+ )?[\w-]+)/g;
 
 function hookTable(hook: string): string[] {
   const lines = readFileSync(join(ROOT, '.husky', hook), 'utf8').split('\n');

@@ -20,7 +20,12 @@ npm run build || {
 echo "✅ Build passed."
 
 echo "🎨 Pre-commit: running lint-staged (format + lint on staged files)..."
-npx lint-staged --config ../.lintstagedrc.json --cwd .. || {
+# Run from the root so lint-staged finds both configs (lint-staged README, monorepos): the
+# tasks of v3/.lintstagedrc.json run in v3/, so ESLint finds v3/eslint.config.js and its file
+# patterns match — with --config from the root they matched nothing under v3/ and most rules
+# never ran (2026-10-04); the root .lintstagedrc.json formats everything outside v3/. The tools
+# are v3's (npx --prefix v3), also for the root config's tasks.
+(cd "$ROOT" && npx --prefix v3 lint-staged) || {
   printf '\n❌ lint-staged failed — commit aborted.\n'
   printf '   Fix the errors above, stage the files again, then git commit.\n\n'
   exit 1
