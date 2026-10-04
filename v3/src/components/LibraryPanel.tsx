@@ -10,7 +10,7 @@
  *
  * Mobile extra: Long-Press (350ms without movement) → onEnterPlaceMode.
  *   The place-mode flow (tap to place on a grid cell) is managed in BoardScreen.
- *   When drag threshold is crossed, the long-press timer is cancelled.
+ *   When drag threshold is crossed, the long-press timer is canceled.
  *
  * The pad creation on drop happens in BoardScreen (handleLibDrop).
  */

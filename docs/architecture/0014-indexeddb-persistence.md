@@ -38,7 +38,7 @@ standards).
 
 - Audio Blobs of up to several GB can be stored (IDB quota depending on available storage).
 - A clear boundary: `src/db/idb.ts` is the only place where IDB transactions are opened. Type
-  safety and memory-safety rules are centralised.
+  safety and memory-safety rules are centralized.
 - localStorage writes are synchronous and simple for small preferences.
 
 **Negative / Trade-offs:**

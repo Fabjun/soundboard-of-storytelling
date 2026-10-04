@@ -146,9 +146,9 @@ describe('processFilesSerial — memory safety', () => {
   });
 });
 
-// ── Behaviour ─────────────────────────────────────────────────────────────────
+// ── Behavior ─────────────────────────────────────────────────────────────────
 
-describe('processFilesSerial — behaviour', () => {
+describe('processFilesSerial — behavior', () => {
   test('persists entries to IndexedDB with peaks and duration', async () => {
     await processFilesSerial([audioFile('a.wav', [1]), audioFile('b.wav', [2])]);
     const stored = await libGetAllMeta();

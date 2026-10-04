@@ -38,7 +38,7 @@ generators did not escape `|` in cells.
    applies to every staged file, so one root config covers the repository.
 4. **Markdown is formatted only if its content stays identical.** `npm run format:md`
    (`v3/scripts/format-md.ts`, used by lint-staged) formats with Prettier and compares the
-   GitHub-flavoured syntax tree before and after (`v3/scripts/lib/markdown.ts`); on any
+   GitHub-flavored syntax tree before and after (`v3/scripts/lib/markdown.ts`); on any
    difference in content or structure it fails with the line instead of writing. The doc
    generators write through the same check (`v3/scripts/lib/write-generated.ts`), so their output
    is always formatted and `sync:docs` never fights Prettier.

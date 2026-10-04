@@ -17,10 +17,18 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.171';
+export const APP_VERSION = '3.0.172';
 
 /** The developer log, newest first; CHANGELOG.md is generated from it (sync-changelog). */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.172',
+    date: '2026-10-04',
+    items: [
+      'docs: American spelling everywhere (owner decision 2026-10-04, ADR-0073) — 265 British forms in 76 files replaced by script from one word list (case kept), history and old release notes included; kept: Claude Design downloads, the icon catalog search words (deliberate synonyms), V1 icon ids, third-party license texts; two measured mentions of the old forms marked off for Vale; one local variable renamed, no CSS class, token or file name changed',
+      'test(guards): the word list .vale/styles/SoS/AmericanSpelling.yml is a Vale rule for Markdown (now also on the historical files) and codeGuards "American spelling outside Markdown" for every other tracked file (counter-checked: planted forms in an active doc, an ADR, a code comment and a workflow file — red; restored green)',
+    ],
+  },
   {
     version: '3.0.171',
     date: '2026-10-04',
@@ -165,7 +173,7 @@ export const CHANGELOG: ChangelogEntry[] = [
     version: '3.0.156',
     date: '2026-10-03',
     items: [
-      "docs: Slice 15 plan — steps 15a preview / waveform / trim / fades, 15b several files, 15c REPEAT, 15d icons from V1's pack once its licence is confirmed; pad templates move to the library, Slice 16 (owner decisions)",
+      "docs: Slice 15 plan — steps 15a preview / waveform / trim / fades, 15b several files, 15c REPEAT, 15d icons from V1's pack once its license is confirmed; pad templates move to the library, Slice 16 (owner decisions)",
     ],
   },
   {
@@ -193,7 +201,7 @@ export const CHANGELOG: ChangelogEntry[] = [
     version: '3.0.152',
     date: '2026-10-03',
     items: [
-      'docs(backlog): idea — built-in sample sounds with redistributable licences (CC0) for the first launch, with Slice 17 (owner idea)',
+      'docs(backlog): idea — built-in sample sounds with redistributable licenses (CC0) for the first launch, with Slice 17 (owner idea)',
     ],
   },
   {
@@ -379,7 +387,7 @@ export const CHANGELOG: ChangelogEntry[] = [
     version: '3.0.126',
     date: '2026-10-02',
     items: [
-      'feat(pads): a Loop with several files runs in the background of a combo and its list repeats; it glows like any loop; the old Playlist colours are gone (owner decisions on PR #36; engine change awaits the playback check)',
+      'feat(pads): a Loop with several files runs in the background of a combo and its list repeats; it glows like any loop; the old Playlist colors are gone (owner decisions on PR #36; engine change awaits the playback check)',
     ],
   },
   {
@@ -520,7 +528,7 @@ export const CHANGELOG: ChangelogEntry[] = [
     version: '3.0.101',
     date: '2026-10-02',
     items: [
-      'test: the start screen visual test hides the version footer (a longer version moved the centred line); review log: PRs #35/#36, Slice 9 structure review',
+      'test: the start screen visual test hides the version footer (a longer version moved the centered line); review log: PRs #35/#36, Slice 9 structure review',
     ],
   },
   {
@@ -528,7 +536,7 @@ export const CHANGELOG: ChangelogEntry[] = [
     date: '2026-10-02',
     items: [
       'feat(model): three pad types — Single and Loop hold several files with an order, Playlist merges into Loop; a Single with several files plays the next one in turn or a random one; DB v5 (Slice 9d, ADR-0048)',
-      'test: the start screen visual test hides the version footer — a longer version moved the centred line and failed it',
+      'test: the start screen visual test hides the version footer — a longer version moved the centered line and failed it',
     ],
   },
   {
@@ -740,7 +748,7 @@ export const CHANGELOG: ChangelogEntry[] = [
     version: '3.0.65',
     date: '2026-09-30',
     items: [
-      'chore: remove the V1 reference copy (incl. third-party icons without licence file) from the public repository; structure audit findings recorded',
+      'chore: remove the V1 reference copy (incl. third-party icons without license file) from the public repository; structure audit findings recorded',
     ],
   },
   {
@@ -939,7 +947,7 @@ export const CHANGELOG: ChangelogEntry[] = [
     date: '2026-09-29',
     items: [
       'feat(start): animated pixel flame from the Claude Design draft (v13) replaces the static placeholder — tap to spark and freeze, idle to thaw',
-      'fix(flame): sparks were drawn black (design colour bug); frost no longer shows a light box',
+      'fix(flame): sparks were drawn black (design color bug); frost no longer shows a light box',
       'feat(flame): inner glow and heart flicker; sparks cool into black smoke',
     ],
   },
@@ -1198,7 +1206,7 @@ export const CHANGELOG: ChangelogEntry[] = [
       'feat: Library: import audio files, rename, delete',
       'feat: Serial upload pipeline — never loads all audio into RAM at once (iOS safety)',
       'feat: SHA-256 content addressing via @noble/hashes — works without Secure Context (iPhone LAN)',
-      'feat: Waveform peak visualisation computed at import, stored in IDB',
+      'feat: Waveform peak visualization computed at import, stored in IDB',
     ],
   },
   {

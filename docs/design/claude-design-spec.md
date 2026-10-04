@@ -12,7 +12,7 @@
 
 Source: [design-system.md §5a](design-system.md#5a-layout-primitives).
 
-| Class            | Behaviour                                     | Use for                           |
+| Class            | Behavior                                      | Use for                           |
 | ---------------- | --------------------------------------------- | --------------------------------- |
 | `sb-row`         | flex row, 8px gap, align-center, min-width:0  | icon+label pairs, toolbar rows    |
 | `sb-row-sm`      | flex row, 4px gap, align-center               | tight action clusters             |

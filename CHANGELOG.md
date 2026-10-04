@@ -7,6 +7,13 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.172 — 2026-10-04
+
+### Internal
+
+- docs: American spelling everywhere (owner decision 2026-10-04, ADR-0073) — 265 British forms in 76 files replaced by script from one word list (case kept), history and old release notes included; kept: Claude Design downloads, the icon catalog search words (deliberate synonyms), V1 icon ids, third-party license texts; two measured mentions of the old forms marked off for Vale; one local variable renamed, no CSS class, token or file name changed
+- test(guards): the word list .vale/styles/SoS/AmericanSpelling.yml is a Vale rule for Markdown (now also on the historical files) and codeGuards "American spelling outside Markdown" for every other tracked file (counter-checked: planted forms in an active doc, an ADR, a code comment and a workflow file — red; restored green)
+
 ## 3.0.171 — 2026-10-04
 
 ### Changed
@@ -187,7 +194,7 @@ release notes the app shows are written separately for its users (`v3/src/lib/wh
 
 ### Internal
 
-- docs: Slice 15 plan — steps 15a preview / waveform / trim / fades, 15b several files, 15c REPEAT, 15d icons from V1's pack once its licence is confirmed; pad templates move to the library, Slice 16 (owner decisions)
+- docs: Slice 15 plan — steps 15a preview / waveform / trim / fades, 15b several files, 15c REPEAT, 15d icons from V1's pack once its license is confirmed; pad templates move to the library, Slice 16 (owner decisions)
 
 ## 3.0.155 — 2026-10-03
 
@@ -211,7 +218,7 @@ release notes the app shows are written separately for its users (`v3/src/lib/wh
 
 ### Internal
 
-- docs(backlog): idea — built-in sample sounds with redistributable licences (CC0) for the first launch, with Slice 17 (owner idea)
+- docs(backlog): idea — built-in sample sounds with redistributable licenses (CC0) for the first launch, with Slice 17 (owner idea)
 
 ## 3.0.151 — 2026-10-03
 
@@ -397,7 +404,7 @@ release notes the app shows are written separately for its users (`v3/src/lib/wh
 
 ### Added
 
-- feat(pads): a Loop with several files runs in the background of a combo and its list repeats; it glows like any loop; the old Playlist colours are gone (owner decisions on PR #36; engine change awaits the playback check)
+- feat(pads): a Loop with several files runs in the background of a combo and its list repeats; it glows like any loop; the old Playlist colors are gone (owner decisions on PR #36; engine change awaits the playback check)
 
 ## 3.0.124 — 2026-10-02
 
@@ -532,7 +539,7 @@ release notes the app shows are written separately for its users (`v3/src/lib/wh
 
 ### Internal
 
-- test: the start screen visual test hides the version footer (a longer version moved the centred line); review log: PRs #35/#36, Slice 9 structure review
+- test: the start screen visual test hides the version footer (a longer version moved the centered line); review log: PRs #35/#36, Slice 9 structure review
 
 ## 3.0.100 — 2026-10-02
 
@@ -542,7 +549,7 @@ release notes the app shows are written separately for its users (`v3/src/lib/wh
 
 ### Internal
 
-- test: the start screen visual test hides the version footer — a longer version moved the centred line and failed it
+- test: the start screen visual test hides the version footer — a longer version moved the centered line and failed it
 
 ## 3.0.99 — 2026-10-02
 
@@ -742,7 +749,7 @@ release notes the app shows are written separately for its users (`v3/src/lib/wh
 
 ### Internal
 
-- chore: remove the V1 reference copy (incl. third-party icons without licence file) from the public repository; structure audit findings recorded
+- chore: remove the V1 reference copy (incl. third-party icons without license file) from the public repository; structure audit findings recorded
 
 ## 3.0.64 — 2026-09-30
 
@@ -930,7 +937,7 @@ release notes the app shows are written separately for its users (`v3/src/lib/wh
 
 ### Fixed
 
-- fix(flame): sparks were drawn black (design colour bug); frost no longer shows a light box
+- fix(flame): sparks were drawn black (design color bug); frost no longer shows a light box
 
 ## 3.0.36 — 2026-09-28
 
@@ -1166,7 +1173,7 @@ release notes the app shows are written separately for its users (`v3/src/lib/wh
 - feat: Library: import audio files, rename, delete
 - feat: Serial upload pipeline — never loads all audio into RAM at once (iOS safety)
 - feat: SHA-256 content addressing via @noble/hashes — works without Secure Context (iPhone LAN)
-- feat: Waveform peak visualisation computed at import, stored in IDB
+- feat: Waveform peak visualization computed at import, stored in IDB
 
 ## 3.0.1 — 2026-05-27
 

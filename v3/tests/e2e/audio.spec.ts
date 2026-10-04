@@ -7,7 +7,7 @@
  * not the audio output itself.
  *
  * Tests covered:
- *   A. TAP TO UNLOCK — navigates to board-list (AudioContext initialised)
+ *   A. TAP TO UNLOCK — navigates to board-list (AudioContext initialized)
  *   B. SINGLE pad — tap → is-hot; tap again → is-hot gone
  *   C. LOOP pad   — tap → is-looping; tap again → is-looping gone
  */
@@ -24,11 +24,11 @@ import {
 
 // ── Test A: TAP TO UNLOCK ─────────────────────────────────────────────────────
 
-test('A — TAP TO UNLOCK navigates to board-list and initialises audio', async ({ page }) => {
+test('A — TAP TO UNLOCK navigates to board-list and initializes audio', async ({ page }) => {
   await page.goto('/soundboard-of-storytelling/');
   // Click TAP TO UNLOCK — should navigate to board-list
   await page.getByRole('button', { name: 'TAP TO UNLOCK' }).click();
-  // Board-list is now shown (AudioContext initialised synchronously in handler)
+  // Board-list is now shown (AudioContext initialized synchronously in handler)
   await expect(page.getByTestId('board-list-screen-new-button')).toBeVisible();
 });
 
@@ -42,7 +42,7 @@ test.beforeEach(async ({ page }, testInfo) => {
   // Upload audio first (required for pad creation and playback)
   await goToLibrary(page);
   await uploadTestAudio(page);
-  // Return to start and click TAP TO UNLOCK (initialises AudioContext)
+  // Return to start and click TAP TO UNLOCK (initializes AudioContext)
   await page.goto('/soundboard-of-storytelling/');
   await page.getByRole('button', { name: 'TAP TO UNLOCK' }).click();
   await page.getByTestId('board-list-screen-new-button').waitFor();

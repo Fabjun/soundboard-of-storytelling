@@ -7,7 +7,7 @@
 import type { Page } from '@playwright/test';
 
 /**
- * Stabilise the page before taking a screenshot:
+ * Stabilize the page before taking a screenshot:
  * - Disable CSS animations / transitions
  * - Disable prefers-reduced-motion media query emulation (use emulateMedia)
  * - Wait for network idle (fonts, images loaded)

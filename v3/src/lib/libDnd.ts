@@ -17,7 +17,7 @@ import type { PadPosition } from '../types';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
-/** How a library drag ended: dropped on the cell `targetPos`, or cancelled. */
+/** How a library drag ended: dropped on the cell `targetPos`, or canceled. */
 export type LibDndDropResult =
   { kind: 'cancel' } | { kind: 'drop'; itemId: string; targetPos: PadPosition };
 

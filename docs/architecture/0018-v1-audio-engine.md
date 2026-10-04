@@ -41,7 +41,7 @@ code itself stays unchanged.
 
 **Positive:**
 
-- Zero risk for audio behaviour: the engine is proven in production (V1).
+- Zero risk for audio behavior: the engine is proven in production (V1).
 - No time spent on a rebuild. Audio engines with correct crossfade, ducking and loop-seam
   handling are more complex than they look.
 - iOS-specific hacks (silent WAV, visibilitychange, ctx.resume) already exist and are tested

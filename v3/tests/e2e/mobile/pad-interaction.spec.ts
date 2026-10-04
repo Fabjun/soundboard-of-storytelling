@@ -41,7 +41,7 @@ test.beforeEach(async ({ page }) => {
   await goToLibrary(page);
   await mobileUploadTestAudio(page);
 
-  // Return to start and tap TAP TO UNLOCK (initialises AudioContext)
+  // Return to start and tap TAP TO UNLOCK (initializes AudioContext)
   await page.goto('/soundboard-of-storytelling/');
   await page.getByRole('button', { name: 'TAP TO UNLOCK' }).tap();
   await page.getByTestId('board-list-screen-new-button').waitFor();

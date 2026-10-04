@@ -1,7 +1,7 @@
 /**
  * @fileoverview flameMath — unit tests
  *
- * Pure maths for the hybrid AnimatedFlame: shape, colours, Hearth freeze front,
+ * Pure math for the hybrid AnimatedFlame: shape, colors, Hearth freeze front,
  * phase automaton, particles, V3 core flicker. No DOM, no mocks needed.
  * Expected values mirror v13-animated-flame.jsx and flame-engine/-themes.jsx (Hearth).
  */
@@ -67,7 +67,7 @@ function particle(p: Partial<Particle>): Particle {
   };
 }
 
-describe('colour maths', () => {
+describe('color math', () => {
   it('lerp interpolates linearly', () => {
     expect(lerp(0, 10, 0.5)).toBe(5);
   });
@@ -117,7 +117,7 @@ describe('shape data', () => {
     }
   });
 
-  it('heart pixels form the 2×2 square at x 7–8, y 9–10; neighbours are adjacent', () => {
+  it('heart pixels form the 2×2 square at x 7–8, y 9–10; neighbors are adjacent', () => {
     expect(HEART_PIXELS).toEqual([
       [7, 9],
       [8, 9],
@@ -134,7 +134,7 @@ describe('shape data', () => {
 });
 
 describe('freeze front (Hearth)', () => {
-  it('edge and top freeze before the bottom centre', () => {
+  it('edge and top freeze before the bottom center', () => {
     expect(freezeThreshold(3, 8)).toBeLessThan(freezeThreshold(7, 13));
     expect(freezeThreshold(7, 0)).toBeLessThan(freezeThreshold(7, 14));
   });

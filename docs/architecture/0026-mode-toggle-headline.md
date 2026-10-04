@@ -42,7 +42,7 @@ These close a symmetry gap: pad types had a `-soft` + `-glow` pair; mode tokens 
 
 - The mode is immediately visually dominant — nobody forgets which mode is active.
 - Consistent semantic mapping: SETUP glow = loop teal family; GAME glow = single gold family.
-  The mode colours "inherit" the pad type semantics.
+  The mode colors "inherit" the pad type semantics.
 - Token symmetry: mode tokens now have the same three-tier structure as pad type tokens
   (base / -soft / -glow).
 

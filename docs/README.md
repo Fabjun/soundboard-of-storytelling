@@ -77,7 +77,7 @@ component anatomy, pixel-frame patterns, and all project-wide naming conventions
 
 Single-page quick reference for daily use. Short form of `docs/design/design-system.md`.
 When the cheatsheet and the main document conflict, the main document wins.
-**Source of truth for:** Nothing exclusively — it summarises `docs/design/design-system.md`.
+**Source of truth for:** Nothing exclusively — it summarizes `docs/design/design-system.md`.
 
 ---
 

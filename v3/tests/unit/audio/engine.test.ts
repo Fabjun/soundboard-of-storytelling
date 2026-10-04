@@ -2,9 +2,9 @@
 /**
  * @fileoverview Audio engine — characterization tests (T4, before Slice 9d)
  *
- * Pins down TODAY's behaviour of src/audio/engine.ts + the facade in
+ * Pins down TODAY's behavior of src/audio/engine.ts + the facade in
  * src/audio/index.ts, so that the Slice-9d change to the play dispatch
- * (docs/architecture/0048-pad-pool-decks.md#4-audio-engine--change-under-product-owner-control) shows every behavioural
+ * (docs/architecture/0048-pad-pool-decks.md#4-audio-engine--change-under-product-owner-control) shows every behavioral
  * difference as a red test. The engine itself is NOT modified here.
  *
  * Runs against a fake Web Audio API that records what the engine does (sources,
@@ -684,7 +684,7 @@ describe('combo', () => {
     expect(tags()).toEqual(['h9', 'h1']);
   });
 
-  test('current behaviour (bug): the stopAll step reports the running combo itself as stopped', async () => {
+  test('current behavior (bug): the stopAll step reports the running combo itself as stopped', async () => {
     vi.useFakeTimers();
     pads.set('s1', single('s1', 'h1'));
     audio.play('c', combo('c', [{ padIds: [], stopAll: true }, { padIds: ['s1'] }]));
@@ -720,7 +720,7 @@ describe('combo', () => {
   });
 });
 
-// ── Not initialised ───────────────────────────────────────────────────────────
+// ── Not initialized ───────────────────────────────────────────────────────────
 
 describe('before initAudio()', () => {
   test('play does nothing until the audio context exists', async () => {
@@ -922,7 +922,7 @@ describe('combo children', () => {
     expect(tries).toBe(1); // one round, then it gave up — no endless retry
   });
 
-  // Slice 9d behaviour change: a Loop with no file is mapped to the engine's loop (not to an
+  // Slice 9d behavior change: a Loop with no file is mapped to the engine's loop (not to an
   // empty playlist), i.e. a silent background child — so the next step starts once, at once.
   // Before 9d the empty playlist was a foreground child that ended at once (and hit the
   // double-start bug).

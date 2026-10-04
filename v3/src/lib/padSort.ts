@@ -1,7 +1,7 @@
 /**
  * @fileoverview Pad sort — the order of the All pads view (owner decision 2026-10-02, E1)
  *
- * Modelled on the Finder (Apple Support "Sort and arrange items in the Finder on Mac"): sort keys
+ * Modeled on the Finder (Apple Support "Sort and arrange items in the Finder on Mac"): sort keys
  * like Name, Date Added, Date Modified, Kind; each has a natural direction (names A→Z, dates
  * newest first), a second choice reverses it, and the choice is remembered per board (per folder
  * in the Finder). Pads without a value (never played, no date) always come last; equal values

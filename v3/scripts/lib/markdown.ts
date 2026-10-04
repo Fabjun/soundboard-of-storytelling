@@ -4,7 +4,7 @@
  * Prettier can change what a Markdown file says when the source is ambiguous: a bare `*` in
  * prose becomes `_`, a `|` inside a table cell splits the row, an indented continuation line
  * turns into a code block (structure audit 2026-09-30, A3). `formatMarkdown` therefore formats
- * and then compares the GitHub-flavoured syntax tree before and after — content and structure
+ * and then compares the GitHub-flavored syntax tree before and after — content and structure
  * must be identical, only layout may change. On a difference it throws with the line number,
  * so the source gets fixed instead of silently damaged.
  */

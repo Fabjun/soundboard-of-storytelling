@@ -45,7 +45,7 @@ is 4×4 and reflow is not an automatic mechanism.
 - 4×4 cells are ~78 px on a 360 px portrait viewport — tight but acceptable. With a 5-column
   default they would be ~62 px — borderline.
 - Users with large fingers on small phones could have difficulties. A deliberate trade-off in
-  favour of data model stability.
+  favor of data model stability.
 
 ## Alternatives considered
 

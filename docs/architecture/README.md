@@ -78,12 +78,12 @@ file. Format: `docs/architecture/_template.md`.
 | #                                             | Title                                                                          | Status   | Slice         | Date       |
 | --------------------------------------------- | ------------------------------------------------------------------------------ | -------- | ------------- | ---------- |
 | [ADR-0021](0021-css-naming.md)                | CSS classes `sb-<block>` / `sb-<block>-<part>` / `is-<state>`                  | Accepted | cross-cutting | 2026-05-27 |
-| [ADR-0022](0022-design-tokens.md)             | Design tokens in `v3/src/styles/tokens.css` — no colour literals               | Accepted | cross-cutting | 2026-05-27 |
+| [ADR-0022](0022-design-tokens.md)             | Design tokens in `v3/src/styles/tokens.css` — no color literals                | Accepted | cross-cutting | 2026-05-27 |
 | [ADR-0023](0023-surface-hierarchy.md)         | Five-level surface hierarchy                                                   | Accepted | cross-cutting | 2026-05-27 |
 | [ADR-0024](0024-clip-path-frames.md)          | `clip-path` for pixel frames — `filter: drop-shadow()` instead of `box-shadow` | Accepted | cross-cutting | 2026-05-27 |
 | [ADR-0025](0025-is-deep-opt-in.md)            | `is-deep` as opt-in for the pad depth stack                                    | Accepted | Slice 3       | 2026-05-27 |
 | [ADR-0026](0026-mode-toggle-headline.md)      | Mode toggle as the interactive screen headline (BoardTopBar)                   | Accepted | Slice 3       | 2026-05-27 |
-| [ADR-0027](0027-pad-type-colors-semantic.md)  | Pad type colours are semantically reserved                                     | Accepted | cross-cutting | 2026-05-27 |
+| [ADR-0027](0027-pad-type-colors-semantic.md)  | Pad type colors are semantically reserved                                      | Accepted | cross-cutting | 2026-05-27 |
 | [ADR-0028](0028-single-component-variants.md) | One component per UI element — variants via props                              | Accepted | cross-cutting | 2026-05-27 |
 | [ADR-0045](0045-two-axis-adaptive-model.md)   | Two-axis adaptive model — one app, no separate systems                         | Accepted | cross-cutting | 2026-06-04 |
 | [ADR-0052](0052-code-naming-conventions.md)   | Code naming conventions                                                        | Accepted | cross-cutting | 2026-09-29 |
@@ -132,5 +132,6 @@ file. Format: `docs/architecture/_template.md`.
 | [ADR-0047](0047-documentation-architecture.md)  | Documentation architecture — hub / leaf / template                                | Accepted | cross-cutting | 2026-09-28 |
 | [ADR-0050](0050-repository-file-naming.md)      | Repository file naming                                                            | Accepted | cross-cutting | 2026-09-29 |
 | [ADR-0063](0063-release-notes-in-two-levels.md) | Release notes in two levels — "What's new" in the app, a changelog for developers | Accepted | cross-cutting | 2026-10-03 |
+| [ADR-0073](0073-american-english-spelling.md)   | American English spelling, checked in every file                                  | Proposed | cross-cutting | 2026-10-04 |
 
 <!-- AUTO-GENERATED:adr-index END -->

@@ -32,10 +32,10 @@ variant? The design system had already answered this for us: BEM-like, but witho
 - States are never block-namespaced (`is-hot`, not `pad--hot`)
 - New `sb-*` classes: register them in `docs/design/design-system.md §6` in the same commit
 
-**Pixel frame customisation:**
+**Pixel frame customization:**
 
 - Never new clip-path / border CSS for variants
-- Customisation via CSS custom properties: `--pix-bg`, `--pix-border`, `--pix-step`
+- Customization via CSS custom properties: `--pix-bg`, `--pix-border`, `--pix-step`
 
 **State vocabulary (managed inventory — complete in docs/design/design-system.md §3; add new
 classes there, not here):**

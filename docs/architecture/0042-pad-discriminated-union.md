@@ -62,7 +62,7 @@ convert old Slice 3 pads:
 - Slice 3 code that spread `{ ...pad, type: newType }` (e.g. `applyTypeChange` in padUtils.ts)
   has to be rewritten to construct explicit union variants.
 - `applyTypeChange()` is more verbose.
-- IDB deserialisation needs a runtime migration step for legacy data.
+- IDB deserialization needs a runtime migration step for legacy data.
 
 ## Alternatives considered
 

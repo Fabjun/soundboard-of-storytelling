@@ -14,7 +14,7 @@ format next to the pad icon sets (ADR-0070: IconifyJSON, one path of pixel recta
 Step 15d-4 was to bring them into the same format; it was held back because the UI icons are the
 project's own work (All Rights Reserved), while ADR-0070's sets record a free license that
 iconGuards allowed only as CC0 or MIT and that `third-party-licenses.txt` lists. Owner decision
-2026-10-04 (review of PR #44): an own set, labelled with an SPDX `LicenseRef-…` id, left out of the
+2026-10-04 (review of PR #44): an own set, labeled with an SPDX `LicenseRef-…` id, left out of the
 third-party notices and of the icon picker.
 
 ## Decision

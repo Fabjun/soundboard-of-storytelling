@@ -63,7 +63,7 @@ The AudioContext lifecycle follows V1's pattern:
 no audio. Not usable.
 
 **Ignore the Page Visibility API:** audio would keep running on a tab switch. On iOS the tab
-is frozen anyway — undefined behaviour.
+is frozen anyway — undefined behavior.
 
 ## Related
 

@@ -20,9 +20,9 @@
  *   Boards are stored as complete JSON documents containing embedded Decks and
  *   Pads. Any pad edit rewrites the entire Board document. At 5 Decks × 16 Pads
  *   this is ~50 KB — fast and unproblematic. If boards grow significantly (20+
- *   decks), write-amplification may become measurable. Optimisation path (only
+ *   decks), write-amplification may become measurable. Optimization path (only
  *   if measured): separate 'decks' store with Board holding deck IDs only.
- *   Do not optimise until the problem is observed and quantified.
+ *   Do not optimize until the problem is observed and quantified.
  */
 
 import { openDB, type IDBPDatabase, type IDBPObjectStore } from 'idb';

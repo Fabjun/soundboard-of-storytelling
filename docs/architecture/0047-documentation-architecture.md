@@ -52,7 +52,7 @@ Consequences observed:
    **Parked** (idea, not to be built without explicit go-ahead). Nothing enters a spec as
    Decided without user confirmation.
 
-4. **Code owns values.** Colours, sizes, spacing and other concrete values live only in
+4. **Code owns values.** Colors, sizes, spacing and other concrete values live only in
    `v3/src/styles/tokens.css` and the CSS. Specs describe purpose, anatomy, states,
    behavior and rules, and name tokens (`--mode-game`) — never copy their values.
 

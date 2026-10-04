@@ -33,17 +33,17 @@ export function BackupExportPanel({
   const [step, setStep] = useState<Step>({ kind: 'building', done: 0, total: 0 });
 
   useEffect(() => {
-    let cancelled = false;
-    buildBackup((done, total) => !cancelled && setStep({ kind: 'building', done, total }))
+    let canceled = false;
+    buildBackup((done, total) => !canceled && setStep({ kind: 'building', done, total }))
       .then(
-        (blob) => !cancelled && setStep({ kind: 'ready', blob, name: backupFileName(new Date()) }),
+        (blob) => !canceled && setStep({ kind: 'ready', blob, name: backupFileName(new Date()) }),
       )
       .catch(
         (e: unknown) =>
-          !cancelled && setStep({ kind: 'error', message: `Backup failed: ${String(e)}` }),
+          !canceled && setStep({ kind: 'error', message: `Backup failed: ${String(e)}` }),
       );
     return () => {
-      cancelled = true;
+      canceled = true;
     };
   }, []);
 

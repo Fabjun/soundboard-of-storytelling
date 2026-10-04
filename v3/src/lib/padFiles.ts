@@ -82,7 +82,7 @@ type WithIconRef<T> = T & { iconRef?: string };
 /** True for a pad that still has the file shape from before ADR-0068. */
 function isLegacy(pad: StoredPad): pad is WithIconRef<LegacyFilePad> {
   if (pad.type === 'combo') return false;
-  // An old pad without files is recognised by its pad-wide trim
+  // An old pad without files is recognized by its pad-wide trim
   return 'trimStart' in pad || 'trimEnd' in pad || pad.files.some((f) => typeof f === 'string');
 }
 

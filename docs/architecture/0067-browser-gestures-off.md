@@ -24,7 +24,7 @@ not inherited — W3C Pointer Events read it per element up to the nearest scrol
    Elements the app drags set `none` (their own class wins).
 2. `user-select: none` (and `-webkit-`) — no text selection on long press, in text fields too.
 3. `-webkit-touch-callout: none`, `-webkit-user-drag: none`, `-webkit-tap-highlight-color:
-transparent` — no iOS long-press menu, no dragging of text or images, no grey tap flash.
+transparent` — no iOS long-press menu, no dragging of text or images, no gray tap flash.
 4. Every field that takes typing has at least 16 px text (the search field went from 12 to
    16 px) — the standard fix for iOS focus zoom.
 
@@ -35,7 +35,7 @@ Checked by `v3/tests/e2e/system-gestures.spec.ts` (computed style of every eleme
 screens, Chromium and WebKit); the iOS-only parts are on the manual iPhone checklist.
 
 Sources: MDN `touch-action` (pan-x / pan-y, Safari 13+); W3C Pointer Events (touch-action,
-pointercancel when the browser takes a gesture); iOS focus zoom under 16 px (WebKit behaviour,
+pointercancel when the browser takes a gesture); iOS focus zoom under 16 px (WebKit behavior,
 e.g. 456 Berea Street); axe rule `meta-viewport` / WCAG 1.4.4.
 
 ## Exceptions

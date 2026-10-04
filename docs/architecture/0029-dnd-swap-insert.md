@@ -46,7 +46,7 @@ which is checked against the registry.
 - A more complex implementation than SWAP alone. `padDnd.ts` is the most elaborate single
   module in Slice 3.
 - Playwright tests for this interaction are marked `test.skip` (tests 20, 21) — pointer
-  events drag in Playwright is hard to stabilise.
+  events drag in Playwright is hard to stabilize.
 
 ## Alternatives considered
 

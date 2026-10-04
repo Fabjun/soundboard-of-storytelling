@@ -41,8 +41,8 @@ A position is an explicit 2D coordinate pair. Array indices are not used interna
 
 **Negative / Trade-offs:**
 
-- IDB serialisation writes `{col, row}` instead of a number. No runtime problem (IndexedDB
-  serialises objects natively), but minimally more storage.
+- IDB serialization writes `{col, row}` instead of a number. No runtime problem (IndexedDB
+  serializes objects natively), but minimally more storage.
 
 ## Alternatives considered
 
