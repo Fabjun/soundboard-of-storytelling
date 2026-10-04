@@ -43,6 +43,10 @@ function noteLines(r: ImportResult): string[] {
     n.unknownModes && `${plural(n.unknownModes, 'pad')} had an unknown type — imported as Single.`,
     n.cycleRefs &&
       `${plural(n.cycleRefs, 'combo step reference')} removed — the combo would have started itself.`,
+    n.customIcons &&
+      `${plural(n.customIcons, 'uploaded pad icon')} not imported — the app has no own icons yet.`,
+    n.unknownIcons &&
+      `${plural(n.unknownIcons, 'pad icon')} not in the icon collection — left out; choose another in the pad editor.`,
     r.boardsSkipped && `${plural(r.boardsSkipped, 'board')} could not be read.`,
     ...r.audioFailed,
   ].filter((l): l is string => typeof l === 'string');

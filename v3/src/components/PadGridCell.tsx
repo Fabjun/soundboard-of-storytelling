@@ -2,7 +2,7 @@
  * @fileoverview PadGridCell — one cell of a pad grid
  *
  * Two states:
- *   occupied (.sb-pad.is-deep): shows type-colored pad with name + type badge
+ *   occupied (.sb-pad.is-deep): shows type-colored pad with type badge, icons (PadIcons) + name
  *   empty (.sb-pad-grid-cell.is-empty): dashed shell with centered +, click → Path A
  *
  * DnD state classes applied from outside by padDnd.ts via cellRef:
@@ -14,6 +14,7 @@ import type { AppMode, Pad } from '../types';
 import { padTypeColor, padTypeLabel } from '../lib/padUtils';
 import { play, stop, isPlaying } from '../audio/index';
 import { playingPads, loopingPads } from '../state/store';
+import { PadIcons } from './PadIcons';
 
 interface PadGridCellProps {
   pad: Pad | null;
@@ -134,6 +135,9 @@ export function PadGridCell({
         <div class="sb-pad-type-label" style={{ color }}>
           {typeLabel}
         </div>
+
+        {/* Picture area: the pad's icons, or its type's placeholder (ADR-0070) */}
+        <PadIcons icons={p.icons} type={p.type} />
 
         {/* Pad name */}
         <div class="sb-pad-title">{p.name || '—'}</div>

@@ -37,17 +37,18 @@ file. Format: `docs/architecture/_template.md`.
 
 ### Data model
 
-| #                                           | Title                                                     | Status                 | Slice    | Date       |
-| ------------------------------------------- | --------------------------------------------------------- | ---------------------- | -------- | ---------- |
-| [ADR-0008](0008-pad-position-struct.md)     | Pad position as a `{col, row}` struct                     | Accepted               | Slice 3  | 2026-05-27 |
-| [ADR-0009](0009-pad-position-null.md)       | Pad position can be `null` (UNPLACED state)               | Superseded by ADR-0048 | Slice 3  | 2026-05-27 |
-| [ADR-0010](0010-board-json-document.md)     | Board as a monolithic JSON document in IDB                | Accepted               | Slice 3  | 2026-05-27 |
-| [ADR-0011](0011-library-item-split.md)      | LibraryItem split into meta (signals) + Blob (IDB only)   | Accepted               | Slice 2  | 2026-05-27 |
-| [ADR-0012](0012-sha256-noble-hashes.md)     | SHA-256 via `@noble/hashes` instead of the Web Crypto API | Accepted               | Slice 2  | 2026-05-27 |
-| [ADR-0013](0013-padset-naming.md)           | Type `PadSet` instead of `Set`                            | Superseded by ADR-0048 | Slice 3  | 2026-05-27 |
-| [ADR-0042](0042-pad-discriminated-union.md) | Pad as a discriminated union                              | Superseded by ADR-0048 | Slice 4  | 2026-05-28 |
-| [ADR-0048](0048-pad-pool-decks.md)          | Pad pool, decks and three pad types                       | Accepted               | Slice 9  | 2026-09-29 |
-| [ADR-0068](0068-trim-per-file.md)           | Several files per pad, each with its own trim             | Accepted               | Slice 15 | 2026-10-03 |
+| #                                           | Title                                                          | Status                 | Slice    | Date       |
+| ------------------------------------------- | -------------------------------------------------------------- | ---------------------- | -------- | ---------- |
+| [ADR-0008](0008-pad-position-struct.md)     | Pad position as a `{col, row}` struct                          | Accepted               | Slice 3  | 2026-05-27 |
+| [ADR-0009](0009-pad-position-null.md)       | Pad position can be `null` (UNPLACED state)                    | Superseded by ADR-0048 | Slice 3  | 2026-05-27 |
+| [ADR-0010](0010-board-json-document.md)     | Board as a monolithic JSON document in IDB                     | Accepted               | Slice 3  | 2026-05-27 |
+| [ADR-0011](0011-library-item-split.md)      | LibraryItem split into meta (signals) + Blob (IDB only)        | Accepted               | Slice 2  | 2026-05-27 |
+| [ADR-0012](0012-sha256-noble-hashes.md)     | SHA-256 via `@noble/hashes` instead of the Web Crypto API      | Accepted               | Slice 2  | 2026-05-27 |
+| [ADR-0013](0013-padset-naming.md)           | Type `PadSet` instead of `Set`                                 | Superseded by ADR-0048 | Slice 3  | 2026-05-27 |
+| [ADR-0042](0042-pad-discriminated-union.md) | Pad as a discriminated union                                   | Superseded by ADR-0048 | Slice 4  | 2026-05-28 |
+| [ADR-0048](0048-pad-pool-decks.md)          | Pad pool, decks and three pad types                            | Accepted               | Slice 9  | 2026-09-29 |
+| [ADR-0068](0068-trim-per-file.md)           | Several files per pad, each with its own trim                  | Accepted               | Slice 15 | 2026-10-03 |
+| [ADR-0070](0070-pad-icons.md)               | Pad icons — IconifyJSON sets, `set:name` keys, up to 4 per pad | Accepted               | Slice 15 | 2026-10-04 |
 
 ### Persistence
 

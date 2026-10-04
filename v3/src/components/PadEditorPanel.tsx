@@ -12,6 +12,8 @@
  *
  * Fields:
  *   - Name (required)
+ *   - Icons: up to 4 slots — tap one to change it in the IconPicker, ✕ twice to remove, + adds
+ *     (Slice 15d, ADR-0070)
  *   - Type (with PadTypeConfirmDialog on change)
  *   - Single / Loop: the file list (PadFileList — select, ▲ / ▼, 2-tap remove, in order /
  *     shuffled) and the library picker that adds several ticked files at once (Slice 15b)
@@ -40,6 +42,9 @@ import { PadFileList } from './PadFileList';
 import { addFiles, moveFile, removeFile, setFileTrim } from '../lib/padFiles';
 import { PadTypeConfirmDialog } from './PadTypeConfirmDialog';
 import { ComboStepsEditor } from './ComboStepsEditor';
+import { IconGlyph, useIconDrawings } from './PadIcons';
+import { IconPicker } from './IconPicker';
+import { PAD_ICONS_MAX } from '../lib/iconSet';
 import {
   padBaseOf,
   padTypeColor,
@@ -111,6 +116,13 @@ export function PadEditorPanel({
   const [removeConfirm, setRemoveConfirm] = useState(false);
   const [libSearch, setLibSearch] = useState('');
   const [libPickerOpen, setLibPickerOpen] = useState(false);
+  /** The pad's icons, up to 4 keys in the order the pad shows them (ADR-0070). */
+  const [icons, setIcons] = useState<string[]>(pad.icons ?? []);
+  /** The icon slot the picker fills (an index into `icons`, or its length to add); null = closed. */
+  const [pickerSlot, setPickerSlot] = useState<number | null>(null);
+  /** The icon whose ✕ was tapped once and now asks to confirm. */
+  const [iconConfirm, setIconConfirm] = useState<number | null>(null);
+  const iconDrawings = useIconDrawings(icons);
 
   // The pad lives once in the pool: the edit shows in every deck that places it (ADR-0048).
   // updateBoard applies it to the board as it is when the save runs, so a change made in the
@@ -186,13 +198,15 @@ export function PadEditorPanel({
     stepsOverride?: ComboStep[],
     orderOverride?: FileOrder,
   ): Pad {
+    const { icons: _stored, ...shared } = padBaseOf(pad);
     const base: PadBase = {
-      ...padBaseOf(pad),
+      ...shared,
       name,
       volume,
       fadeIn,
       fadeOut,
       modifiedAt: Date.now(),
+      ...(icons.length ? { icons } : {}),
     };
     if (type === 'combo') return { ...base, type, steps: stepsOverride ?? steps };
     const fileFields = {
@@ -201,6 +215,23 @@ export function PadEditorPanel({
     };
     if (type === 'single') return { ...base, type, ...fileFields };
     return { ...base, type, ...fileFields, ...(repeat === undefined ? {} : { repeat }) };
+  }
+
+  /** ICONS — the new list, saved at once like every field (each icon once, at most 4). */
+  function handleIconsChange(next: string[]) {
+    const unique = [...new Set(next)].slice(0, PAD_ICONS_MAX);
+    setIcons(unique);
+    const { icons: _old, ...rest } = buildCurrentPad();
+    scheduleAutoSave(unique.length ? { ...rest, icons: unique } : rest);
+  }
+
+  /** Puts the picked icon into the slot the picker was opened for. */
+  function handleIconPick(key: string) {
+    if (pickerSlot === null) return;
+    const next = [...icons];
+    next[pickerSlot] = key;
+    handleIconsChange(next);
+    setPickerSlot(null);
   }
 
   /** REPEAT — ∞ (undefined) or a count; a typed count lands within 1–`REPEAT_MAX`. */
@@ -473,6 +504,59 @@ export function PadEditorPanel({
           onInput={(e) => handleNameChange((e.target as HTMLInputElement).value)}
         />
       </div>
+
+      {/* Icons — up to 4, shown on the pad in this order (ADR-0070; V1's four slots) */}
+      <div class="sb-inspector-section">
+        <label class="sb-field-label">ICONS</label>
+        <div class="sb-row-wrap">
+          {icons.map((key, i) => {
+            const drawing = iconDrawings?.[i];
+            const iconName = key.slice(key.indexOf(':') + 1);
+            return (
+              <div key={key} class="sb-icon-slot">
+                <button
+                  class="sb-icon-cell"
+                  aria-label={`Icon ${i + 1}: ${iconName} — change`}
+                  title={key}
+                  data-testid={`pad-editor-panel-icon-button-${i}`}
+                  onClick={() => setPickerSlot(i)}
+                >
+                  {drawing && <IconGlyph drawing={drawing} />}
+                </button>
+                <button
+                  class="sb-btn sb-btn-xs sb-btn-danger"
+                  aria-label={
+                    iconConfirm === i ? `Confirm: remove ${iconName}` : `Remove ${iconName}`
+                  }
+                  data-testid={`pad-editor-panel-icon-remove-button-${i}`}
+                  onClick={() => {
+                    if (iconConfirm === i) {
+                      setIconConfirm(null);
+                      handleIconsChange(icons.filter((_, k) => k !== i));
+                    } else setIconConfirm(i);
+                  }}
+                  onBlur={() => setIconConfirm(null)}
+                >
+                  {iconConfirm === i ? 'CONFIRM' : '✕'}
+                </button>
+              </div>
+            );
+          })}
+          {icons.length < PAD_ICONS_MAX && (
+            <button
+              class="sb-icon-cell is-empty"
+              aria-label="Add an icon"
+              data-testid="pad-editor-panel-add-icon-button"
+              onClick={() => setPickerSlot(icons.length)}
+            >
+              +
+            </button>
+          )}
+        </div>
+      </div>
+      {pickerSlot !== null && (
+        <IconPicker chosen={icons} onPick={handleIconPick} onClose={() => setPickerSlot(null)} />
+      )}
 
       {/* Type selector */}
       <div class="sb-inspector-section">

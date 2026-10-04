@@ -38,6 +38,9 @@ function packageRootOf(id: string): string | null {
  * `workbox:<name>:<version>` marker, which names its package `workbox-<name>`. MIT/ISC require the
  * notice in copies; the self-hosted fonts' OFL requires the license alongside the font files
  * (audit A2). A package without a license file fails the build instead of shipping silently.
+ * The pad icons (ADR-0070) are no package: each icon set in src/icons/sets names its source,
+ * author and license (IconifyJSON `info`), and a license that must travel with copies (MIT) has
+ * its text next to it — both are appended as the section "Icons".
  */
 function licenseNotices(): Plugin {
   /** Folder of `name` as Node resolves it from `from`: nested first, then the top level. */
@@ -46,7 +49,27 @@ function licenseNotices(): Plugin {
     return existsSync(nested) ? nested : join('node_modules', name);
   };
   let outDir = 'dist';
+  let iconDir = 'src/icons/sets';
   let seen = new Map<string, string>();
+  /** One notice per icon set: name, author, license and its sources; the license text if it ships. */
+  const iconNotices = (): string[] =>
+    readdirSync(iconDir)
+      .filter((f) => f.endsWith('.json'))
+      .sort()
+      .map((f) => {
+        const { prefix, info } = JSON.parse(readFileSync(join(iconDir, f), 'utf8')) as {
+          prefix: string;
+          info: {
+            name: string;
+            version: string;
+            author: { name: string; url: string };
+            license: { title: string; url: string };
+          };
+        };
+        const text = join(iconDir, `${prefix}.LICENSE.txt`);
+        const head = `${info.name} ${info.version} (${prefix}) by ${info.author.name} — ${info.license.title}\n${info.author.url}\n${info.license.url}`;
+        return existsSync(text) ? `${head}\n\n${readFileSync(text, 'utf8').trim()}` : head;
+      });
   /** Adds the license of the package in `dir` and of its runtime dependencies, once each. */
   const visit = (dir: string): void => {
     const meta = JSON.parse(readFileSync(join(dir, 'package.json'), 'utf8')) as {
@@ -70,6 +93,7 @@ function licenseNotices(): Plugin {
     apply: 'build',
     configResolved(config) {
       outDir = resolve(config.root, config.build.outDir);
+      iconDir = resolve(config.root, 'src/icons/sets');
     },
     buildStart() {
       seen = new Map();
@@ -97,9 +121,10 @@ function licenseNotices(): Plugin {
           }
         }
         const texts = [...seen.keys()].sort().map((k) => seen.get(k));
+        const rule = `\n\n${'-'.repeat(72)}\n\n`;
         writeFileSync(
           join(outDir, 'third-party-licenses.txt'),
-          `Third-party licenses\n\n${texts.join(`\n\n${'-'.repeat(72)}\n\n`)}\n`,
+          `Third-party licenses\n\n${texts.join(rule)}\n\n${'='.repeat(72)}\n\nIcons\n\n${iconNotices().join(rule)}\n`,
         );
       },
     },
@@ -116,6 +141,18 @@ export default defineConfig(({ command }) => ({
     ),
   },
   base: '/soundboard-of-storytelling/',
+  build: {
+    rollupOptions: {
+      output: {
+        // The pad icon data (ADR-0070) loads on demand and has its own size budget
+        // (.size-limit.json): its chunks go to assets/icons/, apart from the app's code.
+        chunkFileNames: (chunk) =>
+          chunk.facadeModuleId?.includes('/src/icons/')
+            ? 'assets/icons/[name]-[hash].js'
+            : 'assets/[name]-[hash].js',
+      },
+    },
+  },
   plugins: [
     preact(),
     licenseNotices(),

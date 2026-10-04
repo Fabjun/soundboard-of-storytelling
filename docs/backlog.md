@@ -145,6 +145,79 @@ Sort by date added (All pads) and the original filename (V1 library feature, P8)
 The V3 library has no field for the original name yet.
 **When:** Slice 16 (Library), with the original-filename feature; decided with the owner.
 
+### Pad icon from the pad name
+
+V1 chose an icon from the pad name when a pad had none (`_autoIconFromName`, with a small
+German → English word list). Owner decision 2026-10-04: later, not in Slice 15d. The icon catalog
+now has search words per icon (ADR-0070), so a name like "Wolf at night" can find
+`nikoichu:wolf-howling` through its words.
+**When:** after Slice 15; decided with the owner (automatic or as a suggestion in the picker).
+
+### Uploaded own pad icons
+
+V1 could upload SVG files as pad icons (library tab ICONS, `{h: hash}` on the pad); the owner's
+V1 backup has none. Owner decision 2026-10-04: with Slice 16 (Library). The keys `set:name`
+(ADR-0070) leave room for such a set; the V1 import counts uploaded icons and does not import them.
+**When:** Slice 16.
+
+### More pad icons: Urizen pack, AI gap fill, an own set
+
+Owner decisions 2026-10-04 while choosing the 2,150 icons: the Urizen 1Bit tileset (5,500+ icons,
+12×12, CC0) is set aside; a test of AI tools (Retro Diffusion, PixelLab) that draw missing motifs
+in Nikoichu's style comes later; an own set drawn by a pixel artist is the professional option
+for the commercial product. Each would be one more IconifyJSON set (ADR-0070).
+The selection page (an Artifact with the owner's choice) and the working data live outside the
+repository (`~/dev/archive/icon-sources/work-2026-10-04/`); the shipped files are generated from
+them by `npm run build:icons`.
+**When:** on the owner's request; a way back from the selection page into the repository is
+planned with the next change of the collection.
+
+### UI icons in the icon set format (Slice 15d-4)
+
+Planned as step 15d-4: the app's 24 UI icons (`PixelIcon`, coordinate lists, one `<rect>` per
+pixel) become an IconifyJSON set like the pad icons (one scheme for all icons, one path per icon).
+Held back 2026-10-04 while the owner was away: the UI icons are the project's own work (All
+Rights Reserved), while the icon sets record a license that iconGuards allows only as CC0 or MIT
+and that third-party-licenses.txt lists. Owner decision 2026-10-04 (review of PR #44): an own set
+`sos-ui`, labelled with an SPDX `LicenseRef-…` id, left out of the third-party notices and of the
+icon picker.
+**When:** a separate pull request after Slice 15d, with the visual baselines as check.
+
+### One English spelling variant
+
+The docs mix British and American spelling (measured 2026-10-04 in README, CLAUDE.md and docs:
+color 64 / colour 41, behavior 59 / behaviour 29, license 31 / licence 5, center 27 / centre 1).
+Code identifiers are American (`color`, `license`, `LICENSE`). Proposal: American English
+throughout, as in the Google and Microsoft developer style guides and Lucide's naming rules, with a
+Vale rule that keeps it (the new Slice 15d files use it already).
+Owner decision 2026-10-04: American English everywhere, historical records (ADRs, backlog history,
+released notes) included; only verbatim quotations and third-party license texts keep their
+spelling.
+**When:** a separate pull request after Slice 15d: the clean-up pass and the Vale rule.
+
+### Icon picker: virtualized result grid
+
+The icon picker draws at most 240 search results and asks to narrow the search beyond that (a
+one-letter search matches thousands of icons — iPhone memory). Owner decision 2026-10-04 (review
+of PR #44): replace the limit with a virtualized grid that draws only the visible rows
+(`@tanstack/virtual-core`), keeping the W3C APG grid keys (`aria-rowcount` / `aria-rowindex` for
+rows not in the DOM).
+**When:** a separate pull request after Slice 15d.
+
+### Component styles out of tokens.css
+
+The component classes (`sb-*`) live at the end of `v3/src/styles/tokens.css`, next to the tokens;
+the Slice 15d plan had named `global.css`. Owner decision 2026-10-04: keep them there for now and
+plan the split (tokens apart from component styles) as a clean-up.
+**When:** with the structure step "Relative units for sizes" before Slice 13 — it touches the same
+files.
+
+### Visual baselines without pads
+
+The visual regression tests show no pad, so the pad's picture area (icons, placeholder) and the
+PAD editor are not covered visually (noticed in Slice 15d).
+**When:** with the pad design review (Slice 13 / the design pass).
+
 > **Slice numbers in this section refer to the May plan** (Slices 5–8, superseded 2026-09-28).
 > Mapping to the new plan (Slices 9–14): `CLAUDE.md §Slice progress`. Items are re-triaged when
 > the respective new slice is planned.

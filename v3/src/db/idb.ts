@@ -32,7 +32,7 @@ import { migrateBoard } from '../lib/padFiles';
 // ── DB singleton ─────────────────────────────────────────────────────────────
 
 const DB_NAME = 'sos-v3';
-const DB_VERSION = 7;
+const DB_VERSION = 8;
 
 let _db: IDBPDatabase | null = null;
 
@@ -74,7 +74,10 @@ async function getDB(): Promise<IDBPDatabase> {
       // v7: every file of a Single / Loop pad has its own trim (ADR-0068). The boards are the
       // owner's real data now — CONVERTED in place, never cleared (`migrateBoard` keeps how each
       // pad sounded). Inside the upgrade transaction, so a failure leaves the old version intact.
-      if (oldVersion >= 5 && oldVersion < 7) {
+      // v8: pads hold up to 4 icon keys (ADR-0070); V1's icon id that the import kept in
+      // `iconRef` becomes a key. Same rule: converted in place. One pass covers both steps
+      // (`migrateBoard` does every conversion), so a v5–v6 database is read only once.
+      if (oldVersion >= 5 && oldVersion < 8) {
         void migrateStoredBoards(tx.objectStore('boards'));
       }
     },
@@ -83,7 +86,7 @@ async function getDB(): Promise<IDBPDatabase> {
 }
 
 /**
- * Converts every stored board to the file shape of ADR-0068, one board at a time through a cursor
+ * Converts every stored board to the current pad shape (`migrateBoard`), one board at a time through a cursor
  * (boards are small JSON documents — no audio is read). Only awaits requests of the upgrade
  * transaction, so the transaction stays open until the last board is written.
  */

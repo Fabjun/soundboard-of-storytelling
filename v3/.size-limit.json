@@ -10,5 +10,11 @@
     "path": "dist/assets/*.css",
     "limit": "50 KB",
     "gzip": true
+  },
+  {
+    "name": "Pad icon data (loaded on demand, ADR-0070)",
+    "path": "dist/assets/icons/*.js",
+    "limit": "240 KB",
+    "gzip": true
   }
 ]

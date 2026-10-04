@@ -81,6 +81,16 @@ test('ships the license notices of every production dependency', async ({ page }
   );
   expect(shipped.size).toBeGreaterThanOrEqual(3); // sanity: the markers are found
   for (const name of shipped) expect(text, name).toContain(`${name}@`);
+  // Every pad icon set names its author and license; MIT ships its text (ADR-0070)
+  const iconSets = new URL('../../src/icons/sets/', import.meta.url);
+  for (const file of readdirSync(iconSets).filter((f) => f.endsWith('.json'))) {
+    const { prefix, info } = JSON.parse(readFileSync(new URL(file, iconSets), 'utf8')) as {
+      prefix: string;
+      info: { author: { name: string }; license: { title: string } };
+    };
+    expect(text, prefix).toContain(`(${prefix}) by ${info.author.name} — ${info.license.title}`);
+  }
+  expect(text).toContain('Copyright (c) 2019 Gerrit Halfmann');
 });
 
 test('service worker installs and controls the page', async ({ page }) => {

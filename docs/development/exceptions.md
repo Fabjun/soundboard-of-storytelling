@@ -110,7 +110,7 @@ Unused today, kept for a later slice or a parked feature (`@reserved`, ADR-0064)
 | `v3/src/audio/index.ts:158`    | `stopAll`            | Slice 12 — STOP ALL, K9 / K16 (docs/product/README.md#input-keyboard--numpad)                           |
 | `v3/src/audio/index.ts:167`    | `fadeOutAll`         | Slice 12 — STOP ALL in two stages, the first fades, K16 (docs/product/README.md#input-keyboard--numpad) |
 | `v3/src/audio/index.ts:213`    | `crossfade`          | Parked — crossfade between pads (docs/product/README.md#pad-options)                                    |
-| `v3/src/lib/boardModel.ts:111` | `setPlacementHotkey` | Slice 12 — keys play pads (docs/product/README.md#6-platforms--input)                                   |
+| `v3/src/lib/boardModel.ts:112` | `setPlacementHotkey` | Slice 12 — keys play pads (docs/product/README.md#6-platforms--input)                                   |
 | `v3/src/lib/padUtils.ts:189`   | `padTypeGlow`        | Slice 13 — a playing pad glows in its type colour (docs/design/components/pad.md)                       |
 | `v3/src/state/store.ts:49`     | `activeTheme`        | Slice 14 — themes                                                                                       |
 | `v3/src/state/store.ts:103`    | `masterVolume`       | Parked — master volume (docs/product/README.md#pad-options)                                             |

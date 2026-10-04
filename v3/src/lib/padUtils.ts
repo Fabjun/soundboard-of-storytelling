@@ -124,7 +124,7 @@ export interface MigrationResult {
 /**
  * Computes the migration verdict and field summary for a type change (ADR-0048: three types).
  *
- * Universal fields (always preserved): name, hotkey, volume, fadeIn, fadeOut, color, iconRef.
+ * Universal fields (always preserved): name, hotkey, volume, fadeIn, fadeOut, color, icons.
  *
  *   SINGLE ↔ LOOP:  ADD   (both keep files with their trim, and order — one building block, P5)
  *   SINGLE/LOOP → COMBO, COMBO → SINGLE/LOOP:  RESET (audio files ↔ combo steps)
