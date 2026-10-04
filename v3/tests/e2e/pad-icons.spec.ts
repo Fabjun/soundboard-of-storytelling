@@ -103,6 +103,43 @@ test('an icon is removed on the second tap of its ✕; without icons the pad sho
   ).toHaveAttribute('d', PLACEHOLDERS.single.d);
 });
 
+test('a short search lists every match but draws only the visible rows; arrow keys reach the rows below', async ({
+  page,
+}) => {
+  // Phone width: few columns, so the arrow keys soon reach rows that are not drawn yet (on a wide
+  // window the keys that came before a row was drawn got lost only here — WebKit, 2026-10-04)
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.getByTestId('pad-editor-panel-add-icon-button').click();
+  await page.getByTestId('icon-picker-search-input').fill('a');
+  const countText = await page.getByTestId('icon-picker-result-count-text').innerText();
+  const count = Number(/^(\d+) icons match/.exec(countText)?.[1]);
+  expect(count, countText).toBeGreaterThan(1000); // one letter matches most of the collection
+
+  const grid = page.getByRole('grid', { name: 'Search results' });
+  const cols = Number(await grid.getAttribute('aria-colcount'));
+  await expect(grid).toHaveAttribute('aria-rowcount', String(Math.ceil(count / cols)));
+  const rows = grid.getByRole('row');
+  const drawnRows = await rows.count();
+  expect(drawnRows * cols).toBeLessThan(count); // the rows below are not drawn
+
+  // Down past the last drawn row: the focus arrives there, and that row is drawn now
+  await page.locator('[data-testid^="icon-picker-icon-button-"]').first().focus();
+  for (let i = 0; i < drawnRows + 5; i++) await page.keyboard.press('ArrowDown');
+  const focusedRow = page.locator(':focus').locator('xpath=ancestor::*[@role="row"]');
+  await expect(focusedRow).toHaveAttribute('aria-rowindex', String(drawnRows + 6));
+
+  // Keys typed faster than the rows are drawn (here: five in one go, before any row is drawn)
+  // each move on from the last one, none is lost
+  await page.evaluate(() => {
+    for (let i = 0; i < 5; i++) {
+      document.activeElement?.dispatchEvent(
+        new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true }),
+      );
+    }
+  });
+  await expect(focusedRow).toHaveAttribute('aria-rowindex', String(drawnRows + 11));
+});
+
 test('the picker lists categories that open and close, moves by arrow keys, and closes with Escape', async ({
   page,
 }) => {

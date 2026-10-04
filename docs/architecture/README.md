@@ -87,6 +87,7 @@ file. Format: `docs/architecture/_template.md`.
 | [ADR-0028](0028-single-component-variants.md) | One component per UI element — variants via props                              | Accepted | cross-cutting | 2026-05-27 |
 | [ADR-0045](0045-two-axis-adaptive-model.md)   | Two-axis adaptive model — one app, no separate systems                         | Accepted | cross-cutting | 2026-06-04 |
 | [ADR-0052](0052-code-naming-conventions.md)   | Code naming conventions                                                        | Accepted | cross-cutting | 2026-09-29 |
+| [ADR-0071](0071-virtualized-icon-grids.md)    | Virtualized icon grids with `@tanstack/virtual-core`                           | Proposed | Slice 15      | 2026-10-04 |
 
 ### Interaction
 

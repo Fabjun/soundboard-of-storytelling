@@ -1986,6 +1986,12 @@
   flex-direction: column;
   gap: var(--space-6);
 }
+.sb-overlay-body > * {
+  /* The body scrolls its content: a child keeps its full height. In a flex column a child with
+     min-height 0 (sb-col) or no in-flow content (a virtualized grid) would shrink to fit and
+     overlap the next one (icon picker categories, 2026-10-04). */
+  flex-shrink: 0;
+}
 
 /* ── What's new (children of sb-overlay, ADR-0063) ─────────────────── */
 .sb-whats-new-entry-header {
@@ -2799,14 +2805,28 @@
   outline: 2px solid var(--gold);
 }
 .sb-icon-grid {
-  /* @inventory: Grid of icon buttons in the IconPicker — auto-fill 44px cells; has-names widens the cells for the name under each icon. */
+  /* @inventory: Grid of icon buttons in the IconPicker — auto-fill 44px cells (the column count the picker reads); its rows are drawn only while visible, so it holds them positioned; has-names widens the cells for the name under each icon. */
+  position: relative;
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(44px, 1fr)); /* sub-token: touch target */
   gap: var(--space-1);
-  padding-block: var(--space-2);
+  margin-block: var(--space-2);
 }
 .sb-icon-grid.has-names {
   grid-template-columns: repeat(auto-fill, minmax(5.5rem, 1fr));
+}
+.sb-icon-grid-row {
+  /* @inventory: One drawn row of an sb-icon-grid — placed at its offset, the same columns and gap as its grid. */
+  position: absolute;
+  top: 0;
+  inset-inline: 0;
+  display: grid;
+  grid-template-columns: inherit;
+  gap: inherit;
+}
+.sb-icon-grid-cell {
+  /* @inventory: Grid cell of an sb-icon-grid row — holds one icon button, which fills it. */
+  display: grid;
 }
 .sb-icon-cell {
   /* @inventory: One collection icon as a button (picker cell, PAD editor slot) — at least 44px, glyph in text colour; is-chosen marks icons the pad has, is-empty is the "+" slot that adds one. */

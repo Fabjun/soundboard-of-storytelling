@@ -17,10 +17,19 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.168';
+export const APP_VERSION = '3.0.170';
 
 /** The developer log, newest first; CHANGELOG.md is generated from it (sync-changelog). */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.170',
+    date: '2026-10-04',
+    items: [
+      'feat(icons): the icon picker draws only the visible rows of its grids (owner decision 2026-10-04) — every match of a search is listed (the limit of 240 is gone); one @tanstack/virtual-core virtualizer per grid on the overlay scroll area (scrollMargin), columns and row gap read from the CSS layout, rows measured once drawn; role grid with aria-rowcount / aria-colcount / aria-rowindex; APG keys with Home and End, a key to a row not drawn yet scrolls it in and focuses it, keys typed before that move on from it (ADR-0071)',
+      'test: pad-icons "a short search lists every match but draws only the visible rows; arrow keys reach the rows below" at phone width, incl. five keys in one go (counter-checked: everything drawn — red; keys moving on from the old icon — 4 of 5 lost, red); unit tests for src/lib/iconGrid.ts',
+      'build(deps): @tanstack/virtual-core ^3.17.11 (MIT)',
+    ],
+  },
   {
     version: '3.0.168',
     date: '2026-10-04',

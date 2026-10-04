@@ -4,6 +4,7 @@
 **Date:** 2026-10-04
 **Slice:** Slice 15
 **Refines:** ADR-0057
+**Refined by:** ADR-0071 (the icon picker draws only the visible rows of its grids)
 **Category:** Data model
 
 ## Context
