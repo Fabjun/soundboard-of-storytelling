@@ -51,21 +51,28 @@ function licenseNotices(): Plugin {
   let outDir = 'dist';
   let iconDir = 'src/icons/sets';
   let seen = new Map<string, string>();
-  /** One notice per icon set: name, author, license and its sources; the license text if it ships. */
+  /**
+   * One notice per third-party icon set: name, author, license and its sources; the license text
+   * if it ships. The project's own sets (`LicenseRef-Proprietary`, ADR-0072) are no third party.
+   */
   const iconNotices = (): string[] =>
     readdirSync(iconDir)
       .filter((f) => f.endsWith('.json'))
       .sort()
-      .map((f) => {
-        const { prefix, info } = JSON.parse(readFileSync(join(iconDir, f), 'utf8')) as {
-          prefix: string;
-          info: {
-            name: string;
-            version: string;
-            author: { name: string; url: string };
-            license: { title: string; url: string };
-          };
-        };
+      .map(
+        (f) =>
+          JSON.parse(readFileSync(join(iconDir, f), 'utf8')) as {
+            prefix: string;
+            info: {
+              name: string;
+              version: string;
+              author: { name: string; url: string };
+              license: { title: string; spdx: string; url: string };
+            };
+          },
+      )
+      .filter(({ info }) => info.license.spdx !== 'LicenseRef-Proprietary')
+      .map(({ prefix, info }) => {
         const text = join(iconDir, `${prefix}.LICENSE.txt`);
         const head = `${info.name} ${info.version} (${prefix}) by ${info.author.name} — ${info.license.title}\n${info.author.url}\n${info.license.url}`;
         return existsSync(text) ? `${head}\n\n${readFileSync(text, 'utf8').trim()}` : head;

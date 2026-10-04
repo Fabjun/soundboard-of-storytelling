@@ -89,6 +89,13 @@ export function withEarlyVersions(
 /** The release notes the start screen shows, newest first (checked by whatsNew.test.ts). */
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
+    version: '3.0.171',
+    date: '2026-10-04',
+    behindTheScenes: [
+      "The app's own small icons are now stored in the same format as the pad icons. They look exactly as before.",
+    ],
+  },
+  {
     version: '3.0.170',
     date: '2026-10-04',
     improved: [

@@ -103,15 +103,20 @@ export function loadIconSetsFor(keys: readonly string[]): Promise<void> {
 }
 
 /**
- * The drawing of a key whose pack is loaded; undefined when unknown or not loaded yet. The body is
- * one `<path fill="currentColor" d="…"/>` (checked by iconGuards), so the path data is enough to
- * draw it as a Preact element — no HTML string is inserted.
+ * The path data of an icon body. Every body is one `<path fill="currentColor" d="…"/>` (checked by
+ * iconGuards), so the path data is enough to draw it as a Preact element — no HTML string is
+ * inserted.
  */
+export function iconPath(body: string): string | undefined {
+  return / d="([^"]+)"/.exec(body)?.[1];
+}
+
+/** The drawing of a key whose pack is loaded; undefined when unknown or not loaded yet. */
 export function getIconDrawing(key: string): IconDrawing | undefined {
   const parsed = parseIconKey(key);
   const set = parsed ? loaded.get(parsed.prefix) : undefined;
   const icon = parsed && set?.icons[parsed.name];
-  const d = icon && / d="([^"]+)"/.exec(icon.body)?.[1];
+  const d = icon && iconPath(icon.body);
   return d && set ? { d, size: set.width } : undefined;
 }
 

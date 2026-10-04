@@ -17,10 +17,18 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.170';
+export const APP_VERSION = '3.0.171';
 
 /** The developer log, newest first; CHANGELOG.md is generated from it (sync-changelog). */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.171',
+    date: '2026-10-04',
+    items: [
+      "refactor(icons): the 24 UI icons are the IconifyJSON set sos-ui (owner decision 2026-10-04, step 15d-4) — one path per icon like the pad icon packs instead of one rect per pixel; license LicenseRef-Proprietary (All Rights Reserved), not in the picker's loader, the catalog or third-party-licenses.txt; PixelIcon keeps its API, its names are the set's icon names; iconPath in src/lib/iconSet.ts shared by picker, placeholders and UI icons (ADR-0072)",
+      'test: iconGuards tell own sets from third-party packs (loader and catalog hold only the packs); pwa.spec checks that the own set is not in the notices (counter-checked: own set in the loader — red; own set in the notices — red). Pixel-exact comparison before/after: start, board list, board, PAD editor and picker screens and each start-screen icon identical in Chromium and WebKit',
+    ],
+  },
   {
     version: '3.0.170',
     date: '2026-10-04',

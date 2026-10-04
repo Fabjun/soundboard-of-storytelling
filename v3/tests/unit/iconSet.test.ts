@@ -6,6 +6,7 @@ import {
   getIconDrawing,
   ICON_CATEGORIES,
   ICON_SET_PREFIXES,
+  iconPath,
   iconsByCategory,
   isIconKey,
   loadIconCatalog,
@@ -31,6 +32,11 @@ describe('keys', () => {
       undefined,
     ];
     expect(bad.filter(isIconKey)).toEqual([]);
+  });
+
+  it('iconPath reads the path data of an icon body', () => {
+    expect(iconPath('<path fill="currentColor" d="M1 2h3v1H1z"/>')).toBe('M1 2h3v1H1z');
+    expect(iconPath('<g/>')).toBeUndefined();
   });
 
   it('parseIconKey splits a key and refuses a malformed one', () => {
