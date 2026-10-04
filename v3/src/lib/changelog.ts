@@ -17,10 +17,18 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.172';
+export const APP_VERSION = '3.0.173';
 
 /** The developer log, newest first; CHANGELOG.md is generated from it (sync-changelog). */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.173',
+    date: '2026-10-04',
+    items: [
+      'feat(game): the screen stays on in GAME on a board (docs/product/README.md K11; built early from Slice 12 for a game night, owner decision 2026-10-04) — Screen Wake Lock API as in V1 and the Chrome guide: requested in try/catch, taken again on visibilitychange, released in SETUP and off the board; not switchable; the status bar shows SCREEN ON. src/lib/wakeLock.ts (screen keeper with the API passed in), App wires it to currentScreen and currentMode',
+      'test: unit tests for the screen keeper (held, released, taken again after the page was hidden, refused, no API, released when GAME ends during the request); E2E wake-lock with a recorded navigator.wakeLock in Chromium and WebKit (counter-checked: lock kept in SETUP — red; no re-request after hidden — red); iPhone checklist "Screen stays on in GAME"',
+    ],
+  },
   {
     version: '3.0.172',
     date: '2026-10-04',

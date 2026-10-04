@@ -41,6 +41,12 @@ export const allPadsView = signal(false);
 /** GAME (play) vs SETUP (edit) mode — the primary UI bifurcation. */
 export const currentMode = signal<AppMode>('play');
 
+/**
+ * Whether the screen is kept on (a screen wake lock is held) — in GAME on a board, always (owner
+ * decision 2026-10-04); set by src/lib/wakeLock.ts through App, shown in the status bar.
+ */
+export const screenKeptOn = signal(false);
+
 // ── Theme ────────────────────────────────────────────────────────────────────
 
 /**
