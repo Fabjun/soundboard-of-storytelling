@@ -47,7 +47,9 @@ proposed for the owner's review.
    name.
 6. **Loading on demand:** nothing loads at start. `v3/src/lib/iconSet.ts` imports a set as its
    own chunk when a board shows its icons or the icon picker opens; the build precaches the
-   chunks for offline use (ADR-0057). Measured: all four sets 993 KB, 145 KB gzipped.
+   chunks for offline use (ADR-0057). The chunks go to `assets/icons/` with their own size budget
+   (`v3/.size-limit.json`): measured with the catalog, 210 KB gzipped of 240 KB; the start bundle
+   stays apart (103 KB of 200 KB).
 7. **License notices:** `third-party-licenses.txt` gets a section "Icons", written from the sets'
    `info` and license texts (refines ADR-0057). CC0 asks for nothing; the authors are credited
    anyway. MIT requires its notice in copies.

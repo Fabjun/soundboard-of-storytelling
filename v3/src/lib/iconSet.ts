@@ -115,15 +115,6 @@ export function getIconDrawing(key: string): IconDrawing | undefined {
   return d && set ? { d, size: set.width } : undefined;
 }
 
-/** The category of a key whose pack is loaded. */
-export function getIconCategory(key: string): IconCategory | undefined {
-  const parsed = parseIconKey(key);
-  const set = parsed && loaded.get(parsed.prefix);
-  if (!set) return undefined;
-  const hit = Object.entries(set.categories).find(([, names]) => names.includes(parsed.name));
-  return hit?.[0] as IconCategory | undefined;
-}
-
 /** Loads the catalog of search words (once). */
 export async function loadIconCatalog(): Promise<IconCatalog> {
   catalog ??= (await import('../icons/catalog.json')).default as IconCatalog;

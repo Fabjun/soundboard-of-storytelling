@@ -3,7 +3,6 @@
  */
 import { describe, it, expect } from 'vitest';
 import {
-  getIconCategory,
   getIconDrawing,
   ICON_CATEGORIES,
   ICON_SET_PREFIXES,
@@ -56,13 +55,6 @@ describe('loading on demand', () => {
     expect(getIconDrawing('nikoichu:no-such-icon')).toBeUndefined();
     expect(getIconDrawing('unknown-pack:dragon')).toBeUndefined();
     expect(getIconDrawing('dragon')).toBeUndefined();
-  });
-
-  it('the category of an icon comes from its pack', async () => {
-    await loadIconSets();
-    expect(getIconCategory('nikoichu:dragon')).toBe('creatures');
-    expect(getIconCategory('nikoichu:no-such-icon')).toBeUndefined();
-    expect(getIconCategory('dragon')).toBeUndefined();
   });
 });
 
