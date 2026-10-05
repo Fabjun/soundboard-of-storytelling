@@ -1200,6 +1200,13 @@
   gap: var(--space-3);
   margin-top: var(--space-8);
 }
+.sb-start-status {
+  /* @inventory: Result line of the UPDATE check on StartScreen — centered under the buttons, kept off the screen edges. 1-use. */
+  margin-top: var(--space-3);
+  padding: 0 var(--space-4);
+  max-width: 32rem;
+  text-align: center;
+}
 .sb-start-footer {
   /* @inventory: Footer strip at the bottom of StartScreen — in the flow, pushed down by an auto margin, so on a short window it sits below the buttons instead of over them; mono xs muted text, centered, flex row for version link + build info. 1-use. */
   margin-top: auto;

@@ -7,12 +7,15 @@
  * (vite-plugin-pwa: an automatic reload can lose data; Chrome/Workbox: offer a reload button for
  * precached HTML). LATER hides it; the new version then starts with the next launch. An app that
  * stays open checks for a new version every hour while online (vite-plugin-pwa, periodic service
- * worker updates).
+ * worker updates). The UPDATE button on the start screen checks at once (src/lib/updateCheck.ts) and
+ * brings this prompt back when a version put off with LATER still waits.
  */
 
 import type { JSX } from 'preact';
+import { useEffect } from 'preact/hooks';
 import { useRegisterSW } from 'virtual:pwa-register/preact';
 import { whenSaved } from '../state/boardWrites';
+import { updatePromptRequests } from '../lib/updateCheck';
 
 /** How often an open app asks the server for a new version. */
 const CHECK_INTERVAL_MS = 60 * 60 * 1000;
@@ -28,6 +31,12 @@ export function UpdatePrompt(): JSX.Element | null {
         setInterval(() => void checkForUpdate(swUrl, registration), CHECK_INTERVAL_MS);
     },
   });
+
+  // A check from the UPDATE button found a version that waits: show the prompt again
+  const requests = updatePromptRequests.value;
+  useEffect(() => {
+    if (requests > 0) setNeedRefresh(true);
+  }, [requests, setNeedRefresh]);
 
   if (!needRefresh) return null;
 

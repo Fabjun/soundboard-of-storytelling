@@ -28,6 +28,7 @@ export const FULL_TESTS = [
   'layout-reach',
   'pad-size',
   'deck-rail-fold',
+  'update-check',
   'whats-new',
   'pad-dnd',
   'pad-pool',

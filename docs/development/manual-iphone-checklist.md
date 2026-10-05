@@ -203,3 +203,10 @@ because Playwright runs against a simulated environment:
   - Expected: "A new version is ready." appears; LATER hides it; RELOAD reloads, and the version
     in the start screen footer is the new one.
   - Why manual: A real deploy and the installed app on the phone.
+
+- [ ] **UPDATE button** _(3.0.175, ADR-0066)_
+  - Action: In the installed app, tap UPDATE on the start screen — once with nothing new
+    published, once after a new version was published, once in flight mode.
+  - Expected: "This is the newest version (v …)"; "A new version was found …" and then the prompt
+    with RELOAD; "No internet connection …".
+  - Why manual: A real deploy, the installed app and the iOS service worker.
