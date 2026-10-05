@@ -1784,6 +1784,42 @@ finds nothing; `deck-crud.spec.ts` test 12 locates it by text for now.
 Slice 9e: `pad-pool.spec.ts` does the same; the new **All pads** entry of the deck rail is a `div`
 without a role, like every deck tab (located by test id).
 
+### E2E tests check what the app does, not how its menus are built
+
+Owner decision 2026-10-05: the deck rail and the menus will still change a lot, so E2E tests must
+not be tied to their structure; they check what a person can do (add a deck, open a deck, see and
+tap every pad). A test is never rewritten just to turn green: a changed precondition or expectation
+is named with its reason in the commit and the changelog. Sources to quote when the rule is
+written down: Testing Library, Guiding Principles ("The more your tests resemble the way your
+software is used, the more confidence they can give you"); Playwright, Best practices ("Test
+user-visible behavior", role locators) — read again in the original first.
+
+Found in 3.0.175 (square pads that fit the display, deck list folded):
+
+- `createBoardAndNavigate` and `reopenFirstBoard` (`v3/tests/e2e/helpers.ts`) now unfold the deck
+  list for every spec, so about 20 specs never meet the folded state — it hides a change of
+  behavior instead of checking it.
+- `layout-reach.spec.ts`: the window height went from 400 to 300 px because pads now shrink and the
+  grid fitted at 400 — the check stayed, but its precondition is tied to a number that moves with
+  the layout.
+- `deck-rail-fold.spec.ts` checks "folded is narrower than a third of open" — layout, not function —
+  and finds the toggle by test id although it has an accessible name (against
+  [testing.md §Test locators](development/testing.md#test-locators-adr-0054)).
+- 65 direct locators of the deck rail in 8 specs: `deck-crud` 38 (tests the rail itself),
+  `pad-pool` 16 (uses the rail only as the way to a deck or All pads), the rest 1–4 each.
+
+**Plan:** (1) write the rule into `docs/development/testing.md` and `CLAUDE.md`, with the sources;
+(2) helpers named after the task — `addDeck`, `openDeck(name)`, `showAllPads` — that open the
+navigation themselves; the only place that knows how the deck rail is built; drop the hidden
+unfolding from the two helpers; (3) move `pad-pool`, `combo-editor`, `game-mode`, `pad-size` and
+`deck-rail-fold` to these helpers and to `getByRole`; `deck-rail-fold` checks that the deck entries
+are out of reach when folded and in reach when open, without widths; (4) `layout-reach` builds its
+precondition itself (adds pads until the grid no longer fits at the smallest pad size) instead of
+a fixed window height; (5) a separate `test:` commit with a changelog entry.
+**Deferred:** `deck-crud` tests the rail itself and is rewritten with the rail redesign — doing it
+now would be done twice.
+**When:** before the next change to the deck rail or the menus; `deck-crud` with the rail redesign.
+
 ### Type-check every TypeScript file (T12)
 
 Found 2026-09-30 during S4: unit tests, E2E tests and two tool configs were never type-checked

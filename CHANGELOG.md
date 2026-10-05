@@ -20,6 +20,7 @@ release notes the app shows are written separately for its users (`v3/src/lib/wh
 ### Internal
 
 - test: unit padFit; E2E pad-size (standard size on a wide window; touch-sized squares inside a phone window; no pad cut off with the list open; the whole grid fits a short window; touch size, no overlap and scrolling on a very short one) and deck-rail-fold (starts folded on a wide window), layout-reach window height 300 (counter-checked against 3.0.174: cut-off pads, default-open list and the fit — red)
+- docs(backlog): "E2E tests check what the app does, not how its menus are built" (owner decision 2026-10-05) — records where 3.0.175 tied tests to the deck rail (helpers that unfold it for every spec, the fixed window height in layout-reach, a width ratio and a test-id locator in deck-rail-fold, 65 rail locators in 8 specs) and the plan: task-named helpers, role locators, preconditions the test builds itself
 
 ## 3.0.174 — 2026-10-05
 
