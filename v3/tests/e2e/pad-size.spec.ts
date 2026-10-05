@@ -72,9 +72,11 @@ test('on a phone with the deck list folded, the pads are touch-sized squares ins
   await boardWithPads(page, 1);
   await page.getByTestId('deck-rail-toggle-button').click();
   const size = await padSizePx(page);
+  // The pads grow once the grid has measured its new width (ResizeObserver, a frame later) — wait
+  // for that instead of measuring the frame before it (CI 2026-10-05: 30.5px, the open-list size)
+  await expect.poll(async () => (await boxOf(firstPadCell(page))).width).toBeGreaterThanOrEqual(44);
   const box = await boxOf(firstPadCell(page));
   expect(box.width).toBeLessThanOrEqual(size);
-  expect(box.width).toBeGreaterThanOrEqual(44);
   expect(box.height).toBeCloseTo(box.width, 0);
   const overflowX = await page.evaluate(
     () => document.documentElement.scrollWidth - document.documentElement.clientWidth,

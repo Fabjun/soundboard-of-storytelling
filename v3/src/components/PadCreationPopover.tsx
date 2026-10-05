@@ -14,7 +14,8 @@
  * bottom sheet.
  */
 
-import { useState, useEffect } from 'preact/hooks';
+import { useState } from 'preact/hooks';
+import { useEscapeKey } from '../lib/escapeKey';
 import type { JSX } from 'preact';
 import type { LibraryItemMeta, Pad, PadType } from '../types';
 import { PixelIcon } from './PixelIcon';
@@ -69,14 +70,7 @@ export function PadCreationPopover({ cellRect, onResult }: PadCreationPopoverPro
     ? allAudio.filter((m) => m.name.toLowerCase().includes(search.toLowerCase()))
     : allAudio;
 
-  // Close on Escape
-  useEffect(() => {
-    function onKey(e: KeyboardEvent) {
-      if (e.key === 'Escape') onResult({ action: 'cancel' });
-    }
-    document.addEventListener('keydown', onKey);
-    return () => document.removeEventListener('keydown', onKey);
-  }, [onResult]);
+  useEscapeKey(() => onResult({ action: 'cancel' }));
 
   function buildPad(id: string): Pad {
     const name = padName.trim() || (selectedItem?.name ?? 'New Pad');

@@ -11,7 +11,7 @@
  * Mobile: renders as a bottom sheet; desktop: centered popover.
  */
 
-import { useEffect } from 'preact/hooks';
+import { useEscapeKey } from '../lib/escapeKey';
 import type { JSX } from 'preact';
 import type { PadType } from '../types';
 import { padMigrationMatrix, type MigrationVerdict } from '../lib/padUtils';
@@ -52,17 +52,7 @@ export function PadTypeConfirmDialog({
   const { verdict, keeps, migrates, drops } = padMigrationMatrix(fromType, toType);
   const isDangerous = verdict === 'reset';
 
-  // Close on Escape
-  useEffect(() => {
-    function onKeyDown(e: KeyboardEvent) {
-      if (e.key === 'Escape') {
-        e.preventDefault();
-        onCancel();
-      }
-    }
-    document.addEventListener('keydown', onKeyDown);
-    return () => document.removeEventListener('keydown', onKeyDown);
-  }, [onCancel]);
+  useEscapeKey(onCancel);
 
   const isMobile = typeof window !== 'undefined' && window.innerWidth < 600;
 

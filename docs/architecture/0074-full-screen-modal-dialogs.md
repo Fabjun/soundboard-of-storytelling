@@ -30,11 +30,17 @@ A full-screen dialog of the app is built one way:
    to the screen (`v3/src/lib/inertOutside.ts`, the same walk as react-aria's `ariaHideOutside`);
    Escape closes it; on close, focus returns to the element that opened it.
 3. **Nested dialogs:** a dialog opened on top (the icon list, the type confirmation) closes first
-   on Escape; the dialog below ignores Escape while one is open. It decides when the key is
-   pressed, from the current state (a ref set on every render) — not by removing its listener in
-   an effect, which runs only after the next paint and so missed a key pressed right after the
-   dialog on top opened (found in CI 2026-10-05, reproduced locally in 1 of 15 runs).
-4. **Closing:** only by the close button and Escape — no swipe-away, no tap outside (there is no
+   on Escape; the dialog below ignores Escape while one is open.
+4. **Escape through one hook:** every dialog closes on Escape through `useEscapeKey(onClose,
+active)` (`v3/src/lib/escapeKey.ts`). It adds its document listener in a layout effect —
+   before the dialog is painted — and reads the handler and `active` at the moment the key is
+   pressed. Two races were found in CI on 2026-10-05 with listeners added or removed in passive
+   effects, which run only after the paint: Escape right after the icon list opened closed the
+   PAD editor too, and after the first fix the icon list sometimes heard no Escape at all
+   (reproduced locally in 1 of 15 runs; 0 of 40 with the hook). All four dialogs use the hook;
+   `codeGuards` ("dialogs close on Escape through useEscapeKey") allows no other keydown
+   listener.
+5. **Closing:** only by the close button and Escape — no swipe-away, no tap outside (there is no
    outside; BACKLOG "B7 — Closing the PadEditor").
 
 The PAD editor (`v3/src/components/PadEditorPanel.tsx`) is the first dialog built this way: the
@@ -88,6 +94,8 @@ Safari; and the editor only needs the app window. Rejected.
 ## Related
 
 - **Files:** `v3/src/components/PadEditorPanel.tsx`, `v3/src/lib/inertOutside.ts`,
+  `v3/src/lib/escapeKey.ts`, `v3/src/components/IconPicker.tsx`,
+  `v3/src/components/PadTypeConfirmDialog.tsx`, `v3/src/components/PadCreationPopover.tsx`,
   `v3/src/styles/tokens.css` (`sb-pad-editor`, `sb-overlay-header`),
   `v3/tests/e2e/pad-editor-fullscreen.spec.ts`, `v3/tests/unit/inertOutside.test.ts`
 - **ADRs:** ADR-0054 (test locators — the new spec finds the editor by role and name)
