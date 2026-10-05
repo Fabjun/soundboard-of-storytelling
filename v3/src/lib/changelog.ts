@@ -17,10 +17,19 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.173';
+export const APP_VERSION = '3.0.174';
 
 /** The developer log, newest first; CHANGELOG.md is generated from it (sync-changelog). */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.174',
+    date: '2026-10-05',
+    items: [
+      'feat(board): the deck rail folds to its ◀ / ▶ button; on a narrow screen (max-width 40rem) it starts folded, on a wide one open (owner decision 2026-10-05)',
+      'feat(board): pads are squares of one size, token --pad-size 5.5rem (88px), instead of scaling with the window; the grid scrolls in both directions where it does not fit; a pad name is one line ending in … (owner decision 2026-10-05, pad.md PQ1 decided for now)',
+      'test: mobile board-flow "the deck list starts folded on a phone and unfolds and folds with its button" (counter-checked: starting open — red); E2E helper createDeck unfolds the rail first; visual baselines of the board (GAME, SETUP) and the deck rail renewed after review of the new screenshots',
+    ],
+  },
   {
     version: '3.0.173',
     date: '2026-10-04',

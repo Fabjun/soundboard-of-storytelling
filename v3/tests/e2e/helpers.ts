@@ -167,11 +167,18 @@ export async function createBoardAndNavigate(page: Page): Promise<void> {
 
 // ── Deck helpers ─────────────────────────────────────────────────────────────
 
+/** Unfolds the deck rail if it is folded (it starts folded on a narrow screen). */
+export async function openDeckRail(page: Page): Promise<void> {
+  const toggle = page.getByTestId('deck-rail-toggle-button');
+  if ((await toggle.getAttribute('aria-expanded')) === 'false') await toggle.click();
+}
+
 /**
  * Create a new deck in the current BoardScreen.
  * Returns the deck's data-testid ID part (e.g. "abc123").
  */
 export async function createDeck(page: Page): Promise<string> {
+  await openDeckRail(page);
   await page.getByTestId('deck-rail-new-button').click();
   const deckTab = page.locator('[data-testid^="deck-rail-deck-tab-"]').first();
   await deckTab.waitFor();

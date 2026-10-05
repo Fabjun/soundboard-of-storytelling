@@ -33,6 +33,25 @@ test('A+B — NEW BOARD tap creates board; row title tap opens BoardScreen', asy
   await expect(page.getByTestId('mode-toggle')).toBeVisible();
 });
 
+test('the deck list starts folded on a phone and unfolds and folds with its button', async ({
+  page,
+}) => {
+  await page.goto('/soundboard-of-storytelling/');
+  await goToBoardList(page);
+  await page.getByTestId('board-list-screen-new-button').tap();
+  await page.locator('[data-testid^="board-list-screen-name-text-"]').first().tap();
+  const toggle = page.getByTestId('deck-rail-toggle-button');
+  const allPads = page.getByTestId('deck-rail-all-pads-tab');
+  // Folded: only the button, so the pads get the width (owner decision 2026-10-05)
+  await expect(toggle).toHaveAttribute('aria-expanded', 'false');
+  await expect(allPads).toBeHidden();
+  await toggle.tap();
+  await expect(toggle).toHaveAttribute('aria-expanded', 'true');
+  await expect(allPads).toBeVisible();
+  await toggle.tap();
+  await expect(allPads).toBeHidden();
+});
+
 test('C — Back button tap from BoardScreen returns to BoardListScreen', async ({ page }) => {
   await page.goto('/soundboard-of-storytelling/');
   await goToBoardList(page);
