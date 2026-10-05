@@ -60,9 +60,22 @@ of a game and can lose input (vite-plugin-pwa warning). Rejected by the owner.
 **Keep the silent update** (new version at the second reload): no work, but the running version
 stays unclear — the cause of the owner report. Rejected.
 
+## Amendments
+
+**2026-10-05 (3.0.175):** An UPDATE button on the start screen checks for a new version at once
+(owner decision 2026-10-05; V1 had a way to update by hand, `docs/product/v1-v2-inventory.md`).
+It runs the same service worker update as the hourly check (`registration.update()`) and says how
+it went — new version found, newest version, offline, no service worker in this window, or no
+answer from the server (`v3/src/lib/updateCheck.ts`). Switching stays with the prompt and RELOAD:
+a version found shows the prompt as soon as it is installed, and a version put off with LATER is
+offered again. Checked in `v3/tests/e2e/pwa.spec.ts` against the production build (newest version;
+simulated deploy; LATER, then UPDATE again) and in `v3/tests/e2e/update-check.spec.ts` (no service
+worker, offline).
+
 ## Related
 
 - **Files:** `v3/vite.config.ts`, `v3/src/components/UpdatePrompt.tsx`, `v3/src/App.tsx`,
+  `v3/src/lib/updateCheck.ts`, `v3/src/screens/StartScreen.tsx`,
   `v3/src/state/boardWrites.ts`, `v3/src/pwa-env.d.ts`, `v3/tests/e2e/pwa.spec.ts`
 - **ADRs:** ADR-0049 (deploy the tested build), ADR-0057 (no third-party origins, license notices)
 - **Sources:** https://vite-pwa-org.netlify.app/guide/prompt-for-update.html ·

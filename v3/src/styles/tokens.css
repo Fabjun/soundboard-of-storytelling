@@ -1200,6 +1200,13 @@
   gap: var(--space-3);
   margin-top: var(--space-8);
 }
+.sb-start-status {
+  /* @inventory: Result line of the UPDATE check on StartScreen — centered under the buttons, kept off the screen edges. 1-use. */
+  margin-top: var(--space-3);
+  padding: 0 var(--space-4);
+  max-width: 32rem;
+  text-align: center;
+}
 .sb-start-footer {
   /* @inventory: Footer strip at the bottom of StartScreen — in the flow, pushed down by an auto margin, so on a short window it sits below the buttons instead of over them; mono xs muted text, centered, flex row for version link + build info. 1-use. */
   margin-top: auto;
@@ -1549,10 +1556,14 @@
 
 /* ── Pad Grid ── center panel ─────────────────────────────────────── */
 .sb-pad-grid {
-  /* @inventory: CSS grid for the active deck's pads; col/row counts from --grid-cols/--grid-rows CSS vars. Every cell is a square of --pad-size (owner decision 2026-10-05); what does not fit scrolls, in both directions (WCAG 1.4.10 Reflow). */
+  /* @inventory: CSS grid for the active deck's pads; column count from --grid-cols. Every cell is a square of at most --pad-size, shrunk to --pad-fit (set by PadGrid from the panel size, src/lib/padFit.ts) so the whole grid is seen — the width always, the height down to the 44px touch target; no pad is cut off at the right edge (owner decision 2026-10-05); what still does not fit below scrolls (WCAG 1.4.10 Reflow). */
   display: grid;
-  grid-template-columns: repeat(var(--grid-cols, 4), var(--pad-size));
-  grid-template-rows: repeat(var(--grid-rows, 4), var(--pad-size));
+  grid-template-columns: repeat(
+    var(--grid-cols, 4),
+    minmax(0, min(var(--pad-size), var(--pad-fit, var(--pad-size))))
+  );
+  grid-auto-rows: max-content; /* the square cell decides the row, not the free height of the panel */
+  justify-content: start;
   align-content: start;
   gap: var(--grid-gap, 8px);
   padding: var(--space-3);
@@ -1575,9 +1586,6 @@
 }
 .sb-pad-grid-pool {
   /* @inventory: Variant of sb-pad-grid for the All pads view — as many rows of square pads as the pool needs; the pool scrolls (Slice 9e). */
-  grid-template-rows: none;
-  grid-auto-rows: var(--pad-size);
-  align-content: start;
   overflow: auto;
   overscroll-behavior: none;
   -webkit-overflow-scrolling: touch;
@@ -1587,7 +1595,16 @@
 .sb-pad-grid-cell {
   /* @inventory: Single cell wrapper in the pad grid; carries position, DnD states, and touch targets. */
   position: relative;
+  aspect-ratio: 1;
+  min-width: 0; /* a cell shrinks with its column, so no pad pokes out of the grid */
+  min-height: 0; /* the square decides the height, not the content of the pad */
+}
+/* The global 44px touch minimum (global.css, [role='button']) would keep a pad or empty slot wider
+   than its column on a narrow screen — the square shrinks with the column instead. */
+.sb-pad-grid-cell.is-empty,
+.sb-pad-grid-cell > .sb-pad {
   min-width: 0;
+  min-height: 0;
 }
 /* Empty slot: dashed outline, centered + */
 .sb-pad-grid-cell.is-empty {

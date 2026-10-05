@@ -140,6 +140,40 @@ test('a new version waits until RELOAD, then takes over (ADR-0066)', async ({ pa
   }
 });
 
+test('the UPDATE button says when this is the newest version', async ({ page }) => {
+  await loadControlled(page);
+  await page.getByRole('button', { name: 'UPDATE' }).click();
+  await expect(page.getByRole('status').filter({ hasText: 'newest version' })).toBeVisible();
+  await expect(page.getByTestId('update-prompt')).toBeHidden();
+});
+
+test('the UPDATE button finds a new version and brings back a prompt put off with LATER', async ({
+  page,
+}) => {
+  await loadControlled(page);
+  // A deploy, simulated as in "a new version waits until RELOAD" above
+  const swFile = new URL('../../dist/sw.js', import.meta.url);
+  const original = readFileSync(swFile, 'utf8');
+  const at = original.indexOf('revision:"') + 'revision:"'.length;
+  const flipped = (parseInt(original[at], 16) ^ 1).toString(16);
+  writeFileSync(swFile, original.slice(0, at) + flipped + original.slice(at + 1));
+  try {
+    await page.getByRole('button', { name: 'UPDATE' }).click();
+    await expect(
+      page.getByRole('status').filter({ hasText: 'new version was found' }),
+    ).toBeVisible();
+    await expect(page.getByTestId('update-prompt')).toBeVisible();
+
+    // Put off with LATER, then the button again: the waiting version is offered once more
+    await page.getByTestId('update-prompt-later-button').click();
+    await expect(page.getByTestId('update-prompt')).toBeHidden();
+    await page.getByRole('button', { name: 'UPDATE' }).click();
+    await expect(page.getByTestId('update-prompt')).toBeVisible();
+  } finally {
+    writeFileSync(swFile, original);
+  }
+});
+
 test('manifest is linked with the app name and start URL', async ({ page }) => {
   await page.goto(APP);
   const href = await page.locator('link[rel="manifest"]').getAttribute('href');

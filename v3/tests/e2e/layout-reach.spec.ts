@@ -15,9 +15,10 @@
 import { test, expect } from '@playwright/test';
 import { goToBoardList, createBoardAndNavigate, createDeck, enterSetupMode } from './helpers';
 
-// Four rows of pads (80 px each) do not fit: without scrolling, the fourth row is cut off by
-// 30 px (measured). At 480 px they still fitted, and empty cells (56 px) fit even at 400.
-const SHORT = { width: 1280, height: 400 };
+// Four rows of pads do not fit: the pads shrink to the 44 px touch target (src/lib/padFit.ts), and
+// four rows of those (with gaps and padding) are still taller than the grid area at this height,
+// so without scrolling the fourth row is cut off. At 400 px the shrunk pads still fit.
+const SHORT = { width: 1280, height: 300 };
 
 test.beforeEach(async ({ page }) => {
   await page.setViewportSize(SHORT);

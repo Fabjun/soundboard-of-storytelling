@@ -7,6 +7,7 @@
  *  1. Render the app splash (animated flame, title, tagline)
  *  2. On button tap: unlock the Web Audio context + navigate to board-list
  *  3. Show version (clickable → What's new) + audio state in footer
+ *  4. UPDATE checks for a new version at once and says how it went (owner decision 2026-10-05)
  */
 
 import { useState } from 'preact/hooks';
@@ -17,6 +18,7 @@ import { audioContextState, currentScreen } from '../state/store';
 import { initAudio } from '../audio/index';
 import { APP_VERSION, CHANGELOG } from '../lib/changelog';
 import { versionLine, WHATS_NEW, WHATS_NEW_GROUPS, withEarlyVersions } from '../lib/whatsNew';
+import { checkForUpdateNow, updateCheckMessage } from '../lib/updateCheck';
 
 declare const __BUILD_DATE__: string;
 
@@ -137,6 +139,17 @@ function handleUnlock(): void {
  */
 export function StartScreen(): JSX.Element {
   const [showWhatsNew, setShowWhatsNew] = useState(false);
+  const [checking, setChecking] = useState(false);
+  const [updateMessage, setUpdateMessage] = useState<string | null>(null);
+
+  async function handleUpdateCheck() {
+    setChecking(true);
+    setUpdateMessage(null);
+    const registration = await navigator.serviceWorker?.getRegistration();
+    const result = await checkForUpdateNow(registration, navigator.onLine);
+    setUpdateMessage(updateCheckMessage(result, APP_VERSION));
+    setChecking(false);
+  }
 
   return (
     <div class="sb sb-scanlines sb-start-screen">
@@ -185,6 +198,18 @@ export function StartScreen(): JSX.Element {
           <PixelIcon name="book" size={12} />
           LIBRARY
         </button>
+        <button
+          class="sb-btn sb-btn-sm sb-btn-ghost"
+          disabled={checking}
+          onClick={() => void handleUpdateCheck()}
+        >
+          <PixelIcon name="download" size={12} />
+          {checking ? 'CHECKING…' : 'UPDATE'}
+        </button>
+      </div>
+      {/* The result of the update check, read out by screen readers */}
+      <div class="sb-caption sb-start-status" role="status">
+        {updateMessage}
       </div>
 
       {/* ── Footer: clickable version → What's new + audio state ── */}

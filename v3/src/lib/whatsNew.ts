@@ -89,6 +89,18 @@ export function withEarlyVersions(
 /** The release notes the start screen shows, newest first (checked by whatsNew.test.ts). */
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
+    version: '3.0.175',
+    date: '2026-10-05',
+    new: [
+      'An UPDATE button on the start screen looks for a new version at once and says what it found. A new version then offers RELOAD, as before.',
+    ],
+    improved: [
+      'Pads adapt to the display: they shrink so that the whole grid is seen, with the width always fitting and the height as far as the touch size allows. Only what still does not fit scrolls down.',
+      'The deck list starts folded on every screen and opens with the ▶ button.',
+    ],
+    fixed: ['On a phone, pads are no longer cut off at the right edge.'],
+  },
+  {
     version: '3.0.174',
     date: '2026-10-05',
     improved: [

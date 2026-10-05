@@ -163,11 +163,13 @@ export async function createBoardAndNavigate(page: Page): Promise<void> {
   await boardRow.locator('[data-testid^="board-list-screen-name-text-"]').click();
   // ModeToggle is always present in BoardScreen
   await page.getByTestId('mode-toggle').waitFor();
+  // The deck list starts folded; specs that are not about folding work with it open
+  await openDeckRail(page);
 }
 
 // ── Deck helpers ─────────────────────────────────────────────────────────────
 
-/** Unfolds the deck rail if it is folded (it starts folded on a narrow screen). */
+/** Unfolds the deck rail if it is folded (it starts folded). */
 export async function openDeckRail(page: Page): Promise<void> {
   const toggle = page.getByTestId('deck-rail-toggle-button');
   if ((await toggle.getAttribute('aria-expanded')) === 'false') await toggle.click();
@@ -305,13 +307,14 @@ export async function reloadApp(page: Page): Promise<void> {
   await page.reload();
 }
 
-/** Once the saves are done: StartScreen → board list → open the first board. */
+/** Once the saves are done: StartScreen → board list → open the first board, deck list unfolded. */
 export async function reopenFirstBoard(page: Page): Promise<void> {
   await waitForSaves(page);
   await page.goto('/soundboard-of-storytelling/');
   await goToBoardList(page);
   await page.locator('[data-testid^="board-list-screen-name-text-"]').first().click();
   await page.getByTestId('mode-toggle').waitFor();
+  await openDeckRail(page);
 }
 
 // ── Pads ──────────────────────────────────────────────────────────────────────
