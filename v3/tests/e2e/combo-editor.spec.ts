@@ -12,6 +12,7 @@
 import { test, expect, type Page } from '@playwright/test';
 import {
   addNamedPad,
+  closePadEditor,
   goToBoardList,
   createBoardAndNavigate,
   enterSetupMode,
@@ -66,6 +67,7 @@ test('a combo is never offered itself or a combo that starts it', async ({ page 
   await waitForSaves(page);
 
   // In Dawn, Dusk would close a cycle and Dawn is itself: only Owl is offered
+  await closePadEditor(page);
   await page.getByTestId(`pad-grid-cell-${a}`).click();
   await page.getByTestId('combo-steps-editor-add-button').click();
   const options = await page

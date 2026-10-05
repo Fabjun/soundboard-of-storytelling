@@ -18,6 +18,7 @@
  */
 
 import { useEffect, useLayoutEffect, useRef, useState } from 'preact/hooks';
+import { useEscapeKey } from '../lib/escapeKey';
 import type { JSX } from 'preact';
 import {
   elementScroll,
@@ -76,11 +77,7 @@ export function IconPicker({ chosen, onPick, onClose }: IconPickerProps): JSX.El
     if (catalog && body.current) body.current.scrollTop = memory.scroll;
   }, [catalog]);
 
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && onClose();
-    document.addEventListener('keydown', onKey);
-    return () => document.removeEventListener('keydown', onKey);
-  }, [onClose]);
+  useEscapeKey(onClose);
 
   const groups = catalog ? iconsByCategory() : null;
   const total = groups ? [...groups.values()].reduce((n, keys) => n + keys.length, 0) : 0;

@@ -23,6 +23,7 @@ import {
   pointerDrag,
   reopenFirstBoard,
   addNamedPad,
+  closePadEditor,
   padCells,
 } from './helpers';
 
@@ -81,6 +82,7 @@ test('delete pad shows its decks and removes it everywhere', async ({ page }) =>
   const cell = await addPadCell(page, 'Thunder');
 
   // Duplicate the deck: the copy places the same pad (ADR-0048)
+  await closePadEditor(page);
   await tabs(page).first().hover();
   await tabs(page).first().locator('[data-testid^="deck-rail-copy-button-"]').click();
   await expect(tabs(page)).toHaveCount(2);
@@ -111,6 +113,7 @@ test('the deck checklist places the pad in another deck and takes it out', async
   await expect(box2).toBeChecked();
 
   // The second deck shows it on its first free cell
+  await closePadEditor(page);
   await tabs(page).nth(1).click();
   await expect(page.getByTestId(cell)).toHaveAttribute('data-pos', '0,0');
 
@@ -118,6 +121,7 @@ test('the deck checklist places the pad in another deck and takes it out', async
   await page.getByTestId('deck-rail-all-pads-tab').click();
   await page.getByTestId(cell).click();
   await page.getByTestId(`pad-editor-panel-deck-input-${deck2}`).uncheck();
+  await closePadEditor(page);
   await tabs(page).nth(1).click();
   await expect(page.getByTestId(cell)).toHaveCount(0);
   await tabs(page).first().click();
@@ -149,6 +153,7 @@ test('ADD PAD in All pads creates a pad that sits in no deck', async ({ page }) 
   const cell = padCells(page).first();
   await expect(cell).toContainText('Wind');
   await expect(page.getByTestId(`pad-editor-panel-deck-input-${deck1}`)).not.toBeChecked();
+  await closePadEditor(page);
   await tabs(page).first().click();
   await expect(padCells(page)).toHaveCount(0); // the deck holds no pad
 });
@@ -192,6 +197,7 @@ test('All pads sorts by name, by date added and reversed; the choice stays with 
   await page.getByTestId('deck-rail-new-button').click();
   await tabs(page).first().waitFor();
   for (const name of ['Bravo', 'Alpha', 'Charlie']) await addPadCell(page, name);
+  await closePadEditor(page);
   await page.getByTestId('deck-rail-all-pads-tab').click();
 
   const order = async () =>

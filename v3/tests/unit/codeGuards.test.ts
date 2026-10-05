@@ -510,6 +510,32 @@ describe('guard: timers are listed with their reason (delayed writes use debounc
   });
 });
 
+describe('guard: dialogs close on Escape through useEscapeKey (ADR-0074)', () => {
+  // A document keydown listener added in a passive effect misses a key pressed right after the
+  // dialog appeared (two races in CI, 2026-10-05); src/lib/escapeKey.ts is the one place that adds one
+  const walkSrc = (dir: string): string[] =>
+    readdirSync(dir, { withFileTypes: true }).flatMap((e) =>
+      e.isDirectory() ? walkSrc(join(dir, e.name)) : [join(dir, e.name)],
+    );
+  const withKeydown = walkSrc(SRC)
+    .filter(
+      (f) =>
+        /\.tsx?$/.test(f) && /addEventListener\(\s*['"]keydown['"]/.test(readFileSync(f, 'utf8')),
+    )
+    .map((f) => relative(SRC, f).split('\\').join('/'))
+    .sort();
+
+  it('finds the hook (sanity)', () => {
+    expect(withKeydown).toContain('lib/escapeKey.ts');
+  });
+
+  it('no other file adds a keydown listener — use useEscapeKey', () => {
+    expect(withKeydown, 'close a dialog with useEscapeKey(onClose, active)').toEqual([
+      'lib/escapeKey.ts',
+    ]);
+  });
+});
+
 describe('guard: every TypeScript file opens with a file overview (ADR-0064)', () => {
   const walk = (dir: string): string[] =>
     readdirSync(dir, { withFileTypes: true }).flatMap((e) =>

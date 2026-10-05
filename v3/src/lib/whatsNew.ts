@@ -89,6 +89,13 @@ export function withEarlyVersions(
 /** The release notes the start screen shows, newest first (checked by whatsNew.test.ts). */
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
+    version: '3.0.176',
+    date: '2026-10-05',
+    improved: [
+      'The pad editor opens full screen, on the phone and on large screens, so all its settings have room. The ✕ button or the Escape key closes it and leads back to the board.',
+    ],
+  },
+  {
     version: '3.0.175',
     date: '2026-10-05',
     new: [

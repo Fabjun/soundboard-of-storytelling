@@ -610,13 +610,17 @@ interruptions / tab switches. Deliberately accepted, not dead code.
 
 ## Known limitation: SETUP layout on narrow viewports
 
+> **Update 2026-10-05:** the PAD editor no longer takes a column — it opens full screen on every
+> screen size (owner decision, [ADR-0074](../architecture/0074-full-screen-modal-dialogs.md)); the
+> deck rail folds (3.0.174–3.0.175). The LibraryPanel row below still applies.
+
 Measured geometry at 390px viewport (Playwright diagnostic, 2026-05-28):
 
-| SETUP state                   | SceneRail     | Right panel   | Center `<main>` (pad grid) |
-| ----------------------------- | ------------- | ------------- | -------------------------- |
-| No panel open                 | 220px (fixed) | —             | 170px ✓                    |
-| Pad selected (PadEditorPanel) | 220px (fixed) | 280px (fixed) | 0px ✗                      |
-| Library open (LibraryPanel)   | 220px (fixed) | 280px (fixed) | 0px ✗                      |
+| SETUP state                   | SceneRail     | Right panel   | Center `<main>` (pad grid)  |
+| ----------------------------- | ------------- | ------------- | --------------------------- |
+| No panel open                 | 220px (fixed) | —             | 170px ✓                     |
+| Pad selected (PadEditorPanel) | 220px (fixed) | 280px (fixed) | 0px ✗ — resolved 2026-10-05 |
+| Library open (LibraryPanel)   | 220px (fixed) | 280px (fixed) | 0px ✗                       |
 
 Both SceneRail and the inspector panels use `flex-shrink: 0` with fixed widths.
 At 390px their combined minimum (220 + 280 = 500px) exceeds the viewport, pushing

@@ -1671,16 +1671,16 @@
 
 /* ── Pad Editor Panel (right inspector) ──────────────────────────── */
 .sb-pad-editor {
-  /* @inventory: Right inspector panel shown when a pad is selected in SETUP mode (280px, scrolls). */
-  width: 280px;
-  flex-shrink: 0;
+  /* @inventory: Scrolling body of the full-screen PAD editor (inside sb-overlay, owner decision 2026-10-05) — the fields in one column, centered and at most 40rem wide on a wide window. */
+  flex: 1;
+  min-height: 0;
   display: flex;
   flex-direction: column;
   background: var(--surface);
-  border-left: 1px solid var(--border);
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   overscroll-behavior: contain;
+  padding-inline: max(0px, calc((100% - 40rem) / 2));
 }
 
 /* ── Library Panel (right inspector, library browse mode) ─────────── */
@@ -2004,10 +2004,11 @@
   overscroll-behavior: none;
 }
 .sb-overlay-header {
-  /* @inventory: Header strip for full-screen overlays — space-between flex row, border separator, no-shrink. Wraps sb-overlay-title + close action. */
+  /* @inventory: Header strip for full-screen overlays — space-between flex row with a small gap, border separator, no-shrink. Wraps sb-overlay-title + close action. */
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: var(--space-2);
   padding: var(--space-3) var(--space-4);
   border-bottom: 1px solid var(--border);
   flex-shrink: 0;

@@ -19,6 +19,7 @@ import {
   createPadAtCell00,
   reloadApp,
   reopenFirstBoard,
+  closePadEditor,
 } from './helpers';
 
 test.beforeEach(async ({ page }) => {
@@ -143,15 +144,18 @@ async function pauseClock(page: Page): Promise<void> {
   await page.clock.pauseAt(Date.now() + 60_000);
 }
 
-test('a name typed just before the next pad opens is kept', async ({ page }) => {
+// Until 3.0.175 this was "a name typed just before the next pad opens is kept": the editor sat
+// beside the grid and the next pad could be opened directly. Since the editor covers the board
+// (owner decision 2026-10-05) a person closes it first, so the same check — the waiting save is
+// written, not dropped (src/lib/debouncedSave.ts) — now runs on the close.
+test('a name typed just before the editor is closed is kept', async ({ page }) => {
   const first = page
     .locator('[data-testid^="pad-grid-cell-"]:not([data-testid^="pad-grid-cell-empty-slot-"])')
     .first();
   await pauseClock(page);
   await first.click();
   await page.getByTestId('pad-editor-panel-name-input').fill('Owl');
-  // Located by text: the button has no accessible name in Chromium yet (BACKLOG "Role-based E2E locators").
-  await page.getByText('ADD PAD', { exact: true }).click();
+  await closePadEditor(page);
   await expect(first).toContainText('Owl');
 
   await page.clock.resume();
