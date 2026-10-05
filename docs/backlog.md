@@ -832,6 +832,9 @@ panel size exists).
 This decision is consistent with the summonable overlay contract (PadEditor = layer 1 only,
 selection-driven; → [Summonable overlay contract](#summonable-overlay-contract-pending-not-yet-finalized--refined-after-panel-fit-check)).
 
+**Update 2026-10-05:** the editor is now a full-screen dialog (ADR-0074); there is no resize state
+any more, and closing stays with the explicit close button — plus Escape (WAI-ARIA dialog pattern).
+
 ### B8 — Scene switching mechanism: tap switcher primary, swipe optional and GAME only
 
 → moved to [product/README.md §3](product/README.md#3-app-modes-game-and-setup) (2026-09-28). Revised there: swiping between decks (formerly "scenes") is now **Parked**; decks switch via classic controls only.
@@ -1808,6 +1811,13 @@ Found in 3.0.175 (square pads that fit the display, deck list folded):
 - 65 direct locators of the deck rail in 8 specs: `deck-crud` 38 (tests the rail itself),
   `pad-pool` 16 (uses the rail only as the way to a deck or All pads), the rest 1–4 each.
 
+Found in 3.0.176 (PAD editor full screen): the editor now covers the board, so 7 specs that tapped
+ADD PAD, a pad or a deck tab while it was open close it first through `closePadEditor`
+(`v3/tests/e2e/helpers.ts`) — a task-named helper as planned below; `addNamedPad` closes an open
+editor itself. `pad-editing` "a name typed just before the next pad opens is kept" became "… just
+before the editor is closed is kept": switching pads with the editor open no longer exists; the
+check (a waiting save is written, not dropped) is the same.
+
 **Plan:** (1) write the rule into `docs/development/testing.md` and `CLAUDE.md`, with the sources;
 (2) helpers named after the task — `addDeck`, `openDeck(name)`, `showAllPads` — that open the
 navigation themselves; the only place that knows how the deck rail is built; drop the hidden
@@ -1819,6 +1829,13 @@ a fixed window height; (5) a separate `test:` commit with a changelog entry.
 **Deferred:** `deck-crud` tests the rail itself and is rewritten with the rail redesign — doing it
 now would be done twice.
 **When:** before the next change to the deck rail or the menus; `deck-crud` with the rail redesign.
+
+### Full-screen dialogs per ADR-0074
+
+The icon list (`v3/src/components/IconPicker.tsx`) and What's new (`v3/src/screens/StartScreen.tsx`)
+were built before ADR-0074: neither makes the page behind inert nor returns focus on close, and
+What's new has no Escape. **Plan:** give both the ADR-0074 behavior (inert outside, focus in and
+back, Escape), with an E2E check each. **When:** by 2026-10-31 (exception review date in ADR-0074).
 
 ### Type-check every TypeScript file (T12)
 

@@ -324,14 +324,26 @@ export const padCells = (page: Page) =>
   page.locator('[data-testid^="pad-grid-cell-"]:not([data-testid^="pad-grid-cell-empty-slot-"])');
 
 /**
+ * Closes the PAD editor when it is open. It covers the whole board (owner decision 2026-10-05),
+ * so nothing behind it can be tapped — a person closes it first, and so do the specs.
+ */
+export async function closePadEditor(page: Page): Promise<void> {
+  const close = page.getByRole('button', { name: 'Close the pad editor' });
+  if (await close.isVisible()) await close.click();
+  await expect(page.getByRole('dialog', { name: 'Pad editor' })).toBeHidden();
+}
+
+/**
  * ADD PAD in the open deck or All pads, optionally made a Combo while it is still fresh (no
- * dialog), then named. Returns the new pad's id. Needs SETUP mode.
+ * dialog), then named. Returns the new pad's id. Needs SETUP mode; closes an open PAD editor
+ * first, as ADD PAD is behind it. The new pad's editor stays open.
  */
 export async function addNamedPad(
   page: Page,
   name: string,
   opts: { combo?: boolean } = {},
 ): Promise<string> {
+  await closePadEditor(page);
   const before = await padCells(page).count();
   // Located by text: the button has no accessible name in Chromium yet (BACKLOG "Role-based E2E locators").
   await page.getByText('ADD PAD', { exact: true }).click();

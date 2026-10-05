@@ -7,6 +7,17 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.176 — 2026-10-05
+
+### Added
+
+- feat(editor): the PAD editor opens full screen on every screen size, the board's top bar included (owner decision 2026-10-05) — a modal dialog on sb-overlay (ADR-0074): role dialog, focus moves in, the board behind is inert (src/lib/inertOutside.ts), Escape closes it unless the icon list or the type confirmation on top is open, focus returns to the pad; the fields scroll in one column, at most 40rem wide and centered on a wide window (sb-pad-editor); sb-overlay-header got a small gap
+
+### Internal
+
+- test: E2E pad-editor-fullscreen (covers the window at 390 and 1280px, top bar included; board behind out of reach by pointer and Tab; Escape closes and focus returns; Escape in the icon list closes only the list — counter-checked: no inert, no nested guard, no focus return, the code of 3.0.175 — each red), unit inertOutside; 7 specs that tapped ADD PAD, a pad or a deck tab behind the open editor close it first through the new helper closePadEditor (addNamedPad does it itself); pad-editing "a name typed just before the next pad opens is kept" became "… before the editor is closed is kept" — switching pads with the editor open no longer exists, the check is the same
+- docs: ADR-0074 full-screen modal dialogs (with the icon list and What's new as a dated exception, BACKLOG "Full-screen dialogs per ADR-0074"); design-notes known limitation updated; BACKLOG B7 note; product README; iPhone checklist "PAD editor full screen"; CLAUDE.md UI rule
+
 ## 3.0.175 — 2026-10-05
 
 ### Added

@@ -12,7 +12,7 @@
  */
 
 import { test, expect } from '@playwright/test';
-import { goToBoardList, createBoardAndNavigate, enterSetupMode } from './helpers';
+import { goToBoardList, createBoardAndNavigate, enterSetupMode, closePadEditor } from './helpers';
 
 test.beforeEach(async ({ page }) => {
   await page.goto('/soundboard-of-storytelling/');
@@ -161,6 +161,7 @@ test('duplicate deck shares its pads: a rename in one deck shows in the other', 
   await expect(page.getByTestId(padTestId)).toContainText('Thunder');
 
   // Duplicate the deck and open the copy: the same pad (same id) is there
+  await closePadEditor(page);
   await tabs.first().hover();
   await tabs.first().locator('[data-testid^="deck-rail-copy-button-"]').click();
   await expect(tabs).toHaveCount(2);
@@ -171,6 +172,7 @@ test('duplicate deck shares its pads: a rename in one deck shows in the other', 
   await page.getByTestId(padTestId).click();
   await page.getByTestId('pad-editor-panel-name-input').fill('Storm');
   await expect(page.getByTestId(padTestId)).toContainText('Storm');
+  await closePadEditor(page);
   await tabs.first().click();
   await expect(page.getByTestId(padTestId)).toContainText('Storm');
 });

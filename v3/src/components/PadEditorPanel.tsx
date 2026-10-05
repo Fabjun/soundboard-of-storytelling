@@ -1,5 +1,12 @@
 /**
- * @fileoverview PadEditorPanel — right-inspector panel for pad editing (SETUP mode)
+ * @fileoverview PadEditorPanel — the PAD editor (SETUP mode), a full-screen dialog
+ *
+ * Covers the whole window on every screen size, the board's top bar included (owner decision
+ * 2026-10-05); the fields scroll, centered and limited in width on a wide window. A modal dialog
+ * after the WAI-ARIA APG pattern: focus moves into it, the board behind is inert
+ * (src/lib/inertOutside.ts), Escape closes it — unless the icon list or the type confirmation
+ * on top of it is open, which close first — and focus returns to the pad that opened it.
+ * Closing stays with the ✕ button and Escape (design-notes B7: no swipe-away).
  *
  * Used for:
  *   Path C (ADD PAD): full editor from scratch
@@ -60,6 +67,7 @@ import { debouncedSave } from '../lib/debouncedSave';
 import { fromPad, moveHandle, toPad, type Handle, type TrimValues } from '../lib/trimRange';
 import { previewPosition, startPreview, stopPreview } from '../lib/preview';
 import { ensureFinePeaks } from '../lib/upload';
+import { inertOutside } from '../lib/inertOutside';
 
 interface PadEditorPanelProps {
   pad: Pad;
@@ -152,6 +160,22 @@ export function PadEditorPanel({
 
   // The preview belongs to this editor: it stops when the editor closes or switches pad
   useLayoutEffect(() => () => stopPreview(), []);
+
+  // A modal dialog: focus moves in, the board behind is inert, and on close focus goes back to
+  // the element that opened it (the pad) while that is still on the page
+  const dialog = useRef<HTMLDivElement>(null);
+  useLayoutEffect(() => {
+    const el = dialog.current;
+    if (!el) return;
+    const opener = document.activeElement;
+    const restore = inertOutside(el, el.closest('.sb-screen') ?? document.body);
+    el.focus({ preventScroll: true });
+    return () => {
+      restore();
+      if (opener instanceof HTMLElement && opener.isConnected)
+        opener.focus({ preventScroll: true });
+    };
+  }, []);
 
   /** Index of the selected file, kept inside the list (files can be removed). */
   const selected = Math.min(selectedIndex, Math.max(0, files.length - 1));
@@ -476,12 +500,30 @@ export function PadEditorPanel({
 
   const typeColor = padTypeColor(type);
 
+  // Escape closes the editor — not while the icon list or the type confirmation is open on top:
+  // those close first, with their own Escape handlers
+  const nestedOpen = pickerSlot !== null || pendingType !== null;
+  useEffect(() => {
+    if (nestedOpen) return;
+    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && onClose();
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
+  }, [nestedOpen, onClose]);
+
   return (
-    <div class="sb-pad-editor" data-testid="pad-editor-panel">
+    <div
+      ref={dialog}
+      class="sb-overlay"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Pad editor"
+      tabIndex={-1}
+      data-testid="pad-editor-panel"
+    >
       {/* Header */}
-      <div class="sb-panel-header is-active" style={{ borderBottom: `2px solid ${typeColor}` }}>
+      <div class="sb-overlay-header" style={{ borderBottom: `2px solid ${typeColor}` }}>
         <span class="sb-type-indicator" style={{ background: typeColor }} />
-        <span class="sb-panel-title">Pad Editor</span>
+        <span class="sb-overlay-title sb-flex-1">PAD EDITOR</span>
         <button
           class="sb-btn sb-btn-icon sb-btn-ghost"
           data-testid="pad-editor-panel-close-button"
@@ -492,390 +534,392 @@ export function PadEditorPanel({
         </button>
       </div>
 
-      {/* Name */}
-      <div class="sb-inspector-section">
-        <label class="sb-field-label">NAME</label>
-        <input
-          class="sb-text-input"
-          type="text"
-          data-testid="pad-editor-panel-name-input"
-          value={name}
-          placeholder="Pad name…"
-          onInput={(e) => handleNameChange((e.target as HTMLInputElement).value)}
-        />
-      </div>
-
-      {/* Icons — up to 4, shown on the pad in this order (ADR-0070; V1's four slots) */}
-      <div class="sb-inspector-section">
-        <label class="sb-field-label">ICONS</label>
-        <div class="sb-row-wrap">
-          {icons.map((key, i) => {
-            const drawing = iconDrawings?.[i];
-            const iconName = key.slice(key.indexOf(':') + 1);
-            return (
-              <div key={key} class="sb-icon-slot">
-                <button
-                  class="sb-icon-cell"
-                  aria-label={`Icon ${i + 1}: ${iconName} — change`}
-                  title={key}
-                  data-testid={`pad-editor-panel-icon-button-${i}`}
-                  onClick={() => setPickerSlot(i)}
-                >
-                  {drawing && <IconGlyph drawing={drawing} />}
-                </button>
-                <button
-                  class="sb-btn sb-btn-xs sb-btn-danger"
-                  aria-label={
-                    iconConfirm === i ? `Confirm: remove ${iconName}` : `Remove ${iconName}`
-                  }
-                  data-testid={`pad-editor-panel-icon-remove-button-${i}`}
-                  onClick={() => {
-                    if (iconConfirm === i) {
-                      setIconConfirm(null);
-                      handleIconsChange(icons.filter((_, k) => k !== i));
-                    } else setIconConfirm(i);
-                  }}
-                  onBlur={() => setIconConfirm(null)}
-                >
-                  {iconConfirm === i ? 'CONFIRM' : '✕'}
-                </button>
-              </div>
-            );
-          })}
-          {icons.length < PAD_ICONS_MAX && (
-            <button
-              class="sb-icon-cell is-empty"
-              aria-label="Add an icon"
-              data-testid="pad-editor-panel-add-icon-button"
-              onClick={() => setPickerSlot(icons.length)}
-            >
-              +
-            </button>
-          )}
-        </div>
-      </div>
-      {pickerSlot !== null && (
-        <IconPicker chosen={icons} onPick={handleIconPick} onClose={() => setPickerSlot(null)} />
-      )}
-
-      {/* Type selector */}
-      <div class="sb-inspector-section">
-        <label class="sb-field-label">TYPE</label>
-        <div class="sb-row-sm">
-          {PAD_TYPES.map((t) => (
-            <button
-              key={t}
-              class={`sb-btn sb-type-btn ${type === t ? 'sb-btn-primary' : 'sb-btn-ghost'}`}
-              data-testid={`pad-editor-panel-type-button-${t}`}
-              aria-pressed={type === t}
-              style={{
-                color: type === t ? padTypeColor(t) : 'var(--text-mute)',
-                borderColor: type === t ? padTypeColor(t) : undefined,
-              }}
-              onClick={() => requestTypeChange(t)}
-            >
-              {padTypeLabel(t)}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Combo: its steps (Slice 11) */}
-      {type === 'combo' && (
-        <ComboStepsEditor
-          comboId={pad.id}
-          steps={steps}
-          board={board}
-          onChange={(next) => {
-            setSteps(next);
-            scheduleAutoSave(buildCurrentPad(undefined, next));
-          }}
-        />
-      )}
-
-      {/* Audio source — Single and Loop only; a Combo plays other pads */}
-      {type !== 'combo' && (
+      <div class="sb-pad-editor">
+        {/* Name */}
         <div class="sb-inspector-section">
-          <div class="sb-section-header-row">
-            <label class="sb-field-label">AUDIO FILES</label>
-            <button
-              class="sb-btn sb-btn-xs sb-btn-ghost"
-              data-testid="pad-editor-panel-browse-button"
-              onClick={() => {
-                setPicked([]);
-                setLibPickerOpen((o) => !o);
-              }}
-            >
-              {libPickerOpen ? 'CLOSE' : 'BROWSE'}
-            </button>
-          </div>
-
-          {/* The pad's files: select, reorder, remove; how several of them play */}
-          <PadFileList
-            files={files}
-            names={(hash) => allAudio.find((m) => m.id === hash)?.name}
-            selected={selected}
-            order={order}
-            onSelect={handleSelectFile}
-            onMove={handleMoveFile}
-            onRemove={handleRemoveFile}
-            onOrderChange={handleOrderChange}
+          <label class="sb-field-label">NAME</label>
+          <input
+            class="sb-text-input"
+            type="text"
+            data-testid="pad-editor-panel-name-input"
+            value={name}
+            placeholder="Pad name…"
+            onInput={(e) => handleNameChange((e.target as HTMLInputElement).value)}
           />
-          {selectedItem && !trim && selectedItem.peaks.length > 0 && (
-            <Waveform peaks={selectedItem.peaks} height={24} />
-          )}
+        </div>
 
-          {/* Waveform editor, preview and trim fields — a file of known length is needed */}
-          {selectedItem && trim && (
-            <div class="sb-col">
-              <WaveformEditor
-                peaks={selectedItem.peaks}
-                duration={trim.duration}
-                values={trim.values}
-                onMove={handleTrimMove}
-                playhead={playhead}
-                cursor={cursor ?? trim.values.trimStart}
-                onSeek={handleSeek}
-              />
-              <div class="sb-row-sm">
-                <button
-                  class="sb-btn sb-btn-ghost"
-                  data-testid={`pad-editor-panel-preview-${previewOn ? 'pause' : 'play'}-button`}
-                  aria-label={previewOn ? 'Pause the preview' : 'Play a preview'}
-                  onClick={previewOn ? handlePreviewPause : handlePreviewPlay}
-                >
-                  {previewOn ? '⏸' : '▶'}
-                </button>
-                <button
-                  class="sb-btn sb-btn-ghost"
-                  data-testid="pad-editor-panel-preview-stop-button"
-                  aria-label="Stop the preview"
-                  onClick={() => endPreview(null)}
-                >
-                  ⏹
-                </button>
-                <span class="sb-value-text" data-testid="pad-editor-panel-preview-text">
-                  {previewAt.toFixed(1)}s / {trim.duration.toFixed(1)}s
-                </span>
-              </div>
-              <div class="sb-row-sm">
-                <TrimField
-                  label="Start (s)"
-                  value={trim.values.trimStart}
-                  testid="pad-editor-panel-trim-start-input"
-                  onCommit={(v) => handleTrimMove('trimStart', v)?.trimStart}
-                />
-                <TrimField
-                  label="End (s)"
-                  value={trim.values.trimEnd}
-                  testid="pad-editor-panel-trim-end-input"
-                  onCommit={(v) => handleTrimMove('trimEnd', v)?.trimEnd}
-                />
-              </div>
-            </div>
-          )}
-
-          {/* Library picker — tick several files, add them together (V1 v120 multi-select) */}
-          {libPickerOpen && (
-            <div class="sb-lib-browser-list">
-              <div class="sb-lib-browser-search">
-                <input
-                  class="sb-search-input"
-                  type="text"
-                  placeholder="Search…"
-                  value={libSearch}
-                  onInput={(e) => setLibSearch((e.target as HTMLInputElement).value)}
-                  autoFocus
-                />
-              </div>
-              {filteredAudio.slice(0, 50).map((item) => {
-                const inPad = files.some((f) => f.hash === item.id);
-                return (
-                  <label key={item.id} class="sb-check-row sb-lib-browser-item">
-                    <input
-                      type="checkbox"
-                      data-testid={`pad-editor-panel-pick-input-${item.id}`}
-                      checked={inPad || picked.includes(item.id)}
-                      disabled={inPad}
-                      onChange={(e) => {
-                        const on = (e.target as HTMLInputElement).checked;
-                        setPicked((p) => (on ? [...p, item.id] : p.filter((h) => h !== item.id)));
-                      }}
-                    />
-                    <span class="sb-flex-trunc">{item.name}</span>
-                    {inPad && <span class="sb-hint-text">(in this pad)</span>}
-                  </label>
-                );
-              })}
-              {filteredAudio.length === 0 && (
-                <div class="sb-lib-browser-no-results">No files found</div>
-              )}
+        {/* Icons — up to 4, shown on the pad in this order (ADR-0070; V1's four slots) */}
+        <div class="sb-inspector-section">
+          <label class="sb-field-label">ICONS</label>
+          <div class="sb-row-wrap">
+            {icons.map((key, i) => {
+              const drawing = iconDrawings?.[i];
+              const iconName = key.slice(key.indexOf(':') + 1);
+              return (
+                <div key={key} class="sb-icon-slot">
+                  <button
+                    class="sb-icon-cell"
+                    aria-label={`Icon ${i + 1}: ${iconName} — change`}
+                    title={key}
+                    data-testid={`pad-editor-panel-icon-button-${i}`}
+                    onClick={() => setPickerSlot(i)}
+                  >
+                    {drawing && <IconGlyph drawing={drawing} />}
+                  </button>
+                  <button
+                    class="sb-btn sb-btn-xs sb-btn-danger"
+                    aria-label={
+                      iconConfirm === i ? `Confirm: remove ${iconName}` : `Remove ${iconName}`
+                    }
+                    data-testid={`pad-editor-panel-icon-remove-button-${i}`}
+                    onClick={() => {
+                      if (iconConfirm === i) {
+                        setIconConfirm(null);
+                        handleIconsChange(icons.filter((_, k) => k !== i));
+                      } else setIconConfirm(i);
+                    }}
+                    onBlur={() => setIconConfirm(null)}
+                  >
+                    {iconConfirm === i ? 'CONFIRM' : '✕'}
+                  </button>
+                </div>
+              );
+            })}
+            {icons.length < PAD_ICONS_MAX && (
               <button
-                class="sb-btn sb-btn-primary sb-btn-block"
-                data-testid="pad-editor-panel-add-files-button"
-                disabled={picked.length === 0}
-                onClick={handleAddPicked}
+                class="sb-icon-cell is-empty"
+                aria-label="Add an icon"
+                data-testid="pad-editor-panel-add-icon-button"
+                onClick={() => setPickerSlot(icons.length)}
               >
-                {picked.length === 1 ? 'ADD 1 FILE' : `ADD ${picked.length} FILES`}
+                +
+              </button>
+            )}
+          </div>
+        </div>
+        {pickerSlot !== null && (
+          <IconPicker chosen={icons} onPick={handleIconPick} onClose={() => setPickerSlot(null)} />
+        )}
+
+        {/* Type selector */}
+        <div class="sb-inspector-section">
+          <label class="sb-field-label">TYPE</label>
+          <div class="sb-row-sm">
+            {PAD_TYPES.map((t) => (
+              <button
+                key={t}
+                class={`sb-btn sb-type-btn ${type === t ? 'sb-btn-primary' : 'sb-btn-ghost'}`}
+                data-testid={`pad-editor-panel-type-button-${t}`}
+                aria-pressed={type === t}
+                style={{
+                  color: type === t ? padTypeColor(t) : 'var(--text-mute)',
+                  borderColor: type === t ? padTypeColor(t) : undefined,
+                }}
+                onClick={() => requestTypeChange(t)}
+              >
+                {padTypeLabel(t)}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Combo: its steps (Slice 11) */}
+        {type === 'combo' && (
+          <ComboStepsEditor
+            comboId={pad.id}
+            steps={steps}
+            board={board}
+            onChange={(next) => {
+              setSteps(next);
+              scheduleAutoSave(buildCurrentPad(undefined, next));
+            }}
+          />
+        )}
+
+        {/* Audio source — Single and Loop only; a Combo plays other pads */}
+        {type !== 'combo' && (
+          <div class="sb-inspector-section">
+            <div class="sb-section-header-row">
+              <label class="sb-field-label">AUDIO FILES</label>
+              <button
+                class="sb-btn sb-btn-xs sb-btn-ghost"
+                data-testid="pad-editor-panel-browse-button"
+                onClick={() => {
+                  setPicked([]);
+                  setLibPickerOpen((o) => !o);
+                }}
+              >
+                {libPickerOpen ? 'CLOSE' : 'BROWSE'}
               </button>
             </div>
-          )}
-        </div>
-      )}
 
-      {/* REPEAT — a Loop plays until stopped (∞) or a number of times, then stops (ADR-0069) */}
-      {type === 'loop' && (
-        <div class="sb-inspector-section">
-          <label class="sb-field-label">REPEAT</label>
-          <div class="sb-row-sm">
-            <button
-              class={`sb-btn sb-btn-xs ${repeat === undefined ? 'sb-btn-primary' : 'sb-btn-ghost'}`}
-              aria-pressed={repeat === undefined}
-              aria-label="Repeat until stopped"
-              data-testid="pad-editor-panel-repeat-forever-button"
-              onClick={() => handleRepeatChange(undefined)}
-            >
-              ∞
-            </button>
-            <input
-              class="sb-text-input"
-              type="number"
-              min="1"
-              max={REPEAT_MAX}
-              step="1"
-              placeholder="Count…"
-              aria-label="Repeat count"
-              data-testid="pad-editor-panel-repeat-input"
-              value={repeat ?? ''}
-              onChange={(e) => {
-                const typed = Math.floor(parseFloat(e.currentTarget.value));
-                const next = Number.isFinite(typed)
-                  ? Math.min(Math.max(typed, 1), REPEAT_MAX)
-                  : undefined;
-                handleRepeatChange(next);
-                e.currentTarget.value = next === undefined ? '' : String(next);
-              }}
+            {/* The pad's files: select, reorder, remove; how several of them play */}
+            <PadFileList
+              files={files}
+              names={(hash) => allAudio.find((m) => m.id === hash)?.name}
+              selected={selected}
+              order={order}
+              onSelect={handleSelectFile}
+              onMove={handleMoveFile}
+              onRemove={handleRemoveFile}
+              onOrderChange={handleOrderChange}
             />
-          </div>
-        </div>
-      )}
+            {selectedItem && !trim && selectedItem.peaks.length > 0 && (
+              <Waveform peaks={selectedItem.peaks} height={24} />
+            )}
 
-      {/* Volume */}
-      <div class="sb-inspector-section">
-        <SliderRow
-          label="VOLUME"
-          value={volume}
-          min={0}
-          max={100}
-          step={1}
-          format={(v) => `${v}%`}
-          onChange={handleVolumeChange}
-          testid="pad-editor-panel-volume-slider"
-        />
-      </div>
+            {/* Waveform editor, preview and trim fields — a file of known length is needed */}
+            {selectedItem && trim && (
+              <div class="sb-col">
+                <WaveformEditor
+                  peaks={selectedItem.peaks}
+                  duration={trim.duration}
+                  values={trim.values}
+                  onMove={handleTrimMove}
+                  playhead={playhead}
+                  cursor={cursor ?? trim.values.trimStart}
+                  onSeek={handleSeek}
+                />
+                <div class="sb-row-sm">
+                  <button
+                    class="sb-btn sb-btn-ghost"
+                    data-testid={`pad-editor-panel-preview-${previewOn ? 'pause' : 'play'}-button`}
+                    aria-label={previewOn ? 'Pause the preview' : 'Play a preview'}
+                    onClick={previewOn ? handlePreviewPause : handlePreviewPlay}
+                  >
+                    {previewOn ? '⏸' : '▶'}
+                  </button>
+                  <button
+                    class="sb-btn sb-btn-ghost"
+                    data-testid="pad-editor-panel-preview-stop-button"
+                    aria-label="Stop the preview"
+                    onClick={() => endPreview(null)}
+                  >
+                    ⏹
+                  </button>
+                  <span class="sb-value-text" data-testid="pad-editor-panel-preview-text">
+                    {previewAt.toFixed(1)}s / {trim.duration.toFixed(1)}s
+                  </span>
+                </div>
+                <div class="sb-row-sm">
+                  <TrimField
+                    label="Start (s)"
+                    value={trim.values.trimStart}
+                    testid="pad-editor-panel-trim-start-input"
+                    onCommit={(v) => handleTrimMove('trimStart', v)?.trimStart}
+                  />
+                  <TrimField
+                    label="End (s)"
+                    value={trim.values.trimEnd}
+                    testid="pad-editor-panel-trim-end-input"
+                    onCommit={(v) => handleTrimMove('trimEnd', v)?.trimEnd}
+                  />
+                </div>
+              </div>
+            )}
 
-      {/* Fade In */}
-      <div class="sb-inspector-section">
-        <SliderRow
-          label="FADE IN"
-          value={fadeIn}
-          min={0}
-          max={10}
-          step={0.1}
-          format={(v) => `${v.toFixed(1)}s`}
-          onChange={handleFadeInChange}
-          testid="pad-editor-panel-fade-in-slider"
-        />
-      </div>
-
-      {/* Fade Out */}
-      <div class="sb-inspector-section">
-        <SliderRow
-          label="FADE OUT"
-          value={fadeOut}
-          min={0}
-          max={10}
-          step={0.1}
-          format={(v) => `${v.toFixed(1)}s`}
-          onChange={handleFadeOutChange}
-          testid="pad-editor-panel-fade-out-slider"
-        />
-      </div>
-
-      {/* Hotkey (read-only; assigning keys comes with Slice 12) — keys belong to a deck's placement */}
-      {deck && (
-        <div class="sb-inspector-section">
-          <label class="sb-field-label">HOTKEY</label>
-          <div class="sb-readonly-field">
-            <PixelIcon name="keyboard" size={11} color="var(--text-mute)" />
-            <span
-              class="sb-hotkey-value sb-flex-1"
-              style={{ color: hotkey ? 'var(--text)' : 'var(--text-mute)' }}
-            >
-              {hotkey ?? '— not assigned —'}
-            </span>
-            <span class="sb-hint-text">read-only</span>
-          </div>
-        </div>
-      )}
-
-      {/* Decks — place the pad in other decks or take it out (ADR-0048) */}
-      <div class="sb-inspector-section">
-        <label class="sb-field-label">DECKS</label>
-        {decksByOrder.length === 0 && <div class="sb-hint-text">No decks yet</div>}
-        {decksByOrder.map((d) => {
-          const placed = d.placements.some((p) => p.padId === pad.id);
-          const full =
-            !placed && nextFreeSlot(d.placements, d.gridConfig.cols, d.gridConfig.rows) === null;
-          return (
-            <label key={d.id} class="sb-check-row">
-              <input
-                type="checkbox"
-                data-testid={`pad-editor-panel-deck-input-${d.id}`}
-                checked={placed}
-                disabled={full}
-                onChange={(e) => handleDeckToggle(d.id, (e.target as HTMLInputElement).checked)}
-              />
-              <span class="sb-flex-trunc">{d.name}</span>
-              {full && <span class="sb-hint-text">(full)</span>}
-            </label>
-          );
-        })}
-      </div>
-
-      {/* Spacer */}
-      <div class="sb-flex-1" />
-
-      {/* Remove from deck — deck view only; the pad stays in the pool */}
-      {deck && (
-        <div class="sb-inspector-section">
-          <button
-            class="sb-btn sb-btn-ghost sb-btn-block"
-            data-testid="pad-editor-panel-remove-button"
-            onClick={handleRemove}
-            onBlur={() => setRemoveConfirm(false)}
-          >
-            {removeConfirm ? 'CONFIRM REMOVE' : 'REMOVE FROM DECK'}
-          </button>
-        </div>
-      )}
-
-      {/* Delete */}
-      <div class="sb-inspector-section">
-        <button
-          class="sb-btn sb-btn-danger sb-btn-block"
-          data-testid="pad-editor-panel-delete-button"
-          onClick={handleDelete}
-          onBlur={() => setDeleteConfirm(false)}
-        >
-          <PixelIcon name="skull" size={12} />
-          {deleteConfirm ? 'CONFIRM DELETE' : 'DELETE PAD'}
-        </button>
-        {deleteConfirm && (
-          <div class="sb-hint-text" data-testid="pad-editor-panel-delete-text">
-            Used in {usedIn} {usedIn === 1 ? 'deck' : 'decks'} — deleting removes it everywhere.
+            {/* Library picker — tick several files, add them together (V1 v120 multi-select) */}
+            {libPickerOpen && (
+              <div class="sb-lib-browser-list">
+                <div class="sb-lib-browser-search">
+                  <input
+                    class="sb-search-input"
+                    type="text"
+                    placeholder="Search…"
+                    value={libSearch}
+                    onInput={(e) => setLibSearch((e.target as HTMLInputElement).value)}
+                    autoFocus
+                  />
+                </div>
+                {filteredAudio.slice(0, 50).map((item) => {
+                  const inPad = files.some((f) => f.hash === item.id);
+                  return (
+                    <label key={item.id} class="sb-check-row sb-lib-browser-item">
+                      <input
+                        type="checkbox"
+                        data-testid={`pad-editor-panel-pick-input-${item.id}`}
+                        checked={inPad || picked.includes(item.id)}
+                        disabled={inPad}
+                        onChange={(e) => {
+                          const on = (e.target as HTMLInputElement).checked;
+                          setPicked((p) => (on ? [...p, item.id] : p.filter((h) => h !== item.id)));
+                        }}
+                      />
+                      <span class="sb-flex-trunc">{item.name}</span>
+                      {inPad && <span class="sb-hint-text">(in this pad)</span>}
+                    </label>
+                  );
+                })}
+                {filteredAudio.length === 0 && (
+                  <div class="sb-lib-browser-no-results">No files found</div>
+                )}
+                <button
+                  class="sb-btn sb-btn-primary sb-btn-block"
+                  data-testid="pad-editor-panel-add-files-button"
+                  disabled={picked.length === 0}
+                  onClick={handleAddPicked}
+                >
+                  {picked.length === 1 ? 'ADD 1 FILE' : `ADD ${picked.length} FILES`}
+                </button>
+              </div>
+            )}
           </div>
         )}
+
+        {/* REPEAT — a Loop plays until stopped (∞) or a number of times, then stops (ADR-0069) */}
+        {type === 'loop' && (
+          <div class="sb-inspector-section">
+            <label class="sb-field-label">REPEAT</label>
+            <div class="sb-row-sm">
+              <button
+                class={`sb-btn sb-btn-xs ${repeat === undefined ? 'sb-btn-primary' : 'sb-btn-ghost'}`}
+                aria-pressed={repeat === undefined}
+                aria-label="Repeat until stopped"
+                data-testid="pad-editor-panel-repeat-forever-button"
+                onClick={() => handleRepeatChange(undefined)}
+              >
+                ∞
+              </button>
+              <input
+                class="sb-text-input"
+                type="number"
+                min="1"
+                max={REPEAT_MAX}
+                step="1"
+                placeholder="Count…"
+                aria-label="Repeat count"
+                data-testid="pad-editor-panel-repeat-input"
+                value={repeat ?? ''}
+                onChange={(e) => {
+                  const typed = Math.floor(parseFloat(e.currentTarget.value));
+                  const next = Number.isFinite(typed)
+                    ? Math.min(Math.max(typed, 1), REPEAT_MAX)
+                    : undefined;
+                  handleRepeatChange(next);
+                  e.currentTarget.value = next === undefined ? '' : String(next);
+                }}
+              />
+            </div>
+          </div>
+        )}
+
+        {/* Volume */}
+        <div class="sb-inspector-section">
+          <SliderRow
+            label="VOLUME"
+            value={volume}
+            min={0}
+            max={100}
+            step={1}
+            format={(v) => `${v}%`}
+            onChange={handleVolumeChange}
+            testid="pad-editor-panel-volume-slider"
+          />
+        </div>
+
+        {/* Fade In */}
+        <div class="sb-inspector-section">
+          <SliderRow
+            label="FADE IN"
+            value={fadeIn}
+            min={0}
+            max={10}
+            step={0.1}
+            format={(v) => `${v.toFixed(1)}s`}
+            onChange={handleFadeInChange}
+            testid="pad-editor-panel-fade-in-slider"
+          />
+        </div>
+
+        {/* Fade Out */}
+        <div class="sb-inspector-section">
+          <SliderRow
+            label="FADE OUT"
+            value={fadeOut}
+            min={0}
+            max={10}
+            step={0.1}
+            format={(v) => `${v.toFixed(1)}s`}
+            onChange={handleFadeOutChange}
+            testid="pad-editor-panel-fade-out-slider"
+          />
+        </div>
+
+        {/* Hotkey (read-only; assigning keys comes with Slice 12) — keys belong to a deck's placement */}
+        {deck && (
+          <div class="sb-inspector-section">
+            <label class="sb-field-label">HOTKEY</label>
+            <div class="sb-readonly-field">
+              <PixelIcon name="keyboard" size={11} color="var(--text-mute)" />
+              <span
+                class="sb-hotkey-value sb-flex-1"
+                style={{ color: hotkey ? 'var(--text)' : 'var(--text-mute)' }}
+              >
+                {hotkey ?? '— not assigned —'}
+              </span>
+              <span class="sb-hint-text">read-only</span>
+            </div>
+          </div>
+        )}
+
+        {/* Decks — place the pad in other decks or take it out (ADR-0048) */}
+        <div class="sb-inspector-section">
+          <label class="sb-field-label">DECKS</label>
+          {decksByOrder.length === 0 && <div class="sb-hint-text">No decks yet</div>}
+          {decksByOrder.map((d) => {
+            const placed = d.placements.some((p) => p.padId === pad.id);
+            const full =
+              !placed && nextFreeSlot(d.placements, d.gridConfig.cols, d.gridConfig.rows) === null;
+            return (
+              <label key={d.id} class="sb-check-row">
+                <input
+                  type="checkbox"
+                  data-testid={`pad-editor-panel-deck-input-${d.id}`}
+                  checked={placed}
+                  disabled={full}
+                  onChange={(e) => handleDeckToggle(d.id, (e.target as HTMLInputElement).checked)}
+                />
+                <span class="sb-flex-trunc">{d.name}</span>
+                {full && <span class="sb-hint-text">(full)</span>}
+              </label>
+            );
+          })}
+        </div>
+
+        {/* Spacer */}
+        <div class="sb-flex-1" />
+
+        {/* Remove from deck — deck view only; the pad stays in the pool */}
+        {deck && (
+          <div class="sb-inspector-section">
+            <button
+              class="sb-btn sb-btn-ghost sb-btn-block"
+              data-testid="pad-editor-panel-remove-button"
+              onClick={handleRemove}
+              onBlur={() => setRemoveConfirm(false)}
+            >
+              {removeConfirm ? 'CONFIRM REMOVE' : 'REMOVE FROM DECK'}
+            </button>
+          </div>
+        )}
+
+        {/* Delete */}
+        <div class="sb-inspector-section">
+          <button
+            class="sb-btn sb-btn-danger sb-btn-block"
+            data-testid="pad-editor-panel-delete-button"
+            onClick={handleDelete}
+            onBlur={() => setDeleteConfirm(false)}
+          >
+            <PixelIcon name="skull" size={12} />
+            {deleteConfirm ? 'CONFIRM DELETE' : 'DELETE PAD'}
+          </button>
+          {deleteConfirm && (
+            <div class="sb-hint-text" data-testid="pad-editor-panel-delete-text">
+              Used in {usedIn} {usedIn === 1 ? 'deck' : 'decks'} — deleting removes it everywhere.
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Type change confirm dialog */}

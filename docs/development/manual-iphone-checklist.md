@@ -197,6 +197,12 @@ because Playwright runs against a simulated environment:
     text fields then comes back (BACKLOG "Text fields with selection off").
   - Why manual: The WebKit fault (selection off blocks typing) shows only on the device.
 
+- [ ] **PAD editor full screen** _(3.0.176, ADR-0074)_
+  - Action: In SETUP, tap a pad; type a name; scroll down to DELETE PAD; tap ✕.
+  - Expected: The editor covers the whole screen, the top bar too; the keyboard does not hide the
+    name field; everything scrolls into reach; after ✕ the grid shows the new name.
+  - Why manual: The iOS keyboard, the safe areas and the real touch scroll.
+
 - [ ] **Update prompt** _(3.0.159, ADR-0066)_
   - Action: Keep the app open while a new version is published (or open it after one), wait a
     moment.

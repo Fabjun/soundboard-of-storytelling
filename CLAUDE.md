@@ -285,6 +285,10 @@ and has diverged). Never hardcode colors, fonts, or spacing.
   error messages say in plain words what happened and what to do (Nielsen heuristic 9) — owner
   decision 2026-10-02; the existing screens get an audit (BACKLOG "Tab access and plain errors")
 - Minimum touch target on all interactive elements: 44px (iOS guideline)
+- Full-screen dialogs follow ADR-0074 (`sb-overlay`, role dialog, the page behind inert via
+  `v3/src/lib/inertOutside.ts`, focus in and back, Escape — a dialog on top closes first); the PAD
+  editor is one, on every screen size (owner decision 2026-10-05; guarded by
+  `v3/tests/e2e/pad-editor-fullscreen.spec.ts`)
 - Board pads are squares of at most `--pad-size` that shrink so the whole grid is seen: the width always (no pad is cut off), the height down to the touch target (`v3/src/lib/padFit.ts`); the deck list starts folded (owner decisions 2026-10-05; guarded by `v3/tests/e2e/pad-size.spec.ts`, `v3/tests/e2e/deck-rail-fold.spec.ts`)
 - The browser's own gestures are off — no zoom, no selection, no long-press menu (global rule in
   `v3/src/styles/global.css`, ADR-0067); a gesture the app needs is built with Pointer Events and

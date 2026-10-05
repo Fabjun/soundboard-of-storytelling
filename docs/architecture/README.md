@@ -89,6 +89,7 @@ file. Format: `docs/architecture/_template.md`.
 | [ADR-0052](0052-code-naming-conventions.md)   | Code naming conventions                                                        | Accepted | cross-cutting | 2026-09-29 |
 | [ADR-0071](0071-virtualized-icon-grids.md)    | Virtualized icon grids with `@tanstack/virtual-core`                           | Proposed | Slice 15      | 2026-10-04 |
 | [ADR-0072](0072-ui-icon-set.md)               | The UI icons as the project's own icon set `sos-ui`                            | Proposed | Slice 15      | 2026-10-04 |
+| [ADR-0074](0074-full-screen-modal-dialogs.md) | Full-screen modal dialogs — one pattern, the PAD editor first                  | Accepted | cross-cutting | 2026-10-05 |
 
 ### Interaction
 

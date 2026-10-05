@@ -6,7 +6,9 @@
  * 3-column main area:
  *   Left  220px  DeckRail  (All pads + deck list + CRUD)
  *   Center 1fr   PadGrid    (the deck's grid + Path A/B creation, or the All pads pool view)
- *   Right  280px Right panel (toggles: LibraryPanel ↔ PadEditorPanel)
+ *   Right  280px LibraryPanel (toggles with the LIBRARY button)
+ *
+ * PadEditorPanel opens over all of it, full screen (ADR-0074, owner decision 2026-10-05).
  *
  * Modes:
  *   SETUP (mode='edit'):  full CRUD, DnD, inspector visible
