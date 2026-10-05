@@ -89,6 +89,14 @@ export function withEarlyVersions(
 /** The release notes the start screen shows, newest first (checked by whatsNew.test.ts). */
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
+    version: '3.0.174',
+    date: '2026-10-05',
+    improved: [
+      'The deck list on the left folds away with the ◀ button and comes back with ▶. On a phone it starts folded, so the pads get the room.',
+      'Pads are squares of one size instead of growing and shrinking with the window. Where they do not all fit, the pad area scrolls. A long pad name ends in "…".',
+    ],
+  },
+  {
     version: '3.0.173',
     date: '2026-10-04',
     new: [

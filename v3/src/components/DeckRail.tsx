@@ -13,6 +13,8 @@
  *     directly after the original
  *   - Reorder: NOT built yet (decided: drag & drop, mouse + touch — BACKLOG "Deck reorder")
  *   - + NEW DECK button at bottom
+ *   - Folds to its toggle button (owner decision 2026-10-05): on a narrow screen it starts folded,
+ *     so the pads get the width; on a wide one it starts open
  */
 
 import { useState, useRef } from 'preact/hooks';
@@ -32,6 +34,9 @@ import {
 } from '../lib/boardModel';
 import { nanoid } from '../lib/nanoid';
 import { findConflictingDeck } from '../lib/deckConflict';
+
+/** Below this width the deck rail starts folded (40rem = 640px, Tailwind's "sm" breakpoint). */
+const NARROW = '(max-width: 40rem)';
 
 interface DeckRailProps {
   board: Board;
@@ -55,6 +60,8 @@ export function DeckRail({
   onAllPadsSelect,
   conflictIds,
 }: DeckRailProps): JSX.Element {
+  // Narrow screen (phone): start folded, so the pads get the width
+  const [open, setOpen] = useState(() => !window.matchMedia(NARROW).matches);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editValue, setEditValue] = useState('');
   const [conflictOwner, setConflictOwner] = useState<Deck | null>(null);
@@ -164,8 +171,28 @@ export function DeckRail({
 
   // ── Render ────────────────────────────────────────────────────────────────
 
+  const toggle = (
+    <button
+      class="sb-deck-rail-toggle"
+      aria-expanded={open}
+      aria-label={open ? 'Hide the deck list' : 'Show the deck list'}
+      onClick={() => setOpen(!open)}
+      data-testid="deck-rail-toggle-button"
+    >
+      {open ? '◀' : '▶'}
+    </button>
+  );
+  if (!open) {
+    return (
+      <div class="sb-deck-rail is-closed" data-testid="deck-rail">
+        {toggle}
+      </div>
+    );
+  }
+
   return (
     <div class="sb-deck-rail" data-testid="deck-rail">
+      {toggle}
       {/* All pads — the whole pool, always the first entry (ADR-0048) */}
       <div
         class={'sb-deck-tab' + (allPadsActive ? ' is-active' : '')}

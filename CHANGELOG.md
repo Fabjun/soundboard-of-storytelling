@@ -7,6 +7,17 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.174 — 2026-10-05
+
+### Added
+
+- feat(board): the deck rail folds to its ◀ / ▶ button; on a narrow screen (max-width 40rem) it starts folded, on a wide one open (owner decision 2026-10-05)
+- feat(board): pads are squares of one size, token --pad-size 5.5rem (88px), instead of scaling with the window; the grid scrolls in both directions where it does not fit; a pad name is one line ending in … (owner decision 2026-10-05, pad.md PQ1 decided for now)
+
+### Internal
+
+- test: mobile board-flow "the deck list starts folded on a phone and unfolds and folds with its button" (counter-checked: starting open — red); E2E helper createDeck unfolds the rail first; visual baselines of the board (GAME, SETUP) and the deck rail renewed after review of the new screenshots
+
 ## 3.0.173 — 2026-10-04
 
 ### Added
