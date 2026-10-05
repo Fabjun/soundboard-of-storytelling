@@ -30,7 +30,10 @@ A full-screen dialog of the app is built one way:
    to the screen (`v3/src/lib/inertOutside.ts`, the same walk as react-aria's `ariaHideOutside`);
    Escape closes it; on close, focus returns to the element that opened it.
 3. **Nested dialogs:** a dialog opened on top (the icon list, the type confirmation) closes first
-   on Escape; the dialog below ignores Escape while one is open.
+   on Escape; the dialog below ignores Escape while one is open. It decides when the key is
+   pressed, from the current state (a ref set on every render) — not by removing its listener in
+   an effect, which runs only after the next paint and so missed a key pressed right after the
+   dialog on top opened (found in CI 2026-10-05, reproduced locally in 1 of 15 runs).
 4. **Closing:** only by the close button and Escape — no swipe-away, no tap outside (there is no
    outside; BACKLOG "B7 — Closing the PadEditor").
 

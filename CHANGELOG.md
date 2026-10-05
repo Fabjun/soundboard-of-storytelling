@@ -11,7 +11,7 @@ release notes the app shows are written separately for its users (`v3/src/lib/wh
 
 ### Added
 
-- feat(editor): the PAD editor opens full screen on every screen size, the board's top bar included (owner decision 2026-10-05) — a modal dialog on sb-overlay (ADR-0074): role dialog, focus moves in, the board behind is inert (src/lib/inertOutside.ts), Escape closes it unless the icon list or the type confirmation on top is open, focus returns to the pad; the fields scroll in one column, at most 40rem wide and centered on a wide window (sb-pad-editor); sb-overlay-header got a small gap
+- feat(editor): the PAD editor opens full screen on every screen size, the board's top bar included (owner decision 2026-10-05) — a modal dialog on sb-overlay (ADR-0074): role dialog, focus moves in, the board behind is inert (src/lib/inertOutside.ts), Escape closes it unless the icon list or the type confirmation on top is open — decided when the key is pressed, from a ref set on every render (an effect-removed listener still heard a key pressed right after the icon list opened: CI 2026-10-05, reproduced locally in 1 of 15 runs, 0 of 40 after the fix) — focus returns to the pad; the fields scroll in one column, at most 40rem wide and centered on a wide window (sb-pad-editor); sb-overlay-header got a small gap
 
 ### Internal
 

@@ -501,14 +501,19 @@ export function PadEditorPanel({
   const typeColor = padTypeColor(type);
 
   // Escape closes the editor — not while the icon list or the type confirmation is open on top:
-  // those close first, with their own Escape handlers
-  const nestedOpen = pickerSlot !== null || pendingType !== null;
+  // those close first, with their own Escape handlers. The state is read when the key is pressed,
+  // from a ref set on every render: a listener removed by an effect would still hear a key pressed
+  // before that effect ran (seen in CI 2026-10-05: Escape right after the icon list opened closed
+  // the editor too).
+  const escape = useRef({ nested: false, onClose });
+  escape.current = { nested: pickerSlot !== null || pendingType !== null, onClose };
   useEffect(() => {
-    if (nestedOpen) return;
-    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && onClose();
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && !escape.current.nested) escape.current.onClose();
+    };
     document.addEventListener('keydown', onKey);
     return () => document.removeEventListener('keydown', onKey);
-  }, [nestedOpen, onClose]);
+  }, []);
 
   return (
     <div
