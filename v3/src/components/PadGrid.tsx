@@ -13,7 +13,7 @@
  *     drop onto the grid (BoardScreen, owner decision 2026-10-02).
  */
 
-import { useEffect, useState } from 'preact/hooks';
+import { useEffect, useLayoutEffect, useRef, useState } from 'preact/hooks';
 import type { JSX } from 'preact';
 import type { AppMode, Board, Pad, PadPosition, Deck } from '../types';
 import {
@@ -25,6 +25,7 @@ import {
   setPlacements,
   type PlacedPad,
 } from '../lib/boardModel';
+import { padFit } from '../lib/padFit';
 import { PadGridCell } from './PadGridCell';
 import { PadCreationPopover, type CreationResult } from './PadCreationPopover';
 import {
@@ -79,6 +80,34 @@ export function PadGrid({
   const isSetup = mode === 'edit';
   // Moving and creating pads happens in a deck; the pool view only selects and plays.
   const canArrange = isSetup && !isPool;
+
+  // The side the pads shrink to so the whole grid is seen (owner decision 2026-10-05); null until
+  // measured — the CSS then keeps the standard size
+  const gridRef = useRef<HTMLDivElement>(null);
+  const [fit, setFit] = useState<number | null>(null);
+  useLayoutEffect(() => {
+    const el = gridRef.current;
+    if (!el) return;
+    const measure = () => {
+      const cs = getComputedStyle(el);
+      const padX = parseFloat(cs.paddingLeft) + parseFloat(cs.paddingRight);
+      const padY = parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom);
+      setFit(
+        padFit({
+          width: el.clientWidth - padX,
+          height: el.clientHeight - padY,
+          cols,
+          rows,
+          gap,
+        }),
+      );
+    };
+    measure();
+    if (typeof ResizeObserver === 'undefined') return;
+    const observer = new ResizeObserver(measure);
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [cols, rows, gap]);
 
   // Path A popover state
   const [popoverPos, setPopoverPos] = useState<PadPosition | null>(null);
@@ -152,6 +181,7 @@ export function PadGrid({
   return (
     <>
       <div
+        ref={gridRef}
         class={
           'sb-pad-grid' + (isPool ? ' sb-pad-grid-pool' : '') + (canArrange ? ' sb-grid-bg' : '')
         }
@@ -164,6 +194,7 @@ export function PadGrid({
             '--grid-cols': String(cols),
             '--grid-rows': String(rows),
             '--grid-gap': `${gap}px`,
+            ...(fit === null ? {} : { '--pad-fit': `${fit}px` }),
           } as Record<string, string>
         }
       >

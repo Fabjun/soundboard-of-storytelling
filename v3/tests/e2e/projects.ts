@@ -26,6 +26,8 @@ export const FULL_TESTS = [
   'pad-files',
   'pad-icons',
   'layout-reach',
+  'pad-size',
+  'deck-rail-fold',
   'whats-new',
   'pad-dnd',
   'pad-pool',

@@ -13,8 +13,8 @@
  *     directly after the original
  *   - Reorder: NOT built yet (decided: drag & drop, mouse + touch — BACKLOG "Deck reorder")
  *   - + NEW DECK button at bottom
- *   - Folds to its toggle button (owner decision 2026-10-05): on a narrow screen it starts folded,
- *     so the pads get the width; on a wide one it starts open
+ *   - Folds to its toggle button (owner decision 2026-10-05): it starts folded, so the pads get the
+ *     width, and the toggle opens it
  */
 
 import { useState, useRef } from 'preact/hooks';
@@ -34,9 +34,6 @@ import {
 } from '../lib/boardModel';
 import { nanoid } from '../lib/nanoid';
 import { findConflictingDeck } from '../lib/deckConflict';
-
-/** Below this width the deck rail starts folded (40rem = 640px, Tailwind's "sm" breakpoint). */
-const NARROW = '(max-width: 40rem)';
 
 interface DeckRailProps {
   board: Board;
@@ -60,8 +57,8 @@ export function DeckRail({
   onAllPadsSelect,
   conflictIds,
 }: DeckRailProps): JSX.Element {
-  // Narrow screen (phone): start folded, so the pads get the width
-  const [open, setOpen] = useState(() => !window.matchMedia(NARROW).matches);
+  // Starts folded, so the pads get the width (owner decision 2026-10-05)
+  const [open, setOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editValue, setEditValue] = useState('');
   const [conflictOwner, setConflictOwner] = useState<Deck | null>(null);

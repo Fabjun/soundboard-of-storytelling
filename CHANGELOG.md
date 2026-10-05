@@ -7,6 +7,20 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.175 — 2026-10-05
+
+### Added
+
+- feat(deck-rail): the deck list starts folded on every screen size (owner decision 2026-10-05), not only below 40rem — the toggle opens it; E2E helpers createBoardAndNavigate and reopenFirstBoard unfold it for specs that are not about folding
+
+### Fixed
+
+- fix(pads): pads shrink to be seen whole on every display (owner decision 2026-10-05; the owner found pads cut off at the right edge on a phone in 3.0.174) — src/lib/padFit.ts returns the side at which all columns fit the width and, down to the 44px touch target, all rows fit the height; PadGrid measures its panel (ResizeObserver) and sets --pad-fit; the columns are minmax(0, min(--pad-size, --pad-fit)), the cells are squares (aspect-ratio 1) and the auto rows are max-content, so the square decides the row — with min-height 0 on the cells the rows would only share the free height of the panel and pads would overlap; inside the grid the pad and the empty slot take min-width / min-height 0 against the global 44px minimum of [role='button']; --pad-size (88px) stays the largest size; below the touch target in height the grid scrolls
+
+### Internal
+
+- test: unit padFit; E2E pad-size (standard size on a wide window; touch-sized squares inside a phone window; no pad cut off with the list open; the whole grid fits a short window; touch size, no overlap and scrolling on a very short one) and deck-rail-fold (starts folded on a wide window), layout-reach window height 300 (counter-checked against 3.0.174: cut-off pads, default-open list and the fit — red)
+
 ## 3.0.174 — 2026-10-05
 
 ### Added
