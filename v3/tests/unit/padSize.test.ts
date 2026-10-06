@@ -1,18 +1,20 @@
 /**
- * @fileoverview padSize — unit tests: pad size limits, columns per row, old decks (ADR-0075)
+ * @fileoverview padSize — unit tests: pad size limits, columns per row, old boards (ADR-0075)
  *
  * Edge-case checklist: inside, below, above the limits, between steps; not a number, NaN,
  * Infinity, a word; columns at the phone width (4), a wide window, exactly fitting, a width
- * smaller than one pad (1 column), unknown width; a deck with px stays the same object, an old
- * word becomes the default, a number off the steps is put on them.
+ * smaller than one pad (1 column), unknown width; a board with its size stays the same object, the
+ * first deck (lowest order) gives the size, an old word / no size / no deck gives the default, the
+ * board's own size wins, a number off the steps is put on them.
  */
 
 import {
   PAD_SIZE,
   clampPadSize,
-  migrateDeck,
+  migratePadSize,
   padColumns,
   type StoredDeck,
+  type StoredSizeBoard,
 } from '../../src/lib/padSize';
 
 describe('clampPadSize', () => {
@@ -76,27 +78,55 @@ describe('padColumns', () => {
   });
 });
 
-describe('migrateDeck', () => {
-  const deck = (padSize: unknown): StoredDeck => ({
-    id: 'd',
-    name: 'Deck',
-    order: 0,
-    gridConfig: { cols: 4, rows: 4, gap: 8, padSize },
+describe('migratePadSize', () => {
+  const deck = (id: string, order: number, padSize?: unknown): StoredDeck => ({
+    id,
+    name: id,
+    order,
+    gridConfig:
+      padSize === undefined ? { cols: 4, rows: 4, gap: 8 } : { cols: 4, rows: 4, gap: 8, padSize },
     placements: [],
   });
-
-  it('keeps a deck that has a size in px — the same object', () => {
-    const d = deck(120);
-    expect(migrateDeck(d)).toBe(d);
+  const board = (decks: StoredDeck[], padSize?: unknown): StoredSizeBoard => ({
+    id: 'b',
+    name: 'B',
+    themeId: 't',
+    pads: [],
+    decks,
+    quickAccess: [],
+    ...(padSize === undefined ? {} : { padSize }),
   });
 
-  it("turns an old word ('md', '1fr') into the default", () => {
-    expect(migrateDeck(deck('md')).gridConfig.padSize).toBe(PAD_SIZE.default);
-    expect(migrateDeck(deck('1fr')).gridConfig.padSize).toBe(PAD_SIZE.default);
+  it('keeps a board that has a size and decks without one — the same object', () => {
+    const b = board([deck('a', 0)], 120);
+    expect(migratePadSize(b)).toBe(b);
+  });
+
+  it("takes the first deck's size — the lowest order, not the first in the array", () => {
+    const b = migratePadSize(board([deck('second', 1, 60), deck('first', 0, 120)]));
+    expect(b.padSize).toBe(120);
+    expect(b.decks.map((d) => d.gridConfig)).toEqual([
+      { cols: 4, rows: 4, gap: 8 },
+      { cols: 4, rows: 4, gap: 8 },
+    ]);
+  });
+
+  it("turns an old word ('md', '1fr'), no size and no deck into the default", () => {
+    expect(migratePadSize(board([deck('a', 0, 'md')])).padSize).toBe(PAD_SIZE.default);
+    expect(migratePadSize(board([deck('a', 0, '1fr')])).padSize).toBe(PAD_SIZE.default);
+    expect(migratePadSize(board([deck('a', 0)])).padSize).toBe(PAD_SIZE.default);
+    expect(migratePadSize(board([])).padSize).toBe(PAD_SIZE.default);
+  });
+
+  it("keeps the board's own size over a deck's, and drops the deck's", () => {
+    const b = migratePadSize(board([deck('a', 0, 60)], 120));
+    expect(b.padSize).toBe(120);
+    expect('padSize' in b.decks[0].gridConfig).toBe(false);
   });
 
   it('puts a number off the steps or outside the limits on them', () => {
-    expect(migrateDeck(deck(90)).gridConfig.padSize).toBe(92);
-    expect(migrateDeck(deck(2)).gridConfig.padSize).toBe(PAD_SIZE.min);
+    expect(migratePadSize(board([deck('a', 0, 90)])).padSize).toBe(92);
+    expect(migratePadSize(board([deck('a', 0, 2)])).padSize).toBe(PAD_SIZE.min);
+    expect(migratePadSize(board([], 999)).padSize).toBe(PAD_SIZE.max);
   });
 });

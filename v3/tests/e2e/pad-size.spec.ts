@@ -1,10 +1,11 @@
 /**
  * @fileoverview Full E2E — the pads flow into as many columns as the window allows (ADR-0075)
  *
- * Owner decisions 2026-10-06: a row holds as many pads as fit at the deck's pad size, so on a
+ * Owner decisions 2026-10-06: a row holds as many pads as fit at the board's pad size, so on a
  * phone 4 pads fill a row and a wide window holds many more; the places keep their reading order;
  * nothing is cut off at the right edge, and the grid scrolls downwards. The PAD SIZE slider in the
- * deck rail (SETUP only, per deck, stored) sets the size — a larger size, fewer pads per row.
+ * deck rail (SETUP only, stored) sets the size for every deck of the board and All pads, whichever
+ * view it is moved in — a larger size, fewer pads per row.
  */
 
 import { test, expect, type Locator, type Page } from '@playwright/test';
@@ -106,9 +107,7 @@ for (const viewport of [PHONE, TABLET, WIDE]) {
   });
 }
 
-test('the PAD SIZE slider sets fewer, larger pads per row; the size stays with the deck', async ({
-  page,
-}) => {
+test('the PAD SIZE slider sets fewer, larger pads per row; the size is kept', async ({ page }) => {
   await page.setViewportSize(WIDE);
   await boardWithSixPads(page);
   const before = await columns(page);
@@ -126,6 +125,33 @@ test('the PAD SIZE slider sets fewer, larger pads per row; the size stays with t
   await enterSetupMode(page);
   await openDeckRail(page);
   await expect(slider(page)).toHaveValue('160');
+});
+
+// Owner decision 2026-10-06: one size for the whole board, whichever deck the slider is moved in
+test('the PAD SIZE slider sets the size for every deck and All pads, from any of them', async ({
+  page,
+}) => {
+  await page.setViewportSize(WIDE);
+  await boardWithSixPads(page);
+  await slider(page).focus();
+  await page.keyboard.press('End'); // in Deck 1
+  await expect(slider(page)).toHaveValue('160');
+
+  await page.getByTestId('deck-rail-new-button').click();
+  await page.getByText('Deck 2', { exact: true }).click();
+  await expect(slider(page)).toHaveValue('160');
+  expect((await boxOf(cells(page).first())).width).toBeGreaterThan(88);
+
+  await page.getByText('All pads', { exact: true }).click();
+  await expect(slider(page)).toHaveValue('160');
+  expect((await boxOf(page.getByRole('button', { name: 'A1' }))).width).toBeGreaterThan(88);
+
+  await slider(page).focus();
+  await page.keyboard.press('Home'); // in All pads
+  await expect(slider(page)).toHaveValue('44');
+  await page.getByText('Deck 1', { exact: true }).click();
+  await expect(slider(page)).toHaveValue('44');
+  expect((await boxOf(page.getByRole('button', { name: 'A1' }))).width).toBeLessThanOrEqual(44.5);
 });
 
 test('the PAD SIZE slider is there only in SETUP', async ({ page }) => {

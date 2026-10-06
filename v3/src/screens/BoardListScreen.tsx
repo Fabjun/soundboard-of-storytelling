@@ -25,6 +25,7 @@ import { clearLastView, getLastBackup } from '../state/prefs';
 import { createBoard, updateBoard } from '../state/boardWrites';
 import type { Board } from '../types';
 import { nanoid } from '../lib/nanoid';
+import { PAD_SIZE } from '../lib/padSize';
 
 /**
  * Lists the boards — create, open, rename, delete with two taps — with EXPORT, IMPORT and the
@@ -48,6 +49,7 @@ export function BoardListScreen(): JSX.Element {
       themeId: 'hearth',
       pads: [],
       decks: [],
+      padSize: PAD_SIZE.default,
       quickAccess: [],
     };
     await createBoard(newBoard);

@@ -55,7 +55,7 @@ import {
   deletePad,
   nextDeckName,
   removeFromDeck,
-  setDeckPadSize,
+  setBoardPadSize,
 } from '../lib/boardModel';
 import { type LibDndDropResult } from '../lib/libDnd';
 
@@ -285,13 +285,13 @@ export function BoardScreen(): JSX.Element {
             if (rightPanel === 'editor') setRightPanel('empty');
           }}
           padSize={
-            mode === 'edit' && deck && !poolView
+            mode === 'edit' && (deck || poolView)
               ? {
-                  value: padSizePreview ?? deck.gridConfig.padSize,
+                  value: padSizePreview ?? board.padSize,
                   onChange: setPadSizePreview,
                   onCommit: (px) => {
                     // Stored once, when the move ends; shown at once, so the preview can go
-                    applyBoardChange(board.id, (b) => setDeckPadSize(b, deck.id, px));
+                    applyBoardChange(board.id, (b) => setBoardPadSize(b, px));
                     setPadSizePreview(null);
                   },
                 }
@@ -347,6 +347,7 @@ export function BoardScreen(): JSX.Element {
                   selectedPadId={selectedPadId}
                   onPadSelect={handlePadSelect}
                   placeMode={null}
+                  padSizePreview={padSizePreview}
                 />
               </>
             )

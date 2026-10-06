@@ -13,7 +13,8 @@
  *     directly after the original
  *   - Reorder: NOT built yet (decided: drag & drop, mouse + touch — BACKLOG "Deck reorder")
  *   - + NEW DECK button at bottom
- *   - PAD SIZE slider of the open deck, in SETUP (ADR-0075; V1 had it in the side menu)
+ *   - PAD SIZE slider of the board — all decks and All pads — in SETUP (ADR-0075; V1 had it in the
+ *     side menu)
  *   - Folds to its toggle button (owner decision 2026-10-05): it starts folded, so the pads get the
  *     width, and the toggle opens it
  */
@@ -47,7 +48,8 @@ interface DeckRailProps {
   onAllPadsSelect: () => void;
   conflictIds?: ReadonlySet<string>; // reserved for external conflict override; live detection is internal
   /**
-   * The open deck's PAD SIZE slider (ADR-0075) — given in SETUP with a deck open, absent otherwise.
+   * The board's PAD SIZE slider (ADR-0075) — given in SETUP with a deck or All pads open, absent
+   * otherwise. One size for every deck of the board (owner decision 2026-10-06).
    * `onChange` follows the slider live (preview), `onCommit` stores the size once the move ends.
    */
   padSize?: { value: number; onChange: (px: number) => void; onCommit: (px: number) => void };
@@ -199,7 +201,7 @@ export function DeckRail({
   return (
     <div class="sb-deck-rail" data-testid="deck-rail">
       {toggle}
-      {/* The open deck's pad size — V1 had this slider in the side menu (ADR-0075) */}
+      {/* The board's pad size, for all decks — V1 had this slider in the side menu (ADR-0075) */}
       {padSize && (
         <div class="sb-inspector-section">
           <SliderRow

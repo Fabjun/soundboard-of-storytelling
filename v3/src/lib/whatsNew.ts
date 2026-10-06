@@ -89,6 +89,13 @@ export function withEarlyVersions(
 /** The release notes the start screen shows, newest first (checked by whatsNew.test.ts). */
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
+    version: '3.0.178',
+    date: '2026-10-06',
+    improved: [
+      'The PAD SIZE slider now sets the size of all pads of a board at once: every deck and All pads show the same size, whichever of them the slider is moved in. In SETUP the slider also shows in All pads.',
+    ],
+  },
+  {
     version: '3.0.177',
     date: '2026-10-06',
     new: [

@@ -165,7 +165,7 @@
   --space-12: 48px;
   --space-16: 64px;
 
-  /* ── DECK RAIL ── (a deck's pad size is data, gridConfig.padSize — ADR-0075) */
+  /* ── DECK RAIL ── (the pad size is data, Board.padSize — ADR-0075) */
   --deck-rail-closed: 44px; /* width of the folded deck rail: its toggle button (touch target) */
 
   /* ── RADIUS ── kept for legacy paths; pixel-frame uses clip-path    */
@@ -1560,7 +1560,7 @@
 
 /* ── Pad Grid ── center panel ─────────────────────────────────────── */
 .sb-pad-grid {
-  /* @inventory: CSS grid for the active deck's pads — square cells in reading order, as many columns (--grid-cols, set by PadGrid, src/lib/padSize.ts) as keep every pad at or below the deck's pad size, so a row fills the width and nothing is cut off; the rows go on downwards and scroll (ADR-0075, WCAG 1.4.10 Reflow). */
+  /* @inventory: CSS grid for the active deck's pads — square cells in reading order, as many columns (--grid-cols, set by PadGrid, src/lib/padSize.ts) as keep every pad at or below the board's pad size, so a row fills the width and nothing is cut off; the rows go on downwards and scroll (ADR-0075, WCAG 1.4.10 Reflow). */
   display: grid;
   grid-template-columns: repeat(var(--grid-cols, 4), minmax(0, 1fr));
   grid-auto-rows: max-content; /* the square cell decides the row, not the free height of the panel */

@@ -3,7 +3,7 @@
  *
  * Orchestrates:
  *   - Rendering the deck's cells, occupied and empty, in reading order; as many columns as the
- *     width allows at the deck's pad size (ADR-0075), so the places flow and the grid scrolls down
+ *     width allows at the board's pad size (ADR-0075), so the places flow and the grid scrolls down
  *   - SETUP mode: DnD via padDnd.ts (pointer events)
  *   - SETUP mode: Cell-tap → Path A (PadCreationPopover) or Place-Mode drop
  *   - SETUP mode: Pad-tap → PadEditorPanel
@@ -26,7 +26,7 @@ import {
   setPlacements,
   type PlacedPad,
 } from '../lib/boardModel';
-import { PAD_SIZE, padColumns } from '../lib/padSize';
+import { padColumns } from '../lib/padSize';
 import { PadGridCell } from './PadGridCell';
 import { PadCreationPopover, type CreationResult } from './PadCreationPopover';
 import {
@@ -54,7 +54,7 @@ interface PadGridProps {
   placeMode: string | null;
   /** Called when the user taps an empty cell while placeMode is active. */
   onPlaceModeTap?: (pos: PadPosition) => void;
-  /** A pad size to show instead of the deck's while the PAD SIZE slider is dragged (live preview). */
+  /** A pad size to show instead of the board's while the PAD SIZE slider is dragged (live preview). */
   padSizePreview?: number | null;
 }
 
@@ -85,10 +85,10 @@ export function PadGrid({
   // Moving and creating pads happens in a deck; the pool view only selects and plays.
   const canArrange = isSetup && !isPool;
 
-  // As many columns as keep every pad at or below the deck's pad size (ADR-0075): the places flow
+  // As many columns as keep every pad at or below the board's pad size (ADR-0075): the places flow
   // in reading order, so a row always fills the width and the grid only scrolls downwards. Null
   // until measured — the CSS then shows the deck's own column count.
-  const padSize = padSizePreview ?? deck?.gridConfig.padSize ?? PAD_SIZE.default;
+  const padSize = padSizePreview ?? board.padSize;
   const gridRef = useRef<HTMLDivElement>(null);
   const [shownCols, setShownCols] = useState<number | null>(null);
   useLayoutEffect(() => {

@@ -14,6 +14,7 @@ import { DEFAULT_PAD_VOLUME, indexToPos } from './padUtils';
 import { breakCycles } from './comboModel';
 import { PAD_ICONS_MAX } from './iconSet';
 import { v1IconKey } from './v1Icons';
+import { PAD_SIZE } from './padSize';
 
 /** V1 used a fade-out-all step's `dur` as the fade time, 2.5 s when not set. */
 export const V1_FADE_OUT_ALL_DEFAULT = 2.5;
@@ -215,6 +216,7 @@ export function mapV1Board(v1: unknown, ctx: V1MapContext): Board | null {
         placements,
       },
     ],
+    padSize: PAD_SIZE.default,
     quickAccess: [],
   };
   // A combo that starts itself would make the engine start it again and again — drop such steps

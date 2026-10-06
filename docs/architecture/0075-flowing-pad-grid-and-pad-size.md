@@ -29,11 +29,12 @@ display at full V1 scope"). The automatic shrinking of the pads to fit the windo
    it. `PadGrid` measures its width (ResizeObserver) and sets `--grid-cols`; cells are squares in
    DOM order (reading order), rows are as tall as their pads, the grid scrolls downwards. The All
    pads view follows the same rule with the default size.
-3. **Pad size per deck.** `gridConfig.padSize` is a number in px — 44 to 160 in steps of 4,
+3. **Pad size per deck** _(amended the same day: one size per board — see Amendments)_.
+   `gridConfig.padSize` is a number in px — 44 to 160 in steps of 4,
    88 by default (`PAD_SIZE`). It was a word (`'md'`, `'1fr'`) that nothing used; the word becomes
    the default — in the database (version 9, converted in place, `migrateBoard`) and in a backup
    import (`parseBoard`).
-4. **The slider.** PAD SIZE sits at the top of the deck rail, only in SETUP and only with a deck
+4. **The slider** _(amended: also in All pads, for the whole board)_. PAD SIZE sits at the top of the deck rail, only in SETUP and only with a deck
    open (V1 had it in the side menu). The grid follows it live while it moves; the size is stored
    once, when the move ends (`change` event — no delayed write needed). The slider is the one
    `SliderRow` component the PAD editor uses too.
@@ -50,7 +51,8 @@ reachable from the cloud container on 2026-10-06; to be read again in the origin
 - A phone shows 4 pads per row (390px window, list folded: about 74px each), a laptop about 13 of
   about 86px — the whole width is used, nothing is cut off.
 - The order of the pads is the same on every screen.
-- Each deck can have its own size: a deck of a few key pads large, a full deck small.
+- Each deck can have its own size: a deck of a few key pads large, a full deck small _(withdrawn
+  by the amendment below)_.
 
 **Negative / Trade-offs:**
 
@@ -82,3 +84,18 @@ mouse wheel are parked.
   `v3/src/screens/BoardScreen.tsx`, `v3/src/lib/boardModel.ts`, `v3/src/lib/padFiles.ts`,
   `v3/src/db/idb.ts`, `v3/tests/e2e/pad-size.spec.ts`, `v3/tests/unit/padSize.test.ts`
 - **ADRs:** ADR-0048 (decks, placements, `gridConfig`)
+
+## Amendments
+
+**2026-10-06 (3.0.178) — one pad size per board.** Owner decision: the PAD SIZE slider sets the
+size of every pad of the board — all its decks and the All pads view — whichever of them it is
+moved in. The size moves from the deck to the board: `Board.padSize` (px, same limits and default);
+decks no longer carry one (`gridConfig` is `cols`, `rows`, `gap`). The slider shows in SETUP with a
+deck or All pads open; All pads uses the board's size instead of the default. Boards stored before
+take the size of their first deck — the lowest `order`, the deck the rail shows first (owner
+decision; an old word or no deck gives the default) — in the database (version 10, converted in
+place, `migrateBoard`) and in a backup import (`parseBoard`), both through `migratePadSize` in
+`v3/src/lib/padSize.ts`. One field instead of a copy per deck, so the size cannot differ between
+decks. Consequence: the positive point "each deck can have its own size" no longer holds; whether
+the size applies per board or app-wide stays a later Settings option
+(`docs/design/components/pad.md`).
