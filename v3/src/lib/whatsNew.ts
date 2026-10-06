@@ -89,6 +89,16 @@ export function withEarlyVersions(
 /** The release notes the start screen shows, newest first (checked by whatsNew.test.ts). */
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
+    version: '3.0.177',
+    date: '2026-10-06',
+    new: [
+      'A PAD SIZE slider at the top of the deck list sets how large the pads of a deck are, as in the first version of the app. It shows in SETUP, and each deck keeps its own size.',
+    ],
+    improved: [
+      'A row holds as many pads as the screen allows: four on a phone, many more on a laptop. Nothing has to be scrolled sideways, and the pads keep their order on every screen.',
+    ],
+  },
+  {
     version: '3.0.176',
     date: '2026-10-05',
     improved: [

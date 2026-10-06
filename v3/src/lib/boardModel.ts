@@ -20,6 +20,7 @@ import { REPEAT_MAX } from '../types';
 import { nextFreeSlot } from './padUtils';
 import { combosInCycles } from './comboModel';
 import { migratePad, type StoredPad } from './padFiles';
+import { PAD_SIZE, clampPadSize, migrateDeck, type StoredDeck } from './padSize';
 import { isIconKey, PAD_ICONS_MAX } from './iconSet';
 
 /** A pad as one deck shows it: the pad from the pool plus its placement in that deck. */
@@ -30,7 +31,7 @@ export const DEFAULT_GRID: Readonly<Deck['gridConfig']> = {
   cols: 4,
   rows: 4,
   gap: 8,
-  padSize: 'md',
+  padSize: PAD_SIZE.default,
 };
 
 /** Returns the board's deck with this id, or undefined. */
@@ -257,6 +258,17 @@ export function duplicateDeck(
   return { ...board, decks: [...shifted, copy] };
 }
 
+/**
+ * Sets a deck's pad size (the PAD SIZE slider, ADR-0075), kept inside the slider's limits and
+ * steps. Returns the same board when nothing changes, so no save is made for it.
+ */
+export function setDeckPadSize(board: Board, deckId: string, px: number): Board {
+  const deck = findDeck(board, deckId);
+  const padSize = clampPadSize(px);
+  if (!deck || deck.gridConfig.padSize === padSize) return board;
+  return withDeck(board, deckId, (d) => ({ ...d, gridConfig: { ...d.gridConfig, padSize } }));
+}
+
 /** Renames a deck. */
 export function renameDeck(board: Board, deckId: string, name: string): Board {
   return withDeck(board, deckId, (deck) => ({ ...deck, name }));
@@ -382,7 +394,7 @@ function isPlacement(v: unknown): v is Placement {
   );
 }
 
-function isDeck(v: unknown): v is Deck {
+function isDeck(v: unknown): v is StoredDeck {
   if (!isRec(v) || !isStr(v.id) || !isStr(v.name) || !isNum(v.order)) return false;
   const g = v.gridConfig;
   return (
@@ -390,7 +402,7 @@ function isDeck(v: unknown): v is Deck {
     isNum(g.cols) &&
     isNum(g.rows) &&
     isNum(g.gap) &&
-    isStr(g.padSize) &&
+    (isNum(g.padSize) || isStr(g.padSize)) && // a word before ADR-0075; migrateDeck converts it
     Array.isArray(v.placements) &&
     v.placements.every(isPlacement)
   );
@@ -412,7 +424,14 @@ export function parseBoard(v: unknown): Board | null {
   if (!Array.isArray(decks) || !decks.every(isDeck)) return null;
   if (!Array.isArray(quickAccess) || !quickAccess.every(isQuickAccessEntry)) return null;
   const pads = v.pads.map(migratePad);
-  const board: Board = { id: v.id, name: v.name, themeId: v.themeId, pads, decks, quickAccess };
+  const board: Board = {
+    id: v.id,
+    name: v.name,
+    themeId: v.themeId,
+    pads,
+    decks: decks.map(migrateDeck),
+    quickAccess,
+  };
   return boardProblems(board).length === 0 ? board : null;
 }
 

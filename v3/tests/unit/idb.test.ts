@@ -433,3 +433,33 @@ describe('DB upgrade to v8', () => {
     ]);
   });
 });
+
+// ── Upgrade v8 → v9 (a deck's pad size in px, ADR-0075, 2026-10-06) ──────────
+
+describe('DB upgrade to v9', () => {
+  const deck = (id: string, padSize: unknown) => ({
+    id,
+    name: id,
+    order: id === 'a' ? 0 : 1,
+    gridConfig: { cols: 4, rows: 4, gap: 8, padSize },
+    placements: [],
+  });
+
+  test("a deck's old pad size word becomes the default px; a size in px stays; boards are kept", async () => {
+    const v8 = await openDB('sos-v3', 8, {
+      upgrade(db) {
+        db.createObjectStore('library', { keyPath: 'id' });
+        db.createObjectStore('boards', { keyPath: 'id' });
+        db.createObjectStore('keyval');
+      },
+    });
+    await v8.put('boards', { ...makeBoard('MINE'), decks: [deck('a', 'md'), deck('b', 120)] });
+    await v8.put('keyval', 7, 'last-backup');
+    v8.close();
+
+    const [board] = await boardGetAll();
+    expect(board.id).toBe('MINE');
+    expect(board.decks.map((d) => d.gridConfig.padSize)).toEqual([88, 120]);
+    expect(await kvGetAll()).toEqual([['last-backup', 7]]);
+  });
+});

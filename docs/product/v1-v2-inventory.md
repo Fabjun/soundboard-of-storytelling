@@ -99,7 +99,7 @@ _Parked_, or _drop_. Reviewed area by area in dialogue.
 | Quick rename (long-press in SETUP)                                   | ✓         | ✓   | missing                                                                                                   | —                                    | **Decided** — Slice 13                                                            |
 | Search + sort pads on the board                                      | ✓         | ?   | missing                                                                                                   | —                                    | **Decided** (§5: per view, combinable, temporary)                                 |
 | Filter pads by type (ALL / S-PAD / C-PAD)                            | ✓         | ?   | missing                                                                                                   | —                                    | **Decided** — Slice 13                                                            |
-| Grid: columns AUTO / 2–6, pad size, gap, label size, square / circle | ✓         | ✓   | model only (`gridConfig`), no UI                                                                          | `types.ts Scene.gridConfig`          | **Decided** — Slice 13                                                            |
+| Grid: columns AUTO / 2–6, pad size, gap, label size, square / circle | ✓         | ✓   | pad size slider + AUTO columns built (3.0.177, ADR-0075); fixed columns, gap, label size, circle missing  | `types.ts Scene.gridConfig`          | **Decided** — Slice 13                                                            |
 
 ## 4. Library
 

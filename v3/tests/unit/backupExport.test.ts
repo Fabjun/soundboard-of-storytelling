@@ -70,7 +70,7 @@ async function seed(): Promise<Board> {
         id: 'd1',
         name: 'Deck 1',
         order: 0,
-        gridConfig: { cols: 4, rows: 4, gap: 8, padSize: 'md' },
+        gridConfig: { cols: 4, rows: 4, gap: 8, padSize: 88 },
         placements: [{ padId: 'p1', position: { col: 0, row: 0 }, hotkey: 'K1' }],
       },
     ],

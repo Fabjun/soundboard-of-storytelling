@@ -12,7 +12,7 @@ function makeDeck(id: string, name: string): Deck {
     id,
     name,
     order: 0,
-    gridConfig: { cols: 4, rows: 4, gap: 8, padSize: 'md' },
+    gridConfig: { cols: 4, rows: 4, gap: 8, padSize: 88 },
     placements: [],
   };
 }

@@ -27,7 +27,7 @@ import {
 } from '../../src/lib/boardModel';
 import { indexToPos, newPad } from '../../src/lib/padUtils';
 
-const grid = { cols: 3, rows: 2, gap: 4, padSize: 'md' }; // small grid: full decks happen often
+const grid = { cols: 3, rows: 2, gap: 4, padSize: 88 }; // small grid: full decks happen often
 
 const start = (): Board => ({
   id: 'b',

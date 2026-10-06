@@ -110,7 +110,7 @@ export default [
       // A test without an assertion always passes. Helpers that assert internally are listed.
       'playwright/expect-expect': [
         'error',
-        { assertFunctionNames: ['assertTarget', 'assertNoOverflow'] },
+        { assertFunctionNames: ['assertTarget', 'assertNoOverflow', 'assertRowFillsWidth'] },
       ],
       'playwright/no-focused-test': 'error', // .only silently drops every other test
       // skip AND fixme only as a visible, justified exception (eslint-disable comment + reason)

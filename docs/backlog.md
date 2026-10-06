@@ -876,7 +876,7 @@ Claude Design's five flagged gaps were classified:
 
 1. **Two column modes (from V1):** `AUTO` — pad size + gap determine column count via `auto-fill` — OR fixed column count (user picks 2–6 or similar). Both modes selectable.
 
-2. **Configurable pad display at full V1 scope:** pad size, gap/spacing, column mode, font/label size — all with live preview directly on the board, via the board side-menu in SETUP mode. Scope reduction possible later. Sensible default values apply (see guiding principle).
+2. **Configurable pad display at full V1 scope:** pad size, gap/spacing, column mode, font/label size — all with live preview directly on the board, via the board side-menu in SETUP mode. Scope reduction possible later. Sensible default values apply (see guiding principle). **Partly built 2026-10-06 (3.0.177, ADR-0075):** the pad size slider per deck in the deck rail and the AUTO column mode (as many columns as fit, places in reading order); fixed columns, gap and label size are still open (Slice 13).
 
 3. **Free placement with gaps allowed:** the user may arrange pads with empty slots. Gaps are a legitimate grouping device alongside scenes.
 

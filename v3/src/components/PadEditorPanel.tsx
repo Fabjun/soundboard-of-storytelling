@@ -48,6 +48,7 @@ import { WaveformEditor } from './WaveformEditor';
 import { PadFileList } from './PadFileList';
 import { addFiles, moveFile, removeFile, setFileTrim } from '../lib/padFiles';
 import { PadTypeConfirmDialog } from './PadTypeConfirmDialog';
+import { SliderRow } from './SliderRow';
 import { ComboStepsEditor } from './ComboStepsEditor';
 import { IconGlyph, useIconDrawings } from './PadIcons';
 import { IconPicker } from './IconPicker';
@@ -965,46 +966,5 @@ function TrimField({
         }}
       />
     </label>
-  );
-}
-
-// ── SliderRow ────────────────────────────────────────────────────────────────
-
-function SliderRow({
-  label,
-  value,
-  min,
-  max,
-  step,
-  format,
-  onChange,
-  testid,
-}: {
-  label: string;
-  value: number;
-  min: number;
-  max: number;
-  step: number;
-  format: (v: number) => string;
-  onChange: (v: number) => void;
-  testid?: string;
-}): JSX.Element {
-  return (
-    <div>
-      <div class="sb-section-header-row">
-        <label class="sb-field-label">{label}</label>
-        <span class="sb-value-text">{format(value)}</span>
-      </div>
-      <input
-        class="sb-range-input"
-        type="range"
-        data-testid={testid}
-        min={min}
-        max={max}
-        step={step}
-        value={value}
-        onInput={(e) => onChange(parseFloat((e.target as HTMLInputElement).value))}
-      />
-    </div>
   );
 }

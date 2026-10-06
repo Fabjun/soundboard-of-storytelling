@@ -55,6 +55,7 @@ import {
   deletePad,
   nextDeckName,
   removeFromDeck,
+  setDeckPadSize,
 } from '../lib/boardModel';
 import { type LibDndDropResult } from '../lib/libDnd';
 
@@ -73,6 +74,8 @@ export function BoardScreen(): JSX.Element {
 
   const [rightPanel, setRightPanel] = useState<RightPanelMode>('empty');
   const [selectedPadId, setSelectedPadId] = useState<string | null>(null);
+  /** The PAD SIZE slider's value while it is dragged — the grid shows it live, nothing is saved yet. */
+  const [padSizePreview, setPadSizePreview] = useState<number | null>(null);
   /** Mobile Place-Mode: non-null while user is tapping a slot to place a library item. */
   const [placeMode, setPlaceMode] = useState<{ itemId: string } | null>(null);
 
@@ -281,6 +284,19 @@ export function BoardScreen(): JSX.Element {
             setPlaceMode(null);
             if (rightPanel === 'editor') setRightPanel('empty');
           }}
+          padSize={
+            mode === 'edit' && deck && !poolView
+              ? {
+                  value: padSizePreview ?? deck.gridConfig.padSize,
+                  onChange: setPadSizePreview,
+                  onCommit: (px) => {
+                    // Stored once, when the move ends; shown at once, so the preview can go
+                    applyBoardChange(board.id, (b) => setDeckPadSize(b, deck.id, px));
+                    setPadSizePreview(null);
+                  },
+                }
+              : undefined
+          }
         />
 
         {/* Center: Pad grid or empty states */}
@@ -375,6 +391,7 @@ export function BoardScreen(): JSX.Element {
                 }}
                 placeMode={placeMode?.itemId ?? null}
                 onPlaceModeTap={handlePlaceModeTap}
+                padSizePreview={padSizePreview}
               />
             </>
           )}
