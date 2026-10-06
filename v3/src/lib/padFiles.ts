@@ -15,7 +15,7 @@
 
 import type { Board, Pad, PadFile } from '../types';
 import { v1IconKey } from './v1Icons';
-import { migrateDeck, type StoredDeck } from './padSize';
+import { migratePadSize, type StoredSizeBoard } from './padSize';
 
 /** A file of the pad, untrimmed. */
 export const padFile = (hash: string): PadFile => ({ hash });
@@ -114,11 +114,9 @@ function migrateIcon(pad: WithIconRef<Pad>): Pad {
 }
 
 /**
- * Returns the board with every pad in the current shape (`migratePad`) and every deck with a pad
- * size in px (`migrateDeck`, ADR-0075).
+ * Returns the board with every pad in the current shape (`migratePad`) and one pad size for the
+ * whole board in px (`migratePadSize`, ADR-0075).
  */
-export function migrateBoard(
-  board: Omit<Board, 'pads' | 'decks'> & { pads: StoredPad[]; decks: StoredDeck[] },
-): Board {
-  return { ...board, pads: board.pads.map(migratePad), decks: board.decks.map(migrateDeck) };
+export function migrateBoard(board: Omit<StoredSizeBoard, 'pads'> & { pads: StoredPad[] }): Board {
+  return migratePadSize({ ...board, pads: board.pads.map(migratePad) });
 }

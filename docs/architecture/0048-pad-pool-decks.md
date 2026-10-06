@@ -143,7 +143,9 @@ to the play dispatch in `v3/src/audio/`. Rule agreed with the product owner:
 
 **2026-10-06:** `gridConfig.padSize` is a number in px, and the board shows a deck's places in
 reading order in as many columns as the window allows — refined by
-[ADR-0075](0075-flowing-pad-grid-and-pad-size.md). The type above shows the shape of 2026-09-28.
+[ADR-0075](0075-flowing-pad-grid-and-pad-size.md). The same day the size moved from the deck to the
+board (`Board.padSize`, one size for all decks — ADR-0075 Amendments); `gridConfig` is `cols`,
+`rows`, `gap`. The type above shows the shape of 2026-09-28.
 
 ## Related
 

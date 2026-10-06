@@ -112,7 +112,7 @@ Unused today, kept for a later slice or a parked feature (`@reserved`, ADR-0064)
 | `v3/src/audio/index.ts:158`    | `stopAll`            | Slice 12 — STOP ALL, K9 / K16 (docs/product/README.md#input-keyboard--numpad)                           |
 | `v3/src/audio/index.ts:167`    | `fadeOutAll`         | Slice 12 — STOP ALL in two stages, the first fades, K16 (docs/product/README.md#input-keyboard--numpad) |
 | `v3/src/audio/index.ts:213`    | `crossfade`          | Parked — crossfade between pads (docs/product/README.md#pad-options)                                    |
-| `v3/src/lib/boardModel.ts:113` | `setPlacementHotkey` | Slice 12 — keys play pads (docs/product/README.md#6-platforms--input)                                   |
+| `v3/src/lib/boardModel.ts:112` | `setPlacementHotkey` | Slice 12 — keys play pads (docs/product/README.md#6-platforms--input)                                   |
 | `v3/src/lib/padUtils.ts:189`   | `padTypeGlow`        | Slice 13 — a playing pad glows in its type color (docs/design/components/pad.md)                        |
 | `v3/src/state/store.ts:55`     | `activeTheme`        | Slice 14 — themes                                                                                       |
 | `v3/src/state/store.ts:109`    | `masterVolume`       | Parked — master volume (docs/product/README.md#pad-options)                                             |
@@ -131,7 +131,7 @@ Historical docs excluded in `.vale.ini`, and passages marked `<!-- vale … = NO
 | `.vale.ini`                                            | `docs/product/v1-v2-inventory.md` | historical record — keeps the names valid at its time                             |
 | `.vale.ini`                                            | `CHANGELOG.md`                    | historical record — keeps the names valid at its time                             |
 | `.vale.ini`                                            | `docs/development/exceptions.md`  | historical record — keeps the names valid at its time                             |
-| `CLAUDE.md:882`                                        | `SoS.SupersededTerms` off         | historical slice records keep the names valid at the time (Scene before Slice 9b) |
+| `CLAUDE.md:883`                                        | `SoS.SupersededTerms` off         | historical slice records keep the names valid at the time (Scene before Slice 9b) |
 | `docs/architecture/0056-documentation-freshness.md:33` | `SoS.SupersededTerms` off         | …                                                                                 |
 | `docs/architecture/concept-brief.md:75`                | `SoS.SupersededTerms` off         | explains the rename                                                               |
 | `docs/product/README.md:108`                           | `SoS.SupersededTerms` off         | records the rename decision                                                       |

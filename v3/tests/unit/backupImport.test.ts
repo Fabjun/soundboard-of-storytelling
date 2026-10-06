@@ -180,10 +180,11 @@ describe('runImport — V3', () => {
         id: 'd',
         name: 'Deck 1',
         order: 0,
-        gridConfig: { cols: 4, rows: 4, gap: 8, padSize: 88 },
+        gridConfig: { cols: 4, rows: 4, gap: 8 },
         placements: [{ padId: 'p', position: { col: 0, row: 0 }, hotkey: 'K1' }],
       },
     ],
+    padSize: 88,
     quickAccess: [{ padId: 'c' }],
   });
   const v3Backup = (boardsInFile: unknown[]) => ({
@@ -381,6 +382,7 @@ describe('backup import — entry types, hashes and progress', () => {
       themeId: 'hearth',
       pads: [pad, combo],
       decks: [],
+      padSize: 88,
       quickAccess: [],
     };
     const doc = {

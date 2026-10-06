@@ -99,6 +99,7 @@ describe('migratePad (pads stored before ADR-0068)', () => {
       decks: [],
       quickAccess: [],
       pads: [legacy({ type: 'single', files: ['a'] })],
+      padSize: 88,
     } as Omit<Board, 'pads'> & { pads: StoredPad[] };
     expect(migrateBoard(board).pads[0]).toMatchObject({ files: [{ hash: 'a' }] });
   });

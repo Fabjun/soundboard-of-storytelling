@@ -25,7 +25,7 @@ function toBoard(stepsPerCombo: string[][][]): Board {
     steps: steps.map((padIds) => ({ padIds })),
   }));
   const pads: Pad[] = [...combos, newPad('s0', 'single', 's0'), newPad('s1', 'single', 's1')];
-  return { id: 'b', name: 'B', themeId: 'hearth', pads, decks: [], quickAccess: [] };
+  return { id: 'b', name: 'B', themeId: 'hearth', pads, decks: [], padSize: 88, quickAccess: [] };
 }
 
 const isSubsequence = (part: string[], whole: string[]) => {

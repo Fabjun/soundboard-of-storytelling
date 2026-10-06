@@ -17,6 +17,7 @@ const board = (): Board => ({
   themeId: 'hearth',
   pads: [],
   decks: [],
+  padSize: 88,
   quickAccess: [],
 });
 

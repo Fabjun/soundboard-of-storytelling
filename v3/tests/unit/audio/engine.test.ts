@@ -808,6 +808,7 @@ describe('initAudioBridge', () => {
         themeId: 'hearth',
         pads: [s1], // combo children are found in the board's pool (ADR-0048)
         decks: [],
+        padSize: 88,
         quickAccess: [],
       },
     ];
@@ -823,7 +824,15 @@ describe('initAudioBridge', () => {
     const many = playlist('many', ['h1', 'h2']);
     const once = single('once', 'h3');
     store.boards.value = [
-      { id: 'b', name: 'B', themeId: 'hearth', pads: [many, once], decks: [], quickAccess: [] },
+      {
+        id: 'b',
+        name: 'B',
+        themeId: 'hearth',
+        pads: [many, once],
+        decks: [],
+        padSize: 88,
+        quickAccess: [],
+      },
     ];
     audio.initAudioBridge();
     await audio.play('many', many);

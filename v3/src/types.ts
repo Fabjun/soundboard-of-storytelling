@@ -14,6 +14,11 @@ export type Board = {
   /** Pad pool: every pad of the board, placed in any number of decks or in none (ADR-0048). */
   pads: Pad[];
   decks: Deck[];
+  /**
+   * The largest side of a pad, in px, on every deck of the board and in All pads — the PAD SIZE
+   * slider (ADR-0075; one size per board, owner decision 2026-10-06).
+   */
+  padSize: number;
   /** Board-wide quick-access bar (model since Slice 9c, UI in Slice 13). */
   quickAccess: QuickAccessEntry[];
 };
@@ -28,8 +33,6 @@ export type Deck = {
     cols: number;
     rows: number;
     gap: number;
-    /** The largest side of a pad on this deck, in px — the PAD SIZE slider (ADR-0075). */
-    padSize: number;
   };
   /** Which pads of the pool this deck shows, where, and with which key. */
   placements: Placement[];

@@ -291,8 +291,9 @@ and has diverged). Never hardcode colors, fonts, or spacing.
   editor is one, on every screen size (owner decision 2026-10-05; guarded by
   `v3/tests/e2e/pad-editor-fullscreen.spec.ts`)
 - Board pads are squares in reading order, in as many columns as keep each pad at or below the
-  deck's pad size — no horizontal scrolling, the grid scrolls down; the size is set per deck with
-  the PAD SIZE slider in the deck rail, SETUP only (ADR-0075, `v3/src/lib/padSize.ts`); the deck
+  board's pad size — no horizontal scrolling, the grid scrolls down; one size per board (all decks
+  and All pads), set with the PAD SIZE slider in the deck rail, SETUP only (ADR-0075,
+  `v3/src/lib/padSize.ts`); the deck
   list starts folded (owner decisions 2026-10-05 / 2026-10-06; guarded by
   `v3/tests/e2e/pad-size.spec.ts`, `v3/tests/e2e/deck-rail-fold.spec.ts`)
 - The browser's own gestures are off — no zoom, no selection, no long-press menu (global rule in

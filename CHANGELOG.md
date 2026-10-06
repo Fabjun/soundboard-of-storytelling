@@ -7,6 +7,18 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.178 — 2026-10-06
+
+### Added
+
+- feat(board): one pad size per board instead of per deck (owner decision 2026-10-06, ADR-0075 amendment) — the PAD SIZE slider sets every deck and All pads, whichever of them it is moved in; it now also shows in All pads (SETUP), which used the default size before
+- feat(model): Board.padSize (px) replaces gridConfig.padSize; boards stored before take their first deck's size (lowest order; an old word or no deck → the default; owner decision) — in the database (version 10, in place, migrateBoard) and in a backup import (parseBoard), both through migratePadSize in src/lib/padSize.ts; setBoardPadSize replaces setDeckPadSize; new boards and the V1 import start at the default
+
+### Internal
+
+- test: unit migratePadSize (first deck by order, old word / no size / no deck → default, the board's own size wins, steps and limits), setBoardPadSize, parseBoard of a board before 3.0.178 and a wrong board padSize, DB upgrade to v10 from v8 and v9 (counter-checked: first deck by array position, no v10 step, no board padSize check — each red); E2E pad-size: the slider moved in Deck 1 sets Deck 2 and All pads, moved in All pads sets Deck 1 (counter-checked: All pads at the default size — red); the v9 upgrade test became the v10 one; fixtures carry the board size
+- docs: ADR-0075 amendment (one size per board) and ADR-0048 amendment; pad.md zoom per board; iPhone checklist "Pads per row and PAD SIZE"; CLAUDE.md UI rule
+
 ## 3.0.177 — 2026-10-06
 
 ### Added

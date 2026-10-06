@@ -38,6 +38,7 @@ function makeBoard(id: string, name = 'Test Board'): Board {
     themeId: 'hearth',
     pads: [],
     decks: [],
+    padSize: 88,
     quickAccess: [],
   };
 }
@@ -434,32 +435,43 @@ describe('DB upgrade to v8', () => {
   });
 });
 
-// ── Upgrade v8 → v9 (a deck's pad size in px, ADR-0075, 2026-10-06) ──────────
+// ── Upgrade v8/v9 → v10 (one pad size per board, ADR-0075, owner decision 2026-10-06) ──
 
-describe('DB upgrade to v9', () => {
-  const deck = (id: string, padSize: unknown) => ({
+describe('DB upgrade to v10', () => {
+  const deck = (id: string, order: number, padSize: unknown) => ({
     id,
     name: id,
-    order: id === 'a' ? 0 : 1,
+    order,
     gridConfig: { cols: 4, rows: 4, gap: 8, padSize },
     placements: [],
   });
+  const { padSize: _, ...noSize } = makeBoard('MINE');
 
-  test("a deck's old pad size word becomes the default px; a size in px stays; boards are kept", async () => {
-    const v8 = await openDB('sos-v3', 8, {
-      upgrade(db) {
-        db.createObjectStore('library', { keyPath: 'id' });
-        db.createObjectStore('boards', { keyPath: 'id' });
-        db.createObjectStore('keyval');
-      },
-    });
-    await v8.put('boards', { ...makeBoard('MINE'), decks: [deck('a', 'md'), deck('b', 120)] });
-    await v8.put('keyval', 7, 'last-backup');
-    v8.close();
+  test.each([
+    [8, 'md', 88],
+    [9, 120, 120],
+  ])(
+    "from v%i the board takes its first deck's size (%s → %i); decks lose theirs; data kept",
+    async (version, firstSize, expected) => {
+      const old = await openDB('sos-v3', version, {
+        upgrade(db) {
+          db.createObjectStore('library', { keyPath: 'id' });
+          db.createObjectStore('boards', { keyPath: 'id' });
+          db.createObjectStore('keyval');
+        },
+      });
+      await old.put('boards', {
+        ...noSize,
+        decks: [deck('later', 1, 60), deck('first', 0, firstSize)],
+      });
+      await old.put('keyval', 7, 'last-backup');
+      old.close();
 
-    const [board] = await boardGetAll();
-    expect(board.id).toBe('MINE');
-    expect(board.decks.map((d) => d.gridConfig.padSize)).toEqual([88, 120]);
-    expect(await kvGetAll()).toEqual([['last-backup', 7]]);
-  });
+      const [board] = await boardGetAll();
+      expect(board.id).toBe('MINE');
+      expect(board.padSize).toBe(expected);
+      expect(board.decks.every((d) => !('padSize' in d.gridConfig))).toBe(true);
+      expect(await kvGetAll()).toEqual([['last-backup', 7]]);
+    },
+  );
 });

@@ -20,7 +20,7 @@ import { REPEAT_MAX } from '../types';
 import { nextFreeSlot } from './padUtils';
 import { combosInCycles } from './comboModel';
 import { migratePad, type StoredPad } from './padFiles';
-import { PAD_SIZE, clampPadSize, migrateDeck, type StoredDeck } from './padSize';
+import { clampPadSize, migratePadSize, type StoredDeck } from './padSize';
 import { isIconKey, PAD_ICONS_MAX } from './iconSet';
 
 /** A pad as one deck shows it: the pad from the pool plus its placement in that deck. */
@@ -31,7 +31,6 @@ export const DEFAULT_GRID: Readonly<Deck['gridConfig']> = {
   cols: 4,
   rows: 4,
   gap: 8,
-  padSize: PAD_SIZE.default,
 };
 
 /** Returns the board's deck with this id, or undefined. */
@@ -259,14 +258,13 @@ export function duplicateDeck(
 }
 
 /**
- * Sets a deck's pad size (the PAD SIZE slider, ADR-0075), kept inside the slider's limits and
- * steps. Returns the same board when nothing changes, so no save is made for it.
+ * Sets the board's pad size — for all its decks and All pads (the PAD SIZE slider, ADR-0075), kept
+ * inside the slider's limits and steps. Returns the same board when nothing changes, so no save
+ * is made for it.
  */
-export function setDeckPadSize(board: Board, deckId: string, px: number): Board {
-  const deck = findDeck(board, deckId);
+export function setBoardPadSize(board: Board, px: number): Board {
   const padSize = clampPadSize(px);
-  if (!deck || deck.gridConfig.padSize === padSize) return board;
-  return withDeck(board, deckId, (d) => ({ ...d, gridConfig: { ...d.gridConfig, padSize } }));
+  return board.padSize === padSize ? board : { ...board, padSize };
 }
 
 /** Renames a deck. */
@@ -402,7 +400,8 @@ function isDeck(v: unknown): v is StoredDeck {
     isNum(g.cols) &&
     isNum(g.rows) &&
     isNum(g.gap) &&
-    (isNum(g.padSize) || isStr(g.padSize)) && // a word before ADR-0075; migrateDeck converts it
+    // a deck's own size (px, or a word before ADR-0075) — migratePadSize moves it to the board
+    optional(g.padSize, (x) => isNum(x) || isStr(x)) &&
     Array.isArray(v.placements) &&
     v.placements.every(isPlacement)
   );
@@ -415,7 +414,8 @@ function isQuickAccessEntry(v: unknown): v is QuickAccessEntry {
 /**
  * A board read from a file (untrusted JSON), if it has the board's shape AND passes the model's
  * consistency rules — otherwise null. Only the board's own fields are kept; pads stored before
- * ADR-0068 come back converted (`migratePad`), so an older backup imports like a new one.
+ * ADR-0068 come back converted (`migratePad`) and a board before 3.0.178 gets its pad size from its
+ * first deck (`migratePadSize`), so an older backup imports like a new one.
  */
 export function parseBoard(v: unknown): Board | null {
   if (!isRec(v) || !isStr(v.id) || !isStr(v.name) || !isStr(v.themeId)) return null;
@@ -423,15 +423,17 @@ export function parseBoard(v: unknown): Board | null {
   if (!Array.isArray(v.pads) || !v.pads.every(isStoredPad)) return null;
   if (!Array.isArray(decks) || !decks.every(isDeck)) return null;
   if (!Array.isArray(quickAccess) || !quickAccess.every(isQuickAccessEntry)) return null;
+  if (!optional(v.padSize, isNum)) return null; // none before 3.0.178: migratePadSize sets it
   const pads = v.pads.map(migratePad);
-  const board: Board = {
+  const board: Board = migratePadSize({
     id: v.id,
     name: v.name,
     themeId: v.themeId,
     pads,
-    decks: decks.map(migrateDeck),
+    decks,
+    padSize: v.padSize,
     quickAccess,
-  };
+  });
   return boardProblems(board).length === 0 ? board : null;
 }
 
