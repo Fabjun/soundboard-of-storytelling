@@ -7,6 +7,23 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.177 — 2026-10-06
+
+### Added
+
+- feat(board): the pads flow into as many columns as the window allows (owner decision 2026-10-06, ADR-0075) — the fewest columns that keep every pad at or below the deck's pad size (padColumns in src/lib/padSize.ts; PadGrid measures its width and sets --grid-cols); places are read in reading order (row × cols + col, as padDnd already did), so the order is the same on every screen and the stored data does not change; no horizontal scrolling, the grid scrolls down; the shrinking to fit the window height (3.0.175) is gone; the --pad-size token and src/lib/padFit.ts are gone
+- feat(deck-rail): a PAD SIZE slider per deck, at the top of the deck rail, in SETUP only (as in V1) — 44 to 160px in steps of 4, 88 by default; the grid follows it live, the size is stored once when the move ends; the PAD editor's slider became the shared SliderRow (src/components/SliderRow.tsx), and its label now also names the slider for screen readers
+- feat(model): gridConfig.padSize is a size in px (was a word nothing used) — converted in the database (version 9, in place, migrateBoard) and in a backup import (parseBoard); setDeckPadSize; ADR-0048 amendment
+
+### Fixed
+
+- fix(deck-rail): the rail scrolls when its entries are taller than the window — an entry no longer shrinks to a sliver (layout-reach found a deck entry at 13 of 44px once the slider made the rail taller on a 300px window)
+
+### Internal
+
+- test: unit padSize (limits, columns, old decks), setDeckPadSize, parseBoard with an old word, DB upgrade to v9 (counter-checked: no v9 step — red); E2E pad-size rewritten for the new behavior — 4 per row on a phone and more on a wide window with the order kept; a row fills the width and nothing is cut off at 390, 768 and 1280px with the list open and folded; the slider gives fewer, larger pads and keeps the size after reopening; the slider only in SETUP; a short window scrolls down without overlap (counter-checked: fixed columns, the size not stored, the slider in GAME — each red). The height-fit tests of 3.0.175 went with the behavior; the boardModel validator case for padSize now uses a wrong type (true), as a number is valid; eslint assertFunctionNames lists assertRowFillsWidth
+- docs: ADR-0075; pad.md (zoom by slider decided, + / − and mouse wheel parked, PQ1); V1/V2 inventory; BACKLOG V1 display settings partly built; iPhone checklist "Pads per row and PAD SIZE"; CLAUDE.md UI rule
+
 ## 3.0.176 — 2026-10-05
 
 ### Added

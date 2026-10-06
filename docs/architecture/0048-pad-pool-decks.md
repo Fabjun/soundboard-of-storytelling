@@ -4,7 +4,7 @@
 **Date:** 2026-09-29
 **Slice:** Slice 9
 **Refines:** —
-**Refined by:** ADR-0068 (each file of a Single / Loop has its own trim)
+**Refined by:** ADR-0068 (each file of a Single / Loop has its own trim), ADR-0075 (pad size in px; the grid flows into the window's columns)
 **Category:** Data model
 
 ## Context
@@ -138,6 +138,12 @@ to the play dispatch in `v3/src/audio/`. Rule agreed with the product owner:
 - **Provisional Slice 9 behavior (delete = delete everywhere, no All pads view)** — rejected:
   behavior that changes again later causes confusion.
 - **Separate `playbackOrder` fields per type** — rejected in favor of one `order` field.
+
+## Amendments
+
+**2026-10-06:** `gridConfig.padSize` is a number in px, and the board shows a deck's places in
+reading order in as many columns as the window allows — refined by
+[ADR-0075](0075-flowing-pad-grid-and-pad-size.md). The type above shows the shape of 2026-09-28.
 
 ## Related
 

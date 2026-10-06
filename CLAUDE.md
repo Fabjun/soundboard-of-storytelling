@@ -290,7 +290,11 @@ and has diverged). Never hardcode colors, fonts, or spacing.
   `v3/src/lib/escapeKey.ts` — a dialog on top closes first); the PAD
   editor is one, on every screen size (owner decision 2026-10-05; guarded by
   `v3/tests/e2e/pad-editor-fullscreen.spec.ts`)
-- Board pads are squares of at most `--pad-size` that shrink so the whole grid is seen: the width always (no pad is cut off), the height down to the touch target (`v3/src/lib/padFit.ts`); the deck list starts folded (owner decisions 2026-10-05; guarded by `v3/tests/e2e/pad-size.spec.ts`, `v3/tests/e2e/deck-rail-fold.spec.ts`)
+- Board pads are squares in reading order, in as many columns as keep each pad at or below the
+  deck's pad size — no horizontal scrolling, the grid scrolls down; the size is set per deck with
+  the PAD SIZE slider in the deck rail, SETUP only (ADR-0075, `v3/src/lib/padSize.ts`); the deck
+  list starts folded (owner decisions 2026-10-05 / 2026-10-06; guarded by
+  `v3/tests/e2e/pad-size.spec.ts`, `v3/tests/e2e/deck-rail-fold.spec.ts`)
 - The browser's own gestures are off — no zoom, no selection, no long-press menu (global rule in
   `v3/src/styles/global.css`, ADR-0067); a gesture the app needs is built with Pointer Events and
   has a non-gesture alternative; text fields have at least 16px text (iOS focus zoom); guarded by

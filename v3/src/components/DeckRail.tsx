@@ -13,6 +13,7 @@
  *     directly after the original
  *   - Reorder: NOT built yet (decided: drag & drop, mouse + touch — BACKLOG "Deck reorder")
  *   - + NEW DECK button at bottom
+ *   - PAD SIZE slider of the open deck, in SETUP (ADR-0075; V1 had it in the side menu)
  *   - Folds to its toggle button (owner decision 2026-10-05): it starts folded, so the pads get the
  *     width, and the toggle opens it
  */
@@ -33,6 +34,8 @@ import {
   restoreDeck,
 } from '../lib/boardModel';
 import { nanoid } from '../lib/nanoid';
+import { PAD_SIZE } from '../lib/padSize';
+import { SliderRow } from './SliderRow';
 import { findConflictingDeck } from '../lib/deckConflict';
 
 interface DeckRailProps {
@@ -43,6 +46,11 @@ interface DeckRailProps {
   allPadsActive: boolean;
   onAllPadsSelect: () => void;
   conflictIds?: ReadonlySet<string>; // reserved for external conflict override; live detection is internal
+  /**
+   * The open deck's PAD SIZE slider (ADR-0075) — given in SETUP with a deck open, absent otherwise.
+   * `onChange` follows the slider live (preview), `onCommit` stores the size once the move ends.
+   */
+  padSize?: { value: number; onChange: (px: number) => void; onCommit: (px: number) => void };
 }
 
 /**
@@ -56,6 +64,7 @@ export function DeckRail({
   allPadsActive,
   onAllPadsSelect,
   conflictIds,
+  padSize,
 }: DeckRailProps): JSX.Element {
   // Starts folded, so the pads get the width (owner decision 2026-10-05)
   const [open, setOpen] = useState(false);
@@ -190,6 +199,22 @@ export function DeckRail({
   return (
     <div class="sb-deck-rail" data-testid="deck-rail">
       {toggle}
+      {/* The open deck's pad size — V1 had this slider in the side menu (ADR-0075) */}
+      {padSize && (
+        <div class="sb-inspector-section">
+          <SliderRow
+            label="PAD SIZE"
+            value={padSize.value}
+            min={PAD_SIZE.min}
+            max={PAD_SIZE.max}
+            step={PAD_SIZE.step}
+            format={(v) => `${v}px`}
+            onChange={padSize.onChange}
+            onCommit={padSize.onCommit}
+            testid="deck-rail-pad-size-slider"
+          />
+        </div>
+      )}
       {/* All pads — the whole pool, always the first entry (ADR-0048) */}
       <div
         class={'sb-deck-tab' + (allPadsActive ? ' is-active' : '')}

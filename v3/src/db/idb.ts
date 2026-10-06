@@ -32,7 +32,7 @@ import { migrateBoard } from '../lib/padFiles';
 // ── DB singleton ─────────────────────────────────────────────────────────────
 
 const DB_NAME = 'sos-v3';
-const DB_VERSION = 8;
+const DB_VERSION = 9;
 
 let _db: IDBPDatabase | null = null;
 
@@ -77,7 +77,9 @@ async function getDB(): Promise<IDBPDatabase> {
       // v8: pads hold up to 4 icon keys (ADR-0070); V1's icon id that the import kept in
       // `iconRef` becomes a key. Same rule: converted in place. One pass covers both steps
       // (`migrateBoard` does every conversion), so a v5–v6 database is read only once.
-      if (oldVersion >= 5 && oldVersion < 8) {
+      // v9: each deck's `padSize` is a size in px, set with the PAD SIZE slider (ADR-0075); the old
+      // word ('md', '1fr' — never used) becomes the default. Same rule: converted in place.
+      if (oldVersion >= 5 && oldVersion < 9) {
         void migrateStoredBoards(tx.objectStore('boards'));
       }
     },

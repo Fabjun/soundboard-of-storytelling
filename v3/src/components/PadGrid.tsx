@@ -2,7 +2,8 @@
  * @fileoverview PadGrid — the grid of PadGridCells for a deck or the All pads view
  *
  * Orchestrates:
- *   - Rendering the deck's cells, occupied and empty (columns and rows from its gridConfig)
+ *   - Rendering the deck's cells, occupied and empty, in reading order; as many columns as the
+ *     width allows at the deck's pad size (ADR-0075), so the places flow and the grid scrolls down
  *   - SETUP mode: DnD via padDnd.ts (pointer events)
  *   - SETUP mode: Cell-tap → Path A (PadCreationPopover) or Place-Mode drop
  *   - SETUP mode: Pad-tap → PadEditorPanel
@@ -25,7 +26,7 @@ import {
   setPlacements,
   type PlacedPad,
 } from '../lib/boardModel';
-import { padFit } from '../lib/padFit';
+import { PAD_SIZE, padColumns } from '../lib/padSize';
 import { PadGridCell } from './PadGridCell';
 import { PadCreationPopover, type CreationResult } from './PadCreationPopover';
 import {
@@ -53,6 +54,8 @@ interface PadGridProps {
   placeMode: string | null;
   /** Called when the user taps an empty cell while placeMode is active. */
   onPlaceModeTap?: (pos: PadPosition) => void;
+  /** A pad size to show instead of the deck's while the PAD SIZE slider is dragged (live preview). */
+  padSizePreview?: number | null;
 }
 
 /**
@@ -69,6 +72,7 @@ export function PadGrid({
   onRequestNewPad,
   placeMode,
   onPlaceModeTap,
+  padSizePreview,
 }: PadGridProps): JSX.Element {
   const isPool = deck === null;
   const entries = deck
@@ -81,33 +85,26 @@ export function PadGrid({
   // Moving and creating pads happens in a deck; the pool view only selects and plays.
   const canArrange = isSetup && !isPool;
 
-  // The side the pads shrink to so the whole grid is seen (owner decision 2026-10-05); null until
-  // measured — the CSS then keeps the standard size
+  // As many columns as keep every pad at or below the deck's pad size (ADR-0075): the places flow
+  // in reading order, so a row always fills the width and the grid only scrolls downwards. Null
+  // until measured — the CSS then shows the deck's own column count.
+  const padSize = padSizePreview ?? deck?.gridConfig.padSize ?? PAD_SIZE.default;
   const gridRef = useRef<HTMLDivElement>(null);
-  const [fit, setFit] = useState<number | null>(null);
+  const [shownCols, setShownCols] = useState<number | null>(null);
   useLayoutEffect(() => {
     const el = gridRef.current;
     if (!el) return;
     const measure = () => {
       const cs = getComputedStyle(el);
       const padX = parseFloat(cs.paddingLeft) + parseFloat(cs.paddingRight);
-      const padY = parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom);
-      setFit(
-        padFit({
-          width: el.clientWidth - padX,
-          height: el.clientHeight - padY,
-          cols,
-          rows,
-          gap,
-        }),
-      );
+      setShownCols(padColumns({ width: el.clientWidth - padX, gap, padSize })?.cols ?? null);
     };
     measure();
     if (typeof ResizeObserver === 'undefined') return;
     const observer = new ResizeObserver(measure);
     observer.observe(el);
     return () => observer.disconnect();
-  }, [cols, rows, gap]);
+  }, [gap, padSize]);
 
   // Path A popover state
   const [popoverPos, setPopoverPos] = useState<PadPosition | null>(null);
@@ -191,10 +188,8 @@ export function PadGrid({
         data-pos={isPool ? '0,0' : undefined}
         style={
           {
-            '--grid-cols': String(cols),
-            '--grid-rows': String(rows),
+            '--grid-cols': String(shownCols ?? cols),
             '--grid-gap': `${gap}px`,
-            ...(fit === null ? {} : { '--pad-fit': `${fit}px` }),
           } as Record<string, string>
         }
       >

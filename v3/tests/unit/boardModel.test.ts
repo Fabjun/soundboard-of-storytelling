@@ -26,6 +26,7 @@ import {
   poolLayout,
   removeFromDeck,
   renameDeck,
+  setDeckPadSize,
   restoreDeck,
   setPlacementHotkey,
   setPlacements,
@@ -34,7 +35,7 @@ import {
   withNewIds,
 } from '../../src/lib/boardModel';
 
-const grid = { cols: 4, rows: 4, gap: 4, padSize: 'md' };
+const grid = { cols: 4, rows: 4, gap: 4, padSize: 88 };
 
 function emptyBoard(): Board {
   return {
@@ -304,7 +305,7 @@ describe('remove from deck, place in deck, All pads (Slice 9e)', () => {
   });
 
   it('the default grid is 4×4 — the size of every new deck and the width of All pads', () => {
-    expect(DEFAULT_GRID).toEqual({ cols: 4, rows: 4, gap: 8, padSize: 'md' });
+    expect(DEFAULT_GRID).toEqual({ cols: 4, rows: 4, gap: 8, padSize: 88 });
   });
 });
 
@@ -360,6 +361,14 @@ describe('changes applied to the latest board (board writes)', () => {
     expect(nextDeckName(emptyBoard())).toBe('Deck 3'); // Deck 1, Deck 2
     expect(nextDeckName(deleteDeck(emptyBoard(), 'd1'))).toBe('Deck 1'); // gap filled
     expect(nextDeckName(renameDeck(emptyBoard(), 'd1', 'Night'))).toBe('Deck 1');
+  });
+
+  it("sets one deck's pad size, inside the slider limits; unchanged → the same board", () => {
+    const b = setDeckPadSize(emptyBoard(), 'd2', 120);
+    expect(b.decks.map((d) => d.gridConfig.padSize)).toEqual([88, 120]);
+    expect(setDeckPadSize(b, 'd2', 999).decks[1].gridConfig.padSize).toBe(160);
+    expect(setDeckPadSize(b, 'd2', 120)).toBe(b);
+    expect(setDeckPadSize(b, 'nope', 60)).toBe(b);
   });
 
   it('renames one deck only', () => {
@@ -575,7 +584,7 @@ describe('parseBoard (untrusted boards from a backup file)', () => {
         id: 'd',
         name: 'Deck 1',
         order: 0,
-        gridConfig: { cols: 4, rows: 4, gap: 8, padSize: 'md' },
+        gridConfig: { cols: 4, rows: 4, gap: 8, padSize: 88 },
         placements: [
           { padId: 'p', position: { col: 0, row: 0 }, hotkey: 'K1' },
           { padId: 'c', position: { col: 1, row: 0 } },
@@ -587,6 +596,15 @@ describe('parseBoard (untrusted boards from a backup file)', () => {
 
   it('accepts a valid board with every optional field, and keeps only the board fields', () => {
     expect(parseBoard({ ...valid(), extra: 1 })).toEqual(valid());
+  });
+
+  it("turns a deck's old pad size word into the default size in px (ADR-0075)", () => {
+    const old = valid();
+    const legacy = {
+      ...old,
+      decks: old.decks.map((d) => ({ ...d, gridConfig: { ...d.gridConfig, padSize: 'md' } })),
+    };
+    expect(parseBoard(legacy)).toEqual(valid());
   });
 
   it('accepts a pad stored before ADR-0068 and returns it converted', () => {
@@ -688,7 +706,8 @@ describe('parseBoard (untrusted boards from a backup file)', () => {
       'grid padSize',
       (b) => ({
         ...b,
-        decks: [{ ...b.decks[0], gridConfig: { ...b.decks[0].gridConfig, padSize: 2 } }],
+        // A number (px, ADR-0075) or an old word is fine; anything else is not
+        decks: [{ ...b.decks[0], gridConfig: { ...b.decks[0].gridConfig, padSize: true } }],
       }),
     ],
     ['placements', (b) => ({ ...b, decks: [{ ...b.decks[0], placements: {} }] })],

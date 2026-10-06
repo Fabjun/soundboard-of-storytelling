@@ -28,7 +28,8 @@ export type Deck = {
     cols: number;
     rows: number;
     gap: number;
-    padSize: string;
+    /** The largest side of a pad on this deck, in px — the PAD SIZE slider (ADR-0075). */
+    padSize: number;
   };
   /** Which pads of the pool this deck shows, where, and with which key. */
   placements: Placement[];

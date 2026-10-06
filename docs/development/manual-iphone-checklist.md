@@ -203,6 +203,13 @@ because Playwright runs against a simulated environment:
     name field; everything scrolls into reach; after ✕ the grid shows the new name.
   - Why manual: The iOS keyboard, the safe areas and the real touch scroll.
 
+- [ ] **Pads per row and PAD SIZE** _(3.0.177, ADR-0075)_
+  - Action: Open a deck in portrait and in landscape; in SETUP open the deck list and move PAD
+    SIZE from one end to the other.
+  - Expected: Portrait shows 4 pads per row with the list folded, landscape more; no sideways
+    scrolling; the slider changes the size live; after reopening the app the deck keeps its size.
+  - Why manual: The real screen sizes, rotation and the touch slider.
+
 - [ ] **Update prompt** _(3.0.159, ADR-0066)_
   - Action: Keep the app open while a new version is published (or open it after one), wait a
     moment.
