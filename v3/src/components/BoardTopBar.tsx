@@ -10,6 +10,8 @@ import type { JSX } from 'preact';
 import { PixelIcon } from './PixelIcon';
 import { ModeToggle } from './ModeToggle';
 import { pressStopAll, stopAllFading } from '../state/stopControl';
+import { toggleModeLock } from '../state/modeControl';
+import { modeLocked } from '../state/store';
 import type { AppMode } from '../types';
 
 interface BoardTopBarProps {
@@ -62,8 +64,28 @@ export function BoardTopBar({
         </div>
       </div>
 
-      {/* Center: Mode toggle */}
-      <ModeToggle mode={mode} onSwitch={onModeSwitch} compact={compact} />
+      {/* Center: Mode toggle, and in GAME the Lock right next to the toggle it locks (Slice 12c) */}
+      <div class="sb-row">
+        <ModeToggle
+          mode={mode}
+          onSwitch={onModeSwitch}
+          compact={compact}
+          locked={modeLocked.value}
+        />
+        {mode === 'play' && (
+          <button
+            type="button"
+            class={`sb-btn sb-btn-sm ${modeLocked.value ? 'sb-btn-primary' : 'sb-btn-ghost'} sb-topbar-icon-btn`}
+            data-testid="board-top-bar-lock-button"
+            aria-pressed={modeLocked.value}
+            aria-label={modeLocked.value ? 'Unlock the mode switch' : 'Lock the mode switch'}
+            title={modeLocked.value ? 'Unlock the mode switch' : 'Lock the mode switch in GAME'}
+            onClick={toggleModeLock}
+          >
+            <PixelIcon name="lock" size={12} />
+          </button>
+        )}
+      </div>
 
       {/* Right: STOP ALL (GAME), library toggle + secondary actions */}
       <div class="sb-board-topbar-right">

@@ -133,6 +133,13 @@ because Playwright runs against a simulated environment:
     decimal key does what STOP ALL does (if it sends `NumpadDecimal` — see "Numpad plays pads").
   - Why manual: Only hearing proves the fade is smooth and the second tap cuts it.
 
+- [ ] **Mode switch stops sounds; the Lock** _(Slice 12c)_
+  - Action: In GAME start two pads, switch to SETUP. Back in GAME tap the lock next to the mode
+    toggle, then tap SETUP; tap the lock again and tap SETUP. Lock once more and reload the app.
+  - Expected: The switch to SETUP silences both pads at once. While locked SETUP is dimmed and a
+    tap does nothing; unlocked it switches. After the reload the lock is off.
+  - Why manual: The silence on switching is heard, not seen; the tap targets on the phone.
+
 ---
 
 ## Section 2 — File System

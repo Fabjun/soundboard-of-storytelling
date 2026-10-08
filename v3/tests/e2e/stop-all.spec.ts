@@ -103,3 +103,15 @@ test('the numpad Enter and Enter stop the sound started last; the numpad decimal
   await page.keyboard.press('NumpadDecimal');
   await expect(stopAll(page)).toHaveText('STOP ALL', { timeout: 1_000 });
 });
+
+// Slice 12c (docs/product/README.md#switching-modes): a mode switch stops every sound at once
+test('switching to SETUP stops every sound at once', async ({ page }) => {
+  await enterGameMode(page);
+  await pads(page).nth(0).getByRole('button').click();
+  await pads(page).nth(1).getByRole('button').click();
+  await expect(playing(page, 1)).toBeVisible();
+  await enterSetupMode(page);
+  await enterGameMode(page);
+  await expect(playing(page, 0)).toHaveCount(0);
+  await expect(playing(page, 1)).toHaveCount(0);
+});

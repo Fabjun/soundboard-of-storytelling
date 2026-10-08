@@ -89,6 +89,14 @@ export function withEarlyVersions(
 /** The release notes the start screen shows, newest first (checked by whatsNew.test.ts). */
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
+    version: '3.0.184',
+    date: '2026-10-08',
+    new: [
+      'The Lock: in GAME, the lock next to the mode toggle keeps the app in GAME, so no tap switches to SETUP by accident during a game. Tap it again to unlock. It is off after every restart.',
+    ],
+    improved: ['Switching between GAME and SETUP stops every sound.'],
+  },
+  {
     version: '3.0.183',
     date: '2026-10-08',
     new: [
