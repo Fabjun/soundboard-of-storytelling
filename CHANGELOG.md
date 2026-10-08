@@ -7,6 +7,13 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.181 — 2026-10-08
+
+### Internal
+
+- ci: the ruleset protect-main also requires a pull request and the five tests.yml checks (unit-build-lint, e2e-smoke, e2e-mobile, e2e-full, e2e-prod), the branch up to date, no bypass — a red or pending pull request cannot be merged, direct pushes to main end (owner decision 2026-10-08; set via gh api and read back)
+- docs: ADR-0076 "Required checks on main" refines ADR-0051; CLAUDE.md workflow rule 7a (main only through pull requests)
+
 ## 3.0.180 — 2026-10-08
 
 ### Internal

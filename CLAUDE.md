@@ -647,6 +647,10 @@ Before committing a slice, also:
    any file outside the plan's file list. Stop and ask when a genuine decision is open
    (product behavior, a new scheme or convention, trade-offs, anything irreversible or
    outward-facing beyond a normal push).
+   7a. **Main only through pull requests (ADR-0076, owner decision 2026-10-08):** the ruleset
+   `protect-main` rejects direct pushes; work goes to a branch and a pull request, and is
+   squash-merged once the pre-push gate ran green and every required check passes
+   (`gh pr checks`). Renaming a `tests.yml` job means updating the ruleset in the same change.
 
 ---
 
