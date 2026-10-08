@@ -199,3 +199,17 @@ export function removeBoardFromStore(id: string): void {
  * before a reload) waits for 0. main.tsx mirrors it as the `data-saving` attribute on <html>.
  */
 export const pendingSaves = signal(0);
+
+/**
+ * The last board save failed (src/state/boardWrites.ts sets it; the next successful save clears
+ * it). The board then shows its stored state again — this tells the user (Slice 12e).
+ */
+export const lastSaveFailed = signal(false);
+
+/**
+ * What the status bar says about saving (Slice 12e): a write is waiting or running → `saving`;
+ * otherwise the last board save failed → `failed`; else `saved`.
+ */
+export const saveState = computed<'saving' | 'failed' | 'saved'>(() =>
+  pendingSaves.value > 0 ? 'saving' : lastSaveFailed.value ? 'failed' : 'saved',
+);

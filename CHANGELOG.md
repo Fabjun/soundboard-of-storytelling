@@ -7,6 +7,21 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.185 — 2026-10-08
+
+### Added
+
+- feat(status): the status bar says whether changes are saved (Slice 12e) — SAVING… while a write waits or runs (pendingSaves), SAVED when none does, NOT SAVED after a failed board save (red, announced as an alert, the tooltip says what happened and what to do; sb-error-label); saveState in src/state/store.ts — provisional words and place, review pending
+
+### Fixed
+
+- fix(save): a failed board save is no longer silent — boardWrites sets lastSaveFailed (the board already went back to its stored state; until now only the console knew), the next successful save clears it
+
+### Internal
+
+- test: unit boardWrites save state (saving → saved, failed, a running save wins, the next success clears; counter-checked: failure not recorded / not cleared → red); E2E save-status in Chromium and WebKit (SAVED, SAVING… while the name waits, SAVED again; 5 × 2 runs stable; counter-checked: a fixed SAVED → red); five visual baselines with the new status section
+- docs: slice table 12e in review
+
 ## 3.0.184 — 2026-10-08
 
 ### Added

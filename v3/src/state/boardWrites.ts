@@ -16,7 +16,7 @@
 
 import type { Board } from '../types';
 import { boardGet, boardPut } from '../db/idb';
-import { boards, pendingSaves, removeBoardFromStore, upsertBoard } from './store';
+import { boards, lastSaveFailed, pendingSaves, removeBoardFromStore, upsertBoard } from './store';
 
 /**
  * Applies `change` to the latest version of a board, shows the result and saves it.
@@ -75,9 +75,11 @@ async function save(board: Board): Promise<Board | null> {
   pendingSaves.value++; // synchronously, before the first await — callers see it at once
   try {
     await boardPut(board);
+    lastSaveFailed.value = false;
     return board;
   } catch (e) {
     console.error('Board save failed:', e);
+    lastSaveFailed.value = true; // the status bar says NOT SAVED (Slice 12e)
     try {
       const stored = await boardGet(board.id);
       if (stored) upsertBoard(stored);
