@@ -17,10 +17,18 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.180';
+export const APP_VERSION = '3.0.181';
 
 /** The developer log, newest first; CHANGELOG.md is generated from it (sync-changelog). */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.181',
+    date: '2026-10-08',
+    items: [
+      'ci: the ruleset protect-main also requires a pull request and the five tests.yml checks (unit-build-lint, e2e-smoke, e2e-mobile, e2e-full, e2e-prod), the branch up to date, no bypass — a red or pending pull request cannot be merged, direct pushes to main end (owner decision 2026-10-08; set via gh api and read back)',
+      'docs: ADR-0076 "Required checks on main" refines ADR-0051; CLAUDE.md workflow rule 7a (main only through pull requests)',
+    ],
+  },
   {
     version: '3.0.180',
     date: '2026-10-08',

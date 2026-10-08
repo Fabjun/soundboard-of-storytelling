@@ -4,6 +4,7 @@
 **Date:** 2026-09-29
 **Slice:** infrastructure
 **Refines:** —
+**Refined by:** ADR-0076 (`protect-main` also requires a pull request and the five `tests.yml` checks; no direct pushes)
 **Category:** Test infrastructure & workflow
 
 ## Context
