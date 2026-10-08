@@ -11,7 +11,8 @@ import { PixelIcon } from './PixelIcon';
 import { ModeToggle } from './ModeToggle';
 import { pressStopAll, stopAllFading } from '../state/stopControl';
 import { toggleModeLock } from '../state/modeControl';
-import { modeLocked } from '../state/store';
+import { togglePause } from '../state/pauseControl';
+import { audioPaused, modeLocked } from '../state/store';
 import type { AppMode } from '../types';
 
 interface BoardTopBarProps {
@@ -90,6 +91,18 @@ export function BoardTopBar({
 
       {/* Right: STOP ALL (GAME), library toggle + secondary actions */}
       <div class="sb-board-topbar-right">
+        {/* PAUSED (Slice 12d, K8): clearly visible while every sound is paused; a tap resumes */}
+        {mode === 'play' && audioPaused.value && (
+          <button
+            type="button"
+            class="sb-btn sb-btn-sm sb-btn-primary sb-topbar-icon-btn"
+            data-testid="board-top-bar-paused-button"
+            onClick={() => togglePause()}
+            title="Every sound is paused — tap or press Space to resume"
+          >
+            PAUSED
+          </button>
+        )}
         {/* STOP ALL (K9, K16): fades everything out; pressed again while it fades, stops at once.
             Always enabled — an emergency stop is never greyed out. */}
         {mode === 'play' && (

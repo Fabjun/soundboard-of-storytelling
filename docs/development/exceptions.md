@@ -58,9 +58,9 @@ Procedure: `docs/development/testing.md`; reference enforced by `testGuards.test
 | `v3/tests/e2e/deck-crud.spec.ts:77`            | `fixme` | BACKLOG "Deck reorder"                                                         |
 | `v3/tests/e2e/mobile/overflow.spec.ts:31`      | `fixme` | BACKLOG "Re-enable mobile layout tests"                                        |
 | `v3/tests/e2e/mobile/touch-targets.spec.ts:35` | `fixme` | BACKLOG "Re-enable mobile layout tests"                                        |
-| `v3/tests/unit/audio/engine.test.ts:623`       | `fails` | BACKLOG "Engine: fade out all stops pads started during the fade"              |
-| `v3/tests/unit/audio/engine.test.ts:642`       | `fails` | BACKLOG "Engine: a Single started again during its fade-out cannot be stopped" |
-| `v3/tests/unit/audio/engine.test.ts:711`       | `fails` | BACKLOG "step stops the combo itself"                                          |
+| `v3/tests/unit/audio/engine.test.ts:627`       | `fails` | BACKLOG "Engine: fade out all stops pads started during the fade"              |
+| `v3/tests/unit/audio/engine.test.ts:646`       | `fails` | BACKLOG "Engine: a Single started again during its fade-out cannot be stopped" |
+| `v3/tests/unit/audio/engine.test.ts:715`       | `fails` | BACKLOG "step stops the combo itself"                                          |
 
 ## Modules without their own unit test (4)
 
@@ -111,11 +111,11 @@ Unused today, kept for a later slice or a parked feature (`@reserved`, ADR-0064)
 
 | Location                     | Symbol         | Waits for                                                                                                                   |
 | ---------------------------- | -------------- | --------------------------------------------------------------------------------------------------------------------------- |
-| `v3/src/audio/index.ts:163`  | `fadeOutAll`   | Parked — STOP ALL fades pad by pad until the engine fix (BACKLOG "Engine: fade out all stops pads started during the fade") |
-| `v3/src/audio/index.ts:209`  | `crossfade`    | Parked — crossfade between pads (docs/product/README.md#pad-options)                                                        |
+| `v3/src/audio/index.ts:180`  | `fadeOutAll`   | Parked — STOP ALL fades pad by pad until the engine fix (BACKLOG "Engine: fade out all stops pads started during the fade") |
+| `v3/src/audio/index.ts:226`  | `crossfade`    | Parked — crossfade between pads (docs/product/README.md#pad-options)                                                        |
 | `v3/src/lib/padUtils.ts:189` | `padTypeGlow`  | Slice 13 — a playing pad glows in its type color (docs/design/components/pad.md)                                            |
-| `v3/src/state/store.ts:61`   | `activeTheme`  | Slice 14 — themes                                                                                                           |
-| `v3/src/state/store.ts:115`  | `masterVolume` | Parked — master volume (docs/product/README.md#pad-options)                                                                 |
+| `v3/src/state/store.ts:67`   | `activeTheme`  | Slice 14 — themes                                                                                                           |
+| `v3/src/state/store.ts:121`  | `masterVolume` | Parked — master volume (docs/product/README.md#pad-options)                                                                 |
 
 ## Prose lint exceptions (Vale) (14)
 
@@ -131,7 +131,7 @@ Historical docs excluded in `.vale.ini`, and passages marked `<!-- vale … = NO
 | `.vale.ini`                                            | `docs/product/v1-v2-inventory.md` | historical record — keeps the names valid at its time                             |
 | `.vale.ini`                                            | `CHANGELOG.md`                    | historical record — keeps the names valid at its time                             |
 | `.vale.ini`                                            | `docs/development/exceptions.md`  | historical record — keeps the names valid at its time                             |
-| `CLAUDE.md:889`                                        | `SoS.SupersededTerms` off         | historical slice records keep the names valid at the time (Scene before Slice 9b) |
+| `CLAUDE.md:895`                                        | `SoS.SupersededTerms` off         | historical slice records keep the names valid at the time (Scene before Slice 9b) |
 | `docs/architecture/0056-documentation-freshness.md:33` | `SoS.SupersededTerms` off         | …                                                                                 |
 | `docs/architecture/concept-brief.md:75`                | `SoS.SupersededTerms` off         | explains the rename                                                               |
 | `docs/product/README.md:108`                           | `SoS.SupersededTerms` off         | records the rename decision                                                       |

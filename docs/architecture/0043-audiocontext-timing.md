@@ -4,6 +4,7 @@
 **Date:** 2026-05-28
 **Slice:** Slice 4
 **Refines:** ADR-0020 (TAP TO UNLOCK — AudioContext Creation)
+**Refined by:** ADR-0079 (a user pause is not undone when the app becomes visible again; proposed)
 **Category:** Audio engine & iOS memory
 
 ---

@@ -140,6 +140,17 @@ because Playwright runs against a simulated environment:
     tap does nothing; unlocked it switches. After the reload the lock is off.
   - Why manual: The silence on switching is heard, not seen; the tap targets on the phone.
 
+- [ ] **Pause** _(Slice 12d, engine change ADR-0079 — before the merge)_
+  - Action: In GAME start a Loop and a long Single, press Space (main keyboard; the numpad has
+    none); wait 10 s; press Space again. Pause again, switch to another app for 10 s and come
+    back. Pause again and tap a third pad. Pause again and tap STOP ALL. Also: pause, take a phone
+    call or play music elsewhere, come back.
+  - Expected: Space silences both at once and PAUSED shows in the top bar; the second Space goes on
+    exactly where they stopped. After the app switch it is still paused. The third pad ends the
+    pause — all three play. STOP ALL during the pause stops everything at once, PAUSED goes away.
+    After the call, PAUSED still shows and a tap on it resumes.
+  - Why manual: Suspend and resume of the iOS audio session can only be heard on the device.
+
 ---
 
 ## Section 2 — File System

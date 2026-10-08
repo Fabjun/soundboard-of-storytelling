@@ -7,6 +7,18 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.192 — 2026-10-09
+
+### Added
+
+- feat(audio): pause every sound and resume it (Slice 12d, K7 / K8, ADR-0079) — ENGINE CHANGE, details accepted by the owner 2026-10-09, merged after the iPhone playback check: engine.ts gains pauseAll / resumeAll (suspend / resume the context) and a userPaused flag, so returning to the app no longer ends a pause; the facade sets audioPaused and play() resumes first (K8)
+- feat(keys): Space pauses / resumes in GAME unless a control has focus (togglePause, src/state/pauseControl.ts; nothing playing → nothing); during a pause STOP ALL stops at once and ends the pause, Enter stops at once (a fade cannot run on a suspended clock); PAUSED as a button in the top bar, a tap resumes
+
+### Internal
+
+- test: engine pause (suspend; visibilitychange keeps the pause; resume; a new sound ends it), pauseControl, keyControl Space, stopControl during a pause; E2E pause (Chromium: Space, PAUSED, a new pad resumes, tap on PAUSED, STOP ALL during a pause); counter-checked (visibility ignoring the pause, play not ending it, Space never resuming, STOP ALL ignoring the pause → red); addLoopPad moved to the E2E helpers (stop-all used its own copy, and its own padCells)
+- docs: ADR-0079 (refines ADR-0043; accepted with the playback check); product K7 / K8 built with the owner decisions of 2026-10-09; slice table 12a–12e on main; iPhone checklist "Pause" (before the merge)
+
 ## 3.0.191 — 2026-10-09
 
 ### Internal

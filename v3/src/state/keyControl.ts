@@ -11,7 +11,9 @@
  *   - stop keys (Slice 12b): the numpad's decimal key is STOP ALL (K6, two stages), the numpad's
  *     Enter stops the sound started last (K5); the main Enter does that too unless a control has
  *     focus — then Enter activates the control (a button's own key, WAI-ARIA button pattern);
- *   - the other reserved keys (Space, Escape, Tab) are left to their own controls.
+ *   - Space (Slice 12d, K7) pauses every sound and resumes it — unless a control has focus,
+ *     which Space activates (same rule as Enter);
+ *   - the other reserved keys (Escape, Tab) are left to their own controls.
  */
 
 import { play as playPad, isPlaying as padIsPlaying } from '../audio/index';
@@ -19,6 +21,7 @@ import { RESERVED_KEYS, padForKey } from '../lib/padKeys';
 import type { Pad } from '../types';
 import { currentBoard, currentDeck, currentMode, currentScreen } from './store';
 import { pressStopAll, stopLast } from './stopControl';
+import { togglePause } from './pauseControl';
 
 /** What keyControl needs from the audio engine; tests pass their own. */
 export interface KeyControlAudio {
@@ -26,13 +29,14 @@ export interface KeyControlAudio {
   isPlaying: (padId: string) => boolean;
 }
 
-/** The stop actions the stop keys call; tests pass their own. */
+/** The actions the stop keys and Space call; tests pass their own. */
 export interface KeyControlStops {
   pressStopAll: () => void;
   stopLast: () => void;
+  togglePause: () => void;
 }
 
-/** Elements Enter activates — a focused one keeps its Enter. */
+/** Elements Enter and Space activate — a focused one keeps its key. */
 const CONTROLS =
   'button, a[href], summary, [role="button"], [role="link"], [role="tab"], [role="checkbox"], [role="switch"], [role="menuitem"], [role="option"]';
 
@@ -60,7 +64,11 @@ function takesText(target: EventTarget | null): boolean {
 export function startKeyControl(
   audio: KeyControlAudio = { play: playPad, isPlaying: padIsPlaying },
   doc: Document = document,
-  stops: KeyControlStops = { pressStopAll: () => pressStopAll(), stopLast: () => stopLast() },
+  stops: KeyControlStops = {
+    pressStopAll: () => pressStopAll(),
+    stopLast: () => stopLast(),
+    togglePause: () => togglePause(),
+  },
 ): () => void {
   /** In GAME on a board, a plain key press outside a text field. */
   const applies = (e: KeyboardEvent) =>
@@ -89,11 +97,12 @@ export function startKeyControl(
 
   const onKey = (e: KeyboardEvent) => {
     if (e.defaultPrevented || !applies(e)) return;
-    if (e.code === 'Enter') {
+    if (e.code === 'Enter' || e.code === 'Space') {
       const onControl = e.target instanceof Element && e.target.closest(CONTROLS) !== null;
       if (onControl) return;
-      e.preventDefault();
-      stops.stopLast();
+      e.preventDefault(); // Space would also scroll the page
+      if (e.code === 'Enter') stops.stopLast();
+      else stops.togglePause();
       return;
     }
     if (e.code in RESERVED_KEYS) return;

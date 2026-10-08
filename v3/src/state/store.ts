@@ -48,6 +48,12 @@ export const currentMode = signal<AppMode>('play');
 export const modeLocked = signal(false);
 
 /**
+ * Every sound is paused (Slice 12d, K7): the top bar shows PAUSED. Set and cleared through the
+ * audio facade (pause / resume, and any new play ends it — K8).
+ */
+export const audioPaused = signal(false);
+
+/**
  * Whether the screen is kept on (a screen wake lock is held) — in GAME on a board, always (owner
  * decision 2026-10-04); set by src/lib/wakeLock.ts through App, shown in the status bar.
  */

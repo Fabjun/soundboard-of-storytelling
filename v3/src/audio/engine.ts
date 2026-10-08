@@ -217,12 +217,31 @@ export function initAudio(): void {
   ctx.resume().catch(() => {});
 
   // Resume AudioContext when the tab becomes visible after backgrounding.
-  // iOS suspends it automatically on tab switch; this restores it.
+  // iOS suspends it automatically on tab switch; this restores it — unless the user paused
+  // (Slice 12d, K7): returning to the app must not end a pause.
   document.addEventListener('visibilitychange', () => {
-    if (document.visibilityState === 'visible' && ctx && isHalted(ctx)) {
+    if (document.visibilityState === 'visible' && ctx && isHalted(ctx) && !userPaused) {
       ctx.resume().catch(() => {});
     }
   });
+}
+
+// ── Pause (Slice 12d, K7 / K8 — engine change under owner control) ────────────
+
+/** The user paused every sound; only resumeAll (or a new play, through the facade) ends it. */
+let userPaused = false;
+
+/** Pauses every sound where it is (suspends the context). Does nothing before initAudio. */
+export function pauseAll(): void {
+  if (!ctx) return;
+  userPaused = true;
+  ctx.suspend().catch(() => {});
+}
+
+/** Ends a pause: every paused sound goes on where it stopped. */
+export function resumeAll(): void {
+  userPaused = false;
+  if (ctx && isHalted(ctx)) ctx.resume().catch(() => {});
 }
 
 // ── SINGLE playback (V1 play() 'once' path, ~line 3855) ───────────────────────

@@ -324,6 +324,19 @@ export const padCells = (page: Page) =>
   page.locator('[data-testid^="pad-grid-cell-"]:not([data-testid^="pad-grid-cell-empty-slot-"])');
 
 /**
+ * A Loop pad in the empty cell (col, 0), made from the first library file (Path A). Needs SETUP
+ * mode and a library file (uploadTestAudio). Used by the specs that need sounds to play.
+ */
+export async function addLoopPad(page: Page, col: number): Promise<void> {
+  const before = await padCells(page).count();
+  await page.getByTestId(`pad-grid-cell-empty-slot-${col}-0`).click();
+  await page.locator('[data-testid^="pad-creation-popover-source-item-"]').first().click();
+  await page.getByRole('button', { name: 'LOOP' }).click();
+  await page.getByTestId('pad-creation-popover-add-button').click();
+  await expect(padCells(page)).toHaveCount(before + 1);
+}
+
+/**
  * Closes the PAD editor when it is open. It covers the whole board (owner decision 2026-10-05),
  * so nothing behind it can be tapped — a person closes it first, and so do the specs.
  */
