@@ -8,7 +8,15 @@ npm run sync:docs || {
   printf '   Fix the generator error above, then run git commit again.\n\n'
   exit 1
 }
-git -C "$ROOT" add docs/architecture/README.md docs/design/design-system.md docs/development/testing.md docs/development/exceptions.md CHANGELOG.md
+
+echo "📋 Pre-commit: staging the generated docs..."
+# The generated files come from one list (v3/scripts/lib/generated-docs.ts) — never named here
+GENERATED="$(npx tsx scripts/list-generated-docs.ts)" || {
+  printf '\n❌ Listing the generated docs failed — commit aborted.\n\n'
+  exit 1
+}
+# shellcheck disable=SC2086 # the list is space-separated paths without spaces
+git -C "$ROOT" add $GENERATED
 echo "✅ Docs synced and staged."
 
 echo "🔨 Pre-commit: running build check in v3/..."

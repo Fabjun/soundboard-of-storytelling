@@ -17,10 +17,18 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.185';
+export const APP_VERSION = '3.0.186';
 
 /** The developer log, newest first; CHANGELOG.md is generated from it (sync-changelog). */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.186',
+    date: '2026-10-09',
+    items: [
+      'fix(hooks): the pre-commit hook stages every generated doc — it named them by hand and missed CLAUDE.md (sync:api), so the API list was left unstaged twice (Slices 12b and 12d; CI "Docs sync" would have caught it). One list, v3/scripts/lib/generated-docs.ts: writeGenerated refuses any file not in it, the hook stages what scripts/list-generated-docs.ts prints (own step "staging the generated docs")',
+      'test: docsGuards "generated docs come from one list" — every listed file exists; the hook names no generated file itself; writeGenerated refuses an unlisted file and writes nothing; counter-checked (CLAUDE.md unlisted → sync:api stops with the reason; a hand-named file in the hook / no check in writeGenerated → red)',
+    ],
+  },
   {
     version: '3.0.185',
     date: '2026-10-08',
