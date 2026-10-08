@@ -9,6 +9,7 @@
 import type { JSX } from 'preact';
 import { PixelIcon } from './PixelIcon';
 import { ModeToggle } from './ModeToggle';
+import { pressStopAll, stopAllFading } from '../state/stopControl';
 import type { AppMode } from '../types';
 
 interface BoardTopBarProps {
@@ -64,8 +65,25 @@ export function BoardTopBar({
       {/* Center: Mode toggle */}
       <ModeToggle mode={mode} onSwitch={onModeSwitch} compact={compact} />
 
-      {/* Right: library toggle + secondary actions */}
+      {/* Right: STOP ALL (GAME), library toggle + secondary actions */}
       <div class="sb-board-topbar-right">
+        {/* STOP ALL (K9, K16): fades everything out; pressed again while it fades, stops at once.
+            Always enabled — an emergency stop is never greyed out. */}
+        {mode === 'play' && (
+          <button
+            type="button"
+            class="sb-btn sb-btn-sm sb-btn-danger sb-topbar-icon-btn"
+            data-testid="board-top-bar-stop-all-button"
+            onClick={() => pressStopAll()}
+            title={
+              stopAllFading.value
+                ? 'Stop every sound now'
+                : 'Fade every sound out; again to stop now'
+            }
+          >
+            {stopAllFading.value ? 'STOP NOW' : 'STOP ALL'}
+          </button>
+        )}
         <button
           class={`sb-btn sb-btn-sm ${libraryOpen ? 'sb-btn-primary' : 'sb-btn-ghost'} sb-topbar-icon-btn`}
           onClick={onLibraryToggle}

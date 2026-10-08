@@ -74,13 +74,20 @@ beforeEach(() => {
   allPadsView.value = false;
   currentScreen.value = 'board';
   currentMode.value = 'play';
-  stop = startKeyControl({
-    play: (id: string, pad: Pad) => {
-      played.push(`${id}:${pad.name}`);
-      playing.add(id);
+  stop = startKeyControl(
+    {
+      play: (id: string, pad: Pad) => {
+        played.push(`${id}:${pad.name}`);
+        playing.add(id);
+      },
+      isPlaying: (id) => playing.has(id),
     },
-    isPlaying: (id) => playing.has(id),
-  });
+    document,
+    {
+      pressStopAll: () => played.push('STOP ALL'),
+      stopLast: () => played.push('STOP LAST'),
+    },
+  );
 });
 afterEach(() => {
   stop();
@@ -121,7 +128,7 @@ describe('a key plays its pad', () => {
 
 describe('keys that play nothing', () => {
   it('a key no pad holds, the main-keyboard 1 and a reserved key stay with the browser', () => {
-    for (const code of ['Numpad2', 'Digit1', 'Enter', 'Space', 'NumpadDecimal']) {
+    for (const code of ['Numpad2', 'Digit1', 'Space', 'Escape']) {
       const e = press(code);
       expect(e.defaultPrevented).toBe(false);
     }
@@ -163,5 +170,37 @@ describe('keys that play nothing', () => {
     stop();
     press('Numpad1');
     expect(played).toEqual([]);
+  });
+});
+
+describe('stop keys (Slice 12b)', () => {
+  it('the numpad decimal is STOP ALL, the numpad Enter and Enter stop the last sound (K5, K6)', () => {
+    for (const code of ['NumpadDecimal', 'NumpadEnter', 'Enter']) {
+      expect(press(code).defaultPrevented).toBe(true);
+    }
+    expect(played).toEqual(['STOP ALL', 'STOP LAST', 'STOP LAST']);
+  });
+
+  it('only in GAME on a board, never in a text field, not held down', () => {
+    currentMode.value = 'edit';
+    press('NumpadDecimal');
+    currentMode.value = 'play';
+    const field = document.createElement('input');
+    document.body.append(field);
+    press('NumpadEnter', {}, field);
+    press('NumpadDecimal', { repeat: true });
+    expect(played).toEqual([]);
+  });
+
+  it('a focused control keeps its Enter; the numpad stop keys win before it sees them', () => {
+    const button = document.createElement('button');
+    const seen: string[] = [];
+    button.addEventListener('keydown', (e) => seen.push(e.code));
+    document.body.append(button);
+    press('Enter', {}, button);
+    press('NumpadEnter', {}, button);
+    press('NumpadDecimal', {}, button);
+    expect(seen).toEqual(['Enter']);
+    expect(played).toEqual(['STOP LAST', 'STOP ALL']);
   });
 });

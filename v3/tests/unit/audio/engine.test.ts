@@ -613,6 +613,44 @@ describe('stopping', () => {
     expect(ctx.sources[0].stopped).toEqual({ when: 'now' });
     expect(stopped).toEqual(['a']);
   });
+
+  // KNOWN ENGINE BUG (found 2026-10-08, Slice 12b): fadeOutAllInternal's cleanup timer stops
+  // every pad in `srcs` when the fade ends — also a pad started DURING the fade (engine.ts,
+  // fadeOutAllInternal). STOP ALL therefore fades pad by pad (src/state/stopControl.ts), not with
+  // fadeOutAll; the combo step "fade out all" still has the bug. A fix changes the engine →
+  // product owner. BACKLOG "Engine: fade out all stops pads started during the fade".
+  // When fixed, this turns red → switch it to test().
+  test.fails('a pad started during fadeOutAll keeps playing after the fade', async () => {
+    vi.useFakeTimers();
+    await audio.play('a', loop('a', 'h1'));
+    await flush();
+    audio.fadeOutAll(2);
+    vi.advanceTimersByTime(500);
+    await audio.play('b', loop('b', 'h2'));
+    await flush();
+    vi.advanceTimersByTime(1600);
+    expect(ctx.sources[1].stopped).toBeNull();
+    expect(audio.isPlaying('b')).toBe(true);
+  });
+
+  // KNOWN ENGINE BUG (found 2026-10-08, Slice 12b): stopPad with a fade-out deletes the pad's
+  // entry when the fade ends (engine.ts, stopPad: setTimeout → delete srcs[pid]). A Single started
+  // again within the fade gets a new entry under the same id, which that timer deletes: the new
+  // sound plays on but cannot be stopped. Not reachable from the UI (a fading pad still counts as
+  // playing, so a tap or key stops it); only a direct play() hits it. Engine change → owner.
+  // BACKLOG "Engine: a Single started again during its fade-out cannot be stopped".
+  test.fails('a Single started again during its fade-out can still be stopped', async () => {
+    vi.useFakeTimers();
+    await audio.play('s', single('s', 'h1'));
+    await flush();
+    audio.stop('s', false, 1);
+    await audio.play('s', single('s', 'h1'));
+    await flush();
+    vi.advanceTimersByTime(1100);
+    expect(audio.isPlaying('s')).toBe(true);
+    audio.stop('s');
+    expect(ctx.sources.at(-1)!.stopped).toEqual({ when: 'now' });
+  });
 });
 
 // ── Decode / memory ───────────────────────────────────────────────────────────

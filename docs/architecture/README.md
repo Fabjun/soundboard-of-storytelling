@@ -102,6 +102,7 @@ file. Format: `docs/architecture/_template.md`.
 | [ADR-0032](0032-grid-4col-constant.md)   | 4-column grid constant across all viewports                   | Accepted | Slice 3       | 2026-05-27 |
 | [ADR-0067](0067-browser-gestures-off.md) | The browser's own touch gestures are off — the app owns touch | Accepted | cross-cutting | 2026-10-03 |
 | [ADR-0077](0077-keys-play-pads.md)       | Keys play pads                                                | Accepted | Slice 12      | 2026-10-08 |
+| [ADR-0078](0078-stop-all-two-stages.md)  | STOP ALL in two stages                                        | Proposed | Slice 12      | 2026-10-08 |
 
 ### Test infrastructure & workflow
 

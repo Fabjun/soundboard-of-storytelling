@@ -39,6 +39,7 @@ export const FULL_TESTS = [
   'game-mode',
   'wake-lock',
   'audio',
+  'stop-all',
   'system-gestures',
 ];
 

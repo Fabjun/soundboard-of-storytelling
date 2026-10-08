@@ -124,6 +124,15 @@ because Playwright runs against a simulated environment:
   - Why manual: Which codes a real Bluetooth numpad sends to iOS (NumLock, decimal key) is only
     known on the device.
 
+- [ ] **STOP ALL and the stop keys** _(Slice 12b)_
+  - Action: In GAME start two Loop pads, tap STOP ALL once and listen; start them again, tap STOP
+    ALL twice quickly. Then start two pads and press the numpad Enter, then Enter on the numpad
+    again; start one and press the numpad decimal key twice.
+  - Expected: One tap fades both out over about 2.5 s and the button reads STOP NOW meanwhile;
+    two taps stop at once. The numpad Enter stops the pad started last, then the other one; the
+    decimal key does what STOP ALL does (if it sends `NumpadDecimal` — see "Numpad plays pads").
+  - Why manual: Only hearing proves the fade is smooth and the second tap cuts it.
+
 ---
 
 ## Section 2 — File System

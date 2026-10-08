@@ -394,6 +394,9 @@ exported — pure UI work; no audio changes needed. See [Design Session 2026-06-
 (engine file refs: `engine.ts:375–412`, `index.ts:83–85`).
 **Note:** Not the scene-to-scene crossfade stub (→ [Real crossfade stub](#real-crossfade)).
 **When:** Slice 8.
+**Built in 3.0.183 (Slice 12b, PR review pending):** the first press of STOP ALL fades everything
+out (K16). It fades pad by pad, not with `fadeOutAll` — see "Engine: fade out all stops pads
+started during the fade".
 
 ### Glanceable loop state
 
@@ -527,6 +530,24 @@ standalone mode.
 ---
 
 ### Audio Engine (Deferred from Slice 4)
+
+### Engine: fade out all stops pads started during the fade
+
+Found 2026-10-08 (Slice 12b): `fadeOutAllInternal` in `v3/src/audio/engine.ts` stops every pad in
+`srcs` when its fade ends — also a pad started during the fade. Pinned by a `test.fails` in
+`v3/tests/unit/audio/engine.test.ts`. STOP ALL avoids it (it fades pad by pad); the combo step
+"fade out all" still has it: a pad started by hand during that step's fade is cut off.
+**When:** an engine change — the owner decides (ADR-0048 §4), with a playback check.
+
+### Engine: a Single started again during its fade-out cannot be stopped
+
+Found 2026-10-08 (Slice 12b): `stopPad` with a fade-out deletes the pad's entry when the fade
+ends; a Single started again within the fade gets a new entry under the same id, which that timer
+deletes — the new sound plays to its end and neither its pad nor STOP ALL can stop it. Pinned by
+a `test.fails` in `v3/tests/unit/audio/engine.test.ts`. Not reachable from the UI today: a fading
+pad still counts as playing (`isPlaying`), so a tap or its key stops it instead of starting it
+again; only code that calls `play()` during the fade hits it. Kept known for later engine work.
+**When:** an engine change — the owner decides (ADR-0048 §4), with a playback check.
 
 ### Finite Loop Count (loopCount > 0) ✅ Done (3.0.166 — REPEAT, ADR-0069)
 

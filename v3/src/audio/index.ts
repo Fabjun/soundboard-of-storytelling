@@ -152,11 +152,7 @@ export function stop(padId: string, immediate = false, fadeOut = 0): void {
   stopPad(padId, immediate, fadeOut);
 }
 
-/**
- * Stops everything that plays, at once.
- *
- * @reserved Slice 12 — STOP ALL, K9 / K16 (docs/product/README.md#input-keyboard--numpad)
- */
+/** Stops everything that plays, at once — the second stage of STOP ALL (src/state/stopControl.ts). */
 export function stopAll(): void {
   stopAllInternal();
 }

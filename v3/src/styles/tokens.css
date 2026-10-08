@@ -1345,7 +1345,7 @@
 }
 /* ── BoardTopBar additions — Session 3h ─────────────────────── */
 .sb-topbar-icon-btn {
-  /* @inventory: Icon button size override in the board top bar — 44px min-width (iOS touch target), 0/space-2 padding, space-1 gap for icon+label. 2-use: back button + library toggle. */
+  /* @inventory: Icon button size override in the board top bar — 44px min-width (iOS touch target), 0/space-2 padding, space-1 gap for icon+label. 3-use: back button, STOP ALL, library toggle. */
   min-width: 44px;
   padding: 0 var(--space-2);
   gap: var(--space-1);

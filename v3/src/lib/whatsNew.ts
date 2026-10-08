@@ -89,6 +89,14 @@ export function withEarlyVersions(
 /** The release notes the start screen shows, newest first (checked by whatsNew.test.ts). */
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
+    version: '3.0.183',
+    date: '2026-10-08',
+    new: [
+      'STOP ALL: in GAME a button in the top bar fades every sound out. Pressed again while the sounds fade (it then reads STOP NOW), it stops them at once.',
+      "On a numpad, the decimal key does the same as STOP ALL, and Enter stops the sound started last — pressed again, the one before. The main keyboard's Enter does that too while no button has focus.",
+    ],
+  },
+  {
     version: '3.0.182',
     date: '2026-10-08',
     new: [
