@@ -89,6 +89,13 @@ export function withEarlyVersions(
 /** The release notes the start screen shows, newest first (checked by whatsNew.test.ts). */
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
+    version: '3.0.179',
+    date: '2026-10-08',
+    behindTheScenes: [
+      'A check of the pad layout on short windows sometimes failed for no real reason. It now waits until the pads have settled. The app works exactly as before.',
+    ],
+  },
+  {
     version: '3.0.178',
     date: '2026-10-06',
     improved: [

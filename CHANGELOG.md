@@ -7,6 +7,13 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.179 — 2026-10-08
+
+### Internal
+
+- test(e2e): the pad-size test "on a short window …" waits until the grid shows 4 columns after the deck list folds (expect.poll, as the other tests of the spec) — it measured while PadGrid still counted its columns after the resize and read old and new rows mixed: red in 11 of 30 local runs on main, hidden in CI by its retries; found by the pre-push gate. After the fix 50 of 50 green; counter-checked: rows of 20px (pads overlap) → red with "the second row starts below the first"
+- test(visual): the macOS baselines of the start screen (UPDATE button, 3.0.175), the board in SETUP and the deck rail (PAD SIZE slider, pads flow into the columns, 3.0.177/3.0.178) follow main again — #52–#55 came from a cloud session that cannot run the macOS visual tests, so the pre-push gate failed on every local push; each new picture checked by eye before the update
+
 ## 3.0.178 — 2026-10-06
 
 ### Added

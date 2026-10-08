@@ -171,6 +171,9 @@ test('on a short window the grid scrolls downwards and pads never overlap', asyn
   await createDeck(page);
   await enterSetupMode(page);
   await page.getByRole('button', { name: 'Hide the deck list' }).click();
+  // the grid counts its columns again after the resize; measuring before that read old and new
+  // rows mixed (11 of 30 runs red)
+  await expect.poll(() => columns(page)).toBe(4);
   const first = await boxOf(page.locator('[data-pos="0,0"]'));
   const below = await boxOf(page.locator('[data-pos="0,1"]'));
   expect(below.y - first.y, 'the second row starts below the first').toBeGreaterThanOrEqual(
