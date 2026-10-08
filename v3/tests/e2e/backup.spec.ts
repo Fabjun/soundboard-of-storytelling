@@ -101,7 +101,7 @@ test('a V1 backup imports its audio and its board; the pad plays', async ({ page
   );
   await expect(pads).toHaveCount(2);
   await expect(pads.first()).toContainText('Owl');
-  await expect(pads.first()).toContainText('Numpad1'); // the V1 key, on the placement
+  await expect(pads.first()).toContainText('N1'); // the V1 key, on the placement
 
   // GAME mode: the imported pad plays its imported audio
   await page.getByRole('button', { name: 'GAME' }).click();

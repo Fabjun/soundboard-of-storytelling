@@ -17,10 +17,21 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.181';
+export const APP_VERSION = '3.0.182';
 
 /** The developer log, newest first; CHANGELOG.md is generated from it (sync-changelog). */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.182',
+    date: '2026-10-08',
+    items: [
+      'feat(keys): keys play pads (Slice 12a, ADR-0077) — in GAME on a board a key plays the pad that holds it in the deck shown, in All pads in the deck last selected (K3, K14); a second press while it plays changes nothing (K4); not while a text field has focus, with Ctrl / Alt / Cmd, for a held-down key or a reserved key (Enter, Numpad Enter, Numpad decimal, Space, Escape, Tab — 12b / 12d); one document listener started in main.tsx (src/state/keyControl.ts), keys as KeyboardEvent.code',
+      'feat(pad-editor): the HOTKEY field takes a key — tap, then press it (K1); Escape cancels without closing the editor, Tab moves on; a key another pad of the deck holds shows "Key N1 is on …" with MOVE KEY HERE (owner decision 2026-10-08), setPlacementHotkey takes it from the other pad in the same write; a reserved key is refused with its reason; × removes the key',
+      'feat(pads): the key shows short on the pad — N1 for the numpad 1, 1 for the main 1, A, N+ (K10, keyLabel in src/lib/padKeys.ts); the stored code stays',
+      'test: unit padKeys (key → pad per deck, numpad vs main 1, holder, labels, reserved / modifier keys), keyControl (GAME only, K4, K14, unknown / reserved / held / modified keys, text fields vs buttons and sliders, stop), boardModel (a taken key moves over, other keys and decks stay); E2E pad-keys in Chromium and WebKit (assign, short label after reload, MOVE KEY HERE, Escape keeps the editor, reserved key, ×, GAME takes the key and SETUP not); every new test counter-checked (each rule removed → its test red); backup.spec expects the V1 key as N1 (owner approval); the key badge has no test ID — specs count pads by the pad-grid-cell- prefix (BACKLOG "Role-based E2E locators")',
+      'docs: ADR-0077 (refines ADR-0048); product K1–K16 with the owner decisions of 2026-10-08 (K5 with the pad fade-out, K6 = STOP ALL in two stages, K16 2.5 s, K13 to Slice 13); slice table 12a–12e; backlog key capture / conflict partly built; iPhone checklist "Numpad plays pads"',
+    ],
+  },
   {
     version: '3.0.181',
     date: '2026-10-08',

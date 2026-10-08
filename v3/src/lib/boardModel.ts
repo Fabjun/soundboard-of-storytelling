@@ -107,9 +107,9 @@ export function updatePad(board: Board, pad: Pad): Board {
 }
 
 /**
- * Sets or clears a pad's key in one deck (keys belong to the placement).
- *
- * @reserved Slice 12 — keys play pads (docs/product/README.md#6-platforms--input)
+ * Sets or clears a pad's key in one deck (keys belong to the placement). A key another pad of
+ * the deck holds moves to this pad in the same change, so a key never plays two pads of a deck
+ * (owner decision 2026-10-08, ADR-0077).
  */
 export function setPlacementHotkey(
   board: Board,
@@ -120,9 +120,10 @@ export function setPlacementHotkey(
   return withDeck(board, deckId, (deck) => ({
     ...deck,
     placements: deck.placements.map((p) => {
-      if (p.padId !== padId) return p;
+      const mine = p.padId === padId;
+      if (!mine && (hotkey === undefined || p.hotkey !== hotkey)) return p;
       const { hotkey: _old, ...rest } = p;
-      return hotkey ? { ...rest, hotkey } : rest;
+      return mine && hotkey ? { ...rest, hotkey } : rest;
     }),
   }));
 }

@@ -104,6 +104,25 @@ describe('editing', () => {
     b = setPlacementHotkey(b, 'd1', 'a', undefined);
     expect('hotkey' in findDeck(b, 'd1')!.placements[0]).toBe(false);
   });
+
+  it('a key another pad of the deck holds moves over; other keys and other decks stay', () => {
+    let b = addPadToDeck(emptyBoard(), 'd1', single('a'), { col: 0, row: 0 });
+    b = addPadToDeck(b, 'd1', single('b'), { col: 1, row: 0 });
+    b = addPadToDeck(b, 'd1', single('c'), { col: 2, row: 0 });
+    b = placeInDeck(b, 'd2', 'a');
+    b = setPlacementHotkey(b, 'd1', 'a', 'Numpad1');
+    b = setPlacementHotkey(b, 'd1', 'c', 'Numpad3');
+    b = setPlacementHotkey(b, 'd2', 'a', 'Numpad1');
+    b = setPlacementHotkey(b, 'd1', 'b', 'Numpad1');
+    const keys = (deckId: string) =>
+      Object.fromEntries(findDeck(b, deckId)!.placements.map((p) => [p.padId, p.hotkey]));
+    expect(keys('d1')).toEqual({ a: undefined, b: 'Numpad1', c: 'Numpad3' });
+    expect('hotkey' in findDeck(b, 'd1')!.placements[0]).toBe(false);
+    expect(keys('d2')).toEqual({ a: 'Numpad1' });
+    // clearing one pad's key leaves the others alone
+    b = setPlacementHotkey(b, 'd1', 'b', undefined);
+    expect(keys('d1')).toEqual({ a: undefined, b: undefined, c: 'Numpad3' });
+  });
 });
 
 describe('deleting a pad', () => {

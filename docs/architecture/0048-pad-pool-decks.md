@@ -4,7 +4,7 @@
 **Date:** 2026-09-29
 **Slice:** Slice 9
 **Refines:** —
-**Refined by:** ADR-0068 (each file of a Single / Loop has its own trim), ADR-0075 (pad size in px; the grid flows into the window's columns)
+**Refined by:** ADR-0068 (each file of a Single / Loop has its own trim), ADR-0075 (pad size in px; the grid flows into the window's columns), ADR-0077 (a placement's key plays its pad in GAME; a taken key moves over)
 **Category:** Data model
 
 ## Context

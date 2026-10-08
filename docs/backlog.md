@@ -465,12 +465,17 @@ slice table) — when planning it, decide for each item whether it belongs to it
 KEY / MIDI / GAMEPAD fields enter a "listening" state (pulsing teal border, "press any key…")
 on click. Escape cancels. Visual: reuse SETUP-mode hatch during the listening window.
 **Source:** docs/design/design-notes.md §PAD Editor — Key Capture flow.
+**Partly built 3.0.182 (Slice 12a, ADR-0077):** the KEY field listens after a tap ("PRESS A
+KEY…"), Escape cancels; still open: the pulsing border / hatch while listening, MIDI and gamepad.
 
 ### Inline conflict feedback
 
 Live ✓/⚠ hint under KEY field as a binding is chosen — don't wait for save.
 **Scope:** conflicts are checked **per deck** (formerly "scene"), not per board — keys apply per deck ([docs/product/README.md §6](product/README.md#input-keyboard--numpad) K2, 2026-09-28). Quick-access keys are board-wide (K13) and conflict with every deck.
 **Source:** docs/design/design-notes.md §PAD Editor — Inline conflict feedback.
+**Partly built 3.0.182 (Slice 12a, ADR-0077):** per deck — a taken key shows "Key N1 is on …"
+with MOVE KEY HERE at once; a reserved key shows why. Still open: the quick-access keys (K13,
+Slice 13).
 
 ### Snap-to-zero-crossing on waveform drag
 
@@ -1805,6 +1810,11 @@ Found 2026-10-01 (Slice 9c): the SETUP toolbar button **ADD PAD** has no accessi
 finds nothing; `deck-crud.spec.ts` test 12 locates it by text for now.
 Slice 9e: `pad-pool.spec.ts` does the same; the new **All pads** entry of the deck rail is a `div`
 without a role, like every deck tab (located by test id).
+Slice 12a (2026-10-08): specs and `padCells` in `v3/tests/e2e/helpers.ts` count pads by the
+test-ID prefix `pad-grid-cell-`; a test ID on the key badge inside a cell (`pad-grid-cell-key-text`,
+the ADR-0054 scheme) was counted as a pad and broke `backup.spec.ts`. The badge has no test ID
+for now (`pad-keys.spec.ts` finds it by its text). Counting pads by role (a pad is a `button` with
+the pad's name) removes the trap.
 
 ### E2E tests check what the app does, not how its menus are built
 

@@ -529,10 +529,18 @@ describe('guard: dialogs close on Escape through useEscapeKey (ADR-0074)', () =>
     expect(withKeydown).toContain('lib/escapeKey.ts');
   });
 
+  /**
+   * The files allowed to add one, each with its reason. state/keyControl.ts: the one listener
+   * that lets keys play pads (ADR-0077, owner decision 2026-10-08) — not a dialog, and added once
+   * at app start in main.tsx, never in an effect, so the race above cannot happen.
+   */
+  const ALLOWED = ['lib/escapeKey.ts', 'state/keyControl.ts'];
+
   it('no other file adds a keydown listener — use useEscapeKey', () => {
-    expect(withKeydown, 'close a dialog with useEscapeKey(onClose, active)').toEqual([
-      'lib/escapeKey.ts',
-    ]);
+    expect(
+      withKeydown,
+      'close a dialog with useEscapeKey(onClose, active); keys that play pads: state/keyControl.ts',
+    ).toEqual(ALLOWED);
   });
 });
 
@@ -633,7 +641,8 @@ describe('guard: reserved code names an open slice or a parked decision (ADR-006
   );
 
   it('reads the slice table and finds the reservations (sanity)', () => {
-    expect(slices.get(12)).toContain('Pending');
+    // Slice 1 is finished for good — its status cell proves the table is read column by column
+    expect(slices.get(1)).toContain('Complete');
     expect(reservations.length).toBeGreaterThanOrEqual(5);
   });
 

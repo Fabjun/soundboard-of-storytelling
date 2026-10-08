@@ -89,6 +89,15 @@ export function withEarlyVersions(
 /** The release notes the start screen shows, newest first (checked by whatsNew.test.ts). */
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
+    version: '3.0.182',
+    date: '2026-10-08',
+    new: [
+      'Keys play pads: in the PAD editor, tap HOTKEY and press a key — for example on a Bluetooth numpad. In GAME that key plays the pad; pressing it again while the sound runs does not stop it. Keys belong to a deck, so the same key can play a different pad in each deck, and in All pads the keys of the last deck keep working.',
+      'A key that another pad of the deck already has can be moved over with MOVE KEY HERE.',
+      'The pad shows its key in short form: N1 is the numpad 1, 1 the 1 above the letters.',
+    ],
+  },
+  {
     version: '3.0.181',
     date: '2026-10-08',
     behindTheScenes: [
