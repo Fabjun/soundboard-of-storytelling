@@ -7,6 +7,13 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.180 — 2026-10-08
+
+### Internal
+
+- chore(deps): development patch updates — vite 8.3.2, @types/node 24.19.1 (stays on Node 24 like .nvmrc); supersedes Dependabot #51, whose checks ran on a main before 3.0.175
+- docs(backlog): the runner image change is done — the full test workflow ran green on ubuntu-26.04 (probe PR #56, run 37792184261, no flaky test); new items "Visual tests miss low-contrast changes" and "macOS baselines after cloud sessions" (both found with PR #57)
+
 ## 3.0.179 — 2026-10-08
 
 ### Internal

@@ -17,10 +17,18 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.179';
+export const APP_VERSION = '3.0.180';
 
 /** The developer log, newest first; CHANGELOG.md is generated from it (sync-changelog). */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.180',
+    date: '2026-10-08',
+    items: [
+      'chore(deps): development patch updates — vite 8.3.2, @types/node 24.19.1 (stays on Node 24 like .nvmrc); supersedes Dependabot #51, whose checks ran on a main before 3.0.175',
+      'docs(backlog): the runner image change is done — the full test workflow ran green on ubuntu-26.04 (probe PR #56, run 37792184261, no flaky test); new items "Visual tests miss low-contrast changes" and "macOS baselines after cloud sessions" (both found with PR #57)',
+    ],
+  },
   {
     version: '3.0.179',
     date: '2026-10-08',
