@@ -113,7 +113,7 @@ ubuntu-26.04 runners the combo E2E test reloaded before its last auto-save (1 ru
 decision: `debouncedSave` counts a waiting value as a running save from the moment it is
 scheduled, so RELOAD and the E2E save marker wait for it; the fixed waits in the specs are gone.
 
-### GitHub runner image change
+### GitHub runner image change ✅ Done (3.0.180)
 
 CI annotation 2026-10-03: "The ubuntu-latest label will migrate to Ubuntu 26 beginning October
 19, 2026" (actions/runner-images#14748). Check the CI runs on the new image (browsers, fonts).
@@ -122,6 +122,8 @@ failed — `v3/scripts/vale-install.ts` renamed a file from /tmp, another file s
 (EXDEV); fixed in 3.0.164 (copy instead). Result of the full workflow on ubuntu-26.04: see the
 3.0.164 changelog item and PR #42.
 **When:** done once the probe workflow is green; nothing else changes on 2026-10-19.
+**Probe 2026-10-08** (draft PR #56, main at 3.0.178, only `runs-on` changed, closed without
+merging): all five jobs green on ubuntu-26.04 (run 37792184261), no flaky or failed test.
 
 ### License notices of the service worker ✅ Done (3.0.160)
 
@@ -234,6 +236,23 @@ files.
 The visual regression tests show no pad, so the pad's picture area (icons, placeholder) and the
 PAD editor are not covered visually (noticed in Slice 15d).
 **When:** with the pad design review (Slice 13 / the design pass).
+
+### Visual tests miss low-contrast changes
+
+The pad grid changed from 4 × 4 fixed cells to cells that flow into the window's columns (3.0.177),
+yet the board baseline flagged only the deck rail: the dashed empty cells differ from the
+background by less than the per-pixel color threshold (`threshold: 0.2` in
+`v3/playwright.config.ts`), so moved cells count as equal (seen 2026-10-08 in the diff of PR #57).
+**Open:** a lower threshold for the visual project, or a visual test with cells that stand out.
+**When:** with "Visual baselines without pads" — both are about what the visual tests see.
+
+### macOS baselines after cloud sessions
+
+PRs #52 to #55 came from a cloud session (Linux), which cannot run the macOS visual tests; their
+UI changes left three baselines stale, and the pre-push gate failed on the next local push
+(updated in 3.0.179, PR #57). **Open:** a rule or check so a UI change from a cloud session gets
+its baselines updated on a Mac before the next work starts.
+**When:** before the next cloud session that changes the UI.
 
 > **Slice numbers in this section refer to the May plan** (Slices 5–8, superseded 2026-09-28).
 > Mapping to the new plan (Slices 9–14): `CLAUDE.md §Slice progress`. Items are re-triaged when
