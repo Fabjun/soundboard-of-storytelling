@@ -17,7 +17,7 @@ release notes the app shows are written separately for its users (`v3/src/lib/wh
 
 ### Internal
 
-- test: unit padKeys (key → pad per deck, numpad vs main 1, holder, labels, reserved / modifier keys), keyControl (GAME only, K4, K14, unknown / reserved / held / modified keys, text fields vs buttons and sliders, stop), boardModel (a taken key moves over, other keys and decks stay); E2E pad-keys in Chromium and WebKit (assign, short label after reload, MOVE KEY HERE, Escape keeps the editor, reserved key, ×, GAME takes the key and SETUP not); every new test counter-checked (each rule removed → its test red)
+- test: unit padKeys (key → pad per deck, numpad vs main 1, holder, labels, reserved / modifier keys), keyControl (GAME only, K4, K14, unknown / reserved / held / modified keys, text fields vs buttons and sliders, stop), boardModel (a taken key moves over, other keys and decks stay); E2E pad-keys in Chromium and WebKit (assign, short label after reload, MOVE KEY HERE, Escape keeps the editor, reserved key, ×, GAME takes the key and SETUP not); every new test counter-checked (each rule removed → its test red); backup.spec expects the V1 key as N1 (owner approval); the key badge has no test ID — specs count pads by the pad-grid-cell- prefix (BACKLOG "Role-based E2E locators")
 - docs: ADR-0077 (refines ADR-0048); product K1–K16 with the owner decisions of 2026-10-08 (K5 with the pad fade-out, K6 = STOP ALL in two stages, K16 2.5 s, K13 to Slice 13); slice table 12a–12e; backlog key capture / conflict partly built; iPhone checklist "Numpad plays pads"
 
 ## 3.0.181 — 2026-10-08

@@ -1810,6 +1810,11 @@ Found 2026-10-01 (Slice 9c): the SETUP toolbar button **ADD PAD** has no accessi
 finds nothing; `deck-crud.spec.ts` test 12 locates it by text for now.
 Slice 9e: `pad-pool.spec.ts` does the same; the new **All pads** entry of the deck rail is a `div`
 without a role, like every deck tab (located by test id).
+Slice 12a (2026-10-08): specs and `padCells` in `v3/tests/e2e/helpers.ts` count pads by the
+test-ID prefix `pad-grid-cell-`; a test ID on the key badge inside a cell (`pad-grid-cell-key-text`,
+the ADR-0054 scheme) was counted as a pad and broke `backup.spec.ts`. The badge has no test ID
+for now (`pad-keys.spec.ts` finds it by its text). Counting pads by role (a pad is a `button` with
+the pad's name) removes the trap.
 
 ### E2E tests check what the app does, not how its menus are built
 

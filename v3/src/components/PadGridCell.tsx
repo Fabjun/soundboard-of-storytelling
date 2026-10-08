@@ -144,11 +144,7 @@ export function PadGridCell({
         <div class="sb-pad-title">{p.name || '—'}</div>
 
         {/* Hotkey badge — the short label (K10); the stored code stays as it is */}
-        {hotkey && (
-          <div class="sb-pad-key" data-testid="pad-grid-cell-key-text">
-            {keyLabel(hotkey)}
-          </div>
-        )}
+        {hotkey && <div class="sb-pad-key">{keyLabel(hotkey)}</div>}
 
         {/* SETUP: drag handle indicator */}
         {isSetup && (

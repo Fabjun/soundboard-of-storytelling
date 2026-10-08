@@ -21,8 +21,9 @@ import {
 } from './helpers';
 
 const keyField = (page: Page) => page.getByTestId('pad-editor-panel-key-button');
-const padKey = (page: Page, padId: string) =>
-  page.getByTestId(`pad-grid-cell-${padId}`).getByTestId('pad-grid-cell-key-text');
+/** The key label shown on a pad. No test ID: existing specs count pads by the `pad-grid-cell-` prefix. */
+const padKey = (page: Page, padId: string, label: string) =>
+  page.getByTestId(`pad-grid-cell-${padId}`).getByText(label, { exact: true });
 
 /** Presses the key in the armed key field of the open PAD editor. */
 async function assignKey(page: Page, code: string) {
@@ -51,10 +52,10 @@ test('a key pressed in the key field becomes the pad key, shown short on the pad
   await assignKey(page, 'Numpad1');
   await expect(keyField(page)).toHaveText('N1');
   await closePadEditor(page);
-  await expect(padKey(page, thunder)).toHaveText('N1');
+  await expect(padKey(page, thunder, 'N1')).toBeVisible();
 
   await reopenFirstBoard(page);
-  await expect(padKey(page, thunder)).toHaveText('N1');
+  await expect(padKey(page, thunder, 'N1')).toBeVisible();
 });
 
 test('a key another pad holds moves over on MOVE KEY HERE; Escape cancels and keeps the editor open', async ({
@@ -76,8 +77,8 @@ test('a key another pad holds moves over on MOVE KEY HERE; Escape cancels and ke
   await page.getByTestId('pad-editor-panel-key-move-button').click();
   await expect(keyField(page)).toHaveText('N1');
   await closePadEditor(page);
-  await expect(padKey(page, rain)).toHaveText('N1');
-  await expect(padKey(page, thunder)).toHaveCount(0);
+  await expect(padKey(page, rain, 'N1')).toBeVisible();
+  await expect(padKey(page, thunder, 'N1')).toHaveCount(0);
 });
 
 test('a reserved key is refused with its reason; × removes the key', async ({ page }) => {
