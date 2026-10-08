@@ -17,10 +17,17 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.178';
+export const APP_VERSION = '3.0.179';
 
 /** The developer log, newest first; CHANGELOG.md is generated from it (sync-changelog). */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.179',
+    date: '2026-10-08',
+    items: [
+      'test(e2e): the pad-size test "on a short window …" waits until the grid shows 4 columns after the deck list folds (expect.poll, as the other tests of the spec) — it measured while PadGrid still counted its columns after the resize and read old and new rows mixed: red in 11 of 30 local runs on main, hidden in CI by its retries; found by the pre-push gate. After the fix 50 of 50 green; counter-checked: rows of 20px (pads overlap) → red with "the second row starts below the first"',
+    ],
+  },
   {
     version: '3.0.178',
     date: '2026-10-06',
