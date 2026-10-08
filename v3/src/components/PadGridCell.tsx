@@ -12,6 +12,7 @@
 import type { JSX } from 'preact';
 import type { AppMode, Pad } from '../types';
 import { padTypeColor, padTypeLabel } from '../lib/padUtils';
+import { keyLabel } from '../lib/padKeys';
 import { play, stop, isPlaying } from '../audio/index';
 import { playingPads, loopingPads } from '../state/store';
 import { PadIcons } from './PadIcons';
@@ -142,8 +143,12 @@ export function PadGridCell({
         {/* Pad name */}
         <div class="sb-pad-title">{p.name || '—'}</div>
 
-        {/* Hotkey badge */}
-        {hotkey && <div class="sb-pad-key">{hotkey}</div>}
+        {/* Hotkey badge — the short label (K10); the stored code stays as it is */}
+        {hotkey && (
+          <div class="sb-pad-key" data-testid="pad-grid-cell-key-text">
+            {keyLabel(hotkey)}
+          </div>
+        )}
 
         {/* SETUP: drag handle indicator */}
         {isSetup && (

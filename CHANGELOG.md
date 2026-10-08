@@ -7,6 +7,19 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.182 — 2026-10-08
+
+### Added
+
+- feat(keys): keys play pads (Slice 12a, ADR-0077) — in GAME on a board a key plays the pad that holds it in the deck shown, in All pads in the deck last selected (K3, K14); a second press while it plays changes nothing (K4); not while a text field has focus, with Ctrl / Alt / Cmd, for a held-down key or a reserved key (Enter, Numpad Enter, Numpad decimal, Space, Escape, Tab — 12b / 12d); one document listener started in main.tsx (src/state/keyControl.ts), keys as KeyboardEvent.code
+- feat(pad-editor): the HOTKEY field takes a key — tap, then press it (K1); Escape cancels without closing the editor, Tab moves on; a key another pad of the deck holds shows "Key N1 is on …" with MOVE KEY HERE (owner decision 2026-10-08), setPlacementHotkey takes it from the other pad in the same write; a reserved key is refused with its reason; × removes the key
+- feat(pads): the key shows short on the pad — N1 for the numpad 1, 1 for the main 1, A, N+ (K10, keyLabel in src/lib/padKeys.ts); the stored code stays
+
+### Internal
+
+- test: unit padKeys (key → pad per deck, numpad vs main 1, holder, labels, reserved / modifier keys), keyControl (GAME only, K4, K14, unknown / reserved / held / modified keys, text fields vs buttons and sliders, stop), boardModel (a taken key moves over, other keys and decks stay); E2E pad-keys in Chromium and WebKit (assign, short label after reload, MOVE KEY HERE, Escape keeps the editor, reserved key, ×, GAME takes the key and SETUP not); every new test counter-checked (each rule removed → its test red)
+- docs: ADR-0077 (refines ADR-0048); product K1–K16 with the owner decisions of 2026-10-08 (K5 with the pad fade-out, K6 = STOP ALL in two stages, K16 2.5 s, K13 to Slice 13); slice table 12a–12e; backlog key capture / conflict partly built; iPhone checklist "Numpad plays pads"
+
 ## 3.0.181 — 2026-10-08
 
 ### Internal

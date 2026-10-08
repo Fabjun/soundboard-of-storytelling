@@ -112,6 +112,18 @@ because Playwright runs against a simulated environment:
     their V1 icons.
   - Why manual: Memory and scrolling with thousands of icons on a real iPhone; V1 data.
 
+- [ ] **Numpad plays pads** _(Slice 12a, ADR-0077)_
+  - Action: Pair the Bluetooth numpad. In SETUP, open a pad, tap the HOTKEY field and press
+    numpad 1; open a second pad and press numpad 1 again, then MOVE KEY HERE. Give a third pad the
+    numpad's decimal key. Switch to GAME and press numpad 1 twice, then open All pads and press it
+    again. Also try with NumLock off.
+  - Expected: The field shows `N1`, the pad shows `N1` in its corner; the key moves to the second
+    pad. The decimal key is refused with "stops all sounds" if it sends `NumpadDecimal` — note
+    which code it sends (`NumpadDecimal` or `Period`, K6). In GAME numpad 1 plays the second pad;
+    the second press does not stop it; in All pads it still plays. In SETUP the key plays nothing.
+  - Why manual: Which codes a real Bluetooth numpad sends to iOS (NumLock, decimal key) is only
+    known on the device.
+
 ---
 
 ## Section 2 — File System

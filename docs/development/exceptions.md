@@ -103,19 +103,18 @@ Paths, dependencies and issues excluded from formatting, linting, knip or doc gu
 | knip ignoreDependencies | `@stryker-mutator/command-runner`           | Stryker's "command" test runner is built into @stryker-mutator/core, not a package                                                                                                                                                                                                                                    |
 | knip ignoreBinaries     | `vale`                                      | Installed by scripts/vale-install.ts (a Go binary, not an npm package)                                                                                                                                                                                                                                                |
 
-## Reserved code (7)
+## Reserved code (6)
 
 Unused today, kept for a later slice or a parked feature (`@reserved`, ADR-0064); the slice is the review trigger — `codeGuards` reports a reservation whose slice is complete.
 
-| Location                       | Symbol               | Waits for                                                                                               |
-| ------------------------------ | -------------------- | ------------------------------------------------------------------------------------------------------- |
-| `v3/src/audio/index.ts:158`    | `stopAll`            | Slice 12 — STOP ALL, K9 / K16 (docs/product/README.md#input-keyboard--numpad)                           |
-| `v3/src/audio/index.ts:167`    | `fadeOutAll`         | Slice 12 — STOP ALL in two stages, the first fades, K16 (docs/product/README.md#input-keyboard--numpad) |
-| `v3/src/audio/index.ts:213`    | `crossfade`          | Parked — crossfade between pads (docs/product/README.md#pad-options)                                    |
-| `v3/src/lib/boardModel.ts:112` | `setPlacementHotkey` | Slice 12 — keys play pads (docs/product/README.md#6-platforms--input)                                   |
-| `v3/src/lib/padUtils.ts:189`   | `padTypeGlow`        | Slice 13 — a playing pad glows in its type color (docs/design/components/pad.md)                        |
-| `v3/src/state/store.ts:55`     | `activeTheme`        | Slice 14 — themes                                                                                       |
-| `v3/src/state/store.ts:109`    | `masterVolume`       | Parked — master volume (docs/product/README.md#pad-options)                                             |
+| Location                     | Symbol         | Waits for                                                                                               |
+| ---------------------------- | -------------- | ------------------------------------------------------------------------------------------------------- |
+| `v3/src/audio/index.ts:158`  | `stopAll`      | Slice 12 — STOP ALL, K9 / K16 (docs/product/README.md#input-keyboard--numpad)                           |
+| `v3/src/audio/index.ts:167`  | `fadeOutAll`   | Slice 12 — STOP ALL in two stages, the first fades, K16 (docs/product/README.md#input-keyboard--numpad) |
+| `v3/src/audio/index.ts:213`  | `crossfade`    | Parked — crossfade between pads (docs/product/README.md#pad-options)                                    |
+| `v3/src/lib/padUtils.ts:189` | `padTypeGlow`  | Slice 13 — a playing pad glows in its type color (docs/design/components/pad.md)                        |
+| `v3/src/state/store.ts:55`   | `activeTheme`  | Slice 14 — themes                                                                                       |
+| `v3/src/state/store.ts:109`  | `masterVolume` | Parked — master volume (docs/product/README.md#pad-options)                                             |
 
 ## Prose lint exceptions (Vale) (14)
 
@@ -135,8 +134,8 @@ Historical docs excluded in `.vale.ini`, and passages marked `<!-- vale … = NO
 | `docs/architecture/0056-documentation-freshness.md:33` | `SoS.SupersededTerms` off         | …                                                                                 |
 | `docs/architecture/concept-brief.md:75`                | `SoS.SupersededTerms` off         | explains the rename                                                               |
 | `docs/product/README.md:108`                           | `SoS.SupersededTerms` off         | records the rename decision                                                       |
-| `docs/product/README.md:281`                           | `SoS.SupersededTerms` off         | records the rename                                                                |
-| `docs/product/README.md:300`                           | `SoS.SupersededTerms` off         | records the rename decision (Q1)                                                  |
+| `docs/product/README.md:282`                           | `SoS.SupersededTerms` off         | records the rename                                                                |
+| `docs/product/README.md:301`                           | `SoS.SupersededTerms` off         | records the rename decision (Q1)                                                  |
 
 ## To-do markers (0)
 

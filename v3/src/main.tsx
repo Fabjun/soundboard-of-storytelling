@@ -18,6 +18,7 @@ import { initAudioBridge } from './audio/index';
 import { pendingSaves } from './state/store';
 import { loadPrefs } from './state/prefs';
 import { startPlayHistory } from './state/playHistory';
+import { startKeyControl } from './state/keyControl';
 import { loadStoredState } from './state/boot';
 
 // Apply the design-system root class to <body>.
@@ -36,6 +37,9 @@ effect(() => {
 
 // Remember when each pad was last played ("Last played" sort in All pads).
 startPlayHistory();
+
+// Keys play pads in GAME (Slice 12a, ADR-0077).
+startKeyControl();
 
 // First render only once the stored state (src/state/boot.ts) and the preferences
 // (src/state/prefs.ts) are loaded: nothing the user creates can be replaced by a late load, and
