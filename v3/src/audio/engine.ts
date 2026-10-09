@@ -26,6 +26,8 @@ const srcs: Record<string, AudioBufferSourceNode[]> = {};
 const gains: Record<string, GainNode> = {};
 const playPos: Record<string, number> = {};
 const comboState: Record<string, ComboRuntimeState> = {};
+/** Sounds still fading out after fadeOutPads took them from their pads — stopAllInternal cuts them too. */
+const fadingSources = new Set<AudioBufferSourceNode>();
 
 let callbacks: AudioCallbacks | null = null;
 
@@ -482,8 +484,15 @@ export function stopPad(padId: string, immediate = false, fadeOut = 0): void {
   }
 }
 
-/** Stops every playing pad and every running combo at once, without fades. */
+/** Stops every playing pad, every running combo and every sound still fading out, at once. */
 export function stopAllInternal(): void {
+  fadingSources.forEach((s) => {
+    try {
+      s.onended = null;
+      s.stop();
+    } catch (_) {}
+  });
+  fadingSources.clear();
   for (const padId of Object.keys(srcs)) {
     srcs[padId].forEach((s) => {
       try {
@@ -504,6 +513,7 @@ export function stopAllInternal(): void {
 /**
  * Fades every playing pad out over `duration` seconds and then stops it; running combos stop at
  * once (their gain nodes are not reachable for a fade). Does nothing while audio is suspended.
+ * A pad started during the fade plays on (fadeOutPads).
  */
 export function fadeOutAllInternal(duration: number): void {
   if (!ctx || isHalted(ctx)) return;
@@ -514,34 +524,42 @@ export function fadeOutAllInternal(duration: number): void {
     stopCombo(padId);
   }
 
-  for (const padId of Object.keys(gains)) {
-    const g = gains[padId];
+  fadeOutPads(Object.keys(srcs), duration);
+}
+
+/**
+ * Fades the sounds of `padIds` out over `duration` seconds and stops them on the audio clock
+ * (`stop(when)`, MDN AudioScheduledSourceNode). The pads count as stopped at once, as with
+ * stopPad: their entries go now, so a pad started during the fade gets a sound of its own that the
+ * fade does not touch, and a Loop with several files neither goes on to its next file nor starts
+ * one that is still loading (playNextTrack finds no entry). No timer: one at the end of the fade
+ * would stop whatever the entries hold by then — also a pad started during the fade. The fading
+ * sounds stay in `fadingSources` until they end, so stopAllInternal (the second STOP ALL press)
+ * still cuts them.
+ */
+function fadeOutPads(padIds: string[], duration: number): void {
+  const end = ctx!.currentTime + duration;
+  for (const pid of padIds) {
+    const g = gains[pid];
     if (g?.gain) {
       try {
-        g.gain.cancelScheduledValues(ctx.currentTime);
-        g.gain.setValueAtTime(g.gain.value, ctx.currentTime);
-        g.gain.linearRampToValueAtTime(0, ctx.currentTime + duration);
+        g.gain.cancelScheduledValues(ctx!.currentTime);
+        g.gain.setValueAtTime(g.gain.value, ctx!.currentTime);
+        g.gain.linearRampToValueAtTime(0, end);
       } catch (_) {}
     }
+    srcs[pid]?.forEach((s) => {
+      try {
+        fadingSources.add(s);
+        s.onended = () => fadingSources.delete(s);
+        s.stop(end);
+      } catch (_) {}
+    });
+    onPadStopped(pid);
+    delete srcs[pid];
+    delete gains[pid];
+    delete playPos[pid];
   }
-
-  setTimeout(
-    () => {
-      for (const padId of Object.keys(srcs)) {
-        srcs[padId].forEach((s) => {
-          try {
-            s.onended = null;
-            s.stop();
-          } catch (_) {}
-        });
-        onPadStopped(padId);
-        delete srcs[padId];
-        delete gains[padId];
-        delete playPos[padId];
-      }
-    },
-    duration * 1000 + 50,
-  );
 }
 
 // ── COMBO ENGINE (V1 lines 3970–4238) ────────────────────────────────────────
@@ -848,38 +866,9 @@ function fadeOutAllExcept(exceptPadId: string, duration: number): void {
     if (cid !== exceptPadId) stopCombo(cid);
   }
 
-  const fadingIds: string[] = [];
-  for (const pid of Object.keys(gains)) {
-    if (pid === exceptPadId) continue;
-    const g = gains[pid];
-    if (g?.gain) {
-      try {
-        g.gain.cancelScheduledValues(ctx.currentTime);
-        g.gain.setValueAtTime(g.gain.value, ctx.currentTime);
-        g.gain.linearRampToValueAtTime(0, ctx.currentTime + duration);
-        fadingIds.push(pid);
-      } catch (_) {}
-    }
-  }
-
-  setTimeout(
-    () => {
-      for (const pid of fadingIds) {
-        if (srcs[pid]) {
-          srcs[pid].forEach((s) => {
-            try {
-              s.onended = null;
-              s.stop();
-            } catch (_) {}
-          });
-          delete srcs[pid];
-        }
-        onPadStopped(pid);
-        delete gains[pid];
-        delete playPos[pid];
-      }
-    },
-    duration * 1000 + 50,
+  fadeOutPads(
+    Object.keys(srcs).filter((pid) => pid !== exceptPadId),
+    duration,
   );
 }
 

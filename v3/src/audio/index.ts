@@ -175,9 +175,11 @@ export function resume(): void {
 }
 
 /**
- * Fades everything that plays out over `duration` seconds; running combos stop at once.
+ * Fades everything that plays out over `duration` seconds; running combos stop at once. The pads
+ * count as stopped at once — a pad started during the fade plays on; `stopAll` still cuts the
+ * fading sounds.
  *
- * @reserved Parked — STOP ALL fades pad by pad until the engine fix (BACKLOG "Engine: fade out all stops pads started during the fade")
+ * @reserved Parked — one fade for everything at once; STOP ALL fades pad by pad (src/state/stopControl.ts)
  */
 export function fadeOutAll(duration: number): void {
   fadeOutAllInternal(duration);

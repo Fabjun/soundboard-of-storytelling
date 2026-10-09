@@ -535,13 +535,21 @@ standalone mode.
 
 ### Audio Engine (Deferred from Slice 4)
 
-### Engine: fade out all stops pads started during the fade
+### Engine: fade out all stops pads started during the fade ✅ Done (3.0.194; playback check open)
 
 Found 2026-10-08 (Slice 12b): `fadeOutAllInternal` in `v3/src/audio/engine.ts` stops every pad in
 `srcs` when its fade ends — also a pad started during the fade. Pinned by a `test.fails` in
 `v3/tests/unit/audio/engine.test.ts`. STOP ALL avoids it (it fades pad by pad); the combo step
 "fade out all" still has it: a pad started by hand during that step's fade is cut off.
 **When:** an engine change — the owner decides (ADR-0048 §4), with a playback check.
+**Done 2026-10-09** (owner decision 2026-10-09: own pull request; the owner released the merge
+before the playback check, iPhone checklist "Fade out all in a combo" open): both fades — `fadeOutAll` and the combo step — share one function (`fadeOutPads`) that lets
+the pads go at once and stops their sounds on the audio clock (`stop(when)`, the Web Audio way;
+MDN AudioScheduledSourceNode), with no timer at the end. A pad started during the fade keeps its
+sound; a Loop with several files no longer starts its next file or one still loading within the
+fade (the old combo step let that through at full volume); STOP NOW still cuts the fading sounds
+(`fadingSources`). The second engine bug ("a Single started again during its fade-out") stays as
+decided.
 
 ### Engine: a Single started again during its fade-out cannot be stopped
 

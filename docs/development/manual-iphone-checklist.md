@@ -133,6 +133,16 @@ because Playwright runs against a simulated environment:
     decimal key does what STOP ALL does (if it sends `NumpadDecimal` — see "Numpad plays pads").
   - Why manual: Only hearing proves the fade is smooth and the second tap cuts it.
 
+- [ ] **Fade out all in a combo** _(engine fix 3.0.194)_
+  - Action: Import a V1 backup that has a combo with "fade out all" (V1's fade-out-all step). In
+    GAME start a Loop pad and a Loop pad with several files, then play the combo; while it fades,
+    tap the first Loop pad again. Once more: play the combo and tap STOP ALL twice during its fade.
+  - Expected: Both Loops fade out smoothly over the step's time; the Loop with several files does
+    not jump to its next file; the Loop tapped during the fade starts again and keeps playing after
+    the fade; the combo goes on with its next step. STOP ALL during the fade: the first tap ends
+    the combo at once while the Loops keep fading, the second tap silences them at once.
+  - Why manual: An engine change (owner approval); only hearing proves the fade and the cut.
+
 - [ ] **Mode switch stops sounds; the Lock** _(Slice 12c)_
   - Action: In GAME start two pads, switch to SETUP. Back in GAME tap the lock next to the mode
     toggle, then tap SETUP; tap the lock again and tap SETUP. Lock once more and reload the app.

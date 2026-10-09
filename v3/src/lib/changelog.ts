@@ -17,10 +17,19 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.193';
+export const APP_VERSION = '3.0.194';
 
 /** The developer log, newest first; CHANGELOG.md is generated from it (sync-changelog). */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.194',
+    date: '2026-10-09',
+    items: [
+      'fix(audio): "fade out all" no longer cuts off a pad started during the fade — ENGINE CHANGE, owner decision 2026-10-09 (own pull request; merge released by the owner, iPhone playback check still open): fadeOutAll and the combo step share fadeOutPads, which lets the pads go at once and stops their sounds on the audio clock (stop(when)) instead of a timer that stopped whatever played when the fade ended; a Loop with several files no longer starts its next file or one still loading within the fade; STOP NOW still cuts the fading sounds (fadingSources)',
+      'test: engine — a pad started during fadeOutAll plays on, the same pad started again keeps its new sound and can be stopped, a Loop with several files neither goes on nor starts a loading file, stopAll cuts fading sounds, an ended sound is not stopped again, the combo step lets a pad started by hand play on; the test.fails became a test; counter-checked (the old engine → the seven fade tests red; no cut in stopAll / no clean-up at the end → exactly that test red)',
+      'docs: backlog "Engine: fade out all stops pads started during the fade" done; iPhone checklist "Fade out all in a combo"; fadeOutAll stays reserved (Parked: STOP ALL fades pad by pad, so a tap on a fading pad stops it)',
+    ],
+  },
   {
     version: '3.0.193',
     date: '2026-10-09',
