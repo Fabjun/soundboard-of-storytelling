@@ -1,6 +1,6 @@
 # ADR-0078: STOP ALL in two stages
 
-**Status:** Proposed
+**Status:** Accepted
 **Date:** 2026-10-08
 **Slice:** Slice 12
 **Refines:** ADR-0077
@@ -11,8 +11,8 @@
 The owner decided STOP ALL in two stages (K16): the first press fades every sound out over
 2.5 s, a second press while it fades stops at once; the numpad decimal key is the same action
 (K6); Enter stops the sound started last with that pad's fade-out (K5). Built while the owner was
-away (2026-10-08): the decisions are the owner's, the way they are built is provisional — review
-pending. The engine offers `fadeOutAll(duration)`, but its cleanup timer stops every pad in its
+away (2026-10-08); the owner accepted how it is built in the review of 2026-10-09 (button place,
+always enabled, STOP NOW, Enter on a focused control). The engine offers `fadeOutAll(duration)`, but its cleanup timer stops every pad in its
 table when the fade ends — also a pad started during the fade (pinned by a `test.fails` in
 `v3/tests/unit/audio/engine.test.ts`). A game master who presses STOP ALL and at once starts the
 next atmosphere would lose it after 2.5 s.
