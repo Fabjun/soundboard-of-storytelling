@@ -283,7 +283,9 @@ and has diverged). Never hardcode colors, fonts, or spacing.
 - The app shows no internal plan names (slice numbers, backlog) — guarded by `codeGuards` ("the app shows no internal plan names")
 - Every control works with the Tab key and has an accessible name (icon buttons: `aria-label`);
   error messages say in plain words what happened and what to do (Nielsen heuristic 9) — owner
-  decision 2026-10-02; the existing screens get an audit (BACKLOG "Tab access and plain errors")
+  decision 2026-10-02; checked by `codeGuards` ("controls work with Tab and have a name") and the
+  axe scan `v3/tests/e2e/a11y.spec.ts` (ADR-0080). The main action of a list row is a real
+  `<button>` (`sb-row-button`); `PixelIcon` is decorative — the control carries the name
 - Minimum touch target on all interactive elements: 44px (iOS guideline)
 - Full-screen dialogs follow ADR-0074 (`sb-overlay`, role dialog, the page behind inert via
   `v3/src/lib/inertOutside.ts`, focus in and back, Escape only through `useEscapeKey` in

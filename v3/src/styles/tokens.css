@@ -631,6 +631,29 @@
   padding: var(--space-4) var(--space-5);
   position: relative;
 }
+.sb-row-button {
+  /* @inventory: The main action of a list row as a real button, so it is reached with Tab (owner rule 2026-10-02) — no frame, background or font of its own: it takes the row's look, lays out its content like the row and fills the free width; the row's other buttons stay its siblings, never its children. */
+  display: flex;
+  align-items: center;
+  gap: inherit;
+  flex: 1;
+  min-width: 0;
+  align-self: stretch;
+  margin: 0;
+  padding: 0;
+  background: none;
+  border: 0;
+  color: inherit;
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.sb-row-button:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
+}
 .sb-icon {
   /* @inventory: Icon slot in a board-list menu row — fixed 28px width, gold color. */
   flex: 0 0 28px;
@@ -1496,11 +1519,11 @@
   outline: 2px solid var(--gold);
 }
 .sb-deck-tab {
-  /* @inventory: Clickable deck entry in the deck rail; is-active highlights the current deck. */
+  /* @inventory: Deck entry in the deck rail — its select button (sb-row-button, the full 44px height) and the deck's action buttons; is-active highlights the current deck. */
   display: flex;
   align-items: center;
   gap: var(--space-2);
-  padding: var(--space-2) var(--space-3);
+  padding: 0 var(--space-3);
   font-family: var(--font-ui);
   font-size: var(--fs-md);
   letter-spacing: 0.06em;
@@ -2180,12 +2203,11 @@
   text-align: center;
 }
 .sb-source-item {
-  /* @inventory: Clickable column item in a source picker list — column layout, 5px/8px padding, soft bottom separator, pointer cursor, 2px gap between name row and waveform preview. Background (selection state) set inline. */
+  /* @inventory: Column item in a source picker list — its choose button (sb-row-button, the full 44px touch height) and, when chosen, the waveform preview below; 8px side padding, soft bottom separator. Background (selection state) set inline. */
   display: flex;
   flex-direction: column;
-  padding: 5px 8px;
+  padding: 0 8px;
   border-bottom: 1px solid var(--border-soft);
-  cursor: pointer;
   gap: 2px;
 }
 .sb-readonly-field {
@@ -2319,6 +2341,21 @@
   align-items: center;
   gap: var(--space-2);
   flex-shrink: 0;
+}
+.sb-upload-errors {
+  /* @inventory: Why files failed to import, under the upload bar — a native <details> (opens with a tap, Enter or Space; was a hover-only tooltip): summary in the error style, one plain sentence per file below; same padding, font and background as sb-upload-bar. */
+  padding: 0 var(--space-3) 6px;
+  background: var(--raised);
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  color: var(--blood-bright);
+  flex-shrink: 0;
+}
+.sb-upload-errors > summary {
+  min-height: 44px; /* sub-token: iOS minimum touch target */
+  display: flex;
+  align-items: center;
+  cursor: pointer;
 }
 .sb-error-label {
   /* @inventory: Inline error/warning label — blood red, help cursor, left margin for inline placement. */

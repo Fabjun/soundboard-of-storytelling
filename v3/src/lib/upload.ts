@@ -155,7 +155,12 @@ export async function addAudioFile(
   try {
     buf = await file.arrayBuffer();
   } catch (e) {
-    return { kind: 'error', error: `${file.name}: could not read file (${String(e)})` };
+    // Plain words and a next step for the user (Nielsen 9); the technical cause for diagnosis
+    console.error(`Reading ${file.name} failed:`, e);
+    return {
+      kind: 'error',
+      error: `${file.name}: the file could not be read — check that it still exists, then import it again`,
+    };
   }
 
   // Step 2 — hash (synchronous, @noble/hashes)
@@ -170,7 +175,11 @@ export async function addAudioFile(
   try {
     ({ duration, peaks } = await analyseAudio(buf));
   } catch (e) {
-    return { kind: 'error', error: `${file.name}: decode failed (${String(e)})` };
+    console.error(`Decoding ${file.name} failed:`, e);
+    return {
+      kind: 'error',
+      error: `${file.name}: not an audio file this browser can play — use MP3, M4A or WAV`,
+    };
   }
 
   // Step 6 — persist to IDB
@@ -188,7 +197,11 @@ export async function addAudioFile(
   try {
     await libPut({ ...meta, blob: new Blob([buf], { type: file.type }) });
   } catch (e) {
-    return { kind: 'error', error: `${file.name}: could not save to library (${String(e)})` };
+    console.error(`Storing ${file.name} failed:`, e);
+    return {
+      kind: 'error',
+      error: `${file.name}: could not be stored — free up storage space, then import it again`,
+    };
   }
 
   // Step 7 — update signal immediately (live progress)

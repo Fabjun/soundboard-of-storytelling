@@ -43,6 +43,7 @@ export const FULL_TESTS = [
   'audio',
   'stop-all',
   'system-gestures',
+  'a11y',
 ];
 
 /**
@@ -64,6 +65,7 @@ export const FULL_WEBKIT_TESTS = [
   'layout-reach',
   'wake-lock',
   'whats-new',
+  'a11y',
   'pad-dnd',
   'pad-pool',
   'combo-editor',

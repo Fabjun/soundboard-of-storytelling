@@ -55,18 +55,28 @@ function UploadStatusBar(): JSX.Element | null {
   if (status.errors.length > 0) parts.push(`${status.errors.length} failed`);
 
   return (
-    <div
-      class="sb-upload-bar"
-      style={{ color: status.errors.length > 0 ? 'var(--blood-bright)' : 'var(--text-dim)' }}
-    >
-      <PixelIcon name={status.errors.length > 0 ? 'skull' : 'save'} size={11} />
-      {parts.join(' · ')}
+    <>
+      <div
+        class="sb-upload-bar"
+        role={status.errors.length > 0 ? 'alert' : 'status'}
+        style={{ color: status.errors.length > 0 ? 'var(--blood-bright)' : 'var(--text-dim)' }}
+      >
+        <PixelIcon name={status.errors.length > 0 ? 'skull' : 'save'} size={11} />
+        {parts.join(' · ')}
+      </div>
+      {/* Why each file failed, in plain words — a native disclosure: a tap, Enter or Space opens
+          it (it was a hover-only tooltip, out of reach on a phone and for the keyboard) */}
       {status.errors.length > 0 && (
-        <span title={status.errors.join('\n')} class="sb-error-label">
-          [details]
-        </span>
+        <details class="sb-upload-errors" data-testid="library-screen-upload-errors-region">
+          <summary>Why {status.errors.length === 1 ? 'it' : 'they'} failed</summary>
+          <ul>
+            {status.errors.map((error) => (
+              <li key={error}>{error}</li>
+            ))}
+          </ul>
+        </details>
       )}
-    </div>
+    </>
   );
 }
 

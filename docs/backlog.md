@@ -1504,13 +1504,33 @@ SETUP half of the mode toggle follows `.sb-btn` (no third style). One disabled l
 for the dimming and one cursor — is a structure clean-up, with a guard against a new style.
 **When:** the structure step "Relative units for sizes" before Slice 13 (same file).
 
-### Tab access and plain errors (audit of the existing screens)
+### Tab access and plain errors (audit of the existing screens) ✅ Done (3.0.188, PR review pending)
 
 Owner decision 2026-10-02 (CLAUDE.md UI rules): every control reachable with the Tab key and named
 for screen readers; error messages in plain words with a next step. Found: the PAD editor's close
 button had no accessible name (fixed 35c602d); BACKLOG "Role-based E2E locators" lists buttons
 without accessible names in Chromium.
 **When:** next structure review; checks: an accessibility lint rule or an axe scan in E2E.
+**Audit 2026-10-09 (ADR-0080):** not reachable with the keyboard — opening a board (board list),
+choosing a deck (deck rail), choosing the file of a new pad, selecting and renaming a library
+file; now real buttons (`sb-row-button`). Five icon buttons had only a `title`; every `PixelIcon`
+announced its file name ("book", "flame") — now decorative. Errors shown raw: backup export,
+unexpected import error, the three upload errors; the upload details were a hover-only tooltip —
+now plain words with a next step, in a `<details>`. Checks: `codeGuards` "controls work with Tab
+and have a name"; axe scan and a keyboard-only flow in `v3/tests/e2e/a11y.spec.ts`. The ADD PAD
+button named in "Role-based E2E locators" has a name by now.
+
+### Text contrast below WCAG AA
+
+Found 2026-10-09 by the axe scan (ADR-0080): muted text on most screens is below WCAG AA (4.5:1
+for small text) — status bar sections, the top bar's deck name, PAD editor field labels, library
+tabs, the deck rail's PAD SIZE label, captions, drop hints, empty states. The token itself says so:
+`--text-mute` is commented "tertiary · meta only, AA-large" (`v3/src/styles/tokens.css`) — large
+text only, but it is used for small text; `--text-dim` is close too. Fixing it changes the look of
+every screen and the themes, so the axe scan leaves `color-contrast` out until it is decided.
+**Open:** lighter muted tokens, or muted only for large text, or accept below AA for meta text.
+**When:** with the design pass (Slice 13 / 14); then remove `color-contrast` from `NOT_CHECKED` in
+`v3/tests/e2e/a11y.spec.ts`.
 
 ### PAD editor: several files per pad cannot be edited yet
 

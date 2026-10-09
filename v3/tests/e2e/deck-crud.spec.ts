@@ -222,10 +222,12 @@ test('a new deck after deleting a middle one: badges stay 1, 2, 3; the name fill
 
   await page.getByTestId('deck-rail-new-button').click();
   await expect(tabs).toHaveCount(3);
-  // Badge (order + 1) and name of every tab — its first two child elements
-  const labels = await tabs.evaluateAll((els) =>
-    els.map((el) => `${el.children[0]?.textContent} ${el.children[1]?.textContent}`),
-  );
+  // Badge (order + 1) and name of every tab — the first two child elements of its select button
+  const labels = await page
+    .locator('[data-testid^="deck-rail-select-button-"]')
+    .evaluateAll((els) =>
+      els.map((el) => `${el.children[0]?.textContent} ${el.children[1]?.textContent}`),
+    );
   // Badge = position in the rail; the new deck is appended and named after the free number
   expect(labels).toEqual(['1 Deck 1', '2 Deck 3', '3 Deck 2']);
 });
@@ -239,8 +241,10 @@ test('a duplicated deck appears directly after its original', async ({ page }) =
   await tabs.first().locator('[data-testid^="deck-rail-copy-button-"]').click();
   await expect(tabs).toHaveCount(3);
   // Badge (position) and name of each tab: the copy sits between Deck 1 and Deck 2
-  const labels = await tabs.evaluateAll((els) =>
-    els.map((el) => `${el.children[0]?.textContent} ${el.children[1]?.textContent}`),
-  );
+  const labels = await page
+    .locator('[data-testid^="deck-rail-select-button-"]')
+    .evaluateAll((els) =>
+      els.map((el) => `${el.children[0]?.textContent} ${el.children[1]?.textContent}`),
+    );
   expect(labels).toEqual(['1 Deck 1', '2 Deck 1 · 2', '3 Deck 2']);
 });
