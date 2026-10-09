@@ -31,10 +31,13 @@
  *    is exempt — its dated entries record what was true at the time.
  */
 
-import { readdirSync, readFileSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
 import { dirname, join, normalize, relative, sep } from 'node:path';
 import GithubSlugger from 'github-slugger';
 import { repoFiles } from '../../scripts/lib/repo-files';
+import { GENERATED_DOCS } from '../../scripts/lib/generated-docs';
+import { writeGenerated } from '../../scripts/lib/write-generated';
 
 const ROOT = join(__dirname, '..', '..', '..');
 const ROOT_MD = ['CHANGELOG.md', 'CLAUDE.md', 'README.md'];
@@ -542,5 +545,29 @@ describe('guard: guard rules are referred to by name, not by number', () => {
       numbered,
       'name the rule, e.g. `codeGuards` ("the app shows no internal plan names")',
     ).toEqual([]);
+  });
+});
+
+describe('guard: generated docs come from one list (2026-10-08)', () => {
+  // The hook named the generated files by hand and missed CLAUDE.md (sync:api) — the API list
+  // was left unstaged twice. Now writeGenerated and the hook both read GENERATED_DOCS.
+  it('every listed file exists', () => {
+    const missing = GENERATED_DOCS.filter((f) => !existsSync(join(ROOT, f)));
+    expect(missing).toEqual([]);
+  });
+
+  it('the pre-commit hook stages the list and names no generated file itself', () => {
+    const hook = readFileSync(join(ROOT, '.husky', 'pre-commit'), 'utf8');
+    expect(hook).toContain('scripts/list-generated-docs.ts');
+    const named = GENERATED_DOCS.filter((f) =>
+      hook.split('\n').some((l) => l.includes('git ') && l.includes(f)),
+    );
+    expect(named, 'stage generated docs through $GENERATED only').toEqual([]);
+  });
+
+  it('writeGenerated refuses a file that is not listed, and writes nothing', async () => {
+    const stray = join(tmpdir(), `sos-not-generated-${process.pid}.md`);
+    await expect(writeGenerated(stray, '# x\n')).rejects.toThrow('GENERATED_DOCS');
+    expect(existsSync(stray)).toBe(false);
   });
 });

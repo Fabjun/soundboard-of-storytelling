@@ -10,14 +10,21 @@
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { format, resolveConfig } from 'prettier';
 import { formatMarkdown } from './markdown';
+import { isGeneratedDoc } from './generated-docs';
 
 /**
  * Writes `text` to `file`, formatted the way Prettier would; leaves the file untouched when it
  * already has that content. Resolves true when the file changed.
  *
- * @throws When Markdown formatting would change the content (see `formatMarkdown`).
+ * @throws When `file` is not in GENERATED_DOCS (scripts/lib/generated-docs.ts) — the pre-commit
+ *   hook stages only the files listed there; or when Markdown formatting would change the content
+ *   (see `formatMarkdown`).
  */
 export async function writeGenerated(file: string, text: string): Promise<boolean> {
+  if (!isGeneratedDoc(file))
+    throw new Error(
+      `writeGenerated: ${file} is not in GENERATED_DOCS (v3/scripts/lib/generated-docs.ts) — add it there, so the pre-commit hook stages it`,
+    );
   const formatted = file.endsWith('.md')
     ? await formatMarkdown(file, text)
     : await format(text, { ...((await resolveConfig(file)) ?? {}), filepath: file });

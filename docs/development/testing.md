@@ -66,8 +66,8 @@ number in brackets = test cases in the file (incl. quarantine)._
 | `pwa`             | Chromium (Desktop)             | Build only  | `pwa` (10)                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 | `visual`          | Chromium (Desktop), macOS only | Dev         | `board-list-empty` (1), `board-list-with-board` (1), `board-screen-game` (1), `board-screen-setup` (1), `deck-rail` (1), `library-empty` (1), `mode-toggle-states` (2), `start-screen` (1)                                                                                                                                                                                                                                                                                   |
 
-**Unit tests (Vitest):** 53 files, 660 test cases —
-`audio/engine.test.ts` (68), `audio/lru.property.test.ts` (0), `audio/lru.test.ts` (11), `backupExport.test.ts` (8), `backupImport.test.ts` (20), `backupReader.test.ts` (13), `boardModel.property.test.ts` (0), `boardModel.test.ts` (45), `boardWrites.test.ts` (12), `boot.test.ts` (3), `codeGuards.test.ts` (41), `comboModel.property.test.ts` (0), `comboModel.test.ts` (13), `debouncedSave.test.ts` (8), `deckConflict.test.ts` (9), `docsGuards.test.ts` (27), `e2eProjects.test.ts` (6), `escapeKey.test.ts` (6), `flameMath.property.test.ts` (0), `flameMath.test.ts` (22), `iconGrid.test.ts` (7), `iconGuards.test.ts` (10), `iconSet.test.ts` (7), `idb.test.ts` (23), `inertOutside.test.ts` (3), `keyControl.test.ts` (12), `modeControl.test.ts` (5), `nanoid.test.ts` (2), `padDnd.property.test.ts` (0), `padDnd.test.ts` (31), `padFiles.test.ts` (10), `padKeys.test.ts` (6), `padSize.test.ts` (15), `padSort.test.ts` (14), `padUtils.property.test.ts` (0), `padUtils.test.ts` (30), `peaks.test.ts` (4), `persistentStorage.test.ts` (4), `playHistory.test.ts` (3), `prefs.test.ts` (11), `preview.test.ts` (6), `stopControl.test.ts` (7), `store.test.ts` (23), `testGuards.test.ts` (25), `trimRange.test.ts` (11), `updateCheck.test.ts` (10), `upload.property.test.ts` (0), `upload.test.ts` (18), `v1Icons.test.ts` (4), `v1Import.test.ts` (18), `wakeLock.test.ts` (6), `whatsNew.test.ts` (16), `zipArchive.test.ts` (7)
+**Unit tests (Vitest):** 53 files, 663 test cases —
+`audio/engine.test.ts` (68), `audio/lru.property.test.ts` (0), `audio/lru.test.ts` (11), `backupExport.test.ts` (8), `backupImport.test.ts` (20), `backupReader.test.ts` (13), `boardModel.property.test.ts` (0), `boardModel.test.ts` (45), `boardWrites.test.ts` (12), `boot.test.ts` (3), `codeGuards.test.ts` (41), `comboModel.property.test.ts` (0), `comboModel.test.ts` (13), `debouncedSave.test.ts` (8), `deckConflict.test.ts` (9), `docsGuards.test.ts` (30), `e2eProjects.test.ts` (6), `escapeKey.test.ts` (6), `flameMath.property.test.ts` (0), `flameMath.test.ts` (22), `iconGrid.test.ts` (7), `iconGuards.test.ts` (10), `iconSet.test.ts` (7), `idb.test.ts` (23), `inertOutside.test.ts` (3), `keyControl.test.ts` (12), `modeControl.test.ts` (5), `nanoid.test.ts` (2), `padDnd.property.test.ts` (0), `padDnd.test.ts` (31), `padFiles.test.ts` (10), `padKeys.test.ts` (6), `padSize.test.ts` (15), `padSort.test.ts` (14), `padUtils.property.test.ts` (0), `padUtils.test.ts` (30), `peaks.test.ts` (4), `persistentStorage.test.ts` (4), `playHistory.test.ts` (3), `prefs.test.ts` (11), `preview.test.ts` (6), `stopControl.test.ts` (7), `store.test.ts` (23), `testGuards.test.ts` (25), `trimRange.test.ts` (11), `updateCheck.test.ts` (10), `upload.property.test.ts` (0), `upload.test.ts` (18), `v1Icons.test.ts` (4), `v1Import.test.ts` (18), `wakeLock.test.ts` (6), `whatsNew.test.ts` (16), `zipArchive.test.ts` (7)
 
 <!-- AUTO-GENERATED:test-inventory END -->
 
@@ -301,12 +301,13 @@ from the hook's step messages:
 | #   | Step                                                | Command                       |
 | --- | --------------------------------------------------- | ----------------------------- |
 | 1   | syncing auto-generated docs                         | `npm run sync:docs`           |
-| 2   | running build check in v3/                          | `npm run build`               |
-| 3   | running lint-staged (format + lint on staged files) | `npx --prefix v3 lint-staged` |
-| 4   | running unit tests in v3/                           | `npm run test`                |
-| 5   | running smoke E2E tests                             | `npm run test:e2e:smoke`      |
-| 6   | Vale — superseded terms in active docs              | `npm run lint:docs`           |
-| 7   | checking markdown link integrity                    | `npm run link:check`          |
+| 2   | staging the generated docs                          | `npx tsx`                     |
+| 3   | running build check in v3/                          | `npm run build`               |
+| 4   | running lint-staged (format + lint on staged files) | `npx --prefix v3 lint-staged` |
+| 5   | running unit tests in v3/                           | `npm run test`                |
+| 6   | running smoke E2E tests                             | `npm run test:e2e:smoke`      |
+| 7   | Vale — superseded terms in active docs              | `npm run lint:docs`           |
+| 8   | checking markdown link integrity                    | `npm run link:check`          |
 
 <!-- AUTO-GENERATED:pre-commit-steps END -->
 
