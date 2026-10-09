@@ -17,10 +17,20 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.182';
+export const APP_VERSION = '3.0.183';
 
 /** The developer log, newest first; CHANGELOG.md is generated from it (sync-changelog). */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.183',
+    date: '2026-10-08',
+    items: [
+      'feat(stop): STOP ALL in two stages (Slice 12b, K9 / K16, ADR-0078 proposed) — a button in the board top bar in GAME: the first press fades every playing pad out over 2.5 s, pad by pad; a second press while it fades (the button reads STOP NOW) stops everything at once (src/state/stopControl.ts)',
+      'feat(keys): the numpad decimal key is STOP ALL (K6); the numpad Enter stops the sound started last with its pad fade-out, the next press the one before (K5); the main Enter does the same unless a control has focus — the numpad stop keys are taken in the capture phase, so a focused pad is not toggled as well',
+      'test: engine bugs pinned with test.fails — fadeOutAll cuts off a pad started during the fade; a Single started again during its fade-out cannot be stopped (both BACKLOG; engine changes need the owner); unit stopControl (stages, timing, last-started order, fade-out) and keyControl stop keys (GAME only, text fields, focused control keeps Enter, capture phase); E2E stop-all (Chromium: button in GAME only, both stages, back after the fade, numpad Enter / Enter / numpad decimal); counter-checked — the E2E second-stage check was vacuous at first (the label returns after the fade anyway) and now waits 1 s only',
+      'docs: ADR-0078 (proposed, review pending; refines ADR-0077); product K5 / K6 / K9 / K16 built with the provisional details marked; slice table 12b in review; backlog PANIC built, two engine items; iPhone checklist "STOP ALL and the stop keys"',
+    ],
+  },
   {
     version: '3.0.182',
     date: '2026-10-08',

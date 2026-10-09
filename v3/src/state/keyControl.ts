@@ -8,19 +8,33 @@
  *   - the deck shown, or in All pads the deck last selected (K14: `currentDeckId` stays);
  *   - a key whose pad already plays does nothing — a second press never stops it (K4);
  *   - never while a text field has focus, with Ctrl / Alt / Cmd held, or for a held-down key;
- *   - reserved keys (Enter, Space, Numpad decimal …) are left to their own controls.
+ *   - stop keys (Slice 12b): the numpad's decimal key is STOP ALL (K6, two stages), the numpad's
+ *     Enter stops the sound started last (K5); the main Enter does that too unless a control has
+ *     focus — then Enter activates the control (a button's own key, WAI-ARIA button pattern);
+ *   - the other reserved keys (Space, Escape, Tab) are left to their own controls.
  */
 
 import { play as playPad, isPlaying as padIsPlaying } from '../audio/index';
 import { RESERVED_KEYS, padForKey } from '../lib/padKeys';
 import type { Pad } from '../types';
 import { currentBoard, currentDeck, currentMode, currentScreen } from './store';
+import { pressStopAll, stopLast } from './stopControl';
 
 /** What keyControl needs from the audio engine; tests pass their own. */
 export interface KeyControlAudio {
   play: (padId: string, pad: Pad) => unknown;
   isPlaying: (padId: string) => boolean;
 }
+
+/** The stop actions the stop keys call; tests pass their own. */
+export interface KeyControlStops {
+  pressStopAll: () => void;
+  stopLast: () => void;
+}
+
+/** Elements Enter activates — a focused one keeps its Enter. */
+const CONTROLS =
+  'button, a[href], summary, [role="button"], [role="link"], [role="tab"], [role="checkbox"], [role="switch"], [role="menuitem"], [role="option"]';
 
 /** Input types that take no typing — a key pressed on them may still play a pad. */
 const NON_TEXT_INPUTS = new Set([
@@ -46,11 +60,43 @@ function takesText(target: EventTarget | null): boolean {
 export function startKeyControl(
   audio: KeyControlAudio = { play: playPad, isPlaying: padIsPlaying },
   doc: Document = document,
+  stops: KeyControlStops = { pressStopAll: () => pressStopAll(), stopLast: () => stopLast() },
 ): () => void {
+  /** In GAME on a board, a plain key press outside a text field. */
+  const applies = (e: KeyboardEvent) =>
+    !e.repeat &&
+    !e.ctrlKey &&
+    !e.altKey &&
+    !e.metaKey &&
+    currentScreen.value === 'board' &&
+    currentMode.value === 'play' &&
+    !takesText(e.target);
+
+  // The numpad's stop keys, in the capture phase: they win before a focused pad or button sees
+  // the key — its Enter handler would otherwise toggle it as well (e.key is 'Enter' for both).
+  const onNumpadStop = (e: KeyboardEvent) => {
+    const stop =
+      e.code === 'NumpadDecimal'
+        ? stops.pressStopAll
+        : e.code === 'NumpadEnter'
+          ? stops.stopLast
+          : null;
+    if (!stop || !applies(e)) return;
+    e.preventDefault();
+    e.stopPropagation();
+    stop();
+  };
+
   const onKey = (e: KeyboardEvent) => {
-    if (e.defaultPrevented || e.repeat || e.ctrlKey || e.altKey || e.metaKey) return;
-    if (currentScreen.value !== 'board' || currentMode.value !== 'play') return;
-    if (e.code in RESERVED_KEYS || takesText(e.target)) return;
+    if (e.defaultPrevented || !applies(e)) return;
+    if (e.code === 'Enter') {
+      const onControl = e.target instanceof Element && e.target.closest(CONTROLS) !== null;
+      if (onControl) return;
+      e.preventDefault();
+      stops.stopLast();
+      return;
+    }
+    if (e.code in RESERVED_KEYS) return;
     const board = currentBoard.value;
     const deck = currentDeck.value;
     if (!board || !deck) return;
@@ -59,6 +105,10 @@ export function startKeyControl(
     e.preventDefault();
     if (!audio.isPlaying(pad.id)) void audio.play(pad.id, pad);
   };
+  doc.addEventListener('keydown', onNumpadStop, true);
   doc.addEventListener('keydown', onKey);
-  return () => doc.removeEventListener('keydown', onKey);
+  return () => {
+    doc.removeEventListener('keydown', onNumpadStop, true);
+    doc.removeEventListener('keydown', onKey);
+  };
 }

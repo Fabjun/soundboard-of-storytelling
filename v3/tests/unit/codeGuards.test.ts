@@ -486,6 +486,7 @@ describe('guard: timers are listed with their reason (delayed writes use debounc
     'components/UndoToast.tsx': 'hides the toast; the deletion itself is already saved',
     'lib/backupExport.ts': 'revokes the download URL once the browser has taken the file',
     'lib/debouncedSave.ts': 'the delayed write itself — flushed, never dropped',
+    'state/stopControl.ts': 'ends the first STOP ALL stage when its fade is over (K16)',
   };
   const walkSrc = (dir: string): string[] =>
     readdirSync(dir, { withFileTypes: true }).flatMap((e) =>

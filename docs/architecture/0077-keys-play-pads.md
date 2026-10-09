@@ -4,6 +4,7 @@
 **Date:** 2026-10-08
 **Slice:** Slice 12
 **Refines:** ADR-0048
+**Refined by:** ADR-0078 (the stop keys: numpad decimal = STOP ALL, numpad Enter / Enter = stop the last sound)
 **Category:** Interaction
 
 ## Context
