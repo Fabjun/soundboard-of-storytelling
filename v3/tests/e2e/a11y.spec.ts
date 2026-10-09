@@ -8,6 +8,7 @@
  * statically in codeGuards. Runs in Chromium and WebKit.
  */
 
+import { readFileSync } from 'node:fs';
 import { test, expect, type Locator, type Page } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 import {
@@ -28,15 +29,26 @@ import {
 const TAGS = ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'];
 
 /**
- * Not checked here — color contrast: the muted text colors (`--text-mute` and others) are below
- * WCAG AA on many screens; changing them changes the whole look, a design decision for the owner
- * (BACKLOG "Text contrast below WCAG AA"). Review: when that item is decided.
+ * The themes of `v3/src/styles/tokens.css` (`.sb-theme-<name>` blocks) — read from the file, so a
+ * new theme is scanned without a change here. No screen switches themes yet (Slice 14).
  */
-const NOT_CHECKED = ['color-contrast'];
+const THEMES = [
+  ...new Set(
+    [
+      ...readFileSync(new URL('../../src/styles/tokens.css', import.meta.url), 'utf8').matchAll(
+        /^\.sb-theme-([a-z]+) \{/gm,
+      ),
+    ].map((m) => m[1]),
+  ),
+];
 
-/** The axe violations on the page as it is now, short enough to read in a failure message. */
-async function violations(page: Page): Promise<string[]> {
-  const result = await new AxeBuilder({ page }).withTags(TAGS).disableRules(NOT_CHECKED).analyze();
+/**
+ * The axe violations on the page as it is now, short enough to read in a failure message —
+ * every WCAG 2.2 A / AA rule, or only `rules` when they are given.
+ */
+async function violations(page: Page, rules?: string[]): Promise<string[]> {
+  const axe = new AxeBuilder({ page });
+  const result = await (rules ? axe.withRules(rules) : axe.withTags(TAGS)).analyze();
   return result.violations.flatMap((v) =>
     v.nodes.map((n) => `${v.id}: ${n.target.join(' ')} — ${v.help}`),
   );
@@ -77,6 +89,39 @@ test('board in SETUP and GAME, PAD editor', async ({ page }) => {
   found.push(...(await violations(page)).map((v) => `GAME — ${v}`));
   expect(found).toEqual([]);
 });
+
+/** Opens the start screen in `theme` — its class on the root element, where the theme blocks apply. */
+async function openInTheme(page: Page, theme: string): Promise<void> {
+  await page.goto('/soundboard-of-storytelling/');
+  await page.evaluate((t) => document.documentElement.classList.add(`sb-theme-${t}`), theme);
+}
+
+for (const theme of THEMES) {
+  test(`text contrast in the ${theme} theme (WCAG 1.4.3)`, async ({ page }) => {
+    const found: string[] = [];
+    const scan = async (where: string) =>
+      found.push(...(await violations(page, ['color-contrast'])).map((v) => `${where} — ${v}`));
+    await openInTheme(page, theme);
+    await scan('start screen');
+    await goToLibrary(page);
+    await scan('library');
+    await openInTheme(page, theme);
+    await goToBoardList(page);
+    await createBoardAndNavigate(page);
+    await createDeck(page);
+    await enterSetupMode(page);
+    await addNamedPad(page, 'Thunder');
+    await scan('PAD editor');
+    await closePadEditor(page);
+    await scan('SETUP');
+    await enterGameMode(page);
+    await scan('GAME');
+    await page.getByTestId('board-top-bar-back-button').click();
+    await page.getByTestId('board-list-screen-new-button').waitFor();
+    await scan('board list');
+    expect(found).toEqual([]);
+  });
+}
 
 /**
  * Presses Tab until `target` has focus (at most `max` times) — the way a keyboard user gets
