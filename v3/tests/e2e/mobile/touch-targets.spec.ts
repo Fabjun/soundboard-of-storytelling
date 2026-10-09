@@ -3,12 +3,16 @@
  *
  * SCOPE: Verifies that interactive elements meet the iOS minimum touch target
  * of 44×44px on a 390×844 viewport. Failing elements print a descriptive
- * message. Elements that are known to be intentionally smaller are marked
- * test.fixme with an explicit reason.
+ * message.
  *
  * The global CSS enforces `min-height: 44px; min-width: 44px` on all button /
  * [role='button'] elements. This test catches regressions and layout contexts
  * where that rule is overridden (e.g., overflow: hidden clipping, flex shrink).
+ *
+ * Quarantined until 2026-10-09 as "the desktop layout fails at 390px" (deck rail and an
+ * inspector panel squeezed the grid); the PAD editor became a full-screen dialog (ADR-0074) and
+ * the deck list starts folded, and all tests passed when measured — so they guard the phone
+ * layout now, also while Slice 13 rebuilds it.
  *
  * OUT OF SCOPE (see docs/development/manual-iphone-checklist.md):
  *   File upload, audio output, Ringer Switch, backgrounding.
@@ -19,20 +23,7 @@ import { goToBoardList, createBoardAndNavigate, createDeck } from '../helpers';
 
 const MIN = 44;
 
-// These tests assert against a layout that is intentionally not yet mobile-adapted.
-// The current desktop-oriented three-panel layout (DeckRail 220px + inspector 280px)
-// collapses the center grid to 0px at 390px when any panel is open.
-// See docs/design/design-notes.md "Known limitation: SETUP layout on narrow viewports".
-// Re-enable once the dedicated mobile adaptation (Slice 13) is in place.
-const FIXME_REASON =
-  'Mobile layout is a deliberate later phase. These layout assertions apply once ' +
-  'the dedicated mobile adaptation exists; the current desktop-oriented layout is ' +
-  'expected to fail these at 390px. ' +
-  "See docs/design/design-notes.md 'Known limitation: SETUP layout on narrow viewports'.";
-
-// Quarantine: mobile layout not built yet (Slice 13) — BACKLOG "Re-enable mobile layout tests"
-// eslint-disable-next-line playwright/no-skipped-test -- quarantine: mobile layout not built until Slice 13 (BACKLOG "Re-enable mobile layout tests")
-test.describe.fixme(FIXME_REASON, () => {
+test.describe('touch targets on a 390px phone', () => {
   async function assertTarget(locator: Locator, label: string): Promise<void> {
     const box = await locator.boundingBox();
     expect(box, `${label}: boundingBox() returned null — element may not be in DOM`).not.toBeNull();
@@ -91,7 +82,7 @@ test.describe.fixme(FIXME_REASON, () => {
     ).toBeGreaterThanOrEqual(MIN);
   });
 
-  test('BoardScreen: empty pad cells in 4-col grid are >= 44×44px', async ({ page }) => {
+  test('BoardScreen: empty pad cells are >= 44×44px', async ({ page }) => {
     await page.goto('/soundboard-of-storytelling/');
     await goToBoardList(page);
     await createBoardAndNavigate(page);

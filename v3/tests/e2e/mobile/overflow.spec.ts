@@ -8,6 +8,10 @@
  *
  *   Checks: pad-grid container, deck-rail, topbar, individual pad cells
  *
+ * Quarantined until 2026-10-09 as "the desktop layout fails at 390px"; the PAD editor became a
+ * full-screen dialog (ADR-0074) and the deck list starts folded, and all tests passed when
+ * measured — so they guard the phone layout now, also while Slice 13 rebuilds it.
+ *
  * OUT OF SCOPE (see docs/development/manual-iphone-checklist.md):
  *   Landscape orientation, audio output, file upload, Ringer Switch.
  */
@@ -15,20 +19,7 @@
 import { test, expect, type Locator, type Page } from '@playwright/test';
 import { goToBoardList, createBoardAndNavigate, createDeck } from '../helpers';
 
-// These tests assert against a layout that is intentionally not yet mobile-adapted.
-// The current desktop-oriented three-panel layout (DeckRail 220px + inspector 280px)
-// collapses the center grid to 0px at 390px when any panel is open.
-// See docs/design/design-notes.md "Known limitation: SETUP layout on narrow viewports".
-// Re-enable once the dedicated mobile adaptation (Slice 13) is in place.
-const FIXME_REASON =
-  'Mobile layout is a deliberate later phase. These overflow assertions apply once ' +
-  'the dedicated mobile adaptation exists; the current desktop-oriented layout is ' +
-  'expected to fail these at 390px. ' +
-  "See docs/design/design-notes.md 'Known limitation: SETUP layout on narrow viewports'.";
-
-// Quarantine: mobile layout not built yet (Slice 13) — BACKLOG "Re-enable mobile layout tests"
-// eslint-disable-next-line playwright/no-skipped-test -- quarantine: mobile layout not built until Slice 13 (BACKLOG "Re-enable mobile layout tests")
-test.describe.fixme(FIXME_REASON, () => {
+test.describe('no horizontal overflow on a 390px phone', () => {
   async function assertNoOverflow(page: Page, locator: Locator, label: string): Promise<void> {
     const vp = page.viewportSize()!;
     const box = await locator.boundingBox();
@@ -52,7 +43,7 @@ test.describe.fixme(FIXME_REASON, () => {
     // TopBar (the board-topbar wrapper)
     await assertNoOverflow(page, page.getByTestId('board-top-bar'), 'board-top-bar');
 
-    // Pad grid container — the 4-column layout at 390px is the highest-risk element
+    // Pad grid container — the widest element at 390px, the highest risk
     // No `if (count > 0)` guards: the grid had no test id, so such a guard skipped this check.
     await assertNoOverflow(page, page.getByTestId('pad-grid'), 'pad-grid');
 
@@ -63,7 +54,7 @@ test.describe.fixme(FIXME_REASON, () => {
       'pad-grid-cell-empty-slot-0-0',
     );
 
-    // Deck rail (horizontal scroll container) — the rail itself must not overflow
+    // Deck rail — the rail itself must not overflow
     await assertNoOverflow(page, page.getByTestId('deck-rail'), 'deck-rail');
   });
 

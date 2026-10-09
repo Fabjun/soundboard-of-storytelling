@@ -259,6 +259,10 @@ background by less than the per-pixel color threshold (`threshold: 0.2` in
 `v3/playwright.config.ts`), so moved cells count as equal (seen 2026-10-08 in the diff of PR #57).
 **Open:** a lower threshold for the visual project, or a visual test with cells that stand out.
 **When:** with "Visual baselines without pads" — both are about what the visual tests see.
+✅ **Done (3.0.196):** the visual project compares with `threshold: 0.02` (BACKLOG "Visual tests
+miss small color shifts" — the same cause, found again on 2026-10-09 without this entry). By
+Playwright's pixelmatch color distance the empty-cell border (`--border` on `--deep` /
+`--surface`) counts as different below a threshold of 0.17 / 0.14, so moved cells are seen now.
 
 ### macOS baselines after cloud sessions
 
@@ -1388,7 +1392,7 @@ Single / Loop hold `files` + `order`; stored boards are cleared by DB v5 (ADR-00
 migration, only test data); `toEnginePad` in `v3/src/audio/index.ts` maps the new pads to the
 engine's shapes. Owner decisions on #36: a Loop with several files glows like any loop and runs
 in the background of a combo; the engine change passed the owner's playback check (2026-10-03).
-Still open: choosing several files and their order in the PAD editor — Slice 15.
+Choosing several files and their order in the PAD editor followed in Slice 15b (ADR-0068).
 **When:** review of the Slice 9d PR; file list editing in Slice 11.
 
 ### Theme flames: Verdant, Neon, Crimson
@@ -1406,6 +1410,9 @@ Parked 2026-09-29. The StartScreen flame animates continuously on purpose — us
 Decided 2026-09-28 ([docs/product/README.md §5](product/README.md#board-decks--quick-access)): pads belong to the board; decks (formerly "scenes") and the quick-access bar reference pads with their own position and key; "All pads" view; `PadSet` dropped. Today `Scene.pads: Pad[]` owns pads and `position` / `hotkey` sit on the pad (`types.ts`).
 Requires an ADR (superseding the ownership parts of the current model) and a data migration. **Same change: rename Scene → Deck** in UI, code (`Scene`, `Board.scenes`, `SceneRail`, …) and stored data (docs/product/README.md Q1, 2026-09-28). **Do together with the Playlist → Loop merge above** — both reshape `types.ts` and stored boards.
 **When:** Slice 9 (data model) — see `CLAUDE.md §Slice progress`.
+✅ **Done (Slice 9, ADR-0048; checked in the code 2026-10-09):** `Board` holds `pads`, `decks`
+with `placements` and `quickAccess` (`v3/src/types.ts`); no `Scene` type is left. The quick-access
+bar has no UI yet (Slice 13).
 
 Open questions surfaced during implementation but not yet resolved. Each needs a deliberate
 decision before the relevant slice ships.
@@ -1574,7 +1581,8 @@ contrast on every screen and in every theme.
 
 ### Visual tests miss small color shifts ✅ Done (3.0.196)
 
-Found 2026-10-09 with the contrast fix: the lighter `--text-mute` (`#7e7494` → `#9189a4`) passed
+Same cause as "Visual tests miss low-contrast changes" (2026-10-08), which this entry overlooked
+when it was written; both are done by the same change. Found 2026-10-09 with the contrast fix: the lighter `--text-mute` (`#7e7494` → `#9189a4`) passed
 every visual test against the old baselines. `toHaveScreenshot` uses `threshold: 0.2` (Playwright's
 default — the allowed YIQ color distance per pixel, playwright.dev/docs/api/class-pageassertions)
 and `maxDiffPixels: 100` (`v3/playwright.config.ts`), so a small color change counts as "same".
@@ -1987,6 +1995,11 @@ desktop-first layout fails them at 390 px (layout geometry is broken by design u
 Re-enable once the Slice 8 mobile adaptation is in place.
 **When:** Slice 8 completion.
 **Source:** CLAUDE.md commit notes a37dd26, docs/design/design-notes.md §Known limitation.
+✅ **Done (3.0.198):** measured 2026-10-09 — all 7 tests pass with today's layout (the PAD editor
+is a full-screen dialog since ADR-0074, the deck list starts folded): 35 of 35 runs green with
+`--repeat-each=5`; counter-checked (empty cells forced to 30 px → "width 30px < 44px", the top
+bar forced to 500 px → "right edge 500px exceeds viewport 390px"). The quarantine is lifted, so
+both specs guard the phone layout while Slice 13 rebuilds it.
 
 ### Re-enable DnD E2E tests
 
@@ -1994,6 +2007,10 @@ Tests 9, 14, 20, 21 in `pad-dnd.spec.ts` are `test.skip` (Scene reorder, Library
 Pad SWAP, Pad INSERT). Need a stable Pointer Events drag sequence in Playwright.
 **When:** When a reliable `dragByPointer()` helper is established in Playwright (Phase 3).
 **Source:** docs/development/testing.md §Known pitfalls #5.
+✅ **Done** (found stale 2026-10-09): the drags run with real pointer sequences (`pointerDrag` in
+`v3/tests/e2e/helpers.ts`) — Library drag Path B is `pad-creation.spec.ts` test 14, SWAP and
+INSERT are `pad-dnd.spec.ts` tests 20 and 21, none skipped. Scene (deck) reorder is a missing
+feature, not a skipped test: BACKLOG "Deck reorder (drag & drop) — feature not built".
 
 ### Board persistence optimization
 

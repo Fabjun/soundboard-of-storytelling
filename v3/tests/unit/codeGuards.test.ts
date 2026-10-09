@@ -652,7 +652,18 @@ describe('guard: reserved code names an open slice or a parked decision (ADR-006
   it('reads the slice table and finds the reservations (sanity)', () => {
     // Slice 1 is finished for good — its status cell proves the table is read column by column
     expect(slices.get(1)).toContain('Complete');
-    expect(reservations.length).toBeGreaterThanOrEqual(5);
+    // A probe of the tag scan, not a count of today's reservations: reserved code is meant to be
+    // used up, and a typed count fails when it is (testGuards had the same, 2026-10-09)
+    expect(
+      findReservations([
+        '/**',
+        ' * Does a thing.',
+        ' *',
+        ' * @reserved Slice 13 — probe',
+        ' */',
+        'export function probe(): void {}',
+      ]).map((r) => [r.line, r.text, r.symbol]),
+    ).toEqual([[4, 'Slice 13 — probe', 'probe']]);
   });
 
   it('a @reserved tag stands at the start of a doc comment line, where tools find it', () => {

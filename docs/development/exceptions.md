@@ -24,18 +24,16 @@ From the `## Exceptions` section of each ADR.
 | [ADR-0067](../architecture/0067-browser-gestures-off.md)          | Text selection is off in text fields too                                                        | Owner decision 2026-10-03: no exceptions; WebKit may then refuse typing in a field (WebKit bugs 82692, 156518) — checked on the iPhone                                               | BACKLOG "Text fields with selection off"   | first iPhone check of 3.0.159          |
 | [ADR-0074](../architecture/0074-full-screen-modal-dialogs.md)     | Icon list and What's new: no inert page, no focus return; What's new has no Escape              | built before this ADR; aligned in a step of their own                                                                                                                                | BACKLOG "Full-screen dialogs per ADR-0074" | 2026-10-31                             |
 
-## ESLint rule suppressions (6)
+## ESLint rule suppressions (4)
 
 Inline: `// eslint-disable-next-line <rule> -- <reason>` (enforced by `require-description`). Config: `'<rule>': 'off', // <reason>` in `v3/eslint.config.js` (enforced by `testGuards.test.ts`).
 
-| Location                                       | Rule                                      | Reason                                                                                                               |
-| ---------------------------------------------- | ----------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
-| `v3/src/components/IconPicker.tsx:263`         | `react-hooks/exhaustive-deps`             | measured after every layout (as TanStack's adapter updates the virtualizer); setShape runs only when a value changed |
-| `v3/src/screens/BoardScreen.tsx:96`            | `react-hooks/exhaustive-deps`             | auto-select only on board identity change, never override the user's deck choice                                     |
-| `v3/tests/e2e/deck-crud.spec.ts:76`            | `playwright/no-skipped-test`              | quarantine: feature not built (BACKLOG "Deck reorder")                                                               |
-| `v3/tests/e2e/mobile/overflow.spec.ts:30`      | `playwright/no-skipped-test`              | quarantine: mobile layout not built until Slice 13 (BACKLOG "Re-enable mobile layout tests")                         |
-| `v3/tests/e2e/mobile/touch-targets.spec.ts:34` | `playwright/no-skipped-test`              | quarantine: mobile layout not built until Slice 13 (BACKLOG "Re-enable mobile layout tests")                         |
-| `v3/eslint.config.js:21`                       | `@typescript-eslint/no-unused-vars` (off) | tsc noUnusedLocals/noUnusedParameters report it                                                                      |
+| Location                               | Rule                                      | Reason                                                                                                               |
+| -------------------------------------- | ----------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| `v3/src/components/IconPicker.tsx:263` | `react-hooks/exhaustive-deps`             | measured after every layout (as TanStack's adapter updates the virtualizer); setShape runs only when a value changed |
+| `v3/src/screens/BoardScreen.tsx:96`    | `react-hooks/exhaustive-deps`             | auto-select only on board identity change, never override the user's deck choice                                     |
+| `v3/tests/e2e/deck-crud.spec.ts:76`    | `playwright/no-skipped-test`              | quarantine: feature not built (BACKLOG "Deck reorder")                                                               |
+| `v3/eslint.config.js:21`               | `@typescript-eslint/no-unused-vars` (off) | tsc noUnusedLocals/noUnusedParameters report it                                                                      |
 
 ## Formatting exceptions (prettier-ignore) (5)
 
@@ -49,17 +47,15 @@ The reason is the comment line directly above — enforced by `testGuards.test.t
 | `v3/src/lib/flameMath.ts:68` | Formatting: keep the pixel table aligned row by row (Prettier would reflow it). |
 | `v3/src/lib/flameMath.ts:75` | Formatting: keep the pixel table aligned row by row (Prettier would reflow it). |
 
-## Quarantined tests (5)
+## Quarantined tests (3)
 
 Procedure: `docs/development/testing.md`; reference enforced by `testGuards.test.ts`.
 
-| Location                                       | Marker  | Reference                                                                      |
-| ---------------------------------------------- | ------- | ------------------------------------------------------------------------------ |
-| `v3/tests/e2e/deck-crud.spec.ts:77`            | `fixme` | BACKLOG "Deck reorder"                                                         |
-| `v3/tests/e2e/mobile/overflow.spec.ts:31`      | `fixme` | BACKLOG "Re-enable mobile layout tests"                                        |
-| `v3/tests/e2e/mobile/touch-targets.spec.ts:35` | `fixme` | BACKLOG "Re-enable mobile layout tests"                                        |
-| `v3/tests/unit/audio/engine.test.ts:692`       | `fails` | BACKLOG "Engine: a Single started again during its fade-out cannot be stopped" |
-| `v3/tests/unit/audio/engine.test.ts:761`       | `fails` | BACKLOG "step stops the combo itself"                                          |
+| Location                                 | Marker  | Reference                                                                      |
+| ---------------------------------------- | ------- | ------------------------------------------------------------------------------ |
+| `v3/tests/e2e/deck-crud.spec.ts:77`      | `fixme` | BACKLOG "Deck reorder"                                                         |
+| `v3/tests/unit/audio/engine.test.ts:692` | `fails` | BACKLOG "Engine: a Single started again during its fade-out cannot be stopped" |
+| `v3/tests/unit/audio/engine.test.ts:761` | `fails` | BACKLOG "step stops the combo itself"                                          |
 
 ## Modules without their own unit test (4)
 
