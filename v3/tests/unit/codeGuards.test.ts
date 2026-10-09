@@ -818,3 +818,48 @@ describe('guard: controls work with Tab and have a name (owner rule 2026-10-02)'
     expect(bad, 'add aria-label (a title alone is not reliably read)').toEqual([]);
   });
 });
+
+describe('guard: type and spacing in rem (ADR-0081, owner decision 2026-10-02)', () => {
+  // WCAG 2.2 SC 1.4.4: text resizable to 200 %; px font sizes and spacing ignore the user's text
+  // size. px stays for borders, pixel-art details and minimum touch targets only.
+  const STYLES = ['styles/tokens.css', 'styles/components.css', 'styles/global.css'];
+  const TYPE_AND_SPACING =
+    /^\s*(font-size|padding(-[a-z-]+)?|margin(-[a-z-]+)?|gap|row-gap|column-gap)\s*:([^;]*);/;
+
+  /** The px values kept on purpose, each with its reason. */
+  const ALLOWED: Record<string, string> = {
+    'margin-bottom: -1px': 'pulls a 1px border under the next one — a border, not spacing',
+    'padding-inline: max(0px, calc((100% - 40rem) / 2))': '0px is zero — no length',
+    'gap: 1px': 'the 1px line between waveform bars — a pixel-art detail',
+  };
+
+  const lines = STYLES.flatMap((file) =>
+    readFileSync(join(SRC, file), 'utf8')
+      .split('\n')
+      .map((text, i) => ({ at: `${file}:${i + 1}`, text })),
+  );
+
+  it('finds the declarations (sanity)', () => {
+    expect(lines.filter((l) => TYPE_AND_SPACING.test(l.text)).length).toBeGreaterThan(200);
+  });
+
+  it('font sizes, padding, margins and gaps use rem, not px', () => {
+    const bad = lines
+      .filter((l) => {
+        const m = TYPE_AND_SPACING.exec(l.text);
+        return m !== null && /\dpx/.test(m[4]);
+      })
+      .filter((l) => !Object.keys(ALLOWED).some((ok) => l.text.trim().startsWith(ok)))
+      .map((l) => `${l.at}: ${l.text.trim()}`);
+    expect(bad, 'write rem (px / 16) — or name the exception in ALLOWED with its reason').toEqual(
+      [],
+    );
+  });
+
+  it('the spacing and type tokens are rem', () => {
+    const bad = lines
+      .filter((l) => /^\s*--(space|fs)-[\w-]+\s*:/.test(l.text) && !/:\s*[\d.]+rem;/.test(l.text))
+      .map((l) => `${l.at}: ${l.text.trim()}`);
+    expect(bad).toEqual([]);
+  });
+});

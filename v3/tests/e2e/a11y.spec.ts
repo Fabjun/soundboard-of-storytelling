@@ -150,3 +150,20 @@ test('a file that cannot be imported says why in plain words, opened with the ke
     'notes.txt: not an audio file this browser can play — use MP3, M4A or WAV',
   );
 });
+
+test("type and spacing follow the browser's text size (WCAG 1.4.4, ADR-0081)", async ({ page }) => {
+  await page.goto('/soundboard-of-storytelling/');
+  await goToBoardList(page);
+  const newBoard = page.getByTestId('board-list-screen-new-button');
+  const size = () =>
+    newBoard.evaluate((el) => {
+      const s = getComputedStyle(el);
+      return { font: parseFloat(s.fontSize), pad: parseFloat(s.paddingLeft) };
+    });
+  const normal = await size();
+  // A user who sets the browser's text size to 200 % (the root font size doubles)
+  await page.addStyleTag({ content: 'html { font-size: 200% !important; }' });
+  const large = await size();
+  expect(large.font).toBeCloseTo(normal.font * 2, 0);
+  expect(large.pad).toBeCloseTo(normal.pad * 2, 0);
+});

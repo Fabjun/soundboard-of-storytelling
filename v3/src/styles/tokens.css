@@ -154,17 +154,17 @@
   /* ── ATMOSPHERE ── the radial glow behind the home logo            */
   --glow-radial: #2c1f4a;
 
-  /* ── SPACING ── 4-base                                              */
-  --space-1: 4px;
-  --space-2: 8px;
-  --space-3: 12px;
-  --space-4: 16px;
-  --space-5: 20px;
-  --space-6: 24px;
-  --space-8: 32px;
-  --space-10: 40px;
-  --space-12: 48px;
-  --space-16: 64px;
+  /* ── SPACING ── 4-base, in rem so it grows with the user's text size (ADR-0081)  */
+  --space-1: 0.25rem; /* 4px at the default 16px */
+  --space-2: 0.5rem; /* 8px */
+  --space-3: 0.75rem; /* 12px */
+  --space-4: 1rem; /* 16px */
+  --space-5: 1.25rem; /* 20px */
+  --space-6: 1.5rem; /* 24px */
+  --space-8: 2rem; /* 32px */
+  --space-10: 2.5rem; /* 40px */
+  --space-12: 3rem; /* 48px */
+  --space-16: 4rem; /* 64px */
 
   /* ── DECK RAIL ── (the pad size is data, Board.padSize — ADR-0075) */
   --deck-rail-closed: 44px; /* width of the folded deck rail: its toggle button (touch target) */
@@ -196,19 +196,20 @@
   --font-ui: 'VT323', 'Share Tech Mono', monospace;
   --font-mono: 'Share Tech Mono', 'VT323', monospace;
 
-  --fs-xs: 12px;
-  --fs-sm: 14px;
-  --fs-md: 16px;
-  --fs-lg: 18px;
-  --fs-xl: 22px;
-  --fs-2xl: 28px;
-  --fs-3xl: 36px;
-  --fs-4xl: 48px;
+  /* in rem, so type follows the user's text size (WCAG 2.2 SC 1.4.4, ADR-0081) */
+  --fs-xs: 0.75rem; /* 12px at the default 16px */
+  --fs-sm: 0.875rem; /* 14px */
+  --fs-md: 1rem; /* 16px */
+  --fs-lg: 1.125rem; /* 18px */
+  --fs-xl: 1.375rem; /* 22px */
+  --fs-2xl: 1.75rem; /* 28px */
+  --fs-3xl: 2.25rem; /* 36px */
+  --fs-4xl: 3rem; /* 48px */
 
   /* VT323 reads "small" at any size — these sizes are pre-bumped.    */
-  --fs-pixel-sm: 22px;
-  --fs-pixel-md: 32px;
-  --fs-pixel-lg: 48px;
+  --fs-pixel-sm: 1.375rem; /* 22px */
+  --fs-pixel-md: 2rem; /* 32px */
+  --fs-pixel-lg: 3rem; /* 48px */
 }
 
 /* ════════════════════════════════════════════════════════════════════

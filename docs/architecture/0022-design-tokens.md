@@ -4,6 +4,7 @@
 **Date:** 2026-05-27
 **Slice:** cross-cutting
 **Refines:** —
+**Refined by:** ADR-0081 (type and spacing tokens in rem; component styles in components.css; proposed)
 **Category:** UI architecture
 
 ## Context

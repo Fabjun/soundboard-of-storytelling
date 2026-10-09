@@ -501,18 +501,18 @@ also in [§6](#6-component-inventory)):
 
 ### SPACING
 
-| Token        | Value  | Description |
-| ------------ | ------ | ----------- |
-| `--space-1`  | `4px`  | —           |
-| `--space-2`  | `8px`  | —           |
-| `--space-3`  | `12px` | —           |
-| `--space-4`  | `16px` | —           |
-| `--space-5`  | `20px` | —           |
-| `--space-6`  | `24px` | —           |
-| `--space-8`  | `32px` | —           |
-| `--space-10` | `40px` | —           |
-| `--space-12` | `48px` | —           |
-| `--space-16` | `64px` | —           |
+| Token        | Value     | Description             |
+| ------------ | --------- | ----------------------- |
+| `--space-1`  | `0.25rem` | 4px at the default 16px |
+| `--space-2`  | `0.5rem`  | 8px                     |
+| `--space-3`  | `0.75rem` | 12px                    |
+| `--space-4`  | `1rem`    | 16px                    |
+| `--space-5`  | `1.25rem` | 20px                    |
+| `--space-6`  | `1.5rem`  | 24px                    |
+| `--space-8`  | `2rem`    | 32px                    |
+| `--space-10` | `2.5rem`  | 40px                    |
+| `--space-12` | `3rem`    | 48px                    |
+| `--space-16` | `4rem`    | 64px                    |
 
 ### DECK RAIL
 
@@ -541,21 +541,21 @@ also in [§6](#6-component-inventory)):
 
 ### TYPE
 
-| Token            | Value                                   | Description |
-| ---------------- | --------------------------------------- | ----------- |
-| `--font-display` | `'Press Start 2P', 'VT323', monospace`  | —           |
-| `--font-ui`      | `'VT323', 'Share Tech Mono', monospace` | —           |
-| `--font-mono`    | `'Share Tech Mono', 'VT323', monospace` | —           |
-| `--fs-xs`        | `12px`                                  | —           |
-| `--fs-sm`        | `14px`                                  | —           |
-| `--fs-md`        | `16px`                                  | —           |
-| `--fs-lg`        | `18px`                                  | —           |
-| `--fs-xl`        | `22px`                                  | —           |
-| `--fs-2xl`       | `28px`                                  | —           |
-| `--fs-3xl`       | `36px`                                  | —           |
-| `--fs-4xl`       | `48px`                                  | —           |
-| `--fs-pixel-sm`  | `22px`                                  | —           |
-| `--fs-pixel-md`  | `32px`                                  | —           |
-| `--fs-pixel-lg`  | `48px`                                  | —           |
+| Token            | Value                                   | Description              |
+| ---------------- | --------------------------------------- | ------------------------ |
+| `--font-display` | `'Press Start 2P', 'VT323', monospace`  | —                        |
+| `--font-ui`      | `'VT323', 'Share Tech Mono', monospace` | —                        |
+| `--font-mono`    | `'Share Tech Mono', 'VT323', monospace` | —                        |
+| `--fs-xs`        | `0.75rem`                               | 12px at the default 16px |
+| `--fs-sm`        | `0.875rem`                              | 14px                     |
+| `--fs-md`        | `1rem`                                  | 16px                     |
+| `--fs-lg`        | `1.125rem`                              | 18px                     |
+| `--fs-xl`        | `1.375rem`                              | 22px                     |
+| `--fs-2xl`       | `1.75rem`                               | 28px                     |
+| `--fs-3xl`       | `2.25rem`                               | 36px                     |
+| `--fs-4xl`       | `3rem`                                  | 48px                     |
+| `--fs-pixel-sm`  | `1.375rem`                              | 22px                     |
+| `--fs-pixel-md`  | `2rem`                                  | 32px                     |
+| `--fs-pixel-lg`  | `3rem`                                  | 48px                     |
 
 <!-- AUTO-GENERATED:tokens END -->

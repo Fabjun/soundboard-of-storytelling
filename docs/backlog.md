@@ -1489,7 +1489,13 @@ movement) would need a clear coexistence contract. First-pass recommendation: GA
 
 ## 4. Deferred Infrastructure
 
-### Relative units for sizes (structure step before Slice 13)
+### Relative units for sizes (structure step before Slice 13) ✅ Done (3.0.189, PR review pending)
+
+Done 2026-10-09 (ADR-0081, proposed): the `--space-*` and `--fs-*` tokens and every font size,
+padding, margin and gap are rem — pixel-identical at the default text size (visual baselines
+unchanged); three px values stay with their reason; guard "type and spacing in rem"; an E2E test
+doubles the root font size and sees type and spacing double. Still open for Slice 13: `clamp()`
+for fluid sizes, pad cells and touch minimums that grow with the text.
 
 Measured 2026-10-02: `v3/src/styles/tokens.css` has 452 px values, 0 rem, no `clamp()` — font
 sizes and spacing ignore the user's text-size setting (WCAG 2.2 SC 1.4.4: text resizable to 200 %
