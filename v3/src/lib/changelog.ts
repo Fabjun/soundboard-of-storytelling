@@ -17,10 +17,19 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.189';
+export const APP_VERSION = '3.0.190';
 
 /** The developer log, newest first; CHANGELOG.md is generated from it (sync-changelog). */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.190',
+    date: '2026-10-09',
+    items: [
+      'docs: three "review pending" markers left after the owner decided on 2026-10-09 now name the decision (src/state/modeControl.ts, the E2E specs mode-lock and stop-all) — the second time such a marker went stale (the Slice 12b backlog note before)',
+      'test: codeGuards "code and tests carry no review status" — no file in src, tests or scripts says "review pending", also across a comment line break; what waits for the owner is listed in its pull request; counter-checked (the old marker in modeControl.ts, split over two lines, and the one in mode-lock.spec.ts → red, each by name)',
+      'test: the codeGuards overview numbers every guard (Tab and names, rem, the disabled look were missing)',
+    ],
+  },
   {
     version: '3.0.189',
     date: '2026-10-09',

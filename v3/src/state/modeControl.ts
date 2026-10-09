@@ -2,9 +2,9 @@
  * @fileoverview modeControl — switching GAME / SETUP and the Lock (Slice 12c)
  *
  * docs/product/README.md#switching-modes and #lock (owner decisions 2026-09-28):
- *   - switching modes stops every playing sound — at once (provisional detail 2026-10-08, review
- *     pending: SETUP must be silent before PREVIEW can be used, and the switch is deliberate —
- *     the Lock guards against an accidental one);
+ *   - switching modes stops every playing sound — at once (owner decision 2026-10-09: SETUP must
+ *     be silent before PREVIEW can be used, and the switch is deliberate — the Lock guards
+ *     against an accidental one);
  *   - the Lock is a separate toggle in GAME; while on, the mode cannot leave GAME; off by default
  *     and after every reload (`modeLocked` lives in memory only).
  */

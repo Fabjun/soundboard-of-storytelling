@@ -3,7 +3,7 @@
  *
  * docs/product/README.md#lock (owner decisions 2026-09-28): a separate toggle with a lock icon,
  * shown in GAME only; one tap locks, one unlocks; it locks only the mode switch; off by default
- * and after every reload. Its place next to the mode toggle is provisional (review pending).
+ * and after every reload. It sits next to the mode toggle (owner decision 2026-10-09).
  * Needs no playback — runs in WebKit too.
  */
 

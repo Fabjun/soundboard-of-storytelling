@@ -2,7 +2,7 @@
  * @fileoverview Full E2E — STOP ALL in two stages and "stop the last sound" (Slice 12b)
  *
  * docs/product/README.md#input-keyboard--numpad, K5 / K6 / K9 / K16 (owner decisions 2026-10-08;
- * the button's place and its STOP NOW label are provisional — review pending): the STOP ALL
+ * the button's place and its STOP NOW label 2026-10-09): the STOP ALL
  * button shows in GAME; its first press fades every sound out, a second press while it fades
  * stops at once; the numpad decimal key is the same action; the numpad Enter, and Enter with no
  * control focused, stop the sound started last. Needs playback, so Chromium only (like audio).

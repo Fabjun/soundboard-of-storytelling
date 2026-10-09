@@ -7,6 +7,14 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.190 — 2026-10-09
+
+### Internal
+
+- docs: three "review pending" markers left after the owner decided on 2026-10-09 now name the decision (src/state/modeControl.ts, the E2E specs mode-lock and stop-all) — the second time such a marker went stale (the Slice 12b backlog note before)
+- test: codeGuards "code and tests carry no review status" — no file in src, tests or scripts says "review pending", also across a comment line break; what waits for the owner is listed in its pull request; counter-checked (the old marker in modeControl.ts, split over two lines, and the one in mode-lock.spec.ts → red, each by name)
+- test: the codeGuards overview numbers every guard (Tab and names, rem, the disabled look were missing)
+
 ## 3.0.189 — 2026-10-09
 
 ### Changed
