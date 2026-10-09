@@ -17,10 +17,18 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.198';
+export const APP_VERSION = '3.0.199';
 
 /** The developer log, newest first; CHANGELOG.md is generated from it (sync-changelog). */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.199',
+    date: '2026-10-10',
+    items: [
+      'test: the two weakest modules of the weekly mutation run tested properly — padKeys 55 % → 100 % (every symbol label, whole-code matches only, the reason each reserved key shows in the PAD editor, every modifier) and backupExport 59 % → 94.5 % (saveBackupFile: the share sheet, a canceled share counts as not saved without a download, a failed share and a browser that cannot share fall back to a download whose URL is freed after 60 s; every audio extension); measured with Stryker per module',
+      'docs: backlog "Pre-commit hook runtime watch" measured — 20–22 s plus lint-staged, below the 25 s trigger',
+    ],
+  },
   {
     version: '3.0.198',
     date: '2026-10-09',
