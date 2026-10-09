@@ -25,9 +25,9 @@ export const CHANGELOG: ChangelogEntry[] = [
     version: '3.0.189',
     date: '2026-10-09',
     items: [
-      'refactor(styles): one look for a disabled control — the token --disabled-opacity (0.4) and cursor: not-allowed for every :disabled / aria-disabled rule (there were three: 0.4 / 0.5, cursor default / not-allowed); disabled tabs a little dimmer; guard "one look for a disabled control" (counter-checked)',
+      'refactor(styles): one look for a disabled control — the token --disabled-opacity (0.4) and cursor: not-allowed for every :disabled / aria-disabled rule (there were three: 0.4 / 0.5, cursor default / not-allowed); disabled tabs a little dimmer; guard "one look for a disabled control" (counter-checked); 0.4 and not-allowed accepted by the owner 2026-10-09',
       'chore(audio): fadeOutAll is reserved as Parked until the engine fix — its old reason (Slice 12, the first STOP ALL stage) no longer held, STOP ALL fades pad by pad',
-      'test: coverage floor raised after the Slice 12 stack (measured lines 93.72 · statements 92.71 · functions 94.23 · branches 91.52 → floor 93 / 92 / 94 / 91)',
+      'test: coverage floor raised after the Slice 12 stack (measured lines 93.74 · statements 92.70 · functions 94.69 · branches 91.51 → floor 93 / 92 / 94 / 91)',
       'docs: backlog "Two styles for a disabled control" done; structure review of Slice 12 in the pull request',
     ],
   },
