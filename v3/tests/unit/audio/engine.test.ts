@@ -606,25 +606,19 @@ describe('stopping', () => {
     expect(stopped.sort()).toEqual(['a', 'b']);
   });
 
-  test('fadeOutAll ramps every pad to 0, then stops them', async () => {
-    vi.useFakeTimers();
+  test('fadeOutAll ramps every pad to 0 and stops it at the end of the fade, on the audio clock', async () => {
     await audio.play('a', loop('a', 'h1'));
     await flush();
     audio.fadeOutAll(2);
     expect(ctx.gains.at(-1)!.gain.events.at(-1)).toEqual(['ramp', 0, 2]);
-    expect(stopped).toEqual([]);
-    vi.advanceTimersByTime(2050);
-    expect(ctx.sources[0].stopped).toEqual({ when: 'now' });
-    expect(stopped).toEqual(['a']);
+    expect(ctx.sources[0].stopped).toEqual({ when: 2 });
+    expect(stopped).toEqual(['a']); // counts as stopped at once, as with a pad's own fade-out
+    expect(audio.isPlaying('a')).toBe(false);
   });
 
-  // KNOWN ENGINE BUG (found 2026-10-08, Slice 12b): fadeOutAllInternal's cleanup timer stops
-  // every pad in `srcs` when the fade ends — also a pad started DURING the fade (engine.ts,
-  // fadeOutAllInternal). STOP ALL therefore fades pad by pad (src/state/stopControl.ts), not with
-  // fadeOutAll; the combo step "fade out all" still has the bug. A fix changes the engine →
-  // product owner. BACKLOG "Engine: fade out all stops pads started during the fade".
-  // When fixed, this turns red → switch it to test().
-  test.fails('a pad started during fadeOutAll keeps playing after the fade', async () => {
+  // Fixed 2026-10-09 (BACKLOG "Engine: fade out all stops pads started during the fade"): a timer
+  // at the end of the fade stopped every pad playing by then.
+  test('a pad started during fadeOutAll keeps playing after the fade', async () => {
     vi.useFakeTimers();
     await audio.play('a', loop('a', 'h1'));
     await flush();
@@ -635,6 +629,58 @@ describe('stopping', () => {
     vi.advanceTimersByTime(1600);
     expect(ctx.sources[1].stopped).toBeNull();
     expect(audio.isPlaying('b')).toBe(true);
+  });
+
+  test('the same pad started again during fadeOutAll keeps its new sound', async () => {
+    vi.useFakeTimers();
+    await audio.play('a', loop('a', 'h1'));
+    await flush();
+    audio.fadeOutAll(2);
+    await audio.play('a', loop('a', 'h1'));
+    await flush();
+    vi.advanceTimersByTime(2100);
+    expect(ctx.sources).toHaveLength(2);
+    expect(ctx.sources[0].stopped).toEqual({ when: 2 }); // the old sound fades out
+    expect(ctx.sources[1].stopped).toBeNull();
+    expect(audio.isPlaying('a')).toBe(true);
+    audio.stop('a');
+    expect(ctx.sources[1].stopped).toEqual({ when: 'now' }); // and the new one can be stopped
+  });
+
+  test('stopAll during fadeOutAll cuts the fading sounds at once (the second STOP ALL press)', async () => {
+    await audio.play('a', loop('a', 'h1'));
+    await audio.play('b', single('b', 'h2'));
+    await flush();
+    audio.fadeOutAll(2);
+    audio.stopAll();
+    expect(ctx.sources.map((s) => s.stopped)).toEqual([{ when: 'now' }, { when: 'now' }]);
+  });
+
+  test('a sound that ended after fadeOutAll is not stopped again by a later stopAll', async () => {
+    await audio.play('a', loop('a', 'h1'));
+    await flush();
+    audio.fadeOutAll(2);
+    ctx.sources[0].end(); // the audio clock reached the end of the fade
+    audio.stopAll();
+    expect(ctx.sources[0].stopped).toEqual({ when: 2 });
+  });
+
+  test('a Loop with several files does not go on to its next file during fadeOutAll', async () => {
+    void audio.play('p', playlist('p', ['h1', 'h2']));
+    await flush();
+    audio.fadeOutAll(2);
+    ctx.sources[0].end(); // the first file ends within the fade
+    await flush();
+    expect(tags()).toEqual(['h1']);
+    expect(audio.isPlaying('p')).toBe(false);
+  });
+
+  test('a Loop with several files whose first file is still loading never starts', async () => {
+    void audio.play('p', playlist('p', ['h1', 'h2']));
+    audio.fadeOutAll(2); // before the decode has finished
+    await flush();
+    expect(ctx.sources).toHaveLength(0);
+    expect(stopped).toEqual(['p']);
   });
 
   // KNOWN ENGINE BUG (found 2026-10-08, Slice 12b): stopPad with a fade-out deletes the pad's
@@ -1081,7 +1127,7 @@ describe('combo children', () => {
 // ── "Fade out all" combo step (T11c: had no test at all) ──────────────────────
 
 describe('fade out all (combo step)', () => {
-  test('ramps every other playing pad to 0 over the duration, then stops and reports it', async () => {
+  test('ramps every other playing pad to 0 over the duration and stops it at the end, on the audio clock', async () => {
     vi.useFakeTimers();
     await audio.play('L', loop('L', 'h9'));
     await flush();
@@ -1094,14 +1140,27 @@ describe('fade out all (combo step)', () => {
       ['set', loopGain.gain.value, 0],
       ['ramp', 0, 2],
     ]);
-    expect(ctx.sources[0].stopped).toBeNull(); // still fading
-
-    vi.advanceTimersByTime(2050);
-    await flush();
-    expect(ctx.sources[0].stopped).toEqual({ when: 'now' });
+    expect(ctx.sources[0].stopped).toEqual({ when: 2 });
     expect(stopped).toContain('L');
     expect(stopped).not.toContain('c'); // the fading combo itself keeps running
     expect(audio.isPlaying('L')).toBe(false);
+    expect(audio.isPlaying('c')).toBe(true);
+  });
+
+  test('a pad started by hand during the step keeps playing after the fade', async () => {
+    vi.useFakeTimers();
+    await audio.play('L', loop('L', 'h9'));
+    await flush();
+    pads.set('s1', single('s1', 'h1'));
+    audio.play('c', combo('c', [{ padIds: [], fadeOutAll: 2 }, { padIds: ['s1'] }]));
+    await flush();
+    await audio.play('L', loop('L', 'h9')); // the same pad again, within the fade
+    await flush();
+    vi.advanceTimersByTime(2100);
+    await flush();
+    expect(ctx.sources[0].stopped).toEqual({ when: 2 });
+    expect(ctx.sources[1].stopped).toBeNull();
+    expect(audio.isPlaying('L')).toBe(true);
   });
 
   test('the next step waits for the fade plus 100 ms', async () => {

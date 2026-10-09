@@ -9,9 +9,8 @@
  *     one before it.
  *
  * The first stage fades pad by pad (`stop(id, false, fade)`) and not with the engine's
- * fadeOutAll: that one also stops a pad started during the fade when the fade ends (engine bug,
- * pinned in tests/unit/audio/engine.test.ts; the engine stays unchanged,
- * docs/architecture/0048-pad-pool-decks.md#4-audio-engine--change-under-product-owner-control).
+ * fadeOutAll: that one lets the pads go at once, so a tap on a fading pad would start it anew
+ * instead of stopping it — not the behavior decided for STOP ALL.
  *
  * During a pause (Slice 12d, K8 "stop actions end the paused sounds") the audio clock stands
  * still, so a fade would never run: STOP ALL stops at once and ends the pause; Enter stops the

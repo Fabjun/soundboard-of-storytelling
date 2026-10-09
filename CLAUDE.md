@@ -841,10 +841,12 @@ resume(): void
   // Ends a pause: every paused sound goes on (K7 second press, K8).
 
 fadeOutAll(duration: number): void
-  // Fades everything that plays out over `duration` seconds; running combos stop at once.
+  // Fades everything that plays out over `duration` seconds; running combos stop at once. The pads
+  // count as stopped at once — a pad started during the fade plays on; `stopAll` still cuts the
+  // fading sounds.
   //
-  // Reserved: Parked — STOP ALL fades pad by pad until the engine fix (BACKLOG "Engine: fade out
-  // all stops pads started during the fade")
+  // Reserved: Parked — one fade for everything at once; STOP ALL fades pad by pad
+  // (src/state/stopControl.ts)
 
 isPlaying(padId: string): boolean
   // Tells whether the pad is playing now.

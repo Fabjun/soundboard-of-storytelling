@@ -89,6 +89,13 @@ export function withEarlyVersions(
 /** The release notes the start screen shows, newest first (checked by whatsNew.test.ts). */
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
+    version: '3.0.194',
+    date: '2026-10-09',
+    fixed: [
+      'A combo step that fades out everything no longer cuts off a pad started while it fades, and a Loop with several files no longer jumps to its next file during that fade.',
+    ],
+  },
+  {
     version: '3.0.193',
     date: '2026-10-09',
     improved: [
