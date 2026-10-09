@@ -72,6 +72,7 @@ file. Format: `docs/architecture/_template.md`.
 | [ADR-0044](0044-audio-engine-module-structure.md) | Audio Engine Module Structure                                            | Accepted | Slice 4       | 2026-05-28 |
 | [ADR-0065](0065-waveform-peaks-resolution.md)     | Waveform peaks — 256 per file, computed once, backfilled for old entries | Accepted | Slice 15      | 2026-10-03 |
 | [ADR-0069](0069-loop-repeat.md)                   | REPEAT — a Loop plays a number of times, then stops                      | Accepted | Slice 15      | 2026-10-04 |
+| [ADR-0079](0079-pause-all-sounds.md)              | Pause all sounds                                                         | Accepted | Slice 12      | 2026-10-08 |
 
 ### UI architecture
 

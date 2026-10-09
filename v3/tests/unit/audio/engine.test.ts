@@ -108,6 +108,10 @@ class FakeAudioContext {
     this.state = 'running';
     return Promise.resolve();
   }
+  suspend(): Promise<void> {
+    this.state = 'suspended';
+    return Promise.resolve();
+  }
 }
 
 /** Let the engine's async chains (libGet → arrayBuffer → decode) settle. */
@@ -830,6 +834,43 @@ describe('iOS: silent switch and interrupted audio', () => {
     ctx.state = 'interrupted';
     document.dispatchEvent(new Event('visibilitychange'));
     expect(ctx.state).toBe('running');
+  });
+});
+
+// ── Pause (Slice 12d — engine change, owner playback check pending) ──────────
+
+describe('pause', () => {
+  test('pause suspends; coming back to the app keeps the pause; resume goes on', async () => {
+    await audio.play('l', loop('l', 'h1'));
+    await flush();
+    audio.pause();
+    expect(ctx.state).toBe('suspended');
+    document.dispatchEvent(new Event('visibilitychange'));
+    expect(ctx.state).toBe('suspended');
+    audio.resume();
+    expect(ctx.state).toBe('running');
+    expect(ctx.sources[0].stopped).toBeNull(); // the loop went on, it was never stopped
+  });
+
+  test('after a resume, coming back to the app resumes a context iOS halted again', () => {
+    audio.pause();
+    audio.resume();
+    ctx.state = 'interrupted';
+    document.dispatchEvent(new Event('visibilitychange'));
+    expect(ctx.state).toBe('running');
+  });
+
+  test('a new sound during the pause resumes everything and plays (K8)', async () => {
+    const store = await import('../../../src/state/store');
+    await audio.play('a', loop('a', 'h1'));
+    await flush();
+    audio.pause();
+    expect(store.audioPaused.value).toBe(true);
+    await audio.play('b', single('b', 'h2'));
+    await flush();
+    expect(store.audioPaused.value).toBe(false);
+    expect(ctx.state).toBe('running');
+    expect(tags()).toEqual(['h1', 'h2']);
   });
 });
 

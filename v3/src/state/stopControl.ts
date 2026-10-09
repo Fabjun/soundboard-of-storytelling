@@ -12,11 +12,19 @@
  * fadeOutAll: that one also stops a pad started during the fade when the fade ends (engine bug,
  * pinned in tests/unit/audio/engine.test.ts; the engine stays unchanged,
  * docs/architecture/0048-pad-pool-decks.md#4-audio-engine--change-under-product-owner-control).
+ *
+ * During a pause (Slice 12d, K8 "stop actions end the paused sounds") the audio clock stands
+ * still, so a fade would never run: STOP ALL stops at once and ends the pause; Enter stops the
+ * last sound at once and the others stay paused.
  */
 
 import { signal } from '@preact/signals';
-import { stop as stopPad, stopAll as stopEverything } from '../audio/index';
-import { boards, playingPads } from './store';
+import {
+  resume as resumeEverything,
+  stop as stopPad,
+  stopAll as stopEverything,
+} from '../audio/index';
+import { audioPaused, boards, playingPads } from './store';
 
 /** Seconds the first STOP ALL press fades over — V1's fade-out-all default (K16). */
 export const STOP_ALL_FADE = 2.5;
@@ -28,9 +36,14 @@ export const stopAllFading = signal(false);
 export interface StopControlAudio {
   stop: (padId: string, immediate?: boolean, fadeOut?: number) => void;
   stopAll: () => void;
+  resume: () => void;
 }
 
-const engine: StopControlAudio = { stop: stopPad, stopAll: stopEverything };
+const engine: StopControlAudio = {
+  stop: stopPad,
+  stopAll: stopEverything,
+  resume: resumeEverything,
+};
 
 let fadeTimer: ReturnType<typeof setTimeout> | undefined;
 
@@ -46,7 +59,7 @@ function endFade(): void {
  * once. With nothing playing and no fade running it does nothing.
  */
 export function pressStopAll(audio: StopControlAudio = engine): void {
-  if (stopAllFading.value) {
+  if (stopAllFading.value || audioPaused.value) {
     stopAllNow(audio);
     return;
   }
@@ -64,6 +77,8 @@ export function pressStopAll(audio: StopControlAudio = engine): void {
 export function stopAllNow(audio: StopControlAudio = engine): void {
   endFade();
   audio.stopAll();
+  // Nothing is left to resume — end the pause, so the next sound is not held back
+  if (audioPaused.value) audio.resume();
 }
 
 /** The pad with this id in any board's pool (a combo's own id is a pad too). */
@@ -79,5 +94,11 @@ function padFadeOut(id: string): number {
 export function stopLast(audio: StopControlAudio = engine): void {
   const last = [...playingPads.value].at(-1);
   if (last === undefined) return;
-  audio.stop(last, false, padFadeOut(last));
+  if (!audioPaused.value) {
+    audio.stop(last, false, padFadeOut(last));
+    return;
+  }
+  audio.stop(last, true);
+  // The last paused sound is gone — nothing is paused any more
+  if (playingPads.value.size === 0) audio.resume();
 }

@@ -17,8 +17,11 @@ import {
   fadeOutAllInternal,
   isPlayingInternal,
   configureCallbacks,
+  pauseAll,
+  resumeAll,
 } from './engine';
 import {
+  audioPaused,
   boards,
   addPlayingPad,
   removePlayingPad,
@@ -129,6 +132,8 @@ export function toEnginePad(pad: Pad): EnginePad {
  * instance for `stop` and the playing signals.
  */
 export async function play(padId: string, pad: Pad): Promise<void> {
+  // K8: any sound action during a pause resumes every paused sound, then plays the new one
+  if (audioPaused.value) resume();
   const enginePad = toEnginePad(pad);
   switch (enginePad.type) {
     case 'single':
@@ -155,6 +160,18 @@ export function stop(padId: string, immediate = false, fadeOut = 0): void {
 /** Stops everything that plays, at once — the second stage of STOP ALL (src/state/stopControl.ts). */
 export function stopAll(): void {
   stopAllInternal();
+}
+
+/** Pauses every sound where it is (Slice 12d, K7); the top bar shows PAUSED. */
+export function pause(): void {
+  pauseAll();
+  audioPaused.value = true;
+}
+
+/** Ends a pause: every paused sound goes on (K7 second press, K8). */
+export function resume(): void {
+  resumeAll();
+  audioPaused.value = false;
 }
 
 /**

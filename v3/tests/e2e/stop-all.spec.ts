@@ -10,28 +10,18 @@
 
 import { test, expect, type Page } from '@playwright/test';
 import {
+  addLoopPad,
   createBoardAndNavigate,
   createDeck,
   enterGameMode,
   enterSetupMode,
   goToLibrary,
+  padCells as pads,
   uploadTestAudio,
 } from './helpers';
 
 const stopAll = (page: Page) => page.getByTestId('board-top-bar-stop-all-button');
-const pads = (page: Page) =>
-  page.locator('[data-testid^="pad-grid-cell-"]:not([data-testid^="pad-grid-cell-empty-slot-"])');
 const playing = (page: Page, n: number) => pads(page).nth(n).getByRole('button', { pressed: true });
-
-/** A Loop pad in the empty cell (col, 0), made from the first library file (Path A). */
-async function addLoop(page: Page, col: number) {
-  const before = await pads(page).count();
-  await page.getByTestId(`pad-grid-cell-empty-slot-${col}-0`).click();
-  await page.locator('[data-testid^="pad-creation-popover-source-item-"]').first().click();
-  await page.getByRole('button', { name: 'LOOP' }).click();
-  await page.getByTestId('pad-creation-popover-add-button').click();
-  await expect(pads(page)).toHaveCount(before + 1);
-}
 
 test.beforeEach(async ({ page }) => {
   await page.goto('/soundboard-of-storytelling/');
@@ -43,8 +33,8 @@ test.beforeEach(async ({ page }) => {
   await createBoardAndNavigate(page);
   await createDeck(page);
   await enterSetupMode(page);
-  await addLoop(page, 0);
-  await addLoop(page, 1);
+  await addLoopPad(page, 0);
+  await addLoopPad(page, 1);
 });
 
 test('STOP ALL shows in GAME only; the first press fades out, a second press during the fade stops', async ({

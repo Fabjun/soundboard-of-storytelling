@@ -86,6 +86,7 @@ beforeEach(() => {
     {
       pressStopAll: () => played.push('STOP ALL'),
       stopLast: () => played.push('STOP LAST'),
+      togglePause: () => played.push('PAUSE'),
     },
   );
 });
@@ -128,7 +129,7 @@ describe('a key plays its pad', () => {
 
 describe('keys that play nothing', () => {
   it('a key no pad holds, the main-keyboard 1 and a reserved key stay with the browser', () => {
-    for (const code of ['Numpad2', 'Digit1', 'Space', 'Escape']) {
+    for (const code of ['Numpad2', 'Digit1', 'Escape', 'Tab']) {
       const e = press(code);
       expect(e.defaultPrevented).toBe(false);
     }
@@ -202,5 +203,17 @@ describe('stop keys (Slice 12b)', () => {
     press('NumpadDecimal', {}, button);
     expect(seen).toEqual(['Enter']);
     expect(played).toEqual(['STOP LAST', 'STOP ALL']);
+  });
+});
+
+describe('Space (Slice 12d)', () => {
+  it('pauses / resumes in GAME; a focused control keeps its Space', () => {
+    expect(press('Space').defaultPrevented).toBe(true);
+    const button = document.createElement('button');
+    document.body.append(button);
+    press('Space', {}, button);
+    currentMode.value = 'edit';
+    press('Space');
+    expect(played).toEqual(['PAUSE']);
   });
 });

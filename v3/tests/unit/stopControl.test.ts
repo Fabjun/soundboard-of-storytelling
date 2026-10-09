@@ -7,7 +7,7 @@
  */
 
 import type { Board, SinglePad } from '../../src/types';
-import { boards, playingPads } from '../../src/state/store';
+import { audioPaused, boards, playingPads } from '../../src/state/store';
 import {
   STOP_ALL_FADE,
   pressStopAll,
@@ -51,6 +51,10 @@ const audio: StopControlAudio = {
     calls.push('stopAll');
     playingPads.value = new Set();
   },
+  resume: () => {
+    calls.push('resume');
+    audioPaused.value = false;
+  },
 };
 
 beforeEach(() => {
@@ -59,6 +63,7 @@ beforeEach(() => {
   boards.value = [board];
   playingPads.value = new Set();
   stopAllFading.value = false;
+  audioPaused.value = false;
 });
 afterEach(() => {
   vi.runOnlyPendingTimers();
@@ -126,5 +131,31 @@ describe('stop everything now (mode switch, Slice 12c)', () => {
     // the ended fade's timer changes nothing later
     vi.advanceTimersByTime(3000);
     expect(stopAllFading.value).toBe(false);
+  });
+});
+
+describe('stop actions during a pause (Slice 12d, K8)', () => {
+  it('STOP ALL stops at once — no fade on a stopped clock — and ends the pause', () => {
+    playingPads.value = new Set(['a', 'b']);
+    audioPaused.value = true;
+    pressStopAll(audio);
+    expect(calls).toEqual(['stopAll', 'resume']);
+    expect(stopAllFading.value).toBe(false);
+  });
+
+  it('Enter stops the last sound at once; the others stay paused', () => {
+    playingPads.value = new Set(['a', 'b']);
+    audioPaused.value = true;
+    stopLast(audio);
+    expect(calls).toEqual(['stop b true 0']);
+    expect(audioPaused.value).toBe(true);
+  });
+
+  it('when Enter stops the last paused sound, nothing is paused any more', () => {
+    playingPads.value = new Set(['a']);
+    audioPaused.value = true;
+    stopLast(audio);
+    expect(calls).toEqual(['stop a true 0', 'resume']);
+    expect(audioPaused.value).toBe(false);
   });
 });

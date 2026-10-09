@@ -89,6 +89,13 @@ export function withEarlyVersions(
 /** The release notes the start screen shows, newest first (checked by whatsNew.test.ts). */
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
+    version: '3.0.192',
+    date: '2026-10-09',
+    new: [
+      'Pause: in GAME, Space pauses every sound — for example to talk at the table — and Space again lets them go on where they stopped. PAUSED shows in the top bar; a tap on it resumes too. Playing another pad during the pause also resumes everything.',
+    ],
+  },
+  {
     version: '3.0.191',
     date: '2026-10-09',
     behindTheScenes: [
