@@ -1,6 +1,6 @@
 # ADR-0080: Accessibility checks
 
-**Status:** Proposed
+**Status:** Accepted
 **Date:** 2026-10-09
 **Slice:** infrastructure
 **Refines:** —
@@ -14,7 +14,8 @@ what to do (Nielsen heuristic 9). The existing screens had never been checked. T
 2026-10-09 found core flows that needed a mouse — opening a board, choosing a deck, choosing the
 file of a new pad — because clickable `div`s held them, plus icon buttons named only by `title`,
 icons announced by their file names and raw technical error messages. Built while the owner was
-away (provisional, review pending).
+away; accepted by the owner 2026-10-09 (checks, decorative icons, row buttons and error texts as
+built).
 
 ## Decision
 
@@ -22,7 +23,7 @@ away (provisional, review pending).
    the app) — Playwright's documented way to test accessibility. `v3/tests/e2e/a11y.spec.ts` scans
    every main screen in its real state for WCAG 2.2 A / AA, in Chromium and WebKit; one test walks
    board → deck → new pad with the keyboard alone; one opens an import error with the keyboard.
-   `color-contrast` is left out until the owner decides on the muted colors (BACKLOG "Text contrast
+   `color-contrast` is left out until the muted colors are lightened (BACKLOG "Text contrast
    below WCAG AA").
 2. **Source: a guard** in `codeGuards` — axe cannot see a click handler on a plain element: a
    click handler sits on a control Tab reaches (a native control, or role + tabIndex + keys;

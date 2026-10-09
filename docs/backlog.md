@@ -1504,7 +1504,7 @@ SETUP half of the mode toggle follows `.sb-btn` (no third style). One disabled l
 for the dimming and one cursor — is a structure clean-up, with a guard against a new style.
 **When:** the structure step "Relative units for sizes" before Slice 13 (same file).
 
-### Tab access and plain errors (audit of the existing screens) ✅ Done (3.0.188, PR review pending)
+### Tab access and plain errors (audit of the existing screens) ✅ Done (3.0.187)
 
 Owner decision 2026-10-02 (CLAUDE.md UI rules): every control reachable with the Tab key and named
 for screen readers; error messages in plain words with a next step. Found: the PAD editor's close
@@ -1527,10 +1527,10 @@ for small text) — status bar sections, the top bar's deck name, PAD editor fie
 tabs, the deck rail's PAD SIZE label, captions, drop hints, empty states. The token itself says so:
 `--text-mute` is commented "tertiary · meta only, AA-large" (`v3/src/styles/tokens.css`) — large
 text only, but it is used for small text; `--text-dim` is close too. Fixing it changes the look of
-every screen and the themes, so the axe scan leaves `color-contrast` out until it is decided.
-**Open:** lighter muted tokens, or muted only for large text, or accept below AA for meta text.
-**When:** with the design pass (Slice 13 / 14); then remove `color-contrast` from `NOT_CHECKED` in
-`v3/tests/e2e/a11y.spec.ts`.
+every screen and the themes, so the axe scan leaves `color-contrast` out until it is fixed.
+**Decided** (owner 2026-10-09): lighter muted tokens, AA (4.5:1) in every theme, in a pull request
+of its own; the owner checks the screenshots before the merge.
+**When:** next; then remove `color-contrast` from `NOT_CHECKED` in `v3/tests/e2e/a11y.spec.ts`.
 
 ### PAD editor: several files per pad cannot be edited yet
 

@@ -25,11 +25,11 @@ export const CHANGELOG: ChangelogEntry[] = [
     version: '3.0.187',
     date: '2026-10-09',
     items: [
-      'fix(a11y): opening a board, choosing a deck, choosing the file of a new pad, selecting and renaming a library file work with the keyboard — clickable divs became real buttons (sb-row-button, the row look without a frame), the rows other buttons stay siblings (owner rule 2026-10-02 "every control works with the Tab key"; ADR-0080 proposed)',
+      'fix(a11y): opening a board, choosing a deck, choosing the file of a new pad, selecting and renaming a library file work with the keyboard — clickable divs became real buttons (sb-row-button, the row look without a frame), the rows other buttons stay siblings (owner rule 2026-10-02 "every control works with the Tab key"; ADR-0080, accepted by the owner 2026-10-09)',
       'fix(a11y): PixelIcon is decorative (aria-hidden) — it announced its file name ("book", "flame") as the name of buttons; five icon buttons named only by title got an aria-label (board back, board list rename / delete, deck rename / duplicate / delete, library delete); the source item of a new pad reaches the 44px touch height',
       'fix(errors): plain words and a next step (Nielsen 9) instead of raw browser errors — backup export, an unexpected import error, the three upload errors ("not an audio file this browser can play — use MP3, M4A or WAV" …); the technical cause goes to the console; the upload details were a hover-only tooltip, now a <details> opened with a tap, Enter or Space',
       'test: E2E a11y (axe-core via @axe-core/playwright, dev only, MPL-2.0) — every main screen, WCAG 2.2 A/AA without color-contrast (BACKLOG "Text contrast below WCAG AA"), a keyboard-only flow board → deck → new pad and an import error opened with the keyboard, Chromium and WebKit; codeGuards "controls work with Tab and have a name" (a click handler on a control Tab reaches; an icon-only button has an aria-label); counter-checked; eslint-plugin-jsx-a11y not used — its peer range ends at ESLint 9',
-      'docs: ADR-0080 (proposed); CLAUDE.md UI rule points to the checks; backlog audit done, "Text contrast below WCAG AA" new; three visual baselines (deck rail entries 1px lower)',
+      'docs: ADR-0080 (accepted); CLAUDE.md UI rule points to the checks; backlog audit done, "Text contrast below WCAG AA" new; three visual baselines (deck rail entries 1px lower)',
     ],
   },
   {
