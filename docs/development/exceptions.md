@@ -109,13 +109,13 @@ Paths, dependencies and issues excluded from formatting, linting, knip or doc gu
 
 Unused today, kept for a later slice or a parked feature (`@reserved`, ADR-0064); the slice is the review trigger — `codeGuards` reports a reservation whose slice is complete.
 
-| Location                     | Symbol         | Waits for                                                                                               |
-| ---------------------------- | -------------- | ------------------------------------------------------------------------------------------------------- |
-| `v3/src/audio/index.ts:163`  | `fadeOutAll`   | Slice 12 — STOP ALL in two stages, the first fades, K16 (docs/product/README.md#input-keyboard--numpad) |
-| `v3/src/audio/index.ts:209`  | `crossfade`    | Parked — crossfade between pads (docs/product/README.md#pad-options)                                    |
-| `v3/src/lib/padUtils.ts:189` | `padTypeGlow`  | Slice 13 — a playing pad glows in its type color (docs/design/components/pad.md)                        |
-| `v3/src/state/store.ts:61`   | `activeTheme`  | Slice 14 — themes                                                                                       |
-| `v3/src/state/store.ts:115`  | `masterVolume` | Parked — master volume (docs/product/README.md#pad-options)                                             |
+| Location                     | Symbol         | Waits for                                                                                                                   |
+| ---------------------------- | -------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| `v3/src/audio/index.ts:163`  | `fadeOutAll`   | Parked — STOP ALL fades pad by pad until the engine fix (BACKLOG "Engine: fade out all stops pads started during the fade") |
+| `v3/src/audio/index.ts:209`  | `crossfade`    | Parked — crossfade between pads (docs/product/README.md#pad-options)                                                        |
+| `v3/src/lib/padUtils.ts:189` | `padTypeGlow`  | Slice 13 — a playing pad glows in its type color (docs/design/components/pad.md)                                            |
+| `v3/src/state/store.ts:61`   | `activeTheme`  | Slice 14 — themes                                                                                                           |
+| `v3/src/state/store.ts:115`  | `masterVolume` | Parked — master volume (docs/product/README.md#pad-options)                                                                 |
 
 ## Prose lint exceptions (Vale) (14)
 

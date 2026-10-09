@@ -837,8 +837,8 @@ stopAll(): void
 fadeOutAll(duration: number): void
   // Fades everything that plays out over `duration` seconds; running combos stop at once.
   //
-  // Reserved: Slice 12 — STOP ALL in two stages, the first fades, K16
-  // (docs/product/README.md#input-keyboard--numpad)
+  // Reserved: Parked — STOP ALL fades pad by pad until the engine fix (BACKLOG "Engine: fade out
+  // all stops pads started during the fade")
 
 isPlaying(padId: string): boolean
   // Tells whether the pad is playing now.

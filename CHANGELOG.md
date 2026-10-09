@@ -7,6 +7,18 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.189 — 2026-10-09
+
+### Changed
+
+- refactor(styles): one look for a disabled control — the token --disabled-opacity (0.4) and cursor: not-allowed for every :disabled / aria-disabled rule (there were three: 0.4 / 0.5, cursor default / not-allowed); disabled tabs a little dimmer; guard "one look for a disabled control" (counter-checked)
+
+### Internal
+
+- chore(audio): fadeOutAll is reserved as Parked until the engine fix — its old reason (Slice 12, the first STOP ALL stage) no longer held, STOP ALL fades pad by pad
+- test: coverage floor raised after the Slice 12 stack (measured lines 93.72 · statements 92.71 · functions 94.23 · branches 91.52 → floor 93 / 92 / 94 / 91)
+- docs: backlog "Two styles for a disabled control" done; structure review of Slice 12 in the pull request
+
 ## 3.0.188 — 2026-10-09
 
 ### Added

@@ -89,6 +89,13 @@ export function withEarlyVersions(
 /** The release notes the start screen shows, newest first (checked by whatsNew.test.ts). */
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
+    version: '3.0.189',
+    date: '2026-10-09',
+    improved: [
+      'Buttons and tabs that cannot be used right now all look the same: a little dimmed, and the mouse pointer shows that a click does nothing.',
+    ],
+  },
+  {
     version: '3.0.188',
     date: '2026-10-09',
     improved: [
