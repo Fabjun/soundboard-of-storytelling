@@ -104,8 +104,17 @@ describe('guard: every quarantine marker references an existing BACKLOG entry', 
     })),
   );
 
-  it('finds the known quarantine markers (sanity)', () => {
-    expect(markers.length).toBeGreaterThanOrEqual(4);
+  // A probe of the scan itself, not a count of today's markers: a typed count went stale when
+  // two quarantines were lifted (2026-10-09), and fewer markers is the goal, not a failure.
+  it('finds a marker and its BACKLOG reference, and skips a marker named in a comment (sanity)', () => {
+    // Joined at run time, so this file's own lines hold no marker for the scan above
+    const marker = (kind: string) => ['test', kind].join('.') + '(';
+    const probe = findQuarantineMarkers([
+      `// ${'BACK'}LOG "Probe heading"`,
+      `${marker('fixme')}'probe', () => {});`,
+      ` * ${marker('skip')} named in a comment`,
+    ]);
+    expect(probe).toEqual([{ line: 2, kind: 'fixme', ref: 'Probe heading' }]);
   });
 
   it('has a BACKLOG "<heading>" reference within the lines above each marker', () => {

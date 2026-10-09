@@ -17,10 +17,20 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.197';
+export const APP_VERSION = '3.0.198';
 
 /** The developer log, newest first; CHANGELOG.md is generated from it (sync-changelog). */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.198',
+    date: '2026-10-09',
+    items: [
+      'test: the mobile specs touch-targets and overflow run again — quarantined since May as "the desktop layout fails at 390px", they all passed when measured (the PAD editor is a full-screen dialog, the deck list starts folded): 35 of 35 runs with --repeat-each=5; counter-checked (empty cells forced to 30 px, the top bar to 500 px → red with exactly that message)',
+      'test: two guard sanity checks probe their scanner instead of counting today’s finds — the quarantine guard expected at least 4 markers and failed once two quarantines were lifted; the reservation guard expected at least 5 @reserved tags, exactly today’s number, and would fail when Slice 13 uses one (fewer is the goal in both); counter-checked (a scanner that sees no comments / no tags → the probe red)',
+      'test: mutation break threshold 73 → 84 — weekly run 37992417307 (started by hand to check #72): 84.99 % over 5243 mutants of every logic module, timeouts 0.42 %; the run is green again',
+      'docs: backlog — "Re-enable mobile layout tests" done; "Re-enable DnD E2E tests" found stale (library drag, SWAP and INSERT run with pointer sequences, nothing skipped); "Visual tests miss low-contrast changes" done by 3.0.196 (pixelmatch distance of the empty-cell border: seen below 0.14–0.17, the threshold is 0.02) and linked with its duplicate; "Board pad pool" marked built (checked in the code); design-notes narrow-viewport note updated',
+    ],
+  },
   {
     version: '3.0.197',
     date: '2026-10-09',

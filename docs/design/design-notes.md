@@ -613,6 +613,9 @@ interruptions / tab switches. Deliberately accepted, not dead code.
 > **Update 2026-10-05:** the PAD editor no longer takes a column — it opens full screen on every
 > screen size (owner decision, [ADR-0074](../architecture/0074-full-screen-modal-dialogs.md)); the
 > deck rail folds (3.0.174–3.0.175). The LibraryPanel row below still applies.
+> **Update 2026-10-09:** the mobile specs `touch-targets` and `overflow` pass at 390 px and run
+> again (3.0.198); the pad names that run under the next row at that width are BACKLOG "Pad names
+> cut off on narrow screens".
 
 Measured geometry at 390px viewport (Playwright diagnostic, 2026-05-28):
 
