@@ -17,10 +17,19 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.200';
+export const APP_VERSION = '3.0.201';
 
 /** The developer log, newest first; CHANGELOG.md is generated from it (sync-changelog). */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.201',
+    date: '2026-10-10',
+    items: [
+      'refactor(notes): What’s new takes each version’s date from the changelog instead of a second typed copy — WhatsNewNotes (hand-written, no date) and WhatsNewEntry (shown, with the date) in src/lib/whatsNew.ts; withEarlyVersions adds the date; 78 typed dates removed (all matched the changelog when checked; CLAUDE.md: derivable facts are referenced, never typed)',
+      'test: whatsNew — every entry carries its changelog date (counter-checked: no derivation → red); mutation score 76.1 % → 89.7 % (the typed dates were most of the data mutants)',
+      'test: preview 77.5 % → 97.5 % — a Loop pad wraps at its region end and a Single stops there, a Loop region of no length gives no NaN, the page clock when none is given',
+    ],
+  },
   {
     version: '3.0.200',
     date: '2026-10-10',

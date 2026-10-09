@@ -16,11 +16,11 @@ import {
   WHATS_NEW,
   WHATS_NEW_GROUPS,
   withEarlyVersions,
-  type WhatsNewEntry,
+  type WhatsNewNotes,
 } from '../../src/lib/whatsNew';
 
 const compare = compareVersions;
-const sentences = (e: WhatsNewEntry): string[] => WHATS_NEW_GROUPS.flatMap(([key]) => e[key] ?? []);
+const sentences = (e: WhatsNewNotes): string[] => WHATS_NEW_GROUPS.flatMap(([key]) => e[key] ?? []);
 
 /** Commit types (ADR-0060) plus the two older prefixes the history uses. */
 const COMMIT_TYPE =
@@ -98,9 +98,20 @@ describe('withEarlyVersions (every version in the app)', () => {
     );
   });
 
+  it('every entry carries the date of its version in the changelog — the date is never typed twice', () => {
+    const dates = new Map(CHANGELOG.map((c) => [c.version, c.date]));
+    expect(all.filter((e) => e.date !== dates.get(e.version))).toEqual([]);
+    const notes = [{ version: '3.0.2', new: ['A thing.'] }];
+    const log: ChangelogEntry[] = [{ version: '3.0.2', date: '2026-05-27', items: ['feat: x'] }];
+    expect(withEarlyVersions(notes, log)).toEqual([
+      { version: '3.0.2', date: '2026-05-27', new: ['A thing.'] },
+    ]);
+  });
+
   it('keeps the hand-written early entries and generates the others with the early note', () => {
     const first = all.find((e) => e.version === '3.0.4');
-    expect(first).toBe(WHATS_NEW.find((e) => e.version === '3.0.4'));
+    const written = WHATS_NEW.find((e) => e.version === '3.0.4');
+    expect(first).toEqual({ ...written, date: CHANGELOG.find((c) => c.version === '3.0.4')?.date });
     const generated = all.filter((e) => e.behindTheScenes?.[0] === EARLY_VERSION_NOTE);
     expect(generated.length).toBeGreaterThan(100); // sanity: the early development is there
     expect(generated.every((e) => compare(e.version, NOTES_SINCE) < 0)).toBe(true);
@@ -130,11 +141,7 @@ describe('compareVersions', () => {
 });
 
 describe("versionLine (top of What's new)", () => {
-  const entry = (version: string): WhatsNewEntry => ({
-    version,
-    date: '2026-10-03',
-    fixed: ['X.'],
-  });
+  const entry = (version: string): WhatsNewNotes => ({ version, fixed: ['X.'] });
 
   it('names only the version when the newest notes belong to it', () => {
     expect(versionLine('3.0.149', [entry('3.0.149'), entry('3.0.145')])).toBe('Version 3.0.149.');

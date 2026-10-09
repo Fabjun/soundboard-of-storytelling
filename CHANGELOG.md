@@ -7,6 +7,17 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.201 — 2026-10-10
+
+### Changed
+
+- refactor(notes): What’s new takes each version’s date from the changelog instead of a second typed copy — WhatsNewNotes (hand-written, no date) and WhatsNewEntry (shown, with the date) in src/lib/whatsNew.ts; withEarlyVersions adds the date; 78 typed dates removed (all matched the changelog when checked; CLAUDE.md: derivable facts are referenced, never typed)
+
+### Internal
+
+- test: whatsNew — every entry carries its changelog date (counter-checked: no derivation → red); mutation score 76.1 % → 89.7 % (the typed dates were most of the data mutants)
+- test: preview 77.5 % → 97.5 % — a Loop pad wraps at its region end and a Single stops there, a Loop region of no length gives no NaN, the page clock when none is given
+
 ## 3.0.200 — 2026-10-10
 
 ### Internal
