@@ -99,9 +99,16 @@ design phase. It is kept as a reference only — the running app loads
 ### `v3/src/styles/tokens.css`
 
 Canonical app token file. This is the file the app loads at runtime.
-Has `@inventory` comments (used by `npm run sync:tokens`). Has diverged from the design
-handoff origin since V3 development began.
+Each token's inline comment is its description (used by `npm run sync:tokens`). Has diverged from
+the design handoff origin since V3 development began.
 **Source of truth for:** All CSS custom properties (tokens) used in the running app.
+
+### `v3/src/styles/components.css`
+
+The app's component styles — every `sb-*` class with its `@inventory` comment (used by
+`npm run sync:classes`); loaded after the tokens. Split out of `v3/src/styles/tokens.css` on
+2026-10-09.
+**Source of truth for:** How the components look, built only from the tokens.
 
 ---
 

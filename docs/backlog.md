@@ -223,7 +223,11 @@ the picker's × (seen on a 390 px WebKit screenshot, 2026-10-04). Other search f
 same.
 **When:** with the next change of the search fields; check every `type="search"` field then.
 
-### Component styles out of tokens.css
+### Component styles out of tokens.css ✅ Done (3.0.189, PR review pending)
+
+Split 2026-10-09: tokens and themes stay in `v3/src/styles/tokens.css`, every `sb-*` class moved
+unchanged to `v3/src/styles/components.css` (joined, the two files are byte-identical to the old
+one; `global.css` imports both in the old order; the visual baselines are pixel-identical).
 
 The component classes (`sb-*`) live at the end of `v3/src/styles/tokens.css`, next to the tokens;
 the Slice 15d plan had named `global.css`. Owner decision 2026-10-04: keep them there for now and

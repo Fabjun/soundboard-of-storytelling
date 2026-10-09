@@ -5,7 +5,7 @@
 > status on every statement, token **names** only (values live in `v3/src/styles/tokens.css`).
 
 **Status:** Draft
-**Code:** `v3/src/components/PadGridCell.tsx` (grid cell + pad), styles `.sb-pad` in `v3/src/styles/tokens.css`
+**Code:** `v3/src/components/PadGridCell.tsx` (grid cell + pad), styles `.sb-pad` in `v3/src/styles/components.css`
 **Last reviewed:** 2026-09-28
 
 Status markers used below: **Decided** · **Open** · **Parked**
