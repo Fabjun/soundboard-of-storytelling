@@ -3,9 +3,10 @@
  * @fileoverview mutation-report.ts — summarizes reports/mutation/mutation.json (T11c, ADR-0059).
  *
  * Prints the mutation score and the timeout share, appends them to the GitHub step summary when
- * running in Actions, and fails when more than 5 % of the mutants timed out: Stryker counts a
- * timeout as detected, so a starved runner inflates the score instead of lowering it (weekly run
- * 36770237372: 89 of 134 mutants timed out). A clean run had 0.4 % timeouts (2026-09-30).
+ * running in Actions, and fails when the run looks starved — more than 5 % and at least three of
+ * the mutants timed out (scripts/lib/mutation-score.ts): Stryker counts a timeout as detected,
+ * so a starved runner inflates the score instead of lowering it (weekly run 36770237372: 89 of
+ * 134 mutants timed out). A clean run had 0.4 % timeouts (2026-09-30).
  *
  * In CI it also checks the runtime (MUTATION_SECONDS, set by the weekly job) against the job's
  * timeout-minutes in .github/workflows/weekly.yml (single source) and fails from 70 % on: the
@@ -24,8 +25,8 @@ import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { parse } from 'yaml';
 import { BREAK } from '../stryker.config.mjs';
+import { looksStarved, MAX_TIMEOUT_SHARE, MIN_STARVED_TIMEOUTS } from './lib/mutation-score';
 
-const MAX_TIMEOUT_SHARE = 0.05;
 const MAX_RUNTIME_SHARE = 0.7;
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const args = process.argv.slice(2);
@@ -83,9 +84,9 @@ if (enforceBreak && (100 * detected) / total < BREAK) {
   console.error(`❌ Mutation score ${pct(detected)} % is below the break threshold ${BREAK} %.`);
   process.exitCode = 1;
 }
-if (timeouts / total > MAX_TIMEOUT_SHARE) {
+if (looksStarved(timeouts, total)) {
   console.error(
-    `❌ Timeout share above ${MAX_TIMEOUT_SHARE * 100} % — the run was starved; the score is not trustworthy.`,
+    `❌ Timeout share above ${MAX_TIMEOUT_SHARE * 100} % (${timeouts} mutants, at least ${MIN_STARVED_TIMEOUTS} count) — the run was starved; the score is not trustworthy.`,
   );
   process.exit(1);
 }

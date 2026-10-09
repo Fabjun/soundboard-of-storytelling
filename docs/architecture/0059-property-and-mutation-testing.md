@@ -35,7 +35,9 @@ runs no test per mutant (stryker-js#6210); a hand-planted bug that failed 4 test
 4. **Timeouts are not trusted** — Stryker counts a timed-out mutant as detected, so a starved
    machine inflates the score (first CI run: 89 of 134 mutants timed out). Each mutant runs
    `vitest --maxWorkers=1`, unit tests run in Node (jsdom only by opt-in), and
-   `npm run mutation:report` fails above 5 % timeouts.
+   `npm run mutation:report` fails above 5 % timeouts — once at least three mutants timed out
+   (2026-10-09: with one module per job, two genuine infinite loops in a 28-mutant module were
+   7 % and failed the weekly run).
 5. **Command runner** instead of the Vitest runner until stryker-js#6210 is fixed in a release
    (BACKLOG "T11c"): slower, but it runs the real test command against every mutant.
 

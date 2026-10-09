@@ -7,6 +7,14 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.191 — 2026-10-09
+
+### Internal
+
+- ci(mutation): a run counts as starved only above 5 % timeouts AND at least three — the weekly run of 2026-10-05 failed on peaks.ts: two of its 28 mutants timed out (7.1 %), genuine infinite loops that Stryker counts as detected; since the weekly run tests one module per job, a share alone fails small modules by chance (scripts/lib/mutation-score.ts)
+- test: unit mutationScore (peaks.ts case passes, three timeouts fail, the starved run of 89 / 134 fails, 5 % or below passes); counter-checked (no minimum → the peaks case red; no share → the 4 / 2000 case red); mutation:report on a synthetic 28-mutant report: 2 timeouts → exit 0, 3 → exit 1
+- docs: testing.md, ADR-0059 and weekly.yml name the minimum of three
+
 ## 3.0.190 — 2026-10-09
 
 ### Internal
