@@ -67,6 +67,12 @@ describe('positionAt', () => {
   it('does not run backwards when the clock does', () => {
     expect(positionAt(r, 500)).toBe(2);
   });
+
+  it('a Loop whose region has no length stays at its start — never NaN', () => {
+    const empty = { ...r, loop: true, from: 2, regionStart: 2, regionEnd: 2 };
+    expect(positionAt(empty, 1000)).toBe(2);
+    expect(Number.isFinite(positionAt(empty, 4000))).toBe(true); // a modulo by 0 would be NaN
+  });
 });
 
 describe('startPreview / stopPreview / previewPosition', () => {
@@ -91,6 +97,22 @@ describe('startPreview / stopPreview / previewPosition', () => {
     previewPlaying.value = true;
     now = 1700;
     expect(previewPosition(() => now)).toBe(1);
+  });
+
+  it('a Loop pad wraps at its region end, a Single pad stops there', () => {
+    previewPlaying.value = true;
+    startPreview(loop(), file(1), 1, 4, () => 0);
+    expect(previewPosition(() => 4000)).toBe(2); // 1 + 4 s = 5, region 1–4 (3 s) → 1 + 4 % 3
+    startPreview(single(), file(1), 1, 4, () => 0);
+    expect(previewPosition(() => 4000)).toBe(4);
+  });
+
+  it('uses the page clock when none is given', () => {
+    previewPlaying.value = true;
+    startPreview(single(), file(), 0, 8);
+    const at = previewPosition();
+    expect(Number.isFinite(at)).toBe(true);
+    expect(at).toBeGreaterThanOrEqual(0);
   });
 
   it("pulls the start into the file's region — before its trim start, after its trim end", () => {

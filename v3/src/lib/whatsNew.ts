@@ -23,12 +23,14 @@ export const NOTES_SINCE = '3.0.135';
 export const EARLY_VERSION_NOTE =
   'A version of the early development, before these notes were written; its changes are listed under Details.';
 
-/** One version's notes; every group is optional, but an entry has at least one sentence. */
-export interface WhatsNewEntry {
+/**
+ * One version's notes as written by hand; every group is optional, but an entry has at least one
+ * sentence. The date is not typed here — it is the version's date in src/lib/changelog.ts
+ * (`withEarlyVersions` adds it), so the two can never disagree.
+ */
+export interface WhatsNewNotes {
   /** A version that exists in src/lib/changelog.ts. */
   version: string;
-  /** ISO date (YYYY-MM-DD). */
-  date: string;
   /** Things the app can do that it could not do before. */
   new?: string[];
   /** Things that work better or differently. */
@@ -39,6 +41,12 @@ export interface WhatsNewEntry {
   removed?: string[];
   /** Work that changes nothing visible (checks, documentation, plans), in plain words. */
   behindTheScenes?: string[];
+}
+
+/** One version's notes as the app shows them: with the version's date from the changelog. */
+export interface WhatsNewEntry extends WhatsNewNotes {
+  /** ISO date (YYYY-MM-DD) — the date of the version in src/lib/changelog.ts. */
+  date: string;
 }
 
 /** The headings of the groups, in the order the app shows them. */
@@ -56,7 +64,7 @@ export const WHATS_NEW_GROUPS = [
  * 149"). Since every version has notes (ADR-0063 amendment, checked by whatsNew.test.ts), the
  * second form shows only if the notes of the running version were missing.
  */
-export function versionLine(appVersion: string, entries: readonly WhatsNewEntry[]): string {
+export function versionLine(appVersion: string, entries: readonly WhatsNewNotes[]): string {
   const latest = entries[0]?.version;
   return !latest || latest === appVersion
     ? `Version ${appVersion}.`
@@ -71,117 +79,113 @@ export function compareVersions(a: string, b: string): number {
 }
 
 /**
- * Returns `entries` plus one generated entry for every version before `NOTES_SINCE` that has none
- * — its changes show under Details — newest first. Versions from `NOTES_SINCE` on are never
- * generated: their notes are written by hand, and the check for gaps must see a missing one.
+ * Returns `notes` with each version's date from `changelog`, plus one generated entry for every
+ * version before `NOTES_SINCE` that has none — its changes show under Details — newest first.
+ * Versions from `NOTES_SINCE` on are never generated: their notes are written by hand, and the
+ * check for gaps must see a missing one. A version missing from the changelog gets no date ('');
+ * whatsNew.test.ts rejects such notes.
  */
 export function withEarlyVersions(
-  entries: readonly WhatsNewEntry[],
+  notes: readonly WhatsNewNotes[],
   changelog: readonly ChangelogEntry[],
 ): WhatsNewEntry[] {
-  const covered = new Set(entries.map((e) => e.version));
+  const dates = new Map(changelog.map((c) => [c.version, c.date]));
+  const covered = new Set(notes.map((e) => e.version));
+  const written = notes.map((n) => ({ ...n, date: dates.get(n.version) ?? '' }));
   const early = changelog
     .filter((c) => compareVersions(c.version, NOTES_SINCE) < 0 && !covered.has(c.version))
     .map((c) => ({ version: c.version, date: c.date, behindTheScenes: [EARLY_VERSION_NOTE] }));
-  return [...entries, ...early].sort((a, b) => compareVersions(b.version, a.version));
+  return [...written, ...early].sort((a, b) => compareVersions(b.version, a.version));
 }
 
 /** The release notes the start screen shows, newest first (checked by whatsNew.test.ts). */
-export const WHATS_NEW: WhatsNewEntry[] = [
+export const WHATS_NEW: WhatsNewNotes[] = [
+  {
+    version: '3.0.201',
+    behindTheScenes: [
+      'The date of each version in these notes now comes from one place, and the preview playhead is checked more thoroughly. The app works exactly as before.',
+    ],
+  },
   {
     version: '3.0.200',
-    date: '2026-10-10',
     behindTheScenes: [
       'Reading backup files and keeping several boards are now checked more thoroughly by automatic tests. The app works exactly as before.',
     ],
   },
   {
     version: '3.0.199',
-    date: '2026-10-10',
     behindTheScenes: [
       'Saving a backup and the keys on the pads are now checked more thoroughly by automatic tests. The app works exactly as before.',
     ],
   },
   {
     version: '3.0.198',
-    date: '2026-10-09',
     behindTheScenes: [
       'Two automatic checks for phone screens run again, and the quality bar for the tests is higher. The app works exactly as before.',
     ],
   },
   {
     version: '3.0.197',
-    date: '2026-10-09',
     behindTheScenes: [
       'A known problem with long pad names on narrow phone screens is recorded for the upcoming phone layout. The app works exactly as before.',
     ],
   },
   {
     version: '3.0.196',
-    date: '2026-10-09',
     behindTheScenes: [
       'The automatic screen comparisons now notice even small color changes. The app works exactly as before.',
     ],
   },
   {
     version: '3.0.195',
-    date: '2026-10-09',
     behindTheScenes: [
       'The project description now lists everything that live control and the pad editor can do. The app works exactly as before.',
     ],
   },
   {
     version: '3.0.194',
-    date: '2026-10-09',
     fixed: [
       'A combo step that fades out everything no longer cuts off a pad started while it fades, and a Loop with several files no longer jumps to its next file during that fade.',
     ],
   },
   {
     version: '3.0.193',
-    date: '2026-10-09',
     improved: [
       'Small gray labels, captions and hints are a little lighter and easier to read on every screen.',
     ],
   },
   {
     version: '3.0.192',
-    date: '2026-10-09',
     new: [
       'Pause: in GAME, Space pauses every sound — for example to talk at the table — and Space again lets them go on where they stopped. PAUSED shows in the top bar; a tap on it resumes too. Playing another pad during the pause also resumes everything.',
     ],
   },
   {
     version: '3.0.191',
-    date: '2026-10-09',
     behindTheScenes: [
       'The weekly quality check no longer fails by chance on small parts of the code. The app works exactly as before.',
     ],
   },
   {
     version: '3.0.190',
-    date: '2026-10-09',
     behindTheScenes: [
       'A new check keeps notes in the code up to date once a decision is made. The app works exactly as before.',
     ],
   },
   {
     version: '3.0.189',
-    date: '2026-10-09',
     improved: [
       'Buttons and tabs that cannot be used right now all look the same: a little dimmed, and the mouse pointer shows that a click does nothing.',
     ],
   },
   {
     version: '3.0.188',
-    date: '2026-10-09',
     improved: [
       'Text and spacing now grow with the text size set in the browser or on the phone, so the app stays readable for anyone who needs larger text. At the normal size it looks exactly as before.',
     ],
   },
   {
     version: '3.0.187',
-    date: '2026-10-09',
     improved: [
       'The app works with the keyboard alone: boards, decks and the file of a new pad can now be chosen with Tab and Enter, and screen readers name every button by what it does.',
       'When a file cannot be imported or a backup fails, the message now says in plain words what happened and what to do. On the library screen "Why it failed" opens the details with a tap.',
@@ -189,14 +193,12 @@ export const WHATS_NEW: WhatsNewEntry[] = [
   },
   {
     version: '3.0.186',
-    date: '2026-10-09',
     behindTheScenes: [
       'A check before each saved change now keeps every generated document up to date. The app works exactly as before.',
     ],
   },
   {
     version: '3.0.185',
-    date: '2026-10-08',
     new: [
       'The status bar shows whether changes are stored: SAVING… while a change is being written, SAVED when everything is stored.',
     ],
@@ -206,7 +208,6 @@ export const WHATS_NEW: WhatsNewEntry[] = [
   },
   {
     version: '3.0.184',
-    date: '2026-10-08',
     new: [
       'The Lock: in GAME, the lock next to the mode toggle keeps the app in GAME, so no tap switches to SETUP by accident during a game. Tap it again to unlock. It is off after every restart.',
     ],
@@ -214,7 +215,6 @@ export const WHATS_NEW: WhatsNewEntry[] = [
   },
   {
     version: '3.0.183',
-    date: '2026-10-08',
     new: [
       'STOP ALL: in GAME a button in the top bar fades every sound out. Pressed again while the sounds fade (it then reads STOP NOW), it stops them at once.',
       "On a numpad, the decimal key does the same as STOP ALL, and Enter stops the sound started last — pressed again, the one before. The main keyboard's Enter does that too while no button has focus.",
@@ -222,7 +222,6 @@ export const WHATS_NEW: WhatsNewEntry[] = [
   },
   {
     version: '3.0.182',
-    date: '2026-10-08',
     new: [
       'Keys play pads: in the PAD editor, tap HOTKEY and press a key — for example on a Bluetooth numpad. In GAME that key plays the pad; pressing it again while the sound runs does not stop it. Keys belong to a deck, so the same key can play a different pad in each deck, and in All pads the keys of the last deck keep working.',
       'A key that another pad of the deck already has can be moved over with MOVE KEY HERE.',
@@ -231,35 +230,30 @@ export const WHATS_NEW: WhatsNewEntry[] = [
   },
   {
     version: '3.0.181',
-    date: '2026-10-08',
     behindTheScenes: [
       'A change now reaches the app only after every automatic check has passed. The app works exactly as before.',
     ],
   },
   {
     version: '3.0.180',
-    date: '2026-10-08',
     behindTheScenes: [
       'Two development tools got small bug-fix updates, and the automatic checks were confirmed to run on the next server system. The app works exactly as before.',
     ],
   },
   {
     version: '3.0.179',
-    date: '2026-10-08',
     behindTheScenes: [
       'A check of the pad layout on short windows sometimes failed for no real reason. It now waits until the pads have settled. The app works exactly as before.',
     ],
   },
   {
     version: '3.0.178',
-    date: '2026-10-06',
     improved: [
       'The PAD SIZE slider now sets the size of all pads of a board at once: every deck and All pads show the same size, whichever of them the slider is moved in. In SETUP the slider also shows in All pads.',
     ],
   },
   {
     version: '3.0.177',
-    date: '2026-10-06',
     new: [
       'A PAD SIZE slider at the top of the deck list sets how large the pads of a deck are, as in the first version of the app. It shows in SETUP, and each deck keeps its own size.',
     ],
@@ -269,14 +263,12 @@ export const WHATS_NEW: WhatsNewEntry[] = [
   },
   {
     version: '3.0.176',
-    date: '2026-10-05',
     improved: [
       'The pad editor opens full screen, on the phone and on large screens, so all its settings have room. The ✕ button or the Escape key closes it and leads back to the board.',
     ],
   },
   {
     version: '3.0.175',
-    date: '2026-10-05',
     new: [
       'An UPDATE button on the start screen looks for a new version at once and says what it found. A new version then offers RELOAD, as before.',
     ],
@@ -288,7 +280,6 @@ export const WHATS_NEW: WhatsNewEntry[] = [
   },
   {
     version: '3.0.174',
-    date: '2026-10-05',
     improved: [
       'The deck list on the left folds away with the ◀ button and comes back with ▶. On a phone it starts folded, so the pads get the room.',
       'Pads are squares of one size instead of growing and shrinking with the window. Where they do not all fit, the pad area scrolls. A long pad name ends in "…".',
@@ -296,28 +287,24 @@ export const WHATS_NEW: WhatsNewEntry[] = [
   },
   {
     version: '3.0.173',
-    date: '2026-10-04',
     new: [
       'In GAME the screen stays on, so it never goes dark during a game. The bottom bar shows SCREEN ON while it does. On iPhone this needs iOS 16.4 or newer; as an app on the home screen, iOS 18.4 or newer.',
     ],
   },
   {
     version: '3.0.172',
-    date: '2026-10-04',
     behindTheScenes: [
       'All texts use one spelling, American English, and a check keeps it that way.',
     ],
   },
   {
     version: '3.0.171',
-    date: '2026-10-04',
     behindTheScenes: [
       "The app's own small icons are now stored in the same format as the pad icons. They look exactly as before.",
     ],
   },
   {
     version: '3.0.170',
-    date: '2026-10-04',
     improved: [
       'The icon list shows every icon that matches a search, however short the word — before, it stopped after 240. It draws only the icons in view, so even long lists scroll smoothly.',
       'In the icon list, Home and End jump to the start and end of a row.',
@@ -325,14 +312,12 @@ export const WHATS_NEW: WhatsNewEntry[] = [
   },
   {
     version: '3.0.169',
-    date: '2026-10-04',
     fixed: [
       'In the icon list, an open category no longer covers the categories below it on narrow screens.',
     ],
   },
   {
     version: '3.0.168',
-    date: '2026-10-04',
     new: [
       'Pads can show up to four icons, chosen in the PAD editor from a collection of more than 2,000 pixel icons. The icon list can be searched by name or by a word like "night" or "poison", or browsed by category.',
       'A pad without its own icon shows a placeholder for its type: a circle for Single, an infinity sign for Loop, a double circle for Combo.',
@@ -345,14 +330,12 @@ export const WHATS_NEW: WhatsNewEntry[] = [
   },
   {
     version: '3.0.167',
-    date: '2026-10-04',
     behindTheScenes: [
       'The automatic code check before each change now applies all of its rules again, so mistakes are caught earlier.',
     ],
   },
   {
     version: '3.0.166',
-    date: '2026-10-04',
     new: [
       'REPEAT: a Loop pad can play a set number of times (1 to 999) and then stop by itself, or loop until stopped (∞). A Loop with several files repeats its whole list.',
     ],
@@ -360,21 +343,18 @@ export const WHATS_NEW: WhatsNewEntry[] = [
   },
   {
     version: '3.0.165',
-    date: '2026-10-04',
     fixed: [
       'An edit made just before tapping RELOAD in the update notice is saved before the app reloads.',
     ],
   },
   {
     version: '3.0.164',
-    date: '2026-10-04',
     behindTheScenes: [
       'The automatic checks that run before each release were prepared for a newer system on the check servers, so releases keep working after their switch in October.',
     ],
   },
   {
     version: '3.0.163',
-    date: '2026-10-03',
     new: [
       'A Single or Loop pad can hold several audio files: the PAD editor adds several at once from the library, moves them up and down, removes one with a second tap, and plays them in order or shuffled.',
       'Each file of a pad has its own start and end; selecting a file shows it in the waveform editor and the preview.',
@@ -386,28 +366,24 @@ export const WHATS_NEW: WhatsNewEntry[] = [
   },
   {
     version: '3.0.162',
-    date: '2026-10-03',
     behindTheScenes: [
       'The overview of the code’s main building blocks for developers is now written from the code itself, so it can no longer fall out of date.',
     ],
   },
   {
     version: '3.0.161',
-    date: '2026-10-03',
     improved: [
       "What's new lists every version since the very first; versions from the early development show their changes under Details.",
     ],
   },
   {
     version: '3.0.160',
-    date: '2026-10-03',
     behindTheScenes: [
       'The list of third-party licenses that comes with the app now also names the parts that keep it working offline.',
     ],
   },
   {
     version: '3.0.159',
-    date: '2026-10-03',
     new: [
       'When a new version of the app is ready, a notice offers to reload; the app reloads only on request, never in the middle of a game.',
       "Every version in What's new folds out the full list of its changes under Details.",
@@ -420,7 +396,6 @@ export const WHATS_NEW: WhatsNewEntry[] = [
   },
   {
     version: '3.0.158',
-    date: '2026-10-03',
     new: [
       'The PAD editor shows the waveform of a Single or Loop pad with handles for the trim start and end and for the fade-in and fade-out; each handle also moves with the keyboard, and the trim also has number fields.',
       'A preview plays the pad as it will sound — with its trim, fades and volume, a Loop within its trimmed part — with play, pause and stop and a moving playback position; a tap on the waveform or the arrow keys set where it starts.',
@@ -429,7 +404,6 @@ export const WHATS_NEW: WhatsNewEntry[] = [
   },
   {
     version: '3.0.157',
-    date: '2026-10-03',
     fixed: [
       'On iPhone, pads can be heard with the ring/silent switch set to silent, like a music app.',
       'On iPhone, sound comes back after a call or another app has interrupted it.',
@@ -440,82 +414,70 @@ export const WHATS_NEW: WhatsNewEntry[] = [
   },
   {
     version: '3.0.156',
-    date: '2026-10-03',
     behindTheScenes: [
       'The plan for the PAD editor was laid out in four steps: preview and trimming, several files per pad, repeats, and icons; pad templates move to the library.',
     ],
   },
   {
     version: '3.0.155',
-    date: '2026-10-03',
     behindTheScenes: [
       'A test on a real Android phone was planned for before the app is shared with other people.',
     ],
   },
   {
     version: '3.0.154',
-    date: '2026-10-03',
     behindTheScenes: [
       'A correction was recorded: the backup was tested on a MacBook, not yet on an iPhone — the iPhone test is still open.',
     ],
   },
   {
     version: '3.0.153',
-    date: '2026-10-03',
     behindTheScenes: [
       'The backup test was recorded and the public project description was brought up to date; the device of the test was corrected in 3.0.154.',
     ],
   },
   {
     version: '3.0.152',
-    date: '2026-10-03',
     behindTheScenes: [
       'An idea was noted: built-in sample sounds that may be shared freely, for the first launch.',
     ],
   },
   {
     version: '3.0.151',
-    date: '2026-10-03',
     behindTheScenes: [
       'All documents and these notes were rewritten so that they never address the reader; an automatic check keeps it that way.',
     ],
   },
   {
     version: '3.0.150',
-    date: '2026-10-03',
     behindTheScenes: [
       'The checklist for manual tests on the iPhone gained the steps for saving and restoring a backup.',
     ],
   },
   {
     version: '3.0.149',
-    date: '2026-10-03',
     fixed: [
       'On a narrow screen, adding a pad to an empty cell no longer shows a wrong cell name in the title.',
     ],
   },
   {
     version: '3.0.148',
-    date: '2026-10-03',
     behindTheScenes: [
       'The structure of the project was reviewed: outdated plan names and notes were removed, and the automatic checks now demand more test coverage.',
     ],
   },
   {
     version: '3.0.147',
-    date: '2026-10-03',
     behindTheScenes: ['The remaining descriptions in the code were completed.'],
   },
   {
     version: '3.0.146',
-    date: '2026-10-03',
     behindTheScenes: [
       'Every part of the code now carries a description in one common form, checked automatically; three unused definitions were removed.',
     ],
   },
   {
     version: '3.0.145',
-    date: '2026-10-03',
     improved: [
       'EXPORT now saves a ZIP file that holds the audio files as they are, so its sounds open in any player.',
       'Backups from the old app (V1) now import on iPhones with iOS 15 or an iOS 16 before 16.4 too.',
@@ -524,14 +486,12 @@ export const WHATS_NEW: WhatsNewEntry[] = [
   },
   {
     version: '3.0.144',
-    date: '2026-10-03',
     fixed: [
       'A change in the pad editor is saved even when the next pad opens, the editor closes or the app goes to the background right after typing.',
     ],
   },
   {
     version: '3.0.143',
-    date: '2026-10-03',
     new: [
       'All pads can be sorted by name, date added, date modified, kind, duration or last played, or with the pads that are in no deck first — each order can be reversed, and every board remembers its choice.',
     ],
@@ -542,7 +502,6 @@ export const WHATS_NEW: WhatsNewEntry[] = [
   },
   {
     version: '3.0.142',
-    date: '2026-10-03',
     new: [
       'The pad editor edits combos: steps can be added, each step names the pads that start together and the wait before the next step, and a step can stop everything first.',
     ],
@@ -553,7 +512,6 @@ export const WHATS_NEW: WhatsNewEntry[] = [
   },
   {
     version: '3.0.141',
-    date: '2026-10-03',
     new: [
       'EXPORT on the board list saves all boards and audio files in one backup file — on the iPhone through the share sheet, elsewhere as a download.',
       'IMPORT on the board list reads a backup from this app or from version 1: a summary comes first, then the progress, and afterwards a list of what could not be taken over.',
@@ -566,7 +524,6 @@ export const WHATS_NEW: WhatsNewEntry[] = [
   },
   {
     version: '3.0.140',
-    date: '2026-10-03',
     new: [
       'A Single can hold several files and plays the next one, or a random one, on each tap.',
       'A Loop can hold several files and plays them one after another, in order or shuffled.',
@@ -582,7 +539,6 @@ export const WHATS_NEW: WhatsNewEntry[] = [
   },
   {
     version: '3.0.139',
-    date: '2026-10-03',
     new: [
       'All pads can add pads that are in no deck yet — with ADD PAD or by dropping a file from the library.',
     ],
@@ -590,7 +546,6 @@ export const WHATS_NEW: WhatsNewEntry[] = [
   },
   {
     version: '3.0.138',
-    date: '2026-10-03',
     improved: [
       'The number on each deck tab shows its position: 1, 2, 3.',
       'A new deck takes the lowest free name, so after deleting "Deck 2" the next new deck is "Deck 2" again.',
@@ -602,7 +557,6 @@ export const WHATS_NEW: WhatsNewEntry[] = [
   },
   {
     version: '3.0.137',
-    date: '2026-10-03',
     new: [
       'All pads shows every pad of a board in one place, including pads that are in no deck.',
       'A pad can be taken out of one deck and kept, or deleted from all decks at once.',
@@ -611,7 +565,6 @@ export const WHATS_NEW: WhatsNewEntry[] = [
   },
   {
     version: '3.0.136',
-    date: '2026-10-03',
     improved: [
       'A pad now belongs to its board, and a deck places it — a duplicated deck shares its pads, so a renamed pad shows its new name in every deck.',
     ],
@@ -621,14 +574,12 @@ export const WHATS_NEW: WhatsNewEntry[] = [
   },
   {
     version: '3.0.135',
-    date: '2026-10-03',
     improved: [
       'This list now describes what changed in the app, in plain words, grouped into new, improved, fixed and removed.',
     ],
   },
   {
     version: '3.0.131',
-    date: '2026-10-02',
     fixed: [
       'When a deck has more pads than fit on the screen, the grid now scrolls to reach all of them.',
       'In a small window, the start screen no longer hides the BOARD and LIBRARY buttons.',
@@ -638,19 +589,16 @@ export const WHATS_NEW: WhatsNewEntry[] = [
   },
   {
     version: '3.0.120',
-    date: '2026-10-02',
     fixed: [
       'A combo whose step holds a pad without sound now starts the next step once, not twice, and waits for the step to finish.',
     ],
   },
   {
     version: '3.0.115',
-    date: '2026-10-02',
     fixed: ['A board created right after opening the app no longer disappears.'],
   },
   {
     version: '3.0.111',
-    date: '2026-10-02',
     improved: [
       'A new pad is a Single unless another type is chosen — a long file no longer turns it into a Loop by itself.',
     ],
@@ -660,41 +608,34 @@ export const WHATS_NEW: WhatsNewEntry[] = [
   },
   {
     version: '3.0.82',
-    date: '2026-09-30',
     fixed: ['File sizes just below 1 MB are shown correctly.'],
   },
   {
     version: '3.0.66',
-    date: '2026-09-30',
     improved: [
       'The app brings its own fonts, so it looks the same without an internet connection and loads nothing from other websites.',
     ],
   },
   {
     version: '3.0.57',
-    date: '2026-09-30',
     improved: ['Screen readers announce which pads are playing and which pad type is selected.'],
   },
   {
     version: '3.0.40',
-    date: '2026-09-29',
     improved: ['Scenes are now called decks.'],
   },
   {
     version: '3.0.38',
-    date: '2026-09-29',
     new: [
       'The start screen shows an animated pixel flame — a tap makes it spark and freeze; left alone, it thaws and lights again.',
     ],
   },
   {
     version: '3.0.29',
-    date: '2026-06-18',
     improved: ['Renaming a deck shows at once when another deck already has that name.'],
   },
   {
     version: '3.0.7',
-    date: '2026-05-28',
     fixed: [
       'On iPhone, several loops can play at the same time.',
       'On iPhone, sound starts reliably after TAP TO UNLOCK.',
@@ -703,7 +644,6 @@ export const WHATS_NEW: WhatsNewEntry[] = [
   },
   {
     version: '3.0.4',
-    date: '2026-05-28',
     new: [
       'The first playable version: a library for audio files, boards with decks of pads, and pads that play once, loop, play a list or start other pads in steps.',
       'A pad is added by tapping an empty cell, by dragging a file from the library, or with ADD PAD.',
