@@ -24,6 +24,7 @@ jobs:
 
   maintenance:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     env:
       STALE_DAYS: 14
       GH_TOKEN: ${{ github.token }}
@@ -92,6 +93,7 @@ jobs:
   # after 11–18 min with ~2 h still to go (weekly runs 36770237372, 36775054865).
   mutation-modules:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     outputs:
       modules: ${{ steps.list.outputs.modules }}
     steps:
@@ -164,6 +166,7 @@ jobs:
     needs: [mutation-modules, mutation]
     if: always()
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       # A module job that failed or never reported must not leave a green summary over the rest
       # (weekly run 36825054856: engine.ts died, the summary scored the other nine and passed).

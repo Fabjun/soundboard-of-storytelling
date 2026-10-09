@@ -15,6 +15,8 @@ release notes the app shows are written separately for its users (`v3/src/lib/wh
 - test: codeGuards "code and tests carry no review status" — no file in src, tests or scripts says "review pending", also across a comment line break; what waits for the owner is listed in its pull request; counter-checked (the old marker in modeControl.ts, split over two lines, and the one in mode-lock.spec.ts → red, each by name)
 - test: the codeGuards overview numbers every guard (Tab and names, rem, the disabled look were missing)
 - ci(hooks): the pre-push gate runs lint and the format check over the whole repository, as CI does — lint-staged checks staged files only, so a table aligned by hand while resolving a rebase conflict first failed in CI (PR #64); about 8 s; counter-checked (a misaligned Markdown table → red, lint alone stays green)
+- ci: every workflow job has timeout-minutes — about 3x its longest measured run, at least 10 (unit-build-lint, smoke, mobile 10; prod 15; full 25; deploy and weekly jobs 10) — a browser download hung for over 13 minutes on 2026-10-09 and GitHub cancels only after 360; testGuards "every CI job has a time limit" (counter-checked: e2e-full without one → red by name)
+- test: testGuards "guard files list their rules in order" checked nothing — it looked for `// 1.` lines, and the headers are doc blocks since ADR-0064; it now reads ` * 1.` and fails when a guard file numbers no rule (counter-checked: a skipped number → red; the old pattern → the new sanity check red)
 
 ## 3.0.189 — 2026-10-09
 
