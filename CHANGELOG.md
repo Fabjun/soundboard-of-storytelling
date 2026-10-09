@@ -7,6 +7,13 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.195 — 2026-10-09
+
+### Internal
+
+- docs: Slice 12 (live control) on main — README "Available now" names the pad editor (Slice 15), live control (Slice 12), keyboard and screen-reader use and text size; "Planned next" keeps layout, settings, library; backlog PANIC / fade-all and Performance Lock marked built; the iPhone checklist items of Slices 12 and 15 stay open
+- test: coverage measured after the Slice 12 merges (lines 93.68 · statements 92.76 · functions 94.24 · branches 91.83) — the floor 93 / 92 / 94 / 91 stays
+
 ## 3.0.194 — 2026-10-09
 
 ### Fixed

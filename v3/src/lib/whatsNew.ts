@@ -89,6 +89,13 @@ export function withEarlyVersions(
 /** The release notes the start screen shows, newest first (checked by whatsNew.test.ts). */
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
+    version: '3.0.195',
+    date: '2026-10-09',
+    behindTheScenes: [
+      'The project description now lists everything that live control and the pad editor can do. The app works exactly as before.',
+    ],
+  },
+  {
     version: '3.0.194',
     date: '2026-10-09',
     fixed: [
