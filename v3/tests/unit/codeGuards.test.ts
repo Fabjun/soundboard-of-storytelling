@@ -45,6 +45,14 @@
  *    configuration (owner decision 2026-10-04). The word list is the Vale rule
  *    .vale/styles/SoS/AmericanSpelling.yml, which checks the Markdown files; the exceptions below
  *    name their reason (verbatim third-party material, deliberate search words).
+ * 15. Controls work with Tab and have a name (owner rule 2026-10-02, ADR-0080): a click handler
+ *    sits on a control Tab reaches; a button that shows only an icon has an aria-label.
+ * 16. Type and spacing are rem (ADR-0081): no px in a font-size, padding, margin or gap of the
+ *    stylesheets but the named exceptions.
+ * 17. One look for a disabled control: the token --disabled-opacity and cursor: not-allowed.
+ * 18. Code and tests carry no review status ("review pending"): a decision waiting for the owner
+ *    is listed in its pull request; once merged the owner has decided, and a marker left in a
+ *    comment is stale — three were on 2026-10-09. The version history is exempt.
  */
 
 import { readdirSync, readFileSync } from 'node:fs';
@@ -885,5 +893,32 @@ describe('guard: one look for a disabled control (structure review 2026-10-09)',
       )
       .map((r) => r.selector);
     expect(bad).toEqual([]);
+  });
+});
+
+describe('guard: code and tests carry no review status (2026-10-09)', () => {
+  const walk = (dir: string): string[] =>
+    readdirSync(dir, { withFileTypes: true }).flatMap((e) =>
+      e.isDirectory() ? walk(join(dir, e.name)) : [join(dir, e.name)],
+    );
+  /** The version history records what was true then. */
+  const EXEMPT = new Set(['src/lib/changelog.ts', 'tests/unit/codeGuards.test.ts']);
+  const files = ['src', 'tests', 'scripts']
+    .flatMap((d) => walk(join(V3, d)))
+    .filter((f) => /\.(tsx?|css)$/.test(f))
+    .map((f) => relative(V3, f).split('\\').join('/'))
+    .filter((f) => !EXEMPT.has(f));
+  /** "review pending", also when a comment breaks the line between the two words. */
+  const REVIEW_PENDING = /\breview(\s*(\*|\/\/)?\s*)+pending\b/i;
+
+  it('scans source, tests and scripts (sanity)', () => {
+    expect(files).toEqual(
+      expect.arrayContaining(['src/state/modeControl.ts', 'tests/e2e/stop-all.spec.ts']),
+    );
+  });
+
+  it('no file says "review pending" — the pull request lists what waits for the owner', () => {
+    const bad = files.filter((f) => REVIEW_PENDING.test(readFileSync(join(V3, f), 'utf8')));
+    expect(bad, 'a merged decision is decided — say so, or name the decision').toEqual([]);
   });
 });

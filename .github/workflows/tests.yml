@@ -6,9 +6,13 @@ on:
   pull_request:
   workflow_call: # reused by weekly.yml (T8c)
 
+# Every job has timeout-minutes — about 3x its longest measured run, at least 10 (2026-10-09):
+# without it a hanging step (a browser download) blocks the required checks for GitHub's default
+# of 360 minutes. Guarded by testGuards ("every CI job has a time limit").
 jobs:
   unit-build-lint:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v7
         with:
@@ -80,6 +84,7 @@ jobs:
 
   e2e-smoke:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     needs: unit-build-lint
     steps:
       - uses: actions/checkout@v7
@@ -111,6 +116,7 @@ jobs:
 
   e2e-mobile:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     needs: unit-build-lint
     steps:
       - uses: actions/checkout@v7
@@ -142,6 +148,7 @@ jobs:
 
   e2e-full:
     runs-on: ubuntu-latest
+    timeout-minutes: 25
     needs: unit-build-lint
     steps:
       - uses: actions/checkout@v7
@@ -173,6 +180,7 @@ jobs:
 
   e2e-prod:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     needs: unit-build-lint
     steps:
       - uses: actions/checkout@v7

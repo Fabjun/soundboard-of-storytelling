@@ -89,6 +89,13 @@ export function withEarlyVersions(
 /** The release notes the start screen shows, newest first (checked by whatsNew.test.ts). */
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
+    version: '3.0.190',
+    date: '2026-10-09',
+    behindTheScenes: [
+      'A new check keeps notes in the code up to date once a decision is made. The app works exactly as before.',
+    ],
+  },
+  {
     version: '3.0.189',
     date: '2026-10-09',
     improved: [

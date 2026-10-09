@@ -15,7 +15,9 @@
  *    (T12, ADR-0055) — Vitest and Playwright run tests without type checking, so an
  *    unchecked file hides type errors (found: 6 in unit tests, 1 in E2E, 2026-09-30).
  * 5. Lockstep dependency families (exact peer pins) share a Dependabot group (audit A6).
- * 6. Guard files (this one included) number their header rules 1..n in order.
+ * 6. Guard files (this one included) number their header rules 1..n in order — and number some:
+ *    the check looked for `// 1.` lines only and found none once the headers became doc blocks
+ *    (ADR-0064), so three missing codeGuards rules went unnoticed (2026-10-09).
  * 7. ESLint config rule switches name their reason inline; the tsc flags behind them stay on.
  * 8. Dependabot ignore rules carry a reason; @types/node matches the Node major in .nvmrc.
  * 9. npm overrides carry a reason; files excluded from mutation testing are EXEMPT files.
@@ -24,6 +26,9 @@
  *    lint-staged find its configs (no --config / --cwd). With `--config v3/eslint.config.js` from
  *    the root, ESLint matched its file patterns against the root — none matched under v3/, most
  *    rules never ran at commit time and errors surfaced only in CI (2026-10-04).
+ * 11. Every CI job that runs steps has `timeout-minutes` (a job that calls a reusable workflow
+ *    cannot have one): a browser download hung for over 13 minutes on 2026-10-09, and GitHub's
+ *    default limit is 360 minutes — the required checks would have blocked every merge.
  */
 
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
@@ -225,14 +230,20 @@ describe('guard: guard files list their rules in order', () => {
   // of order twice (docsGuards 4-6-5, testGuards 5 before 4 on 2026-09-30).
   const files = readdirSync(join(V3, 'tests', 'unit')).filter((f) => f.endsWith('Guards.test.ts'));
 
-  it('finds the guard files (sanity)', () => {
+  /** The rule numbers of a guard file's header — ` * 1. …` in its doc block (or `// 1. …`). */
+  const ruleNumbers = (f: string): number[] => {
+    const header = readFileSync(join(V3, 'tests', 'unit', f), 'utf8').split('\n\n')[0];
+    return [...header.matchAll(/^\s*(?:\/\/|\*) (\d+)\. /gm)].map((m) => Number(m[1]));
+  };
+
+  it('finds the guard files and their rules (sanity)', () => {
     expect(files.length).toBeGreaterThanOrEqual(3);
+    expect(files.filter((f) => ruleNumbers(f).length === 0)).toEqual([]);
   });
 
   it('header rules are numbered 1..n without gaps', () => {
     const bad = files.flatMap((f) => {
-      const header = readFileSync(join(V3, 'tests', 'unit', f), 'utf8').split('\n\n')[0];
-      const nums = [...header.matchAll(/^\/\/ (\d+)\. /gm)].map((m) => Number(m[1]));
+      const nums = ruleNumbers(f);
       return nums.every((n, i) => n === i + 1) ? [] : [`${f}: ${nums.join(' ')}`];
     });
     expect(bad).toEqual([]);
@@ -345,5 +356,39 @@ describe('guard: lint-staged runs ESLint where its config lives (2026-10-04)', (
       .filter((l) => /\blint-staged\b/.test(l) && !/^(#|echo\b|printf\b)/.test(l));
     expect(calls.length).toBe(1);
     expect(calls.filter((l) => /--config|--cwd/.test(l))).toEqual([]);
+  });
+});
+
+describe('guard: every CI job has a time limit (2026-10-09)', () => {
+  const ROOT = join(V3, '..');
+  const workflows = repoFiles(ROOT).filter((f) => /^\.github\/workflows\/[^/]+\.ya?ml$/.test(f));
+
+  /** The jobs of a workflow with their own lines (two-space keys under `jobs:`). */
+  const jobsOf = (file: string): { name: string; body: string[] }[] => {
+    const lines = readFileSync(join(ROOT, file), 'utf8').split('\n');
+    const start = lines.indexOf('jobs:');
+    const jobs: { name: string; body: string[] }[] = [];
+    for (const line of lines.slice(start + 1)) {
+      const key = /^ {2}([A-Za-z0-9_-]+):\s*$/.exec(line);
+      if (key) jobs.push({ name: key[1], body: [] });
+      else if (/^\S/.test(line)) break;
+      else jobs.at(-1)?.body.push(line);
+    }
+    return jobs;
+  };
+
+  it('finds the workflows and their jobs (sanity)', () => {
+    expect(workflows).toEqual(expect.arrayContaining(['.github/workflows/tests.yml']));
+    expect(jobsOf('.github/workflows/tests.yml').map((j) => j.name)).toContain('e2e-full');
+  });
+
+  it('every job that runs steps sets timeout-minutes', () => {
+    const missing = workflows.flatMap((file) =>
+      jobsOf(file)
+        .filter((j) => !j.body.some((l) => /^ {4}uses: /.test(l))) // calls a reusable workflow
+        .filter((j) => !j.body.some((l) => /^ {4}timeout-minutes: \d+/.test(l)))
+        .map((j) => `${file}: ${j.name}`),
+    );
+    expect(missing, 'set timeout-minutes — about 3x the longest run, at least 10').toEqual([]);
   });
 });
