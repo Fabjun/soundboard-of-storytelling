@@ -102,8 +102,11 @@ _Pending — to be filled in dialogue._
 
 ### Board, decks & quick access
 
-_Filled 2026-09-28 in dialogue with the product owner ("model B"). Nothing below is built
-yet except deck CRUD (built in Slice 3, renamed to "deck" in Slice 9b); it changes the data model ([backlog: Board pad pool](../backlog.md#board-pad-pool-data-model))._
+_Filled 2026-09-28 in dialogue with the product owner ("model B"; data model:
+[backlog: Board pad pool](../backlog.md#board-pad-pool-data-model)). Built (Slice 9, checked in
+the code 2026-10-09): the pad pool, All pads with its sort, decks with their own arrangement and
+keys, remove from deck vs delete. Not built yet: search, sort inside a deck and the quick-access
+bar (in the data model only) — they come with the layout (Slice 13)._
 
 <!-- vale SoS.SupersededTerms = NO --><!-- reason: records the rename decision -->
 

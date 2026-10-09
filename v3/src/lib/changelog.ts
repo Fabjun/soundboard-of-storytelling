@@ -17,10 +17,18 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.195';
+export const APP_VERSION = '3.0.196';
 
 /** The developer log, newest first; CHANGELOG.md is generated from it (sync-changelog). */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.196',
+    date: '2026-10-09',
+    items: [
+      'test: visual tests compare with threshold 0.02 instead of Playwright’s default 0.2 — the default let the lighter --text-mute of 3.0.193 pass against the old baselines; measured with those baselines: 0.2 and 0.1 caught nothing, 0.05 caught 7 of 8 changed screenshots, 0.03 and 0.02 all 8; the current baselines passed 10 of 10 runs at 0.02 and 3 of 3 at 0 (BACKLOG "Visual tests miss small color shifts" done)',
+      'docs: product §5 "Board, decks & quick access" says what is built (pad pool, All pads with sort, decks, remove vs delete) and what is not (search, sort inside a deck, the quick-access bar) — it still said nothing but deck CRUD was built',
+    ],
+  },
   {
     version: '3.0.195',
     date: '2026-10-09',
