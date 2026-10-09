@@ -863,3 +863,27 @@ describe('guard: type and spacing in rem (ADR-0081, owner decision 2026-10-02)',
     expect(bad).toEqual([]);
   });
 });
+
+describe('guard: one look for a disabled control (structure review 2026-10-09)', () => {
+  // Three looks existed (0.4 / 0.5, cursor default / not-allowed); now the token
+  // --disabled-opacity and cursor: not-allowed for every :disabled or aria-disabled rule.
+  const css = readFileSync(join(SRC, 'styles', 'components.css'), 'utf8');
+  const rules = [...css.matchAll(/([^{}]*(?::disabled|aria-disabled)[^{}]*)\{([^}]*)\}/g)].map(
+    (m) => ({ selector: m[1].trim().split('\n').at(-1) ?? '', body: m[2] }),
+  );
+
+  it('finds the disabled rules (sanity)', () => {
+    expect(rules.length).toBeGreaterThanOrEqual(3);
+  });
+
+  it('every disabled rule uses --disabled-opacity and cursor: not-allowed', () => {
+    const bad = rules
+      .filter(
+        (r) =>
+          !/opacity:\s*var\(--disabled-opacity\)/.test(r.body) ||
+          !/cursor:\s*not-allowed/.test(r.body),
+      )
+      .map((r) => r.selector);
+    expect(bad).toEqual([]);
+  });
+});

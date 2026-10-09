@@ -187,6 +187,9 @@
     drop-shadow(0 0 14px rgba(245, 213, 122, 0.28));
   --glow-flame: drop-shadow(0 0 6px rgba(232, 130, 30, 0.55));
 
+  /* ── STATE ── one look for every control that cannot be used right now */
+  --disabled-opacity: 0.4; /* dims a disabled control (with cursor: not-allowed) */
+
   /* ── TYPE ── three voices ─────────────────────────────────────────
      display       Press Start 2P  → hero titles ONLY (28–40px). Chunky.
      ui            VT323           → buttons, labels, menu rows, tabs.

@@ -294,8 +294,8 @@
   --pix-border: var(--border-gold);
 }
 .sb-btn:disabled {
-  opacity: 0.4;
-  cursor: default;
+  opacity: var(--disabled-opacity);
+  cursor: not-allowed;
 }
 .sb-btn-primary {
   /* @inventory: Button variant — gold border and label; highlighted action. */
@@ -570,7 +570,7 @@
   border-bottom-color: var(--gold);
 }
 .sb-tab:disabled {
-  opacity: 0.5;
+  opacity: var(--disabled-opacity);
   cursor: not-allowed;
 }
 .sb-tab-sm {
@@ -1022,10 +1022,10 @@
 .sb-mode-toggle.is-compact .sb-mode-toggle-half {
   padding: 0 var(--space-3);
 }
-/* Lock on (Slice 12c): the SETUP half cannot be chosen — dimmed like a disabled .sb-btn */
+/* Lock on (Slice 12c): the SETUP half cannot be chosen — the one disabled look */
 .sb-mode-toggle-half[aria-disabled='true'] {
-  opacity: 0.4;
-  cursor: default;
+  opacity: var(--disabled-opacity);
+  cursor: not-allowed;
 }
 
 /* Spark layer — absolutely positioned sibling, not clipped by toggle */

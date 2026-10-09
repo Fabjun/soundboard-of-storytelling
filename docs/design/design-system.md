@@ -539,6 +539,12 @@ also in [§6](#6-component-inventory)):
 | `--shadow-pad-lift` | `drop-shadow(3px 3px 0 rgba(0, 0, 0, 0.65))`    | —           |
 | `--glow-flame`      | `drop-shadow(0 0 6px rgba(232, 130, 30, 0.55))` | —           |
 
+### STATE
+
+| Token                | Value | Description                                        |
+| -------------------- | ----- | -------------------------------------------------- |
+| `--disabled-opacity` | `0.4` | dims a disabled control (with cursor: not-allowed) |
+
 ### TYPE
 
 | Token            | Value                                   | Description              |

@@ -1506,7 +1506,11 @@ details and minimum touch targets — Apple HIG 44 pt, WCAG 2.5.8 24 px), tokens
 blocks new px values for type and spacing.
 **When:** before Slice 13.
 
-### Two styles for a disabled control
+### Two styles for a disabled control ✅ Done (3.0.189)
+
+Done 2026-10-09: the token `--disabled-opacity` (0.4) and `cursor: not-allowed` for every
+`:disabled` / `aria-disabled` rule; guard "one look for a disabled control". Disabled tabs are a
+little dimmer than before (0.5 → 0.4). Accepted by the owner 2026-10-09.
 
 Found 2026-10-08 (Slice 12c): `.sb-btn:disabled` dims to 0.4 with `cursor: default`,
 `.sb-tab:disabled` to 0.5 with `cursor: not-allowed` (`v3/src/styles/tokens.css`). The locked
