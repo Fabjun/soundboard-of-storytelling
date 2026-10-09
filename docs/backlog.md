@@ -1562,7 +1562,7 @@ of its own; the owner checks the screenshots before the merge.
 2026-10-09: WCAG 1.4.3 holds for accent text as well). `v3/tests/e2e/a11y.spec.ts` checks color
 contrast on every screen and in every theme.
 
-### Visual tests miss small color shifts
+### Visual tests miss small color shifts ✅ Done (3.0.196)
 
 Found 2026-10-09 with the contrast fix: the lighter `--text-mute` (`#7e7494` → `#9189a4`) passed
 every visual test against the old baselines. `toHaveScreenshot` uses `threshold: 0.2` (Playwright's
@@ -1572,6 +1572,12 @@ The baselines were rewritten with `--update-snapshots=all` and the changed pixel
 muted text and its anti-aliasing changed. Risk: an unintended small color change goes unnoticed;
 layout changes are still caught. **Open:** a lower threshold (font rendering noise has to be
 measured first), or a test of the computed token values per theme. **When:** next structure review.
+**Done 2026-10-09:** measured with the baselines from before the contrast fix against today's
+rendering — threshold 0.2 and 0.1 caught nothing, 0.05 caught 7 of the 8 changed screenshots,
+0.03 and 0.02 all 8; the current baselines passed 10 of 10 runs at 0.02 and 3 of 3 at 0
+(rendering is pixel-exact on the macOS machine). The threshold is 0.02 now — headroom for small
+rendering changes after a browser update. The per-theme token test is not needed: the axe scan
+checks every theme's contrast since 3.0.193.
 
 ### PAD editor: several files per pad cannot be edited yet
 

@@ -7,6 +7,13 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.196 — 2026-10-09
+
+### Internal
+
+- test: visual tests compare with threshold 0.02 instead of Playwright’s default 0.2 — the default let the lighter --text-mute of 3.0.193 pass against the old baselines; measured with those baselines: 0.2 and 0.1 caught nothing, 0.05 caught 7 of 8 changed screenshots, 0.03 and 0.02 all 8; the current baselines passed 10 of 10 runs at 0.02 and 3 of 3 at 0 (BACKLOG "Visual tests miss small color shifts" done)
+- docs: product §5 "Board, decks & quick access" says what is built (pad pool, All pads with sort, decks, remove vs delete) and what is not (search, sort inside a deck, the quick-access bar) — it still said nothing but deck CRUD was built
+
 ## 3.0.195 — 2026-10-09
 
 ### Internal

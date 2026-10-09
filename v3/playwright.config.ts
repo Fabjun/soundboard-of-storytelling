@@ -84,10 +84,14 @@ export default defineConfig({
   },
   expect: {
     toHaveScreenshot: {
-      // Allow very small pixel-level differences (font subpixel rendering).
-      // macOS-only: baselines are NOT committed for CI (different font stack).
+      // macOS-only: there are no baselines for CI (different font stack).
+      // threshold 0.02, not Playwright's default 0.2 (made for comparing across machines): the
+      // default let the lighter --text-mute of 3.0.193 pass against the old baselines; 0.05 caught
+      // 7 of the 8 changed screenshots, 0.03 and 0.02 all 8. The current baselines passed 10 of 10
+      // runs at 0.02 and 3 of 3 even at 0 (measured 2026-10-09) — headroom for small rendering
+      // changes after a browser update. maxDiffPixels allows a few stray pixels.
       maxDiffPixels: 100,
-      threshold: 0.2,
+      threshold: 0.02,
       animations: 'disabled',
     },
   },
