@@ -130,10 +130,132 @@ describe('zipArchive', () => {
         patched(good, (_b, { cd }, v) => v.setUint16(cd + 8, 1, true)),
         'unsupported',
       ],
+      // Each half of a two-part check on its own (mutation run 2026-10-09)
+      [
+        'split: directory on another disk',
+        patched(good, (_b, { end }, v) => v.setUint16(end + 6, 1, true)),
+        'unsupported',
+      ],
+      [
+        'ZIP64 by entry count',
+        patched(good, (_b, { end }, v) => v.setUint16(end + 10, 0xffff, true)),
+        'unsupported',
+      ],
+      [
+        'ZIP64 by directory size',
+        patched(good, (_b, { end }, v) => v.setUint32(end + 12, 0xffffffff, true)),
+        'unsupported',
+      ],
+      [
+        'ZIP64 entry by size',
+        patched(good, (_b, { cd }, v) => v.setUint32(cd + 20, 0xffffffff, true)),
+        'unsupported',
+      ],
+      [
+        'ZIP64 entry by header offset',
+        patched(good, (_b, { cd }, v) => v.setUint32(cd + 42, 0xffffffff, true)),
+        'unsupported',
+      ],
+      [
+        'more entries counted than the directory holds',
+        patched(good, (_b, { end }, v) => v.setUint16(end + 10, 2, true)),
+        'damaged',
+      ],
+      [
+        'an entry name that runs past the directory',
+        patched(good, (_b, { cd }, v) => v.setUint16(cd + 28, 500, true)),
+        'damaged',
+      ],
     ];
     for (const [label, file, kind] of cases) {
       expect([label, await kindOf(readZipDirectory(await file))]).toEqual([label, kind]);
     }
+  });
+
+  it('a refusal is a ZipError whose message names the kind and where', async () => {
+    const good = write([['a', new Uint8Array([1, 2])]]);
+    const reasons = async (p: Promise<unknown>) => {
+      try {
+        await p;
+        return 'resolved';
+      } catch (e) {
+        return e instanceof Error ? `${e.name} ${e.message}` : String(e);
+      }
+    };
+    expect(await reasons(readZipDirectory(new Blob(['nothing'])))).toBe(
+      'ZipError not-a-zip: no end of central directory record',
+    );
+    const split = await patched(good, (_b, { end }, v) => v.setUint16(end + 4, 1, true));
+    expect(await reasons(readZipDirectory(split))).toBe('ZipError unsupported: split archive');
+    const zip64 = await patched(good, (_b, { end }, v) => v.setUint32(end + 16, 0xffffffff, true));
+    expect(await reasons(readZipDirectory(zip64))).toBe('ZipError unsupported: ZIP64 archive');
+    const beyond = await patched(good, (_b, { end }, v) => v.setUint32(end + 12, 1000, true));
+    expect(await reasons(readZipDirectory(beyond))).toBe('ZipError damaged: central directory');
+    const broken = await patched(good, (b, { cd }) => (b[cd] = 0));
+    expect(await reasons(readZipDirectory(broken))).toBe(
+      'ZipError damaged: central directory entry 0',
+    );
+    const longName = await patched(good, (_b, { cd }, v) => v.setUint16(cd + 28, 500, true));
+    expect(await reasons(readZipDirectory(longName))).toBe(
+      'ZipError damaged: central directory entry 0',
+    );
+    const encrypted = await patched(good, (_b, { cd }, v) => v.setUint16(cd + 8, 1, true));
+    expect(await reasons(readZipDirectory(encrypted))).toBe(
+      'ZipError unsupported: encrypted entry a',
+    );
+    const zip64Entry = await patched(good, (_b, { cd }, v) =>
+      v.setUint32(cd + 20, 0xffffffff, true),
+    );
+    expect(await reasons(readZipDirectory(zip64Entry))).toBe('ZipError unsupported: ZIP64 entry');
+
+    const entry = (await readZipDirectory(good)).get('a')!;
+    expect(await reasons(zipEntryBlob(good, { ...entry, method: 8 }))).toBe(
+      'ZipError unsupported: compressed entry a',
+    );
+    const brokenLocal = await patched(good, (b) => (b[0] = 0));
+    expect(await reasons(zipEntryBlob(brokenLocal, entry))).toBe(
+      'ZipError damaged: local header of a',
+    );
+    expect(await reasons(zipEntryBlob(good, { ...entry, size: good.size }))).toBe(
+      'ZipError damaged: data of a',
+    );
+  });
+
+  it('reads the entry after one with an extra field and a comment in the directory', async () => {
+    // fflate writes the extra field and the comment into the central directory too
+    const extra = { 0x5455: new Uint8Array([1, 2, 3, 4, 5]) };
+    const file = new Blob([
+      zipSync({
+        'a.bin': [new Uint8Array([1]), { level: 0, extra, comment: 'first entry' }],
+        'b.bin': [new Uint8Array([2, 3]), { level: 0 }],
+      }),
+    ]);
+    expect(await readAll(file)).toEqual({ 'a.bin': [1], 'b.bin': [2, 3] });
+  });
+
+  it('reads an archive larger than the end-record search window (64 KiB)', async () => {
+    const big = new Uint8Array(70_000).map((_, i) => i % 251);
+    const file = write([
+      ['big', big],
+      ['small', new Uint8Array([9])],
+    ]);
+    const read = await readAll(file);
+    expect(read.small).toEqual([9]);
+    expect(read.big).toEqual(Array.from(big));
+  });
+
+  it('refuses an entry whose local header is cut off by the end of the file', async () => {
+    const good = write([['a', new Uint8Array([1, 2])]]);
+    const entry = (await readZipDirectory(good)).get('a')!;
+    // Two bytes left: too short even for the signature — a ZipError, not a RangeError
+    expect(await kindOf(zipEntryBlob(good, { ...entry, localHeaderOffset: good.size - 2 }))).toBe(
+      'damaged',
+    );
+  });
+
+  it('a name the format cannot hold fails at once with the writer’s reason', () => {
+    const zip = createZipWriter();
+    expect(() => zip.add('x'.repeat(70_000), new Uint8Array([1]))).toThrow('filename too long');
   });
 
   it('refuses an entry it cannot slice: compressed, broken local header, data beyond the end', async () => {

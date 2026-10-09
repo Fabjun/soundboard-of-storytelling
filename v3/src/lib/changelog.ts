@@ -17,10 +17,19 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.199';
+export const APP_VERSION = '3.0.200';
 
 /** The developer log, newest first; CHANGELOG.md is generated from it (sync-changelog). */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.200',
+    date: '2026-10-10',
+    items: [
+      'test: zipArchive 75.6 % → 94.9 % — each half of the two-part refusals on its own (split by directory disk, ZIP64 by count / directory size / entry size / header offset), a directory with fewer entries than counted, an entry name that runs past the directory, the message of every refusal, the entry after one with an extra field and a comment, an archive larger than the 64 KiB end-record window, a local header cut to two bytes (a ZipError, not a RangeError), a name the format cannot hold; the 10 survivors left change no behavior (buffer sizes, byte order of values that are non-zero either way, boundaries real archives never hit)',
+      'test: store 68.8 % → 97.5 % — the library list setters (remove, rename, peaks), the state the app starts in (start screen, GAME, audio locked, nothing paused, no failed save), and updating one of several boards keeps the others in place (a copy mistake there would drop every other board; counter-checked)',
+      'test: debouncedSave’s 6 surviving mutants are equivalent — whether flush clears a timer that would find nothing to write cannot be observed; recorded, not chased',
+    ],
+  },
   {
     version: '3.0.199',
     date: '2026-10-10',
