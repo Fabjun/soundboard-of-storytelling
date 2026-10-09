@@ -7,9 +7,13 @@
  * Preact Signals are pure JS objects — no DOM required. jsdom env is fine.
  */
 
-import type { Board } from '../../src/types';
+import type { Board, LibraryItemMeta } from '../../src/types';
 import {
   boards,
+  libraryItems,
+  removeLibraryItemMeta,
+  renameLibraryItemMeta,
+  setLibraryItemPeaks,
   currentBoardId,
   currentDeckId,
   currentBoard,
@@ -76,6 +80,18 @@ describe('upsertBoard', () => {
     const before = boards.value;
     upsertBoard(makeBoard('b1', 'Updated'));
     expect(boards.value).not.toBe(before);
+  });
+
+  test('updating one board keeps every other board, in place', () => {
+    upsertBoard(makeBoard('b1', 'First'));
+    upsertBoard(makeBoard('b2', 'Second'));
+    upsertBoard(makeBoard('b3', 'Third'));
+    upsertBoard(makeBoard('b2', 'Second, renamed'));
+    expect(boards.value.map((b) => [b.id, b.name])).toEqual([
+      ['b1', 'First'],
+      ['b2', 'Second, renamed'],
+      ['b3', 'Third'],
+    ]);
   });
 });
 
@@ -244,5 +260,63 @@ describe('addLoopingPad / removeLoopingPad', () => {
     addLoopingPad('pad-2');
     expect(playingPads.value.has('pad-2')).toBe(false);
     expect(loopingPads.value.has('pad-1')).toBe(false);
+  });
+});
+
+// ── Library list (metadata only) ─────────────────────────────────────────────
+
+function meta(id: string, name = id): LibraryItemMeta {
+  return {
+    id,
+    type: 'audio',
+    name,
+    size: 1,
+    tags: [],
+    addedAt: 0,
+    duration: 1,
+    peaks: [0.5],
+  };
+}
+
+describe('library list setters', () => {
+  beforeEach(() => {
+    libraryItems.value = [meta('a', 'Owl'), meta('b', 'Rain')];
+  });
+
+  test('removeLibraryItemMeta removes only that entry', () => {
+    removeLibraryItemMeta('a');
+    expect(libraryItems.value.map((m) => m.id)).toEqual(['b']);
+    removeLibraryItemMeta('gone');
+    expect(libraryItems.value.map((m) => m.id)).toEqual(['b']);
+  });
+
+  test('renameLibraryItemMeta renames only that entry and keeps the rest of it', () => {
+    renameLibraryItemMeta('b', 'Storm');
+    expect(libraryItems.value).toEqual([meta('a', 'Owl'), { ...meta('b', 'Rain'), name: 'Storm' }]);
+  });
+
+  test('setLibraryItemPeaks replaces only that entry’s peaks', () => {
+    setLibraryItemPeaks('a', [0.1, 0.9]);
+    expect(libraryItems.value[0].peaks).toEqual([0.1, 0.9]);
+    expect(libraryItems.value[1].peaks).toEqual([0.5]);
+  });
+});
+
+// ── The state the app starts in ──────────────────────────────────────────────
+
+describe('start state', () => {
+  test('starts on the start screen, in GAME, audio locked, nothing paused, no failed save', async () => {
+    vi.resetModules(); // the store as a fresh page load creates it
+    const fresh = await import('../../src/state/store');
+    expect(fresh.currentScreen.value).toBe('start');
+    expect(fresh.currentMode.value).toBe('play');
+    expect(fresh.audioContextState.value).toBe('locked');
+    expect(fresh.audioPaused.value).toBe(false);
+    expect(fresh.lastSaveFailed.value).toBe(false);
+    expect(fresh.allPadsView.value).toBe(false);
+    expect(fresh.screenKeptOn.value).toBe(false);
+    expect(fresh.previewPlaying.value).toBe(false);
+    expect(fresh.libraryItems.value).toEqual([]);
+    expect(fresh.boards.value).toEqual([]);
   });
 });
