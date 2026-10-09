@@ -75,22 +75,23 @@ file. Format: `docs/architecture/_template.md`.
 
 ### UI architecture
 
-| #                                                 | Title                                                                          | Status   | Slice         | Date       |
-| ------------------------------------------------- | ------------------------------------------------------------------------------ | -------- | ------------- | ---------- |
-| [ADR-0021](0021-css-naming.md)                    | CSS classes `sb-<block>` / `sb-<block>-<part>` / `is-<state>`                  | Accepted | cross-cutting | 2026-05-27 |
-| [ADR-0022](0022-design-tokens.md)                 | Design tokens in `v3/src/styles/tokens.css` — no color literals                | Accepted | cross-cutting | 2026-05-27 |
-| [ADR-0023](0023-surface-hierarchy.md)             | Five-level surface hierarchy                                                   | Accepted | cross-cutting | 2026-05-27 |
-| [ADR-0024](0024-clip-path-frames.md)              | `clip-path` for pixel frames — `filter: drop-shadow()` instead of `box-shadow` | Accepted | cross-cutting | 2026-05-27 |
-| [ADR-0025](0025-is-deep-opt-in.md)                | `is-deep` as opt-in for the pad depth stack                                    | Accepted | Slice 3       | 2026-05-27 |
-| [ADR-0026](0026-mode-toggle-headline.md)          | Mode toggle as the interactive screen headline (BoardTopBar)                   | Accepted | Slice 3       | 2026-05-27 |
-| [ADR-0027](0027-pad-type-colors-semantic.md)      | Pad type colors are semantically reserved                                      | Accepted | cross-cutting | 2026-05-27 |
-| [ADR-0028](0028-single-component-variants.md)     | One component per UI element — variants via props                              | Accepted | cross-cutting | 2026-05-27 |
-| [ADR-0045](0045-two-axis-adaptive-model.md)       | Two-axis adaptive model — one app, no separate systems                         | Accepted | cross-cutting | 2026-06-04 |
-| [ADR-0052](0052-code-naming-conventions.md)       | Code naming conventions                                                        | Accepted | cross-cutting | 2026-09-29 |
-| [ADR-0071](0071-virtualized-icon-grids.md)        | Virtualized icon grids with `@tanstack/virtual-core`                           | Proposed | Slice 15      | 2026-10-04 |
-| [ADR-0072](0072-ui-icon-set.md)                   | The UI icons as the project's own icon set `sos-ui`                            | Proposed | Slice 15      | 2026-10-04 |
-| [ADR-0074](0074-full-screen-modal-dialogs.md)     | Full-screen modal dialogs — one pattern, the PAD editor first                  | Accepted | cross-cutting | 2026-10-05 |
-| [ADR-0075](0075-flowing-pad-grid-and-pad-size.md) | The pad grid flows into the window's columns; each deck has a pad size         | Accepted | cross-cutting | 2026-10-06 |
+| #                                                 | Title                                                                          | Status   | Slice          | Date       |
+| ------------------------------------------------- | ------------------------------------------------------------------------------ | -------- | -------------- | ---------- |
+| [ADR-0021](0021-css-naming.md)                    | CSS classes `sb-<block>` / `sb-<block>-<part>` / `is-<state>`                  | Accepted | cross-cutting  | 2026-05-27 |
+| [ADR-0022](0022-design-tokens.md)                 | Design tokens in `v3/src/styles/tokens.css` — no color literals                | Accepted | cross-cutting  | 2026-05-27 |
+| [ADR-0023](0023-surface-hierarchy.md)             | Five-level surface hierarchy                                                   | Accepted | cross-cutting  | 2026-05-27 |
+| [ADR-0024](0024-clip-path-frames.md)              | `clip-path` for pixel frames — `filter: drop-shadow()` instead of `box-shadow` | Accepted | cross-cutting  | 2026-05-27 |
+| [ADR-0025](0025-is-deep-opt-in.md)                | `is-deep` as opt-in for the pad depth stack                                    | Accepted | Slice 3        | 2026-05-27 |
+| [ADR-0026](0026-mode-toggle-headline.md)          | Mode toggle as the interactive screen headline (BoardTopBar)                   | Accepted | Slice 3        | 2026-05-27 |
+| [ADR-0027](0027-pad-type-colors-semantic.md)      | Pad type colors are semantically reserved                                      | Accepted | cross-cutting  | 2026-05-27 |
+| [ADR-0028](0028-single-component-variants.md)     | One component per UI element — variants via props                              | Accepted | cross-cutting  | 2026-05-27 |
+| [ADR-0045](0045-two-axis-adaptive-model.md)       | Two-axis adaptive model — one app, no separate systems                         | Accepted | cross-cutting  | 2026-06-04 |
+| [ADR-0052](0052-code-naming-conventions.md)       | Code naming conventions                                                        | Accepted | cross-cutting  | 2026-09-29 |
+| [ADR-0071](0071-virtualized-icon-grids.md)        | Virtualized icon grids with `@tanstack/virtual-core`                           | Proposed | Slice 15       | 2026-10-04 |
+| [ADR-0072](0072-ui-icon-set.md)                   | The UI icons as the project's own icon set `sos-ui`                            | Proposed | Slice 15       | 2026-10-04 |
+| [ADR-0074](0074-full-screen-modal-dialogs.md)     | Full-screen modal dialogs — one pattern, the PAD editor first                  | Accepted | cross-cutting  | 2026-10-05 |
+| [ADR-0075](0075-flowing-pad-grid-and-pad-size.md) | The pad grid flows into the window's columns; each deck has a pad size         | Accepted | cross-cutting  | 2026-10-06 |
+| [ADR-0081](0081-relative-units.md)                | Relative units for type and spacing                                            | Accepted | infrastructure | 2026-10-09 |
 
 ### Interaction
 

@@ -89,6 +89,13 @@ export function withEarlyVersions(
 /** The release notes the start screen shows, newest first (checked by whatsNew.test.ts). */
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
+    version: '3.0.188',
+    date: '2026-10-09',
+    improved: [
+      'Text and spacing now grow with the text size set in the browser or on the phone, so the app stays readable for anyone who needs larger text. At the normal size it looks exactly as before.',
+    ],
+  },
+  {
     version: '3.0.187',
     date: '2026-10-09',
     improved: [

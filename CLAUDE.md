@@ -245,7 +245,9 @@ to any → refactor before shipping.
 
 Use the design system tokens from `v3/src/styles/tokens.css` (canonical
 source; `design-sources/2026-05-25/tokens.css` is the design-handoff reference
-and has diverged). Never hardcode colors, fonts, or spacing.
+and has diverged). Never hardcode colors, fonts, or spacing. The `sb-*` component classes live in
+`v3/src/styles/components.css`. Type and spacing are rem (px / 16); px only for borders, radii,
+pixel-art details and touch minimums — ADR-0081, guarded by `codeGuards` ("type and spacing in rem").
 
 ### Color palette (canonical names from design system)
 

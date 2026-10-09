@@ -223,7 +223,11 @@ the picker's × (seen on a 390 px WebKit screenshot, 2026-10-04). Other search f
 same.
 **When:** with the next change of the search fields; check every `type="search"` field then.
 
-### Component styles out of tokens.css
+### Component styles out of tokens.css ✅ Done (3.0.188)
+
+Split 2026-10-09: tokens and themes stay in `v3/src/styles/tokens.css`, every `sb-*` class moved
+unchanged to `v3/src/styles/components.css` (joined, the two files are byte-identical to the old
+one; `global.css` imports both in the old order; the visual baselines are pixel-identical).
 
 The component classes (`sb-*`) live at the end of `v3/src/styles/tokens.css`, next to the tokens;
 the Slice 15d plan had named `global.css`. Owner decision 2026-10-04: keep them there for now and
@@ -394,7 +398,7 @@ exported — pure UI work; no audio changes needed. See [Design Session 2026-06-
 (engine file refs: `engine.ts:375–412`, `index.ts:83–85`).
 **Note:** Not the scene-to-scene crossfade stub (→ [Real crossfade stub](#real-crossfade)).
 **When:** Slice 8.
-**Built in 3.0.183 (Slice 12b, PR review pending):** the first press of STOP ALL fades everything
+**Built in 3.0.183 (Slice 12b):** the first press of STOP ALL fades everything
 out (K16). It fades pad by pad, not with `fadeOutAll` — see "Engine: fade out all stops pads
 started during the fade".
 
@@ -1485,7 +1489,13 @@ movement) would need a clear coexistence contract. First-pass recommendation: GA
 
 ## 4. Deferred Infrastructure
 
-### Relative units for sizes (structure step before Slice 13)
+### Relative units for sizes (structure step before Slice 13) ✅ Done (3.0.188)
+
+Done 2026-10-09 (ADR-0081, accepted): the `--space-*` and `--fs-*` tokens and every font size,
+padding, margin and gap are rem — pixel-identical at the default text size (visual baselines
+unchanged); three px values stay with their reason; guard "type and spacing in rem"; an E2E test
+doubles the root font size and sees type and spacing double. Still open for Slice 13: `clamp()`
+for fluid sizes, pad cells and touch minimums that grow with the text.
 
 Measured 2026-10-02: `v3/src/styles/tokens.css` has 452 px values, 0 rem, no `clamp()` — font
 sizes and spacing ignore the user's text-size setting (WCAG 2.2 SC 1.4.4: text resizable to 200 %
