@@ -17,10 +17,19 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.201';
+export const APP_VERSION = '3.0.202';
 
 /** The developer log, newest first; CHANGELOG.md is generated from it (sync-changelog). */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.202',
+    date: '2026-10-10',
+    items: [
+      'test: engine — every sound it starts is connected through to the speakers (the fake Web Audio nodes now record their connections; single, loop, list, the three combo children and the preview); counter-checked (a missing connection in a combo Single, the master gain off the speakers → red); no connect mutant survives',
+      'test: engine stop and failure paths — a combo stopped while its Single, Loop or list child loads plays nothing; a list child and a Loop with several files skip a missing file; a list child stopped before its track ends starts no further one; a Loop with several files plays at the pad’s volume',
+      'test: engine mutation score 73.5 % → 77.5 % (Stryker per module, 544 of 702); most of the 158 left are equivalent — log texts, guards that back each other up (playNextTrack checks srcs before and after loading), callbacks that are never missing, and a Loop child’s repeat end, which a combo never hears because Loop children always run in the background',
+    ],
+  },
   {
     version: '3.0.201',
     date: '2026-10-10',

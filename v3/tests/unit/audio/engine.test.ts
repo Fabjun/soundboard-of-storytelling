@@ -48,7 +48,11 @@ class FakeParam {
 
 class FakeGain {
   gain = new FakeParam();
-  connect(): void {}
+  /** The node this one is connected to — a sound is heard only if the chain reaches the speakers. */
+  out: unknown = null;
+  connect(node: unknown): void {
+    this.out = node;
+  }
 }
 
 type FakeBuffer = { tag: string; length: number; numberOfChannels: number; duration: number };
@@ -63,7 +67,10 @@ class FakeSource {
   /** Buffer tag at start time (the engine may release .buffer later). */
   startedTag: string | undefined;
   stopped: { when: number | 'now' } | null = null;
-  connect(): void {}
+  out: unknown = null;
+  connect(node: unknown): void {
+    this.out = node;
+  }
   start(when: number, offset?: number, dur?: number): void {
     this.started = { when, offset, dur };
     this.startedTag = this.buffer?.tag;
@@ -1186,5 +1193,99 @@ describe('fade out all (combo step)', () => {
     await flush();
     expect(stopped).toContain('other');
     expect(ctx.sources[0].stopped).toEqual({ when: 'now' });
+  });
+});
+
+// ── Stop and failure paths (weekly mutation run 2026-10-09: doStart / playNextTrack) ─────────
+
+describe('stopped while loading, files that fail', () => {
+  test('a combo stopped while its Single child loads plays nothing', async () => {
+    pads.set('s1', single('s1', 'h1'));
+    audio.play('c', combo('c', [{ padIds: ['s1'] }]));
+    audio.stop('c'); // before the file has loaded
+    await flush();
+    expect(ctx.sources).toHaveLength(0);
+  });
+
+  test('a combo stopped while its Loop child loads plays nothing', async () => {
+    pads.set('bg', loop('bg', 'h3'));
+    audio.play('c', combo('c', [{ padIds: ['bg'], duration: 9 }]));
+    audio.stop('c');
+    await flush();
+    expect(ctx.sources).toHaveLength(0);
+  });
+
+  test('a combo stopped while its list child loads plays nothing — not this track, not the next', async () => {
+    pads.set('pl', playlist('pl', ['a', 'b']));
+    audio.play('c', combo('c', [{ padIds: ['pl'], duration: 9 }]));
+    audio.stop('c');
+    await flush();
+    expect(ctx.sources).toHaveLength(0);
+  });
+
+  test('a list child skips a missing file and plays the next one', async () => {
+    missing.add('m1');
+    pads.set('pl', playlist('pl', ['m1', 'b']));
+    audio.play('c', combo('c', [{ padIds: ['pl'], duration: 9 }]));
+    await flush();
+    expect(tags()).toEqual(['b']);
+  });
+
+  test('a list child stopped after its track ends starts no further track', async () => {
+    pads.set('pl', playlist('pl', ['a', 'b']));
+    audio.play('c', combo('c', [{ padIds: ['pl'], duration: 9 }]));
+    await flush();
+    audio.stop('c');
+    ctx.sources[0].end(); // the browser reports the end after the stop
+    await flush();
+    expect(tags()).toEqual(['a']);
+  });
+
+  test('a Loop with several files skips a missing file and plays the next one', async () => {
+    missing.add('m1');
+    void audio.play('p', playlist('p', ['m1', 'b']));
+    await flush();
+    expect(tags()).toEqual(['b']);
+  });
+
+  test('a Loop with several files stopped while its first file loads plays nothing', async () => {
+    void audio.play('p', playlist('p', ['a', 'b']));
+    audio.stop('p');
+    await flush();
+    expect(ctx.sources).toHaveLength(0);
+    expect(audio.isPlaying('p')).toBe(false);
+  });
+
+  /** Whether a node's chain of connections leads to the speakers (the context's destination). */
+  function reachesSpeakers(node: { out: unknown }): boolean {
+    const seen = new Set<unknown>();
+    let n: unknown = node;
+    while (n && typeof n === 'object' && !seen.has(n)) {
+      if (n === ctx.destination) return true;
+      seen.add(n);
+      n = 'out' in n ? n.out : null;
+    }
+    return false;
+  }
+
+  test('every sound the engine starts is connected through to the speakers — none plays silent', async () => {
+    pads.set('cs', single('cs', 'c1'));
+    pads.set('cl', loop('cl', 'c2'));
+    pads.set('cp', playlist('cp', ['c3', 'c4']));
+    await audio.play('s', single('s', 'h1'));
+    await audio.play('l', loop('l', 'h2'));
+    void audio.play('p', playlist('p', ['h3', 'h4']));
+    audio.play('c', combo('c', [{ padIds: ['cs', 'cl', 'cp'], duration: 9 }]));
+    await flush();
+    await audio.previewFile(single('pv', 'h5'), fileOf('h5'), 0);
+    await flush();
+    expect(tags().sort()).toEqual(['c1', 'c2', 'c3', 'h1', 'h2', 'h3', 'h5']);
+    expect(ctx.sources.filter((s) => !reachesSpeakers(s)).map((s) => s.startedTag)).toEqual([]);
+  });
+
+  test('a Loop with several files plays each track at the pad’s volume', async () => {
+    void audio.play('p', { ...playlist('p', ['a', 'b']), volume: 50 });
+    await flush();
+    expect(ctx.gains.at(-1)!.gain.events).toEqual([['set', 0.5, 0]]);
   });
 });

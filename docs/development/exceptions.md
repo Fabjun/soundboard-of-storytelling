@@ -54,8 +54,8 @@ Procedure: `docs/development/testing.md`; reference enforced by `testGuards.test
 | Location                                 | Marker  | Reference                                                                      |
 | ---------------------------------------- | ------- | ------------------------------------------------------------------------------ |
 | `v3/tests/e2e/deck-crud.spec.ts:77`      | `fixme` | BACKLOG "Deck reorder"                                                         |
-| `v3/tests/unit/audio/engine.test.ts:692` | `fails` | BACKLOG "Engine: a Single started again during its fade-out cannot be stopped" |
-| `v3/tests/unit/audio/engine.test.ts:761` | `fails` | BACKLOG "step stops the combo itself"                                          |
+| `v3/tests/unit/audio/engine.test.ts:699` | `fails` | BACKLOG "Engine: a Single started again during its fade-out cannot be stopped" |
+| `v3/tests/unit/audio/engine.test.ts:768` | `fails` | BACKLOG "step stops the combo itself"                                          |
 
 ## Modules without their own unit test (4)
 
