@@ -11,7 +11,7 @@ release notes the app shows are written separately for its users (`v3/src/lib/wh
 
 ### Added
 
-- feat(a11y): type and spacing follow the user's text size (ADR-0081 proposed, owner scheme 2026-10-02) — the --space-* and --fs-* tokens and every font-size, padding, margin and gap are rem (px / 16), so at the default text size every visual baseline stays pixel-identical; px stays for borders, radii, pixel-art details and touch minimums (three named exceptions)
+- feat(a11y): type and spacing follow the user's text size (ADR-0081, owner scheme 2026-10-02, applied as accepted by the owner 2026-10-09) — the --space-* and --fs-* tokens and every font-size, padding, margin and gap are rem (px / 16), so at the default text size every visual baseline stays pixel-identical; px stays for borders, radii, pixel-art details and touch minimums (three named exceptions)
 
 ### Changed
 

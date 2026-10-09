@@ -1,6 +1,6 @@
 # ADR-0081: Relative units for type and spacing
 
-**Status:** Proposed
+**Status:** Accepted
 **Date:** 2026-10-09
 **Slice:** infrastructure
 **Refines:** ADR-0022
@@ -14,7 +14,8 @@ ignored the text size a user sets in the browser or the operating system. The ow
 for type and spacing, `fr` / flex / `%` for layout, `clamp()` for fluid sizes, px only for
 borders, pixel-art details and minimum touch targets; an ADR fixes it, the tokens migrate, a guard
 blocks new px values for type and spacing. Built while the owner was away (2026-10-09) — the
-scheme is the owner's; how it is applied is provisional, review pending.
+scheme is the owner's; how it is applied was accepted by the owner 2026-10-09 (spacing tokens and
+the named px exceptions, rem rather than em, one components file).
 
 ## Decision
 

@@ -26,7 +26,7 @@ export const CHANGELOG: ChangelogEntry[] = [
     date: '2026-10-09',
     items: [
       'refactor(styles): the sb-* component classes move unchanged from tokens.css to components.css; tokens.css keeps the tokens and themes (joined, the two files are byte-identical to the old one; BACKLOG "Component styles out of tokens.css")',
-      "feat(a11y): type and spacing follow the user's text size (ADR-0081 proposed, owner scheme 2026-10-02) — the --space-* and --fs-* tokens and every font-size, padding, margin and gap are rem (px / 16), so at the default text size every visual baseline stays pixel-identical; px stays for borders, radii, pixel-art details and touch minimums (three named exceptions)",
+      "feat(a11y): type and spacing follow the user's text size (ADR-0081, owner scheme 2026-10-02, applied as accepted by the owner 2026-10-09) — the --space-* and --fs-* tokens and every font-size, padding, margin and gap are rem (px / 16), so at the default text size every visual baseline stays pixel-identical; px stays for borders, radii, pixel-art details and touch minimums (three named exceptions)",
       'test: codeGuards "type and spacing in rem" (no px in a type or spacing property but the named exceptions; the tokens are rem); E2E a11y doubles the root font size and sees type and spacing double (counter-checked with the old px tokens: 14 instead of 28 → red); the guard counter-checked 3×',
       'docs: ADR-0081 (refines ADR-0022); CLAUDE.md §Tokens; docs/README.md names components.css; backlog "Relative units" and "Component styles out of tokens.css" done, clamp() / growing pad cells left for Slice 13',
     ],

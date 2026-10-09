@@ -65,7 +65,7 @@ matter here. Review when the plugin supports ESLint 10.
 ## Related
 
 - **Files:** `v3/tests/e2e/a11y.spec.ts`, `v3/tests/unit/codeGuards.test.ts`,
-  `v3/src/components/PixelIcon.tsx`, `v3/src/styles/tokens.css` (`sb-row-button`)
+  `v3/src/components/PixelIcon.tsx`, `v3/src/styles/components.css` (`sb-row-button`)
 - **ADRs:** ADR-0054 (test IDs and locators), ADR-0074 (dialogs close on Escape)
 - **Sources:** https://playwright.dev/docs/accessibility-testing,
   https://www.w3.org/WAI/ARIA/apg/patterns/button/,

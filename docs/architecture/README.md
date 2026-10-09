@@ -91,7 +91,7 @@ file. Format: `docs/architecture/_template.md`.
 | [ADR-0072](0072-ui-icon-set.md)                   | The UI icons as the project's own icon set `sos-ui`                            | Proposed | Slice 15       | 2026-10-04 |
 | [ADR-0074](0074-full-screen-modal-dialogs.md)     | Full-screen modal dialogs — one pattern, the PAD editor first                  | Accepted | cross-cutting  | 2026-10-05 |
 | [ADR-0075](0075-flowing-pad-grid-and-pad-size.md) | The pad grid flows into the window's columns; each deck has a pad size         | Accepted | cross-cutting  | 2026-10-06 |
-| [ADR-0081](0081-relative-units.md)                | Relative units for type and spacing                                            | Proposed | infrastructure | 2026-10-09 |
+| [ADR-0081](0081-relative-units.md)                | Relative units for type and spacing                                            | Accepted | infrastructure | 2026-10-09 |
 
 ### Interaction
 
