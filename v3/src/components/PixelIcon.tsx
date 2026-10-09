@@ -27,6 +27,11 @@ interface PixelIconProps {
 /**
  * Renders a crisp 16×16 pixel-art icon as an SVG.
  * Set `size` to scale (default 16). Color inherits from `currentColor`.
+ *
+ * Decorative (`aria-hidden`): the icon's name ("book", "flame") is an identifier, not a label —
+ * screen readers read "book LIB" or just "flame" otherwise. Meaning comes from the control's own
+ * name; a button that shows only an icon has an aria-label (codeGuards, a11y.spec.ts). WAI,
+ * "Decorative Images".
  */
 export function PixelIcon({
   name,
@@ -40,8 +45,7 @@ export function PixelIcon({
       width={size}
       height={size}
       viewBox={`0 0 ${uiIcons.width} ${uiIcons.height}`}
-      role="img"
-      aria-label={name}
+      aria-hidden="true"
       class={'sb-pixel-icon' + (className ? ' ' + className : '')}
       style={style}
     >

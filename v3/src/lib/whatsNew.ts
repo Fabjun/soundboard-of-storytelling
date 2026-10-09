@@ -89,6 +89,14 @@ export function withEarlyVersions(
 /** The release notes the start screen shows, newest first (checked by whatsNew.test.ts). */
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
+    version: '3.0.187',
+    date: '2026-10-09',
+    improved: [
+      'The app works with the keyboard alone: boards, decks and the file of a new pad can now be chosen with Tab and Enter, and screen readers name every button by what it does.',
+      'When a file cannot be imported or a backup fails, the message now says in plain words what happened and what to do. On the library screen "Why it failed" opens the details with a tap.',
+    ],
+  },
+  {
     version: '3.0.186',
     date: '2026-10-09',
     behindTheScenes: [

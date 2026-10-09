@@ -22,10 +22,14 @@ interface AudioRowProps {
 
 interface RenameFieldProps {
   name: string;
+  /** The short line under the name (the start of the file's hash). */
+  hint: string;
   onCommit: (newName: string) => void;
+  /** Selects the row — on focus and on click of the name (Tab access, owner rule 2026-10-02). */
+  onSelect: () => void;
 }
 
-function RenameField({ name, onCommit }: RenameFieldProps) {
+function RenameField({ name, hint, onCommit, onSelect }: RenameFieldProps) {
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(name);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -55,38 +59,49 @@ function RenameField({ name, onCommit }: RenameFieldProps) {
 
   if (editing) {
     return (
-      <input
-        ref={inputRef}
-        type="text"
-        value={draft}
-        class="sb-audio-row-rename"
-        onInput={(e) => setDraft((e.target as HTMLInputElement).value)}
-        onBlur={commit}
-        onKeyDown={(e) => {
-          if (e.key === 'Enter') {
-            e.preventDefault();
-            commit();
-          }
-          if (e.key === 'Escape') {
-            e.preventDefault();
-            cancel();
-          }
-        }}
-      />
+      <div class="sb-flex-min">
+        <input
+          ref={inputRef}
+          type="text"
+          value={draft}
+          class="sb-audio-row-rename"
+          aria-label="File name"
+          onInput={(e) => setDraft((e.target as HTMLInputElement).value)}
+          onBlur={commit}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              e.preventDefault();
+              commit();
+            }
+            if (e.key === 'Escape') {
+              e.preventDefault();
+              cancel();
+            }
+          }}
+        />
+        <div class="sb-hint-text">{hint}</div>
+      </div>
     );
   }
 
+  // A real button — reached with Tab; focusing it selects the row, a click renames
   return (
-    <span
+    <button
+      type="button"
+      class="sb-row-button"
       title="Click to rename"
-      class="sb-audio-row-name"
-      onClick={(e) => {
-        e.stopPropagation();
+      aria-label={`Rename ${name}`}
+      onFocus={onSelect}
+      onClick={() => {
+        onSelect();
         setEditing(true);
       }}
     >
-      {name}
-    </span>
+      <span class="sb-flex-min sb-col">
+        <span class="sb-audio-row-name">{name}</span>
+        <span class="sb-hint-text">{hint}</span>
+      </span>
+    </button>
   );
 }
 
@@ -115,20 +130,21 @@ export function AudioRow({ meta, selected, onSelect, onDelete, onRename }: Audio
   return (
     <div
       class="sb-audio-row"
-      onClick={onSelect}
       onMouseLeave={resetDelete}
       style={{
         background: selected ? 'var(--top)' : 'var(--raised)',
         borderLeft: selected ? '2px solid var(--gold)' : '2px solid transparent',
       }}
     >
-      {/* Col 1: type icon + name + filename */}
+      {/* Col 1: type icon + name + filename — the name is the row's button (select, rename) */}
       <div class="sb-row">
         <PixelIcon name="play" size={14} color="var(--gold)" />
-        <div class="sb-flex-min">
-          <RenameField name={meta.name} onCommit={onRename} />
-          <div class="sb-hint-text">{meta.id.slice(0, 8)}…</div>
-        </div>
+        <RenameField
+          name={meta.name}
+          hint={`${meta.id.slice(0, 8)}…`}
+          onCommit={onRename}
+          onSelect={onSelect}
+        />
       </div>
 
       {/* Col 2: waveform thumbnail */}
@@ -144,6 +160,11 @@ export function AudioRow({ meta, selected, onSelect, onDelete, onRename }: Audio
       <button
         class="sb-audio-row-delete-btn"
         title={deleteStep === 'idle' ? 'Delete' : 'Confirm delete'}
+        aria-label={
+          deleteStep === 'idle'
+            ? `Delete ${meta.name}`
+            : `Delete ${meta.name} — press again to confirm`
+        }
         onClick={handleDeleteClick}
         onBlur={resetDelete}
         style={{

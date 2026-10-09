@@ -106,7 +106,9 @@ describe('addAudioFile', () => {
     expect(await addAudioFile(audioFile('copy.wav', bytes))).toEqual({ kind: 'skipped', id });
     const bad = await addAudioFile(audioFile('bad.wav', [0xff]));
     expect(bad).toMatchObject({ kind: 'error' });
-    expect(bad.kind === 'error' && bad.error).toContain('bad.wav: decode failed');
+    expect(bad.kind === 'error' && bad.error).toContain(
+      'bad.wav: not an audio file this browser can play',
+    );
     expect(libraryItems.value).toHaveLength(1);
   });
 });
@@ -172,7 +174,7 @@ describe('processFilesSerial — behavior', () => {
     const status = uploadStatus.value;
     expect(status?.imported).toBe(2);
     expect(status?.errors).toHaveLength(1);
-    expect(status?.errors[0]).toMatch(/^broken\.wav: decode failed/);
+    expect(status?.errors[0]).toMatch(/^broken\.wav: not an audio file/);
     expect(libraryItems.value.map((m) => m.name)).toEqual(['ok1.wav', 'ok2.wav']);
   });
 

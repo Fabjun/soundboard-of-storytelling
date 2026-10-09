@@ -50,6 +50,7 @@ export function BoardTopBar({
           data-testid="board-top-bar-back-button"
           onClick={onBack}
           title="Back to board list"
+          aria-label="Back to the board list"
         >
           <PixelIcon name="flame" size={14} color="var(--flame)" />
         </button>

@@ -184,60 +184,69 @@ function BoardRow({ board, onOpen }: { board: Board; onOpen: () => void }): JSX.
   }
 
   return (
-    <div
-      class="sb-menu-row sb-board-row"
-      data-testid={`board-list-screen-row-${board.id}`}
-      onClick={() => {
-        if (!editing) onOpen();
-      }}
-    >
-      {/* Icon */}
-      <div class="sb-icon">
-        <PixelIcon name="scroll" size={18} />
-      </div>
+    <div class="sb-menu-row sb-board-row" data-testid={`board-list-screen-row-${board.id}`}>
+      {/* Opening the board is a real button — reached with Tab (owner rule 2026-10-02); the
+          rename and delete buttons stay its siblings */}
+      {!editing && (
+        <button
+          type="button"
+          class="sb-row-button"
+          data-testid={`board-list-screen-open-button-${board.id}`}
+          onClick={onOpen}
+        >
+          <span class="sb-icon">
+            <PixelIcon name="scroll" size={18} />
+          </span>
+          <span class="sb-flex-min sb-col">
+            <span class="sb-row-title" data-testid={`board-list-screen-name-text-${board.id}`}>
+              {board.name}
+            </span>
+            <span class="sb-row-sub">
+              {decksCount} deck{decksCount !== 1 ? 's' : ''} · {totalPads} pad
+              {totalPads !== 1 ? 's' : ''}
+            </span>
+          </span>
+        </button>
+      )}
 
-      {/* Name + meta */}
-      <div class="sb-flex-min">
-        {editing ? (
-          <input
-            type="text"
-            class="sb-row-rename-input"
-            value={editValue}
-            onInput={(e) => setEditValue((e.target as HTMLInputElement).value)}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') {
-                e.preventDefault();
-                commitRename();
-              }
-              if (e.key === 'Escape') {
-                e.preventDefault();
-                setEditing(false);
-              }
-            }}
-            onBlur={commitRename}
-            onClick={(e) => e.stopPropagation()}
-            autoFocus
-          />
-        ) : (
-          <div class="sb-row-title" data-testid={`board-list-screen-name-text-${board.id}`}>
-            {board.name}
+      {/* While renaming: icon + name field */}
+      {editing && (
+        <>
+          <div class="sb-icon">
+            <PixelIcon name="scroll" size={18} />
           </div>
-        )}
-        {!editing && (
-          <div class="sb-row-sub">
-            {decksCount} deck{decksCount !== 1 ? 's' : ''} · {totalPads} pad
-            {totalPads !== 1 ? 's' : ''}
+          <div class="sb-flex-min">
+            <input
+              type="text"
+              class="sb-row-rename-input"
+              aria-label="Board name"
+              value={editValue}
+              onInput={(e) => setEditValue((e.target as HTMLInputElement).value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                  commitRename();
+                }
+                if (e.key === 'Escape') {
+                  e.preventDefault();
+                  setEditing(false);
+                }
+              }}
+              onBlur={commitRename}
+              autoFocus
+            />
           </div>
-        )}
-      </div>
+        </>
+      )}
 
       {/* Actions */}
       {!editing && (
-        <div class="sb-row-actions" onClick={(e) => e.stopPropagation()}>
+        <div class="sb-row-actions">
           <button
             class="sb-btn sb-btn-sm sb-btn-ghost sb-btn-icon-sm"
             data-testid={`board-list-screen-edit-button-${board.id}`}
             title="Rename board"
+            aria-label={`Rename board ${board.name}`}
             onClick={() => {
               setEditValue(board.name);
               setEditing(true);
@@ -249,6 +258,11 @@ function BoardRow({ board, onOpen }: { board: Board; onOpen: () => void }): JSX.
             class={`sb-btn sb-btn-sm sb-btn-icon-sm ${deleteConfirm ? 'sb-btn-danger' : 'sb-btn-ghost'}`}
             data-testid={`board-list-screen-delete-button-${board.id}`}
             title={deleteConfirm ? 'Click again to confirm' : 'Delete board'}
+            aria-label={
+              deleteConfirm
+                ? `Delete board ${board.name} — press again to confirm`
+                : `Delete board ${board.name}`
+            }
             onClick={handleDelete}
             onBlur={() => setDeleteConfirm(false)}
           >

@@ -266,24 +266,32 @@ function SourceItem({
   return (
     <div
       data-testid={`pad-creation-popover-source-item-${item.id}`}
-      onClick={onSelect}
       class="sb-source-item"
       style={{ background: selected ? 'var(--raised)' : 'none' }}
     >
-      <div class="sb-row">
-        {selected ? (
-          <PixelIcon name="play" size={10} color="var(--gold)" />
-        ) : (
-          <PixelIcon name="play" size={10} color="var(--text-mute)" />
-        )}
-        <span
-          class="sb-lib-browser-item-name sb-flex-1"
-          style={{ color: selected ? 'var(--gold)' : 'var(--text)' }}
-        >
-          {item.name}
+      {/* Choosing the file is a real button — reached with Tab (owner rule 2026-10-02) */}
+      <button
+        type="button"
+        class="sb-row-button"
+        aria-pressed={selected}
+        data-testid={`pad-creation-popover-source-button-${item.id}`}
+        onClick={onSelect}
+      >
+        <span class="sb-row sb-flex-1">
+          {selected ? (
+            <PixelIcon name="play" size={10} color="var(--gold)" />
+          ) : (
+            <PixelIcon name="play" size={10} color="var(--text-mute)" />
+          )}
+          <span
+            class="sb-lib-browser-item-name sb-flex-1"
+            style={{ color: selected ? 'var(--gold)' : 'var(--text)' }}
+          >
+            {item.name}
+          </span>
+          <span class="sb-hint-text">{item.duration > 0 ? fmt(item.duration) : ''}</span>
         </span>
-        <span class="sb-hint-text">{item.duration > 0 ? fmt(item.duration) : ''}</span>
-      </div>
+      </button>
       {selected && item.peaks.length > 0 && <Waveform peaks={item.peaks} height={18} />}
     </div>
   );

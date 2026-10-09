@@ -117,7 +117,7 @@ describe('runImport — V1', () => {
     doc.boards[0].pads = [{ name: 'Owl', mode: 'once', files: [hash(A), hash(BAD)] }];
     const f = file(doc);
     const result = await runImport(f, await planImport(f));
-    expect(result.audioFailed).toEqual([expect.stringContaining('broken.wav: decode failed')]);
+    expect(result.audioFailed).toEqual([expect.stringContaining('broken.wav: not an audio file')]);
     expect(result.notes.missingFiles).toBe(1);
     const [board] = await boardGetAll();
     expect((board.pads[0] as SinglePad).files).toEqual([{ hash: hash(A) }]);

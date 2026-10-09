@@ -723,3 +723,98 @@ describe('guard: American spelling outside Markdown (owner decision 2026-10-04)'
     expect(bad).toEqual([]);
   });
 });
+
+describe('guard: controls work with Tab and have a name (owner rule 2026-10-02)', () => {
+  // CLAUDE.md UI rules: every control works with the Tab key and has an accessible name (icon
+  // buttons: aria-label). axe (tests/e2e/a11y.spec.ts) checks names at runtime; it cannot see a
+  // click handler on a plain element, so that half is checked here, in the source.
+  const NATIVE = new Set(['button', 'a', 'input', 'select', 'textarea', 'summary', 'label']);
+  const ICONS = new Set(['PixelIcon', 'IconGlyph']);
+
+  /** Plain elements allowed to take a click, each with its reason. */
+  const ALLOWED_CLICKS: Record<string, string> = {
+    'components/TopBar.tsx sb-mode-badge':
+      'never shown — no screen passes `mode`; becomes a button when one does',
+  };
+
+  type Found = {
+    at: string;
+    tag: string;
+    attrs: Map<string, string>;
+    node: ts.JsxElement | ts.JsxSelfClosingElement;
+  };
+  const elements: Found[] = componentFiles.flatMap((file) => {
+    const sf = ts.createSourceFile(
+      file,
+      readFileSync(join(SRC, file), 'utf8'),
+      ts.ScriptTarget.Latest,
+      true,
+      ts.ScriptKind.TSX,
+    );
+    const out: Found[] = [];
+    const visit = (n: ts.Node): void => {
+      const el = ts.isJsxElement(n) ? n.openingElement : ts.isJsxSelfClosingElement(n) ? n : null;
+      if (el) {
+        const attrs = new Map<string, string>();
+        for (const p of el.attributes.properties)
+          if (ts.isJsxAttribute(p))
+            attrs.set(p.name.getText(sf), p.initializer ? p.initializer.getText(sf) : 'true');
+        const line = sf.getLineAndCharacterOfPosition(n.getStart(sf)).line + 1;
+        out.push({
+          at: `${file}:${line}`,
+          tag: el.tagName.getText(sf),
+          attrs,
+          node: n as Found['node'],
+        });
+      }
+      ts.forEachChild(n, visit);
+    };
+    visit(sf);
+    return out;
+  });
+
+  /** Whether the element shows text somewhere inside (text, or an expression that is no icon). */
+  const showsText = (n: ts.Node): boolean =>
+    ts.isJsxText(n)
+      ? n.getText().trim() !== ''
+      : ts.isJsxExpression(n)
+        ? n.expression !== undefined &&
+          !(ts.isJsxSelfClosingElement(n.expression) && ICONS.has(n.expression.tagName.getText()))
+        : ts.isJsxSelfClosingElement(n) && ICONS.has(n.tagName.getText())
+          ? false
+          : ts.isJsxElement(n)
+            ? n.children.some(showsText)
+            : false;
+
+  it('finds buttons and click handlers (sanity)', () => {
+    expect(elements.filter((e) => e.tag === 'button').length).toBeGreaterThan(40);
+  });
+
+  it('a click handler sits on a control that Tab reaches', () => {
+    const bad = elements
+      .filter((e) => /^[a-z]/.test(e.tag) && !NATIVE.has(e.tag) && e.attrs.has('onClick'))
+      .filter((e) => !(e.attrs.has('role') && e.attrs.has('tabIndex')))
+      // closing a dialog by a click beside it — Escape does the same (ADR-0074)
+      .filter((e) => !/backdrop/.test(e.attrs.get('class') ?? ''))
+      // only keeps a click inside from reaching what is behind
+      .filter((e) => !/^\{\(?e\)? => e\.stopPropagation\(\)\}$/.test(e.attrs.get('onClick') ?? ''))
+      .filter((e) => {
+        const cls = /sb-[\w-]+/.exec(e.attrs.get('class') ?? '')?.[0] ?? '';
+        return !(`${e.at.split(':')[0]} ${cls}` in ALLOWED_CLICKS);
+      })
+      .map((e) => `${e.at} <${e.tag}>`);
+    expect(
+      bad,
+      'use a <button> (sb-row-button for a list row) — or role + tabIndex + keys',
+    ).toEqual([]);
+  });
+
+  it('a button that shows only an icon has an aria-label', () => {
+    const bad = elements
+      .filter((e) => e.tag === 'button' && ts.isJsxElement(e.node))
+      .filter((e) => !(e.node as ts.JsxElement).children.some(showsText))
+      .filter((e) => !e.attrs.has('aria-label') && !e.attrs.has('aria-labelledby'))
+      .map((e) => e.at);
+    expect(bad, 'add aria-label (a title alone is not reliably read)').toEqual([]);
+  });
+});

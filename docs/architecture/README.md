@@ -126,6 +126,7 @@ file. Format: `docs/architecture/_template.md`.
 | [ADR-0060](0060-commit-message-convention.md)     | Commit messages follow Conventional Commits                                   | Accepted               | infrastructure | 2026-10-01 |
 | [ADR-0064](0064-code-comments.md)                 | Code comments — TSDoc doc comments, file overviews, line comments for the why | Accepted               | cross-cutting  | 2026-10-03 |
 | [ADR-0076](0076-required-checks-on-main.md)       | Required checks on main                                                       | Accepted               | infrastructure | 2026-10-08 |
+| [ADR-0080](0080-accessibility-checks.md)          | Accessibility checks                                                          | Accepted               | infrastructure | 2026-10-09 |
 
 ### Process & product decisions
 

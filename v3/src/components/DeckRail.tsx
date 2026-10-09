@@ -221,14 +221,22 @@ export function DeckRail({
       <div
         class={'sb-deck-tab' + (allPadsActive ? ' is-active' : '')}
         data-testid="deck-rail-all-pads-tab"
-        onClick={() => {
-          onAllPadsSelect();
-          setPendingDeleteId(null);
-        }}
       >
-        <span class="sb-deck-num-badge">≡</span>
-        <span class="sb-flex-trunc">All pads</span>
-        <span class="sb-count-text">{board.pads.length}</span>
+        {/* A real button — reached with Tab (owner rule 2026-10-02) */}
+        <button
+          type="button"
+          class="sb-row-button"
+          aria-current={allPadsActive || undefined}
+          data-testid="deck-rail-all-pads-button"
+          onClick={() => {
+            onAllPadsSelect();
+            setPendingDeleteId(null);
+          }}
+        >
+          <span class="sb-deck-num-badge">≡</span>
+          <span class="sb-flex-trunc">All pads</span>
+          <span class="sb-count-text">{board.pads.length}</span>
+        </button>
       </div>
       {decks.length === 0 ? (
         <div class="sb-panel-empty">
@@ -251,21 +259,13 @@ export function DeckRail({
                   (isConflict ? ' is-conflict' : '')
                 }
                 data-testid={`deck-rail-deck-tab-${deck.id}`}
-                onClick={() => {
-                  if (editingId !== deck.id) {
-                    onDeckSelect(deck.id);
-                    setPendingDeleteId(null);
-                  }
-                }}
-                onDblClick={() => startRename(deck)}
               >
-                {/* Deck number badge: its position in the rail, 1, 2, 3 … without gaps
-                    (owner decision 2026-10-02), not the stored order number */}
-                <span class="sb-deck-num-badge">{position + 1}</span>
-
                 {/* Name or inline edit input */}
                 {editingId === deck.id ? (
                   <>
+                    {/* Deck number badge: its position in the rail, 1, 2, 3 … without gaps
+                        (owner decision 2026-10-02), not the stored order number */}
+                    <span class="sb-deck-num-badge">{position + 1}</span>
                     <input
                       ref={inputRef}
                       data-testid="deck-rail-name-input"
@@ -286,19 +286,32 @@ export function DeckRail({
                         }
                       }}
                       onBlur={() => commitRename(deck.id, 'blur')}
-                      onClick={(e) => e.stopPropagation()}
                       class="sb-deck-rename-input"
+                      aria-label="Deck name"
                       autoFocus
                     />
                     {isConflict && <span class="sb-deck-tab-conflict-glyph">!</span>}
                   </>
                 ) : (
-                  <span class="sb-flex-trunc">{deck.name}</span>
-                )}
-
-                {/* Pad count */}
-                {editingId !== deck.id && (
-                  <span class="sb-count-text">{deck.placements.length}</span>
+                  /* Choosing the deck is a real button — reached with Tab (owner rule
+                     2026-10-02); a double click renames, as before */
+                  <button
+                    type="button"
+                    class="sb-row-button"
+                    aria-current={activeDeckId === deck.id || undefined}
+                    data-testid={`deck-rail-select-button-${deck.id}`}
+                    onClick={() => {
+                      onDeckSelect(deck.id);
+                      setPendingDeleteId(null);
+                    }}
+                    onDblClick={() => startRename(deck)}
+                  >
+                    {/* Deck number badge: its position in the rail, 1, 2, 3 … without gaps
+                        (owner decision 2026-10-02), not the stored order number */}
+                    <span class="sb-deck-num-badge">{position + 1}</span>
+                    <span class="sb-flex-trunc">{deck.name}</span>
+                    <span class="sb-count-text">{deck.placements.length}</span>
+                  </button>
                 )}
 
                 {/* Action chips (visible on hover / active) */}
@@ -308,6 +321,7 @@ export function DeckRail({
                       class="sb-btn sb-btn-sm sb-btn-ghost sb-btn-icon"
                       data-testid={`deck-rail-rename-button-${deck.id}`}
                       title="Rename deck"
+                      aria-label={`Rename deck ${deck.name}`}
                       onClick={(e) => {
                         e.stopPropagation();
                         startRename(deck);
@@ -319,6 +333,7 @@ export function DeckRail({
                       class="sb-btn sb-btn-sm sb-btn-ghost sb-btn-icon"
                       data-testid={`deck-rail-copy-button-${deck.id}`}
                       title="Duplicate deck"
+                      aria-label={`Duplicate deck ${deck.name}`}
                       onClick={(e) => {
                         e.stopPropagation();
                         duplicateDeck(deck);
@@ -333,6 +348,11 @@ export function DeckRail({
                         pendingDeleteId === deck.id
                           ? 'Click again to confirm delete'
                           : 'Delete deck'
+                      }
+                      aria-label={
+                        pendingDeleteId === deck.id
+                          ? `Delete deck ${deck.name} — press again to confirm`
+                          : `Delete deck ${deck.name}`
                       }
                       onClick={(e) => {
                         e.stopPropagation();

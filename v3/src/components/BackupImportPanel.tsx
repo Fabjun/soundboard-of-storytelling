@@ -28,8 +28,11 @@ const ERROR_TEXT: Record<BackupErrorKind, string> = {
 
 const plural = (n: number, word: string) => `${n} ${word}${n === 1 ? '' : 's'}`;
 
+/** The words for a failed import — plain, with a next step (Nielsen 9); the cause to the console. */
 function errorText(e: unknown): string {
-  return e instanceof BackupError ? ERROR_TEXT[e.kind] : `Import failed: ${String(e)}`;
+  if (e instanceof BackupError) return ERROR_TEXT[e.kind];
+  console.error('Import failed:', e);
+  return 'The import stopped with an unexpected error. Reload the app and look at the board list; if the board is missing, import the same file again.';
 }
 
 /** What the import dropped or could not resolve, one line each (empty when nothing). */

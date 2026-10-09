@@ -38,10 +38,16 @@ export function BackupExportPanel({
       .then(
         (blob) => !canceled && setStep({ kind: 'ready', blob, name: backupFileName(new Date()) }),
       )
-      .catch(
-        (e: unknown) =>
-          !canceled && setStep({ kind: 'error', message: `Backup failed: ${String(e)}` }),
-      );
+      .catch((e: unknown) => {
+        // Plain words and a next step (Nielsen 9); the technical cause for diagnosis
+        console.error('Backup failed:', e);
+        if (!canceled)
+          setStep({
+            kind: 'error',
+            message:
+              'The backup could not be made. Close this, reload the app and press EXPORT again; if it fails again, free up storage space first.',
+          });
+      });
     return () => {
       canceled = true;
     };
