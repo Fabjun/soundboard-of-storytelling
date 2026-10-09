@@ -7,6 +7,19 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.184 — 2026-10-08
+
+### Added
+
+- feat(mode): switching GAME / SETUP stops every sound at once and ends a running STOP ALL fade (Slice 12c; switchMode in src/state/modeControl.ts, stopAllNow in src/state/stopControl.ts) — provisional detail: no fade, review pending
+- feat(mode): the Lock — a toggle with a lock icon next to the mode toggle, GAME only; while on, SETUP is dimmed (aria-disabled) and cannot be chosen; off by default and after every reload (modeLocked lives in memory only); decks still switch
+- feat(icons): sos-ui gains its own lock icon (16×16, ADR-0072)
+
+### Internal
+
+- test: unit modeControl (switch stops first, same mode / Lock change nothing, Lock in GAME only, starts off) and stopControl stopAllNow; E2E mode-lock in Chromium and WebKit (GAME only, locked tap changes nothing, unlock, reload turns it off) and stop-all "switching to SETUP stops every sound"; counter-checked (Lock without effect, switch without stop → red); visual baseline board in GAME with the lock
+- docs: product §3 Switching modes / Lock built with the provisional details marked; slice table 12c in review; backlog "Two styles for a disabled control"; iPhone checklist "Mode switch stops sounds; the Lock"
+
 ## 3.0.183 — 2026-10-08
 
 ### Added

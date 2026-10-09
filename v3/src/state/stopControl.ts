@@ -47,8 +47,7 @@ function endFade(): void {
  */
 export function pressStopAll(audio: StopControlAudio = engine): void {
   if (stopAllFading.value) {
-    endFade();
-    audio.stopAll();
+    stopAllNow(audio);
     return;
   }
   const playing = [...playingPads.value];
@@ -56,6 +55,15 @@ export function pressStopAll(audio: StopControlAudio = engine): void {
   for (const id of playing) audio.stop(id, false, STOP_ALL_FADE);
   stopAllFading.value = true;
   fadeTimer = setTimeout(endFade, STOP_ALL_FADE * 1000);
+}
+
+/**
+ * Stops everything at once and ends a running STOP ALL fade — the second stage of STOP ALL, and
+ * what a mode switch does (Slice 12c, docs/product/README.md#switching-modes).
+ */
+export function stopAllNow(audio: StopControlAudio = engine): void {
+  endFade();
+  audio.stopAll();
 }
 
 /** The pad with this id in any board's pool (a combo's own id is a pad too). */

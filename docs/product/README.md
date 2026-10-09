@@ -54,22 +54,22 @@ are `AppMode = 'play' | 'edit'`; in the UI and in all docs they are **GAME** and
 
 ### Switching modes
 
-| Statement                                                             | Status      |
-| --------------------------------------------------------------------- | ----------- |
-| Modes are switched **only** via the mode toggle — never by a gesture. | **Decided** |
-| Switching modes stops all playing sounds. _Not yet built._            | **Decided** |
-| The app starts in GAME.                                               | **Decided** |
+| Statement                                                                                                                     | Status      |
+| ----------------------------------------------------------------------------------------------------------------------------- | ----------- |
+| Modes are switched **only** via the mode toggle — never by a gesture.                                                         | **Decided** |
+| Switching modes stops all playing sounds — built in 3.0.184 (Slice 12c); at once, without a fade (owner decision 2026-10-09). | **Decided** |
+| The app starts in GAME.                                                                                                       | **Decided** |
 
 ### Lock
 
 Protects a running game session against an accidental switch into SETUP.
 
-| Statement                                                                 | Status                        |
-| ------------------------------------------------------------------------- | ----------------------------- |
-| A separate toggle with a lock icon, shown in GAME only.                   | **Decided** — _not yet built_ |
-| Off by default; off again after every reload.                             | **Decided** — _not yet built_ |
-| One tap locks, one tap unlocks.                                           | **Decided** — _not yet built_ |
-| Locks **only** the mode switch. Decks can still be switched while locked. | **Decided** — _not yet built_ |
+| Statement                                                                 | Status                                                                                                                     |
+| ------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| A separate toggle with a lock icon, shown in GAME only.                   | **Decided** — built in 3.0.184; right next to the mode toggle; the locked SETUP half is dimmed (owner decision 2026-10-09) |
+| Off by default; off again after every reload.                             | **Decided** — built in 3.0.184                                                                                             |
+| One tap locks, one tap unlocks.                                           | **Decided** — built in 3.0.184                                                                                             |
+| Locks **only** the mode switch. Decks can still be switched while locked. | **Decided** — built in 3.0.184                                                                                             |
 
 ### Parked
 

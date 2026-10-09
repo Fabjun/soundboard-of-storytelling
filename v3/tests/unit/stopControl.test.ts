@@ -12,6 +12,7 @@ import {
   STOP_ALL_FADE,
   pressStopAll,
   stopAllFading,
+  stopAllNow,
   stopLast,
   type StopControlAudio,
 } from '../../src/state/stopControl';
@@ -112,5 +113,18 @@ describe('stop the last sound (Enter)', () => {
     playingPads.value = new Set(['x']);
     stopLast(audio);
     expect(calls).toEqual(['stop x false 0']);
+  });
+});
+
+describe('stop everything now (mode switch, Slice 12c)', () => {
+  it('stops at once and ends a running STOP ALL fade', () => {
+    playingPads.value = new Set(['a']);
+    pressStopAll(audio);
+    stopAllNow(audio);
+    expect(calls).toEqual(['stop a false 2.5', 'stopAll']);
+    expect(stopAllFading.value).toBe(false);
+    // the ended fade's timer changes nothing later
+    vi.advanceTimersByTime(3000);
+    expect(stopAllFading.value).toBe(false);
   });
 });

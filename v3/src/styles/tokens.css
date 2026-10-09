@@ -1408,6 +1408,11 @@
 .sb-mode-toggle.is-compact .sb-mode-toggle-half {
   padding: 0 var(--space-3);
 }
+/* Lock on (Slice 12c): the SETUP half cannot be chosen — dimmed like a disabled .sb-btn */
+.sb-mode-toggle-half[aria-disabled='true'] {
+  opacity: 0.4;
+  cursor: default;
+}
 
 /* Spark layer — absolutely positioned sibling, not clipped by toggle */
 .sb-mode-toggle-sparks {

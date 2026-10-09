@@ -27,6 +27,7 @@ import {
   libraryItems,
 } from '../state/store';
 import { applyBoardChange, updateBoard } from '../state/boardWrites';
+import { switchMode } from '../state/modeControl';
 import {
   getLastPlayed,
   getLastView,
@@ -144,7 +145,8 @@ export function BoardScreen(): JSX.Element {
   // ── Handlers ────────────────────────────────────────────────────────────────
 
   function handleModeSwitch(newMode: AppMode) {
-    currentMode.value = newMode;
+    // Stops every sound first; the Lock keeps GAME (Slice 12c)
+    switchMode(newMode);
   }
 
   function handlePadSelect(pad: Pad) {

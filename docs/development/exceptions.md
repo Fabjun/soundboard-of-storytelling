@@ -31,7 +31,7 @@ Inline: `// eslint-disable-next-line <rule> -- <reason>` (enforced by `require-d
 | Location                                       | Rule                                      | Reason                                                                                                               |
 | ---------------------------------------------- | ----------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
 | `v3/src/components/IconPicker.tsx:263`         | `react-hooks/exhaustive-deps`             | measured after every layout (as TanStack's adapter updates the virtualizer); setShape runs only when a value changed |
-| `v3/src/screens/BoardScreen.tsx:95`            | `react-hooks/exhaustive-deps`             | auto-select only on board identity change, never override the user's deck choice                                     |
+| `v3/src/screens/BoardScreen.tsx:96`            | `react-hooks/exhaustive-deps`             | auto-select only on board identity change, never override the user's deck choice                                     |
 | `v3/tests/e2e/deck-crud.spec.ts:76`            | `playwright/no-skipped-test`              | quarantine: feature not built (BACKLOG "Deck reorder")                                                               |
 | `v3/tests/e2e/mobile/overflow.spec.ts:30`      | `playwright/no-skipped-test`              | quarantine: mobile layout not built until Slice 13 (BACKLOG "Re-enable mobile layout tests")                         |
 | `v3/tests/e2e/mobile/touch-targets.spec.ts:34` | `playwright/no-skipped-test`              | quarantine: mobile layout not built until Slice 13 (BACKLOG "Re-enable mobile layout tests")                         |
@@ -114,8 +114,8 @@ Unused today, kept for a later slice or a parked feature (`@reserved`, ADR-0064)
 | `v3/src/audio/index.ts:163`  | `fadeOutAll`   | Slice 12 — STOP ALL in two stages, the first fades, K16 (docs/product/README.md#input-keyboard--numpad) |
 | `v3/src/audio/index.ts:209`  | `crossfade`    | Parked — crossfade between pads (docs/product/README.md#pad-options)                                    |
 | `v3/src/lib/padUtils.ts:189` | `padTypeGlow`  | Slice 13 — a playing pad glows in its type color (docs/design/components/pad.md)                        |
-| `v3/src/state/store.ts:55`   | `activeTheme`  | Slice 14 — themes                                                                                       |
-| `v3/src/state/store.ts:109`  | `masterVolume` | Parked — master volume (docs/product/README.md#pad-options)                                             |
+| `v3/src/state/store.ts:61`   | `activeTheme`  | Slice 14 — themes                                                                                       |
+| `v3/src/state/store.ts:115`  | `masterVolume` | Parked — master volume (docs/product/README.md#pad-options)                                             |
 
 ## Prose lint exceptions (Vale) (14)
 

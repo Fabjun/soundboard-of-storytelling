@@ -42,6 +42,12 @@ export const allPadsView = signal(false);
 export const currentMode = signal<AppMode>('play');
 
 /**
+ * The Lock (docs/product/README.md#lock): while on, the mode toggle cannot leave GAME. Off by
+ * default and after every reload — kept in memory only, never stored.
+ */
+export const modeLocked = signal(false);
+
+/**
  * Whether the screen is kept on (a screen wake lock is held) — in GAME on a board, always (owner
  * decision 2026-10-04); set by src/lib/wakeLock.ts through App, shown in the status bar.
  */

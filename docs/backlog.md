@@ -1496,6 +1496,14 @@ details and minimum touch targets — Apple HIG 44 pt, WCAG 2.5.8 24 px), tokens
 blocks new px values for type and spacing.
 **When:** before Slice 13.
 
+### Two styles for a disabled control
+
+Found 2026-10-08 (Slice 12c): `.sb-btn:disabled` dims to 0.4 with `cursor: default`,
+`.sb-tab:disabled` to 0.5 with `cursor: not-allowed` (`v3/src/styles/tokens.css`). The locked
+SETUP half of the mode toggle follows `.sb-btn` (no third style). One disabled look — a token
+for the dimming and one cursor — is a structure clean-up, with a guard against a new style.
+**When:** the structure step "Relative units for sizes" before Slice 13 (same file).
+
 ### Tab access and plain errors (audit of the existing screens)
 
 Owner decision 2026-10-02 (CLAUDE.md UI rules): every control reachable with the Tab key and named

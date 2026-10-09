@@ -16,6 +16,8 @@ interface ModeToggleProps {
   mode: AppMode;
   onSwitch: (newMode: AppMode) => void;
   compact?: boolean;
+  /** The Lock is on: SETUP cannot be chosen (Slice 12c). */
+  locked?: boolean;
 }
 
 // Spark configuration
@@ -61,14 +63,19 @@ function generateSparks(destMode: AppMode, count: number, rect: DOMRect): Spark[
  * Switches between SETUP and GAME; a switch throws sparks toward the new side (none when the
  * user prefers reduced motion). `compact` is the narrow form for small screens.
  */
-export function ModeToggle({ mode, onSwitch, compact = false }: ModeToggleProps): JSX.Element {
+export function ModeToggle({
+  mode,
+  onSwitch,
+  compact = false,
+  locked = false,
+}: ModeToggleProps): JSX.Element {
   const toggleRef = useRef<HTMLDivElement>(null);
   const sparksRef = useRef<HTMLElement[]>([]);
   const prefersReducedMotion =
     typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   function handleClick(destMode: AppMode) {
-    if (destMode === mode) return;
+    if (destMode === mode || locked) return;
 
     if (!prefersReducedMotion && toggleRef.current) {
       const rect = toggleRef.current.getBoundingClientRect();
@@ -124,6 +131,8 @@ export function ModeToggle({ mode, onSwitch, compact = false }: ModeToggleProps)
         data-testid="mode-toggle-setup-button"
         role="button"
         aria-pressed={mode === 'edit'}
+        aria-disabled={locked || undefined}
+        title={locked ? 'Locked — unlock to switch to SETUP' : undefined}
         tabIndex={0}
         onClick={() => handleClick('edit')}
         onKeyDown={(e) => {
