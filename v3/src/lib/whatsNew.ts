@@ -89,6 +89,13 @@ export function withEarlyVersions(
 /** The release notes the start screen shows, newest first (checked by whatsNew.test.ts). */
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
+    version: '3.0.197',
+    date: '2026-10-09',
+    behindTheScenes: [
+      'A known problem with long pad names on narrow phone screens is recorded for the upcoming phone layout. The app works exactly as before.',
+    ],
+  },
+  {
     version: '3.0.196',
     date: '2026-10-09',
     behindTheScenes: [

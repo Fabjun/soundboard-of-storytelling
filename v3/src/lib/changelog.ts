@@ -17,10 +17,17 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.196';
+export const APP_VERSION = '3.0.197';
 
 /** The developer log, newest first; CHANGELOG.md is generated from it (sync-changelog). */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.197',
+    date: '2026-10-09',
+    items: [
+      'docs: backlog "Pad names cut off on narrow screens" — found in phone screenshots (390 × 844): with the deck rail open the pads shrink and the name runs under the next row; fixed with the pad detail levels of Slice 13, which the owner decides (pad.md PQ2 / PQ4)',
+    ],
+  },
   {
     version: '3.0.196',
     date: '2026-10-09',

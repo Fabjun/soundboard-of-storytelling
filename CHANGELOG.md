@@ -7,6 +7,12 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.197 — 2026-10-09
+
+### Internal
+
+- docs: backlog "Pad names cut off on narrow screens" — found in phone screenshots (390 × 844): with the deck rail open the pads shrink and the name runs under the next row; fixed with the pad detail levels of Slice 13, which the owner decides (pad.md PQ2 / PQ4)
+
 ## 3.0.196 — 2026-10-09
 
 ### Internal
