@@ -11,7 +11,7 @@ release notes the app shows are written separately for its users (`v3/src/lib/wh
 
 ### Added
 
-- feat(status): the status bar says whether changes are saved (Slice 12e) — SAVING… while a write waits or runs (pendingSaves), SAVED when none does, NOT SAVED after a failed board save (red, announced as an alert, the tooltip says what happened and what to do; sb-error-label); saveState in src/state/store.ts — provisional words and place, review pending
+- feat(status): the status bar says whether changes are saved (Slice 12e) — SAVING… while a write waits or runs (pendingSaves), SAVED when none does, NOT SAVED after a failed board save (red, announced as an alert, the tooltip says what happened and what to do; sb-error-label); saveState in src/state/store.ts — words, place and what counts accepted by the owner 2026-10-09
 
 ### Fixed
 

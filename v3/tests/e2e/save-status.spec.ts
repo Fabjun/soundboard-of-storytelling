@@ -2,7 +2,7 @@
  * @fileoverview Full E2E — the status bar says whether changes are saved (Slice 12e)
  *
  * The slice table names "a visible saving / saved status" for Slice 12; the words and the place
- * (SAVING… / SAVED next to LIVE / EDIT) are provisional — review pending. NOT SAVED after a failed
+ * (SAVING… / SAVED next to LIVE / EDIT) are the owner's decision of 2026-10-09. NOT SAVED after a failed
  * save is covered by tests/unit/boardWrites.test.ts (a failed IndexedDB write cannot be forced
  * here). Needs no playback — runs in WebKit too.
  */
