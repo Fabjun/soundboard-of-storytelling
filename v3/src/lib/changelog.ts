@@ -28,6 +28,7 @@ export const CHANGELOG: ChangelogEntry[] = [
       'docs: three "review pending" markers left after the owner decided on 2026-10-09 now name the decision (src/state/modeControl.ts, the E2E specs mode-lock and stop-all) — the second time such a marker went stale (the Slice 12b backlog note before)',
       'test: codeGuards "code and tests carry no review status" — no file in src, tests or scripts says "review pending", also across a comment line break; what waits for the owner is listed in its pull request; counter-checked (the old marker in modeControl.ts, split over two lines, and the one in mode-lock.spec.ts → red, each by name)',
       'test: the codeGuards overview numbers every guard (Tab and names, rem, the disabled look were missing)',
+      'ci(hooks): the pre-push gate runs lint and the format check over the whole repository, as CI does — lint-staged checks staged files only, so a table aligned by hand while resolving a rebase conflict first failed in CI (PR #64); about 8 s; counter-checked (a misaligned Markdown table → red, lint alone stays green)',
     ],
   },
   {

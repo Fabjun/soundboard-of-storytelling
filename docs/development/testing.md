@@ -328,9 +328,11 @@ Generated from `.husky/pre-push`:
 | 3   | security audit (high/critical blocks)                                      | `npm audit --audit-level=high` |
 | 4   | bundle size check                                                          | `npm run size`                 |
 | 5   | unused files, exports and dependencies (knip)                              | `npm run knip`                 |
-| 6   | full E2E suite (all dev-server projects) for CI parity                     | `npm run test:e2e:all`         |
-| 7   | E2E against the production build (smoke + full + PWA)                      | `npm run test:e2e:prod`        |
-| 8   | visual regression (macOS) (conditional)                                    | `npm run test:e2e:visual`      |
+| 6   | lint (whole repository, as in CI)                                          | `npm run lint`                 |
+| 7   | format check (whole repository, as in CI)                                  | `npm run format:check`         |
+| 8   | full E2E suite (all dev-server projects) for CI parity                     | `npm run test:e2e:all`         |
+| 9   | E2E against the production build (smoke + full + PWA)                      | `npm run test:e2e:prod`        |
+| 10  | visual regression (macOS) (conditional)                                    | `npm run test:e2e:visual`      |
 
 <!-- AUTO-GENERATED:pre-push-steps END -->
 

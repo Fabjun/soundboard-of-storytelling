@@ -62,6 +62,26 @@ npm run knip || {
 }
 printf '✅ Nothing unused.\n\n'
 
+# Lint and format over the whole repository, as CI runs them (2026-10-09): lint-staged checks
+# staged files only, so files committed past it — a rebase that resolved a conflict, an amend —
+# first failed in CI (PR #64, an unaligned Markdown table).
+printf '🔍 Pre-push: lint (whole repository, as in CI)...\n'
+npm run lint || {
+  printf '\n❌ Lint FAILED — push aborted. Read the errors above.\n'
+  printf '   Deliberate bypass (ADR-0053 rules): git push --no-verify\n\n'
+  exit 1
+}
+printf '✅ Lint OK.\n\n'
+
+printf '🎨 Pre-push: format check (whole repository, as in CI)...\n'
+npm run format:check || {
+  printf '\n❌ Format check FAILED — push aborted.\n'
+  printf '   Fix: npm run format (Markdown: npm run format:md), then commit.\n'
+  printf '   Deliberate bypass (ADR-0053 rules): git push --no-verify\n\n'
+  exit 1
+}
+printf '✅ Format OK.\n\n'
+
 printf '🎭 Pre-push: full E2E suite (all dev-server projects) for CI parity...\n'
 printf '   Estimated: ~2-3 min. Bypass with: git push --no-verify\n\n'
 
