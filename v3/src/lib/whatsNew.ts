@@ -89,6 +89,16 @@ export function withEarlyVersions(
 /** The release notes the start screen shows, newest first (checked by whatsNew.test.ts). */
 export const WHATS_NEW: WhatsNewEntry[] = [
   {
+    version: '3.0.185',
+    date: '2026-10-08',
+    new: [
+      'The status bar shows whether changes are stored: SAVING… while a change is being written, SAVED when everything is stored.',
+    ],
+    fixed: [
+      'When a change cannot be stored (for example when the device is out of space), the status bar now says NOT SAVED in red instead of silently going back to the stored state.',
+    ],
+  },
+  {
     version: '3.0.184',
     date: '2026-10-08',
     new: [

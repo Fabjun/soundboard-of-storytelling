@@ -8,7 +8,7 @@
 import { IDBFactory } from 'fake-indexeddb';
 import type { Board } from '../../src/types';
 import { boardGet, _resetDB } from '../../src/db/idb';
-import { boards, pendingSaves } from '../../src/state/store';
+import { boards, lastSaveFailed, pendingSaves, saveState } from '../../src/state/store';
 import { applyBoardChange, createBoard, updateBoard, whenSaved } from '../../src/state/boardWrites';
 
 const board = (): Board => ({
@@ -25,6 +25,7 @@ beforeEach(() => {
   (globalThis as Record<string, unknown>).indexedDB = new IDBFactory();
   _resetDB();
   boards.value = [];
+  lastSaveFailed.value = false;
 });
 
 const stored = () => boards.value.find((b) => b.id === 'b');
@@ -132,5 +133,26 @@ describe('whenSaved', () => {
     expect(pendingSaves.value).toBe(0);
     expect((await boardGet('b'))!.name).toBe('Later');
     await saved;
+  });
+});
+
+describe('save state (status bar, Slice 12e)', () => {
+  it('saving while a write runs, failed after a failed save, saved again after the next success', async () => {
+    expect(saveState.value).toBe('saved');
+    const creating = createBoard(board());
+    expect(saveState.value).toBe('saving');
+    await creating;
+    expect(saveState.value).toBe('saved');
+
+    const error = vi.spyOn(console, 'error').mockImplementation(() => {});
+    await updateBoard('b', (b) => Object.assign({ ...b }, { bad: () => 0 }));
+    expect(lastSaveFailed.value).toBe(true);
+    expect(saveState.value).toBe('failed');
+    error.mockRestore();
+
+    const fixing = updateBoard('b', (b) => ({ ...b, name: 'Again' }));
+    expect(saveState.value).toBe('saving'); // a running save wins over the failure
+    await fixing;
+    expect(saveState.value).toBe('saved');
   });
 });
