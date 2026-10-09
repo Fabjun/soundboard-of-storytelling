@@ -23,18 +23,20 @@ Available now:
 - Three pad types: one-shot sounds and loops, each with one or several files, and combos that
   start other pads in steps
 - Combo editor for building sequences from existing pads
+- Pad editor with waveform preview, trim, fades, repeat count, icons and several files per pad
+- Live control: pads on numeric-keypad keys, stop all in two stages (fade, then cut), stop the
+  last sound, pause and resume, a lock that keeps the play mode, and a visible saving status
 - Backup and restore of all boards and audio in a single file, including migration from the
   prototype
 - Separate modes for preparing a board (SETUP) and for playing during a session (GAME)
+- Works with the keyboard alone and with screen readers; text follows the system text size
 - Installable, offline-capable web app
 
 Planned next:
 
-- Full pad editor: preview, trim, repeat, icons, templates and several files per pad
-- Live control via numeric keypad, stop all and pause
-- Layout for smartphones of all sizes
+- Layout for smartphones of all sizes, with a quick-access bar and search
 - Settings and themes
-- Library at the prototype's full scope, help on first launch, undo and redo
+- Library at the prototype's full scope with pad templates, help on first launch, undo and redo
 
 ## Technology
 

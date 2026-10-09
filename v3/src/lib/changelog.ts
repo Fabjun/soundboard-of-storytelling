@@ -17,10 +17,18 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.194';
+export const APP_VERSION = '3.0.195';
 
 /** The developer log, newest first; CHANGELOG.md is generated from it (sync-changelog). */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.195',
+    date: '2026-10-09',
+    items: [
+      'docs: Slice 12 (live control) on main — README "Available now" names the pad editor (Slice 15), live control (Slice 12), keyboard and screen-reader use and text size; "Planned next" keeps layout, settings, library; backlog PANIC / fade-all and Performance Lock marked built; the iPhone checklist items of Slices 12 and 15 stay open',
+      'test: coverage measured after the Slice 12 merges (lines 93.68 · statements 92.76 · functions 94.24 · branches 91.83) — the floor 93 / 92 / 94 / 91 stays',
+    ],
+  },
   {
     version: '3.0.194',
     date: '2026-10-09',

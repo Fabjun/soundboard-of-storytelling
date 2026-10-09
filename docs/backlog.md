@@ -393,14 +393,15 @@ available.
 
 ### PANIC / fade-all button
 
-Global fade button alongside the hard STOP. `fadeOutAll(duration)` is already implemented and
+✅ Done (3.0.183, Slice 12b). Global fade button alongside the hard STOP. `fadeOutAll(duration)` is already implemented and
 exported — pure UI work; no audio changes needed. See [Design Session 2026-06-04](#design--feature-clarification-session--2026-06-04) for full context
 (engine file refs: `engine.ts:375–412`, `index.ts:83–85`).
 **Note:** Not the scene-to-scene crossfade stub (→ [Real crossfade stub](#real-crossfade)).
 **When:** Slice 8.
 **Built in 3.0.183 (Slice 12b):** the first press of STOP ALL fades everything
-out (K16). It fades pad by pad, not with `fadeOutAll` — see "Engine: fade out all stops pads
-started during the fade".
+out (K16). It fades pad by pad, not with `fadeOutAll`, so a tap on a fading pad stops it;
+`fadeOutAll` (fixed in 3.0.194, "Engine: fade out all stops pads started during the fade") lets
+the pads go at once.
 
 ### Glanceable loop state
 
@@ -1135,7 +1136,8 @@ Palette (power-user escape hatch).
 Only missing: a UI button alongside the hard STOP. Pure UI work; no audio changes needed.
 **Note:** This is the global per-pad fade — not the scene-to-scene crossfade stub
 (→ [Real crossfade stub](#real-crossfade)).
-**→ Slice 8:** [PANIC / fade-all (Slice 8)](#panic--fade-all-button).
+**→ Slice 8:** [PANIC / fade-all (Slice 8)](#panic--fade-all-button) — built in 3.0.183 as the
+first stage of STOP ALL (Slice 12b).
 
 ### Glanceable loop state _(see also Slice 8)_
 
@@ -1216,7 +1218,8 @@ These are ideas, each with a stated relation to already-decided things and a con
 
 ### Performance Lock _(parked candidate — strong candidate, phone-specific)_
 
-→ moved to [product/README.md §3](product/README.md#3-app-modes-game-and-setup) (2026-09-28), now **Decided** in simplified form (lock toggle in GAME, locks the mode switch only).
+→ moved to [product/README.md §3](product/README.md#3-app-modes-game-and-setup) (2026-09-28), now **Decided** in simplified form (lock toggle in GAME, locks the mode switch only); built in
+3.0.184 (Slice 12c).
 
 ### Haptic gesture feedback _(parked candidate — verify iOS availability first)_
 
