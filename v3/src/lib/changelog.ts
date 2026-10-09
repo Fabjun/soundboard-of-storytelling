@@ -25,10 +25,10 @@ export const CHANGELOG: ChangelogEntry[] = [
     version: '3.0.192',
     date: '2026-10-09',
     items: [
-      'feat(audio): pause every sound and resume it (Slice 12d, K7 / K8, ADR-0079) — ENGINE CHANGE, details accepted by the owner 2026-10-09, merged after the iPhone playback check: engine.ts gains pauseAll / resumeAll (suspend / resume the context) and a userPaused flag, so returning to the app no longer ends a pause; the facade sets audioPaused and play() resumes first (K8)',
+      'feat(audio): pause every sound and resume it (Slice 12d, K7 / K8, ADR-0079) — ENGINE CHANGE, details accepted and merge released by the owner 2026-10-09 (iPhone playback check still open): engine.ts gains pauseAll / resumeAll (suspend / resume the context) and a userPaused flag, so returning to the app no longer ends a pause; the facade sets audioPaused and play() resumes first (K8)',
       'feat(keys): Space pauses / resumes in GAME unless a control has focus (togglePause, src/state/pauseControl.ts; nothing playing → nothing); during a pause STOP ALL stops at once and ends the pause, Enter stops at once (a fade cannot run on a suspended clock); PAUSED as a button in the top bar, a tap resumes',
       'test: engine pause (suspend; visibilitychange keeps the pause; resume; a new sound ends it), pauseControl, keyControl Space, stopControl during a pause; E2E pause (Chromium: Space, PAUSED, a new pad resumes, tap on PAUSED, STOP ALL during a pause); counter-checked (visibility ignoring the pause, play not ending it, Space never resuming, STOP ALL ignoring the pause → red); addLoopPad moved to the E2E helpers (stop-all used its own copy, and its own padCells)',
-      'docs: ADR-0079 (refines ADR-0043; accepted with the playback check); product K7 / K8 built with the owner decisions of 2026-10-09; slice table 12a–12e on main; iPhone checklist "Pause" (before the merge)',
+      'docs: ADR-0079 accepted (refines ADR-0043); product K7 / K8 built with the owner decisions of 2026-10-09; slice table 12a–12e on main; iPhone checklist "Pause" open',
     ],
   },
   {

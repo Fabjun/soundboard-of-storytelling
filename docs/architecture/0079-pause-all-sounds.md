@@ -1,6 +1,6 @@
 # ADR-0079: Pause all sounds
 
-**Status:** Proposed
+**Status:** Accepted
 **Date:** 2026-10-08
 **Slice:** Slice 12
 **Refines:** ADR-0043
@@ -15,9 +15,9 @@ PAUSED shows. The product doc notes that this needs an engine change, approved s
 engine resumes a suspended context whenever a pad plays (wanted here, K8) and whenever the app
 becomes visible again (`visibilitychange`, ADR-0043) — the second would end a pause behind the
 user's back. Built while the owner was away (2026-10-08) on its own branch, after the precedent
-of the engine fix O1 / PR #35: prepared, then the owner checks playback and decides. The details
-below were accepted by the owner on 2026-10-09; the status turns Accepted with the playback check
-(iPhone checklist "Pause") before the merge.
+of the engine fix O1 / PR #35: prepared, then the owner decides. The owner accepted the details
+on 2026-10-09 and released the merge the same day, before the iPhone playback check; that check
+(iPhone checklist "Pause") stays open.
 
 ## Decision
 
@@ -48,8 +48,8 @@ AudioContext.suspend). This is how Web Audio apps pause globally.
 
 - A pause suspends the whole context: the PAD editor's preview pauses too (it is SETUP-only, and
   a mode switch stops every sound).
-- Engine change: needs the owner's playback check on the iPhone (suspend / resume on iOS, a call
-  during a pause) before it is merged.
+- Engine change: the owner's playback check on the iPhone (suspend / resume on iOS, a call
+  during a pause) is still open — iPhone checklist "Pause".
 
 ## Alternatives considered
 

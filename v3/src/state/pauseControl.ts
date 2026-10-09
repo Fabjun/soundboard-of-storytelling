@@ -5,8 +5,7 @@
  * the table) and resumes them on the next press; K8 any sound action resumes everything (the
  * audio facade's play does that), stop actions end the paused sounds (src/state/stopControl.ts),
  * a clearly visible PAUSED shows (the top bar). The details are the owner's decisions of
- * 2026-10-09; the engine part (pauseAll / resumeAll, src/audio/engine.ts, ADR-0079) is merged
- * after the owner's playback check.
+ * 2026-10-09; the engine part is pauseAll / resumeAll in src/audio/engine.ts (ADR-0079).
  */
 
 import { pause as pauseEverything, resume as resumeEverything } from '../audio/index';
