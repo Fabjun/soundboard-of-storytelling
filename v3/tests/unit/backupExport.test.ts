@@ -1,7 +1,8 @@
 /**
  * @fileoverview backupExport — everything in one ZIP file (D1, B1); the round trip export → import into an
  * empty app restores boards, audio and tags (D2, B9). fake-indexeddb + a fake decoder; synthetic
- * data.
+ * data. saveBackupFile with stubbed navigator / document / URL: the share sheet, a canceled
+ * share, a failed share falling back to a download, and the download where nothing can share.
  */
 
 import { IDBFactory } from 'fake-indexeddb';
@@ -15,6 +16,7 @@ import {
   backupFileName,
   buildBackup,
   describeBackupAge,
+  saveBackupFile,
 } from '../../src/lib/backupExport';
 import { planImport, runImport } from '../../src/lib/backupImport';
 import { BACKUP_MANIFEST } from '../../src/lib/backupReader';
@@ -163,12 +165,87 @@ describe('buildBackup', () => {
 });
 
 describe('audioPath', () => {
-  it('audio/<hash> with the extension of a known type, none for an unknown or missing type', () => {
-    expect(audioPath('h', 'audio/mpeg')).toBe('audio/h.mp3');
-    expect(audioPath('h', 'audio/x-wav')).toBe('audio/h.wav');
-    expect(audioPath('h', 'audio/x-m4a')).toBe('audio/h.m4a');
+  it.each([
+    ['audio/mpeg', '.mp3'],
+    ['audio/mp3', '.mp3'],
+    ['audio/wav', '.wav'],
+    ['audio/x-wav', '.wav'],
+    ['audio/wave', '.wav'],
+    ['audio/ogg', '.ogg'],
+    ['audio/mp4', '.m4a'],
+    ['audio/x-m4a', '.m4a'],
+    ['audio/aac', '.aac'],
+    ['audio/flac', '.flac'],
+    ['audio/webm', '.webm'],
+  ])('%s → audio/<hash>%s, so the file opens anywhere', (type, ext) => {
+    expect(audioPath('h', type)).toBe(`audio/h${ext}`);
+  });
+
+  it('no extension for an unknown or missing type', () => {
     expect(audioPath('h', 'audio/unknown')).toBe('audio/h');
     expect(audioPath('h', '')).toBe('audio/h');
+  });
+});
+
+describe('saveBackupFile', () => {
+  const blob = new Blob([new Uint8Array([1, 2, 3])], { type: 'application/zip' });
+  const name = 'soundboard-backup-2026-10-09.zip';
+
+  /** Stubs the browser: the share sheet (when `share` is given), a link, object URLs. */
+  function stubBrowser(share?: (data: ShareData) => Promise<void>, canShare = true) {
+    const link = { href: '', download: '', click: vi.fn(), remove: vi.fn() };
+    const appendChild = vi.fn();
+    vi.stubGlobal('navigator', share ? { canShare: () => canShare, share: vi.fn(share) } : {});
+    vi.stubGlobal('document', { createElement: vi.fn(() => link), body: { appendChild } });
+    vi.stubGlobal('URL', {
+      createObjectURL: vi.fn(() => 'blob:backup'),
+      revokeObjectURL: vi.fn(),
+    });
+    return { link, appendChild };
+  }
+
+  it('hands the file to the share sheet (iPhone: save to Files) and downloads nothing', async () => {
+    const { link } = stubBrowser(() => Promise.resolve());
+    expect(await saveBackupFile(blob, name)).toBe(true);
+    const shared = vi.mocked(navigator.share).mock.calls[0][0];
+    expect(shared?.files?.[0].name).toBe(name);
+    expect(shared?.files?.[0].type).toBe('application/zip');
+    expect(shared?.title).toBe('Soundboard backup');
+    expect(link.click).not.toHaveBeenCalled();
+  });
+
+  it('a canceled share sheet is not a saved backup — and no download follows', async () => {
+    const { link } = stubBrowser(() => Promise.reject(new DOMException('canceled', 'AbortError')));
+    expect(await saveBackupFile(blob, name)).toBe(false);
+    expect(link.click).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    [
+      'a share that fails for another reason',
+      () => Promise.reject(new DOMException('no', 'NotAllowedError')),
+      true,
+    ],
+    ['a browser that cannot share this file', () => Promise.resolve(), false],
+  ] as const)('%s falls back to a download', async (_, share, canShare) => {
+    vi.useFakeTimers();
+    const { link, appendChild } = stubBrowser(share, canShare);
+    expect(await saveBackupFile(blob, name)).toBe(true);
+    expect(link.href).toBe('blob:backup');
+    expect(link.download).toBe(name);
+    expect(appendChild).toHaveBeenCalledWith(link);
+    expect(link.click).toHaveBeenCalledOnce();
+    expect(link.remove).toHaveBeenCalledOnce();
+    expect(URL.revokeObjectURL).not.toHaveBeenCalled(); // the download may still be reading it
+    vi.advanceTimersByTime(60_000);
+    expect(URL.revokeObjectURL).toHaveBeenCalledWith('blob:backup');
+    vi.useRealTimers();
+  });
+
+  it('a browser without the share API downloads at once', async () => {
+    const { link } = stubBrowser();
+    expect(await saveBackupFile(blob, name)).toBe(true);
+    expect(link.click).toHaveBeenCalledOnce();
   });
 });
 

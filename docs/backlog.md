@@ -2028,6 +2028,10 @@ smoke E2E is the first candidate to move to CI-only (it's the most expensive gat
 runs it anyway; removing it from the pre-commit saves ~6 s locally with no CI coverage gap).
 **When:** When the hook exceeds ~25 s in practice.
 **Source:** docs/development/testing.md §CI integration; empirical measure.
+**Measured 2026-10-10** (two runs at load < 6, steps timed one by one): sync:docs 5–6 s, build
+6 s, unit tests 2 s, smoke E2E 6 s, Vale 0 s, link check 1–2 s — 20–22 s plus lint-staged for the
+staged files. Below the trigger; nothing changes. Under system load the same hook took several
+minutes (2026-10-09) — the load, not the hook, is the thing to avoid before a commit.
 
 ### Cheatsheet state-vocab quick-ref: consider generating from §3 (drift risk)
 

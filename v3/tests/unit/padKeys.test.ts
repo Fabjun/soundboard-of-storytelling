@@ -2,8 +2,9 @@
  * @fileoverview padKeys — key → pad in a deck, the other holder of a key, short key labels,
  * reserved and modifier keys (Slice 12a, ADR-0077).
  * Cases: a key found / not found / found in another deck only; a placement whose pad is gone;
- * the holder excludes the pad itself; labels for numpad, main digits, letters, symbols, unknown
- * codes; the reserved keys of 12b / 12d.
+ * the holder excludes the pad itself; labels for numpad, main digits, letters, every symbol,
+ * unknown codes and codes that only look like a digit or letter code; the reserved keys of
+ * 12b / 12d with the reason the PAD editor shows; every modifier.
  */
 
 import type { Board, SinglePad } from '../../src/types';
@@ -93,27 +94,79 @@ describe('keyLabel', () => {
     ['Numpad0', 'N0'],
     ['Digit1', '1'],
     ['KeyA', 'A'],
-    ['NumpadAdd', 'N+'],
-    ['NumpadSubtract', 'N-'],
-    ['Period', '.'],
-    ['ArrowUp', '↑'],
     ['F5', 'F5'],
     ['IntlBackslash', 'IntlBackslash'],
   ])('%s → %s', (code, label) => {
     expect(keyLabel(code)).toBe(label);
   });
+
+  // Every symbol a pad can show — the weekly mutation run of 2026-10-09 found most untested
+  it.each([
+    ['NumpadAdd', 'N+'],
+    ['NumpadSubtract', 'N-'],
+    ['NumpadMultiply', 'N*'],
+    ['NumpadDivide', 'N/'],
+    ['NumpadEqual', 'N='],
+    ['NumpadComma', 'N,'],
+    ['Period', '.'],
+    ['Comma', ','],
+    ['Minus', '-'],
+    ['Equal', '='],
+    ['Slash', '/'],
+    ['Backslash', '\\'],
+    ['Semicolon', ';'],
+    ['Quote', "'"],
+    ['Backquote', '`'],
+    ['BracketLeft', '['],
+    ['BracketRight', ']'],
+    ['ArrowUp', '↑'],
+    ['ArrowDown', '↓'],
+    ['ArrowLeft', '←'],
+    ['ArrowRight', '→'],
+  ])('symbol %s → %s', (code, label) => {
+    expect(keyLabel(code)).toBe(label);
+  });
+
+  it.each(['Numpad10', 'XNumpad1', 'Digit10', 'XDigit1', 'KeyAB', 'XKeyA'])(
+    '%s is shown as it is — only a whole numpad digit, digit or letter code is shortened',
+    (code) => {
+      expect(keyLabel(code)).toBe(code);
+    },
+  );
 });
 
 describe('reserved and modifier keys', () => {
-  it('keeps Enter, Space, the numpad decimal and Escape for their own controls', () => {
-    for (const code of ['Enter', 'NumpadEnter', 'NumpadDecimal', 'Space', 'Escape', 'Tab'])
-      expect(code in RESERVED_KEYS).toBe(true);
+  it('says in the PAD editor why a reserved key cannot play a pad', () => {
+    expect(RESERVED_KEYS).toEqual({
+      Enter: 'stops the last sound',
+      NumpadEnter: 'stops the last sound',
+      NumpadDecimal: 'stops all sounds',
+      Space: 'pauses all sounds',
+      Escape: 'closes dialogs',
+      Tab: 'moves between controls',
+    });
     expect('Numpad1' in RESERVED_KEYS).toBe(false);
   });
 
-  it('knows the modifiers, and nothing else as one', () => {
-    expect(isModifierKey('ShiftLeft')).toBe(true);
-    expect(isModifierKey('NumLock')).toBe(true);
+  it.each([
+    'ShiftLeft',
+    'ShiftRight',
+    'ControlLeft',
+    'ControlRight',
+    'AltLeft',
+    'AltRight',
+    'MetaLeft',
+    'MetaRight',
+    'CapsLock',
+    'NumLock',
+    'Fn',
+  ])('%s is a modifier — the key field waits for the next key', (code) => {
+    expect(isModifierKey(code)).toBe(true);
+  });
+
+  it('nothing else counts as a modifier', () => {
     expect(isModifierKey('Numpad1')).toBe(false);
+    expect(isModifierKey('KeyA')).toBe(false);
+    expect(isModifierKey('')).toBe(false);
   });
 });
