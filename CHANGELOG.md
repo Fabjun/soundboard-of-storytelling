@@ -7,6 +7,17 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.193 — 2026-10-09
+
+### Fixed
+
+- fix(a11y): small muted text reaches WCAG AA 4.5:1 (SC 1.4.3) in every theme — --text-mute lighter (default #9189a4, verdant #9aa59d, neon #8297b6, crimson #a0807c: the smallest step towards white that reaches 4.5:1 on --raised, so the hue stays and it stays below --text-dim); the crimson accents --gold / --gold-bright lighter too (#dd5d5d, #f37474; owner decision 2026-10-09)
+
+### Internal
+
+- test: E2E a11y checks color contrast — the default theme with every rule, each theme of tokens.css on every main screen (themes read from the file); counter-checked: the old colors → red in the default theme and all three themes, the new ones → green
+- docs: ADR-0080 names the contrast check; backlog "Text contrast below WCAG AA" done; token comment with the measured ratios; eight visual baselines with the lighter muted text (rewritten with --update-snapshots=all — the old ones still passed, threshold 0.2; only muted-text pixels changed, measured); backlog "Visual tests miss small color shifts" new
+
 ## 3.0.192 — 2026-10-09
 
 ### Added

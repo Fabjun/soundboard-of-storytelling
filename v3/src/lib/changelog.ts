@@ -17,10 +17,19 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.192';
+export const APP_VERSION = '3.0.193';
 
 /** The developer log, newest first; CHANGELOG.md is generated from it (sync-changelog). */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.193',
+    date: '2026-10-09',
+    items: [
+      'fix(a11y): small muted text reaches WCAG AA 4.5:1 (SC 1.4.3) in every theme — --text-mute lighter (default #9189a4, verdant #9aa59d, neon #8297b6, crimson #a0807c: the smallest step towards white that reaches 4.5:1 on --raised, so the hue stays and it stays below --text-dim); the crimson accents --gold / --gold-bright lighter too (#dd5d5d, #f37474; owner decision 2026-10-09)',
+      'test: E2E a11y checks color contrast — the default theme with every rule, each theme of tokens.css on every main screen (themes read from the file); counter-checked: the old colors → red in the default theme and all three themes, the new ones → green',
+      'docs: ADR-0080 names the contrast check; backlog "Text contrast below WCAG AA" done; token comment with the measured ratios; eight visual baselines with the lighter muted text (rewritten with --update-snapshots=all — the old ones still passed, threshold 0.2; only muted-text pixels changed, measured); backlog "Visual tests miss small color shifts" new',
+    ],
+  },
   {
     version: '3.0.192',
     date: '2026-10-09',

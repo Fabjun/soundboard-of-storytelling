@@ -23,8 +23,9 @@ built).
    the app) — Playwright's documented way to test accessibility. `v3/tests/e2e/a11y.spec.ts` scans
    every main screen in its real state for WCAG 2.2 A / AA, in Chromium and WebKit; one test walks
    board → deck → new pad with the keyboard alone; one opens an import error with the keyboard.
-   `color-contrast` is left out until the muted colors are lightened (BACKLOG "Text contrast
-   below WCAG AA").
+   Color contrast (WCAG 2.2 SC 1.4.3) is checked too since 3.0.193, in the default theme with
+   every rule and in each `.sb-theme-*` of `v3/src/styles/tokens.css` (read from the file) on its
+   own, before any screen offers themes (BACKLOG "Text contrast below WCAG AA").
 2. **Source: a guard** in `codeGuards` — axe cannot see a click handler on a plain element: a
    click handler sits on a control Tab reaches (a native control, or role + tabIndex + keys;
    dialog backdrops and click stoppers excepted; other exceptions named with their reason); a

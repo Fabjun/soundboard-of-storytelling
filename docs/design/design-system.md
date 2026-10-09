@@ -420,7 +420,7 @@ also in [§6](#6-component-inventory)):
 | `--text`          | `#f0e8d0` | —                                           |
 | `--text-strong`   | `#ffffff` | high emphasis · numbers, headings on raised |
 | `--text-dim`      | `#b8b0c8` | secondary · descriptions                    |
-| `--text-mute`     | `#7e7494` | tertiary · meta only, AA-large              |
+| `--text-mute`     | `#9189a4` | tertiary · meta, AA on --raised             |
 | `--text-on-gold`  | `#14100a` | —                                           |
 | `--text-on-blood` | `#ffe8e0` | —                                           |
 

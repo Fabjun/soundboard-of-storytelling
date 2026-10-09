@@ -1534,7 +1534,7 @@ now plain words with a next step, in a `<details>`. Checks: `codeGuards` "contro
 and have a name"; axe scan and a keyboard-only flow in `v3/tests/e2e/a11y.spec.ts`. The ADD PAD
 button named in "Role-based E2E locators" has a name by now.
 
-### Text contrast below WCAG AA
+### Text contrast below WCAG AA ✅ Done (3.0.193)
 
 Found 2026-10-09 by the axe scan (ADR-0080): muted text on most screens is below WCAG AA (4.5:1
 for small text) — status bar sections, the top bar's deck name, PAD editor field labels, library
@@ -1544,7 +1544,23 @@ text only, but it is used for small text; `--text-dim` is close too. Fixing it c
 every screen and the themes, so the axe scan leaves `color-contrast` out until it is fixed.
 **Decided** (owner 2026-10-09): lighter muted tokens, AA (4.5:1) in every theme, in a pull request
 of its own; the owner checks the screenshots before the merge.
-**When:** next; then remove `color-contrast` from `NOT_CHECKED` in `v3/tests/e2e/a11y.spec.ts`.
+**Done 2026-10-09:** `--text-mute` lighter in all four themes (default `#9189a4`, verdant
+`#9aa59d`, neon `#8297b6`, crimson `#a0807c` — each the smallest step towards white that reaches
+4.5:1 on `--raised`, so the hue stays and it stays darker than `--text-dim`); the crimson accents
+`--gold` / `--gold-bright` failed too and are lighter (`#dd5d5d`, `#f37474`; decided by the owner
+2026-10-09: WCAG 1.4.3 holds for accent text as well). `v3/tests/e2e/a11y.spec.ts` checks color
+contrast on every screen and in every theme.
+
+### Visual tests miss small color shifts
+
+Found 2026-10-09 with the contrast fix: the lighter `--text-mute` (`#7e7494` → `#9189a4`) passed
+every visual test against the old baselines. `toHaveScreenshot` uses `threshold: 0.2` (Playwright's
+default — the allowed YIQ color distance per pixel, playwright.dev/docs/api/class-pageassertions)
+and `maxDiffPixels: 100` (`v3/playwright.config.ts`), so a small color change counts as "same".
+The baselines were rewritten with `--update-snapshots=all` and the changed pixels measured: only the
+muted text and its anti-aliasing changed. Risk: an unintended small color change goes unnoticed;
+layout changes are still caught. **Open:** a lower threshold (font rendering noise has to be
+measured first), or a test of the computed token values per theme. **When:** next structure review.
 
 ### PAD editor: several files per pad cannot be edited yet
 
