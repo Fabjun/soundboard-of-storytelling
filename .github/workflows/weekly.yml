@@ -148,7 +148,8 @@ jobs:
           echo "MUTATION_SECONDS=$(( $(date +%s) - START ))" >> "$GITHUB_ENV"
           exit $RC
 
-      # Score + timeout share of this module; fails above 5 % timeouts or 70 % of the time limit.
+      # Score + timeout share of this module; fails above 5 % timeouts (at least three) or 70 % of
+      # the time limit.
       - name: Mutation score and timeout share
         if: always()
         working-directory: v3
