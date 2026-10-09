@@ -43,6 +43,16 @@ with mouse and touch** (Pointer Events, never HTML5 DnD); alternatives remain op
 **When:** the adaptive layout in Slice 13 (not part of step 9e, whose scope ADR-0048 §5 fixes:
 All pads, remove vs delete, deck checklist).
 
+### Pad names cut off on narrow screens
+
+Found 2026-10-09 in phone screenshots of the board (390 × 844, Chromium): with the deck rail open
+only two pad columns fit, the pads shrink below their PAD SIZE, and the name at the bottom of each
+pad runs under the next row ("THUND…"). At 844 × 390 every name is readable. CLAUDE.md UI rules:
+nothing is cut off (WCAG 2.2 SC 1.4.10 Reflow). The fix depends on what a small pad shows
+(`docs/design/components/pad.md` PQ2 / PQ4, detail levels) — an interim truncation would decide
+that ahead of the owner.
+**When:** Slice 13, pad detail levels (proposed step 13e).
+
 ### All pads view: creating pads there ✅ Done (PR #34)
 
 Decided by the owner 2026-10-02: ADD PAD and a library drop (or long press) in All pads create a
