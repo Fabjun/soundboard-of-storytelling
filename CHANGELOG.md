@@ -7,6 +7,15 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.203 — 2026-10-10
+
+### Internal
+
+- test: upload — the stored audio keeps every byte although decodeAudioData detaches the buffer it is given (the decode gets a copy); a file that cannot be read or stored is reported in plain words and not listed; fine peaks are made for the entry asked for, not the first in the list; formatBytes at 1024
+- test: backup reader — library entries that are not objects are skipped and the others counted without gaps; a file is read without an entry handler; boards that are not a list count as none; a V1 version as number or text, anything else unknown; a damaged audio entry in a ZIP reads as damaged, not as missing
+- test: storage — libDelete removes only its entry (no test covered it); a v1 database (library store only) is upgraded with its audio kept; the audio bridge — a stopped pad no longer glows, a combo child is found in any board
+- test: mutation score per module (Stryker) — backupReader 83.8 % → 92.8 %, upload 84.4 % → 94.3 %, idb 88.6 % → 92.0 %, audio/index 88.1 % → 91.3 %; every new test counter-checked (the code broken on purpose → red)
+
 ## 3.0.202 — 2026-10-10
 
 ### Internal

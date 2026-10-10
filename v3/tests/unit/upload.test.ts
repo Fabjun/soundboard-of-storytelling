@@ -111,6 +111,46 @@ describe('addAudioFile', () => {
     );
     expect(libraryItems.value).toHaveLength(1);
   });
+
+  it('stores every byte although the decode takes its buffer away (decodeAudioData detaches it)', async () => {
+    // Browsers detach the ArrayBuffer handed to decodeAudioData (Web Audio API); the pipeline
+    // decodes a copy, so the stored Blob still holds the whole file.
+    class DetachingContext extends FakeOfflineAudioContext {
+      override decodeAudioData(buf: ArrayBuffer): Promise<AudioBuffer> {
+        return super.decodeAudioData(structuredClone(buf, { transfer: [buf] }));
+      }
+    }
+    vi.stubGlobal('OfflineAudioContext', DetachingContext);
+    const bytes = [1, 2, 3, 4];
+    const id = computeHash(new Uint8Array(bytes).buffer);
+    expect(await addAudioFile(audioFile('a.wav', bytes))).toEqual({ kind: 'imported', id });
+    const stored = (await libGet(id))!;
+    expect(Array.from(new Uint8Array(await stored.blob.arrayBuffer()))).toEqual(bytes);
+    expect(stored).toMatchObject({ type: 'audio', name: 'a.wav', size: 4 });
+  });
+
+  it('says in plain words when a file cannot be read or stored — nothing is listed', async () => {
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    const gone = audioFile('gone.wav', [1]);
+    vi.spyOn(gone, 'arrayBuffer').mockRejectedValue(new Error('NotFoundError'));
+    expect(await addAudioFile(gone)).toEqual({
+      kind: 'error',
+      error:
+        'gone.wav: the file could not be read — check that it still exists, then import it again',
+    });
+    // Storage refuses the write (full, or blocked)
+    (globalThis as Record<string, unknown>).indexedDB = {
+      open: () => {
+        throw new DOMException('full', 'QuotaExceededError');
+      },
+    };
+    _resetDB();
+    expect(await addAudioFile(audioFile('big.wav', [2]))).toEqual({
+      kind: 'error',
+      error: 'big.wav: could not be stored — free up storage space, then import it again',
+    });
+    expect(libraryItems.value).toEqual([]);
+  });
 });
 
 // ── Serial decode (the core iPhone rule) ──────────────────────────────────────
@@ -238,6 +278,15 @@ describe('ensureFinePeaks', () => {
     expect(await ensureFinePeaks('broken')).toBeNull();
     expect((await libGet('broken'))!.peaks).toHaveLength(30);
   });
+
+  it('looks at the entry asked for, not at the first one in the list', async () => {
+    await oldEntry('fine', 1);
+    await ensureFinePeaks('fine'); // first in the list, with fine peaks now
+    await oldEntry('old', 2);
+    FakeOfflineAudioContext.reset();
+    expect(await ensureFinePeaks('old')).toHaveLength(PEAK_COUNT);
+    expect(FakeOfflineAudioContext.log).toEqual(['decode-start:1', 'decode-end:1']);
+  });
 });
 
 // ── Pure helpers ──────────────────────────────────────────────────────────────
@@ -270,6 +319,8 @@ describe('computePeaks', () => {
 describe('formatting helpers', () => {
   test('formatBytes', () => {
     expect(formatBytes(512)).toBe('512 B');
+    expect(formatBytes(1023)).toBe('1023 B');
+    expect(formatBytes(1024)).toBe('1 KB');
     expect(formatBytes(2048)).toBe('2 KB');
     expect(formatBytes(1.5 * 1024 * 1024)).toBe('1.5 MB');
   });

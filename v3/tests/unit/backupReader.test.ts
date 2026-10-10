@@ -228,6 +228,42 @@ describe('readBackup', () => {
     });
     expect(fields.data).toBeNull(); // the base64 text is not kept once decoded
   });
+
+  it('skips library entries that are not objects; the others are counted without gaps', async () => {
+    const doc = {
+      version: 1,
+      boards: [],
+      library: [null, [1], 5, 'x', { hash: 'a' }, { hash: 'b' }],
+    };
+    const seen: [unknown, number][] = [];
+    await readBackup(new Blob([encode(doc)]), {
+      onLibraryEntry: (e, i) => {
+        seen.push([e.fields.hash, i]);
+      },
+    });
+    expect(seen).toEqual([
+      ['a', 0],
+      ['b', 1],
+    ]);
+  });
+
+  it('reads a file without an entry handler; boards that are not a list count as none', async () => {
+    const boards: unknown[][] = [];
+    const header = await readBackup(new Blob([encode({ ...v3Doc, boards: { b: 1 } })]), {
+      onBoards: (b) => boards.push(b),
+    });
+    expect(header).toEqual({ kind: 'v3', formatVersion: 1 });
+    expect(boards).toEqual([[]]);
+  });
+
+  it('takes a V1 version given as a number or as text; anything else is unknown', async () => {
+    const headerOf = async (version: unknown) =>
+      (await readAll(new Blob([encode({ version, boards: [] })]))).header;
+    expect(await headerOf(179)).toEqual({ kind: 'v1', version: 179 });
+    expect(await headerOf('1.5')).toEqual({ kind: 'v1', version: '1.5' });
+    expect(await headerOf({ major: 1 })).toEqual({ kind: 'v1', version: null });
+    expect(await headerOf(undefined)).toEqual({ kind: 'v1', version: null });
+  });
 });
 
 describe('readBackup — ZIP (V3 format 2)', () => {
@@ -264,6 +300,18 @@ describe('readBackup — ZIP (V3 format 2)', () => {
       );
       expect([label, got]).toEqual([label, kind]);
     }
+  });
+
+  it('an audio file whose place in the archive is damaged reads as damaged, not as missing', async () => {
+    const zip = createZipWriter();
+    zip.add(BACKUP_MANIFEST, encode(zipManifest));
+    zip.add('audio/h1.mp3', new Uint8Array([1, 2, 3]));
+    const bytes = new Uint8Array(await zip.finish('application/zip').arrayBuffer());
+    // Break the local header signature ("PK\x03\x04") of the second entry, the audio file
+    const sig = [0x50, 0x4b, 0x03, 0x04];
+    const at = bytes.findIndex((_, i) => i > 0 && sig.every((b, k) => bytes[i + k] === b));
+    bytes[at] = 0;
+    expect((await readAudio(new Blob([bytes])))['one.mp3']).toBe('damaged');
   });
 });
 
