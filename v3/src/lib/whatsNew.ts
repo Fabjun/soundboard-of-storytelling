@@ -101,6 +101,12 @@ export function withEarlyVersions(
 /** The release notes the start screen shows, newest first (checked by whatsNew.test.ts). */
 export const WHATS_NEW: WhatsNewNotes[] = [
   {
+    version: '3.0.209',
+    behindTheScenes: [
+      'The plan for the phone layout is written down: what goes where on a narrow and on a wide screen. The app works exactly as before.',
+    ],
+  },
+  {
     version: '3.0.208',
     fixed: [
       'A combo step that stops everything no longer stops the combo itself: the combo goes on with its next step, and the loops it started earlier keep playing.',

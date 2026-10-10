@@ -17,10 +17,17 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.208';
+export const APP_VERSION = '3.0.209';
 
 /** The developer log, newest first; CHANGELOG.md is generated from it (sync-changelog). */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.209',
+    date: '2026-10-10',
+    items: [
+      'docs: Slice 13 plan — new product leaf docs/product/features/adaptive-layout.md with the owner decisions of 2026-10-10: narrow and wide frames split at 600 px (start value, calibrated on the devices), a dock at the bottom with STOP ALL, PAUSED and the save status on a phone, deck tabs above the grid on a phone and the deck rail on wide screens as one switcher, and the order of the steps 13a–13g; the questions left for later steps are listed as Open',
+    ],
+  },
   {
     version: '3.0.208',
     date: '2026-10-10',

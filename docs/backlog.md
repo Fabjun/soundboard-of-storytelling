@@ -1428,13 +1428,16 @@ The two-axis adaptive model (→ [Stable directions](#two-axis-adaptive-model)) 
 **When:** After the mobile prototype reaches a stable, verified state. Not started; recorded here so it isn't lost.
 **→ Source:** Part 4 of the two-axis model revision, 2026-06-04.
 
-### Axis-1 breakpoint thresholds — narrow↔wide layout switch ⬜ TBD (ADR-0045)
+### Axis-1 breakpoint thresholds — narrow↔wide layout switch (ADR-0045)
 
 Exact breakpoint values at which the SceneRail dock moves from bottom-bar to side-rail are
 explicitly not yet defined — empirical calibration on real devices is required (ref ADR-0045
 §Consequences). Record here so this open decision is not lost.
 **When:** Before or during Slice 8 layout work.
 **Source:** ADR-0045.
+**Owner decision 2026-10-10:** start value **600 px** (Material 3: compact below 600 dp, medium
+from 600 dp) — `docs/product/features/adaptive-layout.md` L1. **Open:** the calibration on the
+owner's phone and tablet, with step 13a.
 
 ### Empty-SETUP affordance
 
