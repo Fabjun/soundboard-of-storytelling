@@ -9,7 +9,8 @@
  * Order: the store updates at once, so the next change already builds on this one; then the board
  * is saved. IndexedDB starts read/write transactions on the same store in the order they were
  * created (W3C IndexedDB, transaction scheduling), so saves land in call order.
- * A failed save reloads the stored board, so the screen never shows unsaved data as saved.
+ * A failed save reloads the stored board, so the screen never shows unsaved data as saved; when
+ * nothing can be read either, a new board is removed and a known one stays with NOT SAVED.
  *
  * Guarded: components and screens never call boardPut / upsertBoard (codeGuards).
  */
@@ -52,7 +53,7 @@ export function applyBoardChange(
 /** Adds a new board to the store and saves it. Returns null when the save failed. */
 export async function createBoard(board: Board): Promise<Board | null> {
   upsertBoard(board);
-  return save(board);
+  return save(board, { isNew: true });
 }
 
 /**
@@ -71,7 +72,7 @@ export function whenSaved(): Promise<void> {
   });
 }
 
-async function save(board: Board): Promise<Board | null> {
+async function save(board: Board, { isNew = false } = {}): Promise<Board | null> {
   pendingSaves.value++; // synchronously, before the first await — callers see it at once
   try {
     await boardPut(board);
@@ -86,6 +87,10 @@ async function save(board: Board): Promise<Board | null> {
       else removeBoardFromStore(board.id);
     } catch (reloadError) {
       console.error('Board reload after a failed save failed:', reloadError);
+      // Nothing can be read either. A new board has no stored version: rolling back means removing
+      // it (owner decision 2026-10-10). A known board stays — its stored version is unknown — and
+      // the status bar says NOT SAVED.
+      if (isNew) removeBoardFromStore(board.id);
     }
     return null;
   } finally {

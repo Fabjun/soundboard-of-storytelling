@@ -101,6 +101,12 @@ export function withEarlyVersions(
 /** The release notes the start screen shows, newest first (checked by whatsNew.test.ts). */
 export const WHATS_NEW: WhatsNewNotes[] = [
   {
+    version: '3.0.207',
+    fixed: [
+      'When the browser lets the app neither store nor read anything, a newly created or imported board that could not be stored no longer stays in the list as if it were there.',
+    ],
+  },
+  {
     version: '3.0.206',
     behindTheScenes: [
       'Automatic tests now check more of the icon search in the pad editor. The app works exactly as before.',
