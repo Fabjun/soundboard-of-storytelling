@@ -17,10 +17,17 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.206';
+export const APP_VERSION = '3.0.207';
 
 /** The developer log, newest first; CHANGELOG.md is generated from it (sync-changelog). */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.207',
+    date: '2026-10-10',
+    items: [
+      'fix: engine — a combo step "stop all" no longer stops the combo itself, so the next step runs (V1 `stopAll(exceptComboId)`); the loops the combo started in earlier steps play on, other combos and pads stop as before (BACKLOG "Bug: combo "stop all" step stops the combo itself"); the pinned `test.fails` is a test now, counter-checked',
+    ],
+  },
   {
     version: '3.0.206',
     date: '2026-10-10',

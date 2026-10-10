@@ -143,6 +143,15 @@ because Playwright runs against a simulated environment:
     the combo at once while the Loops keep fading, the second tap silences them at once.
   - Why manual: An engine change (owner approval); only hearing proves the fade and the cut.
 
+- [ ] **Stop everything first in a combo** _(engine fix 3.0.207 — before the merge)_
+  - Action: Build a combo with three steps: 1 a Loop pad, 2 nothing with "Stop everything first",
+    3 a Single pad. In GAME start another Loop pad by hand, then play the combo.
+  - Expected: The hand-started Loop stops when step 2 comes; the Single of step 3 follows about
+    0.2 s later; the combo's own Loop from step 1 plays on until that Single has ended, then the
+    combo ends and its Loop stops; the combo pad stays lit until then. A V1 combo "stop all →
+    sound" (e.g. a "DAY" combo) plays its sound.
+  - Why manual: An engine change (owner approval, ADR-0048); only hearing proves the order.
+
 - [ ] **Mode switch stops sounds; the Lock** _(Slice 12c)_
   - Action: In GAME start two pads, switch to SETUP. Back in GAME tap the lock next to the mode
     toggle, then tap SETUP; tap the lock again and tap SETUP. Lock once more and reload the app.

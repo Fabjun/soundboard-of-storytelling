@@ -101,6 +101,12 @@ export function withEarlyVersions(
 /** The release notes the start screen shows, newest first (checked by whatsNew.test.ts). */
 export const WHATS_NEW: WhatsNewNotes[] = [
   {
+    version: '3.0.207',
+    fixed: [
+      'A combo step that stops everything no longer stops the combo itself: the combo goes on with its next step, and the loops it started earlier keep playing.',
+    ],
+  },
+  {
     version: '3.0.206',
     behindTheScenes: [
       'Automatic tests now check more of the icon search in the pad editor. The app works exactly as before.',
