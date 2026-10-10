@@ -7,6 +7,12 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.209 — 2026-10-10
+
+### Internal
+
+- docs: Slice 13 plan — new product leaf docs/product/features/adaptive-layout.md with the owner decisions of 2026-10-10: narrow and wide frames split at 600 px (start value, calibrated on the devices), a dock at the bottom with STOP ALL, PAUSED and the save status on a phone, deck tabs above the grid on a phone and the deck rail on wide screens as one switcher, and the order of the steps 13a–13g; the questions left for later steps are listed as Open
+
 ## 3.0.208 — 2026-10-10
 
 ### Fixed
