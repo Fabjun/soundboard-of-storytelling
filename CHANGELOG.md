@@ -7,6 +7,22 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.211 — 2026-10-10
+
+### Added
+
+- feat(board): Slice 13b — the deck switcher on a phone (adaptive-layout.md L3, L4): below 600 px the decks are tabs above the pad grid — All pads first, then every deck, one tap switches, the row scrolls sideways and keeps the current deck in view; in SETUP a DECKS tab, fixed at the end of the bar outside the scrolling row, opens the deck list (PAD SIZE, the deck actions, NEW DECK) as a panel over the grid; from 600 px the rail stays
+
+### Changed
+
+- refactor: DeckRail is one component with two variants (`rail`, `tabs`); its content is written once and shown in the rail and in the DECKS panel
+
+### Internal
+
+- test: E2E deck-switcher (Chromium and WebKit) — tabs below 600 px, DECKS in SETUP only, the current deck in view after a reload, the rail back from 600 px; each counter-checked (the first scroll test passed without the scroll code — a click scrolls its target into view by itself — and was rebuilt); axe scan of the board on a phone; the helpers create decks in either frame
+- test: the mobile board-flow spec checks the tabs on a phone instead of the folded rail (the fold stays in the wide frame, deck-rail-fold.spec.ts); pad-size folds the rail only where there is one
+- docs: CLAUDE.md UI rules — the folded deck list is the wide frame, tabs on a phone; iPhone checklist "Deck tabs on a phone"
+
 ## 3.0.210 — 2026-10-10
 
 ### Added

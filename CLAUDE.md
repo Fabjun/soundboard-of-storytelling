@@ -299,7 +299,10 @@ pixel-art details and touch minimums — ADR-0081, guarded by `codeGuards` ("typ
   and All pads), set with the PAD SIZE slider in the deck rail, SETUP only (ADR-0075,
   `v3/src/lib/padSize.ts`); the deck
   list starts folded (owner decisions 2026-10-05 / 2026-10-06; guarded by
-  `v3/tests/e2e/pad-size.spec.ts`, `v3/tests/e2e/deck-rail-fold.spec.ts`)
+  `v3/tests/e2e/pad-size.spec.ts`, `v3/tests/e2e/deck-rail-fold.spec.ts`) — in the wide frame; below
+  600 px the decks are tabs above the grid and the dock at the bottom holds STOP ALL
+  (`docs/product/features/adaptive-layout.md`, ADR-0082; guarded by
+  `v3/tests/e2e/deck-switcher.spec.ts`, `v3/tests/e2e/board-frames.spec.ts`)
 - The browser's own gestures are off — no zoom, no selection, no long-press menu (global rule in
   `v3/src/styles/global.css`, ADR-0067); a gesture the app needs is built with Pointer Events and
   has a non-gesture alternative; text fields have at least 16px text (iOS focus zoom); guarded by

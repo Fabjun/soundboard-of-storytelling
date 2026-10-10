@@ -101,6 +101,12 @@ export function withEarlyVersions(
 /** The release notes the start screen shows, newest first (checked by whatsNew.test.ts). */
 export const WHATS_NEW: WhatsNewNotes[] = [
   {
+    version: '3.0.211',
+    improved: [
+      'On a phone the decks are tabs above the pads: one tap switches the deck, and the current one is always in view. In SETUP the DECKS tab opens the deck list to add, rename or delete decks and set the pad size.',
+    ],
+  },
+  {
     version: '3.0.210',
     improved: [
       'On a phone held upright, STOP ALL now sits large at the bottom of the board, together with the save status — within reach of the thumb. On wider screens it stays at the top; turning the phone moves it at once.',

@@ -254,6 +254,16 @@ because Playwright runs against a simulated environment:
     bar").
   - Why manual: The reach of the thumb, the home indicator and the real widths of the devices.
 
+- [ ] **Deck tabs on a phone** _(Slice 13b)_
+  - Action: On a board with about eight decks, in portrait: swipe the tab row above the pads
+    sideways, tap a deck far along it, reload the app. In SETUP tap DECKS, scroll the panel, add a
+    deck, tap DECKS again.
+  - Expected: The row moves under the finger and the page does not; one tap switches the deck;
+    after the reload the board shows the same deck and its tab is in view. DECKS opens the deck
+    list over the pads — it scrolls on its own, the page behind does not —, NEW DECK adds a tab,
+    DECKS closes it. In GAME there is no DECKS tab.
+  - Why manual: Sideways swiping, momentum scrolling and overscroll exist only on the device.
+
 - [ ] **Browser gestures are off** _(3.0.159, ADR-0067)_
   - Action: On the board and in the library: double-tap, pinch with two fingers, long-press a pad
     name and a label; tap into the library search field.

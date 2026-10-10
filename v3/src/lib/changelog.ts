@@ -17,10 +17,21 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.210';
+export const APP_VERSION = '3.0.211';
 
 /** The developer log, newest first; CHANGELOG.md is generated from it (sync-changelog). */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.211',
+    date: '2026-10-10',
+    items: [
+      'feat(board): Slice 13b — the deck switcher on a phone (adaptive-layout.md L3, L4): below 600 px the decks are tabs above the pad grid — All pads first, then every deck, one tap switches, the row scrolls sideways and keeps the current deck in view; in SETUP a DECKS tab, fixed at the end of the bar outside the scrolling row, opens the deck list (PAD SIZE, the deck actions, NEW DECK) as a panel over the grid; from 600 px the rail stays',
+      'refactor: DeckRail is one component with two variants (`rail`, `tabs`); its content is written once and shown in the rail and in the DECKS panel',
+      'test: E2E deck-switcher (Chromium and WebKit) — tabs below 600 px, DECKS in SETUP only, the current deck in view after a reload, the rail back from 600 px; each counter-checked (the first scroll test passed without the scroll code — a click scrolls its target into view by itself — and was rebuilt); axe scan of the board on a phone; the helpers create decks in either frame',
+      'test: the mobile board-flow spec checks the tabs on a phone instead of the folded rail (the fold stays in the wide frame, deck-rail-fold.spec.ts); pad-size folds the rail only where there is one',
+      'docs: CLAUDE.md UI rules — the folded deck list is the wide frame, tabs on a phone; iPhone checklist "Deck tabs on a phone"',
+    ],
+  },
   {
     version: '3.0.210',
     date: '2026-10-10',

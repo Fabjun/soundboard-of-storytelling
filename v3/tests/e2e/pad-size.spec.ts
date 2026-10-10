@@ -44,6 +44,12 @@ async function boxOf(locator: Locator) {
   return box;
 }
 
+/** Folds the deck rail — the wide frame has one; on a phone the decks are tabs (Slice 13b). */
+async function foldDeckList(page: Page) {
+  const hide = page.getByRole('button', { name: 'Hide the deck list' });
+  if ((await hide.count()) > 0) await hide.click();
+}
+
 const cells = (page: Page) => page.locator('[data-testid^="pad-grid-cell-"]');
 const slider = (page: Page) => page.getByRole('slider', { name: 'PAD SIZE' });
 
@@ -68,7 +74,7 @@ test('on a phone 4 pads fill a row; a wide window holds more; the order stays', 
 }) => {
   await page.setViewportSize(PHONE);
   await boardWithSixPads(page);
-  await page.getByRole('button', { name: 'Hide the deck list' }).click();
+  await foldDeckList(page);
   await expect.poll(() => columns(page)).toBe(4);
   expect(await seenOrder(page)).toEqual(NAMES);
 
@@ -102,7 +108,7 @@ for (const viewport of [PHONE, TABLET, WIDE]) {
     await page.setViewportSize(viewport);
     await boardWithSixPads(page);
     await assertRowFillsWidth(page, 'list open');
-    await page.getByRole('button', { name: 'Hide the deck list' }).click();
+    await foldDeckList(page);
     await assertRowFillsWidth(page, 'list folded');
   });
 }
@@ -170,7 +176,7 @@ test('on a short window the grid scrolls downwards and pads never overlap', asyn
   await createBoardAndNavigate(page);
   await createDeck(page);
   await enterSetupMode(page);
-  await page.getByRole('button', { name: 'Hide the deck list' }).click();
+  await foldDeckList(page);
   // the grid counts its columns again after the resize; measuring before that read old and new
   // rows mixed (11 of 30 runs red)
   await expect.poll(() => columns(page)).toBe(4);

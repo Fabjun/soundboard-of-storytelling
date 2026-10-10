@@ -169,19 +169,45 @@ export async function createBoardAndNavigate(page: Page): Promise<void> {
 
 // ── Deck helpers ─────────────────────────────────────────────────────────────
 
-/** Unfolds the deck rail if it is folded (it starts folded). */
+/**
+ * Unfolds the deck rail if it is folded (it starts folded). In the narrow frame the decks are
+ * tabs above the grid (Slice 13b) — there is nothing to unfold.
+ */
 export async function openDeckRail(page: Page): Promise<void> {
   const toggle = page.getByTestId('deck-rail-toggle-button');
+  await toggle.or(page.getByTestId('deck-rail-all-pads-tab-button')).first().waitFor();
+  if ((await toggle.count()) === 0) return;
   if ((await toggle.getAttribute('aria-expanded')) === 'false') await toggle.click();
 }
 
 /**
  * Create a new deck in the current BoardScreen.
  * Returns the deck's data-testid ID part (e.g. "abc123").
+ * In the narrow frame NEW DECK sits behind the DECKS tab in SETUP (Slice 13b): the helper goes
+ * there, closes the panel again and returns to the mode it found.
  */
 export async function createDeck(page: Page): Promise<string> {
   await openDeckRail(page);
+  const manage = page.getByTestId('deck-rail-manage-button');
+  const narrow = (await page.getByTestId('deck-rail-toggle-button').count()) === 0;
+  const wasGame =
+    narrow &&
+    (await page.getByRole('button', { name: 'GAME' }).getAttribute('aria-pressed')) === 'true';
+  if (narrow) {
+    await enterSetupMode(page);
+    if ((await manage.getAttribute('aria-expanded')) === 'false') await manage.click();
+  }
   await page.getByTestId('deck-rail-new-button').click();
+  if (narrow) {
+    await page.locator('[data-testid^="deck-rail-tab-button-"]').first().waitFor();
+    const testid = await page
+      .locator('[data-testid^="deck-rail-tab-button-"]')
+      .first()
+      .getAttribute('data-testid');
+    await manage.click();
+    if (wasGame) await enterGameMode(page);
+    return testid!.replace('deck-rail-tab-button-', '');
+  }
   const deckTab = page.locator('[data-testid^="deck-rail-deck-tab-"]').first();
   await deckTab.waitFor();
   const testid = await deckTab.getAttribute('data-testid');

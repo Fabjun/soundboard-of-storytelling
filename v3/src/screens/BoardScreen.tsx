@@ -6,9 +6,10 @@
  * Two frames (Slice 13a, docs/product/features/adaptive-layout.md): in the narrow frame (below
  * 600 px, src/state/windowClass.ts) the StatusBar is the dock and holds PAUSED and STOP ALL —
  * the thumb zone —, without the board and deck name the top bar already shows; in the wide frame
- * they stay in the top bar.
+ * they stay in the top bar. The deck switcher (Slice 13b) is the rail on the left in the wide
+ * frame and tabs above the grid in the narrow one (DeckRail `variant`).
  *
- * 3-column main area:
+ * 3-column main area (wide frame):
  *   Left  220px  DeckRail  (All pads + deck list + CRUD)
  *   Center 1fr   PadGrid    (the deck's grid + Path A/B creation, or the All pads pool view)
  *   Right  280px LibraryPanel (toggles with the LIBRARY button)
@@ -259,6 +260,43 @@ export function BoardScreen(): JSX.Element {
 
   // ── Layout ─────────────────────────────────────────────────────────────────
 
+  /** The deck switcher — the rail on the left (wide frame) or tabs above the grid (narrow). */
+  const deckSwitcher = (variant: 'rail' | 'tabs') => (
+    <DeckRail
+      variant={variant}
+      manage={mode === 'edit'}
+      board={board}
+      activeDeckId={poolView ? null : currentDeckId.value}
+      onDeckSelect={(id) => {
+        allPadsView.value = false;
+        currentDeckId.value = id;
+        setLastView(board.id, { kind: 'deck', deckId: id });
+        setSelectedPadId(null);
+      }}
+      allPadsActive={poolView}
+      onAllPadsSelect={() => {
+        allPadsView.value = true;
+        setLastView(board.id, { kind: 'all-pads' });
+        setSelectedPadId(null);
+        setPlaceMode(null);
+        if (rightPanel === 'editor') setRightPanel('empty');
+      }}
+      padSize={
+        mode === 'edit' && (deck || poolView)
+          ? {
+              value: padSizePreview ?? board.padSize,
+              onChange: setPadSizePreview,
+              onCommit: (px) => {
+                // Stored once, when the move ends; shown at once, so the preview can go
+                applyBoardChange(board.id, (b) => setBoardPadSize(b, px));
+                setPadSizePreview(null);
+              },
+            }
+          : undefined
+      }
+    />
+  );
+
   return (
     <div class="sb-screen">
       <BoardTopBar
@@ -275,41 +313,13 @@ export function BoardScreen(): JSX.Element {
 
       {/* Main content */}
       <div class="sb-board-body">
-        {/* Left: Deck rail */}
-        <DeckRail
-          board={board}
-          activeDeckId={poolView ? null : currentDeckId.value}
-          onDeckSelect={(id) => {
-            allPadsView.value = false;
-            currentDeckId.value = id;
-            setLastView(board.id, { kind: 'deck', deckId: id });
-            setSelectedPadId(null);
-          }}
-          allPadsActive={poolView}
-          onAllPadsSelect={() => {
-            allPadsView.value = true;
-            setLastView(board.id, { kind: 'all-pads' });
-            setSelectedPadId(null);
-            setPlaceMode(null);
-            if (rightPanel === 'editor') setRightPanel('empty');
-          }}
-          padSize={
-            mode === 'edit' && (deck || poolView)
-              ? {
-                  value: padSizePreview ?? board.padSize,
-                  onChange: setPadSizePreview,
-                  onCommit: (px) => {
-                    // Stored once, when the move ends; shown at once, so the preview can go
-                    applyBoardChange(board.id, (b) => setBoardPadSize(b, px));
-                    setPadSizePreview(null);
-                  },
-                }
-              : undefined
-          }
-        />
+        {/* Left: Deck rail (wide frame) */}
+        {!narrowWindow.value && deckSwitcher('rail')}
 
         {/* Center: Pad grid or empty states */}
         <main class="sb-board-main">
+          {/* Top: deck tabs (narrow frame, Slice 13b) */}
+          {narrowWindow.value && deckSwitcher('tabs')}
           {poolView ? (
             board.pads.length === 0 ? (
               // data-pos: a library drop lands here too (libDnd targets the closest [data-pos])
