@@ -101,6 +101,13 @@ export function withEarlyVersions(
 /** The release notes the start screen shows, newest first (checked by whatsNew.test.ts). */
 export const WHATS_NEW: WhatsNewNotes[] = [
   {
+    version: '3.0.213',
+    new: [
+      'Pads can be searched by name — in All pads and in every deck, from the bar above the pads.',
+      'A deck can be sorted by name, date or kind for a moment; with Arrangement chosen, or after opening another deck, it shows its own order again.',
+    ],
+  },
+  {
     version: '3.0.212',
     fixed: [
       'Small pads no longer cut off their names: when pads get small, they leave out their picture and keep their name, type and key inside. Pads are never smaller than a fingertip, also at the smallest pad size.',

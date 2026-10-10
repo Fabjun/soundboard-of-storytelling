@@ -180,6 +180,30 @@ export function poolLayout(pads: readonly Pad[], cols: number): PlacedPad[] {
   }));
 }
 
+/** A deck's pads in its reading order — row by row, left to right — as the deck shows them. */
+export function deckPadsInOrder(board: Board, deck: Deck): Pad[] {
+  return deckPads(board, deck)
+    .sort(
+      (a, b) =>
+        a.placement.position.row - b.placement.position.row ||
+        a.placement.position.col - b.placement.position.col,
+    )
+    .map((e) => e.pad);
+}
+
+/**
+ * A deck's pads laid out in the order given — while a search or a sort is active (Slice 13c) —
+ * row-major without gaps, like poolLayout, but each with its key in the deck (K14: the deck's keys
+ * stay active). Rendering only, never stored: the deck's own arrangement is untouched.
+ */
+export function deckLayoutInOrder(deck: Deck, pads: readonly Pad[], cols: number): PlacedPad[] {
+  const keys = new Map(deck.placements.map((p) => [p.padId, p.hotkey]));
+  return poolLayout(pads, cols).map(({ pad, placement }) => {
+    const hotkey = keys.get(pad.id);
+    return { pad, placement: hotkey ? { ...placement, hotkey } : placement };
+  });
+}
+
 /**
  * Deletes a pad from the board: from the pool, every deck, the quick-access bar and every
  * combo step. A combo step keeps its other pads and its timing (duration, stop all, fade out

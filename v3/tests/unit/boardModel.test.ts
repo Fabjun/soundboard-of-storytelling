@@ -14,7 +14,9 @@ import {
   addPadToPool,
   boardProblems,
   deckCount,
+  deckLayoutInOrder,
   deckPads,
+  deckPadsInOrder,
   deleteDeck,
   deletePad,
   duplicateDeck,
@@ -322,6 +324,42 @@ describe('remove from deck, place in deck, All pads (Slice 9e)', () => {
     ]);
     expect(layout.every((e) => e.placement.hotkey === undefined)).toBe(true);
     expect(poolLayout([], 4)).toEqual([]);
+  });
+
+  it("a deck's pads in reading order: row by row, left to right, whatever the stored order", () => {
+    let b = addPadToDeck(emptyBoard(), 'd1', single('lower'), { col: 0, row: 1 });
+    b = addPadToDeck(b, 'd1', single('right'), { col: 3, row: 0 });
+    b = addPadToDeck(b, 'd1', single('left'), { col: 1, row: 0 });
+    expect(deckPadsInOrder(b, findDeck(b, 'd1')!).map((p) => p.id)).toEqual([
+      'left',
+      'right',
+      'lower',
+    ]);
+  });
+
+  it('a deck laid out in a given order flows without gaps and keeps each pad its deck key', () => {
+    let b = addPadToDeck(emptyBoard(), 'd1', single('a'), { col: 2, row: 3 });
+    b = addPadToDeck(b, 'd1', single('b'), { col: 0, row: 0 });
+    b = setPlacementHotkey(b, 'd1', 'a', 'Numpad1');
+    const deck = findDeck(b, 'd1')!;
+    const layout = deckLayoutInOrder(deck, [single('a'), single('b')], 4);
+    expect(
+      layout.map((e) => [
+        e.pad.id,
+        e.placement.position.col,
+        e.placement.position.row,
+        e.placement.hotkey,
+      ]),
+    ).toEqual([
+      ['a', 0, 0, 'Numpad1'],
+      ['b', 1, 0, undefined],
+    ]);
+    expect('hotkey' in layout[1].placement).toBe(false);
+    // The deck itself is untouched
+    expect(findDeck(b, 'd1')!.placements.find((p) => p.padId === 'a')!.position).toEqual({
+      col: 2,
+      row: 3,
+    });
   });
 
   it('the default grid is 4×4 — the size of every new deck and the width of All pads', () => {

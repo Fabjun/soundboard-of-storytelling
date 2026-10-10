@@ -17,10 +17,21 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.212';
+export const APP_VERSION = '3.0.213';
 
 /** The developer log, newest first; CHANGELOG.md is generated from it (sync-changelog). */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.213',
+    date: '2026-10-10',
+    items: [
+      'feat(board): Slice 13c — search and sort in the current view (product §5): a search field in the bar above the grid, in All pads and in every deck; a pad matches when every word is part of its name (the icon search rule); a deck sorts by the All pads keys or keeps its Arrangement; search and sort combine; a search that finds nothing says so',
+      'feat(board): in a deck, search and sort last only for the moment — another view starts without them and the deck shows its saved arrangement; meanwhile its pads flow without gaps, keep their keys (K14) and cannot be moved (product §5)',
+      'refactor: one search-and-sort bar for All pads and the decks (BoardScreen); PadGrid flows a deck in a given order (`deckOrder`), boardModel `deckPadsInOrder` / `deckLayoutInOrder`, src/lib/padSearch.ts',
+      'test: unit tests for the search and the deck layouts; E2E pad-search in Chromium and WebKit — filter, sort, Arrangement, no empty cells while either is active, a search per view, no match, room for the field on a phone; each counter-checked (the reset on a view change had no test, now it has)',
+      'fix: the search and the sort are cleared while the new view renders, not in an effect — an effect runs after the frame and wiped a search typed right after a switch (2 of 36 repeated E2E runs; 0 of 60 now; react.dev "Adjusting some state when a prop changes"); the screenshot review found the sort choice squeezing the search field to a sliver on a phone (fixed and tested)',
+    ],
+  },
   {
     version: '3.0.212',
     date: '2026-10-10',
