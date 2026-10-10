@@ -245,6 +245,27 @@ export function addToQuickAccess(board: Board, padId: string): Board {
   return { ...board, quickAccess: [...board.quickAccess, { padId }] };
 }
 
+/**
+ * Gives a quick-access pad its board-wide key (K13), or clears it with `undefined`; another pad of
+ * the bar that held the key loses it — as setPlacementHotkey does within a deck. Whether a deck
+ * uses the key (K2) is checked before, in the PAD editor.
+ */
+export function setQuickAccessHotkey(
+  board: Board,
+  padId: string,
+  hotkey: string | undefined,
+): Board {
+  return {
+    ...board,
+    quickAccess: board.quickAccess.map((q) => {
+      const mine = q.padId === padId;
+      if (!mine && (hotkey === undefined || q.hotkey !== hotkey)) return q;
+      const { hotkey: _old, ...rest } = q;
+      return mine && hotkey ? { ...rest, hotkey } : rest;
+    }),
+  };
+}
+
 /** Returns the board without the pad in its quick-access bar; the same board when it is not there. */
 export function removeFromQuickAccess(board: Board, padId: string): Board {
   if (!board.quickAccess.some((q) => q.padId === padId)) return board;

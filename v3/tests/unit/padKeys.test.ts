@@ -10,10 +10,13 @@
 import type { Board, SinglePad } from '../../src/types';
 import {
   RESERVED_KEYS,
+  deckKeyUse,
   isModifierKey,
   keyHolder,
   keyLabel,
   padForKey,
+  quickAccessKeyHolder,
+  quickAccessPadForKey,
 } from '../../src/lib/padKeys';
 
 const grid = { cols: 4, rows: 4, gap: 4 };
@@ -85,6 +88,38 @@ describe('keyHolder', () => {
     expect(keyHolder(deck, 'Numpad1', 'b')).toBe('a');
     expect(keyHolder(deck, 'Numpad1', 'a')).toBeNull();
     expect(keyHolder(deck, 'Numpad5', 'b')).toBeNull();
+  });
+});
+
+describe('quick-access keys (K13) and their clash with deck keys (K2)', () => {
+  const withBar = (): Board => ({
+    ...board(),
+    quickAccess: [
+      { padId: 'a', hotkey: 'KeyQ' },
+      { padId: 'b' },
+      { padId: 'gone', hotkey: 'KeyW' },
+    ],
+  });
+
+  it('a bar key plays its pad board-wide; nothing for a free key or a pad not in the pool', () => {
+    expect(quickAccessPadForKey(withBar(), 'KeyQ')?.id).toBe('a');
+    expect(quickAccessPadForKey(withBar(), 'KeyE')).toBeNull();
+    expect(quickAccessPadForKey(withBar(), 'KeyW')).toBeNull();
+  });
+
+  it('names the other bar pad that holds a key, never the pad itself', () => {
+    expect(quickAccessKeyHolder(withBar(), 'KeyQ', 'b')).toBe('a');
+    expect(quickAccessKeyHolder(withBar(), 'KeyQ', 'a')).toBeNull();
+    expect(quickAccessKeyHolder(withBar(), 'KeyE', 'b')).toBeNull();
+  });
+
+  it('finds the first deck, in deck order, where a key is used', () => {
+    const b = board();
+    // Deck 2 first in the array, but last in order
+    const reordered = { ...b, decks: [b.decks[1], b.decks[0]] };
+    expect(deckKeyUse(reordered, 'Numpad1')).toEqual({ deck: b.decks[0], padId: 'a' });
+    expect(deckKeyUse(b, 'Numpad9')?.deck.id).toBe('d1');
+    expect(deckKeyUse(b, 'KeyQ')).toBeNull();
   });
 });
 

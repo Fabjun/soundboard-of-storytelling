@@ -20,7 +20,10 @@ import {
   reopenFirstBoard,
 } from './helpers';
 
-const keyField = (page: Page) => page.getByTestId('pad-editor-panel-key-button');
+/** The deck key field of the open PAD editor, and the quick-access key field (Slice 13d). */
+const deckKey = (page: Page) => page.getByTestId('pad-editor-panel-deck-key-region');
+const quickKey = (page: Page) => page.getByTestId('pad-editor-panel-quick-key-region');
+const keyField = (page: Page) => deckKey(page).getByTestId('key-field-button');
 /** The key label shown on a pad. No test ID: existing specs count pads by the `pad-grid-cell-` prefix. */
 const padKey = (page: Page, padId: string, label: string) =>
   page.getByTestId(`pad-grid-cell-${padId}`).getByText(label, { exact: true });
@@ -70,11 +73,11 @@ test('a key another pad holds moves over on MOVE KEY HERE; Escape cancels and ke
   await expect(keyField(page)).toHaveText('— not assigned —');
 
   await assignKey(page, 'Numpad1');
-  await expect(page.getByTestId('pad-editor-panel-key-conflict-text')).toHaveText(
+  await expect(deckKey(page).getByTestId('key-field-conflict-text')).toHaveText(
     'Key N1 is on Thunder',
   );
   await expect(keyField(page)).toHaveText('— not assigned —');
-  await page.getByTestId('pad-editor-panel-key-move-button').click();
+  await deckKey(page).getByTestId('key-field-move-button').click();
   await expect(keyField(page)).toHaveText('N1');
   await closePadEditor(page);
   await expect(padKey(page, rain, 'N1')).toBeVisible();
@@ -84,14 +87,14 @@ test('a key another pad holds moves over on MOVE KEY HERE; Escape cancels and ke
 test('a reserved key is refused with its reason; × removes the key', async ({ page }) => {
   await addNamedPad(page, 'Thunder');
   await assignKey(page, 'Enter');
-  await expect(page.getByTestId('pad-editor-panel-key-note-text')).toHaveText(
+  await expect(deckKey(page).getByTestId('key-field-note-text')).toHaveText(
     'Enter stops the last sound — pick another key',
   );
   await expect(keyField(page)).toHaveText('— not assigned —');
 
   await assignKey(page, 'Numpad2');
   await expect(keyField(page)).toHaveText('N2');
-  await page.getByTestId('pad-editor-panel-key-clear-button').click();
+  await deckKey(page).getByTestId('key-field-clear-button').click();
   await expect(keyField(page)).toHaveText('— not assigned —');
 });
 
@@ -115,4 +118,74 @@ test('in GAME the app takes the pad key; in SETUP and for a free key it does not
   expect(await lastKeyTaken(page)).toBe(true);
   await page.keyboard.press('Numpad5');
   expect(await lastKeyTaken(page)).toBe(false);
+});
+
+// ── Quick-access keys (K13) and their clash with deck keys (K2), Slice 13d ──────
+
+/** Presses `code` in the open PAD editor's quick-access key field. */
+async function assignQuickKey(page: Page, code: string) {
+  const field = quickKey(page).getByTestId('key-field-button');
+  await field.click();
+  await expect(field).toHaveText('PRESS A KEY…');
+  await page.keyboard.press(code);
+}
+
+test('a quick-access key is shown on the bar and plays its pad in another deck too', async ({
+  page,
+}) => {
+  await addNamedPad(page, 'Rooster');
+  await expect(quickKey(page)).toHaveCount(0); // only for a pad in the bar
+  await page.getByRole('button', { name: 'In quick access' }).click();
+  await assignQuickKey(page, 'KeyQ');
+  await expect(quickKey(page).getByTestId('key-field-button')).toHaveText('Q');
+  await closePadEditor(page);
+  await expect(page.getByRole('group', { name: 'Quick access' })).toContainText('Q');
+
+  await createDeck(page);
+  await page.getByText('Deck 2', { exact: true }).click();
+  await page.evaluate(() =>
+    window.addEventListener('keydown', (e) => {
+      (window as unknown as { lastKeyTaken: boolean }).lastKeyTaken = e.defaultPrevented;
+    }),
+  );
+  await enterGameMode(page);
+  await page.keyboard.press('KeyQ');
+  expect(await lastKeyTaken(page)).toBe(true);
+});
+
+test('a key is never both a deck key and a quick-access key (K2) — refused with its holder', async ({
+  page,
+}) => {
+  await addNamedPad(page, 'Owl');
+  await assignKey(page, 'Numpad1'); // a deck key in Deck 1
+  await addNamedPad(page, 'Rooster');
+  await page.getByRole('button', { name: 'In quick access' }).click();
+  await assignQuickKey(page, 'Numpad1');
+  await expect(quickKey(page).getByTestId('key-field-note-text')).toHaveText(
+    'N1 plays Owl in Deck 1 — pick another key',
+  );
+  await expect(quickKey(page).getByTestId('key-field-button')).toHaveText('— not assigned —');
+
+  await assignQuickKey(page, 'KeyQ');
+  await assignKey(page, 'KeyQ'); // Rooster's own deck key: the bar has it
+  await expect(deckKey(page).getByTestId('key-field-note-text')).toHaveText(
+    'Q is the quick-access key of Rooster — pick another key',
+  );
+  await expect(keyField(page)).toHaveText('— not assigned —');
+});
+
+test('a quick-access key another bar pad holds moves over on MOVE KEY HERE', async ({ page }) => {
+  await addNamedPad(page, 'Day');
+  await page.getByRole('button', { name: 'In quick access' }).click();
+  await assignQuickKey(page, 'KeyQ');
+  await addNamedPad(page, 'Night');
+  await page.getByRole('button', { name: 'In quick access' }).click();
+  await assignQuickKey(page, 'KeyQ');
+  await expect(quickKey(page).getByTestId('key-field-conflict-text')).toHaveText('Key Q is on Day');
+  await quickKey(page).getByTestId('key-field-move-button').click();
+  await expect(quickKey(page).getByTestId('key-field-button')).toHaveText('Q');
+  await closePadEditor(page);
+  const bar = page.getByRole('group', { name: 'Quick access' });
+  await expect(bar.getByRole('button', { name: /Night/ })).toContainText('Q');
+  await expect(bar.getByRole('button', { name: /Day/ })).not.toContainText('Q');
 });

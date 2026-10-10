@@ -35,6 +35,7 @@ import {
   restoreDeck,
   setPlacementHotkey,
   setPlacements,
+  setQuickAccessHotkey,
   updatePad,
   parseBoard,
   withNewIds,
@@ -159,6 +160,18 @@ describe('deleting a pad', () => {
     expect(QUICK_ACCESS_MAX).toBe(5);
     expect(addToQuickAccess(b, 'f')).toBe(b); // full: the same board
     expect(addToQuickAccess(b, 'ghost')).toBe(b); // not in the pool
+    expect(boardProblems(b)).toEqual([]);
+  });
+
+  it('a quick-access key moves to the pad that takes it; clearing it leaves no key', () => {
+    let b = emptyBoard();
+    for (const id of ['a', 'b']) b = addToQuickAccess(addPadToPool(b, single(id)), id);
+    b = setQuickAccessHotkey(b, 'a', 'KeyQ');
+    expect(b.quickAccess).toEqual([{ padId: 'a', hotkey: 'KeyQ' }, { padId: 'b' }]);
+    b = setQuickAccessHotkey(b, 'b', 'KeyQ');
+    expect(b.quickAccess).toEqual([{ padId: 'a' }, { padId: 'b', hotkey: 'KeyQ' }]);
+    b = setQuickAccessHotkey(b, 'b', undefined);
+    expect(b.quickAccess).toStrictEqual([{ padId: 'a' }, { padId: 'b' }]);
     expect(boardProblems(b)).toEqual([]);
   });
 

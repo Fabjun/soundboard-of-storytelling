@@ -1314,6 +1314,17 @@
 .sb-quick-access-pad:focus-visible {
   outline: 2px solid var(--gold);
 }
+.sb-quick-access-key {
+  /* @inventory: The board-wide key of a quick-access pad (K13), short (K10) — mono, dim, bordered, at the end of the pad button; as the key badge on a pad. */
+  margin-left: auto;
+  flex-shrink: 0;
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  color: var(--text-dim);
+  border: 1px solid var(--border);
+  background: var(--sunk);
+  padding: 0 var(--space-1);
+}
 .sb-pad-grid-pool {
   /* @inventory: Variant of sb-pad-grid for the All pads view — as many rows of square pads as the pool needs; the pool scrolls (Slice 9e). */
   overflow: auto;
