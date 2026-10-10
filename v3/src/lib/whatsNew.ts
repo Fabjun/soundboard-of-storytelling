@@ -101,6 +101,12 @@ export function withEarlyVersions(
 /** The release notes the start screen shows, newest first (checked by whatsNew.test.ts). */
 export const WHATS_NEW: WhatsNewNotes[] = [
   {
+    version: '3.0.204',
+    behindTheScenes: [
+      'Automatic tests now check more of the keyboard and numpad control and of how pads saved by older versions are brought up to date. The app works exactly as before.',
+    ],
+  },
+  {
     version: '3.0.203',
     behindTheScenes: [
       'Automatic tests now check more of how audio files and backups are read, stored and deleted — among them that a stored sound keeps every byte. The app works exactly as before.',

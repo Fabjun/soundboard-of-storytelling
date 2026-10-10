@@ -17,10 +17,19 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.203';
+export const APP_VERSION = '3.0.204';
 
 /** The developer log, newest first; CHANGELOG.md is generated from it (sync-changelog). */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.204',
+    date: '2026-10-10',
+    items: [
+      'test: keys — a key on a focused checkbox, radio, color, file or form button still plays its pad (only the slider was tested); an editable region and a number field keep their keys; a key sent to the page itself plays; a reserved key plays nothing even when an imported pad holds it; a deck that is gone plays nothing and throws no error (the listener error only showed on the window)',
+      'test: pad files — moving the first file down and from just outside either end; a cleared trim end leaves no key; an old pad that was never trimmed is still converted (recognized by its file hashes), and one with only a pad-wide trim end loses it',
+      'test: mutation score per module (Stryker) — keyControl 84.7 % → 95.2 %, padFiles 89.5 % → 99.1 %; every new test counter-checked (the code broken on purpose → red)',
+    ],
+  },
   {
     version: '3.0.203',
     date: '2026-10-10',

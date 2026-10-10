@@ -7,6 +7,14 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.204 — 2026-10-10
+
+### Internal
+
+- test: keys — a key on a focused checkbox, radio, color, file or form button still plays its pad (only the slider was tested); an editable region and a number field keep their keys; a key sent to the page itself plays; a reserved key plays nothing even when an imported pad holds it; a deck that is gone plays nothing and throws no error (the listener error only showed on the window)
+- test: pad files — moving the first file down and from just outside either end; a cleared trim end leaves no key; an old pad that was never trimmed is still converted (recognized by its file hashes), and one with only a pad-wide trim end loses it
+- test: mutation score per module (Stryker) — keyControl 84.7 % → 95.2 %, padFiles 89.5 % → 99.1 %; every new test counter-checked (the code broken on purpose → red)
+
 ## 3.0.203 — 2026-10-10
 
 ### Internal
