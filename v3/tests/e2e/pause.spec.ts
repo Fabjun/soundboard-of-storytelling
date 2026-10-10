@@ -20,7 +20,8 @@ import {
   uploadTestAudio,
 } from './helpers';
 
-const paused = (page: Page) => page.getByTestId('board-top-bar-paused-button');
+const paused = (page: Page) => page.getByRole('button', { name: 'PAUSED', exact: true });
+const stopAll = (page: Page) => page.getByRole('button', { name: /^STOP (ALL|NOW)$/ });
 const playing = (page: Page, n: number) => pads(page).nth(n).getByRole('button', { pressed: true });
 
 /** Space with no control focused (a tapped pad would take Space itself). */
@@ -82,8 +83,8 @@ test('STOP ALL during a pause stops everything at once and ends the pause', asyn
   await expect(playing(page, 0)).toBeVisible();
   await pressSpace(page);
   await expect(paused(page)).toBeVisible();
-  await page.getByTestId('board-top-bar-stop-all-button').click();
+  await stopAll(page).click();
   await expect(paused(page)).toHaveCount(0);
   await expect(playing(page, 0)).toHaveCount(0);
-  await expect(page.getByTestId('board-top-bar-stop-all-button')).toHaveText('STOP ALL');
+  await expect(stopAll(page)).toHaveText('STOP ALL');
 });

@@ -4,6 +4,7 @@
 **Date:** 2026-06-04
 **Slice:** cross-cutting
 **Refines:** —
+**Refined by:** ADR-0082 (the 600 px boundary between the narrow and the wide frame, asked in one place)
 **Category:** UI architecture
 
 ## Context

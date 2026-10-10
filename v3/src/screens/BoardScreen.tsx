@@ -3,6 +3,11 @@
  *
  * Layout: BoardTopBar | 3-column main area | StatusBar
  *
+ * Two frames (Slice 13a, docs/product/features/adaptive-layout.md): in the narrow frame (below
+ * 600 px, src/state/windowClass.ts) the StatusBar is the dock and holds PAUSED and STOP ALL —
+ * the thumb zone —, without the board and deck name the top bar already shows; in the wide frame
+ * they stay in the top bar.
+ *
  * 3-column main area:
  *   Left  220px  DeckRail  (All pads + deck list + CRUD)
  *   Center 1fr   PadGrid    (the deck's grid + Path A/B creation, or the All pads pool view)
@@ -43,7 +48,9 @@ import { PadGrid } from '../components/PadGrid';
 import { PadEditorPanel } from '../components/PadEditorPanel';
 import { LibraryPanel } from '../components/LibraryPanel';
 import { StatusBar } from '../components/StatusBar';
+import { LiveControls } from '../components/LiveControls';
 import { PixelIcon } from '../components/PixelIcon';
+import { narrowWindow } from '../state/windowClass';
 import type { AppMode, Pad, PadPosition } from '../types';
 import { nanoid } from '../lib/nanoid';
 import { DEFAULT_PAD_TYPE, newPad } from '../lib/padUtils';
@@ -438,17 +445,25 @@ export function BoardScreen(): JSX.Element {
         )}
       </div>
 
-      <StatusBar
-        mode={mode}
-        boardName={board.name}
-        infoText={
-          poolView
-            ? `All pads · ${board.pads.length} pad${board.pads.length !== 1 ? 's' : ''}`
-            : deck
-              ? `${deck.name} · ${deck.placements.length} pad${deck.placements.length !== 1 ? 's' : ''}`
-              : 'No deck selected'
-        }
-      />
+      {narrowWindow.value ? (
+        <StatusBar
+          mode={mode}
+          dock
+          right={mode === 'play' ? <LiveControls place="dock" /> : undefined}
+        />
+      ) : (
+        <StatusBar
+          mode={mode}
+          boardName={board.name}
+          infoText={
+            poolView
+              ? `All pads · ${board.pads.length} pad${board.pads.length !== 1 ? 's' : ''}`
+              : deck
+                ? `${deck.name} · ${deck.placements.length} pad${deck.placements.length !== 1 ? 's' : ''}`
+                : 'No deck selected'
+          }
+        />
+      )}
     </div>
   );
 }

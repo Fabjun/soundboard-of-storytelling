@@ -58,6 +58,18 @@ nothing is cut off (WCAG 2.2 SC 1.4.10 Reflow). The fix depends on what a small 
 that ahead of the owner.
 **When:** Slice 13, pad detail levels (proposed step 13e).
 
+### Top bar under the iPhone status bar
+
+Found 2026-10-10 while building the dock (Slice 13a): `v3/index.html` sets `viewport-fit=cover`
+and `apple-mobile-web-app-status-bar-style` black-translucent, so as a home-screen app the page
+reaches under the clock and the notch — but no style uses `env(safe-area-inset-top)`; the board's
+top bar may sit under the clock. The dock at the bottom keeps clear of the home indicator
+(`env(safe-area-inset-bottom)`, ADR-0082). Not checked on a device: in a browser tab the insets
+are 0. **Open:** pad the top bars by the top inset, as WebKit advises for `viewport-fit=cover`.
+**When:** after the iPhone check "The dock on a phone; the 600 px boundary"
+(`docs/development/manual-iphone-checklist.md`) shows it — or with step 13b, which rebuilds the
+top of the board.
+
 ### All pads view: creating pads there ✅ Done (PR #34)
 
 Decided by the owner 2026-10-02: ADD PAD and a library drop (or long press) in All pads create a

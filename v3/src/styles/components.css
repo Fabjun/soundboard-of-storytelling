@@ -330,6 +330,12 @@
   font-size: var(--fs-sm);
   padding: 0.1875rem var(--space-3);
 }
+.sb-btn-lg {
+  /* @inventory: Large-size modifier for .sb-btn — 48px tall, larger font and padding; for the one control that must never be missed (STOP ALL in the dock, Slice 13a). */
+  min-height: 48px;
+  font-size: var(--fs-lg);
+  padding: 0 var(--space-6);
+}
 
 /* ── PAD ── shared shell. Type color is supplied via --pad-color
    on the element by the React layer; idle states keep the color as
@@ -654,6 +660,14 @@
   margin-left: auto;
   display: flex;
   gap: var(--space-4);
+}
+.sb-status-bar-dock {
+  /* @inventory: Dock modifier for the status bar — the narrow frame's one bar at the bottom (Slice 13a): tall enough for the live controls in its right slot, which keep their touch size. */
+  height: auto;
+  min-height: 56px;
+  padding: var(--space-1) var(--space-3);
+  /* Above the iPhone's home indicator: the page uses viewport-fit=cover (index.html); 0 elsewhere */
+  padding-bottom: calc(var(--space-1) + env(safe-area-inset-bottom, 0rem));
 }
 
 /* Mode badge — sits in the top bar. Visually distinct between SETUP/GAME

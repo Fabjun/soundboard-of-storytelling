@@ -21,6 +21,7 @@ import type { LibraryItemMeta, Pad, PadType } from '../types';
 import { PixelIcon } from './PixelIcon';
 import { Waveform } from './Waveform';
 import { libraryItems } from '../state/store';
+import { narrowWindow } from '../state/windowClass';
 import { DEFAULT_PAD_TYPE, newPad, padTypeColor, padTypeLabel } from '../lib/padUtils';
 import { nanoid } from '../lib/nanoid';
 
@@ -45,7 +46,7 @@ const PAD_TYPES: PadType[] = ['single', 'loop', 'combo'];
  * then ADD PAD — or hand over to the PAD editor for more options. The caller places the pad.
  */
 export function PadCreationPopover({ cellRect, onResult }: PadCreationPopoverProps): JSX.Element {
-  const isMobile = typeof window !== 'undefined' && window.innerWidth < 600;
+  const isMobile = narrowWindow.value;
 
   const allAudio = libraryItems.value.filter((m) => m.type === 'audio');
   const recentAudio = [...allAudio].sort((a, b) => b.addedAt - a.addedAt).slice(0, 5);

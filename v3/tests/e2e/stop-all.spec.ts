@@ -20,7 +20,7 @@ import {
   uploadTestAudio,
 } from './helpers';
 
-const stopAll = (page: Page) => page.getByTestId('board-top-bar-stop-all-button');
+const stopAll = (page: Page) => page.getByRole('button', { name: /^STOP (ALL|NOW)$/ });
 const playing = (page: Page, n: number) => pads(page).nth(n).getByRole('button', { pressed: true });
 
 test.beforeEach(async ({ page }) => {

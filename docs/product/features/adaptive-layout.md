@@ -1,7 +1,7 @@
 # Adaptive layout
 
 > **Leaf of [docs/product/README.md](../README.md).** Filled 2026-10-10 in dialogue with the product
-> owner. Nothing in this document is built yet; implementation is Slice 13, in the steps below.
+> owner. Implementation is Slice 13, in the steps below; built so far: step 13a (3.0.210).
 > Architecture: [ADR-0045](../../architecture/0045-two-axis-adaptive-model.md) (one adaptive app,
 > axis 1 screen format, axis 2 input type).
 
@@ -14,16 +14,16 @@ has no breakpoint at all. On a phone the pads get little room, names are cut off
 names cut off on narrow screens"), and the live controls sit in the top corner — the hardest place
 to reach with one hand. Until this slice, real game nights run on laptop or tablet.
 
-## Decided — not yet built
+## Decided
 
-| #   | Statement                                                                                                                                                                                                                                                                                          | Status      |
-| --- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------- |
-| L1  | Two frames by window width: **narrow** below **600 px**, **wide** from 600 px. 600 px is the start value — the boundary between Material 3's _compact_ and _medium_ window size classes — and is calibrated on the owner's phone and tablet (ADR-0045: thresholds are set empirically on devices). | **Decided** |
-| L2  | Narrow: a **dock** at the bottom holds **STOP ALL**, **PAUSED** and the **save status** (one bar instead of the dock plus the status bar — the grid keeps the height, [P4](../README.md#principles)). The top bar keeps back, the mode toggle and the Lock, which play rarely needs.               | **Decided** |
-| L3  | Narrow: decks are switched by **tabs above the pad grid** — All pads first, then every deck — scrolling sideways when they do not fit. One tap switches; the current deck is always visible. Deck actions, NEW DECK and PAD SIZE are reached from the tab row in SETUP.                            | **Decided** |
-| L4  | Wide: the **deck rail** on the left stays as today (folds to its button). Tabs and rail are **two variants of one deck switcher**, not two components (one component per element, variants by props).                                                                                              | **Decided** |
-| L5  | Order of the steps: 13a → 13b → 13e → 13c → 13d → 13f → 13g (table below).                                                                                                                                                                                                                         | **Decided** |
-| L6  | Deck reorder: drag & drop together with a way to reorder without dragging (WCAG 2.2 SC 2.5.7), planned in step 13g — BACKLOG "Deck reorder (drag & drop) — feature not built".                                                                                                                     | **Decided** |
+| #   | Statement                                                                                                                                                                                                                                                                                          | Status                                                      |
+| --- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------- |
+| L1  | Two frames by window width: **narrow** below **600 px**, **wide** from 600 px. 600 px is the start value — the boundary between Material 3's _compact_ and _medium_ window size classes — and is calibrated on the owner's phone and tablet (ADR-0045: thresholds are set empirically on devices). | **Decided** — built in 3.0.210 (ADR-0082); calibration open |
+| L2  | Narrow: a **dock** at the bottom holds **STOP ALL**, **PAUSED** and the **save status** (one bar instead of the dock plus the status bar — the grid keeps the height, [P4](../README.md#principles)). The top bar keeps back, the mode toggle and the Lock, which play rarely needs.               | **Decided** — built in 3.0.210 (ADR-0082)                   |
+| L3  | Narrow: decks are switched by **tabs above the pad grid** — All pads first, then every deck — scrolling sideways when they do not fit. One tap switches; the current deck is always visible. Deck actions, NEW DECK and PAD SIZE are reached from the tab row in SETUP.                            | **Decided**                                                 |
+| L4  | Wide: the **deck rail** on the left stays as today (folds to its button). Tabs and rail are **two variants of one deck switcher**, not two components (one component per element, variants by props).                                                                                              | **Decided**                                                 |
+| L5  | Order of the steps: 13a → 13b → 13e → 13c → 13d → 13f → 13g (table below).                                                                                                                                                                                                                         | **Decided**                                                 |
+| L6  | Deck reorder: drag & drop together with a way to reorder without dragging (WCAG 2.2 SC 2.5.7), planned in step 13g — BACKLOG "Deck reorder (drag & drop) — feature not built".                                                                                                                     | **Decided**                                                 |
 
 ### Steps
 

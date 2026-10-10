@@ -242,6 +242,18 @@ because Playwright runs against a simulated environment:
   - Expected: Layout reflows correctly in both orientations. No elements off-screen.
   - Why manual: Orientation change events and viewport resize require a real device.
 
+- [ ] **The dock on a phone; the 600 px boundary** _(Slice 13a, ADR-0082)_
+  - Action: Open a board in GAME on the iPhone, in portrait, in Brave and as a home-screen app;
+    reach STOP ALL with the thumb of the hand holding the phone. Rotate to landscape and back.
+    On the tablet: portrait and landscape.
+  - Expected: In portrait STOP ALL and the save status sit in one bar at the bottom, above the
+    home indicator, STOP ALL large and easy to hit; the top bar keeps back, the mode toggle and the
+    Lock. In landscape (wider than 600 px) STOP ALL moves to the top bar at once. Note for each
+    device which frame it shows — the boundary is a start value to calibrate. Also note whether the
+    top bar sits under the clock in the home-screen app (BACKLOG "Top bar under the iPhone status
+    bar").
+  - Why manual: The reach of the thumb, the home indicator and the real widths of the devices.
+
 - [ ] **Browser gestures are off** _(3.0.159, ADR-0067)_
   - Action: On the board and in the library: double-tap, pinch with two fingers, long-press a pad
     name and a label; tap into the library search field.

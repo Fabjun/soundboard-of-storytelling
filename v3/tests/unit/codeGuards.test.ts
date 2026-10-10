@@ -53,6 +53,9 @@
  * 18. Code and tests carry no review status ("review pending"): a decision waiting for the owner
  *    is listed in its pull request; once merged the owner has decided, and a marker left in a
  *    comment is stale — three were on 2026-10-09. The version history is exempt.
+ * 19. Narrow or wide is asked in one place, src/state/windowClass.ts (Slice 13a, ADR-0082): no
+ *    other file compares window.innerWidth / innerHeight or writes a width media query — three
+ *    components did, at two different widths, and missed a rotation (2026-10-10).
  */
 
 import { readdirSync, readFileSync } from 'node:fs';
@@ -550,6 +553,30 @@ describe('guard: dialogs close on Escape through useEscapeKey (ADR-0074)', () =>
       withKeydown,
       'close a dialog with useEscapeKey(onClose, active); keys that play pads: state/keyControl.ts',
     ).toEqual(ALLOWED);
+  });
+});
+
+describe('guard: narrow or wide is asked in one place (src/state/windowClass.ts)', () => {
+  // Three components each compared window.innerWidth once while rendering, at 480 or 600 px, and
+  // missed a rotation (found 2026-10-10, Slice 13a); the frame follows narrowWindow instead
+  const walkSrc = (dir: string): string[] =>
+    readdirSync(dir, { withFileTypes: true }).flatMap((e) =>
+      e.isDirectory() ? walkSrc(join(dir, e.name)) : [join(dir, e.name)],
+    );
+  const WIDTH_CHECK = /inner(?:Width|Height)\s*[<>]|\((?:max|min)-(?:width|height)\s*:/;
+  const asking = walkSrc(SRC)
+    .filter((f) => /\.tsx?$/.test(f) && WIDTH_CHECK.test(readFileSync(f, 'utf8')))
+    .map((f) => relative(SRC, f).split('\\').join('/'))
+    .sort();
+
+  it('finds the window class (sanity)', () => {
+    expect(asking).toContain('state/windowClass.ts');
+  });
+
+  it('no other file compares the window size or writes a width query — read narrowWindow', () => {
+    expect(asking, 'read narrowWindow from src/state/windowClass.ts').toEqual([
+      'state/windowClass.ts',
+    ]);
   });
 });
 
