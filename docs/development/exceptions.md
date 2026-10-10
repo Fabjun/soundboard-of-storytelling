@@ -47,7 +47,7 @@ The reason is the comment line directly above — enforced by `testGuards.test.t
 | `v3/src/lib/flameMath.ts:68` | Formatting: keep the pixel table aligned row by row (Prettier would reflow it). |
 | `v3/src/lib/flameMath.ts:75` | Formatting: keep the pixel table aligned row by row (Prettier would reflow it). |
 
-## Quarantined tests (3)
+## Quarantined tests (2)
 
 Procedure: `docs/development/testing.md`; reference enforced by `testGuards.test.ts`.
 
@@ -55,7 +55,6 @@ Procedure: `docs/development/testing.md`; reference enforced by `testGuards.test
 | ---------------------------------------- | ------- | ------------------------------------------------------------------------------ |
 | `v3/tests/e2e/deck-crud.spec.ts:77`      | `fixme` | BACKLOG "Deck reorder"                                                         |
 | `v3/tests/unit/audio/engine.test.ts:699` | `fails` | BACKLOG "Engine: a Single started again during its fade-out cannot be stopped" |
-| `v3/tests/unit/audio/engine.test.ts:768` | `fails` | BACKLOG "step stops the combo itself"                                          |
 
 ## Modules without their own unit test (4)
 

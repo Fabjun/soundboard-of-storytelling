@@ -758,14 +758,9 @@ describe('combo', () => {
     expect(tags()).toEqual(['h1']);
   });
 
-  // KNOWN ENGINE BUG (found 2026-09-29, T4): a combo step with stopAll calls
-  // stopAllInternal(), which also stops THIS combo (engine.ts:600-603 → 370-372), so the
-  // next step never runs. V1 excluded the running combo (V1 changelog v163: "stopAll to skip
-  // srcs[exceptComboId]"); the port lost it. Real impact: the V1 "DAY" combo (stop all →
-  // rooster) would never play the rooster. test.fails documents the bug; when the engine is
-  // fixed (under product-owner control, BACKLOG "step stops the combo itself") this
-  // test starts passing → test.fails turns red → switch it to test().
-  test.fails('"stop all" step stops everything first, then continues after 200 ms', async () => {
+  // The step leaves its own combo running, as V1 did (V1 changelog v163: "stopAll to skip
+  // srcs[exceptComboId]") — the V1 "DAY" combo (stop all → rooster) plays the rooster.
+  test('"stop all" step stops everything first, then continues after 200 ms', async () => {
     vi.useFakeTimers();
     await audio.play('L', loop('L', 'h9'));
     await flush();
@@ -779,16 +774,34 @@ describe('combo', () => {
     expect(tags()).toEqual(['h9', 'h1']);
   });
 
-  test('current behavior (bug): the stopAll step reports the running combo itself as stopped', async () => {
-    vi.useFakeTimers();
+  test('the "stop all" step leaves its own combo playing', async () => {
     pads.set('s1', single('s1', 'h1'));
     audio.play('c', combo('c', [{ padIds: [], stopAll: true }, { padIds: ['s1'] }]));
     await flush();
-    expect(stopped).toContain('c');
-    expect(audio.isPlaying('c')).toBe(false);
-    vi.advanceTimersByTime(1000);
+    expect(stopped).not.toContain('c');
+    expect(audio.isPlaying('c')).toBe(true);
+  });
+
+  test('the "stop all" step stops other combos, but not the loops its own combo started', async () => {
+    vi.useFakeTimers();
+    pads.set('s1', single('s1', 'h1'));
+    pads.set('s2', single('s2', 'h2'));
+    pads.set('bg', loop('bg', 'h3'));
+    audio.play('o', combo('o', [{ padIds: ['s2'] }]));
     await flush();
-    expect(ctx.sources).toHaveLength(0); // the next step never runs
+    audio.play(
+      'c',
+      combo('c', [{ padIds: ['bg'] }, { padIds: [], stopAll: true }, { padIds: ['s1'] }]),
+    );
+    await flush();
+    expect(new Set(stopped)).toEqual(new Set(['o']));
+    expect(ctx.sources.find((s) => s.buffer?.tag === 'h2')!.stopped).toEqual({ when: 'now' });
+    const bg = ctx.sources.find((s) => s.buffer?.tag === 'h3')!;
+    expect(bg.stopped).toBeNull();
+    vi.advanceTimersByTime(200);
+    await flush();
+    expect(tags()).toContain('h1');
+    expect(bg.stopped).toBeNull();
   });
 
   test('stopping a combo stops everything it started', async () => {
