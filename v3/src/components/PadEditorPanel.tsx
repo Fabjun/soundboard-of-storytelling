@@ -64,9 +64,12 @@ import {
 import { libraryItems, previewPlaying } from '../state/store';
 import { updateBoard } from '../state/boardWrites';
 import {
+  QUICK_ACCESS_MAX,
+  addToQuickAccess,
   deckCount,
   placeInDeck,
   removeFromDeck,
+  removeFromQuickAccess,
   setPlacementHotkey,
   updatePad,
 } from '../lib/boardModel';
@@ -561,6 +564,10 @@ export function PadEditorPanel({
 
   const typeColor = padTypeColor(type);
 
+  // Quick access (Slice 13d): ★ pins the pad to the board's bar, as V1's PAD editor did
+  const inQuickAccess = board.quickAccess.some((q) => q.padId === pad.id);
+  const quickAccessFull = !inQuickAccess && board.quickAccess.length >= QUICK_ACCESS_MAX;
+
   // Escape closes the editor — not while the icon list or the type confirmation is open on top:
   // those close first (src/lib/escapeKey.ts decides at the moment the key is pressed)
   useEscapeKey(onClose, pickerSlot === null && pendingType === null);
@@ -579,6 +586,28 @@ export function PadEditorPanel({
       <div class="sb-overlay-header" style={{ borderBottom: `2px solid ${typeColor}` }}>
         <span class="sb-type-indicator" style={{ background: typeColor }} />
         <span class="sb-overlay-title sb-flex-1">PAD EDITOR</span>
+        <button
+          type="button"
+          class={`sb-btn sb-btn-icon ${inQuickAccess ? 'sb-btn-primary' : 'sb-btn-ghost'}`}
+          data-testid="pad-editor-panel-quick-access-button"
+          aria-label="In quick access"
+          aria-pressed={inQuickAccess}
+          disabled={quickAccessFull}
+          title={
+            quickAccessFull
+              ? `The quick-access bar is full (${QUICK_ACCESS_MAX} pads) — take one out first`
+              : inQuickAccess
+                ? 'Take the pad out of the quick-access bar'
+                : 'Put the pad in the quick-access bar'
+          }
+          onClick={() =>
+            void updateBoard(board.id, (b) =>
+              inQuickAccess ? removeFromQuickAccess(b, pad.id) : addToQuickAccess(b, pad.id),
+            )
+          }
+        >
+          ★
+        </button>
         <button
           class="sb-btn sb-btn-icon sb-btn-ghost"
           data-testid="pad-editor-panel-close-button"

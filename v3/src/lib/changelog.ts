@@ -17,10 +17,19 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.213';
+export const APP_VERSION = '3.0.214';
 
 /** The developer log, newest first; CHANGELOG.md is generated from it (sync-changelog). */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.214',
+    date: '2026-10-10',
+    items: [
+      "feat(board): Slice 13d, first part — the quick-access bar (product §5): board-wide, the same in every deck and All pads, above the grid; as V1's strip up to five pads, pinned and taken out with ★ in the PAD editor (full: the ★ says so); in GAME a tap plays or stops the pad, in SETUP it opens it in the PAD editor — also a pad that is not in the deck shown, which then opens as from All pads; the bar's keys (K13) and their collision with deck keys (K2) are the next part",
+      'feat: boardModel `addToQuickAccess` / `removeFromQuickAccess` (`QUICK_ACCESS_MAX` 5); a new component QuickAccessBar',
+      'test: unit tests for the bar (each pad once, up to 5, the order, out with its key); E2E quick-access — pin and unpin, the same bar in every view, a pad from another deck opens, five and full, play and stop in GAME; each counter-checked; the axe scan of the board on a phone includes the bar',
+    ],
+  },
   {
     version: '3.0.213',
     date: '2026-10-10',

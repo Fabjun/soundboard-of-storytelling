@@ -46,6 +46,7 @@ import { PAD_SORT_KEYS, PAD_SORT_LABELS, sortPads, type PadSort } from '../lib/p
 import { searchPads } from '../lib/padSearch';
 import { BoardTopBar } from '../components/BoardTopBar';
 import { DeckRail } from '../components/DeckRail';
+import { QuickAccessBar } from '../components/QuickAccessBar';
 import { PadGrid } from '../components/PadGrid';
 import { PadEditorPanel } from '../components/PadEditorPanel';
 import { LibraryPanel } from '../components/LibraryPanel';
@@ -280,9 +281,12 @@ export function BoardScreen(): JSX.Element {
 
   // ── Pad for editor ─────────────────────────────────────────────────────────
 
-  // Deck view: the pad must be placed in this deck. All pads: any pad of the pool.
+  // Deck view: the pad must be placed in this deck or sit in the quick-access bar, which every
+  // view shows (Slice 13d). All pads: any pad of the pool.
   const selectedPad =
-    poolView || (deck && deck.placements.some((p) => p.padId === selectedPadId))
+    poolView ||
+    (deck && deck.placements.some((p) => p.padId === selectedPadId)) ||
+    board.quickAccess.some((q) => q.padId === selectedPadId)
       ? (board.pads.find((p) => p.id === selectedPadId) ?? null)
       : null;
 
@@ -412,6 +416,9 @@ export function BoardScreen(): JSX.Element {
         <main class="sb-board-main">
           {/* Top: deck tabs (narrow frame, Slice 13b) */}
           {narrowWindow.value && deckSwitcher('tabs')}
+          {/* Board-wide, the same in every view (Slice 13d) — shown while it holds a pad */}
+          <QuickAccessBar board={board} mode={mode} onPadSelect={handlePadSelect} />
+
           {poolView ? (
             board.pads.length === 0 ? (
               // data-pos: a library drop lands here too (libDnd targets the closest [data-pos])
@@ -508,7 +515,9 @@ export function BoardScreen(): JSX.Element {
               <PadEditorPanel
                 key={selectedPad.id}
                 pad={selectedPad}
-                deck={deck}
+                // A quick-access pad that is not in this deck opens as from All pads: no deck key,
+                // no "remove from deck" for a deck it is not in
+                deck={deck?.placements.some((p) => p.padId === selectedPad.id) ? deck : null}
                 board={board}
                 onClose={handleEditorClose}
                 onDelete={handlePadDelete}

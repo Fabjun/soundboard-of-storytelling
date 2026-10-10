@@ -106,8 +106,8 @@ _Pending — to be filled in dialogue._
 _Filled 2026-09-28 in dialogue with the product owner ("model B"; data model:
 [backlog: Board pad pool](../backlog.md#board-pad-pool-data-model)). Built (Slice 9, checked in
 the code 2026-10-09): the pad pool, All pads with its sort, decks with their own arrangement and
-keys, remove from deck vs delete; search and the sort inside a deck in 3.0.213 (Slice 13c). Not built yet: the quick-access
-bar (in the data model only) — it comes with the layout (Slice 13)._
+keys, remove from deck vs delete; search and the sort inside a deck in 3.0.213 (Slice 13c); the
+quick-access bar in 3.0.214 (Slice 13d). Not built yet: the bar's own keys (K13)._
 
 <!-- vale SoS.SupersededTerms = NO --><!-- reason: records the rename decision -->
 

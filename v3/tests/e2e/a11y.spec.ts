@@ -90,13 +90,19 @@ test('board in SETUP and GAME, PAD editor', async ({ page }) => {
   expect(found).toEqual([]);
 });
 
-test('board on a phone: deck tabs, the DECKS panel and the dock (Slice 13)', async ({ page }) => {
+test('board on a phone: deck tabs, the DECKS panel, the quick-access bar and the dock (Slice 13)', async ({
+  page,
+}) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/soundboard-of-storytelling/');
   await goToBoardList(page);
   await createBoardAndNavigate(page);
   await createDeck(page);
   await enterSetupMode(page);
+  await addNamedPad(page, 'Rooster');
+  await page.getByRole('button', { name: 'In quick access' }).click();
+  await closePadEditor(page);
+  await expect(page.getByRole('group', { name: 'Quick access' })).toBeVisible();
   await page.getByTestId('deck-rail-manage-button').click();
   const found = (await violations(page)).map((v) => `SETUP, DECKS open — ${v}`);
   await page.getByTestId('deck-rail-manage-button').click();
