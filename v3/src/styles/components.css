@@ -359,6 +359,14 @@
     --pix-border 0.15s,
     transform 0.15s;
 }
+/* A small pad (below 80 px, padSize.ts COMPACT_BELOW, Slice 13e): no picture and tighter padding,
+   so the type label, the name and the key stay inside it — measured, the name stood 11 px out */
+.sb-pad.is-compact {
+  padding: var(--space-1) var(--space-1) var(--space-1) var(--space-2);
+}
+.sb-pad.is-compact .sb-pad-icons {
+  display: none;
+}
 /* The type "spine": 4-px-wide bar of pad color painted along the
    LEFT edge of every pad. Idle pads show only this — that's the
    passive cue that says "this is a Single / Loop / Combo". When

@@ -101,6 +101,12 @@ export function withEarlyVersions(
 /** The release notes the start screen shows, newest first (checked by whatsNew.test.ts). */
 export const WHATS_NEW: WhatsNewNotes[] = [
   {
+    version: '3.0.212',
+    fixed: [
+      'Small pads no longer cut off their names: when pads get small, they leave out their picture and keep their name, type and key inside. Pads are never smaller than a fingertip, also at the smallest pad size.',
+    ],
+  },
+  {
     version: '3.0.211',
     improved: [
       'On a phone the decks are tabs above the pads: one tap switches the deck, and the current one is always in view. In SETUP the DECKS tab opens the deck list to add, rename or delete decks and set the pad size.',

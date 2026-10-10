@@ -23,6 +23,11 @@ interface PadGridCellProps {
   hotkey?: string;
   mode: AppMode;
   selected: boolean;
+  /**
+   * A small pad (below 80 px, padSize.ts COMPACT_BELOW): no picture and tighter padding, so the
+   * type label, the name and the key fit inside it (Slice 13e).
+   */
+  compact?: boolean;
   /** Grid position of this cell (used as data-pos attribute for drag-over). */
   col: number;
   row: number;
@@ -45,6 +50,7 @@ export function PadGridCell({
   hotkey,
   mode,
   selected,
+  compact = false,
   col,
   row,
   onEmpty,
@@ -110,7 +116,8 @@ export function PadGridCell({
           (isSetup ? ' is-setup' : '') +
           (selected ? ' is-active' : '') +
           (isHot ? ' is-hot' : '') +
-          (isLooping ? ' is-looping' : '')
+          (isLooping ? ' is-looping' : '') +
+          (compact ? ' is-compact' : '')
         }
         style={
           {

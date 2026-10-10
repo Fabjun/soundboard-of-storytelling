@@ -21,6 +21,26 @@ export function clampPadSize(px: unknown): number {
   return Math.min(PAD_SIZE.max, Math.max(PAD_SIZE.min, stepped));
 }
 
+/**
+ * The smallest side a pad gets — the touch target (Apple HIG 44 pt; CLAUDE.md UI rules). At the
+ * smallest PAD SIZE the fewest columns would otherwise leave pads of 42 px and less (measured
+ * 2026-10-10, docs/design/components/pad.md PQ4).
+ */
+export const MIN_PAD_SIDE = 44;
+
+/**
+ * Below this side a pad is compact: no picture and tighter padding, so its type label, name and
+ * key fit — the type is not left to the spine's color alone (WCAG 1.4.1). Measured 2026-10-10:
+ * below 80 px the label, picture and name did not fit and the name stood out of the pad by 11 px
+ * (BACKLOG "Pad names cut off on narrow screens"; pad.md detail levels).
+ */
+export const COMPACT_BELOW = 80;
+
+/** True when a pad of this side is shown compact (COMPACT_BELOW); an unknown side is not. */
+export function isCompactPad(side: number | null): boolean {
+  return side !== null && side < COMPACT_BELOW;
+}
+
 /** The width of a grid's content box and the size its pads may take. */
 export interface PadColumnsInput {
   /** Width of the grid's content box (padding taken off), in px. */
@@ -33,8 +53,9 @@ export interface PadColumnsInput {
 
 /**
  * Returns how many columns the grid takes — the fewest that keep every pad at or below the pad
- * size — and the side each pad then gets. Null while the width is not known (a hidden panel), so
- * the caller keeps its fallback.
+ * size, but never so many that a pad gets smaller than MIN_PAD_SIDE (then a pad may be a little
+ * larger than the pad size) — and the side each pad then gets. Null while the width is not known
+ * (a hidden panel), so the caller keeps its fallback.
  */
 export function padColumns({ width, gap, padSize }: PadColumnsInput): {
   cols: number;
@@ -42,7 +63,9 @@ export function padColumns({ width, gap, padSize }: PadColumnsInput): {
 } | null {
   if (![width, gap, padSize].every(Number.isFinite) || width <= 0 || gap < 0 || padSize <= 0)
     return null;
-  const cols = Math.max(1, Math.ceil((width + gap) / (padSize + gap)));
+  const fewest = Math.max(1, Math.ceil((width + gap) / (padSize + gap)));
+  const most = Math.max(1, Math.floor((width + gap) / (MIN_PAD_SIDE + gap)));
+  const cols = Math.min(fewest, most);
   return { cols, side: Math.max(0, (width - gap * (cols - 1)) / cols) };
 }
 

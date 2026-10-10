@@ -160,6 +160,43 @@ test('the PAD SIZE slider sets the size for every deck and All pads, from any of
   expect((await boxOf(page.getByRole('button', { name: 'A1' }))).width).toBeLessThanOrEqual(44.5);
 });
 
+/** Sets PAD SIZE with the slider's keys; on a phone the slider is in the DECKS panel (Slice 13b). */
+async function setPadSize(page: Page, px: number) {
+  const decks = page.getByTestId('deck-rail-manage-button');
+  const narrow = (await decks.count()) > 0;
+  if (narrow) await decks.click();
+  await slider(page).focus();
+  await page.keyboard.press('Home');
+  for (let s = 44; s < px; s += 4) await page.keyboard.press('ArrowRight');
+  await expect(slider(page)).toHaveValue(String(px));
+  if (narrow) await decks.click(); // closes the panel; the slider has committed on blur
+}
+
+for (const viewport of [PHONE, WIDE]) {
+  test(`at ${viewport.width}px every pad size keeps the name inside the pad and the pad 44px or more`, async ({
+    page,
+  }) => {
+    await page.setViewportSize(viewport);
+    await boardWithSixPads(page);
+    await page.getByTestId('pad-editor-panel-name-input').waitFor({ state: 'detached' });
+    for (const px of [44, 64, 88]) {
+      await setPadSize(page, px);
+      const pad = page.getByRole('button', { name: 'A1' });
+      // Measured 2026-10-10: below 80 px the name stood 11 px out of the pad (Slice 13e)
+      await expect
+        .poll(
+          async () => {
+            const box = await boxOf(pad);
+            const name = await boxOf(pad.getByText('A1', { exact: true }));
+            return name.y + name.height <= box.y + box.height + 0.5 && box.width >= 44;
+          },
+          { message: `PAD SIZE ${px}` },
+        )
+        .toBe(true);
+    }
+  });
+}
+
 test('the PAD SIZE slider is there only in SETUP', async ({ page }) => {
   await boardWithSixPads(page);
   await openDeckRail(page);
