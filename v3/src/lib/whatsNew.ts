@@ -101,6 +101,12 @@ export function withEarlyVersions(
 /** The release notes the start screen shows, newest first (checked by whatsNew.test.ts). */
 export const WHATS_NEW: WhatsNewNotes[] = [
   {
+    version: '3.0.208',
+    fixed: [
+      'A combo step that stops everything no longer stops the combo itself: the combo goes on with its next step, and the loops it started earlier keep playing.',
+    ],
+  },
+  {
     version: '3.0.207',
     fixed: [
       'When the browser lets the app neither store nor read anything, a newly created or imported board that could not be stored no longer stays in the list as if it were there.',

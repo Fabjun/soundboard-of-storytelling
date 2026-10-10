@@ -486,6 +486,15 @@ export function stopPad(padId: string, immediate = false, fadeOut = 0): void {
 
 /** Stops every playing pad, every running combo and every sound still fading out, at once. */
 export function stopAllInternal(): void {
+  stopAllExcept(null);
+}
+
+/**
+ * Stops everything at once, as stopAllInternal does, but leaves the combo `exceptPadId` running —
+ * the combo whose "stop all" step this is goes on with its next step, and the loops it started in
+ * earlier steps play on (V1 `stopAll(exceptComboId)`, the same exception as fadeOutAllExcept).
+ */
+function stopAllExcept(exceptPadId: string | null): void {
   fadingSources.forEach((s) => {
     try {
       s.onended = null;
@@ -494,6 +503,7 @@ export function stopAllInternal(): void {
   });
   fadingSources.clear();
   for (const padId of Object.keys(srcs)) {
+    if (padId === exceptPadId) continue;
     srcs[padId].forEach((s) => {
       try {
         s.onended = null;
@@ -506,7 +516,7 @@ export function stopAllInternal(): void {
     delete playPos[padId];
   }
   for (const padId of Object.keys(comboState)) {
-    stopCombo(padId);
+    if (padId !== exceptPadId) stopCombo(padId);
   }
 }
 
@@ -770,7 +780,7 @@ function playComboStep(padId: string, state: ComboRuntimeState, pad: ComboPad, s
   let delayNext = 0;
 
   if (step.stopAll) {
-    stopAllInternal();
+    stopAllExcept(padId);
     delayNext = 200;
   }
 
