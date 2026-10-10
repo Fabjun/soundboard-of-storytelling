@@ -67,8 +67,8 @@ top bar may sit under the clock. The dock at the bottom keeps clear of the home 
 (`env(safe-area-inset-bottom)`, ADR-0082). Not checked on a device: in a browser tab the insets
 are 0. **Open:** pad the top bars by the top inset, as WebKit advises for `viewport-fit=cover`.
 **When:** after the iPhone check "The dock on a phone; the 600 px boundary"
-(`docs/development/manual-iphone-checklist.md`) shows it — or with step 13b, which rebuilds the
-top of the board.
+(`docs/development/manual-iphone-checklist.md`) shows it (step 13b added the deck tabs below
+the top bar, not the top bar itself).
 
 ### All pads view: creating pads there ✅ Done (PR #34)
 

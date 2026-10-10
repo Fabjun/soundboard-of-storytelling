@@ -594,6 +594,46 @@
   border-bottom: 1px solid var(--border);
   flex-shrink: 0;
 }
+.sb-tabs-scroll {
+  /* @inventory: Scrolling modifier for sb-tabs — one row that scrolls sideways when the tabs do not fit, each tab 44px tall and on one line; the deck switcher's tabs (Slice 13b). */
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+  border-bottom: none;
+}
+.sb-tabs-scroll .sb-tab {
+  flex-shrink: 0;
+  min-height: 44px;
+  white-space: nowrap;
+}
+.sb-deck-tabs {
+  /* @inventory: The deck switcher's tab row in the narrow frame (Slice 13b) — the scrolling tabs, then the DECKS tab fixed at the end; anchors the DECKS panel that opens below it. */
+  position: relative;
+  display: flex;
+  align-items: stretch;
+  padding: 0 var(--space-2);
+}
+.sb-deck-tabs > .sb-tabs-scroll {
+  flex: 1;
+  min-width: 0;
+}
+.sb-deck-tabs > .sb-tab {
+  flex-shrink: 0;
+  min-height: 44px;
+  border-left: 1px solid var(--border);
+}
+.sb-deck-rail-sheet {
+  /* @inventory: The deck rail's content as a panel over the pad grid, opened by the DECKS tab (narrow frame, SETUP, Slice 13b) — full rail width, scrolls on its own, a shadow over the grid. */
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 20;
+  max-height: 70vh;
+  border-bottom: 1px solid var(--border);
+  filter: var(--shadow-pop);
+  overscroll-behavior: none;
+}
 .sb-tab-badge {
   /* @inventory: Count badge inside a tab label — mono xs muted, left margin for separation from tab text. */
   margin-left: 0.375rem;

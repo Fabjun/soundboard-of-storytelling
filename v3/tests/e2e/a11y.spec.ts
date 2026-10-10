@@ -90,6 +90,21 @@ test('board in SETUP and GAME, PAD editor', async ({ page }) => {
   expect(found).toEqual([]);
 });
 
+test('board on a phone: deck tabs, the DECKS panel and the dock (Slice 13)', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/soundboard-of-storytelling/');
+  await goToBoardList(page);
+  await createBoardAndNavigate(page);
+  await createDeck(page);
+  await enterSetupMode(page);
+  await page.getByTestId('deck-rail-manage-button').click();
+  const found = (await violations(page)).map((v) => `SETUP, DECKS open — ${v}`);
+  await page.getByTestId('deck-rail-manage-button').click();
+  await enterGameMode(page);
+  found.push(...(await violations(page)).map((v) => `GAME — ${v}`));
+  expect(found).toEqual([]);
+});
+
 /** Opens the start screen in `theme` — its class on the root element, where the theme blocks apply. */
 async function openInTheme(page: Page, theme: string): Promise<void> {
   await page.goto('/soundboard-of-storytelling/');

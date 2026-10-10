@@ -33,23 +33,25 @@ test('A+B — NEW BOARD tap creates board; row title tap opens BoardScreen', asy
   await expect(page.getByTestId('mode-toggle')).toBeVisible();
 });
 
-test('the deck list starts folded on a phone and unfolds and folds with its button', async ({
+test('on a phone the decks are tabs; in SETUP the DECKS tab opens and closes the deck list', async ({
   page,
 }) => {
   await page.goto('/soundboard-of-storytelling/');
   await goToBoardList(page);
   await page.getByTestId('board-list-screen-new-button').tap();
   await page.locator('[data-testid^="board-list-screen-name-text-"]').first().tap();
-  const toggle = page.getByTestId('deck-rail-toggle-button');
-  const allPads = page.getByTestId('deck-rail-all-pads-tab');
-  // Folded: only the button, so the pads get the width (owner decision 2026-10-05)
-  await expect(toggle).toHaveAttribute('aria-expanded', 'false');
-  await expect(allPads).toBeHidden();
-  await toggle.tap();
-  await expect(toggle).toHaveAttribute('aria-expanded', 'true');
-  await expect(allPads).toBeVisible();
-  await toggle.tap();
-  await expect(allPads).toBeHidden();
+  // No rail on a phone — the tabs above the grid take its place (adaptive-layout.md L3, 2026-10-10;
+  // the folded rail of 2026-10-05 stays in the wide frame, deck-rail-fold.spec.ts)
+  await expect(page.getByTestId('deck-rail-toggle-button')).toHaveCount(0);
+  await expect(page.getByTestId('deck-rail-all-pads-tab-button')).toBeVisible();
+  await page.getByRole('button', { name: 'SETUP' }).tap();
+  const decks = page.getByTestId('deck-rail-manage-button');
+  const list = page.getByTestId('deck-rail-sheet-region');
+  await decks.tap();
+  await expect(decks).toHaveAttribute('aria-expanded', 'true');
+  await expect(list.getByTestId('deck-rail-new-button')).toBeVisible();
+  await decks.tap();
+  await expect(list).toHaveCount(0);
 });
 
 test('C — Back button tap from BoardScreen returns to BoardListScreen', async ({ page }) => {

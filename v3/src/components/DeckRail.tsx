@@ -17,9 +17,15 @@
  *     side menu)
  *   - Folds to its toggle button (owner decision 2026-10-05): it starts folded, so the pads get the
  *     width, and the toggle opens it
+ *
+ * Two variants of one deck switcher (Slice 13b, docs/product/features/adaptive-layout.md L3, L4):
+ * `rail` — the column on the left, in the wide frame; `tabs` — a row of tabs above the pad grid,
+ * in the narrow frame: All pads first, then every deck, one tap switches, the row scrolls sideways.
+ * With `manage` (SETUP) a DECKS button at the end of the row opens the rail's content — PAD SIZE,
+ * the deck actions, NEW DECK — as a panel over the grid.
  */
 
-import { useState, useRef } from 'preact/hooks';
+import { useEffect, useState, useRef } from 'preact/hooks';
 import type { JSX } from 'preact';
 import type { Deck, Board } from '../types';
 import { PixelIcon } from './PixelIcon';
@@ -53,6 +59,10 @@ interface DeckRailProps {
    * `onChange` follows the slider live (preview), `onCommit` stores the size once the move ends.
    */
   padSize?: { value: number; onChange: (px: number) => void; onCommit: (px: number) => void };
+  /** `rail` (wide frame, the default) or `tabs` above the pad grid (narrow frame). */
+  variant?: 'rail' | 'tabs';
+  /** Tabs only: show the DECKS button that opens the deck actions (SETUP). */
+  manage?: boolean;
 }
 
 /**
@@ -67,8 +77,11 @@ export function DeckRail({
   onAllPadsSelect,
   conflictIds,
   padSize,
+  variant = 'rail',
+  manage = false,
 }: DeckRailProps): JSX.Element {
-  // Starts folded, so the pads get the width (owner decision 2026-10-05)
+  // Starts folded, so the pads get the width (owner decision 2026-10-05); for the tabs: the
+  // DECKS panel starts closed
   const [open, setOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editValue, setEditValue] = useState('');
@@ -190,17 +203,18 @@ export function DeckRail({
       {open ? '◀' : '▶'}
     </button>
   );
-  if (!open) {
-    return (
-      <div class="sb-deck-rail is-closed" data-testid="deck-rail">
-        {toggle}
-      </div>
-    );
-  }
+  // Tabs: the current deck is always in view, also far along a long row (L3) — when it changes,
+  // not on every render, so a row scrolled by hand stays where it was
+  const tabRowRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    tabRowRef.current
+      ?.querySelector('[aria-current]')
+      ?.scrollIntoView?.({ block: 'nearest', inline: 'nearest' });
+  }, [activeDeckId, allPadsActive, variant]);
 
-  return (
-    <div class="sb-deck-rail" data-testid="deck-rail">
-      {toggle}
+  // The rail's content — shown in the rail, and in the tabs' DECKS panel
+  const content = (
+    <>
       {/* The board's pad size, for all decks — V1 had this slider in the side menu (ADR-0075) */}
       {padSize && (
         <div class="sb-inspector-section">
@@ -383,16 +397,79 @@ export function DeckRail({
       >
         <PixelIcon name="sparkle" size={12} />+ NEW DECK
       </button>
+    </>
+  );
 
-      {/* Undo toast */}
-      {deletedDeck && (
-        <UndoToast
-          message={deletedDeck.message}
-          durationMs={6000}
-          onUndo={undoDelete}
-          onDismiss={() => setDeletedDeck(null)}
-        />
-      )}
+  const undoToast = deletedDeck && (
+    <UndoToast
+      message={deletedDeck.message}
+      durationMs={6000}
+      onUndo={undoDelete}
+      onDismiss={() => setDeletedDeck(null)}
+    />
+  );
+
+  if (variant === 'tabs') {
+    return (
+      <div class="sb-tab-bar sb-deck-tabs" data-testid="deck-rail">
+        <div class="sb-tabs sb-tabs-scroll" ref={tabRowRef}>
+          <button
+            type="button"
+            class={'sb-tab' + (allPadsActive ? ' is-active' : '')}
+            aria-current={allPadsActive || undefined}
+            data-testid="deck-rail-all-pads-tab-button"
+            onClick={onAllPadsSelect}
+          >
+            All pads
+          </button>
+          {decks.map((deck, position) => (
+            <button
+              key={deck.id}
+              type="button"
+              class={'sb-tab' + (activeDeckId === deck.id ? ' is-active' : '')}
+              aria-current={activeDeckId === deck.id || undefined}
+              data-testid={`deck-rail-tab-button-${deck.id}`}
+              onClick={() => onDeckSelect(deck.id)}
+            >
+              {position + 1} {deck.name}
+            </button>
+          ))}
+        </div>
+        {/* Outside the scrolling row, so it stays in view however many decks there are */}
+        {manage && (
+          <button
+            type="button"
+            class={'sb-tab' + (open ? ' is-active' : '')}
+            aria-expanded={open}
+            data-testid="deck-rail-manage-button"
+            onClick={() => setOpen(!open)}
+          >
+            DECKS
+          </button>
+        )}
+        {manage && open && (
+          <div class="sb-deck-rail sb-deck-rail-sheet" data-testid="deck-rail-sheet-region">
+            {content}
+          </div>
+        )}
+        {undoToast}
+      </div>
+    );
+  }
+
+  if (!open) {
+    return (
+      <div class="sb-deck-rail is-closed" data-testid="deck-rail">
+        {toggle}
+      </div>
+    );
+  }
+
+  return (
+    <div class="sb-deck-rail" data-testid="deck-rail">
+      {toggle}
+      {content}
+      {undoToast}
     </div>
   );
 }
