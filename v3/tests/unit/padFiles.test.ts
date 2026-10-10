@@ -42,13 +42,19 @@ describe('file list operations', () => {
     expect(hashesOf(moveFile(files, 0, -1))).toEqual(['a', 'b', 'c']);
     expect(hashesOf(moveFile(files, 2, 1))).toEqual(['a', 'b', 'c']);
     expect(hashesOf(moveFile(files, 9, 1))).toEqual(['a', 'b', 'c']);
+    // The first file moves down; a place just outside either end moves nothing in
+    expect(hashesOf(moveFile(files, 0, 1))).toEqual(['b', 'a', 'c']);
+    expect(moveFile(files, -1, 1)).toStrictEqual(files);
+    expect(moveFile(files, 3, -1)).toStrictEqual(files);
   });
 
   it('sets the trim of one file only; undefined clears that end', () => {
     const trimmed = setFileTrim(files, 1, { trimStart: 1, trimEnd: 4 });
     expect(trimmed[1]).toEqual({ hash: 'b', trimStart: 1, trimEnd: 4 });
     expect(trimmed[0]).toBe(files[0]);
-    expect(setFileTrim(trimmed, 1, { trimStart: 1 })[1]).toEqual({ hash: 'b', trimStart: 1 });
+    // A cleared end is gone — no key left holding undefined
+    expect(setFileTrim(trimmed, 1, { trimStart: 1 })[1]).toStrictEqual({ hash: 'b', trimStart: 1 });
+    expect(setFileTrim(trimmed, 1, { trimEnd: 4 })[1]).toStrictEqual({ hash: 'b', trimEnd: 4 });
   });
 });
 
@@ -75,13 +81,21 @@ describe('migratePad (pads stored before ADR-0068)', () => {
 
   it('a Loop with several files gets no trim — the engine played each file whole', () => {
     const pad = migratePad(legacy({ type: 'loop', files: ['a', 'b'], trimStart: 2, trimEnd: 5 }));
-    expect(pad.type !== 'combo' && pad.files).toEqual([{ hash: 'a' }, { hash: 'b' }]);
+    expect(pad.type !== 'combo' && pad.files).toStrictEqual([{ hash: 'a' }, { hash: 'b' }]);
+  });
+
+  it('an old pad that was never trimmed is converted too — recognized by its file hashes', () => {
+    const pad = migratePad(legacy({ type: 'single', files: ['a', 'b'] }));
+    expect(pad.type !== 'combo' && pad.files).toStrictEqual([{ hash: 'a' }, { hash: 'b' }]);
   });
 
   it('drops the pad-wide trim, also from a pad without files', () => {
     const pad = migratePad(legacy({ type: 'single', files: [], trimStart: 1 }));
     expect(pad).not.toHaveProperty('trimStart');
     expect(pad).not.toHaveProperty('trimEnd');
+    expect(migratePad(legacy({ type: 'single', files: [], trimEnd: 3 }))).not.toHaveProperty(
+      'trimEnd',
+    );
   });
 
   it('returns a converted pad and a Combo unchanged — the same object', () => {

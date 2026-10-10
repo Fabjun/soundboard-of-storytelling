@@ -167,6 +167,57 @@ describe('keys that play nothing', () => {
     expect(played).toEqual(['a:a', 'a:a']);
   });
 
+  it('a key on a focused checkbox, radio, color, file or form button still plays its pad', () => {
+    const types = ['checkbox', 'radio', 'color', 'file', 'submit', 'reset', 'button'];
+    for (const type of types) {
+      const input = Object.assign(document.createElement('input'), { type });
+      document.body.append(input);
+      playing.clear();
+      press('Numpad1', {}, input);
+    }
+    expect(played).toHaveLength(types.length);
+  });
+
+  it('an editable region and a number field keep their keys', () => {
+    const region = document.createElement('div');
+    // jsdom has no editing: the flag a browser sets for contenteditable is set by hand
+    Object.defineProperty(region, 'isContentEditable', { value: true });
+    const number = Object.assign(document.createElement('input'), { type: 'number' });
+    document.body.append(region, number);
+    press('Numpad1', {}, region);
+    press('Numpad1', {}, number);
+    expect(played).toEqual([]);
+  });
+
+  it('a key sent to the page itself, not to an element, still plays', () => {
+    press('Numpad1', {}, document);
+    expect(played).toEqual(['a:a']);
+  });
+
+  it('a reserved key plays nothing even when a pad holds it (a binding from an import)', () => {
+    const [d1, d2] = testBoard.decks;
+    const escape = { ...d1.placements[0], hotkey: 'Escape' };
+    boards.value = [{ ...testBoard, decks: [{ ...d1, placements: [escape] }, d2] }];
+    const e = press('Escape');
+    expect(played).toEqual([]);
+    expect(e.defaultPrevented).toBe(false);
+  });
+
+  it('nothing, and no error, when the deck it remembers is gone', () => {
+    // An error thrown in a listener does not reach dispatchEvent — the window reports it
+    const errors: unknown[] = [];
+    const onError = (e: ErrorEvent) => {
+      errors.push(e.error);
+      e.preventDefault();
+    };
+    window.addEventListener('error', onError);
+    currentDeckId.value = 'deleted';
+    press('Numpad1');
+    window.removeEventListener('error', onError);
+    expect(errors).toEqual([]);
+    expect(played).toEqual([]);
+  });
+
   it('nothing once it is stopped', () => {
     stop();
     press('Numpad1');
