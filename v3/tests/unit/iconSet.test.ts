@@ -1,7 +1,7 @@
 /**
  * @fileoverview iconSet — keys, loading on demand, drawing lookup, categories and search (ADR-0070)
  */
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import {
   getIconDrawing,
   ICON_CATEGORIES,
@@ -84,5 +84,25 @@ describe('categories and search', () => {
     expect(searchIcons('poison', catalog)).toContain('nikoichu:cobra');
     expect(searchIcons('dragon xyzzy', catalog)).toEqual([]);
     expect(searchIcons('   ', catalog)).toEqual([]);
+  });
+
+  it('search looks at the icon name, never at the pack prefix or the colon of the key', async () => {
+    await loadIconSets();
+    const catalog = await loadIconCatalog();
+    expect(searchIcons('nikoichu', catalog)).toEqual([]);
+    expect(searchIcons(':', catalog)).toEqual([]);
+  });
+
+  it('an icon without search words in the catalog is still found by its name', async () => {
+    await loadIconSets();
+    expect(searchIcons('dragon', {})).toContain('nikoichu:dragon');
+  });
+
+  it('before any pack is loaded every category is empty', async () => {
+    vi.resetModules();
+    const fresh = await import('../../src/lib/iconSet');
+    const groups = fresh.iconsByCategory();
+    expect([...groups.keys()]).toEqual([...ICON_CATEGORIES]);
+    expect([...groups.values()].flat()).toEqual([]);
   });
 });

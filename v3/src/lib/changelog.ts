@@ -17,10 +17,18 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.205';
+export const APP_VERSION = '3.0.206';
 
 /** The developer log, newest first; CHANGELOG.md is generated from it (sync-changelog). */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.206',
+    date: '2026-10-10',
+    items: [
+      'test: icon search — it looks at the icon name, never at the pack prefix or the colon of the key; an icon without search words in the catalog is still found by its name; before any pack is loaded every category is empty',
+      'test: mutation score (Stryker) — iconSet 85.7 % → 91.2 %; every new test counter-checked (the code broken on purpose → red)',
+    ],
+  },
   {
     version: '3.0.205',
     date: '2026-10-10',

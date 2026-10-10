@@ -7,6 +7,13 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.206 — 2026-10-10
+
+### Internal
+
+- test: icon search — it looks at the icon name, never at the pack prefix or the colon of the key; an icon without search words in the catalog is still found by its name; before any pack is loaded every category is empty
+- test: mutation score (Stryker) — iconSet 85.7 % → 91.2 %; every new test counter-checked (the code broken on purpose → red)
+
 ## 3.0.205 — 2026-10-10
 
 ### Internal
