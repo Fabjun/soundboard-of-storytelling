@@ -101,6 +101,12 @@ export function withEarlyVersions(
 /** The release notes the start screen shows, newest first (checked by whatsNew.test.ts). */
 export const WHATS_NEW: WhatsNewNotes[] = [
   {
+    version: '3.0.203',
+    behindTheScenes: [
+      'Automatic tests now check more of how audio files and backups are read, stored and deleted — among them that a stored sound keeps every byte. The app works exactly as before.',
+    ],
+  },
+  {
     version: '3.0.202',
     behindTheScenes: [
       'Automatic tests now check that every sound the app plays is actually routed to the speakers, and what happens when a sound is stopped while it loads. The app works exactly as before.',

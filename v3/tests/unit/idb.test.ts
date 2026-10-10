@@ -19,6 +19,8 @@ import {
   boardGet,
   boardGetAll,
   boardDelete,
+  libDelete,
+  libGet,
   libPut,
   libGetAllMeta,
   libRename,
@@ -193,6 +195,38 @@ describe('libRename', () => {
 
   test('rename of non-existent id is a no-op (no throw)', async () => {
     await expect(libRename('GHOST', 'new.mp3')).resolves.not.toThrow();
+  });
+});
+
+// ── libDelete ────────────────────────────────────────────────────────────────
+
+describe('libDelete', () => {
+  test('removes only the target entry, audio included; a missing id is no error', async () => {
+    await libPut(makeLibraryItem('a'));
+    await libPut(makeLibraryItem('b'));
+    await libDelete('a');
+    expect((await libGetAllMeta()).map((m) => m.id)).toEqual(['b']);
+    expect(await libGet('a')).toBeNull();
+    await expect(libDelete('gone')).resolves.toBeUndefined();
+  });
+});
+
+// ── Upgrade v1 → current (a database from before the boards store) ────────────
+
+describe('DB upgrade from v1', () => {
+  test('a database with only the library store gets the others; library audio is untouched', async () => {
+    const v1 = await openDB('sos-v3', 1, {
+      upgrade(db) {
+        db.createObjectStore('library', { keyPath: 'id' });
+      },
+    });
+    await v1.put('library', makeLibraryItem('A', 'keep.mp3'));
+    v1.close();
+
+    expect((await libGetAllMeta()).map((m) => m.name)).toEqual(['keep.mp3']);
+    expect(await boardGetAll()).toEqual([]);
+    await kvPut('k', 1);
+    expect(await kvGetAll()).toEqual([['k', 1]]);
   });
 });
 

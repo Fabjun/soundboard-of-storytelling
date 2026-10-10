@@ -974,6 +974,31 @@ describe('initAudioBridge', () => {
     expect(store.loopingPads.value.has('once')).toBe(false);
     expect(store.playingPads.value.has('once')).toBe(true);
   });
+
+  test('a stopped pad no longer glows; a combo child is found in any board, not only the first', async () => {
+    const store = await import('../../../src/state/store');
+    const board = (id: string, boardPads: Pad[]) => ({
+      id,
+      name: id,
+      themeId: 'hearth',
+      pads: boardPads,
+      decks: [],
+      padSize: 88,
+      quickAccess: [],
+    });
+    const l = loop('l', 'h1');
+    store.boards.value = [board('first', [l]), board('second', [single('s2', 'h2')])];
+    audio.initAudioBridge();
+    await audio.play('l', l);
+    await flush();
+    expect(store.loopingPads.value.has('l')).toBe(true);
+    audio.stop('l');
+    expect(store.playingPads.value.has('l')).toBe(false);
+    expect(store.loopingPads.value.has('l')).toBe(false);
+    audio.play('c', combo('c', [{ padIds: ['s2'] }]));
+    await flush();
+    expect(tags()).toEqual(['h1', 'h2']);
+  });
 });
 
 // ── Combo children in detail (T11c: mutation testing left createPadInstance unguarded) ─
