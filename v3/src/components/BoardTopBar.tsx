@@ -4,15 +4,18 @@
  * Source: design-sources/2026-05-25/v24-mode-toggle.jsx BoardTopBarV3
  *
  * Layout: 1fr (left: flame + breadcrumb) | auto (center: ModeToggle) | 1fr (right: actions)
+ *
+ * In the narrow frame PAUSED and STOP ALL move to the dock at the bottom (LiveControls,
+ * docs/product/features/adaptive-layout.md L2); the top bar keeps back, the mode toggle and the Lock.
  */
 
 import type { JSX } from 'preact';
 import { PixelIcon } from './PixelIcon';
 import { ModeToggle } from './ModeToggle';
-import { pressStopAll, stopAllFading } from '../state/stopControl';
+import { LiveControls } from './LiveControls';
 import { toggleModeLock } from '../state/modeControl';
-import { togglePause } from '../state/pauseControl';
-import { audioPaused, modeLocked } from '../state/store';
+import { modeLocked } from '../state/store';
+import { narrowWindow } from '../state/windowClass';
 import type { AppMode } from '../types';
 
 interface BoardTopBarProps {
@@ -39,8 +42,7 @@ export function BoardTopBar({
   onLibraryToggle,
   onBack,
 }: BoardTopBarProps): JSX.Element {
-  // Detect compact (mobile) viewport
-  const compact = typeof window !== 'undefined' && window.innerWidth < 480;
+  const compact = narrowWindow.value;
 
   return (
     <div class="sb-board-topbar" data-testid="board-top-bar">
@@ -89,41 +91,15 @@ export function BoardTopBar({
         )}
       </div>
 
-      {/* Right: STOP ALL (GAME), library toggle + secondary actions */}
+      {/* Right: PAUSED and STOP ALL (GAME, wide frame), library toggle */}
       <div class="sb-board-topbar-right">
-        {/* PAUSED (Slice 12d, K8): clearly visible while every sound is paused; a tap resumes */}
-        {mode === 'play' && audioPaused.value && (
-          <button
-            type="button"
-            class="sb-btn sb-btn-sm sb-btn-primary sb-topbar-icon-btn"
-            data-testid="board-top-bar-paused-button"
-            onClick={() => togglePause()}
-            title="Every sound is paused — tap or press Space to resume"
-          >
-            PAUSED
-          </button>
-        )}
-        {/* STOP ALL (K9, K16): fades everything out; pressed again while it fades, stops at once.
-            Always enabled — an emergency stop is never greyed out. */}
-        {mode === 'play' && (
-          <button
-            type="button"
-            class="sb-btn sb-btn-sm sb-btn-danger sb-topbar-icon-btn"
-            data-testid="board-top-bar-stop-all-button"
-            onClick={() => pressStopAll()}
-            title={
-              stopAllFading.value
-                ? 'Stop every sound now'
-                : 'Fade every sound out; again to stop now'
-            }
-          >
-            {stopAllFading.value ? 'STOP NOW' : 'STOP ALL'}
-          </button>
-        )}
+        {mode === 'play' && !compact && <LiveControls place="top-bar" />}
         <button
           class={`sb-btn sb-btn-sm ${libraryOpen ? 'sb-btn-primary' : 'sb-btn-ghost'} sb-topbar-icon-btn`}
           onClick={onLibraryToggle}
           title={libraryOpen ? 'Close library panel' : 'Open library panel'}
+          aria-label={libraryOpen ? 'Close the library' : 'Open the library'}
+          aria-pressed={libraryOpen}
         >
           <PixelIcon name="book" size={12} />
           {!compact && 'LIB'}

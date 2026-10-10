@@ -16,20 +16,34 @@ interface StatusBarProps {
   boardName?: string;
   infoText?: string;
   right?: ComponentChildren;
+  /**
+   * The narrow frame's dock (Slice 13a, docs/product/features/adaptive-layout.md L2): taller, so
+   * the controls in the right slot get their touch size — one bar at the bottom instead of two.
+   */
+  dock?: boolean;
 }
 
 /**
  * Shows the mode (LIVE in GAME, EDIT in SETUP), whether changes are saved (SAVING… / SAVED /
  * NOT SAVED, Slice 12e), SCREEN ON while the screen is kept on, the board name, an info text and
- * a right slot.
+ * a right slot; as the dock (`dock`) it is taller.
  */
-export function StatusBar({ mode, boardName, infoText, right }: StatusBarProps): JSX.Element {
+export function StatusBar({
+  mode,
+  boardName,
+  infoText,
+  right,
+  dock = false,
+}: StatusBarProps): JSX.Element {
   const modeColor = mode === 'play' ? 'var(--gold)' : 'var(--mode-setup)';
   const modeLabel = mode === 'play' ? 'LIVE' : 'EDIT';
   const save = saveState.value;
 
   return (
-    <div class="sb-status-bar">
+    <div
+      class={dock ? 'sb-status-bar sb-status-bar-dock' : 'sb-status-bar'}
+      data-testid="status-bar"
+    >
       <span class="sb-status-section" style={{ color: modeColor }}>
         {modeLabel}
       </span>

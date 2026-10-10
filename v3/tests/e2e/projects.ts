@@ -45,6 +45,7 @@ export const FULL_TESTS = [
   'pause',
   'system-gestures',
   'a11y',
+  'board-frames',
 ];
 
 /**
@@ -71,6 +72,7 @@ export const FULL_WEBKIT_TESTS = [
   'pad-pool',
   'combo-editor',
   'system-gestures',
+  'board-frames',
 ];
 
 /** tests/e2e/mobile/<name>.spec.ts — audio-free, WebKit / iPhone 13 Pro (real Safari engine path). */

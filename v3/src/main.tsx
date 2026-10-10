@@ -19,6 +19,7 @@ import { pendingSaves } from './state/store';
 import { loadPrefs } from './state/prefs';
 import { startPlayHistory } from './state/playHistory';
 import { startKeyControl } from './state/keyControl';
+import { startWindowClass } from './state/windowClass';
 import { loadStoredState } from './state/boot';
 
 // Apply the design-system root class to <body>.
@@ -40,6 +41,9 @@ startPlayHistory();
 
 // Keys play pads in GAME (Slice 12a, ADR-0077).
 startKeyControl();
+
+// Narrow or wide window (Slice 13a, ADR-0082) — known before the first render, so no frame jumps.
+startWindowClass();
 
 // First render only once the stored state (src/state/boot.ts) and the preferences
 // (src/state/prefs.ts) are loaded: nothing the user creates can be replaced by a late load, and

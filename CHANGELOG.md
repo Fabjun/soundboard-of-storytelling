@@ -7,6 +7,23 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.210 — 2026-10-10
+
+### Added
+
+- feat(board): Slice 13a — two frames by window width (ADR-0082): below 600 px the bottom bar is the dock and holds PAUSED, STOP ALL (large, 48 px) and the save status, clear of the iPhone home indicator; from 600 px they stay in the top bar; a resize or a rotation switches at once (docs/product/features/adaptive-layout.md L1, L2)
+
+### Changed
+
+- refactor: narrow or wide is asked in one place — src/state/windowClass.ts follows a media query (MediaQueryList change event); BoardTopBar (480 px), PadCreationPopover and PadTypeConfirmDialog (600 px) each read window.innerWidth once while rendering and missed a rotation; codeGuards rejects a new size comparison or width query elsewhere (counter-checked)
+- refactor: PAUSED and STOP ALL are one component, LiveControls, placed by the frame — one STOP ALL in the page, never a hidden second one
+- a11y: the library button in the board top bar has a name and says whether it is open (its label is hidden in the narrow frame); the STOP ALL and PAUSED tests find the buttons by role and name (ADR-0054)
+
+### Internal
+
+- test: E2E board-frames (Chromium and WebKit) — the dock below 600 px, the top bar from 600 px, the switch on resize, the dock in SETUP; counter-checked; unit test for the window class
+- docs: ADR-0082 (proposed); backlog — the top bar may sit under the iPhone status bar in the home-screen app (viewport-fit=cover without a top inset); iPhone checklist "The dock on a phone; the 600 px boundary"
+
 ## 3.0.209 — 2026-10-10
 
 ### Internal

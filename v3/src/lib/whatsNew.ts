@@ -101,6 +101,12 @@ export function withEarlyVersions(
 /** The release notes the start screen shows, newest first (checked by whatsNew.test.ts). */
 export const WHATS_NEW: WhatsNewNotes[] = [
   {
+    version: '3.0.210',
+    improved: [
+      'On a phone held upright, STOP ALL now sits large at the bottom of the board, together with the save status — within reach of the thumb. On wider screens it stays at the top; turning the phone moves it at once.',
+    ],
+  },
+  {
     version: '3.0.209',
     behindTheScenes: [
       'The plan for the phone layout is written down: what goes where on a narrow and on a wide screen. The app works exactly as before.',

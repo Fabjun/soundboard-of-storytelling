@@ -15,6 +15,7 @@ import { useEscapeKey } from '../lib/escapeKey';
 import type { JSX } from 'preact';
 import type { PadType } from '../types';
 import { padMigrationMatrix, type MigrationVerdict } from '../lib/padUtils';
+import { narrowWindow } from '../state/windowClass';
 
 interface PadTypeConfirmDialogProps {
   fromType: PadType;
@@ -54,7 +55,7 @@ export function PadTypeConfirmDialog({
 
   useEscapeKey(onCancel);
 
-  const isMobile = typeof window !== 'undefined' && window.innerWidth < 600;
+  const isMobile = narrowWindow.value;
 
   const dialogContent = (
     <div
