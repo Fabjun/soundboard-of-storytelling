@@ -42,6 +42,11 @@ with mouse and touch** (Pointer Events, never HTML5 DnD); alternatives remain op
 `deck-crud.spec.ts` is quarantined (`test.fixme`) until the feature lands.
 **When:** the adaptive layout in Slice 13 (not part of step 9e, whose scope ADR-0048 §5 fixes:
 All pads, remove vs delete, deck checklist).
+**Owner decision 2026-10-10:** planned with Slice 13, where the deck rail is redesigned — drag &
+drop together with the way to reorder without dragging that WCAG 2.2 SC 2.5.7 requires (for
+example one menu button with "Move up / Move down", the Atlassian Pragmatic drag and drop
+pattern). ▲ / ▼ buttons as in the PAD editor's file list were weighed: in the 220 px rail they
+would leave about 50 px for the deck name.
 
 ### Pad names cut off on narrow screens
 
@@ -1696,7 +1701,7 @@ ignored — the reason E2E tests called the shortcut "racy"); two quick A presse
 one cell; a new deck after a delete took a number and name still in use.
 **When:** review with the Slice 9 PRs.
 
-### A board that failed to save stays shown when storage cannot be read either
+### A board that failed to save stays shown when storage cannot be read either ✅ Done (3.0.207)
 
 Found 2026-10-10 by a test of the backup import (3.0.205). When a board save fails,
 `v3/src/state/boardWrites.ts` shows the stored board again, or removes a new board from the list.
@@ -1707,6 +1712,10 @@ still working (storage full) behaves as intended and is tested. **Open:** keep i
 visible), or remove a board that is new and could not be saved even when nothing can be read.
 **When:** the owner decides at the review of the pull request that found it; on a real
 occurrence at once.
+**Decided** by the owner 2026-10-10: roll back to the last confirmed state, as an optimistic
+update does on failure (TanStack Query, "Optimistic Updates") — a new board has none, so it is
+removed; a known board stays with NOT SAVED, its stored version being unknown. Built in 3.0.207
+(`createBoard` passes `isNew` to the save), tested in `v3/tests/unit/boardWrites.test.ts`.
 
 ### Major dependency updates (one at a time)
 

@@ -17,10 +17,18 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.206';
+export const APP_VERSION = '3.0.207';
 
 /** The developer log, newest first; CHANGELOG.md is generated from it (sync-changelog). */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.207',
+    date: '2026-10-10',
+    items: [
+      'fix: board writes — when a save fails and the stored board cannot be read either (storage does not open), a new board is removed again instead of staying listed while an import reports it as skipped; a known board stays with NOT SAVED (owner decision 2026-10-10: roll back to the last confirmed state, as optimistic updates do); two tests, counter-checked',
+      'docs: backlog — deck reorder is planned with Slice 13, drag & drop together with a way to reorder without dragging (WCAG 2.2 SC 2.5.7; owner decision 2026-10-10)',
+    ],
+  },
   {
     version: '3.0.206',
     date: '2026-10-10',
