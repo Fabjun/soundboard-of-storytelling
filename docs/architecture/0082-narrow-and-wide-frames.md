@@ -1,6 +1,6 @@
 # ADR-0082: Narrow and wide frames — one window class, asked in one place
 
-**Status:** Proposed
+**Status:** Accepted
 **Date:** 2026-10-10
 **Slice:** Slice 13
 **Refines:** ADR-0045
