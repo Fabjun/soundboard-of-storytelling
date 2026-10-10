@@ -9,8 +9,11 @@
  */
 
 import {
+  COMPACT_BELOW,
+  MIN_PAD_SIDE,
   PAD_SIZE,
   clampPadSize,
+  isCompactPad,
   migratePadSize,
   padColumns,
   type StoredDeck,
@@ -75,6 +78,31 @@ describe('padColumns', () => {
     expect(padColumns({ width: 0, gap: 8, padSize: 88 })).toBeNull();
     expect(padColumns({ width: Number.NaN, gap: 8, padSize: 88 })).toBeNull();
     expect(padColumns({ width: 300, gap: 8, padSize: 0 })).toBeNull();
+  });
+
+  it('never makes a pad smaller than the 44 px touch target — at the smallest size too', () => {
+    // 366 px is a 390 px phone's grid; the fewest columns at 44 px would be 8 pads of 38.75 px
+    const r = padColumns({ width: 366, gap: 8, padSize: PAD_SIZE.min })!;
+    expect(r.side).toBeGreaterThanOrEqual(MIN_PAD_SIDE);
+    expect(r.cols).toBe(7);
+    // one column more would go below it
+    expect((366 - 8 * r.cols) / (r.cols + 1)).toBeLessThan(MIN_PAD_SIDE);
+  });
+
+  it('keeps 44 px exactly when the width fits it exactly', () => {
+    expect(padColumns({ width: 5 * 44 + 4 * 8, gap: 8, padSize: 44 })).toEqual({
+      cols: 5,
+      side: 44,
+    });
+  });
+});
+
+describe('isCompactPad', () => {
+  it('a pad below 80 px is compact; 80 px and an unknown side are not', () => {
+    expect(isCompactPad(COMPACT_BELOW - 0.5)).toBe(true);
+    expect(isCompactPad(MIN_PAD_SIDE)).toBe(true);
+    expect(isCompactPad(COMPACT_BELOW)).toBe(false);
+    expect(isCompactPad(null)).toBe(false);
   });
 });
 

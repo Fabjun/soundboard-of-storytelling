@@ -26,7 +26,7 @@ import {
   setPlacements,
   type PlacedPad,
 } from '../lib/boardModel';
-import { padColumns } from '../lib/padSize';
+import { isCompactPad, padColumns } from '../lib/padSize';
 import { PadGridCell } from './PadGridCell';
 import { PadCreationPopover, type CreationResult } from './PadCreationPopover';
 import {
@@ -90,14 +90,17 @@ export function PadGrid({
   // until measured — the CSS then shows the deck's own column count.
   const padSize = padSizePreview ?? board.padSize;
   const gridRef = useRef<HTMLDivElement>(null);
-  const [shownCols, setShownCols] = useState<number | null>(null);
+  const [shown, setShown] = useState<{ cols: number; side: number } | null>(null);
+  const shownCols = shown?.cols ?? null;
+  // Small pads show only their name and key (Slice 13e, padSize.ts COMPACT_BELOW)
+  const compact = isCompactPad(shown?.side ?? null);
   useLayoutEffect(() => {
     const el = gridRef.current;
     if (!el) return;
     const measure = () => {
       const cs = getComputedStyle(el);
       const padX = parseFloat(cs.paddingLeft) + parseFloat(cs.paddingRight);
-      setShownCols(padColumns({ width: el.clientWidth - padX, gap, padSize })?.cols ?? null);
+      setShown(padColumns({ width: el.clientWidth - padX, gap, padSize }));
     };
     measure();
     if (typeof ResizeObserver === 'undefined') return;
@@ -206,6 +209,7 @@ export function PadGrid({
                 pad={pad}
                 hotkey={entry?.placement.hotkey}
                 mode={mode}
+                compact={compact}
                 col={col}
                 row={row}
                 selected={!!pad && pad.id === selectedPadId}

@@ -7,6 +7,18 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.212 — 2026-10-10
+
+### Fixed
+
+- fix(pads): Slice 13e — names no longer stand out of small pads: measured, below a side of 80 px the type label, the picture and the name did not fit and the name stood 11 px out of the pad (BACKLOG "Pad names cut off on narrow screens"); below 80 px a pad is compact now — no picture, tighter padding, the type label, name and key stay (`is-compact`, padSize.ts COMPACT_BELOW)
+- fix(pads): no pad is smaller than the 44 px touch target — at the smallest PAD SIZE the grid took as many columns as fit and gave 42 px pads (38.75 px on a phone); now one column fewer, so a pad may be a little larger than 44 px (padSize.ts MIN_PAD_SIDE; pad.md PQ4)
+
+### Internal
+
+- test: unit tests for the minimum side and the compact level; E2E pad-size — at every pad size the name stays inside the pad and the pad is 44 px or more, on a phone and a wide window; each counter-checked
+- docs: pad.md — the two detail levels, PQ2 and PQ4 proposed; backlog entry done
+
 ## 3.0.211 — 2026-10-10
 
 ### Added

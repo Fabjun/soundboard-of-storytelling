@@ -48,7 +48,7 @@ example one menu button with "Move up / Move down", the Atlassian Pragmatic drag
 pattern). ▲ / ▼ buttons as in the PAD editor's file list were weighed: in the 220 px rail they
 would leave about 50 px for the deck name.
 
-### Pad names cut off on narrow screens
+### Pad names cut off on narrow screens ✅ Done (3.0.212)
 
 Found 2026-10-09 in phone screenshots of the board (390 × 844, Chromium): with the deck rail open
 only two pad columns fit, the pads shrink below their PAD SIZE, and the name at the bottom of each
@@ -57,6 +57,12 @@ nothing is cut off (WCAG 2.2 SC 1.4.10 Reflow). The fix depends on what a small 
 (`docs/design/components/pad.md` PQ2 / PQ4, detail levels) — an interim truncation would decide
 that ahead of the owner.
 **When:** Slice 13, pad detail levels (proposed step 13e).
+**Fixed in 3.0.212 (Slice 13e, proposed to the owner in its pull request):** measured — below a
+side of 80 px the type label, the picture and the name did not fit and the name stood 11 px out
+of the pad. Below 80 px a pad is compact now (no picture, tighter padding); and no pad gets
+smaller than 44 px (the smallest PAD SIZE gave 42 px, on a phone 38.75 px). The one-line name with
+… stays (PQ1). Guarded by `v3/tests/e2e/pad-size.spec.ts` ("every pad size keeps the name inside
+the pad").
 
 ### Top bar under the iPhone status bar
 
