@@ -7,6 +7,16 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.207 — 2026-10-10
+
+### Fixed
+
+- fix: board writes — when a save fails and the stored board cannot be read either (storage does not open), a new board is removed again instead of staying listed while an import reports it as skipped; a known board stays with NOT SAVED (owner decision 2026-10-10: roll back to the last confirmed state, as optimistic updates do); two tests, counter-checked
+
+### Internal
+
+- docs: backlog — deck reorder is planned with Slice 13, drag & drop together with a way to reorder without dragging (WCAG 2.2 SC 2.5.7; owner decision 2026-10-10)
+
 ## 3.0.206 — 2026-10-10
 
 ### Internal

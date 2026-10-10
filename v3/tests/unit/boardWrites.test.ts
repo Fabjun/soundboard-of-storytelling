@@ -86,6 +86,35 @@ describe('updateBoard', () => {
     error.mockRestore();
   });
 
+  /** Storage that cannot even be opened — every read and write fails. */
+  const breakStorage = () => {
+    (globalThis as Record<string, unknown>).indexedDB = {
+      open: () => {
+        throw new DOMException('blocked', 'UnknownError');
+      },
+    };
+    _resetDB();
+  };
+
+  it('when nothing can be read either, a new board that failed to save is removed again', async () => {
+    const error = vi.spyOn(console, 'error').mockImplementation(() => {});
+    breakStorage();
+    expect(await createBoard(board())).toBeNull();
+    expect(boards.value).toEqual([]);
+    expect(lastSaveFailed.value).toBe(true);
+    error.mockRestore();
+  });
+
+  it('when nothing can be read either, a known board stays — with NOT SAVED', async () => {
+    await createBoard(board());
+    const error = vi.spyOn(console, 'error').mockImplementation(() => {});
+    breakStorage();
+    expect(await updateBoard('b', (b) => ({ ...b, name: 'unsaved' }))).toBeNull();
+    expect(stored()!.name).toBe('unsaved');
+    expect(saveState.value).toBe('failed');
+    error.mockRestore();
+  });
+
   it('counts running saves: 1 while saving, 0 after success and after failure', async () => {
     expect(pendingSaves.value).toBe(0);
     const creating = createBoard(board());
