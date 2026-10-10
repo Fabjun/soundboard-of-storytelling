@@ -656,6 +656,22 @@ describe('parseBoard (untrusted boards from a backup file)', () => {
     pads: b.pads.map((p, k) => (k === i ? { ...p, ...patch } : p)),
   });
 
+  it('accepts the limits: 4 icons, a repeat of 1 and of 999', () => {
+    const icons = [
+      'nikoichu:dragon',
+      'kenney-1bit:bat',
+      'pixelarticons:wind',
+      'pixelarticons:fire',
+    ];
+    for (const board of [
+      withPad(valid(), 0, { icons }),
+      withPad(valid(), 1, { repeat: 1 }),
+      withPad(valid(), 1, { repeat: 999 }),
+    ]) {
+      expect(parseBoard(board)).not.toBeNull();
+    }
+  });
+
   /** [description, change] — each one makes the board invalid. */
   const broken: [string, (b: ReturnType<typeof valid>) => unknown][] = [
     ['not an object', () => 'board'],
@@ -675,6 +691,10 @@ describe('parseBoard (untrusted boards from a backup file)', () => {
     ['pad iconRef', (b) => withPad(b, 0, { iconRef: 1 })],
     ['pad icons not an array', (b) => withPad(b, 0, { icons: 'nikoichu:dragon' })],
     ['pad icon key malformed', (b) => withPad(b, 0, { icons: ['Dragon'] })],
+    [
+      'pad one icon key of two malformed',
+      (b) => withPad(b, 0, { icons: ['nikoichu:dragon', 'X'] }),
+    ],
     ['pad more than 4 icons', (b) => withPad(b, 0, { icons: Array(5).fill('nikoichu:dragon') })],
     ['pad color', (b) => withPad(b, 0, { color: false })],
     ['pad addedAt', (b) => withPad(b, 0, { addedAt: 'yesterday' })],

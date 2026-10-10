@@ -1696,6 +1696,18 @@ ignored — the reason E2E tests called the shortcut "racy"); two quick A presse
 one cell; a new deck after a delete took a number and name still in use.
 **When:** review with the Slice 9 PRs.
 
+### A board that failed to save stays shown when storage cannot be read either
+
+Found 2026-10-10 by a test of the backup import (3.0.205). When a board save fails,
+`v3/src/state/boardWrites.ts` shows the stored board again, or removes a new board from the list.
+When the stored version cannot be read either (the database does not open at all), it keeps the
+unsaved board on screen: the status bar says NOT SAVED, but an import reports that board as
+skipped while it is still listed — until the next app start. A full write refusal with reading
+still working (storage full) behaves as intended and is tested. **Open:** keep it (NOT SAVED is
+visible), or remove a board that is new and could not be saved even when nothing can be read.
+**When:** the owner decides at the review of the pull request that found it; on a real
+occurrence at once.
+
 ### Major dependency updates (one at a time)
 
 Status 2026-09-30 (owner approval of the plan; each major measured in a throwaway worktree first,

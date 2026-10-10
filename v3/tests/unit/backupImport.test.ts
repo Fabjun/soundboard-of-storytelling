@@ -9,7 +9,7 @@
 import { IDBFactory } from 'fake-indexeddb';
 import type { Board, ComboPad, LoopPad, SinglePad } from '../../src/types';
 import { _resetDB, boardGetAll, libGet, libGetAllMeta } from '../../src/db/idb';
-import { boards, libraryItems } from '../../src/state/store';
+import { boards, lastSaveFailed, libraryItems } from '../../src/state/store';
 import { entryTags, planImport, runImport } from '../../src/lib/backupImport';
 import { V3_BACKUP_FORMAT } from '../../src/lib/backupReader';
 import { computeHash } from '../../src/lib/upload';
@@ -210,6 +210,28 @@ describe('runImport — V3', () => {
     expect(day.steps[0].padIds).toEqual([owl.id]);
     expect(stored.decks[0].placements[0]).toMatchObject({ padId: owl.id, hotkey: 'K1' });
     expect(stored.quickAccess).toEqual([{ padId: day.id }]);
+  });
+
+  it('two boards with one name in the same file get two names', async () => {
+    const f = file(v3Backup([v3Board(), v3Board()]));
+    const result = await runImport(f, await planImport(f));
+    expect(result).toMatchObject({ boardsAdded: 2, boardsSkipped: 0 });
+    expect((await boardGetAll()).map((b) => b.name).sort()).toEqual(['Night', 'Night (2)']);
+  });
+
+  it('a board that cannot be saved is counted as skipped and not shown', async () => {
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    const f = file({ ...v3Backup([v3Board()]), library: [] });
+    const plan = await planImport(f);
+    // Storage is full: every write is refused, reading still works
+    const put = vi.spyOn(IDBObjectStore.prototype, 'put').mockImplementation(() => {
+      throw new DOMException('full', 'QuotaExceededError');
+    });
+    const result = await runImport(f, plan);
+    put.mockRestore();
+    expect(result).toMatchObject({ boardsAdded: 0, boardsSkipped: 1 });
+    expect(boards.value).toEqual([]);
+    lastSaveFailed.value = false;
   });
 
   it('skips what is not a valid board and counts it', async () => {

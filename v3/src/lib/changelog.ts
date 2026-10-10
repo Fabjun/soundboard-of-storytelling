@@ -17,10 +17,21 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.204';
+export const APP_VERSION = '3.0.205';
 
 /** The developer log, newest first; CHANGELOG.md is generated from it (sync-changelog). */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.205',
+    date: '2026-10-10',
+    items: [
+      'test: backup import — two boards with one name in the same file get two names; a board that cannot be saved (storage full) is counted as skipped and not shown',
+      'test: V1 import — a gap in the pad array takes no id, so a combo step pointing at it is dropped instead of left dangling; an icon reference without an id is skipped, not counted as unknown',
+      'test: board check — the limits are accepted (4 icons, a repeat of 1 and of 999); an icon list with one malformed key is refused',
+      'test: mutation score per module (Stryker) — backupImport 94.9 % → 96.4 %, v1Import 95.7 % → 96.6 %, boardModel 98.8 % → 99.5 %; every new test counter-checked (the code broken on purpose → red)',
+      'docs: backlog — a board that failed to save stays shown when storage cannot be read either (found by the new import test; Open)',
+    ],
+  },
   {
     version: '3.0.204',
     date: '2026-10-10',
