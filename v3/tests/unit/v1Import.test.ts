@@ -387,6 +387,21 @@ describe('mapV1Board — malformed and boundary values', () => {
     expect(ctx.notes).toMatchObject({ customIcons: 1, unknownIcons: 1 });
   });
 
+  it('an icon reference without an id is skipped, not counted as an unknown icon', () => {
+    const ctx = context();
+    const b = mapV1Board(v1Board([{ mode: 'once', icons: [{ b: 5 }, {}, { b: 'clock' }] }]), ctx)!;
+    expect(b.pads[0].icons).toEqual(['pixelarticons:clock-face']);
+    expect(ctx.notes.unknownIcons).toBe(0);
+  });
+
+  it('a gap in the pad array takes no id: a combo step pointing at it is dropped, never left dangling', () => {
+    const ctx = context();
+    const b = mapV1Board(v1Board([null, { mode: 'combo', steps: [{ pads: [0] }] }]), ctx)!;
+    expect((b.pads[0] as ComboPad).steps).toEqual([{ padIds: [] }]);
+    expect(ctx.notes.missingStepPads).toBe(1);
+    expect(boardProblems(b)).toEqual([]);
+  });
+
   it('an unknown mode becomes a sequential Single; the board uses the default theme', () => {
     const b = mapV1Board(v1Board([{ mode: 'mystery', files: ['a'] }]), context())!;
     expect(b.pads[0]).toMatchObject({
