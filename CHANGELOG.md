@@ -7,6 +7,12 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.207 — 2026-10-10
+
+### Fixed
+
+- fix: engine — a combo step "stop all" no longer stops the combo itself, so the next step runs (V1 `stopAll(exceptComboId)`); the loops the combo started in earlier steps play on, other combos and pads stop as before (BACKLOG "Bug: combo "stop all" step stops the combo itself"); the pinned `test.fails` is a test now, counter-checked
+
 ## 3.0.206 — 2026-10-10
 
 ### Internal

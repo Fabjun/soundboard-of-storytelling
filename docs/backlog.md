@@ -1656,6 +1656,13 @@ Pinned by `tests/unit/audio/engine.test.ts` (`test.fails` + a precise current-be
 **Fix = engine change → only under product-owner control (ADR-0048 §4).**
 **When:** decided by the product owner — with Slice 9d (engine step) at the latest, before the
 V1 import (Slice 10) makes real combos usable.
+**Fixed (3.0.207, own pull request; owner approval of the engine change 2026-10-10, ADR-0048
+§4):** the step calls `stopAllExcept(padId)`, which skips the running combo as V1's
+`stopAll(exceptComboId)` did — the same exception `fadeOutAllExcept` makes. Owner decisions
+2026-10-10: the loops the combo started in earlier steps play on (as in V1); a "stop all" step
+inside a nested combo still stops the combo around it for now (V1 too; `fadeOutAllExcept` the
+same) — a decision of its own later. Merged after the owner's playback check (iPhone checklist
+"Stop everything first in a combo").
 
 ### Bug: combo step starts the next step twice when a child ends at once ✅ Done (ccd24f3)
 
