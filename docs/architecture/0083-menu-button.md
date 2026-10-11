@@ -1,6 +1,6 @@
 # ADR-0083: Action menus — one MenuButton after the W3C menu button pattern
 
-**Status:** Proposed
+**Status:** Accepted
 **Date:** 2026-10-11
 **Slice:** Slice 13
 **Refines:** —

@@ -17,10 +17,20 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.218';
+export const APP_VERSION = '3.0.219';
 
 /** The developer log, newest first; CHANGELOG.md is generated from it (sync-changelog). */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.219',
+    date: '2026-10-11',
+    items: [
+      'a11y(pads): the pad type buttons (SGL / LOOP / COMBO) in the PAD editor and the creation dialog keep the 44 px touch target — sb-type-btn was 28 px tall, found by the wider sweep',
+      'test: the touch-target sweep covers the board list, the library with a file and the PAD editor too (helper smallControls); counter-checked — sb-btn-icon-sm back at 36 px turns the board list red, the type buttons were red before the fix',
+      'refactor: PadGridCell takes the glow from padTypeGlow — the same token was built inline a second time; padTypeGlow loses its Slice 13 reservation (the glow in the type color is built)',
+      'chore: Slice 13 close-out — coverage floor raised to the measured values (lines 95 · statements 95 · functions 96 · branches 93); the mutation break stays 84 (weekly score 84.99 %, Slice 13 modules are measured on the next weekly run); ADR-0083 Accepted; README: the phone layout, the quick-access bar, search and sort, deck order and now playing under Available now; CLAUDE.md slice row 13a–13g and a UI rule for "⋯" menus',
+    ],
+  },
   {
     version: '3.0.218',
     date: '2026-10-11',

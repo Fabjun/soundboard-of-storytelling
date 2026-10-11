@@ -11,7 +11,7 @@
 
 import type { JSX } from 'preact';
 import type { AppMode, Pad } from '../types';
-import { padTypeColor, padTypeLabel } from '../lib/padUtils';
+import { padTypeColor, padTypeGlow, padTypeLabel } from '../lib/padUtils';
 import { keyLabel } from '../lib/padKeys';
 import { play, stop, isPlaying } from '../audio/index';
 import { playingPads, loopingPads } from '../state/store';
@@ -122,7 +122,7 @@ export function PadGridCell({
         style={
           {
             '--pad-color': color,
-            '--pad-glow': `var(--pad-${p.type}-glow)`,
+            '--pad-glow': padTypeGlow(p.type),
             '--pix-bg': 'var(--raised)',
           } as Record<string, string>
         }

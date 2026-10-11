@@ -101,6 +101,12 @@ export function withEarlyVersions(
 /** The release notes the start screen shows, newest first (checked by whatsNew.test.ts). */
 export const WHATS_NEW: WhatsNewNotes[] = [
   {
+    version: '3.0.219',
+    improved: [
+      'The pad type buttons in the pad editor (SGL, LOOP, COMBO) are as easy to hit with a finger as every other button.',
+    ],
+  },
+  {
     version: '3.0.218',
     improved: [
       'A deck’s actions — rename, duplicate, delete — are behind one larger "⋯" button that is easy to hit with a finger; delete still asks for a second tap. Other small icon buttons got the same touch size.',

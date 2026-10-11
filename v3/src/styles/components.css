@@ -2078,7 +2078,7 @@
   flex-shrink: 0;
 }
 .sb-type-btn {
-  /* @inventory: Type-selector button (pad type pill) — fills row evenly, mono xs font, uppercase, tight padding, 28px min-height; color/border/background set inline for active pad-type state. */
+  /* @inventory: Type-selector button (pad type pill) — fills row evenly, mono xs font, uppercase, tight padding, the 44px touch target (28px until 2026-10-11); color/border/background set inline for active pad-type state. */
   flex: 1;
   padding: 0.1875rem 0.25rem;
   font-family: var(--font-mono);
@@ -2086,7 +2086,7 @@
   letter-spacing: 0.04em;
   text-transform: uppercase;
   cursor: pointer;
-  min-height: 28px;
+  min-height: 44px;
 }
 .sb-hotkey-value {
   /* @inventory: Hotkey binding value text in inspector — mono xs; color set inline for has/lacks-hotkey state. */
