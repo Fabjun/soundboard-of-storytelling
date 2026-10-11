@@ -47,6 +47,9 @@ drop together with the way to reorder without dragging that WCAG 2.2 SC 2.5.7 re
 example one menu button with "Move up / Move down", the Atlassian Pragmatic drag and drop
 pattern). ▲ / ▼ buttons as in the PAD editor's file list were weighed: in the 220 px rail they
 would leave about 50 px for the deck name.
+**Owner decision 2026-10-11:** ▲ / ▼ at the deck in SETUP (the file list's scheme) and drag &
+drop, both in step 13g (`docs/product/features/adaptive-layout.md` L6). The room for the name is
+a constraint of the build: the buttons may not cut the deck name off (CLAUDE.md UI rules).
 
 ### Pad names cut off on narrow screens ✅ Done (3.0.212)
 
@@ -56,8 +59,8 @@ pad runs under the next row ("THUND…"). At 844 × 390 every name is readable. 
 nothing is cut off (WCAG 2.2 SC 1.4.10 Reflow). The fix depends on what a small pad shows
 (`docs/design/components/pad.md` PQ2 / PQ4, detail levels) — an interim truncation would decide
 that ahead of the owner.
-**When:** Slice 13, pad detail levels (proposed step 13e).
-**Fixed in 3.0.212 (Slice 13e, proposed to the owner in its pull request):** measured — below a
+**When:** Slice 13, pad detail levels (step 13e).
+**Fixed in 3.0.212 (Slice 13e; the owner decided PQ2 / PQ4 on 2026-10-10):** measured — below a
 side of 80 px the type label, the picture and the name did not fit and the name stood 11 px out
 of the pad. Below 80 px a pad is compact now (no picture, tighter padding); and no pad gets
 smaller than 44 px (the smallest PAD SIZE gave 42 px, on a phone 38.75 px). The one-line name with

@@ -71,9 +71,11 @@ import {
   removeFromDeck,
   removeFromQuickAccess,
   setPlacementHotkey,
+  setQuickAccessHotkey,
   updatePad,
 } from '../lib/boardModel';
-import { RESERVED_KEYS, isModifierKey, keyHolder, keyLabel } from '../lib/padKeys';
+import { deckKeyUse, keyHolder, keyLabel, quickAccessKeyHolder } from '../lib/padKeys';
+import { KeyField, type KeyCheck } from './KeyField';
 import { nextFreeSlot } from '../lib/padUtils';
 import { debouncedSave } from '../lib/debouncedSave';
 import { fromPad, moveHandle, toPad, type Handle, type TrimValues } from '../lib/trimRange';
@@ -155,12 +157,8 @@ export function PadEditorPanel({
   );
   /** The pad's key in this deck — keys belong to the placement (ADR-0048). */
   const hotkey = deck?.placements.find((p) => p.padId === pad.id)?.hotkey;
-  /** The key field waits for a key (tapped, not yet pressed). */
-  const [keyArmed, setKeyArmed] = useState(false);
-  /** A key another pad of the deck holds — offered to move here. */
-  const [keyToMove, setKeyToMove] = useState<string | null>(null);
-  /** Why the pressed key was not taken (a reserved key). */
-  const [keyNote, setKeyNote] = useState<string | null>(null);
+  /** The pad's board-wide key in the quick-access bar (K13). */
+  const quickKey = board.quickAccess.find((q) => q.padId === pad.id)?.hotkey;
 
   // One editor per pad: BoardScreen keys it by pad id, so another pad gets a fresh editor with
   // fresh state (react.dev, "You Might Not Need an Effect" — resetting state with a key). The
@@ -485,50 +483,41 @@ export function PadEditorPanel({
     }
   }
 
-  // ── Hotkey (K1, ADR-0077) ────────────────────────────────────────────────
+  // ── Keys (K1, K2, K13; ADR-0077) ─────────────────────────────────────────
 
-  /** Gives the pad the key in this deck (another pad of the deck loses it), or clears it. */
-  function assignKey(code: string | undefined) {
-    if (!deck) return;
-    const deckId = deck.id;
-    void updateBoard(board.id, (b) => setPlacementHotkey(b, deckId, pad.id, code));
-    setKeyToMove(null);
-    setKeyNote(null);
+  const padName = (id: string | null) => board.pads.find((p) => p.id === id)?.name ?? '';
+
+  /**
+   * A deck key: another pad of the deck can give it up (K1); a quick-access key never doubles as a
+   * deck key (K2) — it would play two pads.
+   */
+  function checkDeckKey(code: string): KeyCheck {
+    const bar = quickAccessKeyHolder(board, code, '');
+    if (bar !== null) {
+      return {
+        kind: 'refused',
+        reason: `${keyLabel(code)} is the quick-access key of ${padName(bar)} — pick another key`,
+      };
+    }
+    const holder = deck ? keyHolder(deck, code, pad.id) : null;
+    return holder ? { kind: 'move', holder: padName(holder) } : { kind: 'free' };
   }
 
   /**
-   * The armed key field takes the next key: Escape cancels (and does not close the editor), Tab
-   * moves on (no keyboard trap, WCAG 2.1.2), modifiers wait for the real key.
+   * A quick-access key: another pad of the bar can give it up; a key some deck uses is refused
+   * (K2), named with its pad and deck.
    */
-  function handleKeyCapture(e: KeyboardEvent) {
-    if (!keyArmed || !deck || e.code === 'Tab' || !e.code) return;
-    e.preventDefault();
-    e.stopPropagation();
-    if (e.code === 'Escape') {
-      setKeyArmed(false);
-      return;
+  function checkQuickKey(code: string): KeyCheck {
+    const used = deckKeyUse(board, code);
+    if (used) {
+      return {
+        kind: 'refused',
+        reason: `${keyLabel(code)} plays ${padName(used.padId)} in ${used.deck.name} — pick another key`,
+      };
     }
-    if (isModifierKey(e.code)) return;
-    setKeyArmed(false);
-    if (e.code in RESERVED_KEYS) {
-      setKeyToMove(null);
-      setKeyNote(`${keyLabel(e.code)} ${RESERVED_KEYS[e.code]} — pick another key`);
-      return;
-    }
-    if (keyHolder(deck, e.code, pad.id)) {
-      setKeyNote(null);
-      setKeyToMove(e.code);
-      return;
-    }
-    assignKey(e.code);
+    const holder = quickAccessKeyHolder(board, code, pad.id);
+    return holder ? { kind: 'move', holder: padName(holder) } : { kind: 'free' };
   }
-
-  /** The name of the pad that holds `keyToMove` in this deck. */
-  const keyOwnerName = (() => {
-    if (!deck || !keyToMove) return '';
-    const id = keyHolder(deck, keyToMove, pad.id);
-    return board.pads.find((p) => p.id === id)?.name ?? '';
-  })();
 
   // ── Decks checklist / remove from deck ───────────────────────────────────
 
@@ -931,71 +920,32 @@ export function PadEditorPanel({
 
         {/* Hotkey: tap, then press a key (K1) — keys belong to a deck's placement */}
         {deck && (
-          <div class="sb-inspector-section">
-            <label class="sb-field-label" for="pad-editor-key-field">
-              HOTKEY
-            </label>
-            <div class="sb-row">
-              <button
-                id="pad-editor-key-field"
-                type="button"
-                class="sb-btn sb-btn-sm sb-flex-1"
-                data-testid="pad-editor-panel-key-button"
-                aria-label={
-                  keyArmed
-                    ? 'Press a key for this pad'
-                    : hotkey
-                      ? `Key ${keyLabel(hotkey)}, tap to change`
-                      : 'No key, tap and press a key'
-                }
-                onClick={(e) => {
-                  // Safari does not focus a tapped button; the key must reach this one
-                  e.currentTarget.focus();
-                  setKeyArmed(true);
-                  setKeyToMove(null);
-                  setKeyNote(null);
-                }}
-                onKeyDown={handleKeyCapture}
-                onBlur={() => setKeyArmed(false)}
-              >
-                <PixelIcon name="keyboard" size={11} color="var(--text-mute)" />
-                {keyArmed ? 'PRESS A KEY…' : hotkey ? keyLabel(hotkey) : '— not assigned —'}
-              </button>
-              {hotkey && !keyArmed && (
-                <button
-                  type="button"
-                  class="sb-btn sb-btn-icon-sm"
-                  data-testid="pad-editor-panel-key-clear-button"
-                  aria-label="Remove the key"
-                  onClick={() => assignKey(undefined)}
-                >
-                  ×
-                </button>
-              )}
-            </div>
-            {keyToMove && (
-              <div class="sb-row" role="status">
-                <span
-                  class="sb-hint-text sb-flex-1"
-                  data-testid="pad-editor-panel-key-conflict-text"
-                >
-                  Key {keyLabel(keyToMove)} is on {keyOwnerName}
-                </span>
-                <button
-                  type="button"
-                  class="sb-btn sb-btn-xs sb-btn-primary"
-                  data-testid="pad-editor-panel-key-move-button"
-                  onClick={() => assignKey(keyToMove)}
-                >
-                  MOVE KEY HERE
-                </button>
-              </div>
-            )}
-            {keyNote && (
-              <div class="sb-hint-text" role="status" data-testid="pad-editor-panel-key-note-text">
-                {keyNote}
-              </div>
-            )}
+          <div data-testid="pad-editor-panel-deck-key-region">
+            <KeyField
+              id="pad-editor-key-field"
+              label="HOTKEY"
+              hotkey={hotkey}
+              check={checkDeckKey}
+              onAssign={(code) => {
+                const deckId = deck.id;
+                void updateBoard(board.id, (b) => setPlacementHotkey(b, deckId, pad.id, code));
+              }}
+            />
+          </div>
+        )}
+
+        {/* Quick-access key: board-wide, in every deck (K13, Slice 13d) */}
+        {inQuickAccess && (
+          <div data-testid="pad-editor-panel-quick-key-region">
+            <KeyField
+              id="pad-editor-quick-key-field"
+              label="QUICK ACCESS KEY"
+              hotkey={quickKey}
+              check={checkQuickKey}
+              onAssign={(code) =>
+                void updateBoard(board.id, (b) => setQuickAccessHotkey(b, pad.id, code))
+              }
+            />
           </div>
         )}
 

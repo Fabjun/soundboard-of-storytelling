@@ -94,3 +94,30 @@ export function padForKey(board: Board, deck: Deck, code: string): Pad | null {
 export function keyHolder(deck: Deck, code: string, padId: string): string | null {
   return deck.placements.find((p) => p.hotkey === code && p.padId !== padId)?.padId ?? null;
 }
+
+/**
+ * The pad of the quick-access bar that the key plays — board-wide, in every deck (K13), or null.
+ * keyControl asks it before the deck: the bar's keys work in every view.
+ */
+export function quickAccessPadForKey(board: Board, code: string): Pad | null {
+  const entry = board.quickAccess.find((q) => q.hotkey === code);
+  if (!entry) return null;
+  return board.pads.find((p) => p.id === entry.padId) ?? null;
+}
+
+/** The id of the other pad in the quick-access bar that holds the key, or null (`padId` excluded). */
+export function quickAccessKeyHolder(board: Board, code: string, padId: string): string | null {
+  return board.quickAccess.find((q) => q.hotkey === code && q.padId !== padId)?.padId ?? null;
+}
+
+/**
+ * The first deck (in deck order) where a pad holds the key, and that pad's id — a quick-access key
+ * must not be a deck key anywhere (K2: they would play two pads). Null when no deck uses it.
+ */
+export function deckKeyUse(board: Board, code: string): { deck: Deck; padId: string } | null {
+  for (const deck of [...board.decks].sort((a, b) => a.order - b.order)) {
+    const placement = deck.placements.find((p) => p.hotkey === code);
+    if (placement) return { deck, padId: placement.padId };
+  }
+  return null;
+}

@@ -5,7 +5,9 @@
  * the deck at the moment the key is pressed (the signals), so it never acts on an old state.
  * Rules (docs/product/README.md#input-keyboard--numpad):
  *   - only on a board in GAME (K3) — in SETUP keys do nothing;
- *   - the deck shown, or in All pads the deck last selected (K14: `currentDeckId` stays);
+ *   - the deck shown, or in All pads the deck last selected (K14: `currentDeckId` stays); the
+ *     quick-access bar's keys first, board-wide in every view (K13, Slice 13d) — the PAD editor
+ *     keeps them apart from the deck keys (K2);
  *   - a key whose pad already plays does nothing — a second press never stops it (K4);
  *   - never while a text field has focus, with Ctrl / Alt / Cmd held, or for a held-down key;
  *   - stop keys (Slice 12b): the numpad's decimal key is STOP ALL (K6, two stages), the numpad's
@@ -17,7 +19,7 @@
  */
 
 import { play as playPad, isPlaying as padIsPlaying } from '../audio/index';
-import { RESERVED_KEYS, padForKey } from '../lib/padKeys';
+import { RESERVED_KEYS, padForKey, quickAccessPadForKey } from '../lib/padKeys';
 import type { Pad } from '../types';
 import { currentBoard, currentDeck, currentMode, currentScreen } from './store';
 import { pressStopAll, stopLast } from './stopControl';
@@ -107,9 +109,11 @@ export function startKeyControl(
     }
     if (e.code in RESERVED_KEYS) return;
     const board = currentBoard.value;
+    if (!board) return;
+    // The quick-access bar's keys work board-wide, in every view (K13); then the deck's (K14)
     const deck = currentDeck.value;
-    if (!board || !deck) return;
-    const pad = padForKey(board, deck, e.code);
+    const pad =
+      quickAccessPadForKey(board, e.code) ?? (deck ? padForKey(board, deck, e.code) : null);
     if (!pad) return;
     e.preventDefault();
     if (!audio.isPlaying(pad.id)) void audio.play(pad.id, pad);

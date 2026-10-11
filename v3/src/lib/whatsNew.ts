@@ -101,6 +101,12 @@ export function withEarlyVersions(
 /** The release notes the start screen shows, newest first (checked by whatsNew.test.ts). */
 export const WHATS_NEW: WhatsNewNotes[] = [
   {
+    version: '3.0.215',
+    new: [
+      'Pads in the quick-access bar can have a key of their own that plays them in every deck. A key is never both a deck key and a quick-access key — the pad editor says which pad already has it.',
+    ],
+  },
+  {
     version: '3.0.214',
     new: [
       'A quick-access bar above the pads holds up to five pads of the board — the same in every deck. The ★ in the pad editor puts a pad there or takes it out; in GAME a tap plays it.',

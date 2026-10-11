@@ -17,10 +17,21 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.214';
+export const APP_VERSION = '3.0.215';
 
 /** The developer log, newest first; CHANGELOG.md is generated from it (sync-changelog). */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.215',
+    date: '2026-10-10',
+    items: [
+      'feat(keys): Slice 13d, second part — quick-access keys (K13): a QUICK ACCESS KEY field in the PAD editor for a pad in the bar; the key works board-wide, in every deck and All pads, also when the remembered deck is gone; it is shown short on the bar (K10); another bar pad holding it gives it up on MOVE KEY HERE',
+      'feat(keys): a key is never both a deck key and a quick-access key (K2) — the PAD editor refuses either way and names the holder ("N1 plays Owl in Deck 1 — pick another key", "Q is the quick-access key of Rooster — pick another key"); keyControl asks the bar first, for data from before the check',
+      'refactor: one KeyField component for the deck key and the quick-access key (it was inline in the PAD editor); padKeys `quickAccessPadForKey` / `quickAccessKeyHolder` / `deckKeyUse`, boardModel `setQuickAccessHotkey`',
+      'test: unit tests for the new key helpers, setQuickAccessHotkey and keyControl (a bar key in every view, without a deck, before a deck key); E2E pad-keys — the bar key shown and played in another deck, K2 refused both ways, a bar key moved; each counter-checked; the deck key tests locate the field by its region',
+      'docs: the owner decisions of 2026-10-10 and 2026-10-11 recorded — pad.md PQ2 / PQ4 decided; adaptive-layout L6 (▲ / ▼ and drag & drop), L7 search and sort, L8 the quick-access bar, L9 now playing as one line in the status bar and the dock; product §5 phone row, the V1 inventory and BACKLOG "Deck reorder" follow',
+    ],
+  },
   {
     version: '3.0.214',
     date: '2026-10-10',

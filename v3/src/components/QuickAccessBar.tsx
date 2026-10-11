@@ -6,12 +6,14 @@
  * same in every deck, freely filled with pads of the pool (e.g. DAY, NIGHT). As V1's strip: above
  * the grid, up to five pads in the order they were added, pinned in the PAD editor (★). In GAME a
  * tap plays or stops the pad, as in the grid; in SETUP it opens the pad in the PAD editor. Shown
- * only while it holds a pad. Its keys (K13) follow in a step of their own.
+ * only while it holds a pad. Each pad may have a board-wide key (K13), set in the PAD editor and
+ * shown on the pad; keyControl plays it in every view.
  */
 
 import type { JSX } from 'preact';
 import type { AppMode, Board, Pad } from '../types';
 import { padTypeColor } from '../lib/padUtils';
+import { keyLabel } from '../lib/padKeys';
 import { play, stop, isPlaying } from '../audio/index';
 import { playingPads } from '../state/store';
 
@@ -31,7 +33,7 @@ export function QuickAccessBar({
   const pool = new Map(board.pads.map((p) => [p.id, p]));
   const pads = board.quickAccess.flatMap((q) => {
     const pad = pool.get(q.padId);
-    return pad ? [pad] : [];
+    return pad ? [{ pad, hotkey: q.hotkey }] : [];
   });
   if (pads.length === 0) return null;
   const isSetup = mode === 'edit';
@@ -46,7 +48,7 @@ export function QuickAccessBar({
       <span class="sb-quick-access-label" aria-hidden="true">
         ★
       </span>
-      {pads.map((pad) => {
+      {pads.map(({ pad, hotkey }) => {
         const hot = playingPads.value.has(pad.id);
         return (
           <button
@@ -63,6 +65,8 @@ export function QuickAccessBar({
             }}
           >
             <span class="sb-flex-trunc">{pad.name || '—'}</span>
+            {/* Its board-wide key, short (K10, K13) */}
+            {hotkey && <span class="sb-quick-access-key">{keyLabel(hotkey)}</span>}
           </button>
         );
       })}

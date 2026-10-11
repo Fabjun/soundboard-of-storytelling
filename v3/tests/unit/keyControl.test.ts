@@ -225,6 +225,38 @@ describe('keys that play nothing', () => {
   });
 });
 
+describe('quick-access keys (K13, Slice 13d)', () => {
+  /** The test board with pad b in the quick-access bar on KeyQ — b is placed only in Deck 2. */
+  const withBarKey = (code = 'KeyQ') => {
+    boards.value = [{ ...testBoard, quickAccess: [{ padId: 'b', hotkey: code }] }];
+  };
+
+  it('a bar key plays its pad in every deck and in All pads', () => {
+    withBarKey();
+    press('KeyQ'); // Deck 1 shown — b is not in it
+    currentDeckId.value = 'd2';
+    playing.clear();
+    press('KeyQ');
+    allPadsView.value = true;
+    playing.clear();
+    press('KeyQ');
+    expect(played).toEqual(['b:b', 'b:b', 'b:b']);
+  });
+
+  it('a bar key plays even when the deck it remembers is gone', () => {
+    withBarKey();
+    currentDeckId.value = 'deleted';
+    press('KeyQ');
+    expect(played).toEqual(['b:b']);
+  });
+
+  it('a key held by the bar and a deck (data from before the check) plays the bar pad', () => {
+    withBarKey('Numpad1'); // Deck 1 plays a on Numpad1
+    press('Numpad1');
+    expect(played).toEqual(['b:b']);
+  });
+});
+
 describe('stop keys (Slice 12b)', () => {
   it('the numpad decimal is STOP ALL, the numpad Enter and Enter stop the last sound (K5, K6)', () => {
     for (const code of ['NumpadDecimal', 'NumpadEnter', 'Enter']) {
