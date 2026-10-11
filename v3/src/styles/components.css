@@ -1216,7 +1216,7 @@
   border-left: 3px solid var(--blood-bright);
 }
 .sb-deck-tab-actions {
-  /* @inventory: Action buttons (duplicate, delete) revealed on hover or on the active deck tab. */
+  /* @inventory: The deck's "⋯" actions menu (rename, duplicate, delete), revealed on hover, on the active deck tab and while its menu has the focus. */
   display: none;
   align-items: center;
   gap: 0.125rem;
@@ -1224,8 +1224,47 @@
   flex-shrink: 0;
 }
 .sb-deck-tab:hover .sb-deck-tab-actions,
-.sb-deck-tab.is-active .sb-deck-tab-actions {
+.sb-deck-tab.is-active .sb-deck-tab-actions,
+.sb-deck-tab-actions:focus-within {
   display: flex;
+}
+.sb-menu {
+  /* @inventory: MenuButton's wrapper — anchors its menu list below the "⋯" button. */
+  position: relative;
+  display: inline-flex;
+}
+.sb-menu-list {
+  /* @inventory: MenuButton's menu (role menu) — a column of actions below the button, right-aligned, above the content around it. */
+  position: absolute;
+  top: 100%;
+  right: 0;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  min-width: 10rem;
+  padding: var(--space-1) 0;
+  background: var(--surface);
+  border: 1px solid var(--border);
+}
+.sb-menu-item {
+  /* @inventory: One action of a MenuButton menu (role menuitem) — a full-width 44px row; is-danger marks a delete. */
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 var(--space-3);
+  font-family: var(--font-ui);
+  font-size: var(--fs-md);
+  text-align: left;
+  color: var(--text);
+  background: none;
+  border: none;
+}
+.sb-menu-item:hover,
+.sb-menu-item:focus-visible {
+  background: var(--raised);
+}
+.sb-menu-item.is-danger {
+  color: var(--blood-bright);
 }
 /* Deck reorder (Slice 13g): the dragged deck fades, a line shows where it lands — the pad
    drag's state names (is-drag-source, is-insert-before / -after) */
@@ -1995,14 +2034,14 @@
   cursor: pointer;
 }
 .sb-btn-icon {
-  /* @inventory: Icon-sized button modifier for sb-btn — 28×28px touch target, tight padding. */
-  min-width: 28px;
-  min-height: 28px;
+  /* @inventory: Icon-sized button modifier for sb-btn — tight padding, the 44px touch target kept (was 28px until 2026-10-11, below the touch minimum). */
+  min-width: 44px;
+  min-height: 44px;
   padding: 0 0.25rem;
 }
 .sb-btn-icon-sm {
-  /* @inventory: Compact icon-button modifier — 36px min-width, tight 6px padding. For icon-only action buttons in list rows (edit, delete). Bet for 3g reuse (AudioRow). */
-  min-width: 36px;
+  /* @inventory: Compact icon-button modifier — tight 6px padding, the 44px touch target kept (was 36px until 2026-10-11). For icon-only action buttons in list rows (edit, delete). */
+  min-width: 44px;
   padding: 0 0.375rem;
 }
 .sb-btn-cta {

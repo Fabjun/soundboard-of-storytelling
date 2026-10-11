@@ -18,6 +18,7 @@ import {
   enterGameMode,
   enterSetupMode,
   closePadEditor,
+  openDeckActions,
   reopenFirstBoard,
 } from './helpers';
 
@@ -64,7 +65,7 @@ test('8 — duplicate deck → new tab appears with suffix', async ({ page }) =>
   await firstTab.waitFor();
 
   // Hover to reveal action chips, then click COPY button
-  await firstTab.hover();
+  await openDeckActions(firstTab);
   const copyBtn = firstTab.locator('[data-testid^="deck-rail-copy-button-"]');
   await copyBtn.click();
 
@@ -146,13 +147,14 @@ test('10 — delete deck → tab removed from DeckRail', async ({ page }) => {
   const deckTab = page.locator('[data-testid^="deck-rail-deck-tab-"]').first();
   await deckTab.waitFor();
 
-  // Reveal action chips
-  await deckTab.hover();
-  const deleteBtn = deckTab.locator('[data-testid^="deck-rail-delete-button-"]');
+  // The "⋯" menu holds the actions
+  await openDeckActions(deckTab);
+  const deleteBtn = deckTab.getByRole('menuitem', { name: /^Delete/ });
 
-  // Two-tap confirm
+  // Two-tap confirm: the first tap asks and the menu stays open
   await deleteBtn.click();
-  await expect(deleteBtn).toHaveText('!!');
+  await expect(deleteBtn).toHaveText('Delete — tap again');
+  await expect(deckTab).toBeVisible();
   await deleteBtn.click();
 
   // Tab should disappear
@@ -170,7 +172,7 @@ test('11 — undo deck delete → tab restored', async ({ page }) => {
   const deckText = await deckTab.textContent();
 
   // Delete it (two taps)
-  await deckTab.hover();
+  await openDeckActions(deckTab);
   const deleteBtn = deckTab.locator('[data-testid^="deck-rail-delete-button-"]');
   await deleteBtn.click();
   await deleteBtn.click();
@@ -215,7 +217,7 @@ test('duplicate deck shares its pads: a rename in one deck shows in the other', 
 
   // Duplicate the deck and open the copy: the same pad (same id) is there
   await closePadEditor(page);
-  await tabs.first().hover();
+  await openDeckActions(tabs.first());
   await tabs.first().locator('[data-testid^="deck-rail-copy-button-"]').click();
   await expect(tabs).toHaveCount(2);
   await tabs.nth(1).click();
@@ -241,7 +243,7 @@ test('undo of a deck delete keeps a deck rename made while the toast is shown', 
   await expect(tabs).toHaveCount(2);
 
   // Delete the second deck (two taps)
-  await tabs.nth(1).hover();
+  await openDeckActions(tabs.nth(1));
   const deleteBtn = tabs.nth(1).locator('[data-testid^="deck-rail-delete-button-"]');
   await deleteBtn.click();
   await deleteBtn.click();
@@ -267,7 +269,7 @@ test('a new deck after deleting a middle one: badges stay 1, 2, 3; the name fill
   for (let i = 0; i < 3; i++) await page.getByTestId('deck-rail-new-button').click();
   await expect(tabs).toHaveCount(3);
 
-  await tabs.nth(1).hover();
+  await openDeckActions(tabs.nth(1));
   const deleteBtn = tabs.nth(1).locator('[data-testid^="deck-rail-delete-button-"]');
   await deleteBtn.click();
   await deleteBtn.click();
@@ -290,7 +292,7 @@ test('a duplicated deck appears directly after its original', async ({ page }) =
   await page.getByTestId('deck-rail-new-button').click();
   await page.getByTestId('deck-rail-new-button').click();
   await expect(tabs).toHaveCount(2);
-  await tabs.first().hover();
+  await openDeckActions(tabs.first());
   await tabs.first().locator('[data-testid^="deck-rail-copy-button-"]').click();
   await expect(tabs).toHaveCount(3);
   // Badge (position) and name of each tab: the copy sits between Deck 1 and Deck 2
@@ -300,4 +302,47 @@ test('a duplicated deck appears directly after its original', async ({ page }) =
       els.map((el) => `${el.children[0]?.textContent} ${el.children[1]?.textContent}`),
     );
   expect(labels).toEqual(['1 Deck 1', '2 Deck 1 · 2', '3 Deck 2']);
+});
+
+// ── The deck's "⋯" actions menu (MenuButton, W3C APG menu button) ─────────────
+
+test('the "⋯" menu works with the keyboard: opens on Enter, arrows move, Escape closes', async ({
+  page,
+}) => {
+  await page.getByTestId('deck-rail-new-button').click();
+  const actions = page.getByRole('button', { name: 'Actions for deck Deck 1' });
+  await expect(actions).toHaveAttribute('aria-haspopup', 'menu');
+  await expect(actions).toHaveAttribute('aria-expanded', 'false');
+
+  await actions.focus();
+  await page.keyboard.press('Enter');
+  await expect(actions).toHaveAttribute('aria-expanded', 'true');
+  const items = page.getByRole('menuitem');
+  await expect(items).toHaveText(['Rename', 'Duplicate', 'Delete']);
+  await expect(items.first()).toBeFocused();
+  await page.keyboard.press('ArrowDown');
+  await expect(items.nth(1)).toBeFocused();
+  await page.keyboard.press('ArrowUp');
+  await page.keyboard.press('ArrowUp');
+  await expect(items.nth(2)).toBeFocused();
+  await page.keyboard.press('Home');
+  await expect(items.first()).toBeFocused();
+
+  await page.keyboard.press('Escape');
+  await expect(page.getByRole('menu')).toHaveCount(0);
+  await expect(actions).toBeFocused();
+});
+
+test('the "⋯" menu closes on a press outside; Rename from it starts the rename', async ({
+  page,
+}) => {
+  await page.getByTestId('deck-rail-new-button').click();
+  const tab = page.locator('[data-testid^="deck-rail-deck-tab-"]').first();
+  await openDeckActions(tab);
+  await page.getByTestId('board-top-bar').click({ position: { x: 300, y: 10 } });
+  await expect(page.getByRole('menu')).toHaveCount(0);
+
+  await openDeckActions(tab);
+  await page.getByRole('menuitem', { name: 'Rename' }).click();
+  await expect(page.getByTestId('deck-rail-name-input')).toBeFocused();
 });

@@ -214,6 +214,18 @@ export async function createDeck(page: Page): Promise<string> {
   return testid!.replace('deck-rail-deck-tab-', '');
 }
 
+/**
+ * Opens the "⋯" actions menu of a deck row in the rail (rename, duplicate, delete — MenuButton);
+ * the row is hovered first, as a row that is not active shows its "⋯" only then. Stays open when
+ * it already is.
+ */
+export async function openDeckActions(deckTab: Locator): Promise<void> {
+  await deckTab.hover();
+  const button = deckTab.locator('[data-testid^="deck-rail-actions-button-"]');
+  if ((await button.getAttribute('aria-expanded')) !== 'true') await button.click();
+  await expect(deckTab.getByRole('menu')).toBeVisible();
+}
+
 // ── Mode helpers ──────────────────────────────────────────────────────────────
 
 /** Switch the ModeToggle to SETUP mode. No-op if already in SETUP. */

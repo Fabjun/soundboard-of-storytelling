@@ -7,6 +7,25 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.218 — 2026-10-11
+
+### Added
+
+- feat: component MenuButton after the W3C APG menu button pattern (ADR-0083, Proposed): aria-haspopup / aria-expanded, role menu, focus on the first entry, ↑ / ↓ / Home / End, Escape back to the button, Tab and a press outside close it; classes sb-menu, sb-menu-list, sb-menu-item
+
+### Changed
+
+- a11y(board): the deck actions — rename, duplicate, delete — sit behind one 44 px "⋯" button (owner decision 2026-10-11; they were three 28 px buttons, below the touch minimum); the delete keeps its two taps inside the menu ("Delete — tap again")
+
+### Fixed
+
+- fix(styles): sb-btn-icon (28 px) and sb-btn-icon-sm (36 px) keep the 44 px touch target — the source of the small buttons, so the PAD editor, the key field, the library panel and the board list follow
+
+### Internal
+
+- test: touch-targets sweeps every visible control of the board in SETUP on a phone (DECKS list and a menu open); deck-crud — the menu with the keyboard, a press outside, Rename from the menu, the delete asking inside the menu; helper openDeckActions; each counter-checked; three visual baselines updated (the "⋯" in the deck row)
+- docs: ADR-0083; BACKLOG "Small icon buttons below the 44 px touch target" done
+
 ## 3.0.217 — 2026-10-11
 
 ### Added
