@@ -17,10 +17,21 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.216';
+export const APP_VERSION = '3.0.217';
 
 /** The developer log, newest first; CHANGELOG.md is generated from it (sync-changelog). */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.217',
+    date: '2026-10-11',
+    items: [
+      'feat(board): Slice 13g — deck reorder (adaptive-layout L6, owner decision 2026-10-11: ▲ / ▼ and drag & drop): in SETUP the active deck gets a line under its row with a drag handle ⣿ (Pointer Events, touch-action none — the list scrolls everywhere else) and ▲ / ▼; the rail and the DECKS list on a phone; the order is stored with the board; the deck badges follow (positions)',
+      'feat: boardModel `moveDeck` (keeps the order numbers in use, so an undone delete still finds its number); lib deckDnd `deckDropIndex` (a dragged deck lands by the row centers, threshold 8 px as for pads)',
+      'test: unit tests moveDeck (down, up, the gap kept, out of range, unchanged board, nothing else changed) and deckDropIndex (ends, between rows, its own place, exactly on a center, one deck); E2E deck-crud 9 out of quarantine — drag and reopen — with 9b ▲ / ▼ and 9c only the active deck in SETUP, deck-switcher on a phone (▲ in the DECKS list, 44 px, the tab row follows); each counter-checked, in Chromium and WebKit',
+      'docs: BACKLOG "Deck reorder" done, new entry "Small icon buttons below the 44 px touch target" (sb-btn-icon 28 px, found while measuring); adaptive-layout L6 built; testing pitfall 5; iPhone checklist "Decks move by touch"',
+      'docs: the owner decided the reorder details on 2026-10-11 (R1 only the active deck moves, R2 on a phone in the DECKS list, R3 a 44 px handle) and a "⋯" menu for the deck actions instead of the 28 px buttons — recorded in the BACKLOG and adaptive-layout L6',
+    ],
+  },
   {
     version: '3.0.216',
     date: '2026-10-11',

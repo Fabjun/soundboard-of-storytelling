@@ -101,6 +101,12 @@ export function withEarlyVersions(
 /** The release notes the start screen shows, newest first (checked by whatsNew.test.ts). */
 export const WHATS_NEW: WhatsNewNotes[] = [
   {
+    version: '3.0.217',
+    new: [
+      'Decks can be put in a new order in SETUP: the selected deck moves with ▲ and ▼, or by dragging its ⣿ handle — in the deck list, and on a phone in the DECKS list.',
+    ],
+  },
+  {
     version: '3.0.216',
     new: [
       'The status bar says which sounds are playing — "2 playing: Rain · Wind", up to three names — or "No sound". On a phone the line sits in the bar at the bottom, next to STOP ALL; sounds of other decks count too.',

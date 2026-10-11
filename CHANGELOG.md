@@ -7,6 +7,19 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.217 — 2026-10-11
+
+### Added
+
+- feat(board): Slice 13g — deck reorder (adaptive-layout L6, owner decision 2026-10-11: ▲ / ▼ and drag & drop): in SETUP the active deck gets a line under its row with a drag handle ⣿ (Pointer Events, touch-action none — the list scrolls everywhere else) and ▲ / ▼; the rail and the DECKS list on a phone; the order is stored with the board; the deck badges follow (positions)
+- feat: boardModel `moveDeck` (keeps the order numbers in use, so an undone delete still finds its number); lib deckDnd `deckDropIndex` (a dragged deck lands by the row centers, threshold 8 px as for pads)
+
+### Internal
+
+- test: unit tests moveDeck (down, up, the gap kept, out of range, unchanged board, nothing else changed) and deckDropIndex (ends, between rows, its own place, exactly on a center, one deck); E2E deck-crud 9 out of quarantine — drag and reopen — with 9b ▲ / ▼ and 9c only the active deck in SETUP, deck-switcher on a phone (▲ in the DECKS list, 44 px, the tab row follows); each counter-checked, in Chromium and WebKit
+- docs: BACKLOG "Deck reorder" done, new entry "Small icon buttons below the 44 px touch target" (sb-btn-icon 28 px, found while measuring); adaptive-layout L6 built; testing pitfall 5; iPhone checklist "Decks move by touch"
+- docs: the owner decided the reorder details on 2026-10-11 (R1 only the active deck moves, R2 on a phone in the DECKS list, R3 a 44 px handle) and a "⋯" menu for the deck actions instead of the 28 px buttons — recorded in the BACKLOG and adaptive-layout L6
+
 ## 3.0.216 — 2026-10-11
 
 ### Added
