@@ -74,7 +74,8 @@ measures every visible button against 44 px.
 **Built in 3.0.218:** `MenuButton` after the W3C menu button pattern (ADR-0083) holds the deck
 actions; `sb-btn-icon` and `sb-btn-icon-sm` keep 44 px now — the source, so their other uses (the
 PAD editor's ★, the key field, the library panel, the board list) follow; the touch-target spec
-sweeps every visible control of the board in SETUP, with the DECKS list and a menu open.
+sweeps every visible control of the board in SETUP, with the DECKS list and a menu open; since
+3.0.219 (Slice 13 structure review) also the board list, the library and the PAD editor.
 
 ### Pad names cut off on narrow screens ✅ Done (3.0.212)
 

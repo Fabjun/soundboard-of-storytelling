@@ -18,8 +18,18 @@
  *   File upload, audio output, Ringer Switch, backgrounding.
  */
 
-import { test, expect, type Locator } from '@playwright/test';
-import { goToBoardList, createBoardAndNavigate, createDeck, enterSetupMode } from '../helpers';
+import { test, expect, type Locator, type Page } from '@playwright/test';
+import {
+  TEST_AUDIO_NAME,
+  addLoopPad,
+  createBoardAndNavigate,
+  createDeck,
+  ensureTestAudio,
+  enterSetupMode,
+  goToBoardList,
+  goToLibrary,
+  padCells,
+} from '../helpers';
 
 const MIN = 44;
 
@@ -97,6 +107,26 @@ test.describe('touch targets on a 390px phone', () => {
 });
 
 /**
+ * Every visible control (`button`, `[role=button]`, `menuitem`) smaller than 44 × 44 px, named by
+ * its test ID, label or text — empty when all keep the touch target (CLAUDE.md UI rules). The mode
+ * toggle's halves are only checked for their height (their own test above).
+ */
+async function smallControls(page: Page): Promise<string[]> {
+  return page.evaluate((min) => {
+    const skip = ['mode-toggle-setup-button', 'mode-toggle-game-button'];
+    return [...document.querySelectorAll<HTMLElement>('button, [role="button"], [role="menuitem"]')]
+      .filter((el) => !skip.includes(el.dataset.testid ?? ''))
+      .map((el) => ({ el, box: el.getBoundingClientRect() }))
+      .filter(({ box }) => box.width > 0 && box.height > 0)
+      .filter(({ box }) => box.width < min || box.height < min)
+      .map(
+        ({ el, box }) =>
+          `${el.dataset.testid ?? el.getAttribute('aria-label') ?? el.textContent?.trim()} ${Math.round(box.width)}×${Math.round(box.height)}`,
+      );
+  }, MIN);
+}
+
+/**
  * Every visible control of the board in SETUP, with the DECKS list open and a deck's "⋯" menu
  * open, is at least 44 × 44 px (CLAUDE.md UI rules) — a sweep, so a new small button cannot slip
  * in unnoticed (found 2026-10-11: the deck actions were 28 px; BACKLOG "Small icon buttons below
@@ -113,17 +143,40 @@ test('BoardScreen: every visible control in SETUP is >= 44×44px', async ({ page
   await sheet.locator('[data-testid^="deck-rail-actions-button-"]').first().click();
   await expect(sheet.getByRole('menu')).toBeVisible();
 
-  const small = await page.evaluate((min) => {
-    const skip = ['mode-toggle-setup-button', 'mode-toggle-game-button'];
-    return [...document.querySelectorAll<HTMLElement>('button, [role="button"], [role="menuitem"]')]
-      .filter((el) => !skip.includes(el.dataset.testid ?? ''))
-      .map((el) => ({ el, box: el.getBoundingClientRect() }))
-      .filter(({ box }) => box.width > 0 && box.height > 0)
-      .filter(({ box }) => box.width < min || box.height < min)
-      .map(
-        ({ el, box }) =>
-          `${el.dataset.testid ?? el.getAttribute('aria-label') ?? el.textContent?.trim()} ${Math.round(box.width)}×${Math.round(box.height)}`,
-      );
-  }, MIN);
-  expect(small, 'controls below 44 × 44 px').toEqual([]);
+  expect(await smallControls(page), 'controls below 44 × 44 px').toEqual([]);
+});
+
+test('BoardListScreen: every visible control is >= 44×44px', async ({ page }) => {
+  await page.goto('/soundboard-of-storytelling/');
+  await goToBoardList(page);
+  await page.getByTestId('board-list-screen-new-button').click();
+  await page.locator('[data-testid^="board-list-screen-row-"]').first().waitFor();
+  expect(await smallControls(page), 'controls below 44 × 44 px').toEqual([]);
+});
+
+test('LibraryScreen: every visible control is >= 44×44px, with a file in the list', async ({
+  page,
+}) => {
+  await page.goto('/soundboard-of-storytelling/');
+  await ensureTestAudio(page);
+  // The app reads the library at start: load it again with the entry
+  await page.goto('/soundboard-of-storytelling/');
+  await goToLibrary(page);
+  await expect(page.getByText(TEST_AUDIO_NAME).first()).toBeVisible();
+  expect(await smallControls(page), 'controls below 44 × 44 px').toEqual([]);
+});
+
+test('PAD editor: every visible control is >= 44×44px', async ({ page }) => {
+  await page.goto('/soundboard-of-storytelling/');
+  await ensureTestAudio(page);
+  // The app reads the library at start: load it again with the entry
+  await page.goto('/soundboard-of-storytelling/');
+  await goToBoardList(page);
+  await createBoardAndNavigate(page);
+  await createDeck(page);
+  await enterSetupMode(page);
+  await addLoopPad(page, 0);
+  await padCells(page).first().getByRole('button').click();
+  await expect(page.getByTestId('pad-editor-panel-name-input')).toBeVisible();
+  expect(await smallControls(page), 'controls below 44 × 44 px').toEqual([]);
 });

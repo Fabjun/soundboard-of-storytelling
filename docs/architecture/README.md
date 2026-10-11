@@ -94,7 +94,7 @@ file. Format: `docs/architecture/_template.md`.
 | [ADR-0075](0075-flowing-pad-grid-and-pad-size.md) | The pad grid flows into the window's columns; each deck has a pad size         | Accepted | cross-cutting  | 2026-10-06 |
 | [ADR-0081](0081-relative-units.md)                | Relative units for type and spacing                                            | Accepted | infrastructure | 2026-10-09 |
 | [ADR-0082](0082-narrow-and-wide-frames.md)        | Narrow and wide frames — one window class, asked in one place                  | Accepted | Slice 13       | 2026-10-10 |
-| [ADR-0083](0083-menu-button.md)                   | Action menus — one MenuButton after the W3C menu button pattern                | Proposed | Slice 13       | 2026-10-11 |
+| [ADR-0083](0083-menu-button.md)                   | Action menus — one MenuButton after the W3C menu button pattern                | Accepted | Slice 13       | 2026-10-11 |
 
 ### Interaction
 

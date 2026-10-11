@@ -29,12 +29,16 @@ Available now:
 - Backup and restore of all boards and audio in a single file, including migration from the
   prototype
 - Separate modes for preparing a board (SETUP) and for playing during a session (GAME)
+- Layout for phones and wide screens: on a phone the decks are tabs above the pads and the live
+  controls sit in a bar at the bottom; pads stay readable and never smaller than a fingertip
+- A quick-access bar with up to five pads and their own keys, the same in every deck
+- Search and sort in every view; decks in any order; a status line that names the sounds playing
 - Works with the keyboard alone and with screen readers; text follows the system text size
 - Installable, offline-capable web app
 
 Planned next:
 
-- Layout for smartphones of all sizes, with a quick-access bar and search
+- A card format for larger pads
 - Settings and themes
 - Library at the prototype's full scope with pad templates, help on first launch, undo and redo
 
