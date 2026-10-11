@@ -48,6 +48,7 @@ export const FULL_TESTS = [
   'board-frames',
   'deck-switcher',
   'pad-search',
+  'quick-access',
 ];
 
 /**

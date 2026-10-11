@@ -1275,6 +1275,45 @@
   flex-shrink: 0;
   max-width: 45%;
 }
+.sb-quick-access {
+  /* @inventory: The board's quick-access bar above the grid (Slice 13d) — a ★ and up to five pad buttons in a row, which share the width; padded, bottom border. */
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  border-bottom: 1px solid var(--border-soft);
+  flex-shrink: 0;
+}
+.sb-quick-access-label {
+  /* @inventory: The ★ at the start of the quick-access bar — gold, decorative (the bar's name is its aria-label). */
+  color: var(--gold);
+  flex-shrink: 0;
+}
+.sb-quick-access-pad {
+  /* @inventory: A pad in the quick-access bar — 44px tall, the pad type's color as its left spine (--pad-color, set per pad), one line of name; is-hot glows while it plays. */
+  flex: 1;
+  min-width: 0;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  padding: 0 var(--space-2);
+  background: var(--raised);
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--pad-color);
+  color: var(--text);
+  font-family: var(--font-ui);
+  font-size: var(--fs-sm);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.sb-quick-access-pad.is-hot {
+  border-color: var(--pad-color);
+  box-shadow: 0 0 8px var(--pad-color);
+}
+.sb-quick-access-pad:focus-visible {
+  outline: 2px solid var(--gold);
+}
 .sb-pad-grid-pool {
   /* @inventory: Variant of sb-pad-grid for the All pads view — as many rows of square pads as the pool needs; the pool scrolls (Slice 9e). */
   overflow: auto;

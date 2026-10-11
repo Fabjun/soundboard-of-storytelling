@@ -230,6 +230,27 @@ export function deletePad(board: Board, padId: string): Board {
   };
 }
 
+/** How many pads the quick-access bar holds — as V1's strip (up to 5; Slice 13d). */
+export const QUICK_ACCESS_MAX = 5;
+
+/**
+ * Returns the board with the pad at the end of its quick-access bar — board-wide, the same in
+ * every deck (docs/product/README.md#board-decks--quick-access). The same board when the pad is not
+ * in the pool, already in the bar, or the bar is full.
+ */
+export function addToQuickAccess(board: Board, padId: string): Board {
+  if (!board.pads.some((p) => p.id === padId)) return board;
+  if (board.quickAccess.some((q) => q.padId === padId)) return board;
+  if (board.quickAccess.length >= QUICK_ACCESS_MAX) return board;
+  return { ...board, quickAccess: [...board.quickAccess, { padId }] };
+}
+
+/** Returns the board without the pad in its quick-access bar; the same board when it is not there. */
+export function removeFromQuickAccess(board: Board, padId: string): Board {
+  if (!board.quickAccess.some((q) => q.padId === padId)) return board;
+  return { ...board, quickAccess: board.quickAccess.filter((q) => q.padId !== padId) };
+}
+
 /**
  * Order number for a deck added at the end: highest + 1. Never the deck count — after a delete
  * the count can equal an order number still in use (two decks with the same badge).

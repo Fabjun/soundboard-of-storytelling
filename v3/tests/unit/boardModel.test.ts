@@ -8,10 +8,12 @@ import { describe, expect, it } from 'vitest';
 import type { Board, ComboPad, Pad, SinglePad } from '../../src/types';
 import {
   DEFAULT_GRID,
+  QUICK_ACCESS_MAX,
   addDeck,
   addPadToDeck,
   addPadToFreeCell,
   addPadToPool,
+  addToQuickAccess,
   boardProblems,
   deckCount,
   deckLayoutInOrder,
@@ -27,6 +29,7 @@ import {
   poolByName,
   poolLayout,
   removeFromDeck,
+  removeFromQuickAccess,
   renameDeck,
   setBoardPadSize,
   restoreDeck,
@@ -146,6 +149,33 @@ describe('deleting a pad', () => {
     const steps = (b.pads.find((p) => p.id === 'c') as ComboPad).steps;
     expect(steps).toEqual([{ padIds: ['b'] }, { padIds: [], duration: 2 }]); // timing kept
     expect(boardProblems(b)).toEqual([]);
+  });
+
+  it('the quick-access bar takes pads of the pool, each once, up to 5, at the end', () => {
+    let b = emptyBoard();
+    for (const id of ['a', 'b', 'c', 'd', 'e', 'f']) b = addPadToPool(b, single(id));
+    for (const id of ['c', 'a', 'c', 'b', 'd', 'e', 'f']) b = addToQuickAccess(b, id);
+    expect(b.quickAccess.map((q) => q.padId)).toEqual(['c', 'a', 'b', 'd', 'e']);
+    expect(QUICK_ACCESS_MAX).toBe(5);
+    expect(addToQuickAccess(b, 'f')).toBe(b); // full: the same board
+    expect(addToQuickAccess(b, 'ghost')).toBe(b); // not in the pool
+    expect(boardProblems(b)).toEqual([]);
+  });
+
+  it('a pad leaves the quick-access bar with its key; the others keep their place', () => {
+    let b = emptyBoard();
+    for (const id of ['a', 'b']) b = addToQuickAccess(addPadToPool(b, single(id)), id);
+    b = {
+      ...b,
+      quickAccess: [
+        { padId: 'a', hotkey: 'Q1' },
+        { padId: 'b', hotkey: 'Q2' },
+      ],
+    };
+    const without = removeFromQuickAccess(b, 'a');
+    expect(without.quickAccess).toEqual([{ padId: 'b', hotkey: 'Q2' }]);
+    expect(without.pads.map((p) => p.id)).toEqual(['a', 'b']); // the pad stays in the pool
+    expect(removeFromQuickAccess(without, 'a')).toBe(without);
   });
 
   it('deleting an unknown pad changes nothing', () => {
