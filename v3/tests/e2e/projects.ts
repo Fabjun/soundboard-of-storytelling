@@ -47,6 +47,7 @@ export const FULL_TESTS = [
   'a11y',
   'board-frames',
   'deck-switcher',
+  'pad-search',
 ];
 
 /**
@@ -75,6 +76,7 @@ export const FULL_WEBKIT_TESTS = [
   'system-gestures',
   'board-frames',
   'deck-switcher',
+  'pad-search',
 ];
 
 /** tests/e2e/mobile/<name>.spec.ts — audio-free, WebKit / iPhone 13 Pro (real Safari engine path). */

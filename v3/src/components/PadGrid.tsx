@@ -20,6 +20,7 @@ import type { AppMode, Board, Pad, PadPosition, Deck } from '../types';
 import {
   DEFAULT_GRID,
   addPadToDeck,
+  deckLayoutInOrder,
   deckPads,
   poolByName,
   poolLayout,
@@ -45,6 +46,12 @@ interface PadGridProps {
   deck: Deck | null;
   /** All pads view: the pool in the order chosen (padSort.ts); by name when not given. */
   poolOrder?: readonly Pad[];
+  /**
+   * A deck while a search or a sort is active (Slice 13c): its pads in this order, flowing without
+   * gaps, each with its key; pads cannot be moved meanwhile
+   * (docs/product/README.md#board-decks--quick-access). Absent: the arrangement.
+   */
+  deckOrder?: readonly Pad[];
   board: Board;
   mode: AppMode;
   selectedPadId: string | null;
@@ -65,6 +72,7 @@ interface PadGridProps {
 export function PadGrid({
   deck,
   poolOrder,
+  deckOrder,
   board,
   mode,
   selectedPadId,
@@ -75,15 +83,19 @@ export function PadGrid({
   padSizePreview,
 }: PadGridProps): JSX.Element {
   const isPool = deck === null;
-  const entries = deck
-    ? deckPads(board, deck)
-    : poolLayout(poolOrder ?? poolByName(board), DEFAULT_GRID.cols);
+  // The pool, and a searched or sorted deck, flow without gaps; a deck's arrangement has its cells
+  const flowing = isPool || deckOrder !== undefined;
   const cols = deck ? deck.gridConfig.cols : DEFAULT_GRID.cols;
-  const rows = deck ? deck.gridConfig.rows : Math.ceil(entries.length / cols);
+  const entries = !deck
+    ? poolLayout(poolOrder ?? poolByName(board), cols)
+    : deckOrder
+      ? deckLayoutInOrder(deck, deckOrder, cols)
+      : deckPads(board, deck);
+  const rows = flowing ? Math.ceil(entries.length / cols) : deck!.gridConfig.rows;
   const gap = deck ? deck.gridConfig.gap : DEFAULT_GRID.gap;
   const isSetup = mode === 'edit';
-  // Moving and creating pads happens in a deck; the pool view only selects and plays.
-  const canArrange = isSetup && !isPool;
+  // Moving and creating pads happens in a deck's arrangement; a flowing view only selects and plays.
+  const canArrange = isSetup && !flowing;
 
   // As many columns as keep every pad at or below the board's pad size (ADR-0075): the places flow
   // in reading order, so a row always fills the width and the grid only scrolls downwards. Null
@@ -183,7 +195,7 @@ export function PadGrid({
       <div
         ref={gridRef}
         class={
-          'sb-pad-grid' + (isPool ? ' sb-pad-grid-pool' : '') + (canArrange ? ' sb-grid-bg' : '')
+          'sb-pad-grid' + (flowing ? ' sb-pad-grid-pool' : '') + (canArrange ? ' sb-grid-bg' : '')
         }
         data-testid="pad-grid"
         // All pads: the whole grid is one library drop target (position ignored; libDnd looks
@@ -201,8 +213,8 @@ export function PadGrid({
             const key = `${col},${row}`;
             const entry = padMap.get(key);
             const pad = entry?.pad ?? null;
-            // The pool has no empty cells: the last row simply ends.
-            if (isPool && !pad) return null;
+            // A flowing view has no empty cells: the last row simply ends.
+            if (flowing && !pad) return null;
             return (
               <PadGridCell
                 key={key}
@@ -213,7 +225,7 @@ export function PadGrid({
                 col={col}
                 row={row}
                 selected={!!pad && pad.id === selectedPadId}
-                cellRef={isPool ? undefined : (el) => registerCellRef(key, el)}
+                cellRef={flowing ? undefined : (el) => registerCellRef(key, el)}
                 onEmpty={(rect) => {
                   // Place-Mode (Path B mobile): tap → place library item
                   if (placeMode && onPlaceModeTap) {

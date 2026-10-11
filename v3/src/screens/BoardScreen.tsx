@@ -42,7 +42,8 @@ import {
   setLastView,
   setPadSort,
 } from '../state/prefs';
-import { PAD_SORT_KEYS, PAD_SORT_LABELS, sortPads } from '../lib/padSort';
+import { PAD_SORT_KEYS, PAD_SORT_LABELS, sortPads, type PadSort } from '../lib/padSort';
+import { searchPads } from '../lib/padSearch';
 import { BoardTopBar } from '../components/BoardTopBar';
 import { DeckRail } from '../components/DeckRail';
 import { PadGrid } from '../components/PadGrid';
@@ -61,6 +62,7 @@ import {
   addPadToFreeCell,
   addPadToPool,
   deckCount,
+  deckPadsInOrder,
   deletePad,
   nextDeckName,
   removeFromDeck,
@@ -87,6 +89,22 @@ export function BoardScreen(): JSX.Element {
   const [padSizePreview, setPadSizePreview] = useState<number | null>(null);
   /** Mobile Place-Mode: non-null while user is tapping a slot to place a library item. */
   const [placeMode, setPlaceMode] = useState<{ itemId: string } | null>(null);
+  // Search and a deck's sort belong to the view they were made in: another view starts without
+  // them, so a deck shows its saved arrangement again (docs/product/README.md#board-decks--quick-access).
+  // They are cleared while rendering the new view, not in an effect: an effect runs after the
+  // frame and wiped what was typed right after a switch (found by a repeated E2E run) — react.dev,
+  // "You Might Not Need an Effect", "Adjusting some state when a prop changes".
+  const viewKey = poolView ? 'all-pads' : (deck?.id ?? '');
+  /** The search in the current view (Slice 13c) — empty: every pad. */
+  const [search, setSearch] = useState('');
+  /** A deck's sort while it is chosen — null: the deck's own arrangement (temporary). */
+  const [deckSort, setDeckSort] = useState<PadSort | null>(null);
+  const [shownView, setShownView] = useState(viewKey);
+  if (shownView !== viewKey) {
+    setShownView(viewKey);
+    setSearch('');
+    setDeckSort(null);
+  }
 
   // Open the board in the view it showed last (owner decision 2026-10-02): a deck that still
   // exists, or All pads; otherwise the first deck.
@@ -238,13 +256,23 @@ export function BoardScreen(): JSX.Element {
   void prefsVersion.value; // re-render when a preference changes (sort choice, last played)
   const padSort = getPadSort(board.id);
   const durations = new Map(libraryItems.value.map((m) => [m.id, m.duration]));
-  const sortedPool = poolView
-    ? sortPads(board.pads, padSort, {
-        deckCount: (id) => deckCount(board, id),
-        fileDuration: (id) => durations.get(id),
-        lastPlayed: getLastPlayed,
-      })
-    : [];
+  const sortContext = {
+    deckCount: (id: string) => deckCount(board, id),
+    fileDuration: (id: string) => durations.get(id),
+    lastPlayed: getLastPlayed,
+  };
+  const sortedPool = poolView ? searchPads(sortPads(board.pads, padSort, sortContext), search) : [];
+  // A deck while a search or a sort is active: its pads in that order (Slice 13c); otherwise
+  // undefined — the deck shows its arrangement and its pads can be moved
+  const deckOrder =
+    deck && (search.trim() !== '' || deckSort)
+      ? searchPads(
+          deckSort
+            ? sortPads(deckPadsInOrder(board, deck), deckSort, sortContext)
+            : deckPadsInOrder(board, deck),
+          search,
+        )
+      : undefined;
 
   // ── Empty Board state ──────────────────────────────────────────────────────
 
@@ -259,6 +287,70 @@ export function BoardScreen(): JSX.Element {
       : null;
 
   // ── Layout ─────────────────────────────────────────────────────────────────
+
+  // A search that finds nothing says so, in plain words (Nielsen 9) — the grid alone would just
+  // be empty
+  const shownCount = poolView ? sortedPool.length : (deckOrder?.length ?? null);
+  const noMatch = search.trim() !== '' && shownCount === 0 && (
+    <div class="sb-center-placeholder" data-testid="board-screen-no-match-text">
+      No pad here has &quot;{search.trim()}&quot; in its name.
+    </div>
+  );
+
+  /**
+   * Search and sort above the grid (Slice 13c, docs/product/README.md#board-decks--quick-access) —
+   * one bar for All pads and the decks.
+   * All pads: the sort is stored per board (Finder-style, E1). A deck: its arrangement unless a
+   * sort is chosen, which lasts until the view changes; "Not in a deck first" means nothing there.
+   */
+  const padToolbar = () => {
+    const sort = poolView ? padSort : deckSort;
+    const keys = poolView ? PAD_SORT_KEYS : PAD_SORT_KEYS.filter((k) => k !== 'unplaced');
+    const choose = (next: PadSort | null) =>
+      poolView ? next && setPadSort(board.id, next) : setDeckSort(next);
+    return (
+      <div class="sb-pool-toolbar">
+        <input
+          type="search"
+          class="sb-text-input sb-flex-1"
+          data-testid="board-screen-search-input"
+          aria-label="Search pads by name"
+          placeholder="Search"
+          value={search}
+          onInput={(e) => setSearch(e.currentTarget.value)}
+        />
+        {/* Sort, Finder-style: a key with its natural direction, reversible */}
+        <select
+          class="sb-text-input"
+          data-testid="board-screen-sort-input"
+          aria-label="Sort pads by"
+          value={sort?.key ?? ''}
+          onChange={(e) => {
+            const key = keys.find((k) => k === e.currentTarget.value);
+            choose(key ? { key, reversed: false } : null);
+          }}
+        >
+          {!poolView && <option value="">Arrangement</option>}
+          {keys.map((k) => (
+            <option key={k} value={k}>
+              {PAD_SORT_LABELS[k]}
+            </option>
+          ))}
+        </select>
+        {sort && (
+          <button
+            class="sb-btn sb-btn-sm sb-btn-ghost"
+            data-testid="board-screen-reverse-button"
+            aria-label="Reverse the order"
+            aria-pressed={sort.reversed}
+            onClick={() => choose({ ...sort, reversed: !sort.reversed })}
+          >
+            {sort.reversed ? '↑' : '↓'}
+          </button>
+        )}
+      </div>
+    );
+  };
 
   /** The deck switcher — the rail on the left (wide frame) or tabs above the grid (narrow). */
   const deckSwitcher = (variant: 'rail' | 'tabs') => (
@@ -328,36 +420,8 @@ export function BoardScreen(): JSX.Element {
               </div>
             ) : (
               <>
-                {/* Sort, Finder-style: a key with its natural direction, reversible; per board */}
-                <div class="sb-pool-toolbar">
-                  <select
-                    class="sb-text-input"
-                    data-testid="board-screen-sort-input"
-                    aria-label="Sort pads by"
-                    value={padSort.key}
-                    onChange={(e) => {
-                      const key = PAD_SORT_KEYS.find((k) => k === e.currentTarget.value);
-                      if (key) setPadSort(board.id, { key, reversed: false });
-                    }}
-                  >
-                    {PAD_SORT_KEYS.map((k) => (
-                      <option key={k} value={k}>
-                        {PAD_SORT_LABELS[k]}
-                      </option>
-                    ))}
-                  </select>
-                  <button
-                    class="sb-btn sb-btn-sm sb-btn-ghost"
-                    data-testid="board-screen-reverse-button"
-                    aria-label="Reverse the order"
-                    aria-pressed={padSort.reversed}
-                    onClick={() =>
-                      setPadSort(board.id, { ...padSort, reversed: !padSort.reversed })
-                    }
-                  >
-                    {padSort.reversed ? '↑' : '↓'}
-                  </button>
-                </div>
+                {padToolbar()}
+                {noMatch}
                 <PadGrid
                   deck={null}
                   poolOrder={sortedPool}
@@ -384,6 +448,8 @@ export function BoardScreen(): JSX.Element {
             <div class="sb-center-placeholder">Select a deck</div>
           ) : (
             <>
+              {deck.placements.length > 0 && padToolbar()}
+              {noMatch}
               {/* Path B Mobile — Place-Mode banner */}
               {placeMode && (
                 <div class="sb-place-banner">
@@ -401,6 +467,7 @@ export function BoardScreen(): JSX.Element {
               )}
               <PadGrid
                 deck={deck}
+                deckOrder={deckOrder}
                 board={board}
                 mode={mode}
                 selectedPadId={selectedPadId}

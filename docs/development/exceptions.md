@@ -31,7 +31,7 @@ Inline: `// eslint-disable-next-line <rule> -- <reason>` (enforced by `require-d
 | Location                               | Rule                                      | Reason                                                                                                               |
 | -------------------------------------- | ----------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
 | `v3/src/components/IconPicker.tsx:263` | `react-hooks/exhaustive-deps`             | measured after every layout (as TanStack's adapter updates the virtualizer); setShape runs only when a value changed |
-| `v3/src/screens/BoardScreen.tsx:104`   | `react-hooks/exhaustive-deps`             | auto-select only on board identity change, never override the user's deck choice                                     |
+| `v3/src/screens/BoardScreen.tsx:122`   | `react-hooks/exhaustive-deps`             | auto-select only on board identity change, never override the user's deck choice                                     |
 | `v3/tests/e2e/deck-crud.spec.ts:76`    | `playwright/no-skipped-test`              | quarantine: feature not built (BACKLOG "Deck reorder")                                                               |
 | `v3/eslint.config.js:21`               | `@typescript-eslint/no-unused-vars` (off) | tsc noUnusedLocals/noUnusedParameters report it                                                                      |
 
