@@ -52,7 +52,8 @@ export function LibraryPanel({
   const sorted = [...filtered].sort((a, b) => b.addedAt - a.addedAt);
 
   return (
-    <div class="sb-library-panel">
+    // A named region: screen readers can jump to it, and tests find it by role and name
+    <div class="sb-library-panel" role="region" aria-label="Library">
       {/* Header */}
       <div class="sb-panel-header is-active">
         <PixelIcon name="book" size={12} />
@@ -60,7 +61,8 @@ export function LibraryPanel({
         <button
           class="sb-btn sb-btn-sm sb-btn-ghost sb-btn-icon"
           onClick={onClose}
-          title="Close library panel"
+          aria-label="Close the library"
+          title="Close the library"
         >
           ×
         </button>

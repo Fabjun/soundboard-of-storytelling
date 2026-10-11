@@ -17,10 +17,18 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.221';
+export const APP_VERSION = '3.0.222';
 
 /** The developer log, newest first; CHANGELOG.md is generated from it (sync-changelog). */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.222',
+    date: '2026-10-12',
+    items: [
+      'a11y(library): the library panel is a named region ("Library") screen readers can jump to; its × is named "Close the library" (it was only "×", a title is no name); the LIB button\'s tooltip says the same as its name',
+      'test: the toggle audit of 2026-10-11 ("Toggles and views", testing.md) — the PAD editor\'s deck checklist unchecks the deck the editor was opened from (the editor stays; checking puts it back); the library panel opens and closes with LIB and closes with its ×; both counter-checked. Lock, deck list, DECKS, pause, preview, icon categories, the deck menu and ★ already had their on / off test',
+    ],
+  },
   {
     version: '3.0.221',
     date: '2026-10-11',

@@ -217,3 +217,45 @@ test('All pads sorts by name, by date added and reversed; the choice stays with 
   await expect.poll(order).toEqual(['Bravo', 'Alpha', 'Charlie']);
   await expect(page.getByTestId('board-screen-sort-input')).toHaveValue('added');
 });
+
+// A toggle on and off in the same open view; every entry path × every action
+// (docs/development/testing.md#test-design-edge-case-checklist, "Toggles and views")
+
+test('unchecking the deck the editor was opened from keeps the editor open; checking puts it back', async ({
+  page,
+}) => {
+  const [deck1] = await twoDecks(page);
+  await tabs(page).first().click();
+  const cell = await addPadCell(page, 'Thunder');
+  const own = page.getByTestId(`pad-editor-panel-deck-input-${deck1}`);
+  await expect(own).toBeChecked();
+
+  await own.uncheck();
+  await expect(own).not.toBeChecked();
+  await expect(page.getByRole('dialog', { name: 'Pad editor' })).toBeVisible();
+  await own.check();
+  await expect(own).toBeChecked();
+
+  await closePadEditor(page);
+  await expect(page.getByTestId(cell)).toBeVisible();
+});
+
+test('the library panel opens and closes with LIB, and closes with its ×', async ({ page }) => {
+  await page.getByTestId('deck-rail-new-button').click();
+  const lib = page
+    .getByTestId('board-top-bar')
+    .getByRole('button', { name: /^(Open|Close) the library$/ });
+  const panel = page.getByRole('region', { name: 'Library' });
+
+  await lib.click();
+  await expect(lib).toHaveAttribute('aria-pressed', 'true');
+  await expect(panel).toBeVisible();
+  await lib.click();
+  await expect(lib).toHaveAttribute('aria-pressed', 'false');
+  await expect(panel).toHaveCount(0);
+
+  await lib.click();
+  await panel.getByRole('button', { name: 'Close the library' }).click();
+  await expect(panel).toHaveCount(0);
+  await expect(lib).toHaveAttribute('aria-pressed', 'false');
+});

@@ -7,6 +7,16 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.222 — 2026-10-12
+
+### Changed
+
+- a11y(library): the library panel is a named region ("Library") screen readers can jump to; its × is named "Close the library" (it was only "×", a title is no name); the LIB button's tooltip says the same as its name
+
+### Internal
+
+- test: the toggle audit of 2026-10-11 ("Toggles and views", testing.md) — the PAD editor's deck checklist unchecks the deck the editor was opened from (the editor stays; checking puts it back); the library panel opens and closes with LIB and closes with its ×; both counter-checked. Lock, deck list, DECKS, pause, preview, icon categories, the deck menu and ★ already had their on / off test
+
 ## 3.0.221 — 2026-10-11
 
 ### Fixed

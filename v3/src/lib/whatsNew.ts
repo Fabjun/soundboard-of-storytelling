@@ -101,6 +101,12 @@ export function withEarlyVersions(
 /** The release notes the start screen shows, newest first (checked by whatsNew.test.ts). */
 export const WHATS_NEW: WhatsNewNotes[] = [
   {
+    version: '3.0.222',
+    improved: [
+      'Screen readers find the library panel as a region of its own, and its close button says what it does.',
+    ],
+  },
+  {
     version: '3.0.221',
     fixed: [
       'The ★ in the pad editor takes a pad out of the quick-access bar again in every case; the editor stays open with the pad.',
