@@ -315,6 +315,20 @@ describe('guard: E2E locators and spec names (ADR-0054)', () => {
     expect(bad, 'use getByRole / getByText / getByTestId instead of CSS classes').toEqual([]);
   });
 
+  // 2026-10-12: three specs located the LIB button by its tooltip; aligning the tooltip with the
+  // button's name broke them — a tooltip is no accessible name and may change on its own
+  it('never locates by tooltip (getByTitle)', () => {
+    const bad: string[] = [];
+    for (const f of files) {
+      readFileSync(f, 'utf8')
+        .split('\n')
+        .forEach((line, i) => {
+          if (/\bgetByTitle\(/.test(line)) bad.push(`${relative(E2E, f)}:${i + 1}`);
+        });
+    }
+    expect(bad, 'use getByRole with the accessible name instead of the tooltip').toEqual([]);
+  });
+
   it('names specs in kebab-case without a folder prefix, helpers as helpers.ts', () => {
     const bad = files
       .map((f) => relative(E2E, f).split('\\').join('/'))

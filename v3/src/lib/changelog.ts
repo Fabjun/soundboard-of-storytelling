@@ -27,6 +27,7 @@ export const CHANGELOG: ChangelogEntry[] = [
     items: [
       'a11y(library): the library panel is a named region ("Library") screen readers can jump to; its × is named "Close the library" (it was only "×", a title is no name); the LIB button\'s tooltip says the same as its name',
       'test: the toggle audit of 2026-10-11 ("Toggles and views", testing.md) — the PAD editor\'s deck checklist unchecks the deck the editor was opened from (the editor stays; checking puts it back); the library panel opens and closes with LIB and closes with its ×; both counter-checked. Lock, deck list, DECKS, pause, preview, icon categories, the deck menu and ★ already had their on / off test',
+      'test: three specs located the LIB button by its tooltip and broke when the tooltip was aligned with the name (found by the pre-push gate) — they use getByRole with the name now; codeGuards: E2E specs never locate by tooltip (getByTitle), counter-checked',
     ],
   },
   {

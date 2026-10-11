@@ -164,7 +164,7 @@ test('a library file dropped on All pads becomes a pad in no deck', async ({ pag
   await reopenFirstBoard(page);
   await enterSetupMode(page);
   await page.getByTestId('deck-rail-all-pads-tab').click();
-  await page.getByTitle('Open library panel').click();
+  await page.getByRole('button', { name: 'Open the library' }).click();
   const row = page
     .locator('[data-testid^="library-panel-row-"]')
     .filter({ hasText: TEST_AUDIO_NAME })
