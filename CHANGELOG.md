@@ -18,6 +18,7 @@ release notes the app shows are written separately for its users (`v3/src/lib/wh
 
 - test: unit tests moveDeck (down, up, the gap kept, out of range, unchanged board, nothing else changed) and deckDropIndex (ends, between rows, its own place, exactly on a center, one deck); E2E deck-crud 9 out of quarantine — drag and reopen — with 9b ▲ / ▼ and 9c only the active deck in SETUP, deck-switcher on a phone (▲ in the DECKS list, 44 px, the tab row follows); each counter-checked, in Chromium and WebKit
 - docs: BACKLOG "Deck reorder" done, new entry "Small icon buttons below the 44 px touch target" (sb-btn-icon 28 px, found while measuring); adaptive-layout L6 built; testing pitfall 5; iPhone checklist "Decks move by touch"
+- docs: the owner decided the reorder details on 2026-10-11 (R1 only the active deck moves, R2 on a phone in the DECKS list, R3 a 44 px handle) and a "⋯" menu for the deck actions instead of the 28 px buttons — recorded in the BACKLOG and adaptive-layout L6
 
 ## 3.0.216 — 2026-10-11
 

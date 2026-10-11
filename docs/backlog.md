@@ -50,7 +50,8 @@ would leave about 50 px for the deck name.
 **Owner decision 2026-10-11:** ▲ / ▼ at the deck in SETUP (the file list's scheme) and drag &
 drop, both in step 13g (`docs/product/features/adaptive-layout.md` L6). The room for the name is
 a constraint of the build: the buttons may not cut the deck name off (CLAUDE.md UI rules).
-**Built in 3.0.217 (step 13g; the details below are proposed to the owner in its pull request):**
+**Built in 3.0.217 (step 13g; the details below decided by the owner on 2026-10-11 — R1 only
+the active deck moves, R2 on a phone in the DECKS list, R3 a 44 px handle):**
 measured in the 220 px rail — next to its three action buttons the active deck's name has 58 px,
 another deck's 156 px. So the active deck in SETUP gets a line of its own under its row: a drag
 handle ⣿ (44 px, takes the pointer — the list scrolls everywhere else, the handle pattern of
@@ -64,9 +65,12 @@ Found 2026-10-11 while building the deck reorder (Slice 13g): `sb-btn-icon` sets
 `sb-btn-icon-sm` 36 px, below the project's 44 px minimum (CLAUDE.md UI rules; the global rule in
 `v3/src/styles/global.css` gives every button 44 px, these classes undercut it). Measured: the
 deck rail's rename, duplicate and delete buttons are 28 px wide. No check caught it — the touch
-target spec measures other controls.
-**When:** Slice 13 structure review — make the classes keep 44 px where the layout allows, and a
-check that measures every visible button (a guard, so the next one cannot slip in).
+target spec measures other controls. Three 44 px buttons would leave the active deck's name about
+14 px.
+**Owner decision 2026-10-11:** one 44 px "⋯" button opens a menu with rename, duplicate and
+delete (the per-item menu of Atlassian's Pragmatic drag and drop guidelines), plus a check that
+measures every visible button against 44 px.
+**When:** Slice 13 structure review, before the slice is closed.
 
 ### Pad names cut off on narrow screens ✅ Done (3.0.212)
 
