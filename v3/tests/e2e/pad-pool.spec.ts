@@ -24,6 +24,7 @@ import {
   reopenFirstBoard,
   addNamedPad,
   closePadEditor,
+  openDeckActions,
   padCells,
 } from './helpers';
 
@@ -83,7 +84,7 @@ test('delete pad shows its decks and removes it everywhere', async ({ page }) =>
 
   // Duplicate the deck: the copy places the same pad (ADR-0048)
   await closePadEditor(page);
-  await tabs(page).first().hover();
+  await openDeckActions(tabs(page).first());
   await tabs(page).first().locator('[data-testid^="deck-rail-copy-button-"]').click();
   await expect(tabs(page)).toHaveCount(2);
 

@@ -7,7 +7,7 @@
  *   - Deck tabs sorted by order
  *   - Active tab highlight
  *   - Inline rename (double-click)
- *   - Hover action chips (RENAME · COPY · ×) — desktop
+ *   - A "⋯" actions menu (rename, duplicate, delete) on hover and on the active deck (MenuButton)
  *   - Delete with confirmation + UndoToast
  *   - Duplicate: the copy places the same pads of the pool (shared, not copied) and appears
  *     directly after the original
@@ -44,6 +44,7 @@ import {
 import { nanoid } from '../lib/nanoid';
 import { PAD_SIZE } from '../lib/padSize';
 import { SliderRow } from './SliderRow';
+import { MenuButton } from './MenuButton';
 import { findConflictingDeck } from '../lib/deckConflict';
 import { DECK_DRAG_THRESHOLD, deckDropIndex } from '../lib/deckDnd';
 
@@ -381,53 +382,37 @@ export function DeckRail({
                   </button>
                 )}
 
-                {/* Action chips (visible on hover / active) */}
+                {/* The deck's actions behind one 44 px "⋯" (visible on hover / active; owner
+                    decision 2026-10-11 — three 28 px buttons were below the touch minimum) */}
                 {editingId !== deck.id && (
                   <div class="sb-deck-tab-actions">
-                    <button
-                      class="sb-btn sb-btn-sm sb-btn-ghost sb-btn-icon"
-                      data-testid={`deck-rail-rename-button-${deck.id}`}
-                      title="Rename deck"
-                      aria-label={`Rename deck ${deck.name}`}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        startRename(deck);
-                      }}
-                    >
-                      <PixelIcon name="edit" size={11} />
-                    </button>
-                    <button
-                      class="sb-btn sb-btn-sm sb-btn-ghost sb-btn-icon"
-                      data-testid={`deck-rail-copy-button-${deck.id}`}
-                      title="Duplicate deck"
-                      aria-label={`Duplicate deck ${deck.name}`}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        duplicateDeck(deck);
-                      }}
-                    >
-                      <PixelIcon name="save" size={11} />
-                    </button>
-                    <button
-                      class={`sb-btn sb-btn-sm sb-btn-icon ${pendingDeleteId === deck.id ? 'sb-btn-danger' : 'sb-btn-ghost'}`}
-                      data-testid={`deck-rail-delete-button-${deck.id}`}
-                      title={
-                        pendingDeleteId === deck.id
-                          ? 'Click again to confirm delete'
-                          : 'Delete deck'
-                      }
-                      aria-label={
-                        pendingDeleteId === deck.id
-                          ? `Delete deck ${deck.name} — press again to confirm`
-                          : `Delete deck ${deck.name}`
-                      }
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        requestDelete(deck);
-                      }}
-                    >
-                      {pendingDeleteId === deck.id ? '!!' : '×'}
-                    </button>
+                    <MenuButton
+                      label={`Actions for deck ${deck.name}`}
+                      testid={`deck-rail-actions-button-${deck.id}`}
+                      actions={[
+                        {
+                          label: 'Rename',
+                          testid: `deck-rail-rename-button-${deck.id}`,
+                          onSelect: () => startRename(deck),
+                        },
+                        {
+                          label: 'Duplicate',
+                          testid: `deck-rail-copy-button-${deck.id}`,
+                          onSelect: () => void duplicateDeck(deck),
+                        },
+                        {
+                          // 2-tap delete (CLAUDE.md UI rules): the first tap asks, the menu stays
+                          label: pendingDeleteId === deck.id ? 'Delete — tap again' : 'Delete',
+                          testid: `deck-rail-delete-button-${deck.id}`,
+                          danger: true,
+                          onSelect: () => {
+                            const asking = pendingDeleteId !== deck.id;
+                            void requestDelete(deck);
+                            return asking;
+                          },
+                        },
+                      ]}
+                    />
                   </div>
                 )}
               </div>

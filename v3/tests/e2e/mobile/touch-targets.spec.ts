@@ -19,7 +19,7 @@
  */
 
 import { test, expect, type Locator } from '@playwright/test';
-import { goToBoardList, createBoardAndNavigate, createDeck } from '../helpers';
+import { goToBoardList, createBoardAndNavigate, createDeck, enterSetupMode } from '../helpers';
 
 const MIN = 44;
 
@@ -94,4 +94,36 @@ test.describe('touch targets on a 390px phone', () => {
       'pad-grid-cell-empty-slot-0-0',
     );
   });
+});
+
+/**
+ * Every visible control of the board in SETUP, with the DECKS list open and a deck's "⋯" menu
+ * open, is at least 44 × 44 px (CLAUDE.md UI rules) — a sweep, so a new small button cannot slip
+ * in unnoticed (found 2026-10-11: the deck actions were 28 px; BACKLOG "Small icon buttons below
+ * the 44 px touch target"). The mode toggle's halves are only checked for their height above.
+ */
+test('BoardScreen: every visible control in SETUP is >= 44×44px', async ({ page }) => {
+  await page.goto('/soundboard-of-storytelling/');
+  await goToBoardList(page);
+  await createBoardAndNavigate(page);
+  await createDeck(page);
+  await enterSetupMode(page);
+  await page.getByTestId('deck-rail-manage-button').click();
+  const sheet = page.getByTestId('deck-rail-sheet-region');
+  await sheet.locator('[data-testid^="deck-rail-actions-button-"]').first().click();
+  await expect(sheet.getByRole('menu')).toBeVisible();
+
+  const small = await page.evaluate((min) => {
+    const skip = ['mode-toggle-setup-button', 'mode-toggle-game-button'];
+    return [...document.querySelectorAll<HTMLElement>('button, [role="button"], [role="menuitem"]')]
+      .filter((el) => !skip.includes(el.dataset.testid ?? ''))
+      .map((el) => ({ el, box: el.getBoundingClientRect() }))
+      .filter(({ box }) => box.width > 0 && box.height > 0)
+      .filter(({ box }) => box.width < min || box.height < min)
+      .map(
+        ({ el, box }) =>
+          `${el.dataset.testid ?? el.getAttribute('aria-label') ?? el.textContent?.trim()} ${Math.round(box.width)}×${Math.round(box.height)}`,
+      );
+  }, MIN);
+  expect(small, 'controls below 44 × 44 px').toEqual([]);
 });

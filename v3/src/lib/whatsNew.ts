@@ -101,6 +101,12 @@ export function withEarlyVersions(
 /** The release notes the start screen shows, newest first (checked by whatsNew.test.ts). */
 export const WHATS_NEW: WhatsNewNotes[] = [
   {
+    version: '3.0.218',
+    improved: [
+      'A deck’s actions — rename, duplicate, delete — are behind one larger "⋯" button that is easy to hit with a finger; delete still asks for a second tap. Other small icon buttons got the same touch size.',
+    ],
+  },
+  {
     version: '3.0.217',
     new: [
       'Decks can be put in a new order in SETUP: the selected deck moves with ▲ and ▼, or by dragging its ⣿ handle — in the deck list, and on a phone in the DECKS list.',

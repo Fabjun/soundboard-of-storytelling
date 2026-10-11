@@ -59,7 +59,7 @@ Atlassian's Pragmatic drag and drop) and ▲ / ▼. Only the active deck moves (
 it); on a phone the same line is in the DECKS list, the tab row itself is not dragged — it
 scrolls sideways. E2E test 9 runs again (9b ▲ / ▼, 9c only in SETUP; deck-switcher on a phone).
 
-### Small icon buttons below the 44 px touch target
+### Small icon buttons below the 44 px touch target ✅ Done (3.0.218)
 
 Found 2026-10-11 while building the deck reorder (Slice 13g): `sb-btn-icon` sets 28 px and
 `sb-btn-icon-sm` 36 px, below the project's 44 px minimum (CLAUDE.md UI rules; the global rule in
@@ -71,6 +71,10 @@ target spec measures other controls. Three 44 px buttons would leave the active 
 delete (the per-item menu of Atlassian's Pragmatic drag and drop guidelines), plus a check that
 measures every visible button against 44 px.
 **When:** Slice 13 structure review, before the slice is closed.
+**Built in 3.0.218:** `MenuButton` after the W3C menu button pattern (ADR-0083) holds the deck
+actions; `sb-btn-icon` and `sb-btn-icon-sm` keep 44 px now — the source, so their other uses (the
+PAD editor's ★, the key field, the library panel, the board list) follow; the touch-target spec
+sweeps every visible control of the board in SETUP, with the DECKS list and a menu open.
 
 ### Pad names cut off on narrow screens ✅ Done (3.0.212)
 
