@@ -82,6 +82,18 @@ npm run format:check || {
 }
 printf '✅ Format OK.\n\n'
 
+# Unit tests with the coverage floor, as CI runs them (2026-10-11): the pre-commit hook runs the
+# unit tests without coverage, so a drop below the floor first failed in CI (PR #98, functions
+# 95.88 % < 96 %).
+printf '📊 Pre-push: unit tests with the coverage floor (as in CI)...\n'
+npm run test:coverage || {
+  printf '\n❌ Unit tests or the coverage floor FAILED — push aborted.\n'
+  printf '   Below the floor: add unit tests — the floor in vitest.config.ts is never lowered.\n'
+  printf '   Deliberate bypass (ADR-0053 rules): git push --no-verify\n\n'
+  exit 1
+}
+printf '✅ Unit tests and coverage OK.\n\n'
+
 printf '🎭 Pre-push: full E2E suite (all dev-server projects) for CI parity...\n'
 printf '   Estimated: ~2-3 min. Bypass with: git push --no-verify\n\n'
 
