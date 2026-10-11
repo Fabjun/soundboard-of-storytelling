@@ -1,7 +1,7 @@
 # Adaptive layout
 
 > **Leaf of [docs/product/README.md](../README.md).** Filled 2026-10-10 in dialogue with the product
-> owner. Implementation is Slice 13, in the steps below; built so far: steps 13a (3.0.210), 13b (3.0.211), 13e without the card format (3.0.212), 13c (3.0.213) and 13d (3.0.214 the bar, 3.0.215 its keys).
+> owner. Implementation is Slice 13, in the steps below; built so far: steps 13a (3.0.210), 13b (3.0.211), 13e without the card format (3.0.212), 13c (3.0.213), 13d (3.0.214 the bar, 3.0.215 its keys) and 13f (3.0.216).
 > Architecture: [ADR-0045](../../architecture/0045-two-axis-adaptive-model.md) (one adaptive app,
 > axis 1 screen format, axis 2 input type).
 
@@ -26,7 +26,7 @@ to reach with one hand. Until this slice, real game nights run on laptop or tabl
 | L6  | Deck reorder: drag & drop together with a way to reorder without dragging (WCAG 2.2 SC 2.5.7), planned in step 13g — BACKLOG "Deck reorder (drag & drop) — feature not built". The way without dragging is **▲ / ▼** at the deck in SETUP, the scheme of the PAD editor's file list; both come in 13g (owner decision 2026-10-11). | **Decided**                                                                                           |
 | L7  | Search and sort sit in **one bar above the grid, in every view**; in a deck the sort offers every key of All pads plus **Arrangement** (the deck's own order), and lasts until it is set back or the view changes (owner decision 2026-10-10).                                                                                     | **Decided** — built in 3.0.213                                                                        |
 | L8  | The **quick-access bar** is V1's strip: **above the grid in every view**, up to **5 pads**, pinned with ★ in the PAD editor; a deck key and a quick-access key are never the same — the PAD editor refuses it and names the holder (K2, owner decision 2026-10-10).                                                                | **Decided** — built in 3.0.214, keys in 3.0.215                                                       |
-| L9  | **Now playing** is one line in the status bar (wide) and in the dock (narrow), as in V1: "N playing: a · b · c…" — the first three names, then … — or "No sound" when nothing plays; announced politely (`role="status"`). The pads keep their glow (owner decision 2026-10-11).                                                   | **Decided** — step 13f                                                                                |
+| L9  | **Now playing** is one line in the status bar (wide) and in the dock (narrow), as in V1: "N playing: a · b · c…" — the first three names, then … — or "No sound" when nothing plays; announced politely (`role="status"`). The pads keep their glow (owner decision 2026-10-11).                                                   | **Decided** — built in 3.0.216 (step 13f, `v3/src/lib/nowPlaying.ts`)                                 |
 
 ### Steps
 

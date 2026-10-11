@@ -49,6 +49,7 @@ export const FULL_TESTS = [
   'deck-switcher',
   'pad-search',
   'quick-access',
+  'now-playing',
 ];
 
 /**
