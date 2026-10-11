@@ -97,7 +97,7 @@ export function BoardTopBar({
         <button
           class={`sb-btn sb-btn-sm ${libraryOpen ? 'sb-btn-primary' : 'sb-btn-ghost'} sb-topbar-icon-btn`}
           onClick={onLibraryToggle}
-          title={libraryOpen ? 'Close library panel' : 'Open library panel'}
+          title={libraryOpen ? 'Close the library' : 'Open the library'}
           aria-label={libraryOpen ? 'Close the library' : 'Open the library'}
           aria-pressed={libraryOpen}
         >
