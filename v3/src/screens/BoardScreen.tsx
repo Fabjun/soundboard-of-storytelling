@@ -41,6 +41,8 @@ import {
   getPadSort,
   prefsVersion,
   setLastView,
+  isBarOpen,
+  setBarOpen,
   setPadSort,
 } from '../state/prefs';
 import { PAD_SORT_KEYS, PAD_SORT_LABELS, sortPads, type PadSort } from '../lib/padSort';
@@ -54,6 +56,7 @@ import { PadEditorPanel } from '../components/PadEditorPanel';
 import { LibraryPanel } from '../components/LibraryPanel';
 import { StatusBar } from '../components/StatusBar';
 import { LiveControls } from '../components/LiveControls';
+import { BarToggle } from '../components/BarToggle';
 import { PixelIcon } from '../components/PixelIcon';
 import { narrowWindow } from '../state/windowClass';
 import type { AppMode, Pad, PadPosition } from '../types';
@@ -314,7 +317,7 @@ export function BoardScreen(): JSX.Element {
     const choose = (next: PadSort | null) =>
       poolView ? next && setPadSort(board.id, next) : setDeckSort(next);
     return (
-      <div class="sb-pool-toolbar">
+      <div class="sb-pool-toolbar" id="board-screen-pad-toolbar">
         <input
           type="search"
           class="sb-text-input sb-flex-1"
@@ -357,11 +360,54 @@ export function BoardScreen(): JSX.Element {
     );
   };
 
+  // The bars that fold behind a toolbar icon (owner decision 2026-10-11); open until folded
+  const searchOpen = isBarOpen('search');
+  const quickAccessOpen = isBarOpen('quick-access');
+  const decksOpen = isBarOpen('decks');
+  // aria-controls names a bar only while it is in the page: an empty bar is not drawn
+  const searchShown = searchOpen && (poolView ? board.pads.length > 0 : !!deck?.placements.length);
+  const quickAccessShown = quickAccessOpen && board.quickAccess.length > 0;
+  /** The bar toggles: in the top bar on a wide window, at the end of the deck tabs on a phone. */
+  const barToggles = (withDecks: boolean) => (
+    <div class="sb-bar-toggles" role="group" aria-label="Bars">
+      <BarToggle
+        icon="search"
+        bar="search bar"
+        open={searchOpen}
+        marked={search.trim() !== '' || (!poolView && deckSort !== null)}
+        controls={searchShown ? 'board-screen-pad-toolbar' : undefined}
+        testid="board-screen-search-toggle-button"
+        onToggle={() => setBarOpen('search', !searchOpen)}
+      />
+      <BarToggle
+        icon="quickAccess"
+        bar="quick-access bar"
+        open={quickAccessOpen}
+        marked={board.quickAccess.length > 0}
+        controls={quickAccessShown ? 'quick-access-bar' : undefined}
+        testid="board-screen-quick-access-toggle-button"
+        onToggle={() => setBarOpen('quick-access', !quickAccessOpen)}
+      />
+      {withDecks && (
+        <BarToggle
+          icon="decks"
+          bar="deck tabs"
+          open={decksOpen}
+          controls="deck-rail-tabs"
+          testid="board-screen-decks-toggle-button"
+          onToggle={() => setBarOpen('decks', !decksOpen)}
+        />
+      )}
+    </div>
+  );
+
   /** The deck switcher — the rail on the left (wide frame) or tabs above the grid (narrow). */
   const deckSwitcher = (variant: 'rail' | 'tabs') => (
     <DeckRail
       variant={variant}
       manage={mode === 'edit'}
+      tabsShown={decksOpen}
+      tail={variant === 'tabs' ? barToggles(true) : undefined}
       board={board}
       activeDeckId={poolView ? null : currentDeckId.value}
       onDeckSelect={(id) => {
@@ -406,6 +452,7 @@ export function BoardScreen(): JSX.Element {
         onBack={() => {
           currentScreen.value = 'board-list';
         }}
+        toggles={narrowWindow.value ? undefined : barToggles(false)}
       />
 
       {/* Main content */}
@@ -418,7 +465,9 @@ export function BoardScreen(): JSX.Element {
           {/* Top: deck tabs (narrow frame, Slice 13b) */}
           {narrowWindow.value && deckSwitcher('tabs')}
           {/* Board-wide, the same in every view (Slice 13d) — shown while it holds a pad */}
-          <QuickAccessBar board={board} mode={mode} onPadSelect={handlePadSelect} />
+          {quickAccessOpen && (
+            <QuickAccessBar board={board} mode={mode} onPadSelect={handlePadSelect} />
+          )}
 
           {poolView ? (
             board.pads.length === 0 ? (
@@ -428,7 +477,7 @@ export function BoardScreen(): JSX.Element {
               </div>
             ) : (
               <>
-                {padToolbar()}
+                {searchOpen && padToolbar()}
                 {noMatch}
                 <PadGrid
                   deck={null}
@@ -456,7 +505,7 @@ export function BoardScreen(): JSX.Element {
             <div class="sb-center-placeholder">Select a deck</div>
           ) : (
             <>
-              {deck.placements.length > 0 && padToolbar()}
+              {searchOpen && deck.placements.length > 0 && padToolbar()}
               {noMatch}
               {/* Path B Mobile — Place-Mode banner */}
               {placeMode && (

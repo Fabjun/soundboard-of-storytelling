@@ -72,27 +72,28 @@ Base classes of the pixel frame family: `sb-pix`, `sb-card`, `sb-pad`, `sb-btn`,
 Currently registered state classes (short list also in
 [design-system-cheatsheet.md §Quick reminders](design-system-cheatsheet.md#quick-reminders)):
 
-| Class              | Meaning                            |
-| ------------------ | ---------------------------------- |
-| `is-active`        | Active element within a group      |
-| `is-on`            | Binary on state (toggle)           |
-| `is-hot`           | Audio is playing                   |
-| `is-setup`         | SETUP mode active                  |
-| `is-game`          | GAME mode active                   |
-| `is-danger`        | Destructive action (2-tap confirm) |
-| `is-conflict`      | Name conflict / invalid input      |
-| `is-raised`        | Raised surface (surface hierarchy) |
-| `is-italic`        | Italic rendering                   |
-| `is-loop`          | Loop context                       |
-| `is-playlist`      | Playlist context                   |
-| `is-combo`         | Combo context                      |
-| `is-deep`          | Opt-in for the pad depth stack     |
-| `is-compact`       | Compact rendering                  |
-| `is-looping`       | Pad is currently looping           |
-| `is-drag-source`   | DnD: this pad is being dragged     |
-| `is-drag-swap`     | DnD target: swap with this pad     |
-| `is-insert-before` | DnD target: insert before this pad |
-| `is-insert-after`  | DnD target: insert after this pad  |
+| Class              | Meaning                                                           |
+| ------------------ | ----------------------------------------------------------------- |
+| `is-active`        | Active element within a group                                     |
+| `is-on`            | Binary on state (toggle)                                          |
+| `is-hot`           | Audio is playing                                                  |
+| `is-setup`         | SETUP mode active                                                 |
+| `is-game`          | GAME mode active                                                  |
+| `is-danger`        | Destructive action (2-tap confirm)                                |
+| `is-conflict`      | Name conflict / invalid input                                     |
+| `is-raised`        | Raised surface (surface hierarchy)                                |
+| `is-italic`        | Italic rendering                                                  |
+| `is-loop`          | Loop context                                                      |
+| `is-playlist`      | Playlist context                                                  |
+| `is-combo`         | Combo context                                                     |
+| `is-deep`          | Opt-in for the pad depth stack                                    |
+| `is-compact`       | Compact rendering                                                 |
+| `is-looping`       | Pad is currently looping                                          |
+| `is-drag-source`   | DnD: this pad is being dragged                                    |
+| `is-drag-swap`     | DnD target: swap with this pad                                    |
+| `is-insert-before` | DnD target: insert before this pad                                |
+| `is-insert-after`  | DnD target: insert after this pad                                 |
+| `has-marker`       | A folded bar holds something in effect (its toggle carries a dot) |
 
 Add new state classes here **before** they are used in code. `has-*` classes (e.g. `has-divider`) are allowed as state classes too (ADR-0052).
 
@@ -171,6 +172,7 @@ also in [§6](#6-component-inventory)):
 | `sb-audio-row-delete-btn`      | Bare 44×44px delete button in AudioRow — centered flex icon container, no background, pointer cursor. Border and color set inline for deleteStep confirm state (2-tap confirmation pattern).                                                                                                                                                                                      | `v3/src/styles/components.css` |
 | `sb-audio-row-name`            | Display-state name span in RenameField within AudioRow — font-ui fs-sm, click-to-edit cursor, block display with ellipsis truncation. Truncation is context-bound (inseparable from the element's function), not a utility add-on.                                                                                                                                                | `v3/src/styles/components.css` |
 | `sb-audio-row-rename`          | Editing-state input in RenameField within AudioRow — font-ui fs-sm (14px), sunk background, strong border. Distinct from sb-row-rename-input (fs-lg/18px, uppercase for board names).                                                                                                                                                                                             | `v3/src/styles/components.css` |
+| `sb-bar-toggles`               | The bar toggles of the board (search, quick access, decks) as one row — in the top bar on a wide window, at the end of the deck tabs on a phone.                                                                                                                                                                                                                                  | `v3/src/styles/components.css` |
 | `sb-board-body`                | 3-column content row in BoardScreen — fills space between TopBar and StatusBar, flex row with overflow containment.                                                                                                                                                                                                                                                               | `v3/src/styles/components.css` |
 | `sb-board-list-area`           | Scrollable board list container in BoardListScreen — flex column fill with iOS-touch scroll and overscroll containment.                                                                                                                                                                                                                                                           | `v3/src/styles/components.css` |
 | `sb-board-main`                | Center column of BoardScreen 3-col layout — flex column fill with min-width:0 (allows inner content to shrink) and overflow containment.                                                                                                                                                                                                                                          | `v3/src/styles/components.css` |
@@ -360,6 +362,7 @@ also in [§6](#6-component-inventory)):
 | `sb-toast-message`             | Message text span inside a toast — mono 13px (sub-token between xs/sm, intentional toast sizing), dim color.                                                                                                                                                                                                                                                                      | `v3/src/styles/components.css` |
 | `sb-toast-progress`            | Animated gold progress bar at the bottom of a timed toast (linear shrink over --toast-duration).                                                                                                                                                                                                                                                                                  | `v3/src/styles/components.css` |
 | `sb-toggle`                    | Binary on/off toggle switch (40×20px); is-on moves thumb right and adds gold glow. Currently no TSX usage. [unused-css]                                                                                                                                                                                                                                                           | `v3/src/styles/components.css` |
+| `sb-toolbar-icon`              | A board toolbar icon from the pad icon collection (2026-10-11: Lock, search, quick access, decks) — 1rem square, drawn in the text color.                                                                                                                                                                                                                                         | `v3/src/styles/components.css` |
 | `sb-topbar`                    | Root container for TopBar — flex row, 48px height, deep bg, bottom border. Uses flex (vs sb-board-topbar's grid). Sub-token padding: 10px/16px (no exact token match).                                                                                                                                                                                                            | `v3/src/styles/components.css` |
 | `sb-topbar-bc-col`             | Breadcrumb column flex wrapper in BoardTopBar — stacks board name above deck name, min-width:0 for truncation.                                                                                                                                                                                                                                                                    | `v3/src/styles/components.css` |
 | `sb-topbar-icon-btn`           | Icon button size override in the board top bar — 44px min-width (iOS touch target), 0/space-2 padding, space-1 gap for icon+label. 3-use: back button, STOP ALL, library toggle.                                                                                                                                                                                                  | `v3/src/styles/components.css` |

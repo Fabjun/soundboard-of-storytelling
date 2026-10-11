@@ -41,6 +41,7 @@ export function QuickAccessBar({
   return (
     <div
       class="sb-quick-access"
+      id="quick-access-bar"
       role="group"
       aria-label="Quick access"
       data-testid="quick-access-bar"

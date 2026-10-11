@@ -151,20 +151,25 @@ describe('catalog and collection', () => {
     expect(sets.flatMap(keysOf).filter((k) => BRANDS.test(k.split(':')[1]))).toEqual([]);
   });
 
-  it('each placeholder in the start bundle is the drawing of its key in the collection', () => {
-    const placeholders = JSON.parse(readFileSync(join(DIR, 'placeholders.json'), 'utf8')) as Record<
-      string,
-      { key: string; d: string; size: number }
-    >;
-    const problems = Object.entries(placeholders).flatMap(([type, { key, d, size }]) => {
-      const [prefix, name] = key.split(':');
-      const set = sets.find((s) => s.prefix === prefix);
-      const body = set?.icons[name]?.body;
-      return body === `<path fill="currentColor" d="${d}"/>` && set?.width === size
-        ? []
-        : [`${type}: ${key}`];
-    });
-    // Every pad type has one: PadIcons types the file as Record<PadType, …>, checked by tsc
-    expect(problems).toEqual([]);
-  });
+  // The placeholders and the board toolbar's icons (2026-10-11) are copied into the start bundle
+  it.each(['placeholders.json', 'toolbar.json'])(
+    'each icon of %s in the start bundle is the drawing of its key in the collection',
+    (file) => {
+      const bundled = JSON.parse(readFileSync(join(DIR, file), 'utf8')) as Record<
+        string,
+        { key: string; d: string; size: number }
+      >;
+      const problems = Object.entries(bundled).flatMap(([use, { key, d, size }]) => {
+        const [prefix, name] = key.split(':');
+        const set = sets.find((s) => s.prefix === prefix);
+        const body = set?.icons[name]?.body;
+        return body === `<path fill="currentColor" d="${d}"/>` && set?.width === size
+          ? []
+          : [`${use}: ${key}`];
+      });
+      // Every use has one: the components type the file's keys, checked by tsc
+      expect(Object.keys(bundled).length).toBeGreaterThan(0);
+      expect(problems).toEqual([]);
+    },
+  );
 });

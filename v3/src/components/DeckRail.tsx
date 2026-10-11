@@ -26,7 +26,7 @@
  */
 
 import { useEffect, useState, useRef } from 'preact/hooks';
-import type { JSX } from 'preact';
+import type { ComponentChildren, JSX } from 'preact';
 import type { Deck, Board } from '../types';
 import { PixelIcon } from './PixelIcon';
 import { UndoToast } from './UndoToast';
@@ -66,6 +66,10 @@ interface DeckRailProps {
   variant?: 'rail' | 'tabs';
   /** SETUP: the tabs show the DECKS button that opens the deck actions; the active deck can move. */
   manage?: boolean;
+  /** Tabs only: false folds the tabs (the bar toggle with the hand of cards); DECKS and `tail` stay. */
+  tabsShown?: boolean;
+  /** Tabs only: shown at the end of the row — the board's bar toggles on a phone. */
+  tail?: ComponentChildren;
 }
 
 /**
@@ -82,6 +86,8 @@ export function DeckRail({
   padSize,
   variant = 'rail',
   manage = false,
+  tabsShown = true,
+  tail,
 }: DeckRailProps): JSX.Element {
   // Starts folded, so the pads get the width (owner decision 2026-10-05); for the tabs: the
   // DECKS panel starts closed
@@ -490,29 +496,35 @@ export function DeckRail({
   if (variant === 'tabs') {
     return (
       <div class="sb-tab-bar sb-deck-tabs" data-testid="deck-rail">
-        <div class="sb-tabs sb-tabs-scroll" ref={tabRowRef}>
-          <button
-            type="button"
-            class={'sb-tab' + (allPadsActive ? ' is-active' : '')}
-            aria-current={allPadsActive || undefined}
-            data-testid="deck-rail-all-pads-tab-button"
-            onClick={onAllPadsSelect}
-          >
-            All pads
-          </button>
-          {decks.map((deck, position) => (
+        {/* Folded (owner decision 2026-10-11): the tabs give their room to the pads; DECKS and the
+            bar toggles stay, so the row can always be opened again */}
+        {tabsShown ? (
+          <div class="sb-tabs sb-tabs-scroll" ref={tabRowRef} id="deck-rail-tabs">
             <button
-              key={deck.id}
               type="button"
-              class={'sb-tab' + (activeDeckId === deck.id ? ' is-active' : '')}
-              aria-current={activeDeckId === deck.id || undefined}
-              data-testid={`deck-rail-tab-button-${deck.id}`}
-              onClick={() => onDeckSelect(deck.id)}
+              class={'sb-tab' + (allPadsActive ? ' is-active' : '')}
+              aria-current={allPadsActive || undefined}
+              data-testid="deck-rail-all-pads-tab-button"
+              onClick={onAllPadsSelect}
             >
-              {position + 1} {deck.name}
+              All pads
             </button>
-          ))}
-        </div>
+            {decks.map((deck, position) => (
+              <button
+                key={deck.id}
+                type="button"
+                class={'sb-tab' + (activeDeckId === deck.id ? ' is-active' : '')}
+                aria-current={activeDeckId === deck.id || undefined}
+                data-testid={`deck-rail-tab-button-${deck.id}`}
+                onClick={() => onDeckSelect(deck.id)}
+              >
+                {position + 1} {deck.name}
+              </button>
+            ))}
+          </div>
+        ) : (
+          <div class="sb-flex-1" />
+        )}
         {/* Outside the scrolling row, so it stays in view however many decks there are */}
         {manage && (
           <button
@@ -525,6 +537,7 @@ export function DeckRail({
             DECKS
           </button>
         )}
+        {tail}
         {manage && open && (
           <div class="sb-deck-rail sb-deck-rail-sheet" data-testid="deck-rail-sheet-region">
             {content}

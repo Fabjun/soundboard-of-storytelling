@@ -9,9 +9,10 @@
  * docs/product/features/adaptive-layout.md L2); the top bar keeps back, the mode toggle and the Lock.
  */
 
-import type { JSX } from 'preact';
+import type { ComponentChildren, JSX } from 'preact';
 import { PixelIcon } from './PixelIcon';
 import { ModeToggle } from './ModeToggle';
+import { ToolbarIcon } from './BarToggle';
 import { LiveControls } from './LiveControls';
 import { toggleModeLock } from '../state/modeControl';
 import { modeLocked } from '../state/store';
@@ -27,6 +28,8 @@ interface BoardTopBarProps {
   libraryOpen: boolean;
   onLibraryToggle: () => void;
   onBack: () => void;
+  /** The bar toggles (search, quick access) — given in the wide frame, where the top bar has room. */
+  toggles?: ComponentChildren;
 }
 
 /**
@@ -41,6 +44,7 @@ export function BoardTopBar({
   libraryOpen,
   onLibraryToggle,
   onBack,
+  toggles,
 }: BoardTopBarProps): JSX.Element {
   const compact = narrowWindow.value;
 
@@ -86,9 +90,11 @@ export function BoardTopBar({
             title={modeLocked.value ? 'Unlock the mode switch' : 'Lock the mode switch in GAME'}
             onClick={toggleModeLock}
           >
-            <PixelIcon name="lock" size={12} />
+            {/* The collection's padlock shows the state: closed while locked (owner decision 2026-10-11) */}
+            <ToolbarIcon name={modeLocked.value ? 'locked' : 'unlocked'} />
           </button>
         )}
+        {toggles}
       </div>
 
       {/* Right: PAUSED and STOP ALL (GAME, wide frame), library toggle */}

@@ -13,8 +13,8 @@ import { formatMarkdown } from './markdown';
 import { isGeneratedDoc } from './generated-docs';
 
 /**
- * Writes `text` to `file`, formatted the way Prettier would; leaves the file untouched when it
- * already has that content. Resolves true when the file changed.
+ * Writes a generated doc (sync:*) to `file`, formatted the way Prettier would; leaves the file
+ * untouched when it already has that content. Resolves true when the file changed.
  *
  * @throws When `file` is not in GENERATED_DOCS (scripts/lib/generated-docs.ts) — the pre-commit
  *   hook stages only the files listed there; or when Markdown formatting would change the content
@@ -25,6 +25,18 @@ export async function writeGenerated(file: string, text: string): Promise<boolea
     throw new Error(
       `writeGenerated: ${file} is not in GENERATED_DOCS (v3/scripts/lib/generated-docs.ts) — add it there, so the pre-commit hook stages it`,
     );
+  return writeFormatted(file, text);
+}
+
+/**
+ * Writes `text` to `file`, formatted the way Prettier would; leaves the file untouched when it
+ * already has that content. Resolves true when the file changed. For generated data that is
+ * built by hand and committed with its change (build:icons) — the doc generators use
+ * `writeGenerated`, which also checks the hook's list.
+ *
+ * @throws When Markdown formatting would change the content (see `formatMarkdown`).
+ */
+export async function writeFormatted(file: string, text: string): Promise<boolean> {
   const formatted = file.endsWith('.md')
     ? await formatMarkdown(file, text)
     : await format(text, { ...((await resolveConfig(file)) ?? {}), filepath: file });

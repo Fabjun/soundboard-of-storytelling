@@ -10,6 +10,7 @@
  *   - src/icons/sets/<prefix>.LICENSE.txt  the license text where the license requires it (MIT)
  *   - src/icons/v1-map.json         V1's icon id → key, for the V1 import and pads it stored
  *   - src/icons/placeholders.json   the drawing of each pad type's placeholder, for the start bundle
+ *   - src/icons/toolbar.json        the drawings of the board toolbar's icons, for the start bundle
  *
  * Run (from v3/): npm run build:icons -- [--from WORK_FOLDER] [--v1 V1_ICONS_JS]
  * Default work folder: ~/dev/archive/icon-sources/work-2026-10-04 (see its README.md); default
@@ -21,7 +22,7 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { homedir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { writeGenerated } from './lib/write-generated';
+import { writeFormatted } from './lib/write-generated';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const OUT = resolve(__dirname, '..', 'src', 'icons');
@@ -91,6 +92,19 @@ const PLACEHOLDERS = {
   single: 'nikoichu:shape-circle-thin',
   loop: 'nikoichu:infinity',
   combo: 'nikoichu:shape-circle',
+};
+
+/**
+ * The board toolbar's icons — collection icons in the pads' style instead of the UI set (owner
+ * decision 2026-10-11): the Lock, and the toggles that fold the search bar, the quick-access bar
+ * and the deck tabs.
+ */
+const TOOLBAR = {
+  locked: 'nikoichu:padlock-locked',
+  unlocked: 'nikoichu:padlock-unlocked',
+  search: 'nikoichu:magnifying-glass',
+  quickAccess: 'nikoichu:star-mana',
+  decks: 'nikoichu:card-hand',
 };
 
 type Mask = { id: string; n: number; m: string };
@@ -186,7 +200,7 @@ async function main(): Promise<void> {
         Object.fromEntries(Object.entries(categories).map(([c, list]) => [c, list.sort()])),
       ),
     };
-    const changed = await writeGenerated(
+    const changed = await writeFormatted(
       join(OUT, 'sets', `${info.prefix}.json`),
       JSON.stringify(json),
     );
@@ -197,22 +211,29 @@ async function main(): Promise<void> {
       );
     console.log(`${info.prefix}: ${json.info.total} icons${changed ? '' : ' (unchanged)'}`);
   }
-  await writeGenerated(join(OUT, 'catalog.json'), JSON.stringify(sorted(catalog)));
+  await writeFormatted(join(OUT, 'catalog.json'), JSON.stringify(sorted(catalog)));
   console.log(`catalog: ${Object.keys(catalog).length} icons`);
 
-  // Almost every board shows placeholders, so their drawings go into the start bundle instead of
-  // loading the largest pack for them (Iconify: bundle the icons needed at once, load the rest)
-  const placeholders = Object.fromEntries(
-    Object.entries(PLACEHOLDERS).map(([type, key]) => {
-      const [prefix, name] = key.split(':');
-      const set = sets.get(prefix);
-      const d = set && / d="([^"]+)"/.exec(set.icons[name]?.body ?? '')?.[1];
-      if (!set || !d) throw new Error(`build-icons: placeholder ${key} is not in the collection`);
-      return [type, { key, d, size: set.size }];
-    }),
+  // Almost every board shows placeholders and the toolbar, so their drawings go into the start
+  // bundle instead of loading the largest pack for them (Iconify: bundle the icons needed at once,
+  // load the rest)
+  const bundle = (what: string, keys: Record<string, string>) =>
+    Object.fromEntries(
+      Object.entries(keys).map(([use, key]) => {
+        const [prefix, name] = key.split(':');
+        const set = sets.get(prefix);
+        const d = set && / d="([^"]+)"/.exec(set.icons[name]?.body ?? '')?.[1];
+        if (!set || !d) throw new Error(`build-icons: ${what} ${key} is not in the collection`);
+        return [use, { key, d, size: set.size }];
+      }),
+    );
+  await writeFormatted(
+    join(OUT, 'placeholders.json'),
+    JSON.stringify(bundle('placeholder', PLACEHOLDERS)),
   );
-  await writeGenerated(join(OUT, 'placeholders.json'), JSON.stringify(placeholders));
   console.log(`placeholders: ${Object.values(PLACEHOLDERS).join(', ')}`);
+  await writeFormatted(join(OUT, 'toolbar.json'), JSON.stringify(bundle('toolbar icon', TOOLBAR)));
+  console.log(`toolbar: ${Object.values(TOOLBAR).join(', ')}`);
 
   // V1 ids: Nikoichu's were `px-` + the file name in lower case with hyphens; pixelarticons' were
   // their names, which the chosen "sharp" drawings carry without `-sharp`. An exact name wins.
@@ -244,7 +265,7 @@ async function main(): Promise<void> {
       if (v1 && v1Ids.has(v1) && !v1Map[v1]) v1Map[v1] = keyOf.get(kept)!;
     }
   }
-  await writeGenerated(join(OUT, 'v1-map.json'), JSON.stringify(sorted(v1Map)));
+  await writeFormatted(join(OUT, 'v1-map.json'), JSON.stringify(sorted(v1Map)));
   console.log(
     `v1-map: ${Object.keys(v1Map).length} of ${v1Ids.size} V1 icons are in the collection`,
   );
