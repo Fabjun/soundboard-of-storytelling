@@ -54,16 +54,15 @@ Procedure: `docs/development/testing.md`; reference enforced by `testGuards.test
 | ---------------------------------------- | ------- | ------------------------------------------------------------------------------ |
 | `v3/tests/unit/audio/engine.test.ts:699` | `fails` | BACKLOG "Engine: a Single started again during its fade-out cannot be stopped" |
 
-## Modules without their own unit test (4)
+## Modules without their own unit test (3)
 
 EXEMPT list in `v3/tests/unit/testGuards.test.ts`.
 
-| Module                    | Reason                                                                        |
-| ------------------------- | ----------------------------------------------------------------------------- |
-| `v3/src/lib/changelog.ts` | data only (release notes), no logic                                           |
-| `v3/src/audio/types.ts`   | type declarations only                                                        |
-| `v3/src/audio/index.ts`   | audio facade — tested through tests/unit/audio/engine.test.ts                 |
-| `v3/src/lib/libDnd.ts`    | pointer/DOM drag — covered by E2E pad-creation test 14 in Chromium and WebKit |
+| Module                    | Reason                                                        |
+| ------------------------- | ------------------------------------------------------------- |
+| `v3/src/lib/changelog.ts` | data only (release notes), no logic                           |
+| `v3/src/audio/types.ts`   | type declarations only                                        |
+| `v3/src/audio/index.ts`   | audio facade — tested through tests/unit/audio/engine.test.ts |
 
 ## Tool ignore lists (25)
 

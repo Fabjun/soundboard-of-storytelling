@@ -944,7 +944,8 @@
   --pad-filter-base: var(--shadow-pad-lift);
   filter: var(--pad-filter-base);
   height: 100%;
-  touch-action: none; /* required for pointer-event capture on iOS Brave */
+  /* The pad keeps the browser's panning: a swipe on it scrolls, a finger drags it after a short
+     press (src/lib/touchDrag.ts) */
 }
 /* Stack glow on top of lift without clobbering it */
 .sb-pad.is-deep.is-hot {
@@ -2467,7 +2468,6 @@
   border-bottom: 1px solid var(--border-soft);
   cursor: grab;
   user-select: none;
-  touch-action: none;
   gap: 0.1875rem;
 }
 

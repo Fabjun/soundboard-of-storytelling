@@ -31,7 +31,6 @@ export const MUTATE = [
   'src/audio/**/*.ts',
   '!src/lib/changelog.ts', // data only (release notes), no logic
   '!src/audio/types.ts', // type declarations only
-  '!src/lib/libDnd.ts', // pointer/DOM drag — covered by E2E, not by unit tests
 ];
 
 // Only ever RAISE (like the coverage floor): measured score rounded down. Clean CI baseline

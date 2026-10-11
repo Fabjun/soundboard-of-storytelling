@@ -14,6 +14,7 @@
  */
 
 import type { PadPosition } from '../types';
+import { pressToDrag } from './touchDrag';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -72,14 +73,35 @@ export function startLibDrag(
 ): void {
   // Prevent conflicts with pad-to-pad DnD (should never co-occur, but defensive)
   if (_s.active) return;
+  // A finger keeps its scroll: it drags only after a short press (src/lib/touchDrag.ts)
+  if (e.pointerType !== 'touch') e.preventDefault();
+  const { pointerId, clientX, clientY } = e;
+  pressToDrag(e, DRAG_THRESHOLD, () =>
+    beginLibDrag(pointerId, clientX, clientY, itemId, rowEl, onDrop, onDragActivated),
+  );
+}
 
-  e.preventDefault();
-  rowEl.setPointerCapture(e.pointerId);
+/** The drag itself, once the press is one (at once for a mouse, after a short press for a finger). */
+function beginLibDrag(
+  pointerId: number,
+  clientX: number,
+  clientY: number,
+  itemId: string,
+  rowEl: HTMLElement,
+  onDrop: (r: LibDndDropResult) => void,
+  onDragActivated?: () => void,
+): void {
+  if (_s.active) return;
+  try {
+    rowEl.setPointerCapture(pointerId);
+  } catch {
+    // The pointer is gone already (lifted at the moment the press became a drag)
+  }
 
   _s.active = true;
   _s.itemId = itemId;
-  _s.startX = e.clientX;
-  _s.startY = e.clientY;
+  _s.startX = clientX;
+  _s.startY = clientY;
   _s.dragging = false;
   _s.onDrop = onDrop;
 

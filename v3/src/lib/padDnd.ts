@@ -22,6 +22,7 @@
 
 import type { PadPosition, Placement } from '../types';
 import { posToIndex, indexToPos } from './padUtils';
+import { pressToDrag } from './touchDrag';
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
@@ -98,25 +99,35 @@ export function startDrag(
   cellEl: HTMLElement,
   onDrop: (result: DndDropResult) => void,
 ): void {
-  e.preventDefault();
-  (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+  const target = e.currentTarget as HTMLElement;
+  const { pointerId, clientX, clientY } = e;
+  // A finger keeps its scroll: it drags only after a short press (src/lib/touchDrag.ts)
+  if (e.pointerType !== 'touch') e.preventDefault();
 
-  _state.srcId = padId;
-  _state.startX = e.clientX;
-  _state.startY = e.clientY;
-  _state.dragging = false;
-  _state.insertAt = null;
-  _state.swapWith = null;
+  pressToDrag(e, DRAG_THRESHOLD, () => {
+    try {
+      target.setPointerCapture(pointerId);
+    } catch {
+      // The pointer is gone already (lifted at the moment the press became a drag)
+    }
 
-  const onMove = (me: PointerEvent) => _onPointerMove(me, cellEl);
-  const onUp = (ue: PointerEvent) => {
-    _onPointerUp(ue, onDrop);
-    document.removeEventListener('pointermove', onMove);
-    document.removeEventListener('pointerup', onUp);
-  };
+    _state.srcId = padId;
+    _state.startX = clientX;
+    _state.startY = clientY;
+    _state.dragging = false;
+    _state.insertAt = null;
+    _state.swapWith = null;
 
-  document.addEventListener('pointermove', onMove);
-  document.addEventListener('pointerup', onUp);
+    const onMove = (me: PointerEvent) => _onPointerMove(me, cellEl);
+    const onUp = (ue: PointerEvent) => {
+      _onPointerUp(ue, onDrop);
+      document.removeEventListener('pointermove', onMove);
+      document.removeEventListener('pointerup', onUp);
+    };
+
+    document.addEventListener('pointermove', onMove);
+    document.addEventListener('pointerup', onUp);
+  });
 }
 
 // ── Result types ─────────────────────────────────────────────────────────────

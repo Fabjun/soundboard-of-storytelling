@@ -46,8 +46,6 @@ const EXEMPT: Record<string, string> = {
   'src/lib/changelog.ts': 'data only (release notes), no logic',
   'src/audio/types.ts': 'type declarations only',
   'src/audio/index.ts': 'audio facade — tested through tests/unit/audio/engine.test.ts',
-  'src/lib/libDnd.ts':
-    'pointer/DOM drag — covered by E2E pad-creation test 14 in Chromium and WebKit',
 };
 
 /** Files below `dir` whose name matches, as absolute paths (.gitignore decides — repoFiles). */
