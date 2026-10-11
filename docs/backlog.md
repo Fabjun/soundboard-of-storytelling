@@ -628,6 +628,15 @@ pad still counts as playing (`isPlaying`), so a tap or its key stops it instead 
 again; only code that calls `play()` during the fade hits it. Kept known for later engine work.
 **When:** an engine change — the owner decides (ADR-0048 §4), with a playback check.
 
+### Remaining time on a playing pad
+
+Owner decision 2026-10-11: a pad shows its running time from the medium size on (built in
+3.0.223), and while it plays the time left (as Farrago does). The app cannot compute it alone: a
+Single with several files plays the next or a random one, which the engine picks; a Loop with
+several files plays them one after another; the engine reports only that a pad started or
+stopped. The engine would have to report which file starts and when.
+**When:** an engine change — the owner decides (ADR-0048 §4), with a playback check.
+
 ### Finite Loop Count (loopCount > 0) ✅ Done (3.0.166 — REPEAT, ADR-0069)
 
 Currently only infinite loops are supported. Add support for a fixed repeat count when

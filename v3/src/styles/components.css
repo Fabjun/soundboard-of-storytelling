@@ -359,13 +359,19 @@
     --pix-border 0.15s,
     transform 0.15s;
 }
-/* A small pad (below 80 px, padSize.ts COMPACT_BELOW, Slice 13e): no picture and tighter padding,
-   so the type label, the name and the key stay inside it — measured, the name stood 11 px out */
+/* A small pad (below 80 px, padSize.ts COMPACT_BELOW): name > icon > type (owner decision
+   2026-10-11, was 13e's "no picture"). Tighter padding; the type row gives way, and the picture
+   takes the room between the top and the name — it shrinks with the pad, the name keeps its line */
 .sb-pad.is-compact {
   padding: var(--space-1) var(--space-1) var(--space-1) var(--space-2);
 }
-.sb-pad.is-compact .sb-pad-icons {
+.sb-pad.is-compact .sb-pad-type-label {
   display: none;
+}
+.sb-pad.is-compact .sb-pad-icons {
+  flex: 1 1 0;
+  height: auto;
+  min-height: 0;
 }
 /* The type "spine": 4-px-wide bar of pad color painted along the
    LEFT edge of every pad. Idle pads show only this — that's the
@@ -444,6 +450,24 @@
   font-size: 0.5625rem; /* sub-token: deliberately tiny type badge (9px) */
   letter-spacing: 0.08em;
   opacity: 0.8;
+  white-space: nowrap;
+  overflow: hidden;
+}
+.sb-pad .sb-pad-duration {
+  /* @inventory: A pad's running time next to its type label (2026-10-11) — the label's tiny mono type, in the dim text color instead of the type color. */
+  color: var(--text-dim);
+}
+.sb-visually-hidden {
+  /* @inventory: Text only screen readers read — kept in the accessibility tree, not drawn (the A11y Project / Bootstrap visually-hidden pattern). */
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -0.0625rem;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 .sb-pad .sb-pad-drag-handle {
   /* Session 3h: drag handle indicator in SETUP mode — absolute bottom-right, mono 10px (sub-token), border-strong color, grab cursor. */

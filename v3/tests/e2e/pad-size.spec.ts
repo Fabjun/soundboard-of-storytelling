@@ -20,6 +20,7 @@ import {
   openDeckRail,
   reopenFirstBoard,
 } from './helpers';
+import { COMPACT_BELOW } from '../../src/lib/padSize';
 
 const PHONE = { width: 390, height: 844 };
 const TABLET = { width: 768, height: 1024 };
@@ -196,6 +197,39 @@ for (const viewport of [PHONE, WIDE]) {
     }
   });
 }
+
+// Owner decision 2026-10-11: on a small pad the name comes first, then the icon, then the rest —
+// the type row gives way below 80 px; the type stays in the description screen readers read
+test('on a phone every pad size shows the name and the icon; the type row only from 80 px', async ({
+  page,
+}) => {
+  await page.setViewportSize(PHONE);
+  await boardWithSixPads(page);
+  await page.getByTestId('pad-editor-panel-name-input').waitFor({ state: 'detached' });
+  const pad = page.getByRole('button', { name: 'A1' });
+  await expect(pad).toHaveAccessibleDescription('Single');
+  for (const px of [44, 68, 76, 88, 120]) {
+    await setPadSize(page, px);
+    await expect
+      .poll(
+        async () => {
+          const box = await boxOf(pad);
+          const name = await boxOf(pad.getByText('A1', { exact: true }));
+          const icon = await boxOf(pad.getByTestId('pad-icons'));
+          const typeRow = pad.getByText('SGL', { exact: true });
+          const typeShown = await typeRow.isVisible();
+          return (
+            name.y + name.height <= box.y + box.height + 0.5 && // the name inside the pad
+            icon.height >= 10 && // the icon is there to see
+            icon.y + icon.height <= name.y + 0.5 && // above the name, not over it
+            typeShown === box.width >= COMPACT_BELOW // the type row only from 80 px
+          );
+        },
+        { message: `PAD SIZE ${px}` },
+      )
+      .toBe(true);
+  }
+});
 
 test('the PAD SIZE slider is there only in SETUP', async ({ page }) => {
   await boardWithSixPads(page);
