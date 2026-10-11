@@ -7,6 +7,18 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.221 — 2026-10-11
+
+### Fixed
+
+- fix(board): the PAD editor stays with its pad when ★ takes it out of the quick-access bar (owner report 2026-10-11) — opened from the bar in a deck without the pad, the editor vanished: it showed its pad only while the pad was in the shown deck or the bar, which ★ itself changes. It now shows the pad while the pad is in the board (a deck or view switch clears the selection itself). The cause: a Slice 13d fix had widened that condition instead of asking why it existed
+
+### Internal
+
+- test: quick-access — ★ on and off in the same open editor; opened from the bar, in the same deck and in a deck without the pad, ★ out and back with the editor still open; counter-checked against the old condition
+- ci: the pre-push gate runs the unit tests with the coverage floor (npm run test:coverage), as CI does — the floor was checked only in CI, so #98 first failed there
+- docs: testing.md edge-case checklist — "Toggles and views" (on and off in the same open view; every entry path × every action) and "A test that proves" (the precondition holds; a "nothing happens" check first shows it can happen)
+
 ## 3.0.220 — 2026-10-11
 
 ### Changed
