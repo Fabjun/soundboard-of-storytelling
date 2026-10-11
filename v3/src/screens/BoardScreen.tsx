@@ -31,6 +31,7 @@ import {
   currentDeck,
   allPadsView,
   libraryItems,
+  playingPads,
 } from '../state/store';
 import { applyBoardChange, updateBoard } from '../state/boardWrites';
 import { switchMode } from '../state/modeControl';
@@ -44,6 +45,7 @@ import {
 } from '../state/prefs';
 import { PAD_SORT_KEYS, PAD_SORT_LABELS, sortPads, type PadSort } from '../lib/padSort';
 import { searchPads } from '../lib/padSearch';
+import { nowPlayingText } from '../lib/nowPlaying';
 import { BoardTopBar } from '../components/BoardTopBar';
 import { DeckRail } from '../components/DeckRail';
 import { QuickAccessBar } from '../components/QuickAccessBar';
@@ -168,6 +170,9 @@ export function BoardScreen(): JSX.Element {
       </div>
     );
   }
+
+  // Every playing pad of the board, also one in another deck (Slice 13f, docs/product/features/adaptive-layout.md#decided L9)
+  const playing = nowPlayingText(playingPads.value, board.pads);
 
   // ── Handlers ────────────────────────────────────────────────────────────────
 
@@ -535,12 +540,14 @@ export function BoardScreen(): JSX.Element {
         <StatusBar
           mode={mode}
           dock
+          playing={playing}
           right={mode === 'play' ? <LiveControls place="dock" /> : undefined}
         />
       ) : (
         <StatusBar
           mode={mode}
           boardName={board.name}
+          playing={playing}
           infoText={
             poolView
               ? `All pads · ${board.pads.length} pad${board.pads.length !== 1 ? 's' : ''}`

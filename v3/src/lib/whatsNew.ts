@@ -101,6 +101,12 @@ export function withEarlyVersions(
 /** The release notes the start screen shows, newest first (checked by whatsNew.test.ts). */
 export const WHATS_NEW: WhatsNewNotes[] = [
   {
+    version: '3.0.216',
+    new: [
+      'The status bar says which sounds are playing — "2 playing: Rain · Wind", up to three names — or "No sound". On a phone the line sits in the bar at the bottom, next to STOP ALL; sounds of other decks count too.',
+    ],
+  },
+  {
     version: '3.0.215',
     new: [
       'Pads in the quick-access bar can have a key of their own that plays them in every deck. A key is never both a deck key and a quick-access key — the pad editor says which pad already has it.',

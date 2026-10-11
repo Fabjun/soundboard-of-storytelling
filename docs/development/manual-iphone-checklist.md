@@ -264,6 +264,15 @@ because Playwright runs against a simulated environment:
     DECKS closes it. In GAME there is no DECKS tab.
   - Why manual: Sideways swiping, momentum scrolling and overscroll exist only on the device.
 
+- [ ] **Now playing in the dock** _(Slice 13f)_
+  - Action: In portrait, in GAME: start three pads with long names, then a fourth; stop them one by
+    one. Once with VoiceOver on.
+  - Expected: The line in the bar at the bottom says "4 playing: …" with the first three names and
+    ends in … where it runs out of room; STOP ALL stays wholly visible and tappable; with all
+    stopped it says "No sound". VoiceOver reads the new line without moving away from the pad.
+  - Why manual: The real font width, the home-indicator inset and VoiceOver's announcements exist
+    only on the device.
+
 - [ ] **Browser gestures are off** _(3.0.159, ADR-0067)_
   - Action: On the board and in the library: double-tap, pinch with two fingers, long-press a pad
     name and a label; tap into the library search field.

@@ -703,6 +703,15 @@
 .sb-status-bar .sb-status-section:last-child {
   border-right: none;
 }
+.sb-status-bar .sb-status-playing {
+  /* @inventory: The status bar's now-playing line (Slice 13f) — one line that gives way first and ends in … when the bar is too narrow. */
+  display: block;
+  flex: 0 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 .sb-status-right {
   /* @inventory: Right-slot wrapper in the status bar — auto left margin pushes it to the far right, flex row with space-4 gap. */
   margin-left: auto;

@@ -16,6 +16,8 @@ interface StatusBarProps {
   boardName?: string;
   infoText?: string;
   right?: ComponentChildren;
+  /** Which sounds play now (`nowPlayingText`, Slice 13f) — announced politely when it changes. */
+  playing?: string;
   /**
    * The narrow frame's dock (Slice 13a, docs/product/features/adaptive-layout.md L2): taller, so
    * the controls in the right slot get their touch size — one bar at the bottom instead of two.
@@ -25,14 +27,15 @@ interface StatusBarProps {
 
 /**
  * Shows the mode (LIVE in GAME, EDIT in SETUP), whether changes are saved (SAVING… / SAVED /
- * NOT SAVED, Slice 12e), SCREEN ON while the screen is kept on, the board name, an info text and
- * a right slot; as the dock (`dock`) it is taller.
+ * NOT SAVED, Slice 12e), SCREEN ON while the screen is kept on, the board name, an info text,
+ * which sounds play now (`playing`) and a right slot; as the dock (`dock`) it is taller.
  */
 export function StatusBar({
   mode,
   boardName,
   infoText,
   right,
+  playing,
   dock = false,
 }: StatusBarProps): JSX.Element {
   const modeColor = mode === 'play' ? 'var(--gold)' : 'var(--mode-setup)';
@@ -68,6 +71,18 @@ export function StatusBar({
       )}
       {boardName && <span class="sb-status-section">{boardName}</span>}
       {infoText && <span class="sb-status-section">{infoText}</span>}
+      {/* role status: a screen reader says the new line when it is idle, without moving focus
+          (WAI-ARIA status role); on a phone a long line ends in … (the whole text stays readable
+          to assistive technology) */}
+      {playing !== undefined && (
+        <span
+          class="sb-status-section sb-status-playing"
+          data-testid="status-bar-playing-text"
+          role="status"
+        >
+          {playing}
+        </span>
+      )}
       {right && <span class="sb-status-right">{right}</span>}
     </div>
   );

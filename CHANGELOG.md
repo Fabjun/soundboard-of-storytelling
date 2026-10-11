@@ -7,6 +7,18 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.216 — 2026-10-11
+
+### Added
+
+- feat(board): Slice 13f — now playing (adaptive-layout L9, owner decision 2026-10-11): one line in the status bar (wide) and the dock (narrow), as V1's `_updSpBar` — "N playing: a · b · c…", the first three names in the order the pads started, or "No sound"; every playing pad of the board counts, also one in another deck; `role="status"` (announced politely); in the dock a long line ends in … and gives way to STOP ALL
+- feat: lib `nowPlayingText`; StatusBar prop `playing`; class `sb-status-playing`
+
+### Internal
+
+- test: unit tests nowPlaying (none, one, three, four with …, the start order, the preview and a deleted pad not counted, a pad without a name as —); E2E now-playing — the line in the status bar, a pad of another deck, the dock on a phone with long names (truncated, STOP ALL wholly visible, no horizontal scroll); each counter-checked; visual baselines of the board updated for the new section
+- docs: adaptive-layout 13f built, Slice 13 row in CLAUDE.md; iPhone checklist "Now playing in the dock"
+
 ## 3.0.215 — 2026-10-10
 
 ### Added
