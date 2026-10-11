@@ -56,6 +56,9 @@
  * 19. Narrow or wide is asked in one place, src/state/windowClass.ts (Slice 13a, ADR-0082): no
  *    other file compares window.innerWidth / innerHeight or writes a width media query — three
  *    components did, at two different widths, and missed a rotation (2026-10-10).
+ * 20. A swipe scrolls everywhere: `touch-action: none` only on a drag handle (`…-handle`) — pads
+ *    and library rows had it and took every swipe from the browser (owner report 2026-10-11);
+ *    a finger drag waits for a short press (src/lib/touchDrag.ts).
  */
 
 import { readdirSync, readFileSync } from 'node:fs';
@@ -497,6 +500,7 @@ describe('guard: timers are listed with their reason (delayed writes use debounc
     'components/UndoToast.tsx': 'hides the toast; the deletion itself is already saved',
     'lib/backupExport.ts': 'revokes the download URL once the browser has taken the file',
     'lib/debouncedSave.ts': 'the delayed write itself — flushed, never dropped',
+    'lib/touchDrag.ts': 'a finger drags only after a short press, so a swipe scrolls',
     'state/stopControl.ts': 'ends the first STOP ALL stage when its fade is over (K16)',
   };
   const walkSrc = (dir: string): string[] =>
@@ -958,5 +962,25 @@ describe('guard: code and tests carry no review status (2026-10-09)', () => {
   it('no file says "review pending" — the pull request lists what waits for the owner', () => {
     const bad = files.filter((f) => REVIEW_PENDING.test(readFileSync(join(V3, f), 'utf8')));
     expect(bad, 'a merged decision is decided — say so, or name the decision').toEqual([]);
+  });
+});
+
+const STYLES_FOR_TOUCH = ['styles/components.css', 'styles/global.css'];
+
+describe('guard: a swipe scrolls everywhere — touch-action none only on drag handles (2026-10-11)', () => {
+  const css = STYLES_FOR_TOUCH.map((f) => readFileSync(join(SRC, f), 'utf8')).join('\n');
+  const rules = [...css.matchAll(/([^{}]*)\{([^}]*)\}/g)]
+    .filter((m) => /touch-action:\s*none/.test(m[2]))
+    .map((m) => m[1].trim().split('\n').at(-1) ?? '');
+
+  it('finds the touch-action none rules (sanity)', () => {
+    expect(rules).toContain('.sb-deck-drag-handle');
+  });
+
+  it('every touch-action none rule is a drag handle (…-handle)', () => {
+    expect(
+      rules.filter((s) => !/-handle\b/.test(s)),
+      'a swipe must scroll: drag after a short press (pressToDrag) or give it a handle',
+    ).toEqual([]);
   });
 });

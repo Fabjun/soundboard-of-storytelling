@@ -101,6 +101,12 @@ export function withEarlyVersions(
 /** The release notes the start screen shows, newest first (checked by whatsNew.test.ts). */
 export const WHATS_NEW: WhatsNewNotes[] = [
   {
+    version: '3.0.220',
+    fixed: [
+      'A swipe scrolls the board wherever it starts, also on a pad or a library row. To move a pad with a finger in SETUP, it is held for a moment first.',
+    ],
+  },
+  {
     version: '3.0.219',
     improved: [
       'The pad type buttons in the pad editor (SGL, LOOP, COMBO) are as easy to hit with a finger as every other button.',

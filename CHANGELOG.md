@@ -7,6 +7,21 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.220 — 2026-10-11
+
+### Changed
+
+- refactor: padDnd and libDnd start through pressToDrag; libDnd beginLibDrag
+
+### Fixed
+
+- fix(board): a swipe scrolls wherever it starts (owner report 2026-10-11) — pads and library rows had touch-action none and took every swipe from the browser; they keep the browser panning now, and a finger drags them only after a short press (250 ms, lib touchDrag `pressToDrag`; the pattern of touch sensors in drag & drop libraries and the iOS home screen); a mouse or a pen drags at once, as before
+
+### Internal
+
+- test: unit tests touchDrag (mouse / pen at once, a rest of the full time, a move or lift first, scrolling blocked only while dragging); E2E mobile touch-scroll with real Chromium touch events — a swipe on a pad scrolls in SETUP, a finger that rests drags a pad, a swipe in GAME does not play; codeGuards 20 — touch-action none only on drag handles; each counter-checked (the GAME test first passed vacuously: the audio was never unlocked — fixed, with a tap that plays as its proof)
+- docs: iPhone checklist "A swipe scrolls wherever it starts"
+
 ## 3.0.219 — 2026-10-11
 
 ### Changed

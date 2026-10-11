@@ -94,7 +94,7 @@ export const MOBILE_WEBKIT_TESTS = [
  * tests/e2e/mobile/<name>.spec.ts — audio-dependent, Chromium / iPhone 13 Pro
  * (headless WebKit has no audio codec support → decodeAudioData fails).
  */
-export const MOBILE_CHROMIUM_TESTS = ['pad-interaction', 'pad-creation'];
+export const MOBILE_CHROMIUM_TESTS = ['pad-interaction', 'pad-creation', 'touch-scroll'];
 
 /**
  * tests/e2e/<name>.spec.ts — only against the PRODUCTION BUILD (E2E_TARGET=prod):

@@ -290,6 +290,16 @@ because Playwright runs against a simulated environment:
     zoom in when tapped.
   - Why manual: The iOS long-press menu and focus zoom exist only on iOS.
 
+- [ ] **A swipe scrolls wherever it starts** _(3.0.220)_
+  - Action: On a board with more pads than fit, in GAME and in SETUP: swipe up and down starting on
+    a pad, between pads and on a library row (library panel open). In SETUP rest a finger on a pad
+    for a moment, then drag it to another cell.
+  - Expected: Every swipe scrolls, whichever spot it starts on; in GAME no pad starts playing from a
+    swipe. A finger that rests on a pad lifts it after about a quarter second and drops it where it
+    is let go; the page does not scroll while it is dragged.
+  - Why manual: The real finger timing and iOS's scrolling exist only on the device; the E2E tests
+    send Chromium touch events.
+
 - [ ] **Typing in text fields still works** _(3.0.159 — selection is off in fields too)_
   - Action: Rename a pad in the PAD editor, type in the library search, type a trim value.
   - Expected: Typing works in every field. If a field takes no input, report it — selection in
