@@ -286,14 +286,10 @@ export function BoardScreen(): JSX.Element {
 
   // ── Pad for editor ─────────────────────────────────────────────────────────
 
-  // Deck view: the pad must be placed in this deck or sit in the quick-access bar, which every
-  // view shows (Slice 13d). All pads: any pad of the pool.
-  const selectedPad =
-    poolView ||
-    (deck && deck.placements.some((p) => p.padId === selectedPadId)) ||
-    board.quickAccess.some((q) => q.padId === selectedPadId)
-      ? (board.pads.find((p) => p.id === selectedPadId) ?? null)
-      : null;
+  // The open editor stays with its pad while the pad is in the board's pool — also when ★ takes a
+  // pad out of the quick-access bar that the shown deck does not hold (owner report 2026-10-11:
+  // the editor vanished). A deck or view switch clears the selection itself.
+  const selectedPad = board.pads.find((p) => p.id === selectedPadId) ?? null;
 
   // ── Layout ─────────────────────────────────────────────────────────────────
 

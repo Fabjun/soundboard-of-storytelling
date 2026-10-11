@@ -17,10 +17,20 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.220';
+export const APP_VERSION = '3.0.221';
 
 /** The developer log, newest first; CHANGELOG.md is generated from it (sync-changelog). */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.221',
+    date: '2026-10-11',
+    items: [
+      'fix(board): the PAD editor stays with its pad when ★ takes it out of the quick-access bar (owner report 2026-10-11) — opened from the bar in a deck without the pad, the editor vanished: it showed its pad only while the pad was in the shown deck or the bar, which ★ itself changes. It now shows the pad while the pad is in the board (a deck or view switch clears the selection itself). The cause: a Slice 13d fix had widened that condition instead of asking why it existed',
+      'test: quick-access — ★ on and off in the same open editor; opened from the bar, in the same deck and in a deck without the pad, ★ out and back with the editor still open; counter-checked against the old condition',
+      'ci: the pre-push gate runs the unit tests with the coverage floor (npm run test:coverage), as CI does — the floor was checked only in CI, so #98 first failed there',
+      'docs: testing.md edge-case checklist — "Toggles and views" (on and off in the same open view; every entry path × every action) and "A test that proves" (the precondition holds; a "nothing happens" check first shows it can happen)',
+    ],
+  },
   {
     version: '3.0.220',
     date: '2026-10-11',
