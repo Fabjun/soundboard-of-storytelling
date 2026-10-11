@@ -325,6 +325,28 @@ export function duplicateDeck(
 }
 
 /**
+ * Moves a deck to `toIndex` among the board's decks in rail order (Slice 13g, ▲ / ▼ and drag &
+ * drop — docs/product/features/adaptive-layout.md#decided L6). An index outside the list goes to
+ * its nearest end. The decks keep the order numbers the board already uses, handed out anew in the
+ * new sequence — so a deleted deck's undo still finds its number free or goes last (`restoreDeck`).
+ * Returns the same board when the deck is missing or stays where it is, so no save is made.
+ */
+export function moveDeck(board: Board, deckId: string, toIndex: number): Board {
+  const sorted = [...board.decks].sort((a, b) => a.order - b.order);
+  const from = sorted.findIndex((d) => d.id === deckId);
+  const to = Math.max(0, Math.min(sorted.length - 1, Math.trunc(toIndex)));
+  if (from < 0 || from === to) return board;
+  const orders = sorted.map((d) => d.order);
+  const [moving] = sorted.splice(from, 1);
+  sorted.splice(to, 0, moving);
+  const orderOf = new Map(sorted.map((d, i) => [d.id, orders[i]]));
+  return {
+    ...board,
+    decks: board.decks.map((d) => ({ ...d, order: orderOf.get(d.id) ?? d.order })),
+  };
+}
+
+/**
  * Sets the board's pad size — for all its decks and All pads (the PAD SIZE slider, ADR-0075), kept
  * inside the slider's limits and steps. Returns the same board when nothing changes, so no save
  * is made for it.

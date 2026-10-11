@@ -264,6 +264,16 @@ because Playwright runs against a simulated environment:
     DECKS closes it. In GAME there is no DECKS tab.
   - Why manual: Sideways swiping, momentum scrolling and overscroll exist only on the device.
 
+- [ ] **Decks move by touch** _(Slice 13g)_
+  - Action: In SETUP on a board with five decks: on a tablet in the rail, on a phone in the DECKS
+    list — select a deck, drag its ⣿ handle up past two decks and let go; scroll the list by
+    swiping next to the handle; tap ▲ and ▼.
+  - Expected: While dragging the deck fades and a line shows where it lands; it lands there and
+    the page does not scroll with the finger. A swipe next to the handle scrolls the list and
+    moves nothing. ▲ / ▼ move it one place; the order is the same after a reload.
+  - Why manual: Touch dragging, its scroll handling (touch-action) and the iOS gestures exist only
+    on the device; the E2E tests drag with a mouse.
+
 - [ ] **Now playing in the dock** _(Slice 13f)_
   - Action: In portrait, in GAME: start three pads with long names, then a fourth; stop them one by
     one. Once with VoiceOver on.

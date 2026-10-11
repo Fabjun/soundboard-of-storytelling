@@ -34,7 +34,7 @@ during the slice. This is the only defense against backlog drift.
 
 ## 1. Features (Slice-bound)
 
-### Deck reorder (drag & drop) — feature not built
+### Deck reorder (drag & drop) ✅ Done (3.0.217)
 
 Found 2026-09-29 (T3): DeckRail has no reorder at all, although Slice 3 docs and the V1/V2
 inventory claimed it. **Decided** by the product owner: decks are reordered by **drag & drop,
@@ -50,6 +50,23 @@ would leave about 50 px for the deck name.
 **Owner decision 2026-10-11:** ▲ / ▼ at the deck in SETUP (the file list's scheme) and drag &
 drop, both in step 13g (`docs/product/features/adaptive-layout.md` L6). The room for the name is
 a constraint of the build: the buttons may not cut the deck name off (CLAUDE.md UI rules).
+**Built in 3.0.217 (step 13g; the details below are proposed to the owner in its pull request):**
+measured in the 220 px rail — next to its three action buttons the active deck's name has 58 px,
+another deck's 156 px. So the active deck in SETUP gets a line of its own under its row: a drag
+handle ⣿ (44 px, takes the pointer — the list scrolls everywhere else, the handle pattern of
+Atlassian's Pragmatic drag and drop) and ▲ / ▼. Only the active deck moves (select it, then move
+it); on a phone the same line is in the DECKS list, the tab row itself is not dragged — it
+scrolls sideways. E2E test 9 runs again (9b ▲ / ▼, 9c only in SETUP; deck-switcher on a phone).
+
+### Small icon buttons below the 44 px touch target
+
+Found 2026-10-11 while building the deck reorder (Slice 13g): `sb-btn-icon` sets 28 px and
+`sb-btn-icon-sm` 36 px, below the project's 44 px minimum (CLAUDE.md UI rules; the global rule in
+`v3/src/styles/global.css` gives every button 44 px, these classes undercut it). Measured: the
+deck rail's rename, duplicate and delete buttons are 28 px wide. No check caught it — the touch
+target spec measures other controls.
+**When:** Slice 13 structure review — make the classes keep 44 px where the layout allows, and a
+check that measures every visible button (a guard, so the next one cannot slip in).
 
 ### Pad names cut off on narrow screens ✅ Done (3.0.212)
 
@@ -2062,7 +2079,7 @@ Pad SWAP, Pad INSERT). Need a stable Pointer Events drag sequence in Playwright.
 ✅ **Done** (found stale 2026-10-09): the drags run with real pointer sequences (`pointerDrag` in
 `v3/tests/e2e/helpers.ts`) — Library drag Path B is `pad-creation.spec.ts` test 14, SWAP and
 INSERT are `pad-dnd.spec.ts` tests 20 and 21, none skipped. Scene (deck) reorder is a missing
-feature, not a skipped test: BACKLOG "Deck reorder (drag & drop) — feature not built".
+feature, not a skipped test: BACKLOG "Deck reorder (drag & drop)" (built in 3.0.217).
 
 ### Board persistence optimization
 

@@ -11,7 +11,7 @@
  *   - Delete with confirmation + UndoToast
  *   - Duplicate: the copy places the same pads of the pool (shared, not copied) and appears
  *     directly after the original
- *   - Reorder: NOT built yet (decided: drag & drop, mouse + touch — BACKLOG "Deck reorder")
+ *   - Reorder (Slice 13g): in SETUP the active deck moves with ▲ / ▼ or its drag handle
  *   - + NEW DECK button at bottom
  *   - PAD SIZE slider of the board — all decks and All pads — in SETUP (ADR-0075; V1 had it in the
  *     side menu)
@@ -36,6 +36,7 @@ import {
   addDeck as addDeckTo,
   deleteDeck,
   duplicateDeck as duplicateDeckIn,
+  moveDeck,
   nextDeckName,
   renameDeck,
   restoreDeck,
@@ -44,6 +45,7 @@ import { nanoid } from '../lib/nanoid';
 import { PAD_SIZE } from '../lib/padSize';
 import { SliderRow } from './SliderRow';
 import { findConflictingDeck } from '../lib/deckConflict';
+import { DECK_DRAG_THRESHOLD, deckDropIndex } from '../lib/deckDnd';
 
 interface DeckRailProps {
   board: Board;
@@ -61,7 +63,7 @@ interface DeckRailProps {
   padSize?: { value: number; onChange: (px: number) => void; onCommit: (px: number) => void };
   /** `rail` (wide frame, the default) or `tabs` above the pad grid (narrow frame). */
   variant?: 'rail' | 'tabs';
-  /** Tabs only: show the DECKS button that opens the deck actions (SETUP). */
+  /** SETUP: the tabs show the DECKS button that opens the deck actions; the active deck can move. */
   manage?: boolean;
 }
 
@@ -190,6 +192,51 @@ export function DeckRail({
     if (added) onDeckSelect(id);
   }
 
+  // ── Reorder (Slice 13g, docs/product/features/adaptive-layout.md#decided L6) ────────────────
+  // The active deck in SETUP moves with ▲ / ▼ or by its drag handle (Pointer Events, never HTML5
+  // drag & drop). `to` is the index it would take now, shown as an insert line.
+
+  const [drag, setDrag] = useState<{ deckId: string; from: number; to: number } | null>(null);
+  const dragStartRef = useRef<{ y: number; from: number; moved: boolean } | null>(null);
+
+  function moveTo(deckId: string, to: number) {
+    void updateBoard(board.id, (b) => moveDeck(b, deckId, to));
+  }
+
+  function onHandleDown(e: PointerEvent, from: number) {
+    if (e.button !== 0) return;
+    e.preventDefault();
+    (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+    dragStartRef.current = { y: e.clientY, from, moved: false };
+  }
+
+  function onHandleMove(e: PointerEvent, deckId: string) {
+    const start = dragStartRef.current;
+    if (!start) return;
+    if (!start.moved && Math.abs(e.clientY - start.y) < DECK_DRAG_THRESHOLD) return;
+    start.moved = true;
+    const rows = (e.currentTarget as HTMLElement)
+      .closest('.sb-deck-rail')
+      ?.querySelectorAll<HTMLElement>('[data-deck-row]');
+    const centers = [...(rows ?? [])].map((r) => {
+      const box = r.getBoundingClientRect();
+      return box.top + box.height / 2;
+    });
+    setDrag({ deckId, from: start.from, to: deckDropIndex(e.clientY, centers, start.from) });
+  }
+
+  function onHandleUp(deckId: string) {
+    const start = dragStartRef.current;
+    dragStartRef.current = null;
+    if (start?.moved && drag && drag.to !== drag.from) moveTo(deckId, drag.to);
+    setDrag(null);
+  }
+
+  function onHandleCancel() {
+    dragStartRef.current = null;
+    setDrag(null);
+  }
+
   // ── Render ────────────────────────────────────────────────────────────────
 
   const toggle = (
@@ -263,14 +310,20 @@ export function DeckRail({
           const isConflict =
             editingId === deck.id ? conflictOwner !== null : (conflictIds?.has(deck.id) ?? false);
           return (
-            <div key={deck.id} class="sb-col">
+            <div key={deck.id} class="sb-col" data-deck-row>
               <div
                 class={
                   'sb-deck-tab' +
                   (activeDeckId === deck.id ? ' is-active' : '') +
                   (editingId === deck.id ? ' is-editing' : '') +
                   (pendingDeleteId === deck.id ? ' is-danger' : '') +
-                  (isConflict ? ' is-conflict' : '')
+                  (isConflict ? ' is-conflict' : '') +
+                  (drag?.deckId === deck.id ? ' is-drag-source' : '') +
+                  (drag && drag.to !== drag.from && drag.to === position
+                    ? drag.to < drag.from
+                      ? ' is-insert-before'
+                      : ' is-insert-after'
+                    : '')
                 }
                 data-testid={`deck-rail-deck-tab-${deck.id}`}
               >
@@ -378,6 +431,46 @@ export function DeckRail({
                   </div>
                 )}
               </div>
+
+              {/* Reorder (Slice 13g): a line of its own under the active deck in SETUP, so the
+                  name keeps its room — the row has only 58 px left next to its action buttons.
+                  The handle is the pointer way; ▲ / ▼ are the way without dragging (WCAG 2.2
+                  SC 2.5.7) and the keyboard's, as in the PAD editor's file list. */}
+              {manage && activeDeckId === deck.id && editingId !== deck.id && (
+                <div class="sb-deck-tab-move" role="group" aria-label={`Move deck ${deck.name}`}>
+                  <span
+                    class="sb-deck-drag-handle"
+                    aria-hidden="true"
+                    data-testid={`deck-rail-drag-region-${deck.id}`}
+                    onPointerDown={(e: PointerEvent) => onHandleDown(e, position)}
+                    onPointerMove={(e: PointerEvent) => onHandleMove(e, deck.id)}
+                    onPointerUp={() => onHandleUp(deck.id)}
+                    onPointerCancel={onHandleCancel}
+                  >
+                    ⣿
+                  </span>
+                  <button
+                    type="button"
+                    class="sb-btn sb-btn-sm sb-btn-ghost"
+                    data-testid={`deck-rail-move-up-button-${deck.id}`}
+                    aria-label={`Move deck ${deck.name} up`}
+                    disabled={position === 0}
+                    onClick={() => moveTo(deck.id, position - 1)}
+                  >
+                    ▲
+                  </button>
+                  <button
+                    type="button"
+                    class="sb-btn sb-btn-sm sb-btn-ghost"
+                    data-testid={`deck-rail-move-down-button-${deck.id}`}
+                    aria-label={`Move deck ${deck.name} down`}
+                    disabled={position === decks.length - 1}
+                    onClick={() => moveTo(deck.id, position + 1)}
+                  >
+                    ▼
+                  </button>
+                </div>
+              )}
 
               {isConflict && (
                 <div class="sb-deck-conflict-hint">

@@ -4,15 +4,22 @@
  * 6.  Create deck → tab appears in DeckRail
  * 7.  Rename via double-click → tab label updates
  * 8.  Duplicate → new tab with "(copy)" suffix
- * 9.  Reorder via drag → order changes                [test.fixme — feature not built]
+ * 9.  Reorder via drag → order changes (Slice 13g; 9b ▲ / ▼, 9c only the active deck in SETUP)
  * 10. Delete → tab removed
  * 11. Undo delete → tab restored
  * Later tests (no Slice-3 number): duplicate shares pads; undo keeps later changes; a new deck
  * after a delete keeps gap-free badges and fills the name gap.
  */
 
-import { test, expect } from '@playwright/test';
-import { goToBoardList, createBoardAndNavigate, enterSetupMode, closePadEditor } from './helpers';
+import { test, expect, type Page } from '@playwright/test';
+import {
+  goToBoardList,
+  createBoardAndNavigate,
+  enterGameMode,
+  enterSetupMode,
+  closePadEditor,
+  reopenFirstBoard,
+} from './helpers';
 
 test.beforeEach(async ({ page }) => {
   await page.goto('/soundboard-of-storytelling/');
@@ -70,20 +77,66 @@ test('8 — duplicate deck → new tab appears with suffix', async ({ page }) =>
 
 // ── Test 9: Reorder via drag ──────────────────────────────────────────────────
 
-// QUARANTINE (docs/development/testing.md#flaky-tests-quarantine): the FEATURE is not built — DeckRail has no
-// reorder at all (found 2026-09-29; earlier docs wrongly claimed it). Decided: drag & drop,
-// mouse + touch. docs/backlog.md#deck-reorder-drag--drop--feature-not-built. Activate when the feature lands.
-// eslint-disable-next-line playwright/no-skipped-test -- quarantine: feature not built (BACKLOG "Deck reorder")
-test.fixme('9 — deck reorder via drag → order changes [FEATURE NOT BUILT — BACKLOG: Deck reorder]', async ({
+// Slice 13g (docs/product/features/adaptive-layout.md#decided L6): the active deck in SETUP moves
+// by its drag handle (Pointer Events) or with ▲ / ▼; the order is stored with the board.
+
+const deckNames = (page: Page) => page.locator('[data-testid^="deck-rail-select-button-"]');
+
+/** Three decks, Deck 3 — the newest — active. */
+async function threeDecks(page: Page): Promise<void> {
+  for (let i = 0; i < 3; i++) await page.getByTestId('deck-rail-new-button').click();
+  await expect(deckNames(page)).toHaveText([/Deck 1/, /Deck 2/, /Deck 3/]);
+  await expect(deckNames(page).nth(2)).toHaveAttribute('aria-current', 'true');
+}
+
+test('9 — deck reorder via drag → order changes, also after reopening', async ({ page }) => {
+  await threeDecks(page);
+  const handle = page.locator('[data-testid^="deck-rail-drag-region-"]');
+  await expect(handle).toHaveCount(1);
+  const from = (await handle.boundingBox())!;
+  const firstRow = (await deckNames(page).first().boundingBox())!;
+  // Pressed on the handle, moved past the threshold, dropped on the top part of Deck 1
+  await page.mouse.move(from.x + from.width / 2, from.y + from.height / 2);
+  await page.mouse.down();
+  await page.mouse.move(from.x + from.width / 2, from.y - 12, { steps: 4 });
+  await page.mouse.move(from.x + from.width / 2, firstRow.y + 4, { steps: 15 });
+  await page.mouse.up();
+  await expect(deckNames(page)).toHaveText([/Deck 3/, /Deck 1/, /Deck 2/]);
+  // The badges are positions: Deck 3 is number 1 now
+  await expect(deckNames(page).first()).toHaveText(/^1\s*Deck 3/);
+
+  await reopenFirstBoard(page);
+  await expect(deckNames(page)).toHaveText([/Deck 3/, /Deck 1/, /Deck 2/]);
+});
+
+test('9b — ▲ / ▼ move the active deck one place; at the ends the button is off', async ({
   page,
 }) => {
-  // Create two decks
-  await page.getByTestId('deck-rail-new-button').click();
-  await page.getByTestId('deck-rail-new-button').click();
-  await expect(page.locator('[data-testid^="deck-rail-deck-tab-"]')).toHaveCount(2);
+  await threeDecks(page);
+  const down = page.getByRole('button', { name: 'Move deck Deck 3 down' });
+  const up = page.getByRole('button', { name: 'Move deck Deck 3 up' });
+  await expect(down).toBeDisabled();
 
-  // To write together with the feature: pointerDrag(deck tab 2 → above deck tab 1),
-  // then assert the tab order and its persistence after reopenFirstBoard().
+  await up.click();
+  await expect(deckNames(page)).toHaveText([/Deck 1/, /Deck 3/, /Deck 2/]);
+  await up.click();
+  await expect(deckNames(page)).toHaveText([/Deck 3/, /Deck 1/, /Deck 2/]);
+  await expect(up).toBeDisabled();
+  await down.click();
+  await expect(deckNames(page)).toHaveText([/Deck 1/, /Deck 3/, /Deck 2/]);
+
+  await reopenFirstBoard(page);
+  await expect(deckNames(page)).toHaveText([/Deck 1/, /Deck 3/, /Deck 2/]);
+});
+
+test('9c — only the active deck in SETUP shows the reorder line; GAME shows none', async ({
+  page,
+}) => {
+  await threeDecks(page);
+  await expect(page.getByRole('group', { name: 'Move deck Deck 3' })).toBeVisible();
+  await expect(page.getByRole('group', { name: /^Move deck/ })).toHaveCount(1);
+  await enterGameMode(page);
+  await expect(page.getByRole('group', { name: /^Move deck/ })).toHaveCount(0);
 });
 
 // ── Test 10: Delete deck ─────────────────────────────────────────────────────

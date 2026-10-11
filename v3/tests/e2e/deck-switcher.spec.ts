@@ -95,3 +95,20 @@ test('from 600 px the rail is back and the tabs are gone', async ({ page }) => {
   await expect(page.getByTestId('deck-rail-toggle-button')).toBeVisible();
   await expect(deckTabs(page)).toHaveCount(0);
 });
+
+test('on a phone a deck moves in the DECKS list, and the tab row follows (Slice 13g)', async ({
+  page,
+}) => {
+  await addDecks(page, 3);
+  await decksButton(page).click();
+  const panel = page.getByTestId('deck-rail-sheet-region');
+  // The newest deck is active; its ▲ is a whole touch target inside the panel
+  const up = panel.getByRole('button', { name: 'Move deck Deck 3 up' });
+  await expect(up).toBeInViewport({ ratio: 1 });
+  const box = (await up.boundingBox())!;
+  expect(box.width).toBeGreaterThanOrEqual(44);
+  expect(box.height).toBeGreaterThanOrEqual(44);
+  await up.click();
+  await decksButton(page).click();
+  await expect(deckTabs(page)).toHaveText(['1 Deck 1', '2 Deck 3', '3 Deck 2']);
+});

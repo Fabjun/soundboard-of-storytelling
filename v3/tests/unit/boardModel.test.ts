@@ -23,6 +23,7 @@ import {
   deletePad,
   duplicateDeck,
   findDeck,
+  moveDeck,
   nextDeckName,
   nextDeckOrder,
   placeInDeck,
@@ -895,5 +896,46 @@ describe('parseBoard (untrusted boards from a backup file)', () => {
 
   it.each(broken)('rejects: %s', (_, change) => {
     expect(parseBoard(change(valid()))).toBeNull();
+  });
+});
+
+describe('moveDeck', () => {
+  // Three decks with a gap in the order numbers (a deck was deleted), stored out of rail order
+  const three = (): Board => ({
+    ...emptyBoard(),
+    decks: [
+      { id: 'c', name: 'C', order: 5, gridConfig: grid, placements: [] },
+      { id: 'a', name: 'A', order: 0, gridConfig: grid, placements: [] },
+      { id: 'b', name: 'B', order: 2, gridConfig: grid, placements: [] },
+    ],
+  });
+  const railOrder = (b: Board) => [...b.decks].sort((x, y) => x.order - y.order).map((d) => d.id);
+
+  it('moves a deck down and up in rail order', () => {
+    expect(railOrder(moveDeck(three(), 'a', 1))).toEqual(['b', 'a', 'c']);
+    expect(railOrder(moveDeck(three(), 'c', 0))).toEqual(['c', 'a', 'b']);
+    expect(railOrder(moveDeck(three(), 'a', 2))).toEqual(['b', 'c', 'a']);
+  });
+
+  it('keeps the order numbers the board uses — the gap stays', () => {
+    const b = moveDeck(three(), 'c', 0);
+    expect(b.decks.map((d) => d.order).sort((x, y) => x - y)).toEqual([0, 2, 5]);
+    expect(findDeck(b, 'c')!.order).toBe(0);
+  });
+
+  it('puts an index outside the list at its nearest end', () => {
+    expect(railOrder(moveDeck(three(), 'a', 99))).toEqual(['b', 'c', 'a']);
+    expect(railOrder(moveDeck(three(), 'c', -3))).toEqual(['c', 'a', 'b']);
+  });
+
+  it('returns the same board for a deck that stays or is missing', () => {
+    const b = three();
+    expect(moveDeck(b, 'b', 1)).toBe(b);
+    expect(moveDeck(b, 'gone', 0)).toBe(b);
+  });
+
+  it('changes nothing else of the decks', () => {
+    const b = moveDeck(three(), 'a', 2);
+    expect(findDeck(b, 'a')).toEqual({ ...findDeck(three(), 'a')!, order: 5 });
   });
 });
