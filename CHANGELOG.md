@@ -21,6 +21,7 @@ release notes the app shows are written separately for its users (`v3/src/lib/wh
 ### Internal
 
 - test: unit tests for the new key helpers, setQuickAccessHotkey and keyControl (a bar key in every view, without a deck, before a deck key); E2E pad-keys — the bar key shown and played in another deck, K2 refused both ways, a bar key moved; each counter-checked; the deck key tests locate the field by its region
+- docs: the owner decisions of 2026-10-10 and 2026-10-11 recorded — pad.md PQ2 / PQ4 decided; adaptive-layout L6 (▲ / ▼ and drag & drop), L7 search and sort, L8 the quick-access bar, L9 now playing as one line in the status bar and the dock; product §5 phone row, the V1 inventory and BACKLOG "Deck reorder" follow
 
 ## 3.0.214 — 2026-10-10
 
