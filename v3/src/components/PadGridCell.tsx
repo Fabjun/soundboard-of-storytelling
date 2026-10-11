@@ -11,10 +11,11 @@
 
 import type { JSX } from 'preact';
 import type { AppMode, Pad } from '../types';
-import { padTypeColor, padTypeGlow, padTypeLabel } from '../lib/padUtils';
+import { padTypeColor, padTypeGlow, padTypeLabel, padTypeName } from '../lib/padUtils';
+import { padDurationText } from '../lib/padDuration';
 import { keyLabel } from '../lib/padKeys';
 import { play, stop, isPlaying } from '../audio/index';
-import { playingPads, loopingPads } from '../state/store';
+import { libraryItems, playingPads, loopingPads } from '../state/store';
 import { PadIcons } from './PadIcons';
 
 interface PadGridCellProps {
@@ -86,6 +87,12 @@ export function PadGridCell({
   const p = pad;
   const color = padTypeColor(p.type);
   const typeLabel = padTypeLabel(p.type);
+  // The running time (owner decision 2026-10-11): shown next to the type from the medium size on
+  const duration = padDurationText(
+    p,
+    (hash) => libraryItems.value.find((m) => m.id === hash)?.duration,
+  );
+  const descriptionId = `pad-grid-cell-description-${p.id}`;
   const isSetup = mode === 'edit';
   const isHot = playingPads.value.has(p.id);
   const isLooping = loopingPads.value.has(p.id);
@@ -132,6 +139,7 @@ export function PadGridCell({
         }
         role="button"
         aria-label={p.name}
+        aria-describedby={descriptionId}
         // GAME: a pad is a play/stop toggle — screen readers announce "pressed" while it plays.
         aria-pressed={isSetup ? undefined : isHot || isLooping}
         tabIndex={0}
@@ -139,10 +147,17 @@ export function PadGridCell({
           if (e.key === 'Enter' || e.key === ' ') handleTap();
         }}
       >
-        {/* Type badge */}
+        {/* Type badge and running time — below 80 px the row gives way to the icon (owner
+            decision 2026-10-11: name > icon > type; the type stays in the color, the placeholder
+            shape and the description below) */}
         <div class="sb-pad-type-label" style={{ color }}>
           {typeLabel}
+          {duration && <span class="sb-pad-duration"> · {duration}</span>}
         </div>
+        {/* What a screen reader says after the name: the type in plain words and the running time */}
+        <span id={descriptionId} class="sb-visually-hidden">
+          {duration ? `${padTypeName(p.type)}, ${duration}` : padTypeName(p.type)}
+        </span>
 
         {/* Picture area: the pad's icons, or its type's placeholder (ADR-0070) */}
         <PadIcons icons={p.icons} type={p.type} />

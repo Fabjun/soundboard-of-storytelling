@@ -101,6 +101,15 @@ export function withEarlyVersions(
 /** The release notes the start screen shows, newest first (checked by whatsNew.test.ts). */
 export const WHATS_NEW: WhatsNewNotes[] = [
   {
+    version: '3.0.223',
+    new: [
+      'Pads from medium size on show how long they play — next to their type, for a Loop with ∞ or its repeat count.',
+    ],
+    improved: [
+      'Small pads show their icon again, above the name; the type label gives way to it, the pad color still shows the type.',
+    ],
+  },
+  {
     version: '3.0.222',
     improved: [
       'Screen readers find the library panel as a region of its own, and its close button says what it does.',

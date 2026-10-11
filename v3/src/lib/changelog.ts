@@ -17,10 +17,21 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.222';
+export const APP_VERSION = '3.0.223';
 
 /** The developer log, newest first; CHANGELOG.md is generated from it (sync-changelog). */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.223',
+    date: '2026-10-12',
+    items: [
+      'feat(pads): a small pad (below 80 px) shows its name and its icon (owner decision 2026-10-11: name > icon > type; replaces PQ2 of 2026-10-10) — the picture takes the room between the top and the name (18.7 px at 45 px, 40 px from 67 px), the type row gives way; the type stays in the color, the placeholder shape and the description screen readers read (WCAG 2.2 SC 1.4.1)',
+      'feat(pads): a pad shows its running time next to its type from 80 px (owner decision 2026-10-11, as Farrago): a Single its length or the shortest–longest of its files, a Loop one pass and ∞ or ×N, a Combo nothing; trims counted, rounded up (lib padDuration); the time left while playing needs the engine to report which file starts — BACKLOG "Remaining time on a playing pad"',
+      'a11y(pads): every pad is described as its type and running time ("Single, 0:13", aria-describedby); padUtils padTypeName; class sb-visually-hidden (the A11y Project / Bootstrap pattern) and sb-pad-duration',
+      'test: unit tests padDuration (no file, unknown length, trim, a short sound never 0:00, range, ∞ / ×N, Combo); E2E pad-size — on a phone at PAD SIZE 44 / 68 / 76 / 88 / 120 the name inside, the icon at least 10 px above it, the type row only from 80 px, the description "Single"; counter-checked (icons hidden again, type row kept)',
+      'docs: pad.md PQ2 and the detail levels; BACKLOG "Remaining time on a playing pad"',
+    ],
+  },
   {
     version: '3.0.222',
     date: '2026-10-12',

@@ -209,3 +209,18 @@ export function padTypeLabel(type: PadType): string {
       return 'COMBO';
   }
 }
+
+/**
+ * The pad type in plain words — what a screen reader says for a pad, which on a small pad shows
+ * its type only by color and shape (WCAG 2.2 SC 1.4.1: color is never the only means).
+ */
+export function padTypeName(type: PadType): string {
+  switch (type) {
+    case 'single':
+      return 'Single';
+    case 'loop':
+      return 'Loop';
+    case 'combo':
+      return 'Combo';
+  }
+}
