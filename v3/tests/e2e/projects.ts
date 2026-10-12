@@ -50,6 +50,7 @@ export const FULL_TESTS = [
   'pad-search',
   'quick-access',
   'now-playing',
+  'bar-toggles',
 ];
 
 /**
@@ -79,6 +80,7 @@ export const FULL_WEBKIT_TESTS = [
   'board-frames',
   'deck-switcher',
   'pad-search',
+  'bar-toggles',
 ];
 
 /** tests/e2e/mobile/<name>.spec.ts — audio-free, WebKit / iPhone 13 Pro (real Safari engine path). */

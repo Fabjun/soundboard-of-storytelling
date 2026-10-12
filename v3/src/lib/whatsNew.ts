@@ -101,6 +101,13 @@ export function withEarlyVersions(
 /** The release notes the start screen shows, newest first (checked by whatsNew.test.ts). */
 export const WHATS_NEW: WhatsNewNotes[] = [
   {
+    version: '3.0.224',
+    new: [
+      'The search bar, the quick-access bar and — on a phone — the deck tabs can be folded away behind a magnifying glass, a star and a hand of cards, to give the pads more room. A folded bar stays folded; a dot on its icon shows when it still has an effect, such as a search.',
+    ],
+    improved: ['The Lock shows a padlock that is open or closed with its state.'],
+  },
+  {
     version: '3.0.223',
     new: [
       'Pads from medium size on show how long they play — next to their type, for a Loop with ∞ or its repeat count.',

@@ -171,13 +171,15 @@ export async function createBoardAndNavigate(page: Page): Promise<void> {
 
 /**
  * Unfolds the deck rail if it is folded (it starts folded). In the narrow frame the decks are
- * tabs above the grid (Slice 13b) — there is nothing to unfold.
+ * tabs above the grid (Slice 13b), which fold behind the cards toggle (2026-10-11) — unfolded
+ * here too.
  */
 export async function openDeckRail(page: Page): Promise<void> {
   const toggle = page.getByTestId('deck-rail-toggle-button');
-  await toggle.or(page.getByTestId('deck-rail-all-pads-tab-button')).first().waitFor();
-  if ((await toggle.count()) === 0) return;
-  if ((await toggle.getAttribute('aria-expanded')) === 'false') await toggle.click();
+  const tabs = page.getByTestId('board-screen-decks-toggle-button');
+  await toggle.or(tabs).first().waitFor();
+  const folding = (await toggle.count()) > 0 ? toggle : tabs;
+  if ((await folding.getAttribute('aria-expanded')) === 'false') await folding.click();
 }
 
 /**

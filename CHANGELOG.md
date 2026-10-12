@@ -7,6 +7,23 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.224 — 2026-10-12
+
+### Added
+
+- feat(board): bars that fold (owner decision 2026-10-11, adaptive-layout L10) — the search bar behind a magnifying glass, the quick-access bar behind a star, the deck tabs on a phone behind a hand of cards; open until folded, folded kept after a reload (prefs `bar-open:*`); a folded bar holding a search or quick-access pads marks its icon (has-marker, "… — it is in effect"); a folded search stays in effect; the toggles in the top bar on a wide window, at the end of the deck tabs on a phone (the top bar is full there: 104 / 175 / 87 of 390 px, measured)
+- feat(board): the Lock shows the collection's padlock, open or closed with its state; the toolbar icons come from the pad icon collection (nikoichu) in the pads' style — build:icons bundles them (src/icons/toolbar.json, checked by iconGuards)
+- feat: component BarToggle (disclosure button, aria-expanded / aria-controls only while the bar is drawn) and ToolbarIcon; DeckRail `tabsShown` / `tail`; prefs isBarOpen / setBarOpen; classes sb-toolbar-icon, sb-bar-toggles, state has-marker
+
+### Fixed
+
+- fix(scripts): build:icons ran no more since #65 — writeGenerated accepts only the generated docs; the icon build writes through writeFormatted now (all its other outputs unchanged)
+
+### Internal
+
+- test: E2E bar-toggles — the deck tabs fold on a phone and stay folded after a reload, a folded search stays in effect and marks the glass, the star folds the quick-access bar and is marked, the toggles in the top bar on a wide window; unit tests for the bar preferences; each counter-checked (not stored, no marker, a fold that clears the search); the axe scan found aria-controls pointing at an empty bar — fixed; openDeckRail unfolds folded tabs; two visual baselines
+- docs: adaptive-layout L10, and L11 the open status-bar idea; design-system state has-marker
+
 ## 3.0.223 — 2026-10-12
 
 ### Added

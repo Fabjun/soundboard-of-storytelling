@@ -13,7 +13,9 @@ import {
   getLastBackup,
   getLastPlayed,
   getPadSort,
+  isBarOpen,
   prefsVersion,
+  setBarOpen,
   setLastPlayed,
   setPadSort,
   getLastView,
@@ -149,6 +151,28 @@ describe('last played, per pad', () => {
       await loadPrefs();
       expect(getLastPlayed('q')).toBeNull();
     }
+  });
+});
+
+describe('bars that fold (2026-10-11)', () => {
+  it('open until folded; folded kept after a reload; opened again stores nothing', async () => {
+    expect(isBarOpen('search')).toBe(true);
+    setBarOpen('search', false);
+    expect(isBarOpen('search')).toBe(false);
+    expect(isBarOpen('quick-access')).toBe(true); // each bar on its own
+    await settled();
+    await loadPrefs();
+    expect(isBarOpen('search')).toBe(false);
+    setBarOpen('search', true);
+    await settled();
+    expect(isBarOpen('search')).toBe(true);
+    expect((await kvGetAll()).map(([k]) => k)).not.toContain('bar-open:search');
+  });
+
+  it('an unexpected stored value counts as open', async () => {
+    await kvPut('bar-open:decks', 'no');
+    await loadPrefs();
+    expect(isBarOpen('decks')).toBe(true);
   });
 });
 

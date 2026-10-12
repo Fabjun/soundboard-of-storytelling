@@ -109,3 +109,23 @@ export function getLastPlayed(padId: string): number | null {
 export function setLastPlayed(padId: string, when: number): void {
   write(lastPlayedKey(padId), when);
 }
+
+// ── Bars that fold (owner decision 2026-10-11) ──────────────────────────────
+
+/** A bar of the board screen that can be folded behind its toolbar icon. */
+export type BarName = 'search' | 'quick-access' | 'decks';
+
+const barKey = (bar: BarName) => `bar-open:${bar}`;
+
+/**
+ * Tells whether a bar is shown — open until it is folded: someone who never folds a bar sees the
+ * board as before (hidden navigation is found less often, NN/g).
+ */
+export function isBarOpen(bar: BarName): boolean {
+  return cache.get(barKey(bar)) !== false;
+}
+
+/** Shows or folds a bar; only a folded bar is stored. */
+export function setBarOpen(bar: BarName, open: boolean): void {
+  write(barKey(bar), open ? undefined : false);
+}
