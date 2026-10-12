@@ -13,9 +13,11 @@
  *   Pad tap in SETUP mode: edit existing pad
  *   "More options" handoff from Path A Popover
  *
- * Save strategy: Auto-Save with 500ms debounce (no explicit Save button).
- * Matches V1 workflow, prevents forgotten saves. A pending edit is written at once — never
- * dropped — when the editor switches pad, closes or the page is hidden (src/lib/debouncedSave.ts).
+ * Save strategy (owner decision 2026-10-11, ADR-0084): the pad's fields are a draft until SAVE;
+ * ↶ / ↷ (and Cmd / Ctrl + Z) undo and redo every step (src/lib/editHistory.ts); ✕ or Escape with
+ * unsaved changes asks "Discard changes?" — KEEP EDITING or DISCARD CHANGES (the Material
+ * full-screen dialog pattern). The board relations — decks, keys, quick access, remove, delete —
+ * act at once, as before. Was: auto-save after 500 ms (src/lib/debouncedSave.ts).
  *
  * Fields:
  *   - Name (required)
@@ -60,6 +62,7 @@ import {
   padTypeLabel,
   applyTypeChange,
   padMigrationMatrix,
+  samePadContent,
 } from '../lib/padUtils';
 import { libraryItems, previewPlaying } from '../state/store';
 import { updateBoard } from '../state/boardWrites';
@@ -77,12 +80,15 @@ import {
 import { deckKeyUse, keyHolder, keyLabel, quickAccessKeyHolder } from '../lib/padKeys';
 import { KeyField, type KeyCheck } from './KeyField';
 import { nextFreeSlot } from '../lib/padUtils';
+import { record, redo, seal, startHistory, undo, type History } from '../lib/editHistory';
 import { debouncedSave } from '../lib/debouncedSave';
+import { clearPadDraft, getPadDraft, setPadDraft } from '../state/prefs';
+import { ToolbarIcon } from './BarToggle';
 import { fromPad, moveHandle, toPad, type Handle, type TrimValues } from '../lib/trimRange';
 import { previewPosition, startPreview, stopPreview } from '../lib/preview';
 import { ensureFinePeaks } from '../lib/upload';
 import { inertOutside } from '../lib/inertOutside';
-import { useEscapeKey } from '../lib/escapeKey';
+import { useEscapeKey, useKeydown } from '../lib/escapeKey';
 
 interface PadEditorPanelProps {
   pad: Pad;
@@ -98,9 +104,9 @@ interface PadEditorPanelProps {
 const PAD_TYPES: PadType[] = ['single', 'loop', 'combo'];
 
 /**
- * Edits one pad in SETUP mode and saves each change on its own after a short pause; a pending
- * change is written at once when the editor closes or switches pad. Also places the pad in decks,
- * removes it from the current deck, or deletes it.
+ * Edits one pad in SETUP mode as a draft that SAVE writes, with undo and redo; closing with
+ * unsaved changes asks first. Also places the pad in decks, removes it from the current deck, or
+ * deletes it — at once.
  */
 export function PadEditorPanel({
   pad,
@@ -110,25 +116,32 @@ export function PadEditorPanel({
   onDelete,
   onRemoveFromDeck,
 }: PadEditorPanelProps): JSX.Element {
-  // Local state mirrors the pad; auto-saved on change
-  const [name, setName] = useState(pad.name);
-  const [type, setType] = useState<PadType>(pad.type);
+  // A draft this editor left behind — the page closed or the tab ended before SAVE — comes back
+  // (ADR-0084); the fields start from it
+  const [restored] = useState(() => {
+    const d = getPadDraft(pad.id);
+    return d && !samePadContent(d, pad) ? d : null;
+  });
+  const start = restored ?? pad;
+  // Local state mirrors the draft
+  const [name, setName] = useState(start.name);
+  const [type, setType] = useState<PadType>(start.type);
   /** Audio files of a Single / Loop pad, each with its own trim (ADR-0068); empty for a Combo. */
-  const [files, setFiles] = useState<PadFile[]>(isComboPad(pad) ? [] : pad.files);
-  const [order, setOrder] = useState<FileOrder>(isComboPad(pad) ? 'sequential' : pad.order);
+  const [files, setFiles] = useState<PadFile[]>(isComboPad(start) ? [] : start.files);
+  const [order, setOrder] = useState<FileOrder>(isComboPad(start) ? 'sequential' : start.order);
   /** How often a Loop plays (ADR-0069); undefined = until stopped (∞). */
   const [repeat, setRepeat] = useState<number | undefined>(
-    pad.type === 'loop' ? pad.repeat : undefined,
+    start.type === 'loop' ? start.repeat : undefined,
   );
   /** The file the waveform editor and the preview work on (index into `files`). */
   const [selectedIndex, setSelectedIndex] = useState(0);
   /** Library files ticked in the picker, added together with ADD. */
   const [picked, setPicked] = useState<string[]>([]);
   /** Steps of a Combo pad (Slice 11); empty for Single / Loop. Saved with the rest of the pad. */
-  const [steps, setSteps] = useState<ComboStep[]>(isComboPad(pad) ? pad.steps : []);
-  const [volume, setVolume] = useState(pad.volume);
-  const [fadeIn, setFadeIn] = useState(pad.fadeIn);
-  const [fadeOut, setFadeOut] = useState(pad.fadeOut);
+  const [steps, setSteps] = useState<ComboStep[]>(isComboPad(start) ? start.steps : []);
+  const [volume, setVolume] = useState(start.volume);
+  const [fadeIn, setFadeIn] = useState(start.fadeIn);
+  const [fadeOut, setFadeOut] = useState(start.fadeOut);
   /** Where the next preview starts, in seconds; null = at the trim start. */
   const [cursor, setCursor] = useState<number | null>(null);
   /** The preview was started and not yet stopped or ended. */
@@ -140,40 +153,64 @@ export function PadEditorPanel({
   const [libSearch, setLibSearch] = useState('');
   const [libPickerOpen, setLibPickerOpen] = useState(false);
   /** The pad's icons, up to 4 keys in the order the pad shows them (ADR-0070). */
-  const [icons, setIcons] = useState<string[]>(pad.icons ?? []);
+  const [icons, setIcons] = useState<string[]>(start.icons ?? []);
   /** The icon slot the picker fills (an index into `icons`, or its length to add); null = closed. */
   const [pickerSlot, setPickerSlot] = useState<number | null>(null);
   /** The icon whose ✕ was tapped once and now asks to confirm. */
   const [iconConfirm, setIconConfirm] = useState<number | null>(null);
   const iconDrawings = useIconDrawings(icons);
 
-  // The pad lives once in the pool: the edit shows in every deck that places it (ADR-0048).
-  // updateBoard applies it to the board as it is when the save runs, so a change made in the
-  // meantime (deck checkbox, drag and drop, deck rename) is kept.
-  const [autoSave] = useState(() =>
-    debouncedSave<{ boardId: string; pad: Pad }>((edit) => {
-      void updateBoard(edit.boardId, (b) => updatePad(b, edit.pad));
-    }, 500),
+  // A draft until SAVE, with undo and redo (owner decision 2026-10-11, ADR-0084): every change
+  // records the whole pad as a step; `saved` is the content last stored, to tell whether there are
+  // unsaved changes
+  const [history, setHistory] = useState<History<Pad>>(() =>
+    restored ? record(startHistory(pad), restored) : startHistory(pad),
   );
+  const [saved, setSaved] = useState<Pad>(pad);
+  const unsaved = !samePadContent(history.present, saved);
+  /** Closing with unsaved changes asks first: discard them, or keep editing. */
+  const [confirmDiscard, setConfirmDiscard] = useState(false);
   /** The pad's key in this deck — keys belong to the placement (ADR-0048). */
   const hotkey = deck?.placements.find((p) => p.padId === pad.id)?.hotkey;
   /** The pad's board-wide key in the quick-access bar (K13). */
   const quickKey = board.quickAccess.find((q) => q.padId === pad.id)?.hotkey;
 
   // One editor per pad: BoardScreen keys it by pad id, so another pad gets a fresh editor with
-  // fresh state (react.dev, "You Might Not Need an Effect" — resetting state with a key). The
-  // pending edit belongs to this pad and is written when the editor goes — a layout cleanup, as
-  // Preact runs passive cleanups only after the next paint.
-  useLayoutEffect(() => () => autoSave.flush(), [autoSave]);
+  // fresh state (react.dev, "You Might Not Need an Effect" — resetting state with a key).
 
-  // The page being hidden is the last reliable moment to save (app switch, tab close)
+  // The undo / redo keys on the document while the editor is open: a SAVE button turned off after
+  // an undo hands the focus to the body (WebKit), outside the dialog
+  useKeydown(handleShortcut);
+
+  // Leaving the page with unsaved changes asks the browser's question first (MDN beforeunload);
+  // iOS does not ask — BACKLOG "PAD editor draft kept on the device"
+  useEffect(() => {
+    if (!unsaved) return;
+    const warn = (e: BeforeUnloadEvent) => e.preventDefault();
+    window.addEventListener('beforeunload', warn);
+    return () => window.removeEventListener('beforeunload', warn);
+  }, [unsaved]);
+
+  // The draft kept on the device while it is unsaved (iOS ends background tabs and asks nothing):
+  // written once the edits pause, at once when the page is hidden or the editor goes; null clears
+  // it (src/lib/debouncedSave.ts)
+  const [keeper] = useState(() =>
+    debouncedSave<Pad | null>((d) => (d ? setPadDraft(d) : clearPadDraft(pad.id)), 500),
+  );
+  useLayoutEffect(() => () => keeper.flush(), [keeper]);
   useEffect(() => {
     const onVisibility = () => {
-      if (document.visibilityState === 'hidden') autoSave.flush();
+      if (document.visibilityState === 'hidden') keeper.flush();
     };
     document.addEventListener('visibilitychange', onVisibility);
     return () => document.removeEventListener('visibilitychange', onVisibility);
-  }, [autoSave]);
+  }, [keeper]);
+
+  /** Forgets the kept draft at once (SAVE, DISCARD CHANGES, delete). */
+  function dropDraft() {
+    keeper.schedule(null);
+    keeper.flush();
+  }
 
   // The preview belongs to this editor: it stops when the editor closes or switches pad
   useLayoutEffect(() => () => stopPreview(), []);
@@ -224,10 +261,94 @@ export function PadEditorPanel({
     return () => cancelAnimationFrame(frame);
   }, [previewOn]);
 
-  // ── Auto-save with 500ms debounce ────────────────────────────────────────
+  // ── Draft, SAVE, undo and redo (ADR-0084) ────────────────────────────────
 
-  function scheduleAutoSave(updatedPad: Pad) {
-    autoSave.schedule({ boardId: board.id, pad: updatedPad });
+  /**
+   * Records a change of the draft. Changes of the same `kind` in quick succession (typing, a
+   * slider) are one undo step (src/lib/editHistory.ts).
+   */
+  function edit(updatedPad: Pad, kind?: string) {
+    applyHistory(record(historyRef.current, updatedPad, kind));
+  }
+
+  // The latest history and stored content, for changes that follow each other within one event
+  const historyRef = useRef(history);
+  const savedRef = useRef(saved);
+
+  /**
+   * Shows a new history and keeps its draft on the device — scheduled here, in the event, not in
+   * an effect: a page hidden right after a change must find it (an effect runs after the paint).
+   */
+  function applyHistory(h: History<Pad>) {
+    historyRef.current = h;
+    setHistory(h);
+    keeper.schedule(samePadContent(h.present, savedRef.current) ? null : h.present);
+  }
+
+  /** Shows a draft from the history in every field (undo / redo). */
+  function loadDraft(p: Pad) {
+    endPreview(null);
+    setName(p.name);
+    setType(p.type);
+    setFiles(isComboPad(p) ? [] : p.files);
+    setOrder(isComboPad(p) ? 'sequential' : p.order);
+    setRepeat(p.type === 'loop' ? p.repeat : undefined);
+    setSteps(isComboPad(p) ? p.steps : []);
+    setVolume(p.volume);
+    setFadeIn(p.fadeIn);
+    setFadeOut(p.fadeOut);
+    setIcons(p.icons ?? []);
+  }
+
+  function handleUndo() {
+    const h = undo(historyRef.current);
+    if (h === historyRef.current) return;
+    applyHistory(h);
+    loadDraft(h.present);
+  }
+
+  function handleRedo() {
+    const h = redo(historyRef.current);
+    if (h === historyRef.current) return;
+    applyHistory(h);
+    loadDraft(h.present);
+  }
+
+  /**
+   * SAVE — writes the draft. updateBoard applies it to the board as it is then, so a change made
+   * meanwhile (deck checkbox, drag and drop, deck rename) is kept.
+   */
+  function handleSave() {
+    const draft = historyRef.current.present;
+    void updateBoard(board.id, (b) => updatePad(b, { ...draft, modifiedAt: Date.now() }));
+    savedRef.current = draft;
+    setSaved(draft);
+    // SAVE is a step boundary: typing on right after it does not merge into the saved step
+    historyRef.current = seal(historyRef.current);
+    setHistory(historyRef.current);
+    dropDraft();
+  }
+
+  /** ✕ or Escape: closes — after asking, when there are unsaved changes. */
+  function requestClose() {
+    if (unsaved) setConfirmDiscard(true);
+    else onClose();
+  }
+
+  /** Cmd / Ctrl + Z undoes, with Shift (or Ctrl + Y) redoes — not in a text field, which keeps its own. */
+  function handleShortcut(e: KeyboardEvent) {
+    if (confirmDiscard || pickerSlot !== null || pendingType !== null) return;
+    const t = e.target as HTMLElement;
+    if (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA') return;
+    if (!(e.metaKey || e.ctrlKey)) return;
+    const key = e.key.toLowerCase();
+    if (key === 'z' && !e.shiftKey) {
+      e.preventDefault();
+      handleUndo();
+    } else if ((key === 'z' && e.shiftKey) || key === 'y') {
+      e.preventDefault();
+      handleRedo();
+    }
   }
 
   /**
@@ -263,7 +384,7 @@ export function PadEditorPanel({
     const unique = [...new Set(next)].slice(0, PAD_ICONS_MAX);
     setIcons(unique);
     const { icons: _old, ...rest } = buildCurrentPad();
-    scheduleAutoSave(unique.length ? { ...rest, icons: unique } : rest);
+    edit(unique.length ? { ...rest, icons: unique } : rest);
   }
 
   /** Puts the picked icon into the slot the picker was opened for. */
@@ -281,7 +402,7 @@ export function PadEditorPanel({
     const current = buildCurrentPad();
     if (current.type !== 'loop') return;
     const { repeat: _old, ...rest } = current;
-    scheduleAutoSave(next === undefined ? rest : { ...rest, repeat: next });
+    edit(next === undefined ? rest : { ...rest, repeat: next });
   }
 
   /** A file with its trim pulled into the file's length (no change while the length is unknown). */
@@ -319,18 +440,18 @@ export function PadEditorPanel({
     setFiles(nextFiles);
     setFadeIn(t.fadeIn);
     setFadeOut(t.fadeOut);
-    scheduleAutoSave({ ...buildCurrentPad(nextFiles), fadeIn: t.fadeIn, fadeOut: t.fadeOut });
+    edit({ ...buildCurrentPad(nextFiles), fadeIn: t.fadeIn, fadeOut: t.fadeOut }, `trim-${handle}`);
     return moved;
   }
 
   function handleNameChange(newName: string) {
     setName(newName);
-    scheduleAutoSave({ ...buildCurrentPad(), name: newName });
+    edit({ ...buildCurrentPad(), name: newName }, 'name');
   }
 
   function handleVolumeChange(v: number) {
     setVolume(v);
-    scheduleAutoSave({ ...buildCurrentPad(), volume: v });
+    edit({ ...buildCurrentPad(), volume: v }, 'volume');
   }
 
   /** A fade slider: with a file, a fade handle move (the fades fit the trimmed region). */
@@ -341,7 +462,7 @@ export function PadEditorPanel({
       return;
     }
     setFadeIn(v);
-    scheduleAutoSave({ ...buildCurrentPad(), fadeIn: v });
+    edit({ ...buildCurrentPad(), fadeIn: v }, 'fadeIn');
   }
 
   /** A fade slider: with a file, a fade handle move (the fades fit the trimmed region). */
@@ -352,7 +473,7 @@ export function PadEditorPanel({
       return;
     }
     setFadeOut(v);
-    scheduleAutoSave({ ...buildCurrentPad(), fadeOut: v });
+    edit({ ...buildCurrentPad(), fadeOut: v }, 'fadeOut');
   }
 
   // ── File list (Slice 15b, ADR-0068) ──────────────────────────────────────
@@ -361,7 +482,7 @@ export function PadEditorPanel({
   function changeFiles(next: PadFile[], select: number, nextOrder = order) {
     setFiles(next);
     setSelectedIndex(Math.max(0, Math.min(select, next.length - 1)));
-    scheduleAutoSave(buildCurrentPad(next, undefined, nextOrder));
+    edit(buildCurrentPad(next, undefined, nextOrder));
   }
 
   /** ADD — the files ticked in the picker go to the end of the list; the first new one is selected. */
@@ -469,7 +590,7 @@ export function PadEditorPanel({
     setOrder(isComboPad(migrated) ? 'sequential' : migrated.order);
     setRepeat(migrated.type === 'loop' ? migrated.repeat : undefined);
     setSteps(isComboPad(migrated) ? migrated.steps : []);
-    scheduleAutoSave(migrated);
+    edit(migrated);
     setPendingType(null);
   }
 
@@ -477,6 +598,7 @@ export function PadEditorPanel({
 
   function handleDelete() {
     if (deleteConfirm) {
+      dropDraft();
       onDelete(pad.id);
     } else {
       setDeleteConfirm(true);
@@ -559,7 +681,26 @@ export function PadEditorPanel({
 
   // Escape closes the editor — not while the icon list or the type confirmation is open on top:
   // those close first (src/lib/escapeKey.ts decides at the moment the key is pressed)
-  useEscapeKey(onClose, pickerSlot === null && pendingType === null);
+  useEscapeKey(requestClose, pickerSlot === null && pendingType === null && !confirmDiscard);
+  // The question on top closes first: Escape keeps editing
+  useEscapeKey(() => setConfirmDiscard(false), confirmDiscard);
+
+  // The question is a modal alert dialog (W3C APG): the editor behind is inert, the focus starts
+  // on the safe answer — KEEP EDITING — and goes back to ✕ when the question closes
+  const discardRef = useRef<HTMLDivElement>(null);
+  const closeRef = useRef<HTMLButtonElement>(null);
+  useLayoutEffect(() => {
+    const el = discardRef.current;
+    const host = dialog.current;
+    if (!confirmDiscard || !el || !host) return;
+    const restore = inertOutside(el, host);
+    const close = closeRef.current;
+    el.querySelector<HTMLButtonElement>('[data-autofocus]')?.focus();
+    return () => {
+      restore();
+      close?.focus({ preventScroll: true });
+    };
+  }, [confirmDiscard]);
 
   return (
     <div
@@ -575,6 +716,38 @@ export function PadEditorPanel({
       <div class="sb-overlay-header" style={{ borderBottom: `2px solid ${typeColor}` }}>
         <span class="sb-type-indicator" style={{ background: typeColor }} />
         <span class="sb-overlay-title sb-flex-1">PAD EDITOR</span>
+        {/* The draft (ADR-0084): undo and redo every step, SAVE writes it */}
+        <button
+          type="button"
+          class="sb-btn sb-btn-ghost sb-topbar-icon-btn"
+          data-testid="pad-editor-panel-undo-button"
+          aria-label="Undo"
+          title="Undo (Ctrl / Cmd + Z)"
+          disabled={history.past.length === 0}
+          onClick={handleUndo}
+        >
+          <ToolbarIcon name="undo" />
+        </button>
+        <button
+          type="button"
+          class="sb-btn sb-btn-ghost sb-topbar-icon-btn"
+          data-testid="pad-editor-panel-redo-button"
+          aria-label="Redo"
+          title="Redo (Shift + Ctrl / Cmd + Z)"
+          disabled={history.future.length === 0}
+          onClick={handleRedo}
+        >
+          <ToolbarIcon name="redo" />
+        </button>
+        <button
+          type="button"
+          class={`sb-btn ${unsaved ? 'sb-btn-primary' : 'sb-btn-ghost'}`}
+          data-testid="pad-editor-panel-save-button"
+          disabled={!unsaved}
+          onClick={handleSave}
+        >
+          SAVE
+        </button>
         <button
           type="button"
           class={`sb-btn sb-btn-icon ${inQuickAccess ? 'sb-btn-primary' : 'sb-btn-ghost'}`}
@@ -598,14 +771,70 @@ export function PadEditorPanel({
           ★
         </button>
         <button
+          ref={closeRef}
           class="sb-btn sb-btn-icon sb-btn-ghost"
           data-testid="pad-editor-panel-close-button"
           aria-label="Close the pad editor"
-          onClick={onClose}
+          onClick={requestClose}
         >
           ×
         </button>
       </div>
+
+      {/* A draft the editor left behind came back: said once, politely (role status) */}
+      {restored && unsaved && (
+        <div class="sb-dialog-section" role="status" data-testid="pad-editor-panel-restored-text">
+          Unsaved changes restored — SAVE keeps them, ✕ discards them.
+        </div>
+      )}
+
+      {confirmDiscard && (
+        <>
+          <div
+            class="sb-type-confirm-backdrop"
+            aria-hidden="true"
+            onClick={() => setConfirmDiscard(false)}
+          />
+          <div
+            ref={discardRef}
+            class="sb-type-confirm sb-type-confirm-centered"
+            role="alertdialog"
+            aria-modal="true"
+            aria-labelledby="pad-editor-panel-discard-title"
+            aria-describedby="pad-editor-panel-discard-text"
+            data-testid="pad-editor-panel-discard-region"
+          >
+            <div class="sb-dialog-header">
+              <div class="sb-dialog-title" id="pad-editor-panel-discard-title">
+                Discard changes?
+              </div>
+            </div>
+            <div class="sb-dialog-section" id="pad-editor-panel-discard-text">
+              The changes to this pad are not saved. Discarding them keeps the pad as it was saved.
+            </div>
+            <div class="sb-dialog-actions">
+              <button
+                class="sb-btn sb-btn-sm sb-btn-primary sb-dialog-action-btn"
+                data-testid="pad-editor-panel-keep-editing-button"
+                data-autofocus
+                onClick={() => setConfirmDiscard(false)}
+              >
+                KEEP EDITING
+              </button>
+              <button
+                class="sb-btn sb-btn-sm sb-btn-danger sb-dialog-action-btn"
+                data-testid="pad-editor-panel-discard-button"
+                onClick={() => {
+                  dropDraft();
+                  onClose();
+                }}
+              >
+                DISCARD CHANGES
+              </button>
+            </div>
+          </div>
+        </>
+      )}
 
       <div class="sb-pad-editor">
         {/* Name */}
@@ -704,7 +933,7 @@ export function PadEditorPanel({
             board={board}
             onChange={(next) => {
               setSteps(next);
-              scheduleAutoSave(buildCurrentPad(undefined, next));
+              edit(buildCurrentPad(undefined, next));
             }}
           />
         )}

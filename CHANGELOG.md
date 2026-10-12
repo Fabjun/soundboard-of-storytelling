@@ -7,6 +7,23 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.225 — 2026-10-12
+
+### Added
+
+- feat(editor): the PAD editor keeps a draft until SAVE (owner decision 2026-10-11, ADR-0084, supersedes ADR-0030) — SAVE is on only with unsaved changes; ✕ or Escape with changes asks "Discard changes?" (role alertdialog, KEEP EDITING focused, DISCARD CHANGES); the board relations — decks, keys, ★, remove, delete — act at once as before
+- feat(editor): undo and redo (↶ / ↷, Cmd / Ctrl + Z, Shift for redo; text fields keep the browser's own) for every step of the draft — lib editHistory (past / present / future, 100 steps; one kind within 500 ms is one step, as ProseMirror's newGroupDelay; SAVE ends a step); icons rotate-counterclockwise / rotate-clockwise from the collection
+- feat(editor): the unsaved draft is kept on the device (prefs pad-draft:<id>, through debouncedSave: after the edits pause, at once when the page is hidden) and comes back when the pad is opened again ("Unsaved changes restored"); leaving the page with changes asks the browser's question (beforeunload); boardModel parsePad, padUtils samePadContent
+
+### Fixed
+
+- fix(dialogs): one Escape closes one dialog — useEscapeKey leaves a press another dialog handled alone (the editor's Escape opened its question, whose handler took the same press after Preact rendered between the listeners); the editor's undo / redo keys go through a new useKeydown in the same module — added in a layout effect like useEscapeKey, so the codeGuards rule against other keydown listeners keeps holding
+
+### Internal
+
+- test: unit tests editHistory, samePadContent, the kept draft; E2E pad-editor-save — SAVE only with changes and only then on the pad, ✕ without changes, the discard question with KEEP EDITING / Escape / DISCARD CHANGES, undo / redo with typed letters as one step, the keys outside a text field (rewritten after a vacuous first version: the browser's own text undo passed for ours); pad-editing — a draft left by a hidden page comes back; the specs that edited pads save explicitly (closePadEditor saves first); each counter-checked
+- docs: ADR-0084, ADR-0030 superseded, ADR-0074 refined by; V1 inventory "Unsaved-changes guard" decided; CLAUDE.md delayed writes; BACKLOG "A new pad discarded in its first edit stays, empty"
+
 ## 3.0.224 — 2026-10-12
 
 ### Added

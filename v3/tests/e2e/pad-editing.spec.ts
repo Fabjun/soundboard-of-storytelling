@@ -55,9 +55,9 @@ test('17 — change pad name in editor → persists after page reload', async ({
   // Change the name
   const nameInput = page.getByTestId('pad-editor-panel-name-input');
   await nameInput.fill('Renamed Pad');
+  await page.getByTestId('pad-editor-panel-save-button').click();
 
-  // Reload page and navigate back to the board — reloadApp waits for the saves, the waiting
-  // auto-save included (src/lib/debouncedSave.ts)
+  // Reload page and navigate back to the board — reloadApp waits for the saves
   await reloadApp(page);
   await page.getByRole('button', { name: 'BOARD' }).click();
   // Board should still exist
@@ -163,11 +163,15 @@ test('a name typed just before the editor is closed is kept', async ({ page }) =
   await expect(first).toContainText('Owl');
 });
 
-test('a name typed just before the page is hidden is kept', async ({ page }) => {
+// ADR-0084: the editor keeps an unsaved draft on the device — iOS ends background tabs and asks
+// nothing — and brings it back when the pad is opened again; the pad itself changes only on SAVE
+test('a draft left when the page is hidden comes back in the editor; SAVE keeps it', async ({
+  page,
+}) => {
   const first = page
     .locator('[data-testid^="pad-grid-cell-"]:not([data-testid^="pad-grid-cell-empty-slot-"])')
     .first();
-  await pauseClock(page);
+  await pauseClock(page); // only the hidden page writes the draft, not the pause after typing
   await first.click();
   await page.getByTestId('pad-editor-panel-name-input').fill('Rain');
   // What the browser does on an app switch or tab close
@@ -175,5 +179,16 @@ test('a name typed just before the page is hidden is kept', async ({ page }) => 
     Object.defineProperty(document, 'visibilityState', { configurable: true, get: () => 'hidden' });
     document.dispatchEvent(new Event('visibilitychange'));
   });
+
+  await reloadApp(page);
+  await page.getByRole('button', { name: 'BOARD' }).click();
+  await page.locator('[data-testid^="board-list-screen-name-text-"]').first().click();
+  await page.getByTestId('mode-toggle').waitFor();
+  await enterSetupMode(page);
+  await expect(first).not.toContainText('Rain'); // not saved
+  await first.click();
+  await expect(page.getByTestId('pad-editor-panel-name-input')).toHaveValue('Rain');
+  await expect(page.getByTestId('pad-editor-panel-restored-text')).toBeVisible();
+  await page.getByTestId('pad-editor-panel-save-button').click();
   await expect(first).toContainText('Rain');
 });

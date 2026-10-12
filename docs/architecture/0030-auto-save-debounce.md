@@ -1,6 +1,6 @@
 # ADR-0030: Auto-save with 500 ms debounce — no explicit save button
 
-**Status:** Accepted
+**Status:** Superseded by ADR-0084
 **Date:** 2026-05-27
 **Slice:** Slice 3
 **Refines:** —

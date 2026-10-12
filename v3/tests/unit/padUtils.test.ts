@@ -16,6 +16,7 @@ import {
   padTypeGlow,
   newPad,
   padBaseOf,
+  samePadContent,
   DEFAULT_PAD_VOLUME,
 } from '../../src/lib/padUtils';
 
@@ -309,5 +310,42 @@ describe('padBaseOf / timestamps (E1)', () => {
     expect(applyTypeChange(pad, 'combo')).toMatchObject({ addedAt: 5, modifiedAt: 9 });
     expect(newPad('n', 'single', 'N', [], 42)).toMatchObject({ addedAt: 42 });
     expect('addedAt' in newPad('n', 'single', 'N')).toBe(false);
+  });
+});
+
+describe('samePadContent (ADR-0084)', () => {
+  const pad: SinglePad = {
+    id: 'p',
+    type: 'single',
+    name: 'Rain',
+    files: [{ hash: 'a', trimStart: 1 }],
+    order: 'sequential',
+    volume: 80,
+    fadeIn: 0,
+    fadeOut: 0,
+  };
+
+  it('the same content is the same — whatever the key order, modifiedAt or keys set to undefined', () => {
+    const reordered = {
+      fadeOut: 0,
+      fadeIn: 0,
+      volume: 80,
+      order: 'sequential' as const,
+      files: [{ trimStart: 1, hash: 'a' }],
+      name: 'Rain',
+      type: 'single' as const,
+      id: 'p',
+    };
+    expect(samePadContent(pad, reordered)).toBe(true);
+    expect(samePadContent(pad, { ...pad, modifiedAt: 5 })).toBe(true);
+    expect(samePadContent(pad, { ...pad, icons: undefined })).toBe(true);
+  });
+
+  it('a changed field, file, trim or file order is a difference', () => {
+    expect(samePadContent(pad, { ...pad, name: 'Wind' })).toBe(false);
+    expect(samePadContent(pad, { ...pad, files: [{ hash: 'a', trimStart: 2 }] })).toBe(false);
+    const two = { ...pad, files: [{ hash: 'a' }, { hash: 'b' }] };
+    expect(samePadContent(two, { ...pad, files: [{ hash: 'b' }, { hash: 'a' }] })).toBe(false);
+    expect(samePadContent(pad, { ...pad, icons: ['x:y'] })).toBe(false);
   });
 });

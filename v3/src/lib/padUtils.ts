@@ -224,3 +224,26 @@ export function padTypeName(type: PadType): string {
       return 'Combo';
   }
 }
+
+/** A value as JSON with its object keys sorted, so key order never counts. */
+function canonical(v: unknown): string {
+  if (Array.isArray(v)) return `[${v.map(canonical).join(',')}]`;
+  if (v && typeof v === 'object')
+    return `{${Object.entries(v)
+      .filter(([, x]) => x !== undefined)
+      .sort(([a], [b]) => (a < b ? -1 : 1))
+      .map(([k, x]) => `${JSON.stringify(k)}:${canonical(x)}`)
+      .join(',')}}`;
+  return JSON.stringify(v);
+}
+
+/**
+ * Tells whether two pads hold the same content — what the PAD editor compares with the stored pad
+ * to know whether there are unsaved changes (ADR-0084). The time of the last change
+ * (`modifiedAt`), the order of keys and keys set to undefined do not count.
+ */
+export function samePadContent(a: Pad, b: Pad): boolean {
+  const { modifiedAt: _a, ...restA } = a;
+  const { modifiedAt: _b, ...restB } = b;
+  return canonical(restA) === canonical(restB);
+}

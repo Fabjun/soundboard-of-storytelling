@@ -134,10 +134,11 @@ test('a rename and a deck checkbox right after it both survive a reload', async 
   await tabs(page).first().click();
   const cell = await addPadCell(page, 'Thunder');
 
-  // Rename (saved after a 500 ms debounce) and check the second deck before that save runs
+  // Rename, SAVE, and check the second deck before that save is written (ADR-0084)
   await page.getByTestId('pad-editor-panel-name-input').fill('Rain');
+  await page.getByTestId('pad-editor-panel-save-button').click();
   await page.getByTestId(`pad-editor-panel-deck-input-${deck2}`).check();
-  // reopenFirstBoard waits for the debounced rename save too (src/lib/debouncedSave.ts)
+  // reopenFirstBoard waits for the saves
 
   await reopenFirstBoard(page);
   await tabs(page).nth(1).click();
@@ -151,6 +152,7 @@ test('ADD PAD in All pads creates a pad that sits in no deck', async ({ page }) 
   await page.getByTestId('deck-rail-all-pads-tab').click();
   await page.getByText('ADD PAD', { exact: true }).click();
   await page.getByTestId('pad-editor-panel-name-input').fill('Wind');
+  await page.getByTestId('pad-editor-panel-save-button').click();
   const cell = padCells(page).first();
   await expect(cell).toContainText('Wind');
   await expect(page.getByTestId(`pad-editor-panel-deck-input-${deck1}`)).not.toBeChecked();

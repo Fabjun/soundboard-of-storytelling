@@ -12,6 +12,8 @@
 import { signal } from '@preact/signals';
 import { kvDelete, kvGetAll, kvPut } from '../db/idb';
 import { DEFAULT_PAD_SORT, isPadSort, type PadSort } from '../lib/padSort';
+import { parsePad } from '../lib/boardModel';
+import type { Pad } from '../types';
 import { pendingSaves } from './store';
 
 const cache = new Map<string, unknown>();
@@ -128,4 +130,28 @@ export function isBarOpen(bar: BarName): boolean {
 /** Shows or folds a bar; only a folded bar is stored. */
 export function setBarOpen(bar: BarName, open: boolean): void {
   write(barKey(bar), open ? undefined : false);
+}
+
+// ── The PAD editor's draft, kept on the device (ADR-0084) ───────────────────
+
+const padDraftKey = (padId: string) => `pad-draft:${padId}`;
+
+/**
+ * The unsaved draft of a pad the PAD editor left behind — the page was closed or the tab ended
+ * (iOS ends background tabs) before SAVE — or null. A stored value that is no pad, or another
+ * pad's, is ignored.
+ */
+export function getPadDraft(padId: string): Pad | null {
+  const draft = parsePad(cache.get(padDraftKey(padId)));
+  return draft && draft.id === padId ? draft : null;
+}
+
+/** Keeps the editor's unsaved draft of a pad on the device. */
+export function setPadDraft(pad: Pad): void {
+  write(padDraftKey(pad.id), pad);
+}
+
+/** Forgets a pad's draft — after SAVE, DISCARD CHANGES, or when the pad is deleted. */
+export function clearPadDraft(padId: string): void {
+  if (cache.has(padDraftKey(padId))) write(padDraftKey(padId), undefined);
 }
