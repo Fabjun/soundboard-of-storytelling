@@ -13,7 +13,10 @@ import {
   getLastBackup,
   getLastPlayed,
   getPadSort,
+  clearPadDraft,
+  getPadDraft,
   isBarOpen,
+  setPadDraft,
   prefsVersion,
   setBarOpen,
   setLastPlayed,
@@ -151,6 +154,39 @@ describe('last played, per pad', () => {
       await loadPrefs();
       expect(getLastPlayed('q')).toBeNull();
     }
+  });
+});
+
+describe('the PAD editor draft kept on the device (ADR-0084)', () => {
+  const draft = {
+    id: 'p1',
+    type: 'single' as const,
+    name: 'Rain',
+    files: [{ hash: 'a' }],
+    order: 'sequential' as const,
+    volume: 80,
+    fadeIn: 0,
+    fadeOut: 0,
+  };
+
+  it('none until kept; kept after a reload; cleared', async () => {
+    expect(getPadDraft('p1')).toBeNull();
+    setPadDraft(draft);
+    await settled();
+    await loadPrefs();
+    expect(getPadDraft('p1')).toEqual(draft);
+    clearPadDraft('p1');
+    await settled();
+    await loadPrefs();
+    expect(getPadDraft('p1')).toBeNull();
+  });
+
+  it("a stored value that is no pad, or another pad's, is ignored", async () => {
+    await kvPut('pad-draft:p1', { id: 'p1', name: 'broken' });
+    await kvPut('pad-draft:p2', draft);
+    await loadPrefs();
+    expect(getPadDraft('p1')).toBeNull();
+    expect(getPadDraft('p2')).toBeNull();
   });
 });
 

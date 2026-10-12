@@ -4,6 +4,7 @@
 **Date:** 2026-10-05
 **Slice:** cross-cutting
 **Refines:** —
+**Refined by:** ADR-0084 (the PAD editor's draft, SAVE, the discard question, undo and redo)
 **Category:** UI architecture
 
 ## Context

@@ -95,18 +95,19 @@ file. Format: `docs/architecture/_template.md`.
 | [ADR-0081](0081-relative-units.md)                | Relative units for type and spacing                                            | Accepted | infrastructure | 2026-10-09 |
 | [ADR-0082](0082-narrow-and-wide-frames.md)        | Narrow and wide frames — one window class, asked in one place                  | Accepted | Slice 13       | 2026-10-10 |
 | [ADR-0083](0083-menu-button.md)                   | Action menus — one MenuButton after the W3C menu button pattern                | Accepted | Slice 13       | 2026-10-11 |
+| [ADR-0084](0084-pad-editor-draft-and-save.md)     | PAD editor — a draft until SAVE, the discard question, undo and redo           | Accepted | cross-cutting  | 2026-10-12 |
 
 ### Interaction
 
-| #                                        | Title                                                         | Status   | Slice         | Date       |
-| ---------------------------------------- | ------------------------------------------------------------- | -------- | ------------- | ---------- |
-| [ADR-0029](0029-dnd-swap-insert.md)      | SWAP + INSERT as dual DnD semantics                           | Accepted | Slice 3       | 2026-05-27 |
-| [ADR-0030](0030-auto-save-debounce.md)   | Auto-save with 500 ms debounce — no explicit save button      | Accepted | Slice 3       | 2026-05-27 |
-| [ADR-0031](0031-two-tap-delete.md)       | 2-tap delete as the standard confirm pattern                  | Accepted | cross-cutting | 2026-05-27 |
-| [ADR-0032](0032-grid-4col-constant.md)   | 4-column grid constant across all viewports                   | Accepted | Slice 3       | 2026-05-27 |
-| [ADR-0067](0067-browser-gestures-off.md) | The browser's own touch gestures are off — the app owns touch | Accepted | cross-cutting | 2026-10-03 |
-| [ADR-0077](0077-keys-play-pads.md)       | Keys play pads                                                | Accepted | Slice 12      | 2026-10-08 |
-| [ADR-0078](0078-stop-all-two-stages.md)  | STOP ALL in two stages                                        | Accepted | Slice 12      | 2026-10-08 |
+| #                                        | Title                                                         | Status                 | Slice         | Date       |
+| ---------------------------------------- | ------------------------------------------------------------- | ---------------------- | ------------- | ---------- |
+| [ADR-0029](0029-dnd-swap-insert.md)      | SWAP + INSERT as dual DnD semantics                           | Accepted               | Slice 3       | 2026-05-27 |
+| [ADR-0030](0030-auto-save-debounce.md)   | Auto-save with 500 ms debounce — no explicit save button      | Superseded by ADR-0084 | Slice 3       | 2026-05-27 |
+| [ADR-0031](0031-two-tap-delete.md)       | 2-tap delete as the standard confirm pattern                  | Accepted               | cross-cutting | 2026-05-27 |
+| [ADR-0032](0032-grid-4col-constant.md)   | 4-column grid constant across all viewports                   | Accepted               | Slice 3       | 2026-05-27 |
+| [ADR-0067](0067-browser-gestures-off.md) | The browser's own touch gestures are off — the app owns touch | Accepted               | cross-cutting | 2026-10-03 |
+| [ADR-0077](0077-keys-play-pads.md)       | Keys play pads                                                | Accepted               | Slice 12      | 2026-10-08 |
+| [ADR-0078](0078-stop-all-two-stages.md)  | STOP ALL in two stages                                        | Accepted               | Slice 12      | 2026-10-08 |
 
 ### Test infrastructure & workflow
 

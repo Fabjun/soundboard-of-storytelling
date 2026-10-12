@@ -377,12 +377,18 @@ export async function addLoopPad(page: Page, col: number): Promise<void> {
 }
 
 /**
- * Closes the PAD editor when it is open. It covers the whole board (owner decision 2026-10-05),
- * so nothing behind it can be tapped — a person closes it first, and so do the specs.
+ * Closes the PAD editor when it is open — after SAVE when there are unsaved changes (ADR-0084).
+ * It covers the whole board (owner decision 2026-10-05), so nothing behind it can be tapped — a
+ * person closes it first, and so do the specs. The discard question has tests of its own.
  */
 export async function closePadEditor(page: Page): Promise<void> {
   const close = page.getByRole('button', { name: 'Close the pad editor' });
-  if (await close.isVisible()) await close.click();
+  if (await close.isVisible()) {
+    // The editor keeps a draft until SAVE (ADR-0084): a test that edits means to keep the edit
+    const save = page.getByTestId('pad-editor-panel-save-button');
+    if (await save.isEnabled()) await save.click();
+    await close.click();
+  }
   await expect(page.getByRole('dialog', { name: 'Pad editor' })).toBeHidden();
 }
 
@@ -404,6 +410,7 @@ export async function addNamedPad(
   const testId = (await padCells(page).nth(before).getAttribute('data-testid'))!;
   if (opts.combo) await page.getByTestId('pad-editor-panel-type-button-combo').click();
   await page.getByTestId('pad-editor-panel-name-input').fill(name);
+  await page.getByTestId('pad-editor-panel-save-button').click(); // a draft until SAVE (ADR-0084)
   await expect(page.getByTestId(testId)).toContainText(name);
   return testId.replace('pad-grid-cell-', '');
 }

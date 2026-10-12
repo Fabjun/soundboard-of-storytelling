@@ -501,6 +501,14 @@ function isQuickAccessEntry(v: unknown): v is QuickAccessEntry {
 }
 
 /**
+ * A pad read from storage (untrusted), if it has a pad's shape — converted to the current shape
+ * (`migratePad`); otherwise null. Used for the PAD editor's draft kept on the device (ADR-0084).
+ */
+export function parsePad(v: unknown): Pad | null {
+  return isStoredPad(v) ? migratePad(v) : null;
+}
+
+/**
  * A board read from a file (untrusted JSON), if it has the board's shape AND passes the model's
  * consistency rules — otherwise null. Only the board's own fields are kept; pads stored before
  * ADR-0068 come back converted (`migratePad`) and a board before 3.0.178 gets its pad size from its

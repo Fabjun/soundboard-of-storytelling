@@ -96,8 +96,8 @@ const PLACEHOLDERS = {
 
 /**
  * The board toolbar's icons — collection icons in the pads' style instead of the UI set (owner
- * decision 2026-10-11): the Lock, and the toggles that fold the search bar, the quick-access bar
- * and the deck tabs.
+ * decision 2026-10-11): the Lock, the toggles that fold the search bar, the quick-access bar and
+ * the deck tabs, and the PAD editor's undo and redo (ADR-0084).
  */
 const TOOLBAR = {
   locked: 'nikoichu:padlock-locked',
@@ -105,6 +105,8 @@ const TOOLBAR = {
   search: 'nikoichu:magnifying-glass',
   quickAccess: 'nikoichu:star-mana',
   decks: 'nikoichu:card-hand',
+  undo: 'nikoichu:rotate-counterclockwise',
+  redo: 'nikoichu:rotate-clockwise',
 };
 
 type Mask = { id: string; n: number; m: string };

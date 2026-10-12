@@ -11,6 +11,7 @@ import { readFileSync } from 'node:fs';
 import { test, expect, type Page } from '@playwright/test';
 import {
   addNamedPad,
+  closePadEditor,
   createBoardAndNavigate,
   createDeck,
   enterSetupMode,
@@ -65,6 +66,7 @@ test('a pad takes up to 4 icons in the order picked; they show on the pad and ar
     'pixelarticons:sword',
   ]);
   await expect(page.getByTestId('pad-editor-panel-add-icon-button')).toBeHidden(); // 4 is the most
+  await page.getByTestId('pad-editor-panel-save-button').click(); // a draft until SAVE (ADR-0084)
   await expect.poll(() => padIconCount(page)).toBe(4);
 
   // A tap on a filled slot changes that icon
@@ -72,7 +74,7 @@ test('a pad takes up to 4 icons in the order picked; they show on the pad and ar
   await page.getByTestId('icon-picker-search-input').fill('rain');
   await page.getByTestId('icon-picker-icon-button-nikoichu:rain').click();
 
-  await page.getByTestId('pad-editor-panel-close-button').click();
+  await closePadEditor(page); // saves first
   await reopenFirstBoard(page);
   await enterSetupMode(page);
   await expect.poll(() => padIconCount(page)).toBe(4);
@@ -89,6 +91,7 @@ test('an icon is removed on the second tap of its ✕; without icons the pad sho
   page,
 }) => {
   await addIcon(page, 'dragon', 'nikoichu:dragon');
+  await page.getByTestId('pad-editor-panel-save-button').click();
   await expect.poll(() => padIconCount(page)).toBe(1);
   const remove = page.getByTestId('pad-editor-panel-icon-remove-button-0');
   await remove.click();
@@ -96,6 +99,7 @@ test('an icon is removed on the second tap of its ✕; without icons the pad sho
   expect(await slotKeys(page)).toHaveLength(1);
   await remove.click();
   expect(await slotKeys(page)).toEqual([]);
+  await page.getByTestId('pad-editor-panel-save-button').click();
   // No own icon left: the pad draws its type's placeholder (a Single: the circle)
   await expect.poll(() => padIconCount(page)).toBe(0);
   await expect(

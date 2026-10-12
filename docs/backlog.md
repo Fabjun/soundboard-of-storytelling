@@ -628,6 +628,14 @@ pad still counts as playing (`isPlaying`), so a tap or its key stops it instead 
 again; only code that calls `play()` during the fade hits it. Kept known for later engine work.
 **When:** an engine change — the owner decides (ADR-0048 §4), with a playback check.
 
+### A new pad discarded in its first edit stays, empty
+
+Found 2026-10-12 while building ADR-0084: ADD PAD puts the pad on the board at once and opens the
+editor; DISCARD CHANGES in that first edit keeps the pad, unnamed ("—"). Material's creation
+dialogs create nothing until SAVE. Two fixes: create the pad on the first SAVE, or remove it when
+its first draft is discarded.
+**When:** the owner decides which (it changes how ADD PAD feels).
+
 ### Remaining time on a playing pad
 
 Owner decision 2026-10-11: a pad shows its running time from the medium size on (built in

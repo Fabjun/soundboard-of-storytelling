@@ -8,7 +8,7 @@
  */
 
 import { h, render } from 'preact';
-import { useEscapeKey } from '../../src/lib/escapeKey';
+import { useEscapeKey, useKeydown } from '../../src/lib/escapeKey';
 
 function Dialog({ onEscape, active }: { onEscape: () => void; active?: boolean }) {
   useEscapeKey(onEscape, active);
@@ -61,6 +61,16 @@ describe('useEscapeKey', () => {
     expect(below).not.toHaveBeenCalled();
   });
 
+  it('one Escape closes one dialog: a press already handled is left alone', () => {
+    // Two active dialogs at once — as when one's Escape opens the other in the same press
+    const first = vi.fn();
+    const second = vi.fn();
+    render(h('div', null, h(Dialog, { onEscape: first }), h(Dialog, { onEscape: second })), root);
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', cancelable: true }));
+    expect(first).toHaveBeenCalledOnce();
+    expect(second).not.toHaveBeenCalled();
+  });
+
   it('calls the newest handler after a re-render', () => {
     const first = vi.fn();
     const second = vi.fn();
@@ -77,5 +87,23 @@ describe('useEscapeKey', () => {
     render(null, root);
     press('Escape');
     expect(onEscape).not.toHaveBeenCalled();
+  });
+});
+
+describe('useKeydown', () => {
+  function Shortcuts({ onKey, active }: { onKey: (e: KeyboardEvent) => void; active?: boolean }) {
+    useKeydown(onKey, active);
+    return h('div', null);
+  }
+
+  it('hears every key from the first render on, and nothing while inactive', () => {
+    const onKey = vi.fn();
+    render(h(Shortcuts, { onKey }), root);
+    press('z');
+    expect(onKey).toHaveBeenCalledOnce();
+    expect((onKey.mock.calls[0][0] as KeyboardEvent).key).toBe('z');
+    render(h(Shortcuts, { onKey, active: false }), root);
+    press('z');
+    expect(onKey).toHaveBeenCalledOnce();
   });
 });

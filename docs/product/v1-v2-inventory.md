@@ -152,13 +152,13 @@ data loss (e.g. iOS evicting site data) is unrecoverable.
 
 ## 8. Help & onboarding
 
-| Feature                                          | V1  | V2  | V3 status                  | Evidence                    | Decision                                                                                                                   |
-| ------------------------------------------------ | --- | --- | -------------------------- | --------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
-| Onboarding slides on first launch                | ✓   | ✓   | missing                    | —                           | **Decided** — Slice 17                                                                                                     |
-| Context tips (? button per screen)               | ✓   | ?   | missing                    | —                           | **Decided** — Slice 17                                                                                                     |
-| In-app changelog                                 | ✓   | ✓   | built (data)               | `lib/changelog.ts`          | **Decided** (built)                                                                                                        |
-| Unsaved-changes guard in editors                 | ✓   | ✓   | n/a — V3 editor auto-saves | `PadEditorPanel.tsx` header | **Rejected** — the editors auto-save and write at once on close / pad switch / page hide (PR #40): nothing is ever unsaved |
-| Update-available modal with backup before reload | ✓   | ?   | missing                    | —                           | **Decided** — Slice 14                                                                                                     |
+| Feature                                          | V1  | V2  | V3 status       | Evidence             | Decision                                                                                                                                                                             |
+| ------------------------------------------------ | --- | --- | --------------- | -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Onboarding slides on first launch                | ✓   | ✓   | missing         | —                    | **Decided** — Slice 17                                                                                                                                                               |
+| Context tips (? button per screen)               | ✓   | ?   | missing         | —                    | **Decided** — Slice 17                                                                                                                                                               |
+| In-app changelog                                 | ✓   | ✓   | built (data)    | `lib/changelog.ts`   | **Decided** (built)                                                                                                                                                                  |
+| Unsaved-changes guard in editors                 | ✓   | ✓   | built (3.0.225) | `PadEditorPanel.tsx` | **Decided** — owner decision 2026-10-11 (replaces the rejection of PR #40): the PAD editor saves with SAVE and asks before discarding unsaved changes, with undo and redo (ADR-0084) |
+| Update-available modal with backup before reload | ✓   | ?   | missing         | —                    | **Decided** — Slice 14                                                                                                                                                               |
 
 ---
 

@@ -101,6 +101,14 @@ export function withEarlyVersions(
 /** The release notes the start screen shows, newest first (checked by whatsNew.test.ts). */
 export const WHATS_NEW: WhatsNewNotes[] = [
   {
+    version: '3.0.225',
+    new: [
+      'The pad editor has SAVE: changes take effect once they are saved. Closing with unsaved changes asks first whether to discard them.',
+      'Undo and redo in the pad editor step back and forth through every change, also with Ctrl / Cmd + Z.',
+      'Unsaved changes in the pad editor are kept on the device and come back when the pad is opened again — also after the app was closed.',
+    ],
+  },
+  {
     version: '3.0.224',
     new: [
       'The search bar, the quick-access bar and — on a phone — the deck tabs can be folded away behind a magnifying glass, a star and a hand of cards, to give the pads more room. A folded bar stays folded; a dot on its icon shows when it still has an effect, such as a search.',
