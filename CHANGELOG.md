@@ -7,6 +7,12 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.231 — 2026-10-14
+
+### Internal
+
+- build(deps-dev): vite-plugin-pwa 2.0 (major, Dependabot PR #107) — only a wider @vite-pwa/assets-generator peer range and Node >= 20.19; dist of 1.3.0 and 2.0.0 measured byte-identical (32 files incl. sw.js)
+
 ## 3.0.230 — 2026-10-14
 
 ### Internal
