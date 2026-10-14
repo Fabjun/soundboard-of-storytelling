@@ -17,10 +17,18 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.232';
+export const APP_VERSION = '3.0.233';
 
 /** The developer log, newest first; CHANGELOG.md is generated from it (sync-changelog). */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.233',
+    date: '2026-10-14',
+    items: [
+      'feat(settings): Slice 14b, theme flames — the animated flame burns in the colors of the chosen theme: Verdant, Neon and Crimson set --flame-outer / -mid / -core / -heart from flame-themes.jsx (PAL.<theme>.warm); the flame already read these tokens, so no code changed. The personalities beyond color (spores, electricity, blood) stay parked (BACKLOG "Theme flames")',
+      'test: theme.test.ts — every theme sets the four flame colors (counter-checked: one removed → red for exactly it)',
+    ],
+  },
   {
     version: '3.0.232',
     date: '2026-10-14',

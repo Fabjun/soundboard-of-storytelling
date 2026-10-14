@@ -7,6 +7,16 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.233 — 2026-10-14
+
+### Added
+
+- feat(settings): Slice 14b, theme flames — the animated flame burns in the colors of the chosen theme: Verdant, Neon and Crimson set --flame-outer / -mid / -core / -heart from flame-themes.jsx (PAL.<theme>.warm); the flame already read these tokens, so no code changed. The personalities beyond color (spores, electricity, blood) stay parked (BACKLOG "Theme flames")
+
+### Internal
+
+- test: theme.test.ts — every theme sets the four flame colors (counter-checked: one removed → red for exactly it)
+
 ## 3.0.232 — 2026-10-14
 
 ### Added

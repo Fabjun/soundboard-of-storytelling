@@ -101,6 +101,12 @@ export function withEarlyVersions(
 /** The release notes the main menu shows, newest first (checked by whatsNew.test.ts). */
 export const WHATS_NEW: WhatsNewNotes[] = [
   {
+    version: '3.0.233',
+    improved: [
+      'The flame on the start screen and in the menu burns in the colors of the chosen theme.',
+    ],
+  },
+  {
     version: '3.0.232',
     new: [
       'Four color themes for the whole app — Hearth, Verdant, Neon and Crimson — chosen in Settings under APPEARANCE.',

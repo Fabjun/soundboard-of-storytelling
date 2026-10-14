@@ -1468,7 +1468,12 @@ Choosing several files and their order in the PAD editor followed in Slice 15b (
 ### Theme flames: Verdant, Neon, Crimson
 
 Parked 2026-09-29. `design-sources/2026-09-28/Design_Soundboard_of_Storytelling/Flammen.html` designs four flame personalities (Hearth, Verdant, Neon, Crimson) on one canvas engine. Hearth's freeze/thaw is in the StartScreen flame (hybrid, `docs/design/imports/animated-flame.md`); the other three belong to the themes.
-**When:** Slice 14 (settings & polish, themes).
+**Colors built in 3.0.233** (Slice 14b): each theme sets the flame's four warm colors from
+`flame-themes.jsx` (`PAL.<theme>.warm`) in `v3/src/styles/tokens.css`, guarded by
+`v3/tests/unit/theme.test.ts`. **Still parked:** the personalities beyond color — Verdant's spores,
+Neon's electricity, Crimson's blood (`flame-themes.jsx` draw / onTap per theme); they need the
+flame engine to take a per-theme behavior.
+**When:** Slice 14c (visuals), or on demand.
 
 ### Settings: reduce motion (animated flame and other animations)
 
