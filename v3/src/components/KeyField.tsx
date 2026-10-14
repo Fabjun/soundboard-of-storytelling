@@ -1,9 +1,9 @@
 /**
- * @fileoverview KeyField — tap, then press the key a pad gets (K1); one field for a deck key and
- * for a quick-access key (Slice 13d)
+ * @fileoverview KeyField — tap, then press the key a pad or a live control gets (K1, K12); one
+ * field for a deck key, a quick-access key (Slice 13d) and the keys of STOP ALL and PAUSE (14d)
  *
  * docs/product/README.md#input-keyboard--numpad: a key is assigned by focusing the field and
- * pressing it. A reserved key is refused with what it does; a key another pad holds is either
+ * pressing it. A reserved key (the caller's `reserved`) is refused with what it does; a key another pad holds is either
  * offered to move over (MOVE KEY HERE, K1 — within one deck, or within the quick-access bar) or
  * refused with its reason (K2: a deck key and a quick-access key must never be the same). What
  * applies is the caller's `check`. Escape cancels without closing the editor; Tab moves on (no
@@ -13,7 +13,7 @@
 import { useState } from 'preact/hooks';
 import type { JSX } from 'preact';
 import { UiIcon } from './UiIcon';
-import { RESERVED_KEYS, isModifierKey, keyLabel } from '../lib/padKeys';
+import { isModifierKey, keyLabel } from '../lib/padKeys';
 
 /** What a pressed key means for the pad: free, held by a pad it can move from, or refused. */
 export type KeyCheck =
@@ -24,8 +24,14 @@ interface KeyFieldProps {
   id: string;
   /** The visible label above the field. */
   label: string;
-  /** The key the pad has now, if any. */
+  /** The key it has now, if any. */
   hotkey?: string;
+  /** Keys it cannot take, each with what the key does instead (`reservedKeys`). */
+  reserved: Readonly<Record<string, string>>;
+  /** What gets the key, in the field's spoken prompt — "this pad" unless said. */
+  subject?: string;
+  /** Whether the key can be removed (a pad's can; a live control always has one). */
+  clearable?: boolean;
   /** Tells what a pressed (not reserved) key means here. */
   check: (code: string) => KeyCheck;
   /** Gives the pad the key — another holder in the same place loses it — or clears it. */
@@ -33,7 +39,16 @@ interface KeyFieldProps {
 }
 
 /** Shows the key field: the key now, its clear button, and a conflict or a refusal in words. */
-export function KeyField({ id, label, hotkey, check, onAssign }: KeyFieldProps): JSX.Element {
+export function KeyField({
+  id,
+  label,
+  hotkey,
+  reserved,
+  subject = 'this pad',
+  clearable = true,
+  check,
+  onAssign,
+}: KeyFieldProps): JSX.Element {
   const [armed, setArmed] = useState(false);
   const [toMove, setToMove] = useState<{ code: string; holder: string } | null>(null);
   const [note, setNote] = useState<string | null>(null);
@@ -54,9 +69,9 @@ export function KeyField({ id, label, hotkey, check, onAssign }: KeyFieldProps):
     }
     if (isModifierKey(e.code)) return;
     setArmed(false);
-    if (e.code in RESERVED_KEYS) {
+    if (e.code in reserved) {
       setToMove(null);
-      setNote(`${keyLabel(e.code)} ${RESERVED_KEYS[e.code]} — pick another key`);
+      setNote(`${keyLabel(e.code)} ${reserved[e.code]} — pick another key`);
       return;
     }
     const result = check(e.code);
@@ -84,7 +99,7 @@ export function KeyField({ id, label, hotkey, check, onAssign }: KeyFieldProps):
           data-testid="key-field-button"
           aria-label={
             armed
-              ? 'Press a key for this pad'
+              ? `Press a key for ${subject}`
               : hotkey
                 ? `Key ${keyLabel(hotkey)}, tap to change`
                 : 'No key, tap and press a key'
@@ -102,7 +117,7 @@ export function KeyField({ id, label, hotkey, check, onAssign }: KeyFieldProps):
           <UiIcon name="key" size={11} color="var(--text-mute)" />
           {armed ? 'PRESS A KEY…' : hotkey ? keyLabel(hotkey) : '— not assigned —'}
         </button>
-        {hotkey && !armed && (
+        {clearable && hotkey && !armed && (
           <button
             type="button"
             class="sb-btn sb-btn-icon-sm"

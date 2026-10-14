@@ -3,20 +3,24 @@
  * reserved and modifier keys (Slice 12a, ADR-0077).
  * Cases: a key found / not found / found in another deck only; a placement whose pad is gone;
  * the holder excludes the pad itself; labels for numpad, main digits, letters, every symbol,
- * unknown codes and codes that only look like a digit or letter code; the reserved keys of
- * 12b / 12d with the reason the PAD editor shows; every modifier.
+ * unknown codes and codes that only look like a digit or letter code; the fixed keys and the
+ * movable live-control keys (K12) with the reason the PAD editor shows, one action left out for
+ * its own field; the pad on any board that uses a key (bar before decks, a pad not in the pool
+ * skipped, later boards searched); every modifier.
  */
 
 import type { Board, SinglePad } from '../../src/types';
 import {
-  RESERVED_KEYS,
+  DEFAULT_CONTROL_KEYS,
   deckKeyUse,
   isModifierKey,
   keyHolder,
   keyLabel,
   padForKey,
+  padUsingKey,
   quickAccessKeyHolder,
   quickAccessPadForKey,
+  reservedKeys,
 } from '../../src/lib/padKeys';
 
 const grid = { cols: 4, rows: 4, gap: 4 };
@@ -123,6 +127,46 @@ describe('quick-access keys (K13) and their clash with deck keys (K2)', () => {
   });
 });
 
+describe('padUsingKey', () => {
+  const other = (): Board => ({
+    ...board(),
+    id: 'b2',
+    name: 'Other',
+    pads: [single('c')],
+    decks: [
+      {
+        ...board().decks[0],
+        placements: [{ padId: 'c', position: { col: 0, row: 0 }, hotkey: 'KeyC' }],
+      },
+    ],
+    quickAccess: [{ padId: 'c', hotkey: 'KeyQ' }],
+  });
+
+  it('finds a deck key or a bar key on any board, with the board', () => {
+    const found = padUsingKey([board(), other()], 'KeyC');
+    expect(found?.board.id).toBe('b2');
+    expect(found?.pad.id).toBe('c');
+    expect(padUsingKey([board(), other()], 'Numpad1')?.pad.id).toBe('a');
+  });
+
+  it('looks at the quick-access bar before the decks', () => {
+    const b = { ...board(), quickAccess: [{ padId: 'b', hotkey: 'Numpad1' }] };
+    expect(padUsingKey([b], 'Numpad1')?.pad.id).toBe('b');
+  });
+
+  it('skips a holder whose pad is not in the pool and goes on to the next one', () => {
+    const b = board();
+    b.decks[1].placements[0].hotkey = 'Numpad9'; // after the dangling Numpad9 of deck 1
+    expect(padUsingKey([b], 'Numpad9')?.pad.id).toBe('b');
+    expect(padUsingKey([board()], 'Numpad9')).toBeNull();
+  });
+
+  it('is null for a key no pad uses, and with no boards', () => {
+    expect(padUsingKey([board(), other()], 'KeyZ')).toBeNull();
+    expect(padUsingKey([], 'Numpad1')).toBeNull();
+  });
+});
+
 describe('keyLabel', () => {
   it.each([
     ['Numpad1', 'N1'],
@@ -143,6 +187,7 @@ describe('keyLabel', () => {
     ['NumpadDivide', 'N/'],
     ['NumpadEqual', 'N='],
     ['NumpadComma', 'N,'],
+    ['NumpadDecimal', 'N.'],
     ['Period', '.'],
     ['Comma', ','],
     ['Minus', '-'],
@@ -172,15 +217,30 @@ describe('keyLabel', () => {
 
 describe('reserved and modifier keys', () => {
   it('says in the PAD editor why a reserved key cannot play a pad', () => {
-    expect(RESERVED_KEYS).toEqual({
-      Enter: 'stops the last sound',
-      NumpadEnter: 'stops the last sound',
+    expect(reservedKeys(DEFAULT_CONTROL_KEYS)).toEqual({
+      Enter: 'stops a sound',
+      NumpadEnter: 'stops a sound',
       NumpadDecimal: 'stops all sounds',
       Space: 'pauses all sounds',
       Escape: 'closes dialogs',
       Tab: 'moves between controls',
     });
-    expect('Numpad1' in RESERVED_KEYS).toBe(false);
+    expect('Numpad1' in reservedKeys(DEFAULT_CONTROL_KEYS)).toBe(false);
+  });
+
+  it('follows moved live-control keys: the old ones are free, the new ones reserved', () => {
+    const reserved = reservedKeys({ stopAll: 'KeyS', pause: 'KeyP' });
+    expect(reserved.KeyS).toBe('stops all sounds');
+    expect(reserved.KeyP).toBe('pauses all sounds');
+    expect('NumpadDecimal' in reserved).toBe(false);
+    expect('Space' in reserved).toBe(false);
+  });
+
+  it("leaves one action's key out — its own key field may take it again", () => {
+    const reserved = reservedKeys(DEFAULT_CONTROL_KEYS, 'pause');
+    expect('Space' in reserved).toBe(false);
+    expect(reserved.NumpadDecimal).toBe('stops all sounds');
+    expect(reserved.Enter).toBe('stops a sound');
   });
 
   it.each([

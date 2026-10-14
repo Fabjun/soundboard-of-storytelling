@@ -2,12 +2,14 @@
  * @fileoverview prefs — UI preferences in IndexedDB (ADR-0062; owner decision 2026-10-02)
  * Real IndexedDB semantics via fake-indexeddb. Cases: nothing stored, round trip incl. a reload
  * (loadPrefs), per-board keys, unknown values, clear, writes counted in pendingSaves, a failing
- * database never breaks the app, the backup reminder days, the theme.
+ * database never breaks the app, the backup reminder days, the theme, the live-control keys (K12:
+ * moved, kept, reset; a damaged entry — not text, a fixed key, both on one key — falls back).
  */
 
 import { IDBFactory } from 'fake-indexeddb';
 import { _resetDB, kvGetAll, kvPut } from '../../src/db/idb';
 import { pendingSaves } from '../../src/state/store';
+import { DEFAULT_CONTROL_KEYS } from '../../src/lib/padKeys';
 import {
   clearLastView,
   getLastBackup,
@@ -36,6 +38,9 @@ import {
   setPadSizeScope,
   getContentWidth,
   setContentWidth,
+  getControlKeys,
+  resetControlKeys,
+  setControlKey,
   animationsOn,
   getAnimationsSwitch,
   setAnimationsSwitch,
@@ -350,6 +355,44 @@ describe('Enter key (Settings → CONTROLS, settings.md S2)', () => {
     await kvPut('enter-stop', 'some');
     await loadPrefs();
     expect(getEnterStop()).toBe('last');
+  });
+});
+
+describe('live-control keys (Settings → CONTROLS, settings.md S2, K12)', () => {
+  it('the defaults until moved; a moved key is kept after a reload; the defaults are not stored', async () => {
+    expect(getControlKeys()).toEqual(DEFAULT_CONTROL_KEYS);
+    setControlKey('pause', 'KeyP');
+    await settled();
+    await loadPrefs();
+    expect(getControlKeys()).toEqual({ stopAll: 'NumpadDecimal', pause: 'KeyP' });
+    setControlKey('pause', 'Space');
+    await settled();
+    expect((await kvGetAll()).map(([k]) => k)).not.toContain('control-keys');
+  });
+
+  it('reset gives both actions their default keys back and stores nothing', async () => {
+    setControlKey('stopAll', 'KeyS');
+    setControlKey('pause', 'KeyP');
+    expect(getControlKeys()).toEqual({ stopAll: 'KeyS', pause: 'KeyP' });
+    resetControlKeys();
+    await settled();
+    expect(getControlKeys()).toEqual(DEFAULT_CONTROL_KEYS);
+    expect((await kvGetAll()).map(([k]) => k)).not.toContain('control-keys');
+  });
+
+  it.each([
+    ['not an object', 'KeyS', DEFAULT_CONTROL_KEYS],
+    ['no text', { stopAll: 3, pause: '' }, DEFAULT_CONTROL_KEYS],
+    [
+      'a fixed key',
+      { stopAll: 'Enter', pause: 'KeyP' },
+      { stopAll: 'NumpadDecimal', pause: 'KeyP' },
+    ],
+    ['both on one key', { stopAll: 'KeyS', pause: 'KeyS' }, DEFAULT_CONTROL_KEYS],
+  ])('a damaged entry (%s) falls back to the defaults', async (_case, stored, expected) => {
+    await kvPut('control-keys', stored);
+    await loadPrefs();
+    expect(getControlKeys()).toEqual(expected);
   });
 });
 
