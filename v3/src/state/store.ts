@@ -65,15 +65,6 @@ export const audioPaused = signal(false);
  */
 export const screenKeptOn = signal(false);
 
-// ── Theme ────────────────────────────────────────────────────────────────────
-
-/**
- * Active theme ID — will map to a CSS class on the root element; nothing reads it yet.
- *
- * @reserved Slice 14 — themes
- */
-export const activeTheme = signal<string>('hearth');
-
 // ── Playback state ───────────────────────────────────────────────────────────
 // globalThis.Set: explicit built-in Set (the code base used to have a PadSet type).
 // ReadonlySet in the type signature prevents callers from mutating directly;

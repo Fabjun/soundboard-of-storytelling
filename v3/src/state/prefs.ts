@@ -14,6 +14,7 @@ import { kvDelete, kvGetAll, kvPut } from '../db/idb';
 import { DEFAULT_PAD_SORT, isPadSort, type PadSort } from '../lib/padSort';
 import { parsePad } from '../lib/boardModel';
 import { BACKUP_REMINDER_CHOICES, BACKUP_REMINDER_DAYS } from '../lib/backupExport';
+import { DEFAULT_THEME, isThemeId, type ThemeId } from '../lib/theme';
 import type { Pad } from '../types';
 import { pendingSaves } from './store';
 
@@ -172,4 +173,19 @@ export function getBackupReminderDays(): number {
 /** Sets the backup reminder's days; the default (7) is not stored. */
 export function setBackupReminderDays(days: number): void {
   write(BACKUP_REMINDER_KEY, days === BACKUP_REMINDER_DAYS ? undefined : days);
+}
+
+// ── Theme (Settings → APPEARANCE, docs/product/features/settings.md S5) ──────
+
+const THEME_KEY = 'theme';
+
+/** The app's theme — Hearth until another is chosen. */
+export function getTheme(): ThemeId {
+  const v = cache.get(THEME_KEY);
+  return isThemeId(v) ? v : DEFAULT_THEME;
+}
+
+/** Sets the app's theme; the default (Hearth) is not stored. */
+export function setTheme(theme: ThemeId): void {
+  write(THEME_KEY, theme === DEFAULT_THEME ? undefined : theme);
 }

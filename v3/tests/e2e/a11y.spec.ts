@@ -31,7 +31,8 @@ const TAGS = ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'];
 
 /**
  * The themes of `v3/src/styles/tokens.css` (`.sb-theme-<name>` blocks) — read from the file, so a
- * new theme is scanned without a change here. No screen switches themes yet (Slice 14).
+ * new theme is scanned without a change here. The class is set as Settings → APPEARANCE sets it, on
+ * the root element (src/lib/theme.ts).
  */
 const THEMES = [
   ...new Set(

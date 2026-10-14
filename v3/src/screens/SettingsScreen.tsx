@@ -4,19 +4,32 @@
  * docs/product/features/settings.md (owner decisions 2026-10-11): one screen with group headings
  * (S11); as few settings as possible, none that repeats a system setting (S12); each control by
  * kind, applied and stored at once — no SAVE (S13); reached from the main menu and the board list
- * (S14), and BACK returns there. Groups so far: DATA — the backup reminder (S7) — and ABOUT — the
- * version and the license notices (S9).
+ * (S14), and BACK returns there. Groups so far: APPEARANCE — the theme (S5, Slice 14b) — DATA —
+ * the backup reminder (S7) — and ABOUT — the version and the license notices (S9).
  */
 
 import type { JSX } from 'preact';
 import { TopBar } from '../components/TopBar';
 import { PixelIcon } from '../components/PixelIcon';
+import { SegmentedChoice } from '../components/SegmentedChoice';
 import { currentScreen, settingsReturn } from '../state/store';
-import { getBackupReminderDays, prefsVersion, setBackupReminderDays } from '../state/prefs';
+import {
+  getBackupReminderDays,
+  getTheme,
+  prefsVersion,
+  setBackupReminderDays,
+  setTheme,
+} from '../state/prefs';
 import { BACKUP_REMINDER_CHOICES } from '../lib/backupExport';
+import { THEMES } from '../lib/theme';
 import { APP_VERSION } from '../lib/changelog';
 
 declare const __BUILD_DATE__: string;
+
+/** The themes as Settings names them (S5). */
+const THEME_OPTIONS = THEMES.map((t) => ({ value: t, label: t.toUpperCase() }));
+/** The backup reminder's choices (S7). */
+const REMINDER_OPTIONS = BACKUP_REMINDER_CHOICES.map((d) => ({ value: d, label: `${d} days` }));
 
 /** Shows the settings; every change applies and is stored at once. */
 export function SettingsScreen(): JSX.Element {
@@ -42,35 +55,35 @@ export function SettingsScreen(): JSX.Element {
       />
 
       <div class="sb-settings">
+        {/* The groups in V1's order (settings.md S1) */}
+        <section class="sb-settings-group" aria-labelledby="settings-screen-appearance-title">
+          <h2 class="sb-settings-group-title" id="settings-screen-appearance-title">
+            APPEARANCE
+          </h2>
+          <SegmentedChoice
+            legend="Theme"
+            caption="The colors of the whole app."
+            name="theme"
+            options={THEME_OPTIONS}
+            value={getTheme()}
+            onChange={setTheme}
+            testid="settings-screen-theme-region"
+          />
+        </section>
+
         <section class="sb-settings-group" aria-labelledby="settings-screen-data-title">
           <h2 class="sb-settings-group-title" id="settings-screen-data-title">
             DATA
           </h2>
-          {/* A few fixed values: a segmented choice of radio buttons (settings.md S13) */}
-          <fieldset class="sb-settings-row">
-            <legend class="sb-settings-label">Backup reminder</legend>
-            <div class="sb-caption">
-              The board list reminds to export a backup when the last one is older than this.
-            </div>
-            <div class="sb-segmented" data-testid="settings-screen-reminder-region">
-              {BACKUP_REMINDER_CHOICES.map((days) => (
-                <label
-                  key={days}
-                  class={`sb-segmented-option${days === reminderDays ? ' is-active' : ''}`}
-                >
-                  <input
-                    type="radio"
-                    name="backup-reminder"
-                    class="sb-visually-hidden"
-                    value={days}
-                    checked={days === reminderDays}
-                    onChange={() => setBackupReminderDays(days)}
-                  />
-                  {days} days
-                </label>
-              ))}
-            </div>
-          </fieldset>
+          <SegmentedChoice
+            legend="Backup reminder"
+            caption="The board list reminds to export a backup when the last one is older than this."
+            name="backup-reminder"
+            options={REMINDER_OPTIONS}
+            value={reminderDays}
+            onChange={setBackupReminderDays}
+            testid="settings-screen-reminder-region"
+          />
         </section>
 
         <section class="sb-settings-group" aria-labelledby="settings-screen-about-title">
