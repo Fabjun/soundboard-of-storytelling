@@ -16,9 +16,17 @@ import {
   isCompactPad,
   migratePadSize,
   padColumns,
+  padSizeFor,
   type StoredDeck,
   type StoredSizeBoard,
 } from '../../src/lib/padSize';
+
+describe('padSizeFor (settings.md S4)', () => {
+  it("per board the board's own size, for every board the app-wide one", () => {
+    expect(padSizeFor(120, 'board', 60)).toBe(120);
+    expect(padSizeFor(120, 'app', 60)).toBe(60);
+  });
+});
 
 describe('clampPadSize', () => {
   it('keeps a value inside the limits and on the steps', () => {

@@ -39,7 +39,10 @@ import {
   getLastPlayed,
   getLastView,
   getPadSort,
+  getPadSizeScope,
+  padSizeOf,
   prefsVersion,
+  setAppPadSize,
   setLastView,
   isBarOpen,
   setBarOpen,
@@ -427,11 +430,13 @@ export function BoardScreen(): JSX.Element {
       padSize={
         mode === 'edit' && (deck || poolView)
           ? {
-              value: padSizePreview ?? board.padSize,
+              value: padSizePreview ?? padSizeOf(board),
               onChange: setPadSizePreview,
               onCommit: (px) => {
-                // Stored once, when the move ends; shown at once, so the preview can go
-                applyBoardChange(board.id, (b) => setBoardPadSize(b, px));
+                // Stored once, when the move ends — with the board, or for every board (settings.md
+                // S4); shown at once, so the preview can go
+                if (getPadSizeScope() === 'app') setAppPadSize(px);
+                else applyBoardChange(board.id, (b) => setBoardPadSize(b, px));
                 setPadSizePreview(null);
               },
             }

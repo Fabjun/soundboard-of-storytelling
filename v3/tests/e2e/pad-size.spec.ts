@@ -239,6 +239,50 @@ test('the PAD SIZE slider is there only in SETUP', async ({ page }) => {
   await expect(slider(page)).toHaveCount(0);
 });
 
+test('Settings can make PAD SIZE one size for every board; per board again, each keeps its own', async ({
+  page,
+}) => {
+  /** Opens the board named `name` from the board list, a deck shown in SETUP. */
+  async function openBoardInSetup(name: string) {
+    await page.getByText(name, { exact: true }).click();
+    await page.getByTestId('mode-toggle').waitFor();
+    await openDeckRail(page);
+    await enterSetupMode(page);
+  }
+  async function chooseScope(label: string) {
+    await page.getByTestId('board-list-screen-settings-button').click();
+    await page.getByText(label, { exact: true }).click();
+    await page.getByTestId('settings-screen-back-button').click();
+  }
+  const back = () => page.getByTestId('board-top-bar-back-button').click();
+
+  await page.goto('/soundboard-of-storytelling/');
+  await goToBoardList(page);
+  await chooseScope('Same on every board');
+  await createBoardAndNavigate(page);
+  await createDeck(page);
+  await enterSetupMode(page);
+  await slider(page).focus();
+  await page.keyboard.press('End');
+  await expect(slider(page)).toHaveValue('160');
+
+  // A second board shows the same size
+  await back();
+  await page.getByTestId('board-list-screen-new-button').click();
+  await openBoardInSetup('Board 2');
+  await createDeck(page);
+  await expect(slider(page)).toHaveValue('160');
+
+  // Per board again: each board shows its own size, untouched meanwhile
+  await back();
+  await chooseScope('Per board');
+  await openBoardInSetup('Board 2');
+  await expect(slider(page)).toHaveValue('88');
+  await back();
+  await openBoardInSetup('Board 1');
+  await expect(slider(page)).toHaveValue('88');
+});
+
 test('on a short window the grid scrolls downwards and pads never overlap', async ({ page }) => {
   // 4 rows of phone-sized pads are taller than the grid area at this height
   await page.setViewportSize({ width: 390, height: 400 });

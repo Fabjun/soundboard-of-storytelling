@@ -22,6 +22,20 @@ export function clampPadSize(px: unknown): number {
 }
 
 /**
+ * Where the PAD SIZE slider's value lives (docs/product/features/settings.md S4): with each board
+ * (`Board.padSize`, the default — ADR-0075), or one size for every board (a preference).
+ */
+export const PAD_SIZE_SCOPES = ['board', 'app'] as const;
+
+/** One of PAD_SIZE_SCOPES. */
+export type PadSizeScope = (typeof PAD_SIZE_SCOPES)[number];
+
+/** Returns the pad size a board shows: its own, or the app-wide one when the scope is `app`. */
+export function padSizeFor(boardPadSize: number, scope: PadSizeScope, appPadSize: number): number {
+  return scope === 'app' ? appPadSize : boardPadSize;
+}
+
+/**
  * The smallest side a pad gets — the touch target (Apple HIG 44 pt; CLAUDE.md UI rules). At the
  * smallest PAD SIZE the fewest columns would otherwise leave pads of 42 px and less (measured
  * 2026-10-10, docs/design/components/pad.md PQ4).
