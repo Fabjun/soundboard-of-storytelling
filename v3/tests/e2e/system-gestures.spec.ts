@@ -9,7 +9,7 @@
  * (`-webkit-touch-callout`) exists only on iOS and is on the manual iPhone checklist.
  */
 
-import { test, expect, type Page } from '@playwright/test';
+import { test, expect, type Locator, type Page } from '@playwright/test';
 import {
   createBoardAndNavigate,
   createDeck,
@@ -114,4 +114,42 @@ test.describe('with a touch screen', () => {
         .evaluate((c) => getComputedStyle(c).getPropertyValue('touch-action')),
     ).toBe('pan-x pan-y');
   });
+
+  test('a tapped button looks as before afterwards — no hover stays on it', async ({ page }) => {
+    await page.goto('/soundboard-of-storytelling/');
+    await openMainMenu(page);
+    const update = page.getByRole('button', { name: /^(UPDATE|CHECKING…)$/ });
+    const before = await looks(update);
+    await update.tap();
+    await expect.poll(() => looks(update)).toEqual(before);
+  });
+});
+
+/** The look of a control that a hover or a press would change: frame, label, shift, light. */
+const looks = (control: Locator) =>
+  control.evaluate((el) => {
+    const s = getComputedStyle(el);
+    return [s.getPropertyValue('--pix-border').trim(), s.color, s.transform, s.filter];
+  });
+
+// Owner decision 2026-10-14: no hover effects — a pointer resting on a button changes nothing; a
+// press shows briefly (it sinks and lightens) and is gone when the button is let go.
+test('a mouse over a button changes nothing; a press shows only while it lasts', async ({
+  page,
+}) => {
+  await page.goto('/soundboard-of-storytelling/');
+  await openMainMenu(page);
+  const library = page.getByRole('button', { name: 'LIBRARY' });
+  const idle = await looks(library);
+  await library.hover();
+  expect(await looks(library)).toEqual(idle);
+  await page.mouse.down();
+  const pressed = await looks(library);
+  expect(pressed[2]).not.toBe('none'); // it sinks
+  expect(pressed[3]).toContain('brightness'); // and lightens
+  expect(pressed[0]).toBe(idle[0]); // frame and label keep their colors — readable
+  expect(pressed[1]).toBe(idle[1]);
+  await page.mouse.move(0, 0); // away, so letting go does not open the library
+  await page.mouse.up();
+  await expect.poll(() => looks(library)).toEqual(idle);
 });

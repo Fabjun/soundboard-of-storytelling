@@ -7,6 +7,21 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.241 — 2026-10-14
+
+### Added
+
+- feat(ui): a control answers a press instead — it sinks by 1px and lightens while pressed (:active on buttons, pads, menu items, row buttons, segmented options, switches, empty pad cells; never on a container: the transform of a pressed deck row put its open menu under the next button, measured); iOS shows :active only with a touch listener on the page (WebKit bug 138816) — a passive empty one in main.tsx; the deck "⋯" shows on the active deck only, also on a desktop
+
+### Fixed
+
+- fix(ui): buttons no longer stay gold after a tap (owner report 2026-10-14) — measured: on a touch screen :hover stays on the last tapped control (WebKit and Chromium), and a ghost or danger button has no fill of its own, so the gold hover frame filled it and hid its label; owner decision: no hover effects at all, desktop included
+
+### Internal
+
+- test: codeGuards ("no hover effects") — no :hover rule in any stylesheet (counter-checked); E2E system-gestures in Chromium and WebKit — a mouse over a button changes nothing and a press shows only while it lasts, a tapped button looks as before afterwards (both red with the old hover rule); helper openDeckActions chooses the deck first
+- docs: CLAUDE.md UI rule; ghost button inventory note (its frame color fills it)
+
 ## 3.0.240 — 2026-10-14
 
 ### Fixed

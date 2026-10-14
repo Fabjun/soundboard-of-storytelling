@@ -39,6 +39,11 @@ effect(() => {
 // Remember when each pad was last played ("Last played" sort in All pads).
 startPlayHistory();
 
+// The brief pressed look of a control (:active, owner decision 2026-10-14: no hover effects) shows
+// on iOS only when the page listens for touches (WebKit bug 138816; Apple, Safari Web Content
+// Guide "Handling Events"). Passive and empty, so scrolling is never held up.
+document.addEventListener('touchstart', () => {}, { passive: true });
+
 // Keys play pads in GAME (Slice 12a, ADR-0077).
 startKeyControl();
 
