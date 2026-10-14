@@ -101,6 +101,12 @@ export function withEarlyVersions(
 /** The release notes the main menu shows, newest first (checked by whatsNew.test.ts). */
 export const WHATS_NEW: WhatsNewNotes[] = [
   {
+    version: '3.0.244',
+    new: [
+      'Settings → DEVELOPER: a debug log keeps the last messages of the app, and VIEW LOG AND STATS shows them with the library and memory figures — to copy when reporting a problem.',
+    ],
+  },
+  {
     version: '3.0.243',
     improved: [
       'The small symbols on buttons — close, up and down, fold, pause and stop, remove — are pixel icons from the same library now.',

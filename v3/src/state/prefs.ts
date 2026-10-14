@@ -274,3 +274,17 @@ export function getEnterStop(): EnterStop {
 export function setEnterStop(stop: EnterStop): void {
   write(ENTER_STOP_KEY, stop === 'last' ? undefined : stop);
 }
+
+// ── Debug log (Settings → DEVELOPER, settings.md S8) ─────────────────────────
+
+const DEBUG_LOG_KEY = 'debug-log';
+
+/** Whether the console's messages are kept for the developer view — off until switched on. */
+export function getDebugLogSwitch(): boolean {
+  return cache.get(DEBUG_LOG_KEY) === true;
+}
+
+/** Switches the debug log; off (the default) is not stored. */
+export function setDebugLogSwitch(on: boolean): void {
+  write(DEBUG_LOG_KEY, on ? true : undefined);
+}

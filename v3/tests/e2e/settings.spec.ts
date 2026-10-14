@@ -7,6 +7,8 @@
  * - VISUALS: the Animations switch stops the flame (S6, WCAG 2.2.2); with the system asking for
  *   reduced motion the flame stands still and the switch is off and fixed (S12)
  * - DATA: the backup reminder's days apply at once and are kept after a reload (S7, S13)
+ * - DEVELOPER: the debug log keeps the app's messages while on; the developer view shows them with
+ *   stats and the audio cache, clears them, and Escape takes the focus back (S8)
  * - ABOUT: the version and the link to the license notices (S9)
  *
  * The backup's age comes from Playwright's clock: an EXPORT today, then the clock moves ten days on.
@@ -83,6 +85,36 @@ test.describe('with the system asking for reduced motion', () => {
     await expect(animations).toBeDisabled();
     await expect(animations).toHaveAccessibleDescription(/reduced motion/);
   });
+});
+
+test('the debug log keeps messages while on; the developer view shows, clears and closes', async ({
+  page,
+}) => {
+  await page.goto(APP);
+  await openMainMenu(page);
+  await page.getByRole('button', { name: 'SETTINGS' }).click();
+  const debugLog = page.getByRole('switch', { name: 'Debug log' });
+  await expect(debugLog).toHaveAttribute('aria-checked', 'false');
+  await page.evaluate(() => console.warn('before the switch'));
+  await debugLog.click();
+  await expect(debugLog).toHaveAttribute('aria-checked', 'true');
+  await page.evaluate(() => console.warn('a message for the log'));
+
+  const open = page.getByTestId('settings-screen-developer-button');
+  await open.click();
+  const dialog = page.getByRole('dialog', { name: 'DEVELOPER' });
+  const log = dialog.getByTestId('developer-dialog-log-text');
+  await expect(log).toContainText('WARN a message for the log');
+  await expect(log).not.toContainText('before the switch');
+  await expect(dialog.getByTestId('developer-dialog-stats-region')).toContainText(APP_VERSION);
+  await expect(dialog.getByTestId('developer-dialog-cache-text')).toContainText('No audio decoded');
+  await expect(dialog.getByTestId('developer-dialog-close-button')).toBeFocused();
+
+  await dialog.getByTestId('developer-dialog-clear-button').click();
+  await expect(log).toHaveText('No messages.');
+  await page.keyboard.press('Escape');
+  await expect(dialog).toBeHidden();
+  await expect(open).toBeFocused();
 });
 
 test('Settings opens from the main menu and goes back there', async ({ page }) => {

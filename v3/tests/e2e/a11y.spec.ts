@@ -69,6 +69,9 @@ test('main menu and Settings', async ({ page }) => {
   await page.getByRole('button', { name: 'SETTINGS' }).click();
   await page.getByRole('heading', { name: 'DATA' }).waitFor();
   found.push(...(await violations(page)).map((v) => `Settings — ${v}`));
+  await page.getByTestId('settings-screen-developer-button').click();
+  await page.getByRole('dialog', { name: 'DEVELOPER' }).waitFor();
+  found.push(...(await violations(page)).map((v) => `developer view — ${v}`));
   expect(found).toEqual([]);
 });
 

@@ -9,19 +9,24 @@
  *   - APPEARANCE — theme (S5), content width (S3), pad size per board or for every board (S4);
  *   - VISUALS — the Animations switch (S6, Slice 14c);
  *   - DATA — the backup reminder (S7);
+ *   - DEVELOPER — the debug log and the developer view: stats, cache, log (S8, Slice 14e);
  *   - ABOUT — the version and the license notices (S9).
  */
 
 import type { JSX } from 'preact';
+import { useState } from 'preact/hooks';
 import { TopBar } from '../components/TopBar';
 import { UiIcon } from '../components/UiIcon';
 import { SegmentedChoice } from '../components/SegmentedChoice';
 import { Switch } from '../components/Switch';
+import { DeveloperDialog } from '../components/DeveloperDialog';
 import { currentScreen, settingsReturn } from '../state/store';
 import {
   getAnimationsSwitch,
   getBackupReminderDays,
   getContentWidth,
+  getDebugLogSwitch,
+  setDebugLogSwitch,
   getEnterStop,
   getPadSizeScope,
   getTheme,
@@ -65,6 +70,7 @@ export function SettingsScreen(): JSX.Element {
   void prefsVersion.value; // re-render when a setting changes
   const reminderDays = getBackupReminderDays();
   const systemReduce = systemPrefersReducedMotion();
+  const [developerOpen, setDeveloperOpen] = useState(false);
 
   return (
     <div class="sb-screen">
@@ -168,6 +174,34 @@ export function SettingsScreen(): JSX.Element {
             testid="settings-screen-reminder-region"
           />
         </section>
+
+        <section class="sb-settings-group" aria-labelledby="settings-screen-developer-title">
+          <h2 class="sb-settings-group-title" id="settings-screen-developer-title">
+            DEVELOPER
+          </h2>
+          <Switch
+            label="Debug log"
+            caption="Keeps the app's last messages, to read and copy when something went wrong."
+            checked={getDebugLogSwitch()}
+            onChange={setDebugLogSwitch}
+            testid="settings-screen-debug-log-switch"
+          />
+          <div class="sb-settings-row">
+            <button
+              class="sb-btn sb-btn-sm sb-btn-ghost"
+              data-testid="settings-screen-developer-button"
+              onClick={() => setDeveloperOpen(true)}
+            >
+              VIEW LOG AND STATS
+            </button>
+          </div>
+        </section>
+        {developerOpen && (
+          <DeveloperDialog
+            debugLogOn={getDebugLogSwitch()}
+            onClose={() => setDeveloperOpen(false)}
+          />
+        )}
 
         <section class="sb-settings-group" aria-labelledby="settings-screen-about-title">
           <h2 class="sb-settings-group-title" id="settings-screen-about-title">

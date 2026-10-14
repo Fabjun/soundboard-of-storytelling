@@ -12,8 +12,9 @@ import { useEffect, useLayoutEffect } from 'preact/hooks';
 import { effect } from '@preact/signals';
 import type { JSX } from 'preact';
 import { currentMode, currentScreen, screenKeptOn } from './state/store';
-import { getContentWidth, getTheme, prefsVersion } from './state/prefs';
+import { getContentWidth, getDebugLogSwitch, getTheme, prefsVersion } from './state/prefs';
 import { applyTheme } from './lib/theme';
+import { startDebugLog, stopDebugLog } from './lib/debugLog';
 import { applyContentWidth } from './lib/contentWidth';
 import { requestPersistentStorage } from './db/persistentStorage';
 import { createScreenKeeper } from './lib/wakeLock';
@@ -43,6 +44,17 @@ export function App(): JSX.Element {
         void prefsVersion.value;
         applyTheme(document.documentElement, getTheme());
         applyContentWidth(document.documentElement, getContentWidth());
+      }),
+    [],
+  );
+
+  // S8: the debug log keeps the console's messages while it is switched on in Settings
+  useLayoutEffect(
+    () =>
+      effect(() => {
+        void prefsVersion.value;
+        if (getDebugLogSwitch()) startDebugLog();
+        else stopDebugLog();
       }),
     [],
   );
