@@ -7,6 +7,14 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.227 — 2026-10-14
+
+### Internal
+
+- build(deps-dev): the development updates of Dependabot PRs #104 and #105 in one change — @playwright/test 1.64, size-limit and @size-limit/file 14.2 together (each PR alone failed on their exact peer pin), @typescript-eslint/eslint-plugin and parser 8.71.2 together, eslint 10.12, eslint-plugin-jsdoc 65.3, eslint-plugin-playwright 2.12.1, jsdom 30.1.2, knip 6.41, mdast-util-from-markdown 2.1, vite 8.3.4, @types/node 24.19.2
+- ci(deps): dev-minor-patch and prod-minor-patch exclude every lockstep family by name — Dependabot had put @size-limit/file and @typescript-eslint/eslint-plugin into dev-minor-patch although their family groups come first; testGuards checks that every family pattern is excluded from both type groups (counter-checked)
+- build(knip): knip 6.40 reads the Playwright webServer command and reports vite as an unlisted binary in production mode (same class as knip issue #1017) — a temporary ignoreIssues for playwright.config.ts binaries; BACKLOG "knip: vite unlisted in production mode"
+
 ## 3.0.226 — 2026-10-14
 
 ### Added

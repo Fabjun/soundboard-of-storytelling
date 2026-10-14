@@ -101,6 +101,12 @@ export function withEarlyVersions(
 /** The release notes the main menu shows, newest first (checked by whatsNew.test.ts). */
 export const WHATS_NEW: WhatsNewNotes[] = [
   {
+    version: '3.0.227',
+    behindTheScenes: [
+      'The development tools are up to date, and their updates now arrive together where they belong together. The app works exactly as before.',
+    ],
+  },
+  {
     version: '3.0.226',
     new: [
       'A Settings screen, reached from the main menu and the board list. Its first settings: after how many days without a backup the board list reminds (3, 7, 14 or 30), and the version with the license notices.',

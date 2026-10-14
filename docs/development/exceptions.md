@@ -64,7 +64,7 @@ EXEMPT list in `v3/tests/unit/testGuards.test.ts`.
 | `v3/src/audio/types.ts`   | type declarations only                                        |
 | `v3/src/audio/index.ts`   | audio facade — tested through tests/unit/audio/engine.test.ts |
 
-## Tool ignore lists (25)
+## Tool ignore lists (26)
 
 Paths, dependencies and issues excluded from formatting, linting, knip or doc guards.
 
@@ -95,6 +95,7 @@ Paths, dependencies and issues excluded from formatting, linting, knip or doc gu
 | knip ignoreDependencies | `@stryker-mutator/api`                      | Type-only JSDoc import in stryker.config.mjs; @stryker-mutator/core pins it exactly                                                                                                                                                                                                                                   |
 | knip ignoreDependencies | `@stryker-mutator/command-runner`           | Stryker's "command" test runner is built into @stryker-mutator/core, not a package                                                                                                                                                                                                                                    |
 | knip ignoreBinaries     | `vale`                                      | Installed by scripts/vale-install.ts (a Go binary, not an npm package)                                                                                                                                                                                                                                                |
+| knip ignoreIssues       | `playwright.config.ts`                      | Production mode falsely reports vite unlisted (BACKLOG "knip: vite unlisted in production mode")                                                                                                                                                                                                                      |
 
 ## Reserved code (4)
 

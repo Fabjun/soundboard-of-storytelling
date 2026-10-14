@@ -230,6 +230,39 @@ describe('guard: lockstep dependency families update together (audit A6)', () =>
     const bad = pairs.filter(([a, b]) => !shareGroup(a, b)).map(([a, b]) => `${a} → ${b}`);
     expect(bad, 'add both packages to one group in .github/dependabot.yml').toEqual([]);
   });
+
+  // Dependabot put family members into dev-minor-patch although their family group comes first
+  // (PRs #104 / #105, 2026-10-13) — so each type group excludes every family pattern by name.
+  const quoted = (list: string): string[] =>
+    list
+      .split(',')
+      .map((p) => p.trim().replace(/'/g, ''))
+      .filter(Boolean);
+  const familyPatterns = [...yml.matchAll(/^ {6}[\w-]+:\n {8}patterns: \[([^\]]*)\]/gm)].flatMap(
+    (m) => quoted(m[1]),
+  );
+  const typeGroups = [
+    ...yml.matchAll(/^ {6}([\w-]+):\n {8}dependency-type: '\w+'\n((?: {8,}.*\n)*)/gm),
+  ].map((m) => {
+    const excluded = /exclude-patterns:\s*\[([^\]]*)\]/.exec(m[2]);
+    return { name: m[1], excluded: excluded ? quoted(excluded[1]) : [] };
+  });
+
+  it('finds the type groups (sanity)', () => {
+    expect(typeGroups.map((g) => g.name)).toEqual(['dev-minor-patch', 'prod-minor-patch']);
+  });
+
+  it('every type group excludes every family', () => {
+    // A pattern is covered when the type group excludes it or a wildcard that matches it
+    const covers = (ex: string, p: string): boolean =>
+      ex === p || new RegExp(`^${ex.replace(/\*/g, '.*')}$`).test(p);
+    const missing = typeGroups.flatMap((g) =>
+      familyPatterns
+        .filter((p) => !g.excluded.some((ex) => covers(ex, p)))
+        .map((p) => `${g.name}: ${p}`),
+    );
+    expect(missing, 'add the pattern to exclude-patterns in .github/dependabot.yml').toEqual([]);
+  });
 });
 
 describe('guard: guard files list their rules in order', () => {

@@ -36,6 +36,11 @@ const config: KnipConfig = {
     // Installed by scripts/vale-install.ts (a Go binary, not an npm package)
     'vale',
   ],
+  ignoreIssues: {
+    // knip 6.40 reads Playwright's webServer command (npm run dev → vite); same class as knip #1017
+    // Production mode falsely reports vite unlisted (BACKLOG "knip: vite unlisted in production mode")
+    'playwright.config.ts': ['binaries'],
+  },
 };
 
 export default config;
