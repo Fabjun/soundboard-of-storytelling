@@ -201,7 +201,7 @@ export function LibraryScreen(): JSX.Element {
             <button
               class="sb-btn sb-btn-sm sb-btn-ghost"
               onClick={() => {
-                currentScreen.value = 'start';
+                currentScreen.value = 'menu';
               }}
             >
               <PixelIcon name="play" size={11} />

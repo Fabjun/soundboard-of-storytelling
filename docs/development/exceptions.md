@@ -104,8 +104,8 @@ Unused today, kept for a later slice or a parked feature (`@reserved`, ADR-0064)
 | --------------------------- | -------------- | ---------------------------------------------------------------------------------------------- |
 | `v3/src/audio/index.ts:182` | `fadeOutAll`   | Parked — one fade for everything at once; STOP ALL fades pad by pad (src/state/stopControl.ts) |
 | `v3/src/audio/index.ts:228` | `crossfade`    | Parked — crossfade between pads (docs/product/README.md#pad-options)                           |
-| `v3/src/state/store.ts:67`  | `activeTheme`  | Slice 14 — themes                                                                              |
-| `v3/src/state/store.ts:121` | `masterVolume` | Parked — master volume (docs/product/README.md#pad-options)                                    |
+| `v3/src/state/store.ts:73`  | `activeTheme`  | Slice 14 — themes                                                                              |
+| `v3/src/state/store.ts:127` | `masterVolume` | Parked — master volume (docs/product/README.md#pad-options)                                    |
 
 ## Prose lint exceptions (Vale) (14)
 
@@ -124,9 +124,9 @@ Historical docs excluded in `.vale.ini`, and passages marked `<!-- vale … = NO
 | `CLAUDE.md:902`                                        | `SoS.SupersededTerms` off         | historical slice records keep the names valid at the time (Scene before Slice 9b) |
 | `docs/architecture/0056-documentation-freshness.md:33` | `SoS.SupersededTerms` off         | …                                                                                 |
 | `docs/architecture/concept-brief.md:75`                | `SoS.SupersededTerms` off         | explains the rename                                                               |
-| `docs/product/README.md:112`                           | `SoS.SupersededTerms` off         | records the rename decision                                                       |
-| `docs/product/README.md:286`                           | `SoS.SupersededTerms` off         | records the rename                                                                |
-| `docs/product/README.md:305`                           | `SoS.SupersededTerms` off         | records the rename decision (Q1)                                                  |
+| `docs/product/README.md:114`                           | `SoS.SupersededTerms` off         | records the rename decision                                                       |
+| `docs/product/README.md:288`                           | `SoS.SupersededTerms` off         | records the rename                                                                |
+| `docs/product/README.md:307`                           | `SoS.SupersededTerms` off         | records the rename decision (Q1)                                                  |
 
 ## To-do markers (0)
 

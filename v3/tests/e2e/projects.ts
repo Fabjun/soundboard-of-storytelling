@@ -52,6 +52,7 @@ export const FULL_TESTS = [
   'now-playing',
   'bar-toggles',
   'pad-editor-save',
+  'settings',
 ];
 
 /**

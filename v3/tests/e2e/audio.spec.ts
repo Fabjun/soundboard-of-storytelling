@@ -7,13 +7,14 @@
  * not the audio output itself.
  *
  * Tests covered:
- *   A. TAP TO UNLOCK — navigates to board-list (AudioContext initialized)
+ *   A. TAP TO START — navigates to board-list (AudioContext initialized)
  *   B. SINGLE pad — tap → is-hot; tap again → is-hot gone
  *   C. LOOP pad   — tap → is-looping; tap again → is-looping gone
  */
 
 import { test, expect } from '@playwright/test';
 import {
+  goToBoardList,
   goToLibrary,
   uploadTestAudio,
   createBoardAndNavigate,
@@ -22,14 +23,15 @@ import {
   enterGameMode,
 } from './helpers';
 
-// ── Test A: TAP TO UNLOCK ─────────────────────────────────────────────────────
+// ── Test A: TAP TO START ─────────────────────────────────────────────────────
 
-test('A — TAP TO UNLOCK navigates to board-list and initializes audio', async ({ page }) => {
+test('A — TAP TO START opens the main menu and initializes audio', async ({ page }) => {
   await page.goto('/soundboard-of-storytelling/');
-  // Click TAP TO UNLOCK — should navigate to board-list
-  await page.getByRole('button', { name: 'TAP TO UNLOCK' }).click();
-  // Board-list is now shown (AudioContext initialized synchronously in handler)
-  await expect(page.getByTestId('board-list-screen-new-button')).toBeVisible();
+  // The start screen has one action (settings.md S15)
+  await page.getByRole('button', { name: 'TAP TO START' }).click();
+  // The main menu is shown; the AudioContext was started in the tap handler
+  await expect(page.getByTestId('main-menu-screen')).toBeVisible();
+  await expect(page.getByText('audio context running · ready')).toBeVisible();
 });
 
 // ── Shared setup (Tests B + C) ────────────────────────────────────────────────
@@ -42,10 +44,9 @@ test.beforeEach(async ({ page }, testInfo) => {
   // Upload audio first (required for pad creation and playback)
   await goToLibrary(page);
   await uploadTestAudio(page);
-  // Return to start and click TAP TO UNLOCK (initializes AudioContext)
+  // Back to the start screen: TAP TO START initializes the AudioContext, then BOARD
   await page.goto('/soundboard-of-storytelling/');
-  await page.getByRole('button', { name: 'TAP TO UNLOCK' }).click();
-  await page.getByTestId('board-list-screen-new-button').waitFor();
+  await goToBoardList(page);
   await createBoardAndNavigate(page);
   await createDeck(page);
   await enterSetupMode(page);

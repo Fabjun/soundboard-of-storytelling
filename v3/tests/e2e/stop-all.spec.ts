@@ -10,6 +10,7 @@
 
 import { test, expect, type Page } from '@playwright/test';
 import {
+  goToBoardList,
   addLoopPad,
   createBoardAndNavigate,
   createDeck,
@@ -28,7 +29,7 @@ test.beforeEach(async ({ page }) => {
   await goToLibrary(page);
   await uploadTestAudio(page);
   await page.goto('/soundboard-of-storytelling/');
-  await page.getByRole('button', { name: 'TAP TO UNLOCK' }).click();
+  await goToBoardList(page); // through TAP TO START, which unlocks the audio
   await page.getByTestId('board-list-screen-new-button').waitFor();
   await createBoardAndNavigate(page);
   await createDeck(page);

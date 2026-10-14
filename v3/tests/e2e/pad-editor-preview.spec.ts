@@ -10,6 +10,7 @@
 
 import { test, expect, type Page } from '@playwright/test';
 import {
+  goToBoardList,
   ensureTestAudio,
   createBoardAndNavigate,
   createDeck,
@@ -28,7 +29,7 @@ async function openEditor(page: Page): Promise<void> {
 test.beforeEach(async ({ page }) => {
   await ensureTestAudio(page);
   await page.goto('/soundboard-of-storytelling/');
-  await page.getByRole('button', { name: 'TAP TO UNLOCK' }).click(); // the preview needs audio
+  await goToBoardList(page); // TAP TO START unlocks the audio the preview needs
   await page.getByTestId('board-list-screen-new-button').waitFor();
   await createBoardAndNavigate(page);
   await createDeck(page);

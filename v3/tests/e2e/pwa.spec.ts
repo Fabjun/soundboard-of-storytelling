@@ -11,7 +11,13 @@
 
 import { readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { test, expect, type Page } from '@playwright/test';
-import { createBoardAndNavigate, goToBoardList, reloadApp, waitForSaves } from './helpers';
+import {
+  createBoardAndNavigate,
+  goToBoardList,
+  reloadApp,
+  waitForSaves,
+  openMainMenu,
+} from './helpers';
 
 const APP = '/soundboard-of-storytelling/';
 
@@ -50,7 +56,7 @@ test('loads nothing from other origins', async ({ page, baseURL }) => {
     if (new URL(req.url()).origin !== new URL(baseURL!).origin) foreign.push(req.url());
   });
   await page.goto(APP);
-  await expect(page.getByRole('button', { name: 'TAP TO UNLOCK' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'TAP TO START' })).toBeVisible();
   for (const family of FONTS) await fontLoaded(page, family);
   expect(foreign).toEqual([]);
 });
@@ -142,6 +148,7 @@ test('a new version waits until RELOAD, then takes over (ADR-0066)', async ({ pa
 
 test('the UPDATE button says when this is the newest version', async ({ page }) => {
   await loadControlled(page);
+  await openMainMenu(page);
   await page.getByRole('button', { name: 'UPDATE' }).click();
   await expect(page.getByRole('status').filter({ hasText: 'newest version' })).toBeVisible();
   await expect(page.getByTestId('update-prompt')).toBeHidden();
@@ -158,6 +165,7 @@ test('the UPDATE button finds a new version and brings back a prompt put off wit
   const flipped = (parseInt(original[at], 16) ^ 1).toString(16);
   writeFileSync(swFile, original.slice(0, at) + flipped + original.slice(at + 1));
   try {
+    await openMainMenu(page);
     await page.getByRole('button', { name: 'UPDATE' }).click();
     await expect(
       page.getByRole('status').filter({ hasText: 'new version was found' }),
@@ -167,6 +175,7 @@ test('the UPDATE button finds a new version and brings back a prompt put off wit
     // Put off with LATER, then the button again: the waiting version is offered once more
     await page.getByTestId('update-prompt-later-button').click();
     await expect(page.getByTestId('update-prompt')).toBeHidden();
+    await openMainMenu(page);
     await page.getByRole('button', { name: 'UPDATE' }).click();
     await expect(page.getByTestId('update-prompt')).toBeVisible();
   } finally {
@@ -188,7 +197,7 @@ test('app starts offline after the first visit', async ({ page, context }) => {
   await loadControlled(page);
   await context.setOffline(true);
   await reloadApp(page);
-  await expect(page.getByRole('button', { name: 'TAP TO UNLOCK' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'TAP TO START' })).toBeVisible();
 });
 
 test('fonts are available offline', async ({ page, context }) => {

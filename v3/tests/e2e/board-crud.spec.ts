@@ -9,7 +9,7 @@
  */
 
 import { test, expect } from '@playwright/test';
-import { goToBoardList, reloadApp } from './helpers';
+import { goToBoardList, reloadApp, openMainMenu } from './helpers';
 
 test.beforeEach(async ({ page }) => {
   await page.goto('/soundboard-of-storytelling/');
@@ -69,6 +69,7 @@ test('3 — renamed board persists after page reload', async ({ page }) => {
   );
 
   await reloadApp(page);
+  await openMainMenu(page);
   await page.getByRole('button', { name: 'BOARD' }).click();
   await page.getByTestId('board-list-screen-new-button').waitFor();
 

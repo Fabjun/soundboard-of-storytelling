@@ -19,14 +19,28 @@ export const TEST_AUDIO_NAME = 'test-audio-1s';
 
 // ── Navigation helpers ────────────────────────────────────────────────────────
 
-/** Navigate to the LibraryScreen from StartScreen. */
+/**
+ * Opens the main menu: from the start screen through TAP TO START — which also unlocks the audio
+ * (settings.md S15) — or stays when the menu is shown already.
+ */
+export async function openMainMenu(page: Page): Promise<void> {
+  const start = page.getByRole('button', { name: 'TAP TO START' });
+  const menu = page.getByTestId('main-menu-screen');
+  await start.or(menu).first().waitFor();
+  if (await start.isVisible()) await start.click();
+  await menu.waitFor();
+}
+
+/** Navigate to the LibraryScreen from the start screen or the main menu. */
 export async function goToLibrary(page: Page): Promise<void> {
+  await openMainMenu(page);
   await page.getByRole('button', { name: 'LIBRARY' }).click();
   await page.getByRole('button', { name: /IMPORT/ }).waitFor();
 }
 
-/** Navigate to the BoardListScreen from StartScreen. */
+/** Navigate to the BoardListScreen from the start screen or the main menu. */
 export async function goToBoardList(page: Page): Promise<void> {
+  await openMainMenu(page);
   await page.getByRole('button', { name: 'BOARD' }).click();
   await page.getByTestId('board-list-screen-new-button').waitFor();
 }

@@ -179,7 +179,7 @@ function onPadStopped(id: string): void {
 /**
  * Creates the audio context on the first call and unlocks audio on iOS; later calls do nothing.
  *
- * @remarks Must be called synchronously inside a tap handler (TAP TO UNLOCK): iOS allows the
+ * @remarks Must be called synchronously inside a tap handler (TAP TO START): iOS allows the
  * silent-audio session fix and `resume()` only within the user gesture.
  */
 export function initAudio(): void {

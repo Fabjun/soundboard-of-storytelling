@@ -4,9 +4,9 @@
  * SCOPE: Verifies that the primary navigation gestures work with real touch
  * events (tap()) on a 390×844 viewport with hasTouch: true.
  *
- *   A. TAP TO UNLOCK button tap → navigates to board-list
- *   B. LIBRARY button tap → LibraryScreen; back to start
- *   C. BOARD button tap → BoardListScreen; new-board-button visible
+ *   A. TAP TO START button tap → the main menu (settings.md S15)
+ *   B. LIBRARY button tap in the menu → LibraryScreen
+ *   C. BOARD button tap in the menu → BoardListScreen; new-board-button visible
  *
  * OUT OF SCOPE (see docs/development/manual-iphone-checklist.md):
  *   File upload via iOS native picker, audio output, Ringer Switch, backgrounding.
@@ -16,17 +16,18 @@
 
 import { test, expect } from '@playwright/test';
 
-test('A — TAP TO UNLOCK button tap navigates to board-list', async ({ page }) => {
+test('A — TAP TO START button tap opens the main menu', async ({ page }) => {
   await page.goto('/soundboard-of-storytelling/');
-  await expect(page.getByRole('button', { name: 'TAP TO UNLOCK' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'TAP TO START' })).toBeVisible();
 
-  await page.getByRole('button', { name: 'TAP TO UNLOCK' }).tap();
+  await page.getByRole('button', { name: 'TAP TO START' }).tap();
 
-  await expect(page.getByTestId('board-list-screen-new-button')).toBeVisible();
+  await expect(page.getByTestId('main-menu-screen')).toBeVisible();
 });
 
 test('B — LIBRARY button tap opens LibraryScreen', async ({ page }) => {
   await page.goto('/soundboard-of-storytelling/');
+  await page.getByRole('button', { name: 'TAP TO START' }).tap();
 
   await page.getByRole('button', { name: 'LIBRARY' }).tap();
 
@@ -36,6 +37,7 @@ test('B — LIBRARY button tap opens LibraryScreen', async ({ page }) => {
 
 test('C — BOARD button tap opens BoardListScreen', async ({ page }) => {
   await page.goto('/soundboard-of-storytelling/');
+  await page.getByRole('button', { name: 'TAP TO START' }).tap();
 
   await page.getByRole('button', { name: 'BOARD' }).tap();
 

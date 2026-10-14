@@ -195,11 +195,12 @@ workbox-routing and workbox-strategies (measured by their `workbox:<name>:` mark
 their licenses were not in the notices — a gap that existed before. Approved by the owner
 2026-10-03; the generator now reads the markers after the service worker is built.
 
-### Backup reminder threshold as a setting
+### Backup reminder threshold as a setting ✅ Done (3.0.226)
 
 Owner decision B5 (2026-10-02): the board list reminds after seven days without a backup
 (`BACKUP_REMINDER_DAYS` in `v3/src/lib/backupExport.ts`); the number becomes a setting.
-**When:** Slice 14 (Settings screen).
+Built in Slice 14a: Settings → DATA offers 3, 7, 14 or 30 days
+(docs/product/features/settings.md S7).
 
 ### Import: date added and original file name from a backup
 
@@ -1910,7 +1911,8 @@ Owner decisions 2026-09-30: A1–A3 as recommended.
   public site sends every visitor's IP to Google (LG München I, 3 O 17493/20). Decision:
   self-host (OFL) with license notices. Done: `@fontsource/*`, woff2 precached,
   `third-party-licenses.txt` generated per build, three pwa-spec tests (counter-checked). Follow-up:
-  link the license notices from the app (Slice 14 settings / about).
+  link the license notices from the app (Slice 14 settings / about) — ✅ Done (3.0.226, Settings →
+  ABOUT).
 - ✅ **A3 Formatter and linter cover only `v3/`** (ADR-0058) — scripts moved to `v3/scripts/`
   (linted, type-checked, no `paths`/`NODE_PATH` workarounds); Prettier and lint-staged config at
   the root; the whole repository formatted. The first plain Prettier run changed the content of

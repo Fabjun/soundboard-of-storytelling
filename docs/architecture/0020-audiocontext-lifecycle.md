@@ -65,6 +65,13 @@ no audio. Not usable.
 **Ignore the Page Visibility API:** audio would keep running on a tab switch. On iOS the tab
 is frozen anyway — undefined behavior.
 
+## Amendments
+
+**2026-10-14 (3.0.226):** the button is labeled TAP TO START and is the start screen's only
+action; the tap still creates and unlocks the AudioContext as decided above, then opens the main
+menu (owner decision 2026-10-11, docs/product/features/settings.md S15). Every way into the app
+passes this tap.
+
 ## Related
 
 - **Files:** `v3/src/state/store.ts` (audioContextState signal), `v3/src/screens/StartScreen.tsx` (TAP TO UNLOCK UI), `v3/src/audio/` (Slice 4 — not yet created)

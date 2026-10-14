@@ -3,9 +3,11 @@
  */
 
 import { test, expect } from '@playwright/test';
+import { openMainMenu } from './helpers';
 
 test('create board → appears in list → BoardScreen loads with pad grid', async ({ page }) => {
   await page.goto('/soundboard-of-storytelling/');
+  await openMainMenu(page);
   await page.getByRole('button', { name: 'BOARD' }).click();
 
   // Create new board

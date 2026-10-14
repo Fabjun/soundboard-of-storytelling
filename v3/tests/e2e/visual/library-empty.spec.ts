@@ -6,10 +6,12 @@
  */
 
 import { test, expect } from '@playwright/test';
+import { openMainMenu } from '../helpers';
 import { stableScreenshot } from './helpers';
 
 test('LibraryScreen — empty state', async ({ page }) => {
   await page.goto('/soundboard-of-storytelling/');
+  await openMainMenu(page);
   await page.getByRole('button', { name: 'LIBRARY' }).click();
   await page.getByRole('button', { name: /IMPORT/ }).waitFor();
   await stableScreenshot(page);

@@ -1,119 +1,19 @@
 /**
- * @fileoverview StartScreen — fire animation + TAP TO UNLOCK entry point
+ * @fileoverview StartScreen — the flame and one action: TAP TO START
  *
  * Source: design-sources/2026-05-25/v2-screens.jsx StartScreen
  *
- * Responsibilities:
- *  1. Render the app splash (animated flame, title, tagline)
- *  2. On button tap: unlock the Web Audio context + navigate to board-list
- *  3. Show version (clickable → What's new) + audio state in footer
- *  4. UPDATE checks for a new version at once and says how it went (owner decision 2026-10-05)
+ * docs/product/features/settings.md S15 (owner decision 2026-10-11): the start screen shows the
+ * flame, the title and TAP TO START only. The tap unlocks the Web Audio context — browsers allow
+ * sound only after a user gesture, so every way into the app passes it — and opens the main menu
+ * (src/screens/MainMenuScreen.tsx), which holds BOARD, LIBRARY, SETTINGS, UPDATE and What's new.
  */
 
-import { useState } from 'preact/hooks';
 import type { JSX } from 'preact';
 import { PixelIcon } from '../components/PixelIcon';
 import { AnimatedFlame } from '../components/AnimatedFlame';
 import { audioContextState, currentScreen } from '../state/store';
 import { initAudio } from '../audio/index';
-import { APP_VERSION, CHANGELOG } from '../lib/changelog';
-import { versionLine, WHATS_NEW, WHATS_NEW_GROUPS, withEarlyVersions } from '../lib/whatsNew';
-import { checkForUpdateNow, updateCheckMessage } from '../lib/updateCheck';
-
-declare const __BUILD_DATE__: string;
-
-/** The developer changelog items of each version, shown under "Details" (owner decision 2026-10-03). */
-const DETAILS = new Map(CHANGELOG.map((c) => [c.version, c.items]));
-/** Every version's notes, the early development included (ADR-0063 amendment). */
-const NOTES = withEarlyVersions(WHATS_NEW, CHANGELOG);
-
-// ── WhatsNewOverlay ───────────────────────────────────────────────────────────
-
-/** Folds out every change of one version, as recorded for developers; nothing if none is. */
-function VersionDetails({ version }: { version: string }): JSX.Element | null {
-  const items = DETAILS.get(version);
-  if (!items?.length) return null;
-  return (
-    <details data-testid={`start-screen-whats-new-details-region-${version}`}>
-      <summary class="sb-whats-new-group sb-whats-new-details-toggle">Details</summary>
-      <ul class="sb-whats-new-items">
-        {items.map((item) => (
-          <li key={item} class="sb-mono sb-whats-new-item">
-            {item}
-          </li>
-        ))}
-      </ul>
-    </details>
-  );
-}
-
-/**
- * The release notes for the people who use the app, newest version first (ADR-0063); each version
- * folds out its full developer changelog under "Details" (HTML disclosure element).
- */
-function WhatsNewOverlay({ onClose }: { onClose: () => void }): JSX.Element {
-  return (
-    <div class="sb-overlay" data-testid="start-screen-whats-new-region">
-      <div class="sb-overlay-header">
-        <div class="sb-overlay-title">WHAT'S NEW</div>
-        <button
-          class="sb-btn sb-btn-sm sb-btn-ghost"
-          onClick={onClose}
-          aria-label="Close What's new"
-        >
-          ×
-        </button>
-      </div>
-
-      <div class="sb-overlay-body">
-        <div class="sb-caption" data-testid="start-screen-whats-new-version-text">
-          {versionLine(APP_VERSION, NOTES)}
-        </div>
-        {NOTES.map((entry) => (
-          <section key={entry.version} aria-label={`Version ${entry.version}`}>
-            <div class="sb-row sb-whats-new-entry-header">
-              <span class="sb-whats-new-version">v {entry.version}</span>
-              <span class="sb-caption">{entry.date}</span>
-            </div>
-
-            {/* Only the groups this version has, in a fixed order */}
-            {WHATS_NEW_GROUPS.map(([key, heading]) => {
-              const sentences = entry[key];
-              if (!sentences?.length) return null;
-              return (
-                <div key={key}>
-                  <h3 class="sb-whats-new-group">{heading}</h3>
-                  <ul class="sb-whats-new-items">
-                    {sentences.map((text) => (
-                      <li key={text} class="sb-mono sb-whats-new-item">
-                        {text}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              );
-            })}
-
-            <VersionDetails version={entry.version} />
-          </section>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-// ── Helpers ───────────────────────────────────────────────────────────────────
-
-function describeAudioState(): string {
-  switch (audioContextState.value) {
-    case 'locked':
-      return 'audio context idle · tap to activate';
-    case 'running':
-      return 'audio context running · ready';
-    case 'suspended':
-      return 'audio context suspended';
-  }
-}
 
 /**
  * initAudio() MUST be the first statement — no await before it.
@@ -121,109 +21,41 @@ function describeAudioState(): string {
  * Wrapped in try-catch so navigation always succeeds even if AudioContext
  * creation fails (e.g. browser privacy settings).
  */
-function handleUnlock(): void {
+function handleStart(): void {
   try {
     initAudio();
   } catch (e) {
     console.warn('[audio] AudioContext init failed — pads will be silent:', e);
   }
   audioContextState.value = 'running';
-  currentScreen.value = 'board-list';
+  currentScreen.value = 'menu';
 }
 
-// ── Screen ────────────────────────────────────────────────────────────────────
-
-/**
- * Shows the start screen: TAP TO UNLOCK unlocks audio (it must run in the tap) and opens the
- * board list; the version in the footer opens What's new.
- */
+/** Shows the start screen: the flame, the title and TAP TO START, which unlocks audio and opens the main menu. */
 export function StartScreen(): JSX.Element {
-  const [showWhatsNew, setShowWhatsNew] = useState(false);
-  const [checking, setChecking] = useState(false);
-  const [updateMessage, setUpdateMessage] = useState<string | null>(null);
-
-  async function handleUpdateCheck() {
-    setChecking(true);
-    setUpdateMessage(null);
-    const registration = await navigator.serviceWorker?.getRegistration();
-    const result = await checkForUpdateNow(registration, navigator.onLine);
-    setUpdateMessage(updateCheckMessage(result, APP_VERSION));
-    setChecking(false);
-  }
-
   return (
     <div class="sb sb-scanlines sb-start-screen">
-      {showWhatsNew && <WhatsNewOverlay onClose={() => setShowWhatsNew(false)} />}
-
       {/* ── Animated flame (tap to freeze) — v13-animated-flame.jsx ── */}
       <div class="sb-flame-well" data-testid="start-screen-flame-region">
         <AnimatedFlame size={120} />
       </div>
 
-      {/* ── App title ── */}
-      <div class="sb-display sb-start-title">
+      <h1 class="sb-display sb-start-title">
         SOUNDBOARD
         <br />
         OF STORYTELLING
-      </div>
+      </h1>
 
-      {/* ── Tagline ── */}
       <div class="sb-mono is-italic sb-start-tagline">
         // a tool for game-masters and other creative creatures
       </div>
 
-      {/* ── Unlock button — minimum 44px touch target per CLAUDE.md ── */}
-      <button class="sb-btn sb-btn-primary sb-btn-unlock" onClick={handleUnlock}>
+      {/* The one action — minimum 44px touch target per CLAUDE.md; the flame's auto margins keep
+          it centered */}
+      <button class="sb-btn sb-btn-primary sb-btn-unlock sb-start-action" onClick={handleStart}>
         <PixelIcon name="play" size={14} />
-        TAP TO UNLOCK
+        TAP TO START
       </button>
-
-      {/* ── Navigation buttons ── */}
-      <div class="sb-start-nav">
-        <button
-          class="sb-btn sb-btn-sm sb-btn-ghost"
-          onClick={() => {
-            currentScreen.value = 'board-list';
-          }}
-        >
-          <PixelIcon name="scroll" size={12} />
-          BOARD
-        </button>
-        <button
-          class="sb-btn sb-btn-sm sb-btn-ghost"
-          onClick={() => {
-            currentScreen.value = 'library';
-          }}
-        >
-          <PixelIcon name="book" size={12} />
-          LIBRARY
-        </button>
-        <button
-          class="sb-btn sb-btn-sm sb-btn-ghost"
-          disabled={checking}
-          onClick={() => void handleUpdateCheck()}
-        >
-          <PixelIcon name="download" size={12} />
-          {checking ? 'CHECKING…' : 'UPDATE'}
-        </button>
-      </div>
-      {/* The result of the update check, read out by screen readers */}
-      <div class="sb-caption sb-start-status" role="status">
-        {updateMessage}
-      </div>
-
-      {/* ── Footer: clickable version → What's new + audio state ── */}
-      <div class="sb-start-footer" data-testid="start-screen-footer-region">
-        <button
-          class="sb-version-link"
-          onClick={() => setShowWhatsNew(true)}
-          aria-label="Open What's new"
-        >
-          v {APP_VERSION}
-        </button>
-        <span>· build {__BUILD_DATE__} ·</span>
-        <span>{describeAudioState()}</span>
-      </div>
     </div>
   );
 }

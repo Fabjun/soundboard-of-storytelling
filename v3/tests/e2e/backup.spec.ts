@@ -94,7 +94,7 @@ test('a V1 backup imports its audio and its board; the pad plays', async ({ page
   // Unlock audio on the start screen (user gesture), then open the board
   await waitForSaves(page);
   await page.goto('/soundboard-of-storytelling/');
-  await page.getByRole('button', { name: 'TAP TO UNLOCK' }).click();
+  await goToBoardList(page); // through TAP TO START, which unlocks the audio
   await page.locator('[data-testid^="board-list-screen-name-text-"]').first().click();
   const pads = page.locator(
     '[data-testid^="pad-grid-cell-"]:not([data-testid^="pad-grid-cell-empty-slot-"])',

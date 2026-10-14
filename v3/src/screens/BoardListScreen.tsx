@@ -15,13 +15,14 @@ import { describeBackupAge } from '../lib/backupExport';
 import { PixelIcon } from '../components/PixelIcon';
 import {
   currentScreen,
+  settingsReturn,
   currentBoardId,
   currentDeckId,
   boards,
   removeBoardFromStore,
 } from '../state/store';
 import { boardDelete } from '../db/idb';
-import { clearLastView, getLastBackup } from '../state/prefs';
+import { clearLastView, getBackupReminderDays, getLastBackup } from '../state/prefs';
 import { createBoard, updateBoard } from '../state/boardWrites';
 import type { Board } from '../types';
 import { nanoid } from '../lib/nanoid';
@@ -39,7 +40,7 @@ export function BoardListScreen(): JSX.Element {
   const [exporting, setExporting] = useState(false);
   /** When the last backup was saved (D3) — re-read after a save. */
   const [lastBackup, setLastBackupShown] = useState(getLastBackup);
-  const backupAge = describeBackupAge(lastBackup, Date.now());
+  const backupAge = describeBackupAge(lastBackup, Date.now(), getBackupReminderDays());
 
   async function handleCreate() {
     const name = `Board ${allBoards.length + 1}`;
@@ -104,10 +105,23 @@ export function BoardListScreen(): JSX.Element {
             >
               IMPORT
             </button>
+            {/* Settings from the board list too (settings.md S14) */}
+            <button
+              class="sb-btn sb-btn-sm sb-btn-ghost"
+              data-testid="board-list-screen-settings-button"
+              aria-label="Settings"
+              title="Settings"
+              onClick={() => {
+                settingsReturn.value = 'board-list';
+                currentScreen.value = 'settings';
+              }}
+            >
+              <PixelIcon name="cog" size={11} />
+            </button>
             <button
               class="sb-btn sb-btn-sm sb-btn-ghost"
               onClick={() => {
-                currentScreen.value = 'start';
+                currentScreen.value = 'menu';
               }}
             >
               <PixelIcon name="flame" size={11} />

@@ -20,6 +20,7 @@ import {
   reloadApp,
   reopenFirstBoard,
   closePadEditor,
+  openMainMenu,
 } from './helpers';
 
 test.beforeEach(async ({ page }) => {
@@ -59,6 +60,7 @@ test('17 — change pad name in editor → persists after page reload', async ({
 
   // Reload page and navigate back to the board — reloadApp waits for the saves
   await reloadApp(page);
+  await openMainMenu(page);
   await page.getByRole('button', { name: 'BOARD' }).click();
   // Board should still exist
   const boardRow = page.locator('[data-testid^="board-list-screen-row-"]').first();
@@ -181,6 +183,7 @@ test('a draft left when the page is hidden comes back in the editor; SAVE keeps 
   });
 
   await reloadApp(page);
+  await openMainMenu(page);
   await page.getByRole('button', { name: 'BOARD' }).click();
   await page.locator('[data-testid^="board-list-screen-name-text-"]').first().click();
   await page.getByTestId('mode-toggle').waitFor();
