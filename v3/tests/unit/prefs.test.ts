@@ -39,6 +39,8 @@ import {
   animationsOn,
   getAnimationsSwitch,
   setAnimationsSwitch,
+  getEnterStop,
+  setEnterStop,
 } from '../../src/state/prefs';
 import { BACKUP_REMINDER_DAYS } from '../../src/lib/backupExport';
 
@@ -330,6 +332,22 @@ describe('animations switch (Settings → VISUALS, settings.md S6)', () => {
     setAnimationsSwitch(true);
     await settled();
     expect((await kvGetAll()).map(([k]) => k)).not.toContain('animations');
+  });
+});
+
+describe('Enter key (Settings → CONTROLS, settings.md S2)', () => {
+  it('stops the last sound until set to all; kept after a reload; the default is not stored', async () => {
+    expect(getEnterStop()).toBe('last');
+    setEnterStop('all');
+    await settled();
+    await loadPrefs();
+    expect(getEnterStop()).toBe('all');
+    setEnterStop('last');
+    await settled();
+    expect((await kvGetAll()).map(([k]) => k)).not.toContain('enter-stop');
+    await kvPut('enter-stop', 'some');
+    await loadPrefs();
+    expect(getEnterStop()).toBe('last');
   });
 });
 

@@ -58,6 +58,8 @@ const testBoard: Board = {
 let played: string[];
 let playing: Set<string>;
 let stop: () => void;
+/** What the Settings choice says Enter stops — read by keyControl at each press. */
+let enterStopsAll: boolean;
 
 function press(code: string, init: KeyboardEventInit = {}, target: EventTarget = document.body) {
   const e = new KeyboardEvent('keydown', { code, bubbles: true, cancelable: true, ...init });
@@ -68,6 +70,7 @@ function press(code: string, init: KeyboardEventInit = {}, target: EventTarget =
 beforeEach(() => {
   played = [];
   playing = new Set();
+  enterStopsAll = false;
   boards.value = [testBoard];
   currentBoardId.value = 'b';
   currentDeckId.value = 'd1';
@@ -87,6 +90,7 @@ beforeEach(() => {
       pressStopAll: () => played.push('STOP ALL'),
       stopLast: () => played.push('STOP LAST'),
       togglePause: () => played.push('PAUSE'),
+      enterStopsAll: () => enterStopsAll,
     },
   );
 });
@@ -286,6 +290,17 @@ describe('stop keys (Slice 12b)', () => {
     press('NumpadDecimal', {}, button);
     expect(seen).toEqual(['Enter']);
     expect(played).toEqual(['STOP LAST', 'STOP ALL']);
+  });
+
+  it('with Enter set to STOP ALL in Settings, both Enter keys stop all (settings.md S2)', () => {
+    enterStopsAll = true;
+    press('NumpadEnter');
+    press('Enter');
+    press('NumpadDecimal');
+    expect(played).toEqual(['STOP ALL', 'STOP ALL', 'STOP ALL']);
+    enterStopsAll = false; // read at each press
+    press('Enter');
+    expect(played.at(-1)).toBe('STOP LAST');
   });
 });
 

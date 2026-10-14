@@ -95,6 +95,29 @@ test('the numpad Enter and Enter stop the sound started last; the numpad decimal
   await expect(stopAll(page)).toHaveText('STOP ALL', { timeout: 1_000 });
 });
 
+test('with Enter set to STOP ALL in Settings, the numpad Enter stops every sound (settings.md S2)', async ({
+  page,
+}) => {
+  await page.getByTestId('board-top-bar-back-button').click();
+  await page.getByTestId('board-list-screen-settings-button').click();
+  await page.getByText('STOP ALL', { exact: true }).click();
+  await expect(page.getByRole('radio', { name: 'STOP ALL' })).toBeChecked();
+  await page.getByTestId('settings-screen-back-button').click();
+  await page.getByText('Board 1', { exact: true }).click();
+  await page.getByTestId('mode-toggle').waitFor();
+
+  await enterGameMode(page);
+  await pads(page).nth(0).getByRole('button').click();
+  await pads(page).nth(1).getByRole('button').click();
+  await expect(playing(page, 0)).toBeVisible();
+  await expect(playing(page, 1)).toBeVisible();
+
+  await page.keyboard.press('NumpadEnter');
+  await expect(stopAll(page)).toHaveText('STOP NOW'); // the same two-stage action as STOP ALL
+  await expect(playing(page, 0)).toHaveCount(0);
+  await expect(playing(page, 1)).toHaveCount(0);
+});
+
 // Slice 12c (docs/product/README.md#switching-modes): a mode switch stops every sound at once
 test('switching to SETUP stops every sound at once', async ({ page }) => {
   await enterGameMode(page);

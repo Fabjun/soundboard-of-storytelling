@@ -11,8 +11,9 @@
  *   - a key whose pad already plays does nothing — a second press never stops it (K4);
  *   - never while a text field has focus, with Ctrl / Alt / Cmd held, or for a held-down key;
  *   - stop keys (Slice 12b): the numpad's decimal key is STOP ALL (K6, two stages), the numpad's
- *     Enter stops the sound started last (K5); the main Enter does that too unless a control has
- *     focus — then Enter activates the control (a button's own key, WAI-ARIA button pattern);
+ *     Enter stops the sound started last (K5) — or every sound, the same as STOP ALL, when Settings
+ *     says so (V1's ENTER KEY STOP, settings.md S2); the main Enter does that too unless a control
+ *     has focus — then Enter activates the control (a button's own key, WAI-ARIA button pattern);
  *   - Space (Slice 12d, K7) pauses every sound and resumes it — unless a control has focus,
  *     which Space activates (same rule as Enter);
  *   - the other reserved keys (Escape, Tab) are left to their own controls.
@@ -24,6 +25,7 @@ import type { Pad } from '../types';
 import { currentBoard, currentDeck, currentMode, currentScreen } from './store';
 import { pressStopAll, stopLast } from './stopControl';
 import { togglePause } from './pauseControl';
+import { getEnterStop } from './prefs';
 
 /** What keyControl needs from the audio engine; tests pass their own. */
 export interface KeyControlAudio {
@@ -36,6 +38,8 @@ export interface KeyControlStops {
   pressStopAll: () => void;
   stopLast: () => void;
   togglePause: () => void;
+  /** Whether Enter stops all sounds instead of the last one — read at each press (Settings). */
+  enterStopsAll: () => boolean;
 }
 
 /** Elements Enter and Space activate — a focused one keeps its key. */
@@ -70,8 +74,12 @@ export function startKeyControl(
     pressStopAll: () => pressStopAll(),
     stopLast: () => stopLast(),
     togglePause: () => togglePause(),
+    enterStopsAll: () => getEnterStop() === 'all',
   },
 ): () => void {
+  /** Enter — the numpad's and the main one: the sound started last, or all (settings.md S2). */
+  const enterStop = () => (stops.enterStopsAll() ? stops.pressStopAll() : stops.stopLast());
+
   /** In GAME on a board, a plain key press outside a text field. */
   const applies = (e: KeyboardEvent) =>
     !e.repeat &&
@@ -86,11 +94,7 @@ export function startKeyControl(
   // the key — its Enter handler would otherwise toggle it as well (e.key is 'Enter' for both).
   const onNumpadStop = (e: KeyboardEvent) => {
     const stop =
-      e.code === 'NumpadDecimal'
-        ? stops.pressStopAll
-        : e.code === 'NumpadEnter'
-          ? stops.stopLast
-          : null;
+      e.code === 'NumpadDecimal' ? stops.pressStopAll : e.code === 'NumpadEnter' ? enterStop : null;
     if (!stop || !applies(e)) return;
     e.preventDefault();
     e.stopPropagation();
@@ -103,7 +107,7 @@ export function startKeyControl(
       const onControl = e.target instanceof Element && e.target.closest(CONTROLS) !== null;
       if (onControl) return;
       e.preventDefault(); // Space would also scroll the page
-      if (e.code === 'Enter') stops.stopLast();
+      if (e.code === 'Enter') enterStop();
       else stops.togglePause();
       return;
     }

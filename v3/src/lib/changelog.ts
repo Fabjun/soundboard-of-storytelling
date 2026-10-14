@@ -17,10 +17,19 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.237';
+export const APP_VERSION = '3.0.238';
 
 /** The developer log, newest first; CHANGELOG.md is generated from it (sync-changelog). */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.238',
+    date: '2026-10-14',
+    items: [
+      "feat(settings): Slice 14d, Enter key — Settings → CONTROLS → Enter key: STOP LAST (K5, default) or STOP ALL — V1's ENTER KEY STOP (SERIAL / TOTAL), settings.md S2 / K12; STOP ALL is the same two-stage action as the STOP ALL button and the numpad decimal (K16), for the numpad Enter and the main Enter alike; read at each press; prefs enter-stop (decided by Claude 2026-10-14)",
+      'test: keyControl — both Enter keys stop all when set, read at each press; prefs enter-stop; E2E stop-all — set in Settings, the numpad Enter fades every sound (STOP NOW); each counter-checked',
+      'docs: settings.md S2, product K12, SettingsScreen header lists every group',
+    ],
+  },
   {
     version: '3.0.237',
     date: '2026-10-14',
