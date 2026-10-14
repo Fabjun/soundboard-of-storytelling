@@ -17,10 +17,17 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.228';
+export const APP_VERSION = '3.0.229';
 
 /** The developer log, newest first; CHANGELOG.md is generated from it (sync-changelog). */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.229',
+    date: '2026-10-14',
+    items: [
+      'build(deps): production updates of Dependabot PR #106 — preact 11.0.1, idb 8.0.4, @tanstack/virtual-core 3.19.4 (newer than the PR; 3.19 changes overscan only with lanes, which the icon picker does not use)',
+    ],
+  },
   {
     version: '3.0.228',
     date: '2026-10-14',
