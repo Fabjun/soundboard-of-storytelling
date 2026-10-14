@@ -17,10 +17,17 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.235';
+export const APP_VERSION = '3.0.236';
 
 /** The developer log, newest first; CHANGELOG.md is generated from it (sync-changelog). */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.236',
+    date: '2026-10-14',
+    items: [
+      "docs(settings): S3 density — no density setting: V1's two densities (icon density on the pad, key map info density) have no counterpart in V3's icon grid or belong to the Parked key map overlay; a whole-UI density would add a setting V1 never had (S12) and cannot go below the 44 px touch target (decided by Claude 2026-10-14, for review); v1-v2-inventory key map row",
+    ],
+  },
   {
     version: '3.0.235',
     date: '2026-10-14',

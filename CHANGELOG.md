@@ -7,6 +7,12 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.236 — 2026-10-14
+
+### Internal
+
+- docs(settings): S3 density — no density setting: V1's two densities (icon density on the pad, key map info density) have no counterpart in V3's icon grid or belong to the Parked key map overlay; a whole-UI density would add a setting V1 never had (S12) and cannot go below the 44 px touch target (decided by Claude 2026-10-14, for review); v1-v2-inventory key map row
+
 ## 3.0.235 — 2026-10-14
 
 ### Added
