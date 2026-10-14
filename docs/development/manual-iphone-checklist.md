@@ -290,6 +290,14 @@ because Playwright runs against a simulated environment:
     zoom in when tapped.
   - Why manual: The iOS long-press menu and focus zoom exist only on iOS.
 
+- [ ] **Page zoom to 200 %** _(3.0.228, ADR-0067 amendment 2026-10-14)_
+  - Action: In Brave, look for the page zoom or text size in the browser menu and set 200 %; in
+    Safari, aA → enlarge to 200 %. Open the board list, a board and the Settings screen.
+  - Expected: The text grows; every control can still be reached by scrolling, nothing is cut off.
+    Note whether Brave offers a page zoom at all.
+  - Why manual: Pinch zoom is off in the app (ADR-0067), so text resizing (WCAG 1.4.4) rests on
+    the browser's own page zoom, which exists only in the browser's menu on the device.
+
 - [ ] **A swipe scrolls wherever it starts** _(3.0.220)_
   - Action: On a board with more pads than fit, in GAME and in SETUP: swipe up and down starting on
     a pad, between pads and on a library row (library panel open). In SETUP rest a finger on a pad

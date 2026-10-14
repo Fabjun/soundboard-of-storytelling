@@ -1818,7 +1818,17 @@ Found 2026-10-14 with knip 6.41 (Dependabot PR #105): knip 6.40 resolves Playwri
 dependency, used only by dev tooling. Same class as knip issue #1017 (husky / lint-staged files
 read in production mode, fixed in knip 5.47). Temporary exception, scoped to the one file:
 `ignoreIssues` `playwright.config.ts: ['binaries']` in `v3/knip.config.ts` (an `ignoreBinaries`
-entry would not do: the default mode then reports it as unused). Reporting it upstream is an outward-facing step — **owner decision open**.
+entry would not do: the default mode then reports it as unused).
+
+Narrowed 2026-10-14 in a minimal project (`@playwright/test` 1.64, `vite` 8.3.4, `typescript`
+5.9.3, `index.ts` as `main`, script `"dev": "vite"`): knip 6.39.0 passes, 6.40.0 and 6.41.0 fail,
+and only with arguments after `--` — `webServer.command` `npm run dev` and `npm run dev --` pass,
+`npm run dev -- --port 5199` and `npm run dev -- --strictPort` report `vite`; the default mode
+passes in every case. Decision (Claude, on the owner's instruction of 2026-10-14): report it
+upstream as a regression with this reproduction (knip's issue guide asks for a public
+reproduction). Publishing the reproduction as a public gist was refused by the session's
+permission check — **the upload waits for the owner** (a gist or a reproduction repository, then
+the issue on the "Regression" template: good 6.39.0, bad 6.40.0).
 **Trigger:** a knip release that skips the Playwright config in production mode — then remove the
 exception (a removed exception that stays green proves it).
 

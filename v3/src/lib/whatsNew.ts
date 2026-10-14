@@ -101,6 +101,12 @@ export function withEarlyVersions(
 /** The release notes the main menu shows, newest first (checked by whatsNew.test.ts). */
 export const WHATS_NEW: WhatsNewNotes[] = [
   {
+    version: '3.0.228',
+    behindTheScenes: [
+      'The plan for making text larger is written down: the page zoom of the browser does it, and a check on the iPhone confirms it. The app works exactly as before.',
+    ],
+  },
+  {
     version: '3.0.227',
     behindTheScenes: [
       'The development tools are up to date, and their updates now arrive together where they belong together. The app works exactly as before.',
