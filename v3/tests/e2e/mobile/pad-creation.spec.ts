@@ -27,6 +27,7 @@ import {
   createBoardAndNavigate,
   createDeck,
   enterSetupMode,
+  PAD_CELL,
 } from '../helpers';
 import { mobileUploadTestAudio } from './helpers';
 
@@ -57,9 +58,5 @@ test('A+B — empty cell tap opens popover; source + ADD PAD tap creates pad', a
   await page.getByTestId('pad-creation-popover-add-button').tap();
 
   // Pad appeared — cell is no longer empty
-  await expect(
-    page
-      .locator('[data-testid^="pad-grid-cell-"]:not([data-testid^="pad-grid-cell-empty-slot-"])')
-      .first(),
-  ).toBeVisible();
+  await expect(page.locator(PAD_CELL).first()).toBeVisible();
 });

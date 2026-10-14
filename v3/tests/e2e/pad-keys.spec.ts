@@ -24,7 +24,7 @@ import {
 const deckKey = (page: Page) => page.getByTestId('pad-editor-panel-deck-key-region');
 const quickKey = (page: Page) => page.getByTestId('pad-editor-panel-quick-key-region');
 const keyField = (page: Page) => deckKey(page).getByTestId('key-field-button');
-/** The key label shown on a pad. No test ID: existing specs count pads by the `pad-grid-cell-` prefix. */
+/** The key label shown on a pad, found by its text inside the pad's cell. */
 const padKey = (page: Page, padId: string, label: string) =>
   page.getByTestId(`pad-grid-cell-${padId}`).getByText(label, { exact: true });
 

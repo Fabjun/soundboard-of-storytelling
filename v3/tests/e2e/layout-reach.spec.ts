@@ -13,7 +13,13 @@
  */
 
 import { test, expect } from '@playwright/test';
-import { goToBoardList, createBoardAndNavigate, createDeck, enterSetupMode } from './helpers';
+import {
+  goToBoardList,
+  createBoardAndNavigate,
+  createDeck,
+  enterSetupMode,
+  PAD_CELL,
+} from './helpers';
 
 // Four rows of pads do not fit: the pads shrink to the 44 px touch target (src/lib/padFit.ts), and
 // four rows of those (with gaps and padding) are still taller than the grid area at this height,
@@ -36,9 +42,7 @@ test('the last grid cell can be reached and tapped on a short window', async ({ 
     await page.getByText('ADD PAD', { exact: true }).click();
     await page.getByTestId('pad-editor-panel-close-button').click();
   }
-  const pads = page.locator(
-    '[data-testid^="pad-grid-cell-"]:not([data-testid^="pad-grid-cell-empty-slot-"])',
-  );
+  const pads = page.locator(PAD_CELL);
   await expect(pads).toHaveCount(13);
   const grid = page.getByTestId('pad-grid');
   const overflow = await grid.evaluate((g) => g.scrollHeight - g.clientHeight);

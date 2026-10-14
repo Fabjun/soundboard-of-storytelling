@@ -20,6 +20,7 @@ import {
   setStepStopAll,
 } from '../lib/comboModel';
 import { poolByName } from '../lib/boardModel';
+import { UiIcon } from './UiIcon';
 
 /**
  * Edits the steps of the combo `comboId`: each step's pads, wait and "stop everything first".
@@ -98,7 +99,7 @@ export function ComboStepsEditor({
                   onBlur={() => setArmed(null)}
                 >
                   {names.get(id) ?? '(missing pad)'}
-                  {armed === `pad:${i}:${id}` ? ' — tap again to remove' : ' ×'}
+                  {armed === `pad:${i}:${id}` ? ' — tap again to remove' : <UiIcon name="delete" />}
                 </button>
               ))}
             </div>

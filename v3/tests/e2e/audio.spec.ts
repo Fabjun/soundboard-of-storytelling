@@ -21,6 +21,7 @@ import {
   createDeck,
   enterSetupMode,
   enterGameMode,
+  PAD_CELL,
 } from './helpers';
 
 // ── Test A: TAP TO START ─────────────────────────────────────────────────────
@@ -67,9 +68,7 @@ test('B — SINGLE pad: tap → is-hot; tap again → is-hot removed', async ({ 
   await page.getByTestId('pad-creation-popover-add-button').click();
 
   // Wait for pad cell to appear (occupied, not empty)
-  const padCell = page
-    .locator('[data-testid^="pad-grid-cell-"]:not([data-testid^="pad-grid-cell-empty-slot-"])')
-    .first();
+  const padCell = page.locator(PAD_CELL).first();
   await padCell.waitFor();
 
   // Switch to GAME mode
@@ -98,9 +97,7 @@ test('C — LOOP pad: tap → is-looping; tap again → is-looping removed', asy
   await page.getByRole('button', { name: 'LOOP' }).click();
   await page.getByTestId('pad-creation-popover-add-button').click();
 
-  const padCell = page
-    .locator('[data-testid^="pad-grid-cell-"]:not([data-testid^="pad-grid-cell-empty-slot-"])')
-    .first();
+  const padCell = page.locator(PAD_CELL).first();
   await padCell.waitFor();
 
   await enterGameMode(page);

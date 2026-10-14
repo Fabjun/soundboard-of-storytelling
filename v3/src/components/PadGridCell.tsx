@@ -17,6 +17,7 @@ import { keyLabel } from '../lib/padKeys';
 import { play, stop, isPlaying } from '../audio/index';
 import { libraryItems, playingPads, loopingPads } from '../state/store';
 import { PadIcons } from './PadIcons';
+import { UiIcon } from './UiIcon';
 
 interface PadGridCellProps {
   pad: Pad | null;
@@ -77,7 +78,7 @@ export function PadGridCell({
         }}
       >
         <span class="sb-pad-cell-add" aria-hidden="true">
-          +
+          <UiIcon name="add" />
         </span>
       </div>
     );
@@ -170,8 +171,12 @@ export function PadGridCell({
 
         {/* SETUP: drag handle indicator */}
         {isSetup && (
-          <div class="sb-pad-drag-handle" aria-hidden="true">
-            ⣿
+          <div
+            class="sb-pad-drag-handle"
+            aria-hidden="true"
+            data-testid="pad-grid-cell-drag-region"
+          >
+            <UiIcon name="drag" />
           </div>
         )}
       </div>

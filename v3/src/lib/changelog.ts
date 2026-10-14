@@ -17,10 +17,20 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.242';
+export const APP_VERSION = '3.0.243';
 
 /** The developer log, newest first; CHANGELOG.md is generated from it (sync-changelog). */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.243',
+    date: '2026-10-14',
+    items: [
+      'feat(ui): symbols written as characters are icons from the collection too (ADR-0085 amendment) — close (exit-cross), the four directions (Kenney 1-bit chevrons, same 16-pixel grid), pause, stop, all pads, drag, the add sign of an empty pad cell; removing an item from a list (file, icon, key, combo step pad) is the delete icon; the board list\'s two-tap delete says CONFIRM like every other (was "!!"); the menu "⋯" stays a character — the collection has no "more" icon (named exception)',
+      'fix(pads): the drag handle in SETUP is hidden on a compact pad (below 80 px), where the 16 px icon covered the name, and a name keeps room for it on larger pads (measured at 44 and 88 px)',
+      'a11y: the clear buttons of the library searches had only "×" as their name — they say "Clear the search" now',
+      'test: codeGuards ("symbols are icons") — no symbol character in the markup but the named exception (counter-checked); pad-size — the drag handle only from 80 px and never over the name (both fixes counter-checked); a pad cell is found through one selector, PAD_CELL in helpers.ts, which needs a grid position (data-pos) — 19 prefix-only copies counted the new drag handles as pads; testGuards keeps further copies out (counter-checked); board-crud — the delete icon is named, CONFIRM on the first tap',
+    ],
+  },
   {
     version: '3.0.242',
     date: '2026-10-14',

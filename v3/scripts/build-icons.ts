@@ -99,9 +99,20 @@ const PLACEHOLDERS = {
  * meaning (owner decisions 2026-10-11 for the toolbar, 2026-10-14 for all of them, ADR-0085):
  * the menu and its screens, the board toolbar (the Lock, the toggles of the search bar, the
  * quick-access bar and the deck tabs), the PAD editor's undo and redo (ADR-0084), and the actions
- * of buttons and lists. Keys name the meaning, not the drawing.
+ * of buttons and lists. Keys name the meaning, not the drawing. Nikoichu first; Kenney's 1-bit pack
+ * (the same 16-pixel grid) where Nikoichu has no fitting drawing — its arrows look like pins, so
+ * the four directions are Kenney's chevrons.
  */
 const UI_ICONS = {
+  close: 'nikoichu:exit-cross',
+  up: 'kenney-1bit:chevron-up',
+  down: 'kenney-1bit:chevron-down',
+  left: 'kenney-1bit:chevron-left',
+  right: 'kenney-1bit:chevron-right',
+  pause: 'nikoichu:pause',
+  stop: 'nikoichu:stop',
+  allPads: 'nikoichu:clipboard-list',
+  drag: 'nikoichu:arrows-up-down',
   board: 'nikoichu:scroll-document',
   library: 'nikoichu:books',
   settings: 'nikoichu:settings-gear',

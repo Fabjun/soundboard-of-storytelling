@@ -381,7 +381,10 @@
 .sb-pad.is-compact {
   padding: var(--space-1) var(--space-1) var(--space-1) var(--space-2);
 }
-.sb-pad.is-compact .sb-pad-type-label {
+.sb-pad.is-compact .sb-pad-type-label,
+.sb-pad.is-compact .sb-pad-drag-handle {
+  /* The drag handle too: as an icon (ADR-0085, at least 16 px) it covered the name of a 44 px pad
+     (measured 2026-10-14) — the name comes first, and a press still drags */
   display: none;
 }
 .sb-pad.is-compact .sb-pad-icons {
@@ -440,6 +443,11 @@
   text-overflow: ellipsis;
   flex-shrink: 0;
 }
+.sb-pad.is-setup:not(.is-compact) .sb-pad-title {
+  /* Room for the drag handle in the bottom-right corner (a 16 px icon, ADR-0085): a long name
+     ends in … before it instead of under it (measured 2026-10-14) */
+  padding-right: 1.25rem;
+}
 .sb-pad .sb-pad-meta {
   font-family: var(--font-mono);
   font-size: var(--fs-xs);
@@ -483,12 +491,10 @@
   border: 0;
 }
 .sb-pad .sb-pad-drag-handle {
-  /* Session 3h: drag handle indicator in SETUP mode — absolute bottom-right, mono 10px (sub-token), border-strong color, grab cursor. */
+  /* Drag handle indicator in SETUP mode — the drag icon (ADR-0085), absolute bottom-right, border-strong color, grab cursor; hidden on a compact pad. */
   position: absolute;
   bottom: 4px; /* sub-token pixel literal — tight corner positioning */
   right: 6px; /* sub-token pixel literal — tight corner positioning */
-  font-family: var(--font-mono);
-  font-size: 0.625rem; /* sub-token: deliberately small drag indicator (10px) */
   color: var(--border-strong);
   cursor: grab;
   user-select: none;
@@ -1650,11 +1656,8 @@
   );
 }
 .sb-pad-cell-add {
-  /* @inventory: "+" symbol in empty grid cells; the tap-to-create affordance. */
-  font-family: var(--font-ui);
-  font-size: 1.75rem;
+  /* @inventory: The add icon in an empty grid cell (ADR-0085); the tap-to-create affordance. */
   color: var(--border);
-  line-height: 1;
   pointer-events: none;
   transition: color 0.15s;
 }

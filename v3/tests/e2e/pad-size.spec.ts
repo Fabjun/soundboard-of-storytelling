@@ -51,7 +51,7 @@ async function foldDeckList(page: Page) {
   if ((await hide.count()) > 0) await hide.click();
 }
 
-const cells = (page: Page) => page.locator('[data-testid^="pad-grid-cell-"]');
+const cells = (page: Page) => page.locator('[data-testid^="pad-grid-cell-"][data-pos]');
 const slider = (page: Page) => page.getByRole('slider', { name: 'PAD SIZE' });
 
 /** How many cells stand in the grid's first row. */
@@ -200,7 +200,7 @@ for (const viewport of [PHONE, WIDE]) {
 
 // Owner decision 2026-10-11: on a small pad the name comes first, then the icon, then the rest —
 // the type row gives way below 80 px; the type stays in the description screen readers read
-test('on a phone every pad size shows the name and the icon; the type row only from 80 px', async ({
+test('on a phone every pad size shows the name and the icon; the type row and the drag handle only from 80 px', async ({
   page,
 }) => {
   await page.setViewportSize(PHONE);
@@ -218,7 +218,23 @@ test('on a phone every pad size shows the name and the icon; the type row only f
           const icon = await boxOf(pad.getByTestId('pad-icons'));
           const typeRow = pad.getByText('SGL', { exact: true });
           const typeShown = await typeRow.isVisible();
+          // SETUP's drag handle (an icon, ADR-0085) only from 80 px, and never over the name
+          const handle = pad.getByTestId('pad-grid-cell-drag-region');
+          const handleShown = await handle.isVisible();
+          // The name's text area: its box without the right padding kept for the handle
+          const nameTextRight = await pad
+            .getByText('A1', { exact: true })
+            .evaluate(
+              (el) =>
+                el.getBoundingClientRect().right - parseFloat(getComputedStyle(el).paddingRight),
+            );
+          const clear =
+            !handleShown ||
+            (await boxOf(handle)).x >= nameTextRight - 0.5 ||
+            (await boxOf(handle)).y >= name.y + name.height - 0.5;
           return (
+            handleShown === box.width >= COMPACT_BELOW &&
+            clear &&
             name.y + name.height <= box.y + box.height + 0.5 && // the name inside the pad
             icon.height >= 10 && // the icon is there to see
             icon.y + icon.height <= name.y + 0.5 && // above the name, not over it

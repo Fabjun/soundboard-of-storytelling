@@ -29,6 +29,9 @@
  * 11. Every CI job that runs steps has `timeout-minutes` (a job that calls a reusable workflow
  *    cannot have one): a browser download hung for over 13 minutes on 2026-10-09, and GitHub's
  *    default limit is 360 minutes — the required checks would have blocked every merge.
+ * 12. A pad's cell is found through `PAD_CELL` / `padCells` (tests/e2e/helpers.ts) — a selector
+ *    copied into 25 places matched every test ID of PadGridCell by its prefix and counted a new
+ *    drag handle as a pad (2026-10-14); no spec writes it itself.
  */
 
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
@@ -430,5 +433,27 @@ describe('guard: every CI job has a time limit (2026-10-09)', () => {
         .map((j) => `${file}: ${j.name}`),
     );
     expect(missing, 'set timeout-minutes — about 3x the longest run, at least 10').toEqual([]);
+  });
+});
+
+describe('guard: a pad cell is found in one place (2026-10-14)', () => {
+  const E2E = join(V3, 'tests', 'e2e');
+  const specs = repoFiles(E2E)
+    .filter((f) => f.endsWith('.ts') && basename(f) !== 'helpers.ts')
+    .map((f) => join(E2E, f));
+  // The prefix of a cell's test ID, as a CSS attribute selector — only with a grid position
+  // ([data-pos]) does it mean a cell, and that selector lives in helpers.ts (PAD_CELL)
+  const PREFIX_ONLY = /\[data-testid\^="pad-grid-cell-"\](?![^'"`]*\[data-pos)/;
+
+  it('finds the specs (sanity)', () => {
+    expect(specs.length).toBeGreaterThan(30);
+  });
+
+  it('no spec matches cells by the test ID prefix alone — PAD_CELL / padCells do', () => {
+    const bad = specs.filter((f) => {
+      const src = readFileSync(f, 'utf8');
+      return src.split('\n').some((line) => PREFIX_ONLY.test(line) && !/\[data-pos/.test(line));
+    });
+    expect(bad.map((f) => relative(V3, f))).toEqual([]);
   });
 });
