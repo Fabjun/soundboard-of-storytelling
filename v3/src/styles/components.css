@@ -1988,6 +1988,14 @@
   padding: 0.125rem var(--space-3); /* 2px top/bottom: deliberate sub-token — tight pill sizing */
   flex-shrink: 0;
 }
+.sb-update-prompt {
+  /* @inventory: The update prompt on a sb-toast (ADR-0066, settings.md S10) — stacked: the message, the row of BACKUP / RELOAD / LATER, and the backup panel when open; wraps its text and keeps inside a narrow window. 1-use. */
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--space-2);
+  white-space: normal;
+  width: min(28rem, calc(100vw - 2rem));
+}
 
 /* ── Inspector / PadEditor ─────────────────────────────────── */
 

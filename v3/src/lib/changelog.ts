@@ -17,10 +17,19 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.238';
+export const APP_VERSION = '3.0.239';
 
 /** The developer log, newest first; CHANGELOG.md is generated from it (sync-changelog). */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.239',
+    date: '2026-10-14',
+    items: [
+      "feat(update): Slice 14e — the update prompt offers BACKUP next to RELOAD and LATER (settings.md S10, ADR-0066 amendment; V1's BACKUP NOW): it opens the backup export inside the prompt, the same one as the board list, and records the last backup; the prompt stacks its message, buttons and panel (class sb-update-prompt) and says that boards and sounds stay on the device",
+      'test: pwa — BACKUP, SAVE (a download), then RELOAD takes over and the board list shows the backup of today (counter-checked: no BACKUP button → red); the simulated deploy is one helper, whileANewVersionWaits, instead of three copies',
+      'docs: ADR-0066 amendment, settings.md S10; UpdatePrompt header (the UPDATE button is in the main menu)',
+    ],
+  },
   {
     version: '3.0.238',
     date: '2026-10-14',

@@ -101,6 +101,12 @@ export function withEarlyVersions(
 /** The release notes the main menu shows, newest first (checked by whatsNew.test.ts). */
 export const WHATS_NEW: WhatsNewNotes[] = [
   {
+    version: '3.0.239',
+    new: [
+      'When a new version is ready, the message offers BACKUP: a backup can be saved right there before reloading.',
+    ],
+  },
+  {
     version: '3.0.238',
     new: [
       'Enter can stop all sounds instead of the last one: Settings → CONTROLS → Enter key. It then works like STOP ALL — a first press fades out, a second stops at once.',

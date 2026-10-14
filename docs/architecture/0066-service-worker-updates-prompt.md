@@ -72,6 +72,13 @@ offered again. Checked in `v3/tests/e2e/pwa.spec.ts` against the production buil
 simulated deploy; LATER, then UPDATE again) and in `v3/tests/e2e/update-check.spec.ts` (no service
 worker, offline).
 
+**2026-10-14 (3.0.239) — a backup before the reload.** The prompt offers BACKUP next to RELOAD and
+LATER (docs/product/features/settings.md S10; V1's update modal had BACKUP NOW). It opens the same
+backup export as the board list inside the prompt — one export path, the last-backup time is
+recorded — and RELOAD stays as before. The UPDATE button now sits in the main menu (S15). Checked
+in `v3/tests/e2e/pwa.spec.ts` against the production build: BACKUP, SAVE, then RELOAD takes over
+and the board list shows "Last backup: today".
+
 ## Related
 
 - **Files:** `v3/vite.config.ts`, `v3/src/components/UpdatePrompt.tsx`, `v3/src/App.tsx`,

@@ -7,6 +7,17 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.239 — 2026-10-14
+
+### Added
+
+- feat(update): Slice 14e — the update prompt offers BACKUP next to RELOAD and LATER (settings.md S10, ADR-0066 amendment; V1's BACKUP NOW): it opens the backup export inside the prompt, the same one as the board list, and records the last backup; the prompt stacks its message, buttons and panel (class sb-update-prompt) and says that boards and sounds stay on the device
+
+### Internal
+
+- test: pwa — BACKUP, SAVE (a download), then RELOAD takes over and the board list shows the backup of today (counter-checked: no BACKUP button → red); the simulated deploy is one helper, whileANewVersionWaits, instead of three copies
+- docs: ADR-0066 amendment, settings.md S10; UpdatePrompt header (the UPDATE button is in the main menu)
+
 ## 3.0.238 — 2026-10-14
 
 ### Added
