@@ -7,6 +7,12 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.229 — 2026-10-14
+
+### Internal
+
+- build(deps): production updates of Dependabot PR #106 — preact 11.0.1, idb 8.0.4, @tanstack/virtual-core 3.19.4 (newer than the PR; 3.19 changes overscan only with lanes, which the icon picker does not use)
+
 ## 3.0.228 — 2026-10-14
 
 ### Internal

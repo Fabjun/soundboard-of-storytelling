@@ -54,10 +54,10 @@
     "@noble/hashes": "^2.4.0",
     "@preact/signals": "^2.11.3",
     "@streamparser/json": "^0.0.26",
-    "@tanstack/virtual-core": "^3.17.11",
+    "@tanstack/virtual-core": "^3.19.4",
     "fflate": "^0.8.3",
-    "idb": "^8.0.3",
-    "preact": "^11.0.0"
+    "idb": "^8.0.4",
+    "preact": "^11.0.1"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.13.0",
