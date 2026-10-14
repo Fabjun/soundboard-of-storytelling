@@ -17,10 +17,17 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.245';
+export const APP_VERSION = '3.0.246';
 
 /** The developer log, newest first; CHANGELOG.md is generated from it (sync-changelog). */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.246',
+    date: '2026-10-14',
+    items: [
+      'docs: settings.md S1 said "not built" since 3.0.226 — now built, with V1\'s KEYBINDING group inside CONTROLS (3.0.245); v1-v2-inventory §6 marks the Settings screen and the developer view built, appearance partly (content width built, scale and density dropped, S3)',
+    ],
+  },
   {
     version: '3.0.245',
     date: '2026-10-14',
