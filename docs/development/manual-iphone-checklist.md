@@ -290,6 +290,16 @@ because Playwright runs against a simulated environment:
     zoom in when tapped.
   - Why manual: The iOS long-press menu and focus zoom exist only on iOS.
 
+- [ ] **Quick taps never zoom** _(3.0.240, ADR-0067 amendment 2026-10-14)_
+  - Action: Tap the flame on the start screen and in the main menu quickly several times. In GAME,
+    tap one pad quickly twice, and two pads one right after the other. Do the same on an Android
+    phone (Chrome).
+  - Expected: The flame freezes and thaws; the pads play — the page never zooms in or out. If a
+    pad tap zooms on the iPhone, note it: the pads keep pan-x pan-y so a swipe on them still
+    scrolls, and need their own fix.
+  - Why manual: Double-tap zoom is a gesture of the phone's browser; Playwright's desktop engines
+    do not zoom on a double tap, so the automatic test can only read the CSS (system-gestures).
+
 - [ ] **Page zoom to 200 %** _(3.0.228, ADR-0067 amendment 2026-10-14)_
   - Action: In Brave, look for the page zoom or text size in the browser menu and set 200 %; in
     Safari, aA → enlarge to 200 %. Open the board list, a board and the Settings screen.

@@ -17,6 +17,7 @@ import {
   ensureTestAudio,
   goToBoardList,
   goToLibrary,
+  openMainMenu,
   padCells,
 } from './helpers';
 
@@ -72,4 +73,45 @@ test('no browser gestures and no small text fields on any screen', async ({ page
   await padCells(page).first().click();
   await page.getByRole('button', { name: 'BROWSE' }).click();
   expect(await offenders(page), 'PAD editor with library picker').toEqual([]);
+});
+
+// Owner report 2026-10-14: tapping the menu flame quickly zoomed the page in and out on the iPhone.
+// iOS WebKit's double-tap zoom ignores the global pan-x pan-y; the flame cancels the end of each
+// touch, which keeps the browser from the double tap (and the click the flame does not need).
+// Android Chrome has no double-tap zoom on a width=device-width page (Chrome 32+). A desktop
+// engine never zooms on a double tap, so the test reads whether the touch's end was canceled.
+test.describe('with a touch screen', () => {
+  test.use({ hasTouch: true });
+
+  test('a tap on the flame ends without a double-tap zoom, on the start screen and in the menu', async ({
+    page,
+  }) => {
+    /** Taps the flame and tells whether its touchend was canceled — by the time it reaches window. */
+    const tapCancelsZoom = async () => {
+      await page.evaluate(() => {
+        (window as { lastTouchEndPrevented?: boolean }).lastTouchEndPrevented = undefined;
+        window.addEventListener(
+          'touchend',
+          (e) =>
+            ((window as { lastTouchEndPrevented?: boolean }).lastTouchEndPrevented =
+              e.defaultPrevented),
+          { once: true },
+        );
+      });
+      await page.getByRole('img', { name: 'Animated flame' }).tap();
+      return page.evaluate(
+        () => (window as { lastTouchEndPrevented?: boolean }).lastTouchEndPrevented,
+      );
+    };
+    await page.goto('/soundboard-of-storytelling/');
+    expect(await tapCancelsZoom(), 'start screen').toBe(true);
+    await openMainMenu(page);
+    expect(await tapCancelsZoom(), 'main menu').toBe(true);
+    // A swipe still scrolls from the flame: its touch-action is the global one (codeGuards)
+    expect(
+      await page
+        .getByRole('img', { name: 'Animated flame' })
+        .evaluate((c) => getComputedStyle(c).getPropertyValue('touch-action')),
+    ).toBe('pan-x pan-y');
+  });
 });

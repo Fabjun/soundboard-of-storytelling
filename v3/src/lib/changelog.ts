@@ -17,10 +17,19 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.239';
+export const APP_VERSION = '3.0.240';
 
 /** The developer log, newest first; CHANGELOG.md is generated from it (sync-changelog). */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.240',
+    date: '2026-10-14',
+    items: [
+      'fix(start): quick taps on the flame no longer zoom the page in and out on the iPhone (owner report 2026-10-14) — iOS WebKit drops double-tap zoom only for touch-action none / manipulation (WebKit r247212), the global pan-x pan-y did not; the flame cancels the end of each touch (preventDefault on touchend), so iOS sees no double tap, and a swipe from it still scrolls (touch-action none was tried first and refused by codeGuards: none only on drag handles). Android Chrome has no double-tap zoom on a width=device-width page (Chrome 32+), so it was not affected',
+      'test: system-gestures with a touch screen — a tap on the flame, on the start screen and in the main menu, ends canceled; the flame keeps pan-x pan-y; Chromium and WebKit (counter-checked: without the handler red in both)',
+      'docs: ADR-0067 amendment; manual checklist "Quick taps never zoom" with pads and an Android line; CLAUDE.md — every touch / gesture / zoom fix covers iOS and Android (owner decision 2026-10-14)',
+    ],
+  },
   {
     version: '3.0.239',
     date: '2026-10-14',

@@ -883,7 +883,7 @@
   -webkit-tap-highlight-color: transparent;
 }
 .sb-animated-flame-canvas {
-  /* @inventory: AnimatedFlame canvas — 32×40-cell field overflowing the flame box (room for sparks, steam, shards); pixelated; no zoom gestures (global rule, ADR-0067). Size, offset, cursor and glow filter set inline (computed). */
+  /* @inventory: AnimatedFlame canvas — 32×40-cell field overflowing the flame box (room for sparks, steam, shards); pixelated; no zoom gestures (global rule, ADR-0067; its touchend stops iOS double-tap zoom). Size, offset, cursor and glow filter set inline (computed). */
   position: absolute;
   display: block;
   image-rendering: pixelated;

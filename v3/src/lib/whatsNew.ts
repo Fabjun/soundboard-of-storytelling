@@ -101,6 +101,12 @@ export function withEarlyVersions(
 /** The release notes the main menu shows, newest first (checked by whatsNew.test.ts). */
 export const WHATS_NEW: WhatsNewNotes[] = [
   {
+    version: '3.0.240',
+    fixed: [
+      'Tapping the flame quickly several times no longer zooms the page in and out on the iPhone.',
+    ],
+  },
+  {
     version: '3.0.239',
     new: [
       'When a new version is ready, the message offers BACKUP: a backup can be saved right there before reloading.',

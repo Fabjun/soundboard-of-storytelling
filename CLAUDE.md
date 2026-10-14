@@ -150,6 +150,11 @@
 - Android Chrome 100+ (~2022 and newer)
 - Desktop: current Chromium, Firefox, Safari (last 2 major versions)
 
+**Every touch, gesture, zoom, viewport or input fix covers iOS and Android** (owner decision
+2026-10-14): name the cause and the fix for WebKit (iOS) and Chromium (Android), each with a
+source; test it in the `mobile` (WebKit) and `mobile-chromium` projects or by computed style in both
+engines; what only a phone shows goes onto the manual checklist with an iPhone and an Android line.
+
 **Available modern features (all supported on minimum):**
 
 - Pointer Events API (iOS 13+)
