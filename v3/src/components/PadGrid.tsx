@@ -40,6 +40,7 @@ import {
   type DndDropResult,
 } from '../lib/padDnd';
 import { updateBoard } from '../state/boardWrites';
+import { padSizeOf } from '../state/prefs';
 
 interface PadGridProps {
   /** The deck to show; null = the All pads view of the whole pool (ADR-0048). */
@@ -97,10 +98,11 @@ export function PadGrid({
   // Moving and creating pads happens in a deck's arrangement; a flowing view only selects and plays.
   const canArrange = isSetup && !flowing;
 
-  // As many columns as keep every pad at or below the board's pad size (ADR-0075): the places flow
-  // in reading order, so a row always fills the width and the grid only scrolls downwards. Null
-  // until measured — the CSS then shows the deck's own column count.
-  const padSize = padSizePreview ?? board.padSize;
+  // As many columns as keep every pad at or below the board's pad size (ADR-0075; or the one size
+  // for every board, settings.md S4): the places flow in reading order, so a row always fills the
+  // width and the grid only scrolls downwards. Null until measured — the CSS then shows the deck's
+  // own column count.
+  const padSize = padSizePreview ?? padSizeOf(board);
   const gridRef = useRef<HTMLDivElement>(null);
   const [shown, setShown] = useState<{ cols: number; side: number } | null>(null);
   const shownCols = shown?.cols ?? null;

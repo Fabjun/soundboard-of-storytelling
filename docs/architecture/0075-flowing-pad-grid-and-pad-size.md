@@ -99,3 +99,12 @@ place, `migrateBoard`) and in a backup import (`parseBoard`), both through `migr
 decks. Consequence: the positive point "each deck can have its own size" no longer holds; whether
 the size applies per board or app-wide stays a later Settings option
 (`docs/design/components/pad.md`).
+
+**2026-10-14 (3.0.234) — PAD SIZE per board or for every board.** Settings → APPEARANCE → Pad size
+(docs/product/features/settings.md S4): "Per board" (the default, as above) or "Same on every
+board". In the second case the slider writes one size for every board — the preference `pad-size`
+(`v3/src/state/prefs.ts`, ADR-0062) — and every board shows it (`padSizeFor` in
+`v3/src/lib/padSize.ts`); `Board.padSize` stays untouched, so "Per board" again brings each
+board's own size back. Decided by Claude on the owner's instruction of 2026-10-14 (S4 was decided,
+its form open): a preference rather than writing the size into every board, because a choice that
+can be undone should not overwrite the boards' own values.

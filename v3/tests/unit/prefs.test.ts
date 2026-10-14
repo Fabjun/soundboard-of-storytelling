@@ -29,6 +29,11 @@ import {
   setBackupReminderDays,
   getTheme,
   setTheme,
+  getAppPadSize,
+  getPadSizeScope,
+  padSizeOf,
+  setAppPadSize,
+  setPadSizeScope,
 } from '../../src/state/prefs';
 import { BACKUP_REMINDER_DAYS } from '../../src/lib/backupExport';
 
@@ -259,6 +264,36 @@ describe('theme (Settings → APPEARANCE, settings.md S5)', () => {
     await kvPut('theme', 'modern');
     await loadPrefs();
     expect(getTheme()).toBe('hearth');
+  });
+});
+
+describe('pad size for every board (Settings → APPEARANCE, settings.md S4)', () => {
+  it('per board until chosen: a board shows its own size; the scope is kept after a reload', async () => {
+    expect(getPadSizeScope()).toBe('board');
+    expect(padSizeOf({ padSize: 120 })).toBe(120);
+    setPadSizeScope('app');
+    setAppPadSize(60);
+    expect(padSizeOf({ padSize: 120 })).toBe(60);
+    await settled();
+    await loadPrefs();
+    expect(getPadSizeScope()).toBe('app');
+    expect(getAppPadSize()).toBe(60);
+    setPadSizeScope('board');
+    expect(padSizeOf({ padSize: 120 })).toBe(120);
+  });
+
+  it('the size for every board stays on the slider; 88 until set and not stored', async () => {
+    expect(getAppPadSize()).toBe(88);
+    setAppPadSize(999);
+    expect(getAppPadSize()).toBe(160);
+    setAppPadSize(88);
+    await settled();
+    expect((await kvGetAll()).map(([k]) => k)).not.toContain('pad-size');
+    await kvPut('pad-size-scope', 'everything');
+    await kvPut('pad-size', 'big');
+    await loadPrefs();
+    expect(getPadSizeScope()).toBe('board');
+    expect(getAppPadSize()).toBe(88);
   });
 });
 

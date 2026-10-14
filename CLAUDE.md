@@ -298,7 +298,8 @@ pixel-art details and touch minimums — ADR-0081, guarded by `codeGuards` ("typ
   `v3/tests/e2e/pad-editor-fullscreen.spec.ts`)
 - Board pads are squares in reading order, in as many columns as keep each pad at or below the
   board's pad size — no horizontal scrolling, the grid scrolls down; one size per board (all decks
-  and All pads), set with the PAD SIZE slider in the deck rail, SETUP only (ADR-0075,
+  and All pads) — or one for every board, chosen in Settings (S4) — set with the PAD SIZE slider in
+  the deck rail, SETUP only (ADR-0075,
   `v3/src/lib/padSize.ts`); the deck
   list starts folded (owner decisions 2026-10-05 / 2026-10-06; guarded by
   `v3/tests/e2e/pad-size.spec.ts`, `v3/tests/e2e/deck-rail-fold.spec.ts`) — in the wide frame; below

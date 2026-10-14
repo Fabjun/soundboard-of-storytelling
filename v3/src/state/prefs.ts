@@ -15,6 +15,7 @@ import { DEFAULT_PAD_SORT, isPadSort, type PadSort } from '../lib/padSort';
 import { parsePad } from '../lib/boardModel';
 import { BACKUP_REMINDER_CHOICES, BACKUP_REMINDER_DAYS } from '../lib/backupExport';
 import { DEFAULT_THEME, isThemeId, type ThemeId } from '../lib/theme';
+import { PAD_SIZE, clampPadSize, padSizeFor, type PadSizeScope } from '../lib/padSize';
 import type { Pad } from '../types';
 import { pendingSaves } from './store';
 
@@ -188,4 +189,35 @@ export function getTheme(): ThemeId {
 /** Sets the app's theme; the default (Hearth) is not stored. */
 export function setTheme(theme: ThemeId): void {
   write(THEME_KEY, theme === DEFAULT_THEME ? undefined : theme);
+}
+
+// ── Pad size for every board (Settings → APPEARANCE, settings.md S4) ─────────
+
+const PAD_SIZE_SCOPE_KEY = 'pad-size-scope';
+const APP_PAD_SIZE_KEY = 'pad-size';
+
+/** Whether PAD SIZE is set per board (the default) or once for every board. */
+export function getPadSizeScope(): PadSizeScope {
+  return cache.get(PAD_SIZE_SCOPE_KEY) === 'app' ? 'app' : 'board';
+}
+
+/** Sets where PAD SIZE lives; the default (per board) is not stored. */
+export function setPadSizeScope(scope: PadSizeScope): void {
+  write(PAD_SIZE_SCOPE_KEY, scope === 'board' ? undefined : scope);
+}
+
+/** The pad size of every board while the scope is `app` — on the slider's steps, 88 until set. */
+export function getAppPadSize(): number {
+  return clampPadSize(cache.get(APP_PAD_SIZE_KEY));
+}
+
+/** Sets the pad size of every board (kept inside the slider's limits); the default is not stored. */
+export function setAppPadSize(px: number): void {
+  const size = clampPadSize(px);
+  write(APP_PAD_SIZE_KEY, size === PAD_SIZE.default ? undefined : size);
+}
+
+/** The pad size this board shows — its own, or the one for every board (S4). */
+export function padSizeOf(board: { padSize: number }): number {
+  return padSizeFor(board.padSize, getPadSizeScope(), getAppPadSize());
 }

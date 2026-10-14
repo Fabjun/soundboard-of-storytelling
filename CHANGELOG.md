@@ -7,6 +7,17 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.234 — 2026-10-14
+
+### Added
+
+- feat(settings): Slice 14b, pad size — Settings → APPEARANCE → Pad size: "Per board" (default) or "Same on every board" (settings.md S4; ADR-0075 amendment); for every board the PAD SIZE slider writes the preference pad-size and every board shows it, Board.padSize stays untouched so "Per board" brings each board's own size back (decided by Claude 2026-10-14); padSize.ts padSizeFor, prefs padSizeOf / getPadSizeScope / setAppPadSize
+
+### Internal
+
+- test: unit tests padSizeFor and the two preferences (default, reload, limits, invalid values); E2E pad-size — one size for two boards, per board again each its own (counter-checked: slider writing to the board regardless, padSizeFor ignoring the scope)
+- docs: ADR-0075 amendment, settings.md S4, CLAUDE.md UI rule
+
 ## 3.0.233 — 2026-10-14
 
 ### Added

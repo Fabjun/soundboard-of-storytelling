@@ -15,19 +15,27 @@ import { SegmentedChoice } from '../components/SegmentedChoice';
 import { currentScreen, settingsReturn } from '../state/store';
 import {
   getBackupReminderDays,
+  getPadSizeScope,
   getTheme,
   prefsVersion,
   setBackupReminderDays,
+  setPadSizeScope,
   setTheme,
 } from '../state/prefs';
 import { BACKUP_REMINDER_CHOICES } from '../lib/backupExport';
 import { THEMES } from '../lib/theme';
+import type { PadSizeScope } from '../lib/padSize';
 import { APP_VERSION } from '../lib/changelog';
 
 declare const __BUILD_DATE__: string;
 
 /** The themes as Settings names them (S5). */
 const THEME_OPTIONS = THEMES.map((t) => ({ value: t, label: t.toUpperCase() }));
+/** Where PAD SIZE lives (S4). */
+const PAD_SIZE_SCOPE_OPTIONS: { value: PadSizeScope; label: string }[] = [
+  { value: 'board', label: 'Per board' },
+  { value: 'app', label: 'Same on every board' },
+];
 /** The backup reminder's choices (S7). */
 const REMINDER_OPTIONS = BACKUP_REMINDER_CHOICES.map((d) => ({ value: d, label: `${d} days` }));
 
@@ -68,6 +76,15 @@ export function SettingsScreen(): JSX.Element {
             value={getTheme()}
             onChange={setTheme}
             testid="settings-screen-theme-region"
+          />
+          <SegmentedChoice
+            legend="Pad size"
+            caption="The PAD SIZE slider in a board's deck list sets it for that board, or once for every board."
+            name="pad-size-scope"
+            options={PAD_SIZE_SCOPE_OPTIONS}
+            value={getPadSizeScope()}
+            onChange={setPadSizeScope}
+            testid="settings-screen-pad-size-region"
           />
         </section>
 
