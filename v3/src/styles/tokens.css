@@ -328,6 +328,11 @@
   --text-mute: #9aa59d;
 
   --flame: #d8893a;
+  /* Animated flame — Verdant palette (flame-themes.jsx PAL.verdant.warm) */
+  --flame-outer: #b8631f;
+  --flame-mid: #d8893a;
+  --flame-core: #f2c24f;
+  --flame-heart: #ffe8a0;
   --gold: #c9a04f;
   --gold-bright: #f2cc5c;
 
@@ -364,6 +369,11 @@
   --text-mute: #8297b6;
 
   --flame: #ff3d8b;
+  /* Animated flame — Neon palette (flame-themes.jsx PAL.neon.warm) */
+  --flame-outer: #b81e6b;
+  --flame-mid: #ff3d8b;
+  --flame-core: #ff8fc0;
+  --flame-heart: #ffd8ec;
   --gold: #3dd4f0;
   --gold-bright: #6ef0ff;
 
@@ -397,6 +407,11 @@
   --text-mute: #a0807c;
 
   --flame: #b5302e;
+  /* Animated flame — Crimson palette (flame-themes.jsx PAL.crimson.warm) */
+  --flame-outer: #7a1a1a;
+  --flame-mid: #b5302e;
+  --flame-core: #e85c3a;
+  --flame-heart: #ffc2a0;
   --gold: #dd5d5d; /* lighter than the border red so text keeps AA */
   --gold-bright: #f37474;
 
