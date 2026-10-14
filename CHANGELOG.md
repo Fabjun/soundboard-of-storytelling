@@ -7,6 +7,16 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.235 — 2026-10-14
+
+### Added
+
+- feat(settings): Slice 14b, content width — Settings → APPEARANCE → Content width: AUTO (the whole window, default), COMPACT 900, MEDIUM 1100, WIDE 1400 px — V1's choices and values (settings.md S3); a class on the root element sets the token --content-max, .sb-screen takes it as max-width, centered; lib contentWidth, prefs content-width; classes sb-width-compact / -medium / -wide
+
+### Internal
+
+- test: unit tests contentWidth (V1's values in the classes, class switch) and the preference; E2E settings — at 1600 px COMPACT puts the screen's right edge at 1250 px, kept on the board list after a reload (counter-checked: no max-width, a wrong value)
+
 ## 3.0.234 — 2026-10-14
 
 ### Added

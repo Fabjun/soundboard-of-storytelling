@@ -16,6 +16,7 @@ import { parsePad } from '../lib/boardModel';
 import { BACKUP_REMINDER_CHOICES, BACKUP_REMINDER_DAYS } from '../lib/backupExport';
 import { DEFAULT_THEME, isThemeId, type ThemeId } from '../lib/theme';
 import { PAD_SIZE, clampPadSize, padSizeFor, type PadSizeScope } from '../lib/padSize';
+import { DEFAULT_CONTENT_WIDTH, isContentWidth, type ContentWidth } from '../lib/contentWidth';
 import type { Pad } from '../types';
 import { pendingSaves } from './store';
 
@@ -189,6 +190,21 @@ export function getTheme(): ThemeId {
 /** Sets the app's theme; the default (Hearth) is not stored. */
 export function setTheme(theme: ThemeId): void {
   write(THEME_KEY, theme === DEFAULT_THEME ? undefined : theme);
+}
+
+// ── Content width (Settings → APPEARANCE, settings.md S3) ────────────────────
+
+const CONTENT_WIDTH_KEY = 'content-width';
+
+/** How wide the screens get on a large window — the whole window (AUTO) until chosen. */
+export function getContentWidth(): ContentWidth {
+  const v = cache.get(CONTENT_WIDTH_KEY);
+  return isContentWidth(v) ? v : DEFAULT_CONTENT_WIDTH;
+}
+
+/** Sets the content width; the default (AUTO) is not stored. */
+export function setContentWidth(width: ContentWidth): void {
+  write(CONTENT_WIDTH_KEY, width === DEFAULT_CONTENT_WIDTH ? undefined : width);
 }
 
 // ── Pad size for every board (Settings → APPEARANCE, settings.md S4) ─────────

@@ -17,10 +17,18 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.234';
+export const APP_VERSION = '3.0.235';
 
 /** The developer log, newest first; CHANGELOG.md is generated from it (sync-changelog). */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.235',
+    date: '2026-10-14',
+    items: [
+      "feat(settings): Slice 14b, content width — Settings → APPEARANCE → Content width: AUTO (the whole window, default), COMPACT 900, MEDIUM 1100, WIDE 1400 px — V1's choices and values (settings.md S3); a class on the root element sets the token --content-max, .sb-screen takes it as max-width, centered; lib contentWidth, prefs content-width; classes sb-width-compact / -medium / -wide",
+      "test: unit tests contentWidth (V1's values in the classes, class switch) and the preference; E2E settings — at 1600 px COMPACT puts the screen's right edge at 1250 px, kept on the board list after a reload (counter-checked: no max-width, a wrong value)",
+    ],
+  },
   {
     version: '3.0.234',
     date: '2026-10-14',
