@@ -110,7 +110,7 @@ export function KeyField({ id, label, hotkey, check, onAssign }: KeyFieldProps):
             aria-label="Remove the key"
             onClick={() => assign(undefined)}
           >
-            ×
+            <UiIcon name="delete" />
           </button>
         )}
       </div>

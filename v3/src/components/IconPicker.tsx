@@ -112,7 +112,7 @@ export function IconPicker({ chosen, onPick, onClose }: IconPickerProps): JSX.El
           aria-label="Close the icon list"
           data-testid="icon-picker-close-button"
         >
-          ×
+          <UiIcon name="close" />
         </button>
       </div>
       <div class="sb-search-bar">
@@ -130,7 +130,7 @@ export function IconPicker({ chosen, onPick, onClose }: IconPickerProps): JSX.El
           />
           {query && (
             <button class="sb-btn-clear" onClick={() => setQuery('')} aria-label="Clear the search">
-              ×
+              <UiIcon name="close" />
             </button>
           )}
         </div>
@@ -180,7 +180,7 @@ export function IconPicker({ chosen, onPick, onClose }: IconPickerProps): JSX.El
                   onClick={() => toggle(cat)}
                   data-testid={`icon-picker-category-button-${cat}`}
                 >
-                  <span aria-hidden="true">{isOpen ? '▼' : '▶'}</span>
+                  <UiIcon name={isOpen ? 'down' : 'right'} />
                   <span class="sb-flex-1">{cat.toUpperCase()}</span>
                   <span class="sb-count-text">{keys.length}</span>
                 </button>

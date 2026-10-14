@@ -20,6 +20,7 @@ import {
   reopenFirstBoard,
   seedTestAudio,
   TEST_AUDIO_NAME,
+  PAD_CELL,
 } from './helpers';
 
 test.beforeEach(async ({ page }) => {
@@ -65,11 +66,7 @@ test('13 — Path A: select from RECENT tab → ADD PAD → pad appears in cell'
 
   // Popover closes, pad cell appears (not empty)
   await expect(popover).not.toBeVisible({ timeout: 3000 });
-  await expect(
-    page
-      .locator('[data-testid^="pad-grid-cell-"]:not([data-testid^="pad-grid-cell-empty-slot-"])')
-      .first(),
-  ).toBeVisible();
+  await expect(page.locator(PAD_CELL).first()).toBeVisible();
   // Cell 0,0 is no longer empty
   await expect(page.getByTestId('pad-grid-cell-empty-slot-0-0')).not.toBeVisible({
     timeout: 2000,
@@ -122,11 +119,7 @@ test('15 — Path A: BROWSE tab → search → select → ADD PAD', async ({ pag
   await addPadBtn.click();
 
   // Pad appears
-  await expect(
-    page
-      .locator('[data-testid^="pad-grid-cell-"]:not([data-testid^="pad-grid-cell-empty-slot-"])')
-      .first(),
-  ).toBeVisible();
+  await expect(page.locator(PAD_CELL).first()).toBeVisible();
 });
 
 // ── Later tests: what the user picks or types is kept ─────────────────────────
@@ -178,9 +171,7 @@ test('the suggested name follows the chosen file; a typed name is kept', async (
   const popover = page.getByTestId('pad-creation-popover');
   const item = (name: string) =>
     popover.locator('[data-testid^="pad-creation-popover-source-item-"]').filter({ hasText: name });
-  const pads = page.locator(
-    '[data-testid^="pad-grid-cell-"]:not([data-testid^="pad-grid-cell-empty-slot-"])',
-  );
+  const pads = page.locator(PAD_CELL);
 
   // One file, then another: the pad takes the name of the second
   await page.getByTestId('pad-grid-cell-empty-slot-0-0').click();

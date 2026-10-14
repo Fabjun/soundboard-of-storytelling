@@ -101,6 +101,13 @@ export function withEarlyVersions(
 /** The release notes the main menu shows, newest first (checked by whatsNew.test.ts). */
 export const WHATS_NEW: WhatsNewNotes[] = [
   {
+    version: '3.0.243',
+    improved: [
+      'The small symbols on buttons — close, up and down, fold, pause and stop, remove — are pixel icons from the same library now.',
+    ],
+    fixed: ['In SETUP, the drag mark no longer covers the name of a small pad.'],
+  },
+  {
     version: '3.0.242',
     improved: [
       'All symbols of menus and buttons now come from the same pixel icon library as the pads, so the whole app has one style. Each symbol means one thing everywhere — Back is always the same arrow.',

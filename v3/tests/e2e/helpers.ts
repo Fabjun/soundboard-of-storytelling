@@ -294,14 +294,9 @@ export async function createPadAtCell00(page: Page): Promise<string> {
   // Add the pad
   await page.getByTestId('pad-creation-popover-add-button').click();
   // Wait for the occupied cell (no longer pad-cell-empty-0-0)
-  await page
-    .locator('[data-testid^="pad-grid-cell-"]:not([data-testid^="pad-grid-cell-empty-slot-"])')
-    .first()
-    .waitFor();
+  await page.locator(PAD_CELL).first().waitFor();
   // Return the pad ID from the testid
-  const padCell = page
-    .locator('[data-testid^="pad-grid-cell-"]:not([data-testid^="pad-grid-cell-empty-slot-"])')
-    .first();
+  const padCell = page.locator(PAD_CELL).first();
   const testid = await padCell.getAttribute('data-testid');
   return testid!.replace('pad-grid-cell-', '');
 }
@@ -374,9 +369,17 @@ export async function reopenFirstBoard(page: Page): Promise<void> {
 
 // ── Pads ──────────────────────────────────────────────────────────────────────
 
+/**
+ * The CSS selector of a pad's cell (not an empty one) — the one place it is written (testGuards).
+ * A cell is the element with a grid position (data-pos): other test IDs of PadGridCell, such as
+ * its drag handle, share the prefix and are no cells (2026-10-14: a prefix-only copy of this
+ * selector, in 25 places, counted the drag handles as pads).
+ */
+export const PAD_CELL =
+  '[data-testid^="pad-grid-cell-"][data-pos]:not([data-testid^="pad-grid-cell-empty-slot-"])';
+
 /** The pads shown in the grid (not the empty cells). */
-export const padCells = (page: Page) =>
-  page.locator('[data-testid^="pad-grid-cell-"]:not([data-testid^="pad-grid-cell-empty-slot-"])');
+export const padCells = (page: Page) => page.locator(PAD_CELL);
 
 /**
  * A Loop pad in the empty cell (col, 0), made from the first library file (Path A). Needs SETUP

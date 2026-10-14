@@ -64,7 +64,7 @@ export function LibraryPanel({
           aria-label="Close the library"
           title="Close the library"
         >
-          ×
+          <UiIcon name="close" />
         </button>
       </div>
 
@@ -80,8 +80,12 @@ export function LibraryPanel({
             class="sb-flex-1 sb-search-input"
           />
           {search && (
-            <button onClick={() => setSearch('')} class="sb-btn-clear">
-              ×
+            <button
+              onClick={() => setSearch('')}
+              class="sb-btn-clear"
+              aria-label="Clear the search"
+            >
+              <UiIcon name="close" />
             </button>
           )}
         </div>

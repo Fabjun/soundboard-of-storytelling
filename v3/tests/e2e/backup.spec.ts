@@ -23,6 +23,7 @@ import {
   waitForSaves,
   setupBoardAndDeck,
   createPadAtCell00,
+  PAD_CELL,
 } from './helpers';
 
 const wav = readFileSync(TEST_AUDIO_PATH);
@@ -96,9 +97,7 @@ test('a V1 backup imports its audio and its board; the pad plays', async ({ page
   await page.goto('/soundboard-of-storytelling/');
   await goToBoardList(page); // through TAP TO START, which unlocks the audio
   await page.locator('[data-testid^="board-list-screen-name-text-"]').first().click();
-  const pads = page.locator(
-    '[data-testid^="pad-grid-cell-"]:not([data-testid^="pad-grid-cell-empty-slot-"])',
-  );
+  const pads = page.locator(PAD_CELL);
   await expect(pads).toHaveCount(2);
   await expect(pads.first()).toContainText('Owl');
   await expect(pads.first()).toContainText('N1'); // the V1 key, on the placement
@@ -185,9 +184,7 @@ test('EXPORT saves one file that restores the board and its audio in a fresh bro
   );
   await other.getByTestId('backup-import-panel-close-button').click();
   await other.locator('[data-testid^="board-list-screen-name-text-"]').first().click();
-  const pads = other.locator(
-    '[data-testid^="pad-grid-cell-"]:not([data-testid^="pad-grid-cell-empty-slot-"])',
-  );
+  const pads = other.locator(PAD_CELL);
   await expect(pads).toHaveCount(1);
   await expect(pads.first()).toContainText(TEST_AUDIO_NAME);
   await fresh.close();

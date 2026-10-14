@@ -254,7 +254,7 @@ export function DeckRail({
       onClick={() => setOpen(!open)}
       data-testid="deck-rail-toggle-button"
     >
-      {open ? '◀' : '▶'}
+      <UiIcon name={open ? 'left' : 'right'} />
     </button>
   );
   // Tabs: the current deck is always in view, also far along a long row (L3) — when it changes,
@@ -301,7 +301,9 @@ export function DeckRail({
             setPendingDeleteId(null);
           }}
         >
-          <span class="sb-deck-num-badge">≡</span>
+          <span class="sb-deck-num-badge">
+            <UiIcon name="allPads" />
+          </span>
           <span class="sb-flex-trunc">All pads</span>
           <span class="sb-count-text">{board.pads.length}</span>
         </button>
@@ -425,7 +427,7 @@ export function DeckRail({
 
               {/* Reorder (Slice 13g): a line of its own under the active deck in SETUP, so the
                   name keeps its room — the row has only 58 px left next to its action buttons.
-                  The handle is the pointer way; ▲ / ▼ are the way without dragging (WCAG 2.2
+                  The handle is the pointer way; the up / down buttons are the way without dragging (WCAG 2.2
                   SC 2.5.7) and the keyboard's, as in the PAD editor's file list. */}
               {manage && activeDeckId === deck.id && editingId !== deck.id && (
                 <div class="sb-deck-tab-move" role="group" aria-label={`Move deck ${deck.name}`}>
@@ -438,7 +440,7 @@ export function DeckRail({
                     onPointerUp={() => onHandleUp(deck.id)}
                     onPointerCancel={onHandleCancel}
                   >
-                    ⣿
+                    <UiIcon name="drag" />
                   </span>
                   <button
                     type="button"
@@ -448,7 +450,7 @@ export function DeckRail({
                     disabled={position === 0}
                     onClick={() => moveTo(deck.id, position - 1)}
                   >
-                    ▲
+                    <UiIcon name="up" />
                   </button>
                   <button
                     type="button"
@@ -458,7 +460,7 @@ export function DeckRail({
                     disabled={position === decks.length - 1}
                     onClick={() => moveTo(deck.id, position + 1)}
                   >
-                    ▼
+                    <UiIcon name="down" />
                   </button>
                 </div>
               )}

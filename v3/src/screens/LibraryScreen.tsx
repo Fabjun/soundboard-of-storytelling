@@ -287,8 +287,12 @@ export function LibraryScreen(): JSX.Element {
                   onInput={(e) => setSearch((e.target as HTMLInputElement).value)}
                 />
                 {search && (
-                  <button class="sb-btn-clear" onClick={() => setSearch('')}>
-                    ×
+                  <button
+                    class="sb-btn-clear"
+                    onClick={() => setSearch('')}
+                    aria-label="Clear the search"
+                  >
+                    <UiIcon name="close" />
                   </button>
                 )}
               </div>

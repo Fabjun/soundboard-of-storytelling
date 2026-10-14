@@ -280,7 +280,7 @@ function BoardRow({ board, onOpen }: { board: Board; onOpen: () => void }): JSX.
             onClick={handleDelete}
             onBlur={() => setDeleteConfirm(false)}
           >
-            {deleteConfirm ? '!!' : '×'}
+            {deleteConfirm ? 'CONFIRM' : <UiIcon name="delete" />}
           </button>
         </div>
       )}

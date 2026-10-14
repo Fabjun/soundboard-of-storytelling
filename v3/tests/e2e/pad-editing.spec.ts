@@ -21,6 +21,7 @@ import {
   reopenFirstBoard,
   closePadEditor,
   openMainMenu,
+  PAD_CELL,
 } from './helpers';
 
 test.beforeEach(async ({ page }) => {
@@ -36,9 +37,7 @@ test.beforeEach(async ({ page }) => {
 // ── Test 16: Tap pad in SETUP → PadEditorPanel opens ─────────────────────────
 
 test('16 — tap pad in SETUP mode → PadEditorPanel opens', async ({ page }) => {
-  const padCell = page
-    .locator('[data-testid^="pad-grid-cell-"]:not([data-testid^="pad-grid-cell-empty-slot-"])')
-    .first();
+  const padCell = page.locator(PAD_CELL).first();
   await padCell.click();
   await expect(page.getByTestId('pad-editor-panel')).toBeVisible();
 });
@@ -47,9 +46,7 @@ test('16 — tap pad in SETUP mode → PadEditorPanel opens', async ({ page }) =
 
 test('17 — change pad name in editor → persists after page reload', async ({ page }) => {
   // Open editor
-  const padCell = page
-    .locator('[data-testid^="pad-grid-cell-"]:not([data-testid^="pad-grid-cell-empty-slot-"])')
-    .first();
+  const padCell = page.locator(PAD_CELL).first();
   await padCell.click();
   await page.getByTestId('pad-editor-panel').waitFor();
 
@@ -71,20 +68,14 @@ test('17 — change pad name in editor → persists after page reload', async ({
   await enterSetupMode(page);
 
   // The pad cell should show the new name (DOM text; textTransform is CSS-visual only)
-  await expect(
-    page
-      .locator('[data-testid^="pad-grid-cell-"]:not([data-testid^="pad-grid-cell-empty-slot-"])')
-      .first(),
-  ).toContainText('Renamed Pad');
+  await expect(page.locator(PAD_CELL).first()).toContainText('Renamed Pad');
 });
 
 // ── Test 18: Trivial type change → no dialog ─────────────────────────────────
 
 test('18 — trivial type change (single→loop) → no confirmation dialog', async ({ page }) => {
   // Open editor
-  const padCell = page
-    .locator('[data-testid^="pad-grid-cell-"]:not([data-testid^="pad-grid-cell-empty-slot-"])')
-    .first();
+  const padCell = page.locator(PAD_CELL).first();
   await padCell.click();
   await page.getByTestId('pad-editor-panel').waitFor();
 
@@ -105,9 +96,7 @@ test('18 — trivial type change (single→loop) → no confirmation dialog', as
 // ── Test 19: Lossy type change → PadTypeConfirmDialog appears ────────────────
 
 test('19 — lossy type change → PadTypeConfirmDialog appears', async ({ page }) => {
-  const padCell = page
-    .locator('[data-testid^="pad-grid-cell-"]:not([data-testid^="pad-grid-cell-empty-slot-"])')
-    .first();
+  const padCell = page.locator(PAD_CELL).first();
   await padCell.click();
   await page.getByTestId('pad-editor-panel').waitFor();
 
@@ -151,9 +140,7 @@ async function pauseClock(page: Page): Promise<void> {
 // (owner decision 2026-10-05) a person closes it first, so the same check — the waiting save is
 // written, not dropped (src/lib/debouncedSave.ts) — now runs on the close.
 test('a name typed just before the editor is closed is kept', async ({ page }) => {
-  const first = page
-    .locator('[data-testid^="pad-grid-cell-"]:not([data-testid^="pad-grid-cell-empty-slot-"])')
-    .first();
+  const first = page.locator(PAD_CELL).first();
   await pauseClock(page);
   await first.click();
   await page.getByTestId('pad-editor-panel-name-input').fill('Owl');
@@ -170,9 +157,7 @@ test('a name typed just before the editor is closed is kept', async ({ page }) =
 test('a draft left when the page is hidden comes back in the editor; SAVE keeps it', async ({
   page,
 }) => {
-  const first = page
-    .locator('[data-testid^="pad-grid-cell-"]:not([data-testid^="pad-grid-cell-empty-slot-"])')
-    .first();
+  const first = page.locator(PAD_CELL).first();
   await pauseClock(page); // only the hidden page writes the draft, not the pause after typing
   await first.click();
   await page.getByTestId('pad-editor-panel-name-input').fill('Rain');

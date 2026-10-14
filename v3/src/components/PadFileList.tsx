@@ -11,6 +11,7 @@
 import type { JSX } from 'preact';
 import { useState } from 'preact/hooks';
 import type { FileOrder, PadFile } from '../types';
+import { UiIcon } from './UiIcon';
 
 interface PadFileListProps {
   files: readonly PadFile[];
@@ -41,7 +42,7 @@ export function PadFileList({
   onRemove,
   onOrderChange,
 }: PadFileListProps): JSX.Element {
-  /** The file whose ✕ was tapped once and waits for the confirming second tap. */
+  /** The file whose remove button was tapped once and waits for the confirming second tap. */
   const [confirming, setConfirming] = useState<number | null>(null);
 
   if (files.length === 0) {
@@ -73,7 +74,7 @@ export function PadFileList({
               data-testid={`pad-file-list-up-button-${i}`}
               onClick={() => onMove(i, -1)}
             >
-              ▲
+              <UiIcon name="up" />
             </button>
             <button
               class="sb-btn sb-btn-ghost"
@@ -82,7 +83,7 @@ export function PadFileList({
               data-testid={`pad-file-list-down-button-${i}`}
               onClick={() => onMove(i, 1)}
             >
-              ▼
+              <UiIcon name="down" />
             </button>
             <button
               class="sb-btn sb-btn-danger"
@@ -96,7 +97,7 @@ export function PadFileList({
               }}
               onBlur={() => setConfirming(null)}
             >
-              {confirming === i ? 'CONFIRM' : '✕'}
+              {confirming === i ? 'CONFIRM' : <UiIcon name="delete" />}
             </button>
           </div>
         );

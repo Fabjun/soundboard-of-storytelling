@@ -57,7 +57,7 @@ function WhatsNewOverlay({ onClose }: { onClose: () => void }): JSX.Element {
           onClick={onClose}
           aria-label="Close What's new"
         >
-          ×
+          <UiIcon name="close" />
         </button>
       </div>
 

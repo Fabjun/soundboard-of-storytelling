@@ -62,6 +62,9 @@
  * 21. No hover effects (owner decision 2026-10-14): no `:hover` rule in any stylesheet — on a
  *    touch screen :hover stuck to the last tapped button, which stayed gold and unreadable;
  *    a control answers a press (:active) and shows its persistent state instead.
+ * 22. Symbols are icons (owner decision 2026-10-14, ADR-0085): no symbol character (× ✕ ▲ ▼ ◀ ▶
+ *    ★ ≡ ⏸ ⏹ ⣿ …) in the markup of a component or screen — `UiIcon` draws them from the icon
+ *    collection; the named exceptions say why (ADR-0053).
  */
 
 import { readdirSync, readFileSync } from 'node:fs';
@@ -1016,5 +1019,44 @@ describe('guard: no hover effects (owner decision 2026-10-14)', () => {
       /:hover\b/.test(withoutComments(readFileSync(join(SRC, 'styles', f), 'utf8'))),
     );
     expect(bad, 'touch screens keep :hover after a tap (owner report 2026-10-14)').toEqual([]);
+  });
+});
+
+describe('guard: symbols are icons (owner decision 2026-10-14, ADR-0085)', () => {
+  // Characters drawn as symbols; text that merely names a key or a size (e.g. "44 × 44") is in
+  // comments or tests, which do not count
+  const SYMBOLS = /[×✕✖✗✓▲▼◀▶△▽⋯…★☆≡⏸⏹⏵⣿]/g;
+  /** File → the symbols it may show, with the reason (ADR-0053; listed in ADR-0085). */
+  const ALLOWED: Record<string, { symbols: string; reason: string }> = {
+    'components/MenuButton.tsx': {
+      symbols: '⋯',
+      reason: 'the collection has no "more" icon (ADR-0085 exception)',
+    },
+  };
+  const files = ['components', 'screens'].flatMap((dir) =>
+    readdirSync(join(SRC, dir))
+      .filter((f) => f.endsWith('.tsx'))
+      .map((f) => `${dir}/${f}`),
+  );
+  // Comments may name a symbol; only the markup and the code count. The ellipsis of a text
+  // ("Loading icons…") is punctuation, not a symbol.
+  const withoutComments = (code: string) =>
+    code
+      .replace(/\{\/\*[\s\S]*?\*\/\}/g, '')
+      .replace(/\/\*[\s\S]*?\*\//g, '')
+      .replace(/^\s*\/\/.*$/gm, '');
+
+  it('finds the components and screens (sanity)', () => {
+    expect(files.length).toBeGreaterThan(20);
+  });
+
+  it('no component or screen shows a symbol character — UiIcon draws it', () => {
+    const bad = files.flatMap((f) => {
+      const found = [...new Set(withoutComments(readFileSync(join(SRC, f), 'utf8')).match(SYMBOLS))]
+        .filter((s) => s !== '…')
+        .filter((s) => !(ALLOWED[f]?.symbols ?? '').includes(s));
+      return found.map((s) => `${f}: ${s}`);
+    });
+    expect(bad, 'use <UiIcon name=…> (ADR-0085), or name an exception with its reason').toEqual([]);
   });
 });

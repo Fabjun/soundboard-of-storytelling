@@ -81,19 +81,20 @@ test('3 — renamed board persists after page reload', async ({ page }) => {
 
 // ── Test 4: Delete — first tap shows confirm state ────────────────────────────
 
-test('4 — delete board: first tap shows confirm state (!! label)', async ({ page }) => {
+test('4 — delete board: first tap shows confirm state (CONFIRM label)', async ({ page }) => {
   await goToBoardList(page);
   await page.getByTestId('board-list-screen-new-button').click();
   const boardRow = page.locator('[data-testid^="board-list-screen-row-"]').first();
   await boardRow.waitFor();
 
   const deleteBtn = boardRow.locator('[data-testid^="board-list-screen-delete-button-"]');
-  // Initial state: "×" character
-  await expect(deleteBtn).toHaveText('×');
+  // Initial state: the delete icon (decorative), named by its label (ADR-0085)
+  await expect(deleteBtn).toHaveText('');
+  await expect(deleteBtn).toHaveAccessibleName('Delete board Board 1');
 
-  // First tap: should enter confirm state
+  // First tap: should enter confirm state — CONFIRM, as every two-tap delete
   await deleteBtn.click();
-  await expect(deleteBtn).toHaveText('!!');
+  await expect(deleteBtn).toHaveText('CONFIRM');
   // Board is still in the list
   await expect(boardRow).toBeVisible();
 });
@@ -109,7 +110,7 @@ test('5 — delete board: second tap removes it from list', async ({ page }) => 
   const deleteBtn = boardRow.locator('[data-testid^="board-list-screen-delete-button-"]');
   // Two taps
   await deleteBtn.click();
-  await expect(deleteBtn).toHaveText('!!');
+  await expect(deleteBtn).toHaveText('CONFIRM');
   await deleteBtn.click();
 
   // Board row should be gone; empty state visible

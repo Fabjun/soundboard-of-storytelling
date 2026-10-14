@@ -37,6 +37,12 @@ general concept.
 The choice of each icon was made by looking at the candidates side by side (preview sheet,
 2026-10-14) and is open to the owner's review.
 
+## Exceptions
+
+| Exception                                                  | Reason                                                                                                           | Reference | Review                                   |
+| ---------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- | --------- | ---------------------------------------- |
+| The menu button's "⋯" stays a character (`MenuButton.tsx`) | The collection has no "more" icon — nikoichu's only candidate, "hamburger", draws a burger (preview, 2026-10-14) | ADR-0085  | a fitting icon comes into the collection |
+
 ## Consequences
 
 **Positive:**
@@ -49,7 +55,8 @@ The choice of each icon was made by looking at the candidates side by side (prev
 - The icons are 16×16 drawings made for pads. Pixel art scaled by a fraction blurs (the back
   arrow at 11 px, measured), so `UiIcon` draws at the nearest whole multiple of the grid — at
   least 16 px; icons that were 10–14 px are 16 px now, and one at 40 px is 48 px.
-- Symbols written as characters (× ▲ ▼ ◀ ▶ ⋯ ★) are not icons yet — a follow-up step.
+- A drag handle as a 16 px icon is larger than the 10 px character it replaced: it is hidden on a
+  compact pad (below 80 px, where it covered the name) and the name keeps room for it in SETUP.
 
 ## Alternatives considered
 
@@ -58,6 +65,18 @@ the owner asked for the library's icons.
 
 **Mix sets (Kenney, pixelarticons) where nikoichu has no fitting icon:** possible later, but
 nikoichu had a fitting icon for every meaning, and one set keeps the line width and pixel grid alike.
+
+## Amendments
+
+**2026-10-14 (3.0.243) — symbols written as characters become icons too.** The buttons' × ✕
+▲ ▼ ◀ ▶ ★ ≡ ⏸ ⏹ ⣿ are icons now: close (`nikoichu:exit-cross`), the four directions (Kenney 1-bit
+chevrons — the same 16-pixel grid; nikoichu's arrows look like pins, so this is where a second set
+is used), pause and stop (nikoichu), all pads (`nikoichu:clipboard-list`), drag
+(`nikoichu:arrows-up-down`); removing an item from a list (a file, an icon, a key, a combo step's
+pad) is the delete icon, ✕ was used for both. The board list's two-tap delete says CONFIRM like
+every other two-tap delete (it said "!!"). Buttons whose only name was the character got an
+`aria-label` ("Clear the search"). `codeGuards` ("symbols are icons") keeps symbol characters out
+of the markup, the one exception named above.
 
 ## Related
 

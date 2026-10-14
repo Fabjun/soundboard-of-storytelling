@@ -155,7 +155,7 @@ export function PadEditorPanel({
   const [icons, setIcons] = useState<string[]>(start.icons ?? []);
   /** The icon slot the picker fills (an index into `icons`, or its length to add); null = closed. */
   const [pickerSlot, setPickerSlot] = useState<number | null>(null);
-  /** The icon whose ✕ was tapped once and now asks to confirm. */
+  /** The icon whose remove button was tapped once and now asks to confirm. */
   const [iconConfirm, setIconConfirm] = useState<number | null>(null);
   const iconDrawings = useIconDrawings(icons);
 
@@ -328,7 +328,7 @@ export function PadEditorPanel({
     dropDraft();
   }
 
-  /** ✕ or Escape: closes — after asking, when there are unsaved changes. */
+  /** Close or Escape: closes — after asking, when there are unsaved changes. */
   function requestClose() {
     if (unsaved) setConfirmDiscard(true);
     else onClose();
@@ -498,7 +498,7 @@ export function PadEditorPanel({
     setSelectedIndex(index);
   }
 
-  /** ▲ / ▼ — the selection moves with the file it is on. */
+  /** Up / down — the selection moves with the file it is on. */
   function handleMoveFile(index: number, step: -1 | 1) {
     const next = moveFile(files, index, step);
     const follow = selected === index ? index + step : selected === index + step ? index : selected;
@@ -517,7 +517,7 @@ export function PadEditorPanel({
 
   // ── Preview ──────────────────────────────────────────────────────────────
 
-  /** ▶ — plays the file as the pad would, from the cursor (default: the trim start). */
+  /** Play — plays the file as the pad would, from the cursor (default: the trim start). */
   function handlePreviewPlay() {
     const trim = currentTrim();
     const current = buildCurrentPad();
@@ -532,12 +532,12 @@ export function PadEditorPanel({
     });
   }
 
-  /** ⏸ — stops the preview; the next ▶ goes on where it stopped. */
+  /** Pause — stops the preview; the next Play goes on where it stopped. */
   function handlePreviewPause() {
     endPreview(previewPosition() ?? cursor);
   }
 
-  /** Stops the preview; the next ▶ starts at `nextCursor` (null = the trim start). */
+  /** Stops the preview; the next Play starts at `nextCursor` (null = the trim start). */
   function endPreview(nextCursor: number | null) {
     previewRun.current++;
     // A frame may still run before the playhead loop is canceled: it must not take this stop
@@ -667,7 +667,7 @@ export function PadEditorPanel({
     : allAudio;
   const selectedItem = allAudio.find((m) => m.id === selectedHash);
   const trim = currentTrim();
-  /** Seconds shown next to the preview buttons: the playhead, else where ▶ starts. */
+  /** Seconds shown next to the preview buttons: the playhead, else where Play starts. */
   const previewAt = playhead ?? cursor ?? trim?.values.trimStart ?? 0;
 
   // ── Render ───────────────────────────────────────────────────────────────
@@ -767,7 +767,7 @@ export function PadEditorPanel({
             )
           }
         >
-          ★
+          <UiIcon name="quickAccess" />
         </button>
         <button
           ref={closeRef}
@@ -776,14 +776,14 @@ export function PadEditorPanel({
           aria-label="Close the pad editor"
           onClick={requestClose}
         >
-          ×
+          <UiIcon name="close" />
         </button>
       </div>
 
       {/* A draft the editor left behind came back: said once, politely (role status) */}
       {restored && unsaved && (
         <div class="sb-dialog-section" role="status" data-testid="pad-editor-panel-restored-text">
-          Unsaved changes restored — SAVE keeps them, ✕ discards them.
+          Unsaved changes restored — SAVE keeps them, closing the editor discards them.
         </div>
       )}
 
@@ -881,7 +881,7 @@ export function PadEditorPanel({
                     }}
                     onBlur={() => setIconConfirm(null)}
                   >
-                    {iconConfirm === i ? 'CONFIRM' : '✕'}
+                    {iconConfirm === i ? 'CONFIRM' : <UiIcon name="delete" />}
                   </button>
                 </div>
               );
@@ -988,7 +988,7 @@ export function PadEditorPanel({
                     aria-label={previewOn ? 'Pause the preview' : 'Play a preview'}
                     onClick={previewOn ? handlePreviewPause : handlePreviewPlay}
                   >
-                    {previewOn ? '⏸' : '▶'}
+                    <UiIcon name={previewOn ? 'pause' : 'play'} />
                   </button>
                   <button
                     class="sb-btn sb-btn-ghost"
@@ -996,7 +996,7 @@ export function PadEditorPanel({
                     aria-label="Stop the preview"
                     onClick={() => endPreview(null)}
                   >
-                    ⏹
+                    <UiIcon name="stop" />
                   </button>
                   <span class="sb-value-text" data-testid="pad-editor-panel-preview-text">
                     {previewAt.toFixed(1)}s / {trim.duration.toFixed(1)}s

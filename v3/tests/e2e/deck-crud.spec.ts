@@ -20,6 +20,7 @@ import {
   closePadEditor,
   openDeckActions,
   reopenFirstBoard,
+  PAD_CELL,
 } from './helpers';
 
 test.beforeEach(async ({ page }) => {
@@ -208,9 +209,7 @@ test('duplicate deck shares its pads: a rename in one deck shows in the other', 
   // text: the button has no accessible name in Chromium yet (BACKLOG "Role-based E2E locators").
   await page.getByText('ADD PAD', { exact: true }).click();
   await page.getByTestId('pad-editor-panel-name-input').waitFor();
-  const padCell = page
-    .locator('[data-testid^="pad-grid-cell-"]:not([data-testid^="pad-grid-cell-empty-slot-"])')
-    .first();
+  const padCell = page.locator(PAD_CELL).first();
   const padTestId = (await padCell.getAttribute('data-testid'))!;
   await page.getByTestId('pad-editor-panel-name-input').fill('Thunder');
   await page.getByTestId('pad-editor-panel-save-button').click();

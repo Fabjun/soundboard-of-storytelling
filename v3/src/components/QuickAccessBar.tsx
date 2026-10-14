@@ -16,6 +16,7 @@ import { padTypeColor } from '../lib/padUtils';
 import { keyLabel } from '../lib/padKeys';
 import { play, stop, isPlaying } from '../audio/index';
 import { playingPads } from '../state/store';
+import { UiIcon } from './UiIcon';
 
 interface QuickAccessBarProps {
   board: Board;
@@ -47,7 +48,7 @@ export function QuickAccessBar({
       data-testid="quick-access-bar"
     >
       <span class="sb-quick-access-label" aria-hidden="true">
-        ★
+        <UiIcon name="quickAccess" />
       </span>
       {pads.map(({ pad, hotkey }) => {
         const hot = playingPads.value.has(pad.id);
