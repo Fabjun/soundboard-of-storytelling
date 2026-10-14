@@ -101,6 +101,12 @@ export function withEarlyVersions(
 /** The release notes the main menu shows, newest first (checked by whatsNew.test.ts). */
 export const WHATS_NEW: WhatsNewNotes[] = [
   {
+    version: '3.0.241',
+    fixed: [
+      'Buttons no longer stay yellow after a tap, so their labels stay readable. A button now shows a short pressed look while it is pressed, on the phone and with the mouse.',
+    ],
+  },
+  {
     version: '3.0.240',
     fixed: [
       'Tapping the flame quickly several times no longer zooms the page in and out on the iPhone.',

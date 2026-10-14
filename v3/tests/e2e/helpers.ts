@@ -232,11 +232,12 @@ export async function createDeck(page: Page): Promise<string> {
 
 /**
  * Opens the "⋯" actions menu of a deck row in the rail (rename, duplicate, delete — MenuButton);
- * the row is hovered first, as a row that is not active shows its "⋯" only then. Stays open when
- * it already is.
+ * the deck is chosen first, as only the active deck shows its "⋯" (no hover, owner decision
+ * 2026-10-14). Stays open when it already is.
  */
 export async function openDeckActions(deckTab: Locator): Promise<void> {
-  await deckTab.hover();
+  const select = deckTab.locator('[data-testid^="deck-rail-select-button-"]');
+  if ((await select.getAttribute('aria-current')) !== 'true') await select.click();
   const button = deckTab.locator('[data-testid^="deck-rail-actions-button-"]');
   if ((await button.getAttribute('aria-expanded')) !== 'true') await button.click();
   await expect(deckTab.getByRole('menu')).toBeVisible();

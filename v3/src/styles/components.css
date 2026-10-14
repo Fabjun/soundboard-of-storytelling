@@ -290,8 +290,24 @@
     --pix-border 0.12s,
     color 0.12s;
 }
-.sb-btn:hover {
-  --pix-border: var(--border-gold);
+/* No hover effects (owner decision 2026-10-14): the app is used with a mouse and on touch screens,
+   where :hover sticks to the last tapped control (measured: WebKit and Chromium) — a ghost button
+   then stayed gold and unreadable. A control answers a press instead, briefly, the same way in
+   every variant: it sinks by one pixel and lightens (no color change, so every label stays
+   readable). Persistent states (is-active, aria-pressed, aria-checked) keep their own look.
+   iOS shows :active only with a touch listener on the page (WebKit bug 138816) — src/main.tsx.
+   Controls only, never a container of controls: transform and filter open a stacking context,
+   and a pressed deck row (:active from its "⋯") put its open menu under the next button
+   (measured 2026-10-14). */
+.sb-btn:active,
+.sb-pad:active,
+.sb-menu-item:active,
+.sb-row-button:active,
+.sb-segmented-option:active,
+.sb-switch:active,
+.sb-pad-grid-cell.is-empty:active {
+  transform: translateY(1px);
+  filter: brightness(1.25);
 }
 .sb-btn:disabled {
   opacity: var(--disabled-opacity);
@@ -309,7 +325,7 @@
   color: var(--text-on-gold);
 }
 .sb-btn-ghost {
-  /* @inventory: Button variant — transparent fill, dimmed border; low-emphasis. */
+  /* @inventory: Button variant — low emphasis: no fill of its own, so the dim frame color (border-soft) fills it, dim label; hover brightens frame and label, never gold. */
   --pix-bg: transparent;
   --pix-border: var(--border-soft);
   color: var(--text-dim);
@@ -387,9 +403,6 @@
   background: var(--pad-color);
   opacity: 0.85;
   pointer-events: none;
-}
-.sb-pad:hover {
-  --pix-border: var(--pad-color);
 }
 .sb-pad.is-hot {
   --pix-border: var(--pad-color);
@@ -1387,10 +1400,6 @@
     background 0.1s,
     color 0.1s;
 }
-.sb-deck-tab:hover {
-  background: var(--raised);
-  color: var(--text);
-}
 .sb-deck-tab.is-active {
   background: var(--raised);
   color: var(--gold);
@@ -1404,14 +1413,13 @@
   border-left: 3px solid var(--blood-bright);
 }
 .sb-deck-tab-actions {
-  /* @inventory: The deck's "⋯" actions menu (rename, duplicate, delete), revealed on hover, on the active deck tab and while its menu has the focus. */
+  /* @inventory: The deck's "⋯" actions menu (rename, duplicate, delete), shown on the active deck tab and while its menu has the focus (no hover, owner decision 2026-10-14). */
   display: none;
   align-items: center;
   gap: 0.125rem;
   margin-left: auto;
   flex-shrink: 0;
 }
-.sb-deck-tab:hover .sb-deck-tab-actions,
 .sb-deck-tab.is-active .sb-deck-tab-actions,
 .sb-deck-tab-actions:focus-within {
   display: flex;
@@ -1447,7 +1455,6 @@
   background: none;
   border: none;
 }
-.sb-menu-item:hover,
 .sb-menu-item:focus-visible {
   background: var(--raised);
 }
@@ -1641,13 +1648,6 @@
     5px calc(100% - 5px),
     0 calc(100% - 5px)
   );
-}
-.sb-pad-grid-cell.is-empty:hover {
-  border-color: var(--border-strong);
-  background: var(--raised);
-}
-.sb-pad-grid-cell.is-empty:hover .sb-pad-cell-add {
-  color: var(--text-dim);
 }
 .sb-pad-cell-add {
   /* @inventory: "+" symbol in empty grid cells; the tap-to-create affordance. */

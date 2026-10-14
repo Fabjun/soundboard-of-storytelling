@@ -293,6 +293,12 @@ pixel-art details and touch minimums — ADR-0081, guarded by `codeGuards` ("typ
   decision 2026-10-02; checked by `codeGuards` ("controls work with Tab and have a name") and the
   axe scan `v3/tests/e2e/a11y.spec.ts` (ADR-0080). The main action of a list row is a real
   `<button>` (`sb-row-button`); `PixelIcon` is decorative — the control carries the name
+- No hover effects (owner decision 2026-10-14): the app is used with a mouse and on touch screens,
+  where `:hover` sticks after a tap. A control answers a press briefly (`:active`: it sinks by
+  1px and lightens, colors unchanged — on controls only, never on a container of controls) and
+  shows persistent states (is-active, aria-pressed, aria-checked); keyboard focus keeps
+  `:focus-visible`. iOS needs the page's touch listener for `:active` (`v3/src/main.tsx`).
+  Guarded by `codeGuards` ("no hover effects") and `v3/tests/e2e/system-gestures.spec.ts`
 - Minimum touch target on all interactive elements: 44px (iOS guideline) — no class may undercut
   it (`v3/tests/e2e/mobile/touch-targets.spec.ts` sweeps every visible control of the board);
   the rare actions of a row sit behind one "⋯" `MenuButton` (ADR-0083), never in small icon buttons

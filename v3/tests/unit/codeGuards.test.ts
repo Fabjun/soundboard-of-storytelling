@@ -59,6 +59,9 @@
  * 20. A swipe scrolls everywhere: `touch-action: none` only on a drag handle (`…-handle`) — pads
  *    and library rows had it and took every swipe from the browser (owner report 2026-10-11);
  *    a finger drag waits for a short press (src/lib/touchDrag.ts).
+ * 21. No hover effects (owner decision 2026-10-14): no `:hover` rule in any stylesheet — on a
+ *    touch screen :hover stuck to the last tapped button, which stayed gold and unreadable;
+ *    a control answers a press (:active) and shows its persistent state instead.
  */
 
 import { readdirSync, readFileSync } from 'node:fs';
@@ -996,5 +999,22 @@ describe('guard: a swipe scrolls everywhere — touch-action none only on drag h
       rules.filter((s) => !/-handle\b/.test(s)),
       'a swipe must scroll: drag after a short press (pressToDrag) or give it a handle',
     ).toEqual([]);
+  });
+});
+
+describe('guard: no hover effects (owner decision 2026-10-14)', () => {
+  // Comments may name :hover (to explain the rule); only rules count
+  const sheets = readdirSync(join(SRC, 'styles')).filter((f) => f.endsWith('.css'));
+  const withoutComments = (css: string) => css.replace(/\/\*[\s\S]*?\*\//g, '');
+
+  it('finds the stylesheets (sanity)', () => {
+    expect(sheets).toEqual(expect.arrayContaining(['components.css', 'global.css', 'tokens.css']));
+  });
+
+  it('no stylesheet has a :hover rule — a press (:active) and persistent states answer instead', () => {
+    const bad = sheets.filter((f) =>
+      /:hover\b/.test(withoutComments(readFileSync(join(SRC, 'styles', f), 'utf8'))),
+    );
+    expect(bad, 'touch screens keep :hover after a tap (owner report 2026-10-14)').toEqual([]);
   });
 });
