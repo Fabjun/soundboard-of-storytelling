@@ -7,6 +7,12 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.246 — 2026-10-14
+
+### Internal
+
+- docs: settings.md S1 said "not built" since 3.0.226 — now built, with V1's KEYBINDING group inside CONTROLS (3.0.245); v1-v2-inventory §6 marks the Settings screen and the developer view built, appearance partly (content width built, scale and density dropped, S3)
+
 ## 3.0.245 — 2026-10-14
 
 ### Added

@@ -132,12 +132,12 @@ data loss (e.g. iOS evicting site data) is unrecoverable.
 
 ## 6. Settings
 
-| Feature                                                                                 | V1  | V2  | V3 status | Evidence                       | Decision                |
-| --------------------------------------------------------------------------------------- | --- | --- | --------- | ------------------------------ | ----------------------- |
-| Settings screen (sub-menus: controls, appearance, visuals, keybinding, data, developer) | ✓   | ✓   | missing   | `src/screens/` has no Settings | **Decided** — Slice 14  |
-| Start mode setting                                                                      | ✓   | ✓   | missing   | —                              | **Parked** (PRODUCT §3) |
-| Appearance: content width, font / symbol / icon scale, density                          | ✓   | ✓   | missing   | —                              | **Decided** — Slice 14  |
-| Developer: debug log, stats, LRU view                                                   | ✓   | ?   | missing   | —                              | **Decided** — Slice 14  |
+| Feature                                                                                 | V1  | V2  | V3 status | Evidence                                                                                          | Decision                |
+| --------------------------------------------------------------------------------------- | --- | --- | --------- | ------------------------------------------------------------------------------------------------- | ----------------------- |
+| Settings screen (sub-menus: controls, appearance, visuals, keybinding, data, developer) | ✓   | ✓   | built     | `v3/src/screens/SettingsScreen.tsx` (3.0.226; keybinding in CONTROLS, 3.0.245)                    | **Decided** — Slice 14  |
+| Start mode setting                                                                      | ✓   | ✓   | missing   | —                                                                                                 | **Parked** (PRODUCT §3) |
+| Appearance: content width, font / symbol / icon scale, density                          | ✓   | ✓   | partly    | content width built (3.0.235); scale and density dropped — [settings.md](features/settings.md) S3 | **Decided** — Slice 14  |
+| Developer: debug log, stats, LRU view                                                   | ✓   | ?   | built     | `v3/src/components/DeveloperDialog.tsx` (3.0.244)                                                 | **Decided** — Slice 14  |
 
 ## 7. Visuals & atmosphere
 
