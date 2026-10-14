@@ -35,6 +35,26 @@ async function loadControlled(page: Page): Promise<void> {
     .toBe(true);
 }
 
+/**
+ * Runs `steps` while a new version waits on the server — a deploy, simulated: dist/sw.js gets other
+ * bytes. Playwright's routes do not reach the browser's fetch of a service worker script (measured
+ * 2026-10-03: 0 requests routed), so the file itself changes — one character, same length (the
+ * preview server knows each file's size) — and is restored afterwards. The pwa project runs one
+ * test at a time (workers: 1).
+ */
+async function whileANewVersionWaits(steps: () => Promise<void>): Promise<void> {
+  const swFile = new URL('../../dist/sw.js', import.meta.url);
+  const original = readFileSync(swFile, 'utf8');
+  const at = original.indexOf('revision:"') + 'revision:"'.length;
+  const flipped = (parseInt(original[at], 16) ^ 1).toString(16); // another hex digit, always
+  writeFileSync(swFile, original.slice(0, at) + flipped + original.slice(at + 1));
+  try {
+    await steps();
+  } finally {
+    writeFileSync(swFile, original);
+  }
+}
+
 const FONTS = ['Press Start 2P', 'VT323', 'Share Tech Mono'];
 
 /** True only if the face is declared AND its file loaded (document.fonts.check() would also
@@ -115,16 +135,7 @@ test('service worker installs and controls the page', async ({ page }) => {
 
 test('a new version waits until RELOAD, then takes over (ADR-0066)', async ({ page }) => {
   await loadControlled(page);
-  // A deploy, simulated: dist/sw.js gets other bytes. Playwright's routes do not reach the
-  // browser's fetch of a service worker script (measured 2026-10-03: 0 requests routed), so the
-  // file itself changes — one character, same length (the preview server knows each file's
-  // size) — and is restored afterwards. The pwa project runs one test at a time (workers: 1).
-  const swFile = new URL('../../dist/sw.js', import.meta.url);
-  const original = readFileSync(swFile, 'utf8');
-  const at = original.indexOf('revision:"') + 'revision:"'.length;
-  const flipped = (parseInt(original[at], 16) ^ 1).toString(16); // another hex digit, always
-  writeFileSync(swFile, original.slice(0, at) + flipped + original.slice(at + 1));
-  try {
+  await whileANewVersionWaits(async () => {
     await page.evaluate(async () => {
       await (await navigator.serviceWorker.getRegistration())?.update();
     });
@@ -141,9 +152,38 @@ test('a new version waits until RELOAD, then takes over (ADR-0066)', async ({ pa
     await expect(page.locator('html')).not.toHaveAttribute('data-old-page'); // reloaded
     await expect(page.getByTestId('update-prompt')).toBeHidden();
     await expect.poll(waiting).toBe(false); // the new version took over
-  } finally {
-    writeFileSync(swFile, original);
-  }
+  });
+});
+
+test('the update prompt saves a backup first, then RELOAD still takes over (settings.md S10)', async ({
+  page,
+}) => {
+  await loadControlled(page);
+  await goToBoardList(page);
+  await createBoardAndNavigate(page);
+  await waitForSaves(page);
+  await whileANewVersionWaits(async () => {
+    await page.evaluate(async () => {
+      await (await navigator.serviceWorker.getRegistration())?.update();
+    });
+    const prompt = page.getByTestId('update-prompt');
+    await expect(prompt).toBeVisible();
+
+    await prompt.getByTestId('update-prompt-backup-button').click();
+    const downloading = page.waitForEvent('download');
+    await prompt.getByTestId('backup-export-panel-save-button').click();
+    expect((await downloading).suggestedFilename()).toMatch(/^soundboard-backup-.*\.zip$/);
+    await expect(prompt.getByTestId('backup-export-panel-saved-text')).toBeVisible();
+
+    await page.evaluate(() => document.documentElement.setAttribute('data-old-page', ''));
+    await prompt.getByTestId('update-prompt-reload-button').click();
+    await expect(page.locator('html')).not.toHaveAttribute('data-old-page'); // reloaded
+    // The backup counts: the board list knows it was saved today
+    await goToBoardList(page);
+    await expect(page.getByTestId('board-list-screen-backup-text')).toHaveText(
+      'Last backup: today',
+    );
+  });
 });
 
 test('the UPDATE button says when this is the newest version', async ({ page }) => {
@@ -158,13 +198,7 @@ test('the UPDATE button finds a new version and brings back a prompt put off wit
   page,
 }) => {
   await loadControlled(page);
-  // A deploy, simulated as in "a new version waits until RELOAD" above
-  const swFile = new URL('../../dist/sw.js', import.meta.url);
-  const original = readFileSync(swFile, 'utf8');
-  const at = original.indexOf('revision:"') + 'revision:"'.length;
-  const flipped = (parseInt(original[at], 16) ^ 1).toString(16);
-  writeFileSync(swFile, original.slice(0, at) + flipped + original.slice(at + 1));
-  try {
+  await whileANewVersionWaits(async () => {
     await openMainMenu(page);
     await page.getByRole('button', { name: 'UPDATE' }).click();
     await expect(
@@ -178,9 +212,7 @@ test('the UPDATE button finds a new version and brings back a prompt put off wit
     await openMainMenu(page);
     await page.getByRole('button', { name: 'UPDATE' }).click();
     await expect(page.getByTestId('update-prompt')).toBeVisible();
-  } finally {
-    writeFileSync(swFile, original);
-  }
+  });
 });
 
 test('manifest is linked with the app name and start URL', async ({ page }) => {
