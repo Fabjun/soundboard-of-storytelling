@@ -45,7 +45,7 @@ import { useState, useEffect, useLayoutEffect, useRef } from 'preact/hooks';
 import type { JSX } from 'preact';
 import type { Board, ComboStep, Deck, FileOrder, Pad, PadBase, PadFile, PadType } from '../types';
 import { isComboPad, REPEAT_MAX } from '../types';
-import { PixelIcon } from './PixelIcon';
+import { UiIcon } from './UiIcon';
 import { Waveform } from './Waveform';
 import { WaveformEditor } from './WaveformEditor';
 import { PadFileList } from './PadFileList';
@@ -83,7 +83,6 @@ import { nextFreeSlot } from '../lib/padUtils';
 import { record, redo, seal, startHistory, undo, type History } from '../lib/editHistory';
 import { debouncedSave } from '../lib/debouncedSave';
 import { clearPadDraft, getPadDraft, setPadDraft } from '../state/prefs';
-import { ToolbarIcon } from './BarToggle';
 import { fromPad, moveHandle, toPad, type Handle, type TrimValues } from '../lib/trimRange';
 import { previewPosition, startPreview, stopPreview } from '../lib/preview';
 import { ensureFinePeaks } from '../lib/upload';
@@ -726,7 +725,7 @@ export function PadEditorPanel({
           disabled={history.past.length === 0}
           onClick={handleUndo}
         >
-          <ToolbarIcon name="undo" />
+          <UiIcon name="undo" class="sb-toolbar-icon" />
         </button>
         <button
           type="button"
@@ -737,7 +736,7 @@ export function PadEditorPanel({
           disabled={history.future.length === 0}
           onClick={handleRedo}
         >
-          <ToolbarIcon name="redo" />
+          <UiIcon name="redo" class="sb-toolbar-icon" />
         </button>
         <button
           type="button"
@@ -1227,7 +1226,7 @@ export function PadEditorPanel({
             onClick={handleDelete}
             onBlur={() => setDeleteConfirm(false)}
           >
-            <PixelIcon name="skull" size={12} />
+            <UiIcon name="delete" size={12} />
             {deleteConfirm ? 'CONFIRM DELETE' : 'DELETE PAD'}
           </button>
           {deleteConfirm && (

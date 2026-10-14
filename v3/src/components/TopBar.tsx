@@ -6,7 +6,7 @@
  */
 
 import type { ComponentChildren, JSX } from 'preact';
-import { PixelIcon } from './PixelIcon';
+import { UiIcon } from './UiIcon';
 import type { AppMode } from '../types';
 
 interface TopBarProps {
@@ -25,7 +25,7 @@ export function TopBar({ title, breadcrumb, mode, onModeSwap, right }: TopBarPro
     <div class="sb-topbar" data-testid="top-bar">
       {/* Flame logo */}
       <div class="sb-topbar-logo">
-        <PixelIcon name="flame" size={20} />
+        <UiIcon name="app" size={20} />
       </div>
 
       {/* Title + breadcrumb */}
@@ -41,7 +41,7 @@ export function TopBar({ title, breadcrumb, mode, onModeSwap, right }: TopBarPro
           onClick={onModeSwap}
           style={{ cursor: onModeSwap ? 'pointer' : 'default' }}
         >
-          <PixelIcon name={mode === 'play' ? 'play' : 'edit'} size={11} color="currentColor" />
+          <UiIcon name={mode === 'play' ? 'play' : 'edit'} size={11} color="currentColor" />
           {mode === 'play' ? 'GAME' : 'SETUP'}
         </span>
       )}

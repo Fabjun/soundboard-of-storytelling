@@ -12,7 +12,7 @@ import { StatusBar } from '../components/StatusBar';
 import { BackupImportPanel } from '../components/BackupImportPanel';
 import { BackupExportPanel } from '../components/BackupExportPanel';
 import { describeBackupAge } from '../lib/backupExport';
-import { PixelIcon } from '../components/PixelIcon';
+import { UiIcon } from '../components/UiIcon';
 import {
   currentScreen,
   settingsReturn,
@@ -88,7 +88,7 @@ export function BoardListScreen(): JSX.Element {
               data-testid="board-list-screen-new-button"
               onClick={handleCreate}
             >
-              <PixelIcon name="sparkle" size={11} />
+              <UiIcon name="add" size={11} />
               NEW BOARD
             </button>
             <button
@@ -116,7 +116,7 @@ export function BoardListScreen(): JSX.Element {
                 currentScreen.value = 'settings';
               }}
             >
-              <PixelIcon name="cog" size={11} />
+              <UiIcon name="settings" size={11} />
             </button>
             <button
               class="sb-btn sb-btn-sm sb-btn-ghost"
@@ -124,7 +124,7 @@ export function BoardListScreen(): JSX.Element {
                 currentScreen.value = 'menu';
               }}
             >
-              <PixelIcon name="flame" size={11} />
+              <UiIcon name="back" size={11} />
               BACK
             </button>
           </div>
@@ -209,7 +209,7 @@ function BoardRow({ board, onOpen }: { board: Board; onOpen: () => void }): JSX.
           onClick={onOpen}
         >
           <span class="sb-icon">
-            <PixelIcon name="scroll" size={18} />
+            <UiIcon name="board" size={18} />
           </span>
           <span class="sb-flex-min sb-col">
             <span class="sb-row-title" data-testid={`board-list-screen-name-text-${board.id}`}>
@@ -227,7 +227,7 @@ function BoardRow({ board, onOpen }: { board: Board; onOpen: () => void }): JSX.
       {editing && (
         <>
           <div class="sb-icon">
-            <PixelIcon name="scroll" size={18} />
+            <UiIcon name="board" size={18} />
           </div>
           <div class="sb-flex-min">
             <input
@@ -266,7 +266,7 @@ function BoardRow({ board, onOpen }: { board: Board; onOpen: () => void }): JSX.
               setEditing(true);
             }}
           >
-            <PixelIcon name="edit" size={11} />
+            <UiIcon name="edit" size={11} />
           </button>
           <button
             class={`sb-btn sb-btn-sm sb-btn-icon-sm ${deleteConfirm ? 'sb-btn-danger' : 'sb-btn-ghost'}`}
@@ -293,7 +293,7 @@ function BoardRow({ board, onOpen }: { board: Board; onOpen: () => void }): JSX.
 function EmptyBoardsState({ onCreate }: { onCreate: () => void }): JSX.Element {
   return (
     <div class="sb-screen-empty is-loose">
-      <PixelIcon name="scroll" size={48} color="var(--border)" />
+      <UiIcon name="board" size={48} color="var(--border)" />
       <div class="sb-display-vt is-heading">No Boards Yet</div>
       <div class="sb-empty-body">
         A Board holds your pads and decks for one game session or campaign.
@@ -303,7 +303,8 @@ function EmptyBoardsState({ onCreate }: { onCreate: () => void }): JSX.Element {
         data-testid="board-list-screen-create-first-button"
         onClick={onCreate}
       >
-        <PixelIcon name="sparkle" size={14} />+ CREATE FIRST BOARD
+        <UiIcon name="add" size={14} />
+        CREATE FIRST BOARD
       </button>
     </div>
   );

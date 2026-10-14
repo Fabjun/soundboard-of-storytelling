@@ -101,6 +101,12 @@ export function withEarlyVersions(
 /** The release notes the main menu shows, newest first (checked by whatsNew.test.ts). */
 export const WHATS_NEW: WhatsNewNotes[] = [
   {
+    version: '3.0.242',
+    improved: [
+      'All symbols of menus and buttons now come from the same pixel icon library as the pads, so the whole app has one style. Each symbol means one thing everywhere — Back is always the same arrow.',
+    ],
+  },
+  {
     version: '3.0.241',
     fixed: [
       'Buttons no longer stay yellow after a tap, so their labels stay readable. A button now shows a short pressed look while it is pressed, on the phone and with the mouse.',

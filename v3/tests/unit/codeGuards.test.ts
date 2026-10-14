@@ -796,7 +796,7 @@ describe('guard: controls work with Tab and have a name (owner rule 2026-10-02)'
   // buttons: aria-label). axe (tests/e2e/a11y.spec.ts) checks names at runtime; it cannot see a
   // click handler on a plain element, so that half is checked here, in the source.
   const NATIVE = new Set(['button', 'a', 'input', 'select', 'textarea', 'summary', 'label']);
-  const ICONS = new Set(['PixelIcon', 'IconGlyph']);
+  const ICONS = new Set(['UiIcon', 'IconGlyph']);
 
   /** Plain elements allowed to take a click, each with its reason. */
   const ALLOWED_CLICKS: Record<string, string> = {

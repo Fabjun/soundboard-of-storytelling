@@ -18,7 +18,7 @@
 import { useRef } from 'preact/hooks';
 import type { JSX } from 'preact';
 import type { LibraryItemMeta } from '../types';
-import { PixelIcon } from './PixelIcon';
+import { UiIcon } from './UiIcon';
 import { Waveform } from './Waveform';
 import { libraryItems } from '../state/store';
 import { startLibDrag, type LibDndDropResult } from '../lib/libDnd';
@@ -56,7 +56,7 @@ export function LibraryPanel({
     <div class="sb-library-panel" role="region" aria-label="Library">
       {/* Header */}
       <div class="sb-panel-header is-active">
-        <PixelIcon name="book" size={12} />
+        <UiIcon name="library" size={12} />
         <span class="sb-panel-title">Library</span>
         <button
           class="sb-btn sb-btn-sm sb-btn-ghost sb-btn-icon"
@@ -71,7 +71,7 @@ export function LibraryPanel({
       {/* Search */}
       <div class="sb-lib-panel-search-bar">
         <div class="sb-search-field">
-          <PixelIcon name="search" size={11} color="var(--text-mute)" />
+          <UiIcon name="search" size={11} color="var(--text-mute)" />
           <input
             type="text"
             placeholder={`${items.length} files…`}
@@ -160,7 +160,7 @@ function LibraryPanelRow({ item, onLibDrop, onLongPress }: LibraryPanelRowProps)
       onPointerCancel={cancelLongPress}
     >
       <div class="sb-row">
-        <PixelIcon name="play" size={10} color="var(--text-mute)" />
+        <UiIcon name="play" size={10} color="var(--text-mute)" />
         <span class="sb-lib-browser-item-name sb-flex-1">{item.name}</span>
         {item.duration > 0 && <span class="sb-hint-text">{formatDuration(item.duration)}</span>}
       </div>

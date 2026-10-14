@@ -60,7 +60,7 @@ import { LibraryPanel } from '../components/LibraryPanel';
 import { StatusBar } from '../components/StatusBar';
 import { LiveControls } from '../components/LiveControls';
 import { BarToggle } from '../components/BarToggle';
-import { PixelIcon } from '../components/PixelIcon';
+import { UiIcon } from '../components/UiIcon';
 import { narrowWindow } from '../state/windowClass';
 import type { AppMode, Pad, PadPosition } from '../types';
 import { nanoid } from '../lib/nanoid';
@@ -549,7 +549,7 @@ export function BoardScreen(): JSX.Element {
           {mode === 'edit' && (deck || poolView) && (
             <div class="sb-setup-toolbar">
               <button class="sb-btn sb-btn-sm sb-btn-primary" onClick={handleAddPad}>
-                <PixelIcon name="sparkle" size={11} />
+                <UiIcon name="add" size={11} />
                 ADD PAD
               </button>
             </div>
@@ -616,13 +616,14 @@ export function BoardScreen(): JSX.Element {
 function EmptyBoardState({ onAddDeck }: { onAddDeck: () => void }): JSX.Element {
   return (
     <div class="sb-screen-empty">
-      <PixelIcon name="scroll" size={40} color="var(--border)" />
+      <UiIcon name="board" size={40} color="var(--border)" />
       <div class="sb-display-vt is-heading">Empty Board</div>
       <div class="sb-empty-body">
         Add a deck to start placing pads. A deck is your hand-picked selection of pads.
       </div>
       <button class="sb-btn sb-btn-primary sb-btn-cta" onClick={onAddDeck}>
-        <PixelIcon name="sparkle" size={14} />+ NEW DECK
+        <UiIcon name="add" size={14} />
+        NEW DECK
       </button>
     </div>
   );

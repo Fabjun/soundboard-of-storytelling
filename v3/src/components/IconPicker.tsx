@@ -39,7 +39,7 @@ import {
 } from '../lib/iconSet';
 import { moveIndex, rowCount, rowKeys, trackCount } from '../lib/iconGrid';
 import { IconGlyph } from './PadIcons';
-import { PixelIcon } from './PixelIcon';
+import { UiIcon } from './UiIcon';
 
 /** Rows drawn beyond the visible ones on each side, so a quick scroll shows no gap. */
 const OVERSCAN = 4;
@@ -117,7 +117,7 @@ export function IconPicker({ chosen, onPick, onClose }: IconPickerProps): JSX.El
       </div>
       <div class="sb-search-bar">
         <div class="sb-search-field">
-          <PixelIcon name="search" size={12} color="var(--text-mute)" />
+          <UiIcon name="search" size={12} color="var(--text-mute)" />
           <input
             ref={search}
             class="sb-search-input sb-flex-1"

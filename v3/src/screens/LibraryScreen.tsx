@@ -15,7 +15,7 @@ import { useState, useRef } from 'preact/hooks';
 import type { JSX } from 'preact';
 import { TopBar } from '../components/TopBar';
 import { StatusBar } from '../components/StatusBar';
-import { PixelIcon } from '../components/PixelIcon';
+import { UiIcon } from '../components/UiIcon';
 import { AudioRow } from '../components/AudioRow';
 import {
   currentScreen,
@@ -37,7 +37,7 @@ const TABS: LibTab[] = ['AUDIO', 'ICONS', 'PADS', 'BOARDS'];
 function EmptyState({ label }: { label: string }): JSX.Element {
   return (
     <div class="sb-screen-empty">
-      <PixelIcon name="scroll" size={32} color="var(--border)" />
+      <UiIcon name="board" size={32} color="var(--border)" />
       {label}
     </div>
   );
@@ -61,7 +61,7 @@ function UploadStatusBar(): JSX.Element | null {
         role={status.errors.length > 0 ? 'alert' : 'status'}
         style={{ color: status.errors.length > 0 ? 'var(--blood-bright)' : 'var(--text-dim)' }}
       >
-        <PixelIcon name={status.errors.length > 0 ? 'skull' : 'save'} size={11} />
+        <UiIcon name={status.errors.length > 0 ? 'error' : 'saved'} size={11} />
         {parts.join(' · ')}
       </div>
       {/* Why each file failed, in plain words — a native disclosure: a tap, Enter or Space opens
@@ -195,7 +195,7 @@ export function LibraryScreen(): JSX.Element {
               class="sb-btn sb-btn-sm sb-btn-primary"
               onClick={() => fileInputRef.current?.click()}
             >
-              <PixelIcon name="download" size={11} />
+              <UiIcon name="import" size={11} />
               IMPORT
             </button>
             <button
@@ -204,7 +204,7 @@ export function LibraryScreen(): JSX.Element {
                 currentScreen.value = 'menu';
               }}
             >
-              <PixelIcon name="play" size={11} />
+              <UiIcon name="back" size={11} />
               BACK
             </button>
           </div>
@@ -278,7 +278,7 @@ export function LibraryScreen(): JSX.Element {
             {/* Search bar */}
             <div class="sb-search-bar">
               <div class="sb-search-field">
-                <PixelIcon name="search" size={12} color="var(--text-mute)" />
+                <UiIcon name="search" size={12} color="var(--text-mute)" />
                 <input
                   class="sb-search-input sb-flex-1"
                   type="text"

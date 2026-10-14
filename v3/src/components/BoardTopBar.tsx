@@ -10,9 +10,8 @@
  */
 
 import type { ComponentChildren, JSX } from 'preact';
-import { PixelIcon } from './PixelIcon';
+import { UiIcon } from './UiIcon';
 import { ModeToggle } from './ModeToggle';
-import { ToolbarIcon } from './BarToggle';
 import { LiveControls } from './LiveControls';
 import { toggleModeLock } from '../state/modeControl';
 import { modeLocked } from '../state/store';
@@ -59,7 +58,7 @@ export function BoardTopBar({
           title="Back to board list"
           aria-label="Back to the board list"
         >
-          <PixelIcon name="flame" size={14} color="var(--flame)" />
+          <UiIcon name="back" size={14} color="var(--flame)" />
         </button>
         <div class="sb-topbar-bc-col">
           <span
@@ -91,7 +90,7 @@ export function BoardTopBar({
             onClick={toggleModeLock}
           >
             {/* The collection's padlock shows the state: closed while locked (owner decision 2026-10-11) */}
-            <ToolbarIcon name={modeLocked.value ? 'locked' : 'unlocked'} />
+            <UiIcon name={modeLocked.value ? 'locked' : 'unlocked'} class="sb-toolbar-icon" />
           </button>
         )}
         {toggles}
@@ -107,7 +106,7 @@ export function BoardTopBar({
           aria-label={libraryOpen ? 'Close the library' : 'Open the library'}
           aria-pressed={libraryOpen}
         >
-          <PixelIcon name="book" size={12} />
+          <UiIcon name="library" size={12} />
           {!compact && 'LIB'}
         </button>
       </div>

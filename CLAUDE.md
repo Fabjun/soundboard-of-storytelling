@@ -292,7 +292,7 @@ pixel-art details and touch minimums — ADR-0081, guarded by `codeGuards` ("typ
   error messages say in plain words what happened and what to do (Nielsen heuristic 9) — owner
   decision 2026-10-02; checked by `codeGuards` ("controls work with Tab and have a name") and the
   axe scan `v3/tests/e2e/a11y.spec.ts` (ADR-0080). The main action of a list row is a real
-  `<button>` (`sb-row-button`); `PixelIcon` is decorative — the control carries the name
+  `<button>` (`sb-row-button`); `UiIcon` is decorative — the control carries the name
 - No hover effects (owner decision 2026-10-14): the app is used with a mouse and on touch screens,
   where `:hover` sticks after a tap. A control answers a press briefly (`:active`: it sinks by
   1px and lightens, colors unchanged — on controls only, never on a container of controls) and

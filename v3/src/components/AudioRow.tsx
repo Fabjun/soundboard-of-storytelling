@@ -5,7 +5,7 @@
  */
 
 import { useRef, useState, useEffect } from 'preact/hooks';
-import { PixelIcon } from './PixelIcon';
+import { UiIcon } from './UiIcon';
 import { Waveform } from './Waveform';
 import { formatBytes, formatDuration } from '../lib/upload';
 import type { LibraryItemMeta } from '../types';
@@ -138,7 +138,7 @@ export function AudioRow({ meta, selected, onSelect, onDelete, onRename }: Audio
     >
       {/* Col 1: type icon + name + filename — the name is the row's button (select, rename) */}
       <div class="sb-row">
-        <PixelIcon name="play" size={14} color="var(--gold)" />
+        <UiIcon name="play" size={14} color="var(--gold)" />
         <RenameField
           name={meta.name}
           hint={`${meta.id.slice(0, 8)}…`}
@@ -172,7 +172,7 @@ export function AudioRow({ meta, selected, onSelect, onDelete, onRename }: Audio
           color: deleteStep === 'confirm' ? 'var(--blood-bright)' : 'var(--text-mute)',
         }}
       >
-        <PixelIcon name="skull" size={12} />
+        <UiIcon name="delete" size={12} />
       </button>
     </div>
   );

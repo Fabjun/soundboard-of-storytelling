@@ -2846,10 +2846,11 @@
   outline: 2px solid var(--gold);
 }
 
-/* ── PixelIcon — Session 3h ───────────────────────────────────────── */
-.sb-pixel-icon {
-  /* @inventory: SVG display fix for PixelIcon — block display prevents inline baseline gap. Applied as hardcoded base class inside PixelIcon component; callers' class prop is appended after. */
+/* ── UiIcon (ADR-0085) ───────────────────────────────────────────── */
+.sb-ui-icon {
+  /* @inventory: An icon of the interface (UiIcon, ADR-0085) — block display prevents the inline baseline gap; its size comes from the component, a caller's class may set another. */
   display: block;
+  flex-shrink: 0;
 }
 
 /* ── Pad icons and the icon picker (Slice 15d, ADR-0070) ──────────────── */

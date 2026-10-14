@@ -10,7 +10,7 @@
  */
 
 import type { JSX } from 'preact';
-import { PixelIcon } from '../components/PixelIcon';
+import { UiIcon } from '../components/UiIcon';
 import { AnimatedFlame } from '../components/AnimatedFlame';
 import { audioContextState, currentScreen } from '../state/store';
 import { initAudio } from '../audio/index';
@@ -53,7 +53,7 @@ export function StartScreen(): JSX.Element {
       {/* The one action — minimum 44px touch target per CLAUDE.md; the flame's auto margins keep
           it centered */}
       <button class="sb-btn sb-btn-primary sb-btn-unlock sb-start-action" onClick={handleStart}>
-        <PixelIcon name="play" size={14} />
+        <UiIcon name="play" size={14} />
         TAP TO START
       </button>
     </div>

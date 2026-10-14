@@ -10,7 +10,7 @@
  *   - src/icons/sets/<prefix>.LICENSE.txt  the license text where the license requires it (MIT)
  *   - src/icons/v1-map.json         V1's icon id → key, for the V1 import and pads it stored
  *   - src/icons/placeholders.json   the drawing of each pad type's placeholder, for the start bundle
- *   - src/icons/toolbar.json        the drawings of the board toolbar's icons, for the start bundle
+ *   - src/icons/ui.json             the drawings of the interface's icons (ADR-0085), for the start bundle
  *
  * Run (from v3/): npm run build:icons -- [--from WORK_FOLDER] [--v1 V1_ICONS_JS]
  * Default work folder: ~/dev/archive/icon-sources/work-2026-10-04 (see its README.md); default
@@ -95,11 +95,27 @@ const PLACEHOLDERS = {
 };
 
 /**
- * The board toolbar's icons — collection icons in the pads' style instead of the UI set (owner
- * decision 2026-10-11): the Lock, the toggles that fold the search bar, the quick-access bar and
- * the deck tabs, and the PAD editor's undo and redo (ADR-0084).
+ * Every icon of the interface — from the pad icon collection, in the pads' style, one icon per
+ * meaning (owner decisions 2026-10-11 for the toolbar, 2026-10-14 for all of them, ADR-0085):
+ * the menu and its screens, the board toolbar (the Lock, the toggles of the search bar, the
+ * quick-access bar and the deck tabs), the PAD editor's undo and redo (ADR-0084), and the actions
+ * of buttons and lists. Keys name the meaning, not the drawing.
  */
-const TOOLBAR = {
+const UI_ICONS = {
+  board: 'nikoichu:scroll-document',
+  library: 'nikoichu:books',
+  settings: 'nikoichu:settings-gear',
+  update: 'nikoichu:cloud-download',
+  import: 'nikoichu:file-import',
+  back: 'nikoichu:arrow-left',
+  add: 'nikoichu:plus-sign',
+  play: 'nikoichu:play',
+  edit: 'nikoichu:pencil',
+  delete: 'nikoichu:trash-can',
+  error: 'nikoichu:warning-triangle',
+  saved: 'nikoichu:floppy-save',
+  key: 'nikoichu:keyboard',
+  app: 'nikoichu:campfire-camp',
   locked: 'nikoichu:padlock-locked',
   unlocked: 'nikoichu:padlock-unlocked',
   search: 'nikoichu:magnifying-glass',
@@ -216,7 +232,7 @@ async function main(): Promise<void> {
   await writeFormatted(join(OUT, 'catalog.json'), JSON.stringify(sorted(catalog)));
   console.log(`catalog: ${Object.keys(catalog).length} icons`);
 
-  // Almost every board shows placeholders and the toolbar, so their drawings go into the start
+  // Almost every screen shows UI icons and every board placeholders, so their drawings go into the start
   // bundle instead of loading the largest pack for them (Iconify: bundle the icons needed at once,
   // load the rest)
   const bundle = (what: string, keys: Record<string, string>) =>
@@ -234,8 +250,8 @@ async function main(): Promise<void> {
     JSON.stringify(bundle('placeholder', PLACEHOLDERS)),
   );
   console.log(`placeholders: ${Object.values(PLACEHOLDERS).join(', ')}`);
-  await writeFormatted(join(OUT, 'toolbar.json'), JSON.stringify(bundle('toolbar icon', TOOLBAR)));
-  console.log(`toolbar: ${Object.values(TOOLBAR).join(', ')}`);
+  await writeFormatted(join(OUT, 'ui.json'), JSON.stringify(bundle('UI icon', UI_ICONS)));
+  console.log(`ui: ${Object.values(UI_ICONS).join(', ')}`);
 
   // V1 ids: Nikoichu's were `px-` + the file name in lower case with hyphens; pixelarticons' were
   // their names, which the chosen "sharp" drawings carry without `-sharp`. An exact name wins.
