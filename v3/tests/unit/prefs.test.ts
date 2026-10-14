@@ -41,6 +41,8 @@ import {
   setAnimationsSwitch,
   getEnterStop,
   setEnterStop,
+  getDebugLogSwitch,
+  setDebugLogSwitch,
 } from '../../src/state/prefs';
 import { BACKUP_REMINDER_DAYS } from '../../src/lib/backupExport';
 
@@ -348,6 +350,19 @@ describe('Enter key (Settings → CONTROLS, settings.md S2)', () => {
     await kvPut('enter-stop', 'some');
     await loadPrefs();
     expect(getEnterStop()).toBe('last');
+  });
+});
+
+describe('debug log switch (Settings → DEVELOPER, settings.md S8)', () => {
+  it('off until switched on; on is kept after a reload; off again stores nothing', async () => {
+    expect(getDebugLogSwitch()).toBe(false);
+    setDebugLogSwitch(true);
+    await settled();
+    await loadPrefs();
+    expect(getDebugLogSwitch()).toBe(true);
+    setDebugLogSwitch(false);
+    await settled();
+    expect((await kvGetAll()).map(([k]) => k)).not.toContain('debug-log');
   });
 });
 

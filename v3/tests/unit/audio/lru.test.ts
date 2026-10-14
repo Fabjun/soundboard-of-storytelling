@@ -6,7 +6,7 @@
  */
 
 import { describe, test, expect, beforeEach } from 'vitest';
-import { libBufs, lruSet, lruDelete, bufDecodedBytes } from '../../../src/audio/engine';
+import { libBufs, lruSet, lruDelete, bufDecodedBytes, cacheState } from '../../../src/audio/engine';
 
 // ── AudioBuffer mock ───────────────────────────────────────────────────────────
 
@@ -146,5 +146,37 @@ describe('lruDelete', () => {
 
     expect(libBufs['c']).toBeDefined();
     expect(libBufs['d']).toBeDefined();
+  });
+});
+
+// ── cacheState (developer view, settings.md S8) ───────────────────────────────
+
+describe('cacheState', () => {
+  beforeEach(clearLibBufs);
+
+  test('empty: no bytes, the 150 MB limit, no entries', () => {
+    expect(cacheState()).toEqual({ bytes: 0, maxBytes: 150 * 1024 * 1024, entries: [] });
+  });
+
+  test('the bytes held and each buffer, the most recently used first; eviction and deletes count', () => {
+    libBufs['a'] = mockBuf(100, 1);
+    lruSet('a');
+    libBufs['b'] = mockBuf(200, 2);
+    lruSet('b');
+    lruSet('a'); // used again → first
+    expect(cacheState().entries).toEqual([
+      { hash: 'a', bytes: 400 },
+      { hash: 'b', bytes: 1600 },
+    ]);
+    expect(cacheState().bytes).toBe(2000);
+    lruDelete('a');
+    expect(cacheState()).toMatchObject({ bytes: 1600, entries: [{ hash: 'b', bytes: 1600 }] });
+    const SAMPLES_80MB = 20 * 1024 * 1024;
+    libBufs['c'] = mockBuf(SAMPLES_80MB, 1);
+    lruSet('c');
+    libBufs['d'] = mockBuf(SAMPLES_80MB, 1);
+    lruSet('d'); // over the limit → the least recently used go
+    expect(cacheState().entries.map((e) => e.hash)).toEqual(['d']);
+    expect(cacheState().bytes).toBe(SAMPLES_80MB * 4);
   });
 });

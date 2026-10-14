@@ -19,6 +19,7 @@ import {
   configureCallbacks,
   pauseAll,
   resumeAll,
+  cacheState,
 } from './engine';
 import {
   audioPaused,
@@ -188,6 +189,14 @@ export function fadeOutAll(duration: number): void {
 /** Tells whether the pad is playing now. */
 export function isPlaying(padId: string): boolean {
   return isPlayingInternal(padId);
+}
+
+/**
+ * Reports the decoded-audio cache for the developer view (settings.md S8): its bytes, its limit
+ * (150 MB, iPhone memory rule 7) and each buffer, the most recently used first. Read only.
+ */
+export function audioCacheState(): ReturnType<typeof cacheState> {
+  return cacheState();
 }
 
 // ── Preview (PAD editor, Slice 15a) ──────────────────────────────────────────

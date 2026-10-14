@@ -68,6 +68,25 @@ export function lruSet(hash: string): void {
   }
 }
 
+/**
+ * Returns what the cache holds now, for the developer view (docs/product/features/settings.md
+ * S8) — read only: the decoded bytes, the limit, and each buffer, the most recently used first.
+ */
+export function cacheState(): {
+  bytes: number;
+  maxBytes: number;
+  entries: { hash: string; bytes: number }[];
+} {
+  return {
+    bytes: libBufBytes,
+    maxBytes: LRU_BUF_MAX_BYTES,
+    entries: [...libBufLru]
+      .reverse()
+      .filter((hash) => libBufs[hash])
+      .map((hash) => ({ hash, bytes: bufDecodedBytes(libBufs[hash]) })),
+  };
+}
+
 /** Drops one buffer from the cache and its size from the total (no-op when it is not cached). */
 export function lruDelete(hash: string): void {
   if (!libBufs[hash]) return;

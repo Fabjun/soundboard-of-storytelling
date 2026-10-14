@@ -17,10 +17,20 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.243';
+export const APP_VERSION = '3.0.244';
 
 /** The developer log, newest first; CHANGELOG.md is generated from it (sync-changelog). */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.244',
+    date: '2026-10-14',
+    items: [
+      "feat(settings): Slice 14e, developer (settings.md S8, V1's DEVELOPER) — Settings → DEVELOPER: a Debug log switch (off by default; while on, console log / info / warn / error are also kept, the last 200; off, the console is left untouched) and VIEW LOG AND STATS, a full-screen dialog (ADR-0074: inert page, focus on CLOSE, Escape, the focus back to the opener) with STATS (audio files and size, boards, decks, pads, decoded audio of 150 MB, log count, version), CACHE (the decoded buffers, the most recently used first, by library name) and LOG (COPY ALL, CLEAR); decided by Claude 2026-10-14",
+      'feat(audio): engine cacheState / facade audioCacheState — the decoded-audio cache read only (bytes, limit, entries), for the developer view; the engine itself is unchanged',
+      'feat: lib debugLog (startDebugLog / stopDebugLog, ring of 200, formatArgs, debugLogText), prefs debug-log, component DeveloperDialog; classes sb-dev-stats, sb-dev-log (no text selection, ADR-0067 — COPY ALL copies)',
+      'test: unit debugLog (off keeps nothing, every level, once when started twice, the last 200, console restored, formatting, copy text), cacheState (most recent first, bytes after delete and eviction — the byte counter was untestable before), prefs; E2E settings — a message kept only after the switch, shown with version and empty cache, CLEAR, Escape gives the focus back; a11y scans the dialog; each counter-checked',
+    ],
+  },
   {
     version: '3.0.243',
     date: '2026-10-14',

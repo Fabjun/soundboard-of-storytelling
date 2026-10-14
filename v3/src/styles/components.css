@@ -985,6 +985,34 @@
   font-family: var(--font-mono);
   color: var(--gold);
 }
+.sb-dev-stats {
+  /* @inventory: Name / value rows of the developer view (settings.md S8) — mono sm, dim names, values right; a definition list. */
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: var(--fs-sm);
+  color: var(--text);
+}
+.sb-dev-stats dt {
+  color: var(--text-dim);
+}
+.sb-dev-stats dd {
+  margin: 0;
+  text-align: right;
+}
+.sb-dev-log {
+  /* @inventory: The kept console messages in the developer view — mono xs, wrapped, sunk background; copied with COPY ALL (no selection, ADR-0067). */
+  margin: 0;
+  padding: var(--space-2);
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  color: var(--text);
+  background: var(--sunk);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
 .sb-segmented {
   /* @inventory: A segmented choice (settings.md S13: a few fixed values) — a row of radio buttons drawn as joined buttons; the radios themselves are sb-visually-hidden. */
   display: flex;
