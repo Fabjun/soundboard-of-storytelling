@@ -80,23 +80,30 @@ export async function buildBackup(
 }
 
 /**
- * After how many days without a backup the app reminds (D3) — owner decision B5 (2026-10-02):
- * seven days; it becomes a setting with the Settings screen (Slice 14).
+ * After how many days without a backup the app reminds by default (D3) — owner decision B5
+ * (2026-10-02): seven days; a setting since 3.0.226 (Settings → DATA, docs/product/features/settings.md S7).
  */
 export const BACKUP_REMINDER_DAYS = 7;
 
+/** The reminder's choices in Settings — a few fixed values, a segmented choice (settings.md S13). */
+export const BACKUP_REMINDER_CHOICES = [3, 7, 14, 30] as const;
+
 const DAY_MS = 24 * 60 * 60 * 1000;
 
-/** "Last backup: today / 1 day ago / N days ago", or "No backup yet"; stale → remind (D3). */
+/**
+ * "Last backup: today / 1 day ago / N days ago", or "No backup yet"; stale → remind (D3) when more
+ * than `reminderDays` days have passed.
+ */
 export function describeBackupAge(
   last: number | null,
   now: number,
+  reminderDays: number = BACKUP_REMINDER_DAYS,
 ): { text: string; stale: boolean } {
   if (last === null) return { text: 'No backup yet', stale: true };
   const days = Math.max(0, Math.floor((now - last) / DAY_MS));
   const text =
     days === 0 ? 'Last backup: today' : `Last backup: ${days} day${days === 1 ? '' : 's'} ago`;
-  return { text, stale: days > BACKUP_REMINDER_DAYS };
+  return { text, stale: days > reminderDays };
 }
 
 /**

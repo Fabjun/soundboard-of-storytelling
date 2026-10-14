@@ -275,4 +275,12 @@ describe('describeBackupAge (D3)', () => {
     expect(describeBackupAge(now - BACKUP_REMINDER_DAYS * day, now).stale).toBe(false);
     expect(describeBackupAge(now - (BACKUP_REMINDER_DAYS + 1) * day, now).stale).toBe(true);
   });
+
+  it('reminds after the days chosen in Settings (S7)', () => {
+    expect(describeBackupAge(now - 3 * day, now, 3).stale).toBe(false);
+    expect(describeBackupAge(now - 4 * day, now, 3).stale).toBe(true);
+    expect(describeBackupAge(now - 14 * day, now, 14).stale).toBe(false);
+    expect(describeBackupAge(now - 15 * day, now, 14).stale).toBe(true);
+    expect(describeBackupAge(null, now, 30).stale).toBe(true);
+  });
 });

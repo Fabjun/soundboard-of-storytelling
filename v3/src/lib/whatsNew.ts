@@ -98,8 +98,17 @@ export function withEarlyVersions(
   return [...written, ...early].sort((a, b) => compareVersions(b.version, a.version));
 }
 
-/** The release notes the start screen shows, newest first (checked by whatsNew.test.ts). */
+/** The release notes the main menu shows, newest first (checked by whatsNew.test.ts). */
 export const WHATS_NEW: WhatsNewNotes[] = [
+  {
+    version: '3.0.226',
+    new: [
+      'A Settings screen, reached from the main menu and the board list. Its first settings: after how many days without a backup the board list reminds (3, 7, 14 or 30), and the version with the license notices.',
+    ],
+    improved: [
+      'The start screen has one button, TAP TO START. It switches the sound on and opens a main menu with BOARD, LIBRARY, SETTINGS, UPDATE and the release notes.',
+    ],
+  },
   {
     version: '3.0.225',
     new: [

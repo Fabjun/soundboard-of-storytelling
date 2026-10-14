@@ -13,6 +13,7 @@ import { signal } from '@preact/signals';
 import { kvDelete, kvGetAll, kvPut } from '../db/idb';
 import { DEFAULT_PAD_SORT, isPadSort, type PadSort } from '../lib/padSort';
 import { parsePad } from '../lib/boardModel';
+import { BACKUP_REMINDER_CHOICES, BACKUP_REMINDER_DAYS } from '../lib/backupExport';
 import type { Pad } from '../types';
 import { pendingSaves } from './store';
 
@@ -154,4 +155,21 @@ export function setPadDraft(pad: Pad): void {
 /** Forgets a pad's draft — after SAVE, DISCARD CHANGES, or when the pad is deleted. */
 export function clearPadDraft(padId: string): void {
   if (cache.has(padDraftKey(padId))) write(padDraftKey(padId), undefined);
+}
+
+// ── Backup reminder (Settings → DATA, docs/product/features/settings.md S7) ──
+
+const BACKUP_REMINDER_KEY = 'backup-reminder-days';
+
+/** After how many days without a backup the board list reminds — one of the choices, 7 until set. */
+export function getBackupReminderDays(): number {
+  const v = cache.get(BACKUP_REMINDER_KEY);
+  return typeof v === 'number' && BACKUP_REMINDER_CHOICES.some((c) => c === v)
+    ? v
+    : BACKUP_REMINDER_DAYS;
+}
+
+/** Sets the backup reminder's days; the default (7) is not stored. */
+export function setBackupReminderDays(days: number): void {
+  write(BACKUP_REMINDER_KEY, days === BACKUP_REMINDER_DAYS ? undefined : days);
 }

@@ -22,6 +22,7 @@ import {
   goToBoardList,
   goToLibrary,
   openDeckRail,
+  openMainMenu,
   padCells,
 } from './helpers';
 
@@ -56,8 +57,18 @@ async function violations(page: Page, rules?: string[]): Promise<string[]> {
 
 test('start screen', async ({ page }) => {
   await page.goto('/soundboard-of-storytelling/');
-  await expect(page.getByRole('button', { name: 'TAP TO UNLOCK' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'TAP TO START' })).toBeVisible();
   expect(await violations(page)).toEqual([]);
+});
+
+test('main menu and Settings', async ({ page }) => {
+  await page.goto('/soundboard-of-storytelling/');
+  await openMainMenu(page);
+  const found = (await violations(page)).map((v) => `main menu — ${v}`);
+  await page.getByRole('button', { name: 'SETTINGS' }).click();
+  await page.getByRole('heading', { name: 'DATA' }).waitFor();
+  found.push(...(await violations(page)).map((v) => `Settings — ${v}`));
+  expect(found).toEqual([]);
 });
 
 test('library', async ({ page }) => {

@@ -23,11 +23,17 @@ export const audioContextState = signal<AudioContextState>('locked');
 
 // ── Navigation / routing ─────────────────────────────────────────────────────
 
-/** The app's top-level screens. */
-export type AppScreen = 'start' | 'library' | 'board-list' | 'board';
+/**
+ * The app's top-level screens: the start screen with its one action, the main menu behind it
+ * (owner decision 2026-10-11), and the screens it leads to.
+ */
+export type AppScreen = 'start' | 'menu' | 'settings' | 'library' | 'board-list' | 'board';
 
 /** Top-level screen routing. */
 export const currentScreen = signal<AppScreen>('start');
+
+/** The screen Settings goes back to — the main menu or the board list it was opened from. */
+export const settingsReturn = signal<AppScreen>('menu');
 
 /** The board the board screen shows; null outside a board. */
 export const currentBoardId = signal<string | null>(null);

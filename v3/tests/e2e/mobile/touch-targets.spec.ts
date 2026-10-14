@@ -28,6 +28,7 @@ import {
   enterSetupMode,
   goToBoardList,
   goToLibrary,
+  openMainMenu,
   padCells,
 } from '../helpers';
 
@@ -43,15 +44,16 @@ test.describe('touch targets on a 390px phone', () => {
 
   // ── StartScreen ─────────────────────────────────────────────────────────────
 
-  test('StartScreen: TAP TO UNLOCK button is >= 44×44px', async ({ page }) => {
+  test('StartScreen: TAP TO START button is >= 44×44px', async ({ page }) => {
     await page.goto('/soundboard-of-storytelling/');
-    await assertTarget(page.getByRole('button', { name: 'TAP TO UNLOCK' }), 'TAP TO UNLOCK');
+    await assertTarget(page.getByRole('button', { name: 'TAP TO START' }), 'TAP TO START');
   });
 
-  test('StartScreen: BOARD and LIBRARY navigation buttons are >= 44×44px', async ({ page }) => {
+  test('MainMenuScreen: every menu button is >= 44×44px', async ({ page }) => {
     await page.goto('/soundboard-of-storytelling/');
-    await assertTarget(page.getByRole('button', { name: 'BOARD' }), 'BOARD button');
-    await assertTarget(page.getByRole('button', { name: 'LIBRARY' }), 'LIBRARY button');
+    await openMainMenu(page);
+    for (const name of ['BOARD', 'LIBRARY', 'SETTINGS', 'UPDATE'])
+      await assertTarget(page.getByRole('button', { name }), `${name} button`);
   });
 
   // ── BoardListScreen ──────────────────────────────────────────────────────────

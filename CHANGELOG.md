@@ -7,6 +7,19 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.226 — 2026-10-14
+
+### Added
+
+- feat(settings): Slice 14a — the start screen has one action, TAP TO START (owner decision 2026-10-11, settings.md S15): it unlocks the audio as before (ADR-0020 amendment) and opens the new main menu (MainMenuScreen: BOARD, LIBRARY, SETTINGS, UPDATE, the version that opens What's new, the flame); BACK from the board list and the library leads to the menu
+- feat(settings): the Settings screen (settings.md S11–S14) — one screen with group headings, each change applied and stored at once; reached from the main menu and from the board list (cog), BACK returns there (store settingsReturn); DATA: the backup reminder after 3 / 7 / 14 / 30 days (S7, prefs backup-reminder-days, describeBackupAge takes the days); ABOUT: version, build and the third-party license notices (S9, ADR-0057)
+- feat: classes sb-menu-nav, sb-start-action, sb-settings, sb-settings-group, sb-settings-group-title, sb-settings-row, sb-settings-label, sb-settings-link, sb-segmented, sb-segmented-option; sb-start-nav removed
+
+### Internal
+
+- test: unit tests for the reminder days (prefs: default, kept after a reload, default not stored, invalid values; describeBackupAge with chosen days); E2E settings — from the menu and back, the reminder follows 14 days set from the board list and is kept after a reload (Playwright clock); a11y scans the main menu and Settings; helpers openMainMenu, the specs pass the menu; each new test counter-checked
+- docs: docs/product/features/settings.md (S1–S15, steps 14a–14e; rewritten from the owner decisions of 2026-10-11 after the first draft was lost); product and docs hubs link it; ADR-0020 amendment; TAP TO UNLOCK → TAP TO START in the iPhone checklist, testing.md and comments; BACKLOG "Backup reminder threshold as a setting" and the license link done
+
 ## 3.0.225 — 2026-10-12
 
 ### Added

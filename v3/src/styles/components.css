@@ -902,11 +902,99 @@
   max-width: 320px;
   margin-bottom: var(--space-8);
 }
-.sb-start-nav {
-  /* @inventory: Navigation buttons row on StartScreen — flex row with 12px gap and top margin. 1-use. */
+.sb-menu-nav {
+  /* @inventory: The main menu's buttons (MainMenuScreen, 2026-10-11) — one column of equal-width buttons under the title, as on a title screen. 1-use. */
   display: flex;
+  flex-direction: column;
   gap: var(--space-3);
-  margin-top: var(--space-8);
+  width: min(16rem, 100%);
+  margin-top: var(--space-4);
+}
+.sb-start-action {
+  /* @inventory: TAP TO START on the start screen — the one action; its auto bottom margin pairs with the flame well's top margin, so the content stays centered. 1-use. */
+  margin-bottom: auto;
+}
+.sb-settings {
+  /* @inventory: The Settings screen's scrolling body — groups one under the other, centered and limited in width on a wide window. 1-use. */
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  width: 100%;
+  max-width: 40rem;
+  margin: 0 auto;
+}
+.sb-settings-group {
+  /* @inventory: One group of settings under its heading (settings.md S11). */
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+.sb-settings-group-title {
+  /* @inventory: A settings group's heading (DATA, ABOUT) — the UI font, gold, spaced capitals. */
+  font-family: var(--font-ui);
+  font-size: var(--fs-md);
+  letter-spacing: 0.08em;
+  color: var(--gold);
+  border-bottom: 1px solid var(--border-soft);
+  padding-bottom: var(--space-1);
+}
+.sb-settings-row {
+  /* @inventory: One setting: its label, a short explanation and its control (a fieldset for a choice). */
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  border: none;
+  padding: 0;
+  margin: 0;
+}
+.sb-settings-label {
+  /* @inventory: A setting's name (a legend for a choice) — the UI font in the text color. */
+  font-family: var(--font-ui);
+  font-size: var(--fs-md);
+  color: var(--text);
+  padding: 0;
+}
+.sb-settings-link {
+  /* @inventory: A link in Settings (the license notices) — mono, gold, underlined, a 44px touch target. */
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  font-family: var(--font-mono);
+  color: var(--gold);
+}
+.sb-segmented {
+  /* @inventory: A segmented choice (settings.md S13: a few fixed values) — a row of radio buttons drawn as joined buttons; the radios themselves are sb-visually-hidden. */
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+}
+.sb-segmented-option {
+  /* @inventory: One value of a sb-segmented choice — a 44px label around its radio; is-active marks the chosen one, a visible ring the focused one. */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0 var(--space-3);
+  font-family: var(--font-ui);
+  font-size: var(--fs-md);
+  color: var(--text-dim);
+  background: var(--raised);
+  border: 1px solid var(--border);
+  cursor: pointer;
+}
+.sb-segmented-option.is-active {
+  color: var(--night);
+  background: var(--gold);
+  border-color: var(--gold);
+}
+.sb-segmented-option:focus-within {
+  outline: 2px solid var(--gold-bright);
+  outline-offset: 2px;
 }
 .sb-start-status {
   /* @inventory: Result line of the UPDATE check on StartScreen — centered under the buttons, kept off the screen edges. 1-use. */
@@ -2112,7 +2200,7 @@
   font-size: var(--fs-xs);
 }
 .sb-btn-unlock {
-  /* @inventory: Sizing modifier for the StartScreen TAP TO UNLOCK CTA — 240px min-width and taller padding. 1-use. Rule-mandated: minWidth + padding-override are static values. */
+  /* @inventory: Sizing modifier for the StartScreen TAP TO START CTA — 240px min-width and taller padding. 1-use. Rule-mandated: minWidth + padding-override are static values. */
   min-width: 240px;
   padding: var(--space-3) var(--space-6);
 }

@@ -6,11 +6,13 @@
  */
 
 import { test, expect } from '@playwright/test';
+import { openMainMenu } from './helpers';
 
 test('ModeToggle switches from GAME to SETUP and back', async ({ page }) => {
   await page.goto('/soundboard-of-storytelling/');
 
   // Navigate to a board (create one first)
+  await openMainMenu(page);
   await page.getByRole('button', { name: 'BOARD' }).click();
   await page.getByRole('button', { name: /NEW BOARD/ }).click();
   await page.locator('[data-testid^="board-list-screen-row-"]').first().click();

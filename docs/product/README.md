@@ -10,7 +10,9 @@
 > **Leaves:** [v1-v2-inventory.md](v1-v2-inventory.md) — prototype features vs. V3 status,
 > decisions per feature. · [features/data-backup.md](features/data-backup.md) — export,
 > import, V1 migration. · [features/adaptive-layout.md](features/adaptive-layout.md) — the
-> narrow and wide frames, the deck switcher on a phone (Slice 13).
+> narrow and wide frames, the deck switcher on a phone (Slice 13). ·
+> [features/settings.md](features/settings.md) — the Settings screen, the start screen and the
+> main menu (Slice 14).
 
 ## Status legend
 

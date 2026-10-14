@@ -26,6 +26,7 @@
 
 import { test, expect } from '@playwright/test';
 import {
+  goToBoardList,
   goToLibrary,
   createBoardAndNavigate,
   createDeck,
@@ -41,9 +42,9 @@ test.beforeEach(async ({ page }) => {
   await goToLibrary(page);
   await mobileUploadTestAudio(page);
 
-  // Return to start and tap TAP TO UNLOCK (initializes AudioContext)
+  // Return to start and tap TAP TO START (initializes AudioContext)
   await page.goto('/soundboard-of-storytelling/');
-  await page.getByRole('button', { name: 'TAP TO UNLOCK' }).tap();
+  await goToBoardList(page); // through TAP TO START, which unlocks the audio
   await page.getByTestId('board-list-screen-new-button').waitFor();
 
   await createBoardAndNavigate(page);

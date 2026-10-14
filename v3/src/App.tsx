@@ -14,6 +14,8 @@ import { currentMode, currentScreen, screenKeptOn } from './state/store';
 import { requestPersistentStorage } from './db/persistentStorage';
 import { createScreenKeeper } from './lib/wakeLock';
 import { StartScreen } from './screens/StartScreen';
+import { MainMenuScreen } from './screens/MainMenuScreen';
+import { SettingsScreen } from './screens/SettingsScreen';
 import { LibraryScreen } from './screens/LibraryScreen';
 import { BoardListScreen } from './screens/BoardListScreen';
 import { BoardScreen } from './screens/BoardScreen';
@@ -57,6 +59,8 @@ export function App(): JSX.Element {
 function Screen(): JSX.Element {
   const screen = currentScreen.value;
 
+  if (screen === 'menu') return <MainMenuScreen />;
+  if (screen === 'settings') return <SettingsScreen />;
   if (screen === 'library') return <LibraryScreen />;
   if (screen === 'board-list') return <BoardListScreen />;
   if (screen === 'board') return <BoardScreen />;

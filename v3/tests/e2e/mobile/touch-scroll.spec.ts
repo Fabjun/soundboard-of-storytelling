@@ -11,6 +11,7 @@
 
 import { test, expect, type CDPSession, type Locator, type Page } from '@playwright/test';
 import {
+  goToBoardList,
   addLoopPad,
   createBoardAndNavigate,
   createDeck,
@@ -59,7 +60,7 @@ test.beforeEach(async ({ page }) => {
   await ensureTestAudio(page);
   await page.goto('/soundboard-of-storytelling/');
   // Unlocks the audio — without it no pad plays, and the GAME test below would prove nothing
-  await page.getByRole('button', { name: 'TAP TO UNLOCK' }).tap();
+  await goToBoardList(page); // through TAP TO START, which unlocks the audio
   await page.getByTestId('board-list-screen-new-button').waitFor();
   await createBoardAndNavigate(page);
   await createDeck(page);

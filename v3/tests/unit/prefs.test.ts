@@ -2,7 +2,7 @@
  * @fileoverview prefs — UI preferences in IndexedDB (ADR-0062; owner decision 2026-10-02)
  * Real IndexedDB semantics via fake-indexeddb. Cases: nothing stored, round trip incl. a reload
  * (loadPrefs), per-board keys, unknown values, clear, writes counted in pendingSaves, a failing
- * database never breaks the app.
+ * database never breaks the app, the backup reminder days.
  */
 
 import { IDBFactory } from 'fake-indexeddb';
@@ -25,7 +25,10 @@ import {
   loadPrefs,
   setLastBackup,
   setLastView,
+  getBackupReminderDays,
+  setBackupReminderDays,
 } from '../../src/state/prefs';
+import { BACKUP_REMINDER_DAYS } from '../../src/lib/backupExport';
 
 /** Lets the background writes finish. */
 const settled = async () => {
@@ -209,6 +212,30 @@ describe('bars that fold (2026-10-11)', () => {
     await kvPut('bar-open:decks', 'no');
     await loadPrefs();
     expect(isBarOpen('decks')).toBe(true);
+  });
+});
+
+describe('backup reminder days (Settings → DATA, settings.md S7)', () => {
+  it('7 until chosen; the choice is kept after a reload; 7 again stores nothing', async () => {
+    expect(getBackupReminderDays()).toBe(BACKUP_REMINDER_DAYS);
+    setBackupReminderDays(14);
+    expect(getBackupReminderDays()).toBe(14);
+    await settled();
+    await loadPrefs();
+    expect(getBackupReminderDays()).toBe(14);
+    setBackupReminderDays(BACKUP_REMINDER_DAYS);
+    await settled();
+    expect(getBackupReminderDays()).toBe(BACKUP_REMINDER_DAYS);
+    expect((await kvGetAll()).map(([k]) => k)).not.toContain('backup-reminder-days');
+  });
+
+  it('a stored value that is not one of the choices counts as 7', async () => {
+    await kvPut('backup-reminder-days', 5);
+    await loadPrefs();
+    expect(getBackupReminderDays()).toBe(BACKUP_REMINDER_DAYS);
+    await kvPut('backup-reminder-days', '14');
+    await loadPrefs();
+    expect(getBackupReminderDays()).toBe(BACKUP_REMINDER_DAYS);
   });
 });
 

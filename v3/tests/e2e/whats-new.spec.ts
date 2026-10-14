@@ -1,12 +1,13 @@
 /**
  * @fileoverview Full E2E — What's new (ADR-0063)
  *
- * The version in the start screen footer opens the release notes: versions with their groups
+ * The version in the main menu's footer opens the release notes: versions with their groups
  * (New / Improved / Fixed / Removed / Behind the scenes) in plain sentences, each with its full
- * developer changelog folded under "Details"; the close button returns to the start.
+ * developer changelog folded under "Details"; the close button returns to the menu.
  */
 
 import { test, expect } from '@playwright/test';
+import { openMainMenu } from './helpers';
 import { CHANGELOG } from '../../src/lib/changelog';
 import { WHATS_NEW, WHATS_NEW_GROUPS } from '../../src/lib/whatsNew';
 
@@ -14,9 +15,10 @@ test("the version link opens What's new, grouped per version, and closes again",
   page,
 }) => {
   await page.goto('/soundboard-of-storytelling/');
+  await openMainMenu(page);
   await page.getByRole('button', { name: "Open What's new" }).click();
 
-  const notes = page.getByTestId('start-screen-whats-new-region');
+  const notes = page.getByTestId('main-menu-screen-whats-new-region');
   await expect(notes).toBeVisible();
   const newest = WHATS_NEW[0];
   const firstSection = notes.getByRole('region', {
