@@ -17,10 +17,15 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.229';
+export const APP_VERSION = '3.0.230';
 
 /** The developer log, newest first; CHANGELOG.md is generated from it (sync-changelog). */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.230',
+    date: '2026-10-14',
+    items: ['build(deps-dev): prettier 3.9.10 (Dependabot PR #110) — no file changes its format'],
+  },
   {
     version: '3.0.229',
     date: '2026-10-14',

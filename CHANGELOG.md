@@ -7,6 +7,12 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.230 — 2026-10-14
+
+### Internal
+
+- build(deps-dev): prettier 3.9.10 (Dependabot PR #110) — no file changes its format
+
 ## 3.0.229 — 2026-10-14
 
 ### Internal
