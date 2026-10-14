@@ -18,7 +18,7 @@ import { useState } from 'preact/hooks';
 import { useEscapeKey } from '../lib/escapeKey';
 import type { JSX } from 'preact';
 import type { LibraryItemMeta, Pad, PadType } from '../types';
-import { PixelIcon } from './PixelIcon';
+import { UiIcon } from './UiIcon';
 import { Waveform } from './Waveform';
 import { libraryItems } from '../state/store';
 import { narrowWindow } from '../state/windowClass';
@@ -280,9 +280,9 @@ function SourceItem({
       >
         <span class="sb-row sb-flex-1">
           {selected ? (
-            <PixelIcon name="play" size={10} color="var(--gold)" />
+            <UiIcon name="play" size={10} color="var(--gold)" />
           ) : (
-            <PixelIcon name="play" size={10} color="var(--text-mute)" />
+            <UiIcon name="play" size={10} color="var(--text-mute)" />
           )}
           <span
             class="sb-lib-browser-item-name sb-flex-1"

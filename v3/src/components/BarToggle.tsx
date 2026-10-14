@@ -11,23 +11,10 @@
  */
 
 import type { JSX } from 'preact';
-import { IconGlyph } from './PadIcons';
-import toolbar from '../icons/toolbar.json';
-
-/** The toolbar's icons, bundled at build time (scripts/build-icons.ts TOOLBAR). */
-export type ToolbarIconName = keyof typeof toolbar;
-
-/** Draws one of the toolbar's collection icons, in the current text color. */
-export function ToolbarIcon({ name }: { name: ToolbarIconName }): JSX.Element {
-  return (
-    <span class="sb-toolbar-icon">
-      <IconGlyph drawing={toolbar[name]} />
-    </span>
-  );
-}
+import { UiIcon, type UiIconName } from './UiIcon';
 
 interface BarToggleProps {
-  icon: ToolbarIconName;
+  icon: UiIconName;
   /** What the bar is, e.g. "search bar" — the button says "Show the search bar" / "Hide …". */
   bar: string;
   open: boolean;
@@ -61,7 +48,7 @@ export function BarToggle({
       data-testid={testid}
       onClick={onToggle}
     >
-      <ToolbarIcon name={icon} />
+      <UiIcon name={icon} class="sb-toolbar-icon" />
     </button>
   );
 }

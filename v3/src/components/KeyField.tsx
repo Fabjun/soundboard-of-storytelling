@@ -12,7 +12,7 @@
 
 import { useState } from 'preact/hooks';
 import type { JSX } from 'preact';
-import { PixelIcon } from './PixelIcon';
+import { UiIcon } from './UiIcon';
 import { RESERVED_KEYS, isModifierKey, keyLabel } from '../lib/padKeys';
 
 /** What a pressed key means for the pad: free, held by a pad it can move from, or refused. */
@@ -99,7 +99,7 @@ export function KeyField({ id, label, hotkey, check, onAssign }: KeyFieldProps):
           onKeyDown={capture}
           onBlur={() => setArmed(false)}
         >
-          <PixelIcon name="keyboard" size={11} color="var(--text-mute)" />
+          <UiIcon name="key" size={11} color="var(--text-mute)" />
           {armed ? 'PRESS A KEY…' : hotkey ? keyLabel(hotkey) : '— not assigned —'}
         </button>
         {hotkey && !armed && (

@@ -1,6 +1,6 @@
 # ADR-0072: The UI icons as the project's own icon set `sos-ui`
 
-**Status:** Proposed
+**Status:** Superseded by ADR-0085
 **Date:** 2026-10-04
 **Slice:** Slice 15
 **Refines:** ADR-0070

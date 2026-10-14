@@ -14,7 +14,7 @@
 
 import type { JSX } from 'preact';
 import { TopBar } from '../components/TopBar';
-import { PixelIcon } from '../components/PixelIcon';
+import { UiIcon } from '../components/UiIcon';
 import { SegmentedChoice } from '../components/SegmentedChoice';
 import { Switch } from '../components/Switch';
 import { currentScreen, settingsReturn } from '../state/store';
@@ -78,7 +78,7 @@ export function SettingsScreen(): JSX.Element {
               currentScreen.value = settingsReturn.value;
             }}
           >
-            <PixelIcon name="flame" size={11} />
+            <UiIcon name="back" size={11} />
             BACK
           </button>
         }

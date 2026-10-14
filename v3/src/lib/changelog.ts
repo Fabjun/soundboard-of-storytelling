@@ -17,10 +17,20 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.241';
+export const APP_VERSION = '3.0.242';
 
 /** The developer log, newest first; CHANGELOG.md is generated from it (sync-changelog). */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.242',
+    date: '2026-10-14',
+    items: [
+      "feat(ui): every icon of the interface comes from the pad icon collection (owner decision 2026-10-14, ADR-0085, supersedes ADR-0072) — one icon per meaning from nikoichu, the set the toolbar already used: board, library, settings, update, import, back, add, play, edit, delete, error, saved, key, app, and the toolbar's locked / unlocked, search, quick access, decks, undo, redo; BACK is one arrow on every screen (was a flame on two, a play triangle on one); labels no longer repeat their icon (NEW DECK, CREATE FIRST BOARD)",
+      'refactor(ui): component UiIcon replaces PixelIcon and ToolbarIcon; build-icons writes src/icons/ui.json (UI_ICONS) instead of toolbar.json; sos-ui.json removed; class sb-ui-icon replaces sb-pixel-icon; icons are drawn at whole multiples of their 16-pixel grid (pixelSide) — at 11 px the back arrow blurred; the app icon is the campfire (a fire in a triangle looked like the error sign)',
+      "test: iconGuards — free licenses only, so no own set comes back (counter-checked with sos-ui.json restored: red); ui.json drawings are their keys' drawings in the collection; codeGuards counts UiIcon as decorative; unit test pixelSide; seven visual baselines updated (icons)",
+      'docs: ADR-0085; ADR-0072 superseded; ADR-0070 and ADR-0080 references; CLAUDE.md UI rule',
+    ],
+  },
   {
     version: '3.0.241',
     date: '2026-10-14',

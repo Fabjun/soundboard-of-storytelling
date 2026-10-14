@@ -12,7 +12,7 @@
  *   - Duplicate: the copy places the same pads of the pool (shared, not copied) and appears
  *     directly after the original
  *   - Reorder (Slice 13g): in SETUP the active deck moves with ▲ / ▼ or its drag handle
- *   - + NEW DECK button at bottom
+ *   - NEW DECK button at bottom
  *   - PAD SIZE slider of the board — all decks and All pads — in SETUP (ADR-0075; V1 had it in the
  *     side menu)
  *   - Folds to its toggle button (owner decision 2026-10-05): it starts folded, so the pads get the
@@ -28,7 +28,7 @@
 import { useEffect, useState, useRef } from 'preact/hooks';
 import type { ComponentChildren, JSX } from 'preact';
 import type { Deck, Board } from '../types';
-import { PixelIcon } from './PixelIcon';
+import { UiIcon } from './UiIcon';
 import { UndoToast } from './UndoToast';
 import { applyBoardChange, updateBoard } from '../state/boardWrites';
 import {
@@ -479,7 +479,8 @@ export function DeckRail({
         data-testid="deck-rail-new-button"
         onClick={addDeck}
       >
-        <PixelIcon name="sparkle" size={12} />+ NEW DECK
+        <UiIcon name="add" size={12} />
+        NEW DECK
       </button>
     </>
   );

@@ -9,7 +9,7 @@
 
 import { useState } from 'preact/hooks';
 import type { JSX } from 'preact';
-import { PixelIcon } from '../components/PixelIcon';
+import { UiIcon } from '../components/UiIcon';
 import { AnimatedFlame } from '../components/AnimatedFlame';
 import { audioContextState, currentScreen, settingsReturn } from '../state/store';
 import { APP_VERSION, CHANGELOG } from '../lib/changelog';
@@ -153,7 +153,7 @@ export function MainMenuScreen(): JSX.Element {
             currentScreen.value = 'board-list';
           }}
         >
-          <PixelIcon name="scroll" size={14} />
+          <UiIcon name="board" size={14} />
           BOARD
         </button>
         <button
@@ -162,7 +162,7 @@ export function MainMenuScreen(): JSX.Element {
             currentScreen.value = 'library';
           }}
         >
-          <PixelIcon name="book" size={14} />
+          <UiIcon name="library" size={14} />
           LIBRARY
         </button>
         <button
@@ -172,7 +172,7 @@ export function MainMenuScreen(): JSX.Element {
             currentScreen.value = 'settings';
           }}
         >
-          <PixelIcon name="cog" size={14} />
+          <UiIcon name="settings" size={14} />
           SETTINGS
         </button>
         <button
@@ -180,7 +180,7 @@ export function MainMenuScreen(): JSX.Element {
           disabled={checking}
           onClick={() => void handleUpdateCheck()}
         >
-          <PixelIcon name="download" size={14} />
+          <UiIcon name="update" size={14} />
           {checking ? 'CHECKING…' : 'UPDATE'}
         </button>
       </nav>
