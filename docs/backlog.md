@@ -1810,6 +1810,18 @@ then applied with the full gate):
   `preact` in 11. Visual 9/9, all dev-server E2E 64/64, production-build E2E 36/36. **Owner
   check:** open the live app on the iPhone once after the deploy.
 
+### knip: vite unlisted in production mode
+
+Found 2026-10-14 with knip 6.41 (Dependabot PR #105): knip 6.40 resolves Playwright's
+`webServer` command ("Resolve webServer commands in Playwright plugin", knip PR #2110), follows
+`npm run dev` to the binary `vite`, and `knip --production` reports it as unlisted — a dev
+dependency, used only by dev tooling. Same class as knip issue #1017 (husky / lint-staged files
+read in production mode, fixed in knip 5.47). Temporary exception, scoped to the one file:
+`ignoreIssues` `playwright.config.ts: ['binaries']` in `v3/knip.config.ts` (an `ignoreBinaries`
+entry would not do: the default mode then reports it as unused). Reporting it upstream is an outward-facing step — **owner decision open**.
+**Trigger:** a knip release that skips the Playwright config in production mode — then remove the
+exception (a removed exception that stays green proves it).
+
 ### Library audio as Blob — Safari Private Browsing (open question)
 
 Found 2026-09-29 (T6): WebKit in an ephemeral context (Playwright; technically like Safari
