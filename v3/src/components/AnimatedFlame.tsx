@@ -626,6 +626,16 @@ export function AnimatedFlame({ size = 120, interactive = true }: AnimatedFlameP
     else strike(st.charge, 1);
   };
 
+  // Quick taps freeze the flame — iOS WebKit would take two of them as a double tap and zoom the
+  // page in and out (owner report 2026-10-14): the global pan-x pan-y does not stop it there.
+  // Canceling the touch's end keeps the browser from the double tap and the click; the flame
+  // needs neither (pointerdown), and a swipe that starts on it still scrolls (touch-action stays,
+  // codeGuards: none only on drag handles). Android Chrome has no double-tap zoom here (Chrome 32+:
+  // none on a width=device-width page).
+  const handleTouchEnd = (e: TouchEvent): void => {
+    if (e.cancelable) e.preventDefault();
+  };
+
   const unit = size / 16; // CSS px per cell
   return (
     <div class="sb-animated-flame" style={{ width: `${size}px`, height: `${size * (17 / 16)}px` }}>
@@ -637,6 +647,7 @@ export function AnimatedFlame({ size = 120, interactive = true }: AnimatedFlameP
         width={FIELD_W * CELL}
         height={FIELD_H * CELL}
         onPointerDown={handlePointerDown}
+        onTouchEnd={handleTouchEnd}
         style={{
           width: `${FIELD_W * unit}px`,
           height: `${FIELD_H * unit}px`,

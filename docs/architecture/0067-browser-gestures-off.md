@@ -82,6 +82,21 @@ has one is open (Brave community threads). Checked on the device: manual iPhone 
 zoom to 200 %". Decision taken by Claude on the owner's instruction of 2026-10-14 (decide on the
 basis of research), for the owner's later review.
 
+**2026-10-14 (3.0.240) — double-tap zoom on iOS.** Owner report: tapping the menu flame quickly
+zoomed the page in and out on the iPhone. iOS WebKit drops its double-tap zoom only for
+`touch-action: none` or `manipulation` (WebKit r247212, "'touch-action: none' does not prevent
+double-tap-to-zoom", 2019; WebKit blog "More Responsive Tapping on iOS") — the global
+`pan-x pan-y` of rule 1 did not stop it there. Android Chrome has no double-tap zoom on a
+`width=device-width` page since Chrome 32 (Chrome for Developers, "300ms tap delay, gone away"),
+which `v3/index.html` sets, so Android is not affected. Fix: the flame cancels the end of each
+touch (`preventDefault` on `touchend`), the standard way to keep iOS from a double tap — it needs no
+click (it reacts on `pointerdown`). Not `touch-action: none`: that would stop a swipe that starts on
+the flame from scrolling a short menu (codeGuards: `none` only on drag handles, 2026-10-11).
+Checked by `v3/tests/e2e/system-gestures.spec.ts` with a touch screen in Chromium and WebKit: a
+tap's `touchend` arrives canceled, and the flame keeps `pan-x pan-y`. The pads keep `pan-x pan-y`
+so a swipe on them scrolls (3.0.220); whether a quick double tap on a pad zooms on the iPhone is on
+the manual checklist ("Quick taps never zoom"), with an Android line.
+
 ## Related
 
 - **Files:** `v3/src/styles/global.css`, `v3/src/styles/tokens.css`,
