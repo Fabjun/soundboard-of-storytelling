@@ -101,6 +101,12 @@ export function withEarlyVersions(
 /** The release notes the main menu shows, newest first (checked by whatsNew.test.ts). */
 export const WHATS_NEW: WhatsNewNotes[] = [
   {
+    version: '3.0.245',
+    new: [
+      "Settings → CONTROLS: STOP ALL and PAUSE can have other keys, set by pressing the new key in their field; a key a pad plays is refused with the pad's name, and RESET KEYS TO DEFAULT brings the numpad decimal and Space back.",
+    ],
+  },
+  {
     version: '3.0.244',
     new: [
       'Settings → DEVELOPER: a debug log keeps the last messages of the app, and VIEW LOG AND STATS shows them with the library and memory figures — to copy when reporting a problem.',

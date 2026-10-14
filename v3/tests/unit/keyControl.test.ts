@@ -4,7 +4,9 @@
  * Cases: plays in GAME (K3) and not in SETUP or off the board; a second press while it plays
  * does not stop or restart it (K4); the deck shown decides, and in All pads the deck last
  * selected (K14); unknown, reserved, held-down and modified keys; a focused text field keeps its
- * keys, a focused button or slider does not; nothing after it is stopped.
+ * keys, a focused button or slider does not; nothing after it is stopped. Live-control keys moved
+ * in Settings (K12): the new keys act, the old ones are free for pads; Enter stays fixed; a moved
+ * key other than Enter and Space wins before a focused control.
  */
 
 import type { Board, Pad, SinglePad } from '../../src/types';
@@ -17,6 +19,7 @@ import {
   currentScreen,
 } from '../../src/state/store';
 import { startKeyControl } from '../../src/state/keyControl';
+import { DEFAULT_CONTROL_KEYS, type ControlKeys } from '../../src/lib/padKeys';
 
 const grid = { cols: 4, rows: 4, gap: 4 };
 const single = (id: string): SinglePad => ({
@@ -60,6 +63,8 @@ let playing: Set<string>;
 let stop: () => void;
 /** What the Settings choice says Enter stops — read by keyControl at each press. */
 let enterStopsAll: boolean;
+/** The keys of STOP ALL and PAUSE as Settings has them — read at each press. */
+let controlKeys: ControlKeys;
 
 function press(code: string, init: KeyboardEventInit = {}, target: EventTarget = document.body) {
   const e = new KeyboardEvent('keydown', { code, bubbles: true, cancelable: true, ...init });
@@ -71,6 +76,7 @@ beforeEach(() => {
   played = [];
   playing = new Set();
   enterStopsAll = false;
+  controlKeys = DEFAULT_CONTROL_KEYS;
   boards.value = [testBoard];
   currentBoardId.value = 'b';
   currentDeckId.value = 'd1';
@@ -91,6 +97,7 @@ beforeEach(() => {
       stopLast: () => played.push('STOP LAST'),
       togglePause: () => played.push('PAUSE'),
       enterStopsAll: () => enterStopsAll,
+      controlKeys: () => controlKeys,
     },
   );
 });
@@ -313,5 +320,52 @@ describe('Space (Slice 12d)', () => {
     currentMode.value = 'edit';
     press('Space');
     expect(played).toEqual(['PAUSE']);
+  });
+});
+
+describe('live-control keys moved in Settings (K12)', () => {
+  const withKey = (code: string) => {
+    boards.value = [{ ...testBoard, quickAccess: [{ padId: 'b', hotkey: code }] }];
+  };
+
+  it('the new keys stop all and pause; read at each press', () => {
+    controlKeys = { stopAll: 'KeyS', pause: 'KeyP' };
+    expect(press('KeyS').defaultPrevented).toBe(true);
+    expect(press('KeyP').defaultPrevented).toBe(true);
+    expect(played).toEqual(['STOP ALL', 'PAUSE']);
+  });
+
+  it('the old keys are free: a pad that holds one plays, Space no longer pauses', () => {
+    controlKeys = { stopAll: 'KeyS', pause: 'KeyP' };
+    withKey('NumpadDecimal');
+    press('NumpadDecimal');
+    expect(press('Space').defaultPrevented).toBe(false);
+    expect(played).toEqual(['b:b']);
+  });
+
+  it('the two actions can swap keys: Space stops all, the numpad decimal pauses', () => {
+    controlKeys = { stopAll: 'Space', pause: 'NumpadDecimal' };
+    press('Space');
+    press('NumpadDecimal');
+    expect(played).toEqual(['STOP ALL', 'PAUSE']);
+  });
+
+  it('Enter stays the stop key whatever is moved', () => {
+    controlKeys = { stopAll: 'KeyS', pause: 'KeyP' };
+    press('Enter');
+    press('NumpadEnter');
+    expect(played).toEqual(['STOP LAST', 'STOP LAST']);
+  });
+
+  it('a moved key wins before a focused control; Space on a control stays with the control', () => {
+    controlKeys = { stopAll: 'KeyS', pause: 'Space' };
+    const button = document.createElement('button');
+    const seen: string[] = [];
+    button.addEventListener('keydown', (e) => seen.push(e.code));
+    document.body.append(button);
+    press('KeyS', {}, button);
+    press('Space', {}, button);
+    expect(seen).toEqual(['Space']);
+    expect(played).toEqual(['STOP ALL']);
   });
 });

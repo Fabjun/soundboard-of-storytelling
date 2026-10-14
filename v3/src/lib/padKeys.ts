@@ -11,17 +11,46 @@
 import type { Board, Deck, Pad } from '../types';
 
 /**
- * Keys that never play a pad: they stop, pause or move focus (K5, K6, K7; Escape closes dialogs,
- * Tab moves focus). The value says why, in the words the PAD editor shows.
+ * Keys no setting moves: the two Enters stop a sound (K5; what they stop is the Enter key setting,
+ * settings.md S2), Escape closes dialogs, Tab moves the focus. The value says why, in the words
+ * the PAD editor shows.
  */
-export const RESERVED_KEYS: Readonly<Record<string, string>> = {
-  Enter: 'stops the last sound',
-  NumpadEnter: 'stops the last sound',
-  NumpadDecimal: 'stops all sounds',
-  Space: 'pauses all sounds',
+export const FIXED_KEYS: Readonly<Record<string, string>> = {
+  Enter: 'stops a sound',
+  NumpadEnter: 'stops a sound',
   Escape: 'closes dialogs',
   Tab: 'moves between controls',
 };
+
+/** The live-control actions whose key can be moved in Settings (K12, settings.md S2). */
+export type ControlAction = 'stopAll' | 'pause';
+
+/** The key of each movable action. */
+export type ControlKeys = Readonly<Record<ControlAction, string>>;
+
+/** The keys they have until moved: the numpad's decimal stops all (K6), Space pauses (K7). */
+export const DEFAULT_CONTROL_KEYS: ControlKeys = { stopAll: 'NumpadDecimal', pause: 'Space' };
+
+/** What each movable action does, in the words a refusal shows. */
+export const CONTROL_ACTION_TEXT: Readonly<Record<ControlAction, string>> = {
+  stopAll: 'stops all sounds',
+  pause: 'pauses all sounds',
+};
+
+/**
+ * Keys that never play a pad, each with what it does instead: the fixed ones and the keys the
+ * movable actions have now — `except` leaves one action out (its own key field may take it).
+ */
+export function reservedKeys(
+  control: ControlKeys,
+  except?: ControlAction,
+): Readonly<Record<string, string>> {
+  const reserved: Record<string, string> = { ...FIXED_KEYS };
+  for (const action of Object.keys(control) as ControlAction[]) {
+    if (action !== except) reserved[control[action]] = CONTROL_ACTION_TEXT[action];
+  }
+  return reserved;
+}
 
 /** Modifier keys: pressed alone they are not a key of their own. */
 const MODIFIERS = new Set([
@@ -51,6 +80,7 @@ const SYMBOLS: Readonly<Record<string, string>> = {
   NumpadDivide: 'N/',
   NumpadEqual: 'N=',
   NumpadComma: 'N,',
+  NumpadDecimal: 'N.',
   Period: '.',
   Comma: ',',
   Minus: '-',
@@ -118,6 +148,24 @@ export function deckKeyUse(board: Board, code: string): { deck: Deck; padId: str
   for (const deck of [...board.decks].sort((a, b) => a.order - b.order)) {
     const placement = deck.placements.find((p) => p.hotkey === code);
     if (placement) return { deck, padId: placement.padId };
+  }
+  return null;
+}
+
+/**
+ * The first pad on any board that a key plays — in a deck or in the quick-access bar — with its
+ * board, or null. A live-control key must not be one (it would stop the pad from playing).
+ */
+export function padUsingKey(
+  boards: readonly Board[],
+  code: string,
+): { board: Board; pad: Pad } | null {
+  for (const board of boards) {
+    const holders = [...board.quickAccess, ...board.decks.flatMap((d) => d.placements)];
+    for (const entry of holders) {
+      const pad = entry.hotkey === code && board.pads.find((p) => p.id === entry.padId);
+      if (pad) return { board, pad };
+    }
   }
   return null;
 }

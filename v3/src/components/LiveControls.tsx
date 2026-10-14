@@ -11,6 +11,8 @@ import type { JSX } from 'preact';
 import { pressStopAll, stopAllFading } from '../state/stopControl';
 import { togglePause } from '../state/pauseControl';
 import { audioPaused } from '../state/store';
+import { getControlKeys } from '../state/prefs';
+import { keyLabel } from '../lib/padKeys';
 
 interface LiveControlsProps {
   /** Where they sit: the top bar (small buttons) or the dock (a large STOP ALL). */
@@ -31,7 +33,7 @@ export function LiveControls({ place }: LiveControlsProps): JSX.Element {
           class={`sb-btn sb-btn-primary ${size}`}
           data-testid="live-controls-paused-button"
           onClick={() => togglePause()}
-          title="Every sound is paused — tap or press Space to resume"
+          title={`Every sound is paused — tap or press ${keyLabel(getControlKeys().pause)} to resume`}
         >
           PAUSED
         </button>

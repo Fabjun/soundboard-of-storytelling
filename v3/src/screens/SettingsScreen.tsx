@@ -5,7 +5,7 @@
  * (S11); as few settings as possible, none that repeats a system setting (S12); each control by
  * kind, applied and stored at once — no SAVE (S13); reached from the main menu and the board list
  * (S14), and BACK returns there. The groups, in V1's order (S1):
- *   - CONTROLS — what Enter stops (S2, Slice 14d);
+ *   - CONTROLS — what Enter stops, the keys of STOP ALL and PAUSE (S2, Slice 14d);
  *   - APPEARANCE — theme (S5), content width (S3), pad size per board or for every board (S4);
  *   - VISUALS — the Animations switch (S6, Slice 14c);
  *   - DATA — the backup reminder (S7);
@@ -20,20 +20,24 @@ import { UiIcon } from '../components/UiIcon';
 import { SegmentedChoice } from '../components/SegmentedChoice';
 import { Switch } from '../components/Switch';
 import { DeveloperDialog } from '../components/DeveloperDialog';
-import { currentScreen, settingsReturn } from '../state/store';
+import { KeyField, type KeyCheck } from '../components/KeyField';
+import { boards, currentScreen, settingsReturn } from '../state/store';
 import {
   getAnimationsSwitch,
   getBackupReminderDays,
   getContentWidth,
+  getControlKeys,
   getDebugLogSwitch,
   setDebugLogSwitch,
   getEnterStop,
   getPadSizeScope,
   getTheme,
   prefsVersion,
+  resetControlKeys,
   setAnimationsSwitch,
   setBackupReminderDays,
   setContentWidth,
+  setControlKey,
   setEnterStop,
   setPadSizeScope,
   setTheme,
@@ -45,6 +49,13 @@ import { CONTENT_WIDTHS } from '../lib/contentWidth';
 import { systemPrefersReducedMotion } from '../lib/motion';
 import type { PadSizeScope } from '../lib/padSize';
 import { APP_VERSION } from '../lib/changelog';
+import {
+  DEFAULT_CONTROL_KEYS,
+  keyLabel,
+  padUsingKey,
+  reservedKeys,
+  type ControlAction,
+} from '../lib/padKeys';
 
 declare const __BUILD_DATE__: string;
 
@@ -62,6 +73,41 @@ const ENTER_STOP_OPTIONS: { value: EnterStop; label: string }[] = [
   { value: 'last', label: 'STOP LAST' },
   { value: 'all', label: 'STOP ALL' },
 ];
+/** The live controls whose key can be moved (S2, K12), as their key fields name them. */
+const CONTROL_KEY_FIELDS: readonly {
+  action: ControlAction;
+  slug: 'stop-all' | 'pause';
+  label: string;
+  subject: string;
+}[] = [
+  { action: 'stopAll', slug: 'stop-all', label: 'STOP ALL key', subject: 'STOP ALL' },
+  { action: 'pause', slug: 'pause', label: 'PAUSE key', subject: 'PAUSE' },
+];
+
+/** Says which pad plays the key, on which board — or null when no pad on any board does. */
+function padUse(code: string): string | null {
+  const use = padUsingKey(boards.value, code);
+  return use && `${keyLabel(code)} plays ${use.pad.name} on ${use.board.name}`;
+}
+
+/** Refuses a key a pad plays on any board — the live control would take it from the pad. */
+function checkControlKey(code: string): KeyCheck {
+  const use = padUse(code);
+  return use ? { kind: 'refused', reason: `${use} — pick another key` } : { kind: 'free' };
+}
+
+/**
+ * Why the default keys cannot come back, or null when they can: a pad may have taken a default key
+ * while it was moved away.
+ */
+function resetRefusal(): string | null {
+  for (const code of Object.values(DEFAULT_CONTROL_KEYS)) {
+    const use = padUse(code);
+    if (use) return `${use} — give that pad another key first`;
+  }
+  return null;
+}
+
 /** The backup reminder's choices (S7). */
 const REMINDER_OPTIONS = BACKUP_REMINDER_CHOICES.map((d) => ({ value: d, label: `${d} days` }));
 
@@ -71,6 +117,11 @@ export function SettingsScreen(): JSX.Element {
   const reminderDays = getBackupReminderDays();
   const systemReduce = systemPrefersReducedMotion();
   const [developerOpen, setDeveloperOpen] = useState(false);
+  const [resetNote, setResetNote] = useState<string | null>(null);
+  const controlKeys = getControlKeys();
+  const keysMoved =
+    controlKeys.stopAll !== DEFAULT_CONTROL_KEYS.stopAll ||
+    controlKeys.pause !== DEFAULT_CONTROL_KEYS.pause;
 
   return (
     <div class="sb-screen">
@@ -105,6 +156,41 @@ export function SettingsScreen(): JSX.Element {
             onChange={setEnterStop}
             testid="settings-screen-enter-stop-region"
           />
+          {/* K12: a key is moved by pressing it; a fixed key, the other control's key or a key a
+              pad plays is refused with its reason */}
+          {CONTROL_KEY_FIELDS.map(({ action, slug, label, subject }) => (
+            <div key={action} data-testid={`settings-screen-${slug}-key-region`}>
+              <KeyField
+                id={`settings-screen-${slug}-key-field`}
+                label={label}
+                hotkey={controlKeys[action]}
+                reserved={reservedKeys(controlKeys, action)}
+                subject={subject}
+                clearable={false}
+                check={checkControlKey}
+                onAssign={(code) => code && setControlKey(action, code)}
+              />
+            </div>
+          ))}
+          <div class="sb-settings-row">
+            <button
+              class="sb-btn sb-btn-sm sb-btn-ghost"
+              data-testid="settings-screen-reset-keys-button"
+              disabled={!keysMoved}
+              onClick={() => {
+                const refusal = resetRefusal();
+                setResetNote(refusal);
+                if (!refusal) resetControlKeys();
+              }}
+            >
+              RESET KEYS TO DEFAULT
+            </button>
+          </div>
+          {resetNote && (
+            <div class="sb-hint-text" role="status" data-testid="settings-screen-reset-keys-text">
+              {resetNote}
+            </div>
+          )}
         </section>
 
         <section class="sb-settings-group" aria-labelledby="settings-screen-appearance-title">

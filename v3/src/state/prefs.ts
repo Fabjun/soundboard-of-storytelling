@@ -18,6 +18,12 @@ import { DEFAULT_THEME, isThemeId, type ThemeId } from '../lib/theme';
 import { PAD_SIZE, clampPadSize, padSizeFor, type PadSizeScope } from '../lib/padSize';
 import { DEFAULT_CONTENT_WIDTH, isContentWidth, type ContentWidth } from '../lib/contentWidth';
 import { motionAllowed, systemPrefersReducedMotion } from '../lib/motion';
+import {
+  DEFAULT_CONTROL_KEYS,
+  FIXED_KEYS,
+  type ControlAction,
+  type ControlKeys,
+} from '../lib/padKeys';
 import type { Pad } from '../types';
 import { pendingSaves } from './store';
 
@@ -287,4 +293,35 @@ export function getDebugLogSwitch(): boolean {
 /** Switches the debug log; off (the default) is not stored. */
 export function setDebugLogSwitch(on: boolean): void {
   write(DEBUG_LOG_KEY, on ? true : undefined);
+}
+
+// ── Live-control keys (Settings → CONTROLS, settings.md S2, K12) ─────────────
+
+const CONTROL_KEYS_KEY = 'control-keys';
+
+/** The key of each movable live-control action — the defaults until one is moved. */
+export function getControlKeys(): ControlKeys {
+  const v = cache.get(CONTROL_KEYS_KEY);
+  const stored = typeof v === 'object' && v !== null ? (v as Record<string, unknown>) : {};
+  const pick = (action: ControlAction): string => {
+    const code = stored[action];
+    const usable = typeof code === 'string' && code !== '' && !(code in FIXED_KEYS);
+    return usable ? code : DEFAULT_CONTROL_KEYS[action];
+  };
+  const keys = { stopAll: pick('stopAll'), pause: pick('pause') };
+  // A fixed key or two actions on one key (a hand-edited or damaged entry) would not work
+  return keys.stopAll === keys.pause ? DEFAULT_CONTROL_KEYS : keys;
+}
+
+/** Gives one action its key; the defaults are not stored. */
+export function setControlKey(action: ControlAction, code: string): void {
+  const next = { ...getControlKeys(), [action]: code };
+  const isDefault =
+    next.stopAll === DEFAULT_CONTROL_KEYS.stopAll && next.pause === DEFAULT_CONTROL_KEYS.pause;
+  write(CONTROL_KEYS_KEY, isDefault ? undefined : next);
+}
+
+/** Gives every movable action its default key back. */
+export function resetControlKeys(): void {
+  write(CONTROL_KEYS_KEY, undefined);
 }

@@ -7,6 +7,20 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.245 — 2026-10-14
+
+### Added
+
+- feat(settings): Slice 14d step 2, K12 — Settings → CONTROLS: the keys of STOP ALL (numpad decimal) and PAUSE (Space) move to another key by pressing it, RESET KEYS TO DEFAULT brings both back; Enter stays the fixed stop key, its Enter key setting decides what it stops. Refused with the reason: a fixed key (Enter, Escape, Tab), the other action's key, a key a pad plays on any board ("N2 plays Thunder on Board 1"); RESET is refused while a pad has taken a default key. The PAD editor refuses the moved keys and takes the old ones; the PAUSED hint names the pause key (XAG 107); decided by Claude 2026-10-14
+
+### Changed
+
+- refactor(keys): padKeys RESERVED_KEYS → FIXED_KEYS + DEFAULT_CONTROL_KEYS + reservedKeys(control, except); padUsingKey (every board, bar before decks); keyLabel NumpadDecimal → "N."; KeyField takes the reserved keys, a spoken subject and whether the key can be removed; keyControl reads the keys at each press, and every live-control key but Enter and Space wins before a focused control (capture phase), as the numpad keys did; prefs control-keys (defaults not stored; a damaged entry — not text, a fixed key, both on one key — falls back)
+
+### Internal
+
+- test: unit padKeys (reserved keys follow the moved keys, one action left out, padUsingKey — a holder whose pad is gone is skipped, which a first draft missed), keyControl (moved keys act, old ones free for pads, swapped keys, Enter fixed, a moved key wins before a focused control), prefs (kept, reset, four damaged entries); E2E pad-keys (Settings refuses a pad key and the PAUSE key, the PAD editor refuses the moved key and takes N., RESET refused with the pad, RESET after a reload), stop-all (the moved key stops all, the numpad decimal no longer); each counter-checked
+
 ## 3.0.244 — 2026-10-14
 
 ### Added

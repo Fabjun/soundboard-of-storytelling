@@ -5,7 +5,8 @@
  * the button's place and its STOP NOW label 2026-10-09): the STOP ALL
  * button shows in GAME; its first press fades every sound out, a second press while it fades
  * stops at once; the numpad decimal key is the same action; the numpad Enter, and Enter with no
- * control focused, stop the sound started last. Needs playback, so Chromium only (like audio).
+ * control focused, stop the sound started last. STOP ALL's key moved in Settings (K12) does STOP ALL,
+ * the old key nothing. Needs playback, so Chromium only (like audio).
  */
 
 import { test, expect, type Page } from '@playwright/test';
@@ -116,6 +117,33 @@ test('with Enter set to STOP ALL in Settings, the numpad Enter stops every sound
   await expect(stopAll(page)).toHaveText('STOP NOW'); // the same two-stage action as STOP ALL
   await expect(playing(page, 0)).toHaveCount(0);
   await expect(playing(page, 1)).toHaveCount(0);
+});
+
+test('STOP ALL moved to another key in Settings: that key stops all, the numpad decimal no longer (K12)', async ({
+  page,
+}) => {
+  await page.getByTestId('board-top-bar-back-button').click();
+  await page.getByTestId('board-list-screen-settings-button').click();
+  const field = page
+    .getByTestId('settings-screen-stop-all-key-region')
+    .getByTestId('key-field-button');
+  await field.click();
+  await page.keyboard.press('KeyS');
+  await expect(field).toHaveText('S');
+  await page.getByTestId('settings-screen-back-button').click();
+  await page.getByText('Board 1', { exact: true }).click();
+  await page.getByTestId('mode-toggle').waitFor();
+
+  await enterGameMode(page);
+  await pads(page).nth(0).getByRole('button').click();
+  await expect(playing(page, 0)).toBeVisible();
+  await page.evaluate(() => (document.activeElement as HTMLElement | null)?.blur());
+  await page.keyboard.press('NumpadDecimal');
+  await expect(stopAll(page)).toHaveText('STOP ALL');
+  await expect(playing(page, 0)).toBeVisible();
+  await page.keyboard.press('KeyS');
+  await expect(stopAll(page)).toHaveText('STOP NOW');
+  await expect(playing(page, 0)).toHaveCount(0);
 });
 
 // Slice 12c (docs/product/README.md#switching-modes): a mode switch stops every sound at once

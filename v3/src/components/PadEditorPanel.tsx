@@ -77,12 +77,18 @@ import {
   setQuickAccessHotkey,
   updatePad,
 } from '../lib/boardModel';
-import { deckKeyUse, keyHolder, keyLabel, quickAccessKeyHolder } from '../lib/padKeys';
+import {
+  deckKeyUse,
+  keyHolder,
+  keyLabel,
+  quickAccessKeyHolder,
+  reservedKeys,
+} from '../lib/padKeys';
 import { KeyField, type KeyCheck } from './KeyField';
 import { nextFreeSlot } from '../lib/padUtils';
 import { record, redo, seal, startHistory, undo, type History } from '../lib/editHistory';
 import { debouncedSave } from '../lib/debouncedSave';
-import { clearPadDraft, getPadDraft, setPadDraft } from '../state/prefs';
+import { clearPadDraft, getControlKeys, getPadDraft, setPadDraft } from '../state/prefs';
 import { fromPad, moveHandle, toPad, type Handle, type TrimValues } from '../lib/trimRange';
 import { previewPosition, startPreview, stopPreview } from '../lib/preview';
 import { ensureFinePeaks } from '../lib/upload';
@@ -1153,6 +1159,7 @@ export function PadEditorPanel({
               id="pad-editor-key-field"
               label="HOTKEY"
               hotkey={hotkey}
+              reserved={reservedKeys(getControlKeys())}
               check={checkDeckKey}
               onAssign={(code) => {
                 const deckId = deck.id;
@@ -1169,6 +1176,7 @@ export function PadEditorPanel({
               id="pad-editor-quick-key-field"
               label="QUICK ACCESS KEY"
               hotkey={quickKey}
+              reserved={reservedKeys(getControlKeys())}
               check={checkQuickKey}
               onAssign={(code) =>
                 void updateBoard(board.id, (b) => setQuickAccessHotkey(b, pad.id, code))
