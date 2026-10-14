@@ -34,6 +34,8 @@ import {
   padSizeOf,
   setAppPadSize,
   setPadSizeScope,
+  getContentWidth,
+  setContentWidth,
 } from '../../src/state/prefs';
 import { BACKUP_REMINDER_DAYS } from '../../src/lib/backupExport';
 
@@ -294,6 +296,22 @@ describe('pad size for every board (Settings → APPEARANCE, settings.md S4)', (
     await loadPrefs();
     expect(getPadSizeScope()).toBe('board');
     expect(getAppPadSize()).toBe(88);
+  });
+});
+
+describe('content width (Settings → APPEARANCE, settings.md S3)', () => {
+  it('AUTO until chosen; kept after a reload; AUTO again stores nothing; unknown counts as AUTO', async () => {
+    expect(getContentWidth()).toBe('auto');
+    setContentWidth('compact');
+    await settled();
+    await loadPrefs();
+    expect(getContentWidth()).toBe('compact');
+    setContentWidth('auto');
+    await settled();
+    expect((await kvGetAll()).map(([k]) => k)).not.toContain('content-width');
+    await kvPut('content-width', 'huge');
+    await loadPrefs();
+    expect(getContentWidth()).toBe('auto');
   });
 });
 

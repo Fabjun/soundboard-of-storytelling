@@ -2242,14 +2242,29 @@
 /* ── LibraryScreen / Screen-level ─────────────────────────── */
 
 .sb-screen {
-  /* @inventory: Full-height screen root container — flex column, 100dvh, surface background, positioned, overflow hidden; outline-offset for inset drag indicators. */
+  /* @inventory: Full-height screen root container — flex column, 100dvh, surface background, positioned, overflow hidden; outline-offset for inset drag indicators; at most --content-max wide, centered (Settings → Content width). */
   display: flex;
   flex-direction: column;
   height: 100dvh;
+  width: 100%;
+  max-width: var(--content-max);
+  margin-inline: auto;
   background: var(--surface);
   position: relative;
   outline-offset: -2px;
   overflow: hidden;
+}
+.sb-width-compact {
+  /* @inventory: Content width COMPACT on the root element — screens at most 900px wide (V1's value; settings.md S3). */
+  --content-max: 56.25rem;
+}
+.sb-width-medium {
+  /* @inventory: Content width MEDIUM on the root element — screens at most 1100px wide (V1's value; settings.md S3). */
+  --content-max: 68.75rem;
+}
+.sb-width-wide {
+  /* @inventory: Content width WIDE on the root element — screens at most 1400px wide (V1's value; settings.md S3). */
+  --content-max: 87.5rem;
 }
 .sb-screen-empty {
   /* @inventory: Full-screen centered empty state — flex column, centered both axes, fills parent, mono xs text in text-mute. */

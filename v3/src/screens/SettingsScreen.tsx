@@ -15,15 +15,18 @@ import { SegmentedChoice } from '../components/SegmentedChoice';
 import { currentScreen, settingsReturn } from '../state/store';
 import {
   getBackupReminderDays,
+  getContentWidth,
   getPadSizeScope,
   getTheme,
   prefsVersion,
   setBackupReminderDays,
+  setContentWidth,
   setPadSizeScope,
   setTheme,
 } from '../state/prefs';
 import { BACKUP_REMINDER_CHOICES } from '../lib/backupExport';
 import { THEMES } from '../lib/theme';
+import { CONTENT_WIDTHS } from '../lib/contentWidth';
 import type { PadSizeScope } from '../lib/padSize';
 import { APP_VERSION } from '../lib/changelog';
 
@@ -31,6 +34,8 @@ declare const __BUILD_DATE__: string;
 
 /** The themes as Settings names them (S5). */
 const THEME_OPTIONS = THEMES.map((t) => ({ value: t, label: t.toUpperCase() }));
+/** The content widths as V1 named them (S3). */
+const CONTENT_WIDTH_OPTIONS = CONTENT_WIDTHS.map((w) => ({ value: w, label: w.toUpperCase() }));
 /** Where PAD SIZE lives (S4). */
 const PAD_SIZE_SCOPE_OPTIONS: { value: PadSizeScope; label: string }[] = [
   { value: 'board', label: 'Per board' },
@@ -76,6 +81,15 @@ export function SettingsScreen(): JSX.Element {
             value={getTheme()}
             onChange={setTheme}
             testid="settings-screen-theme-region"
+          />
+          <SegmentedChoice
+            legend="Content width"
+            caption="How wide the screens get on a large window: 900, 1100 or 1400 px — or AUTO, the whole window."
+            name="content-width"
+            options={CONTENT_WIDTH_OPTIONS}
+            value={getContentWidth()}
+            onChange={setContentWidth}
+            testid="settings-screen-content-width-region"
           />
           <SegmentedChoice
             legend="Pad size"

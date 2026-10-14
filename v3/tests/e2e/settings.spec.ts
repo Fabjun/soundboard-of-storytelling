@@ -2,19 +2,27 @@
  * @fileoverview Full E2E — the Settings screen (Slice 14a, docs/product/features/settings.md)
  *
  * - Reached from the main menu and from the board list; BACK returns to where it was opened (S14)
- * - APPEARANCE: the theme applies at once to the whole app and from the first screen on (S5)
+ * - APPEARANCE: the theme applies at once to the whole app and from the first screen on (S5); the
+ *   content width limits every screen on a large window (S3)
  * - DATA: the backup reminder's days apply at once and are kept after a reload (S7, S13)
  * - ABOUT: the version and the link to the license notices (S9)
  *
  * The backup's age comes from Playwright's clock: an EXPORT today, then the clock moves ten days on.
  */
 
-import { test, expect } from '@playwright/test';
+import { test, expect, type Locator } from '@playwright/test';
 import { goToBoardList, openMainMenu, waitForSaves } from './helpers';
 import { APP_VERSION } from '../../src/lib/changelog';
 
 const APP = '/soundboard-of-storytelling/';
 const DAY_MS = 24 * 60 * 60 * 1000;
+
+/** The right edge of a visible element, in px; fails the test when it has no box. */
+async function rightEdge(locator: Locator): Promise<number> {
+  const box = await locator.boundingBox();
+  if (!box) throw new Error('element has no box');
+  return box.x + box.width;
+}
 
 test('Settings opens from the main menu and goes back there', async ({ page }) => {
   await page.goto(APP);
@@ -61,6 +69,31 @@ test('the theme applies at once, to the whole app, and from the first screen aft
   await page.getByRole('button', { name: 'SETTINGS' }).click();
   await page.getByText('HEARTH', { exact: true }).click();
   await expect.poll(night).toBe(hearthNight);
+});
+
+test('the content width limits the screens on a large window, centered, also after a reload', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1600, height: 900 });
+  // The right edge of the top bar's BACK button marks the screen's right edge
+  const right = (name: string) => rightEdge(page.getByRole('button', { name }));
+  await page.goto(APP);
+  await openMainMenu(page);
+  await page.getByRole('button', { name: 'SETTINGS' }).click();
+  await expect(page.getByRole('radio', { name: 'AUTO' })).toBeChecked();
+  expect(await right('BACK')).toBeGreaterThan(1550); // the whole window
+
+  await page.getByText('COMPACT', { exact: true }).click();
+  await expect.poll(() => right('BACK')).toBeLessThanOrEqual((1600 + 900) / 2); // 900 px, centered
+  expect(await right('BACK')).toBeGreaterThan((1600 + 900) / 2 - 30);
+
+  // Kept, and on every screen: the board list after a reload
+  await waitForSaves(page);
+  await page.goto(APP);
+  await goToBoardList(page);
+  expect(
+    await rightEdge(page.getByTestId('board-list-screen-settings-button')),
+  ).toBeLessThanOrEqual((1600 + 900) / 2);
 });
 
 test('the backup reminder follows the days chosen in Settings, also after a reload', async ({

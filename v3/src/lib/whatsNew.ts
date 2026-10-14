@@ -101,6 +101,12 @@ export function withEarlyVersions(
 /** The release notes the main menu shows, newest first (checked by whatsNew.test.ts). */
 export const WHATS_NEW: WhatsNewNotes[] = [
   {
+    version: '3.0.235',
+    new: [
+      'On a large window the screens can stay narrower and centered: Settings → APPEARANCE → Content width (900, 1100 or 1400 px, or the whole window).',
+    ],
+  },
+  {
     version: '3.0.234',
     new: [
       'The pad size can be the same on every board: Settings → APPEARANCE → Pad size. Back on "Per board", each board has its own size again.',

@@ -167,6 +167,9 @@
   --space-12: 3rem; /* 48px */
   --space-16: 4rem; /* 64px */
 
+  /* ── CONTENT WIDTH ── Settings → APPEARANCE (settings.md S3, src/lib/contentWidth.ts) */
+  --content-max: none; /* widest a screen gets — none (AUTO) or a width class on the root element */
+
   /* ── DECK RAIL ── (the pad size is data, Board.padSize — ADR-0075) */
   --deck-rail-closed: 44px; /* width of the folded deck rail: its toggle button (touch target) */
 
