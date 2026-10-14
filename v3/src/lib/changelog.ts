@@ -17,10 +17,18 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.227';
+export const APP_VERSION = '3.0.228';
 
 /** The developer log, newest first; CHANGELOG.md is generated from it (sync-changelog). */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.228',
+    date: '2026-10-14',
+    items: [
+      'docs(adr): ADR-0067 amendment — the pinch-zoom exception reached its trigger "Slice 14 (text size setting)"; Slice 14 has no text size setting (settings.md S12) and the pad zoom gesture is Parked, so the exception stays (owner decision) with the trigger "pad zoom gesture built or dropped"; WCAG 1.4.4 rests on the browser page zoom (W3C Understanding 1.4.4, G142); iPhone checklist "Page zoom to 200 %"',
+      'docs(backlog): "knip: vite unlisted in production mode" narrowed to `npm run <script> -- <args>` (good 6.39.0, bad 6.40.0) with a minimal reproduction; the public upload for the upstream report waits for the owner',
+    ],
+  },
   {
     version: '3.0.227',
     date: '2026-10-14',

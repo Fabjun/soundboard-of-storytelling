@@ -40,10 +40,10 @@ e.g. 456 Berea Street); axe rule `meta-viewport` / WCAG 1.4.4.
 
 ## Exceptions
 
-| Exception                                                                | Reason                                                                                                                                 | Reference                                | Review                        |
-| ------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------- | ----------------------------- |
-| Pinch zoom is off everywhere, against WCAG 2.2 SC 1.4.4 Resize text (AA) | Owner decision 2026-10-03: the app owns two-finger gestures (pad size, Slice 13); iOS Zoom (accessibility setting) still magnifies     | BACKLOG "App gestures"                   | Slice 14 (text size setting)  |
-| Text selection is off in text fields too                                 | Owner decision 2026-10-03: no exceptions; WebKit may then refuse typing in a field (WebKit bugs 82692, 156518) — checked on the iPhone | BACKLOG "Text fields with selection off" | first iPhone check of 3.0.159 |
+| Exception                                                                | Reason                                                                                                                                 | Reference                                | Review                            |
+| ------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------- | --------------------------------- |
+| Pinch zoom is off everywhere, against WCAG 2.2 SC 1.4.4 Resize text (AA) | Owner decision 2026-10-03: the app owns two-finger gestures (pad size, Slice 13); iOS Zoom (accessibility setting) still magnifies     | BACKLOG "App gestures"                   | pad zoom gesture built or dropped |
+| Text selection is off in text fields too                                 | Owner decision 2026-10-03: no exceptions; WebKit may then refuse typing in a field (WebKit bugs 82692, 156518) — checked on the iPhone | BACKLOG "Text fields with selection off" | first iPhone check of 3.0.159     |
 
 ## Consequences
 
@@ -67,6 +67,20 @@ gesture of the app's own. Rejected by the owner.
 
 **Allow selection in text fields** (as native apps do; safe for typing): rejected by the owner,
 to be checked on the iPhone.
+
+## Amendments
+
+**2026-10-14 — review of the pinch-zoom exception (its trigger "Slice 14 (text size setting)" was
+reached).** Slice 14 has no text size setting: text follows the system and the browser
+(docs/product/features/settings.md S12). The two-finger pad zoom the exception keeps free is
+Parked (docs/design/components/pad.md "Zoom by gesture"). The exception stays — it is an owner
+decision — with a new trigger: the pad zoom gesture is built (the exception then serves it) or
+dropped (pinch zoom comes back). Meanwhile WCAG 2.2 SC 1.4.4 rests on the browser's page zoom: it
+is met when "at least one text scaling mechanism supported by user agents" reaches 200 %
+(W3C, Understanding SC 1.4.4, technique G142) — Safari's aA page zoom is one; whether Brave on iOS
+has one is open (Brave community threads). Checked on the device: manual iPhone checklist, "Page
+zoom to 200 %". Decision taken by Claude on the owner's instruction of 2026-10-14 (decide on the
+basis of research), for the owner's later review.
 
 ## Related
 
