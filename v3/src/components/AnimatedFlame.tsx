@@ -9,12 +9,14 @@
  *         falling frost, cracks, glinting facets, ice shards, steam, drips, re-ignite.
  *         Idle crackle and rare embers from Hearth as well.
  * Drawn on a canvas (Hearth engine); glow is a drop-shadow that follows the pixel
- * silhouette. Colors come from design tokens, read once at mount.
+ * silhouette. Colors come from design tokens, read once at mount. With the animations off
+ * (Settings → VISUALS, settings.md S6; WCAG 2.2.2) it is drawn once and stands still.
  * Import record: docs/design/imports/animated-flame.md
  */
 
 import { useEffect, useRef } from 'preact/hooks';
 import type { JSX } from 'preact';
+import { animationsOn, prefsVersion } from '../state/prefs';
 import {
   CELL,
   CORE_FLICKER_FPS,
@@ -119,6 +121,8 @@ function makeParticle(p: Partial<Particle> & Pick<Particle, 'kind' | 'x' | 'y'>)
  * When `interactive`, a tap makes it spark and freeze; left alone, it thaws and lights again.
  */
 export function AnimatedFlame({ size = 120, interactive = true }: AnimatedFlameProps): JSX.Element {
+  void prefsVersion.value; // re-render when Settings switches the animations
+  const moving = animationsOn();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const paletteRef = useRef<FlamePalette | null>(null);
   const rtRef = useRef<Runtime>({
@@ -596,6 +600,8 @@ export function AnimatedFlame({ size = 120, interactive = true }: AnimatedFlameP
     };
     // First frame immediately (also without a rAF tick)
     frame(performance.now() / 1000, 0.022);
+    // Animations off (settings.md S6, WCAG 2.2.2): the flame stays as this one frame
+    if (!moving) return;
 
     let raf = 0;
     let last = performance.now();
@@ -608,11 +614,11 @@ export function AnimatedFlame({ size = 120, interactive = true }: AnimatedFlameP
     };
     raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
-  }, []);
+  }, [moving]);
 
   // ── Tap ─────────────────────────────────────────────────────
   const handlePointerDown = (e: PointerEvent): void => {
-    if (!interactive) return;
+    if (!interactive || !moving) return;
     e.preventDefault();
     const st = rtRef.current.st;
     const result = tapFlameState(st, performance.now() / 1000);
@@ -636,7 +642,7 @@ export function AnimatedFlame({ size = 120, interactive = true }: AnimatedFlameP
           height: `${FIELD_H * unit}px`,
           left: `${-FIELD_OX * unit}px`,
           top: `${-FIELD_OY * unit}px`,
-          cursor: interactive ? 'pointer' : 'default',
+          cursor: interactive && moving ? 'pointer' : 'default',
         }}
       />
     </div>

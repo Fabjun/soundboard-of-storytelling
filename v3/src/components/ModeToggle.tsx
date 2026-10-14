@@ -5,12 +5,14 @@
  *
  * Animation model: hammer-strike — sparks spawn at destination half and
  * fly outward in a ~200° fan. ~14 sparks desktop, 8 mobile.
- * Reduced-motion: 220ms drop-shadow flash instead.
+ * No sparks while the animations are off (Settings → VISUALS, which follows the system's "reduce
+ * motion" until it is switched — docs/product/features/settings.md S6).
  */
 
 import { useRef } from 'preact/hooks';
 import type { JSX } from 'preact';
 import type { AppMode } from '../types';
+import { animationsOn } from '../state/prefs';
 
 interface ModeToggleProps {
   mode: AppMode;
@@ -60,8 +62,8 @@ function generateSparks(destMode: AppMode, count: number, rect: DOMRect): Spark[
 }
 
 /**
- * Switches between SETUP and GAME; a switch throws sparks toward the new side (none when the
- * user prefers reduced motion). `compact` is the narrow form for small screens.
+ * Switches between SETUP and GAME; a switch throws sparks toward the new side (none while the
+ * animations are off). `compact` is the narrow form for small screens.
  */
 export function ModeToggle({
   mode,
@@ -71,13 +73,10 @@ export function ModeToggle({
 }: ModeToggleProps): JSX.Element {
   const toggleRef = useRef<HTMLDivElement>(null);
   const sparksRef = useRef<HTMLElement[]>([]);
-  const prefersReducedMotion =
-    typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
   function handleClick(destMode: AppMode) {
     if (destMode === mode || locked) return;
 
-    if (!prefersReducedMotion && toggleRef.current) {
+    if (animationsOn() && toggleRef.current) {
       const rect = toggleRef.current.getBoundingClientRect();
       const count = compact ? 8 : 14;
       const sparks = generateSparks(destMode, count, rect);

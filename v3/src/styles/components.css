@@ -996,6 +996,56 @@
   outline: 2px solid var(--gold-bright);
   outline-offset: 2px;
 }
+.sb-switch {
+  /* @inventory: An on / off setting (settings.md S13, WAI-ARIA APG Switch) — a full-width 44px row button: its label, then the track; aria-checked="true" lights the track and moves the thumb. */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  width: 100%;
+  min-height: 44px;
+  padding: 0;
+  background: none;
+  border: none;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.sb-switch:focus-visible {
+  outline: 2px solid var(--gold-bright);
+  outline-offset: 2px;
+}
+.sb-switch:disabled {
+  cursor: not-allowed;
+  opacity: var(--disabled-opacity);
+}
+.sb-switch-track {
+  /* @inventory: The track of a sb-switch — a square pixel frame; gold when on. */
+  position: relative;
+  flex-shrink: 0;
+  width: 3rem;
+  height: 1.5rem;
+  background: var(--raised);
+  border: 1px solid var(--border);
+}
+.sb-switch[aria-checked='true'] .sb-switch-track {
+  background: var(--gold);
+  border-color: var(--gold);
+}
+.sb-switch-thumb {
+  /* @inventory: The thumb of a sb-switch — a square that sits left when off and right when on. */
+  position: absolute;
+  top: 0.1875rem;
+  left: 0.1875rem;
+  width: 1rem;
+  height: 1rem;
+  background: var(--text-dim);
+}
+.sb-switch[aria-checked='true'] .sb-switch-thumb {
+  left: auto;
+  right: 0.1875rem;
+  background: var(--night);
+}
 .sb-start-status {
   /* @inventory: Result line of the UPDATE check on StartScreen — centered under the buttons, kept off the screen edges. 1-use. */
   margin-top: var(--space-3);

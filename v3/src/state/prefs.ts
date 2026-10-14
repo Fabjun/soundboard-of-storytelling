@@ -17,6 +17,7 @@ import { BACKUP_REMINDER_CHOICES, BACKUP_REMINDER_DAYS } from '../lib/backupExpo
 import { DEFAULT_THEME, isThemeId, type ThemeId } from '../lib/theme';
 import { PAD_SIZE, clampPadSize, padSizeFor, type PadSizeScope } from '../lib/padSize';
 import { DEFAULT_CONTENT_WIDTH, isContentWidth, type ContentWidth } from '../lib/contentWidth';
+import { motionAllowed, systemPrefersReducedMotion } from '../lib/motion';
 import type { Pad } from '../types';
 import { pendingSaves } from './store';
 
@@ -236,4 +237,23 @@ export function setAppPadSize(px: number): void {
 /** The pad size this board shows — its own, or the one for every board (S4). */
 export function padSizeOf(board: { padSize: number }): number {
   return padSizeFor(board.padSize, getPadSizeScope(), getAppPadSize());
+}
+
+// ── Animations (Settings → VISUALS, settings.md S6) ──────────────────────────
+
+const ANIMATIONS_KEY = 'animations';
+
+/** The Animations switch — on until switched off. */
+export function getAnimationsSwitch(): boolean {
+  return cache.get(ANIMATIONS_KEY) !== false;
+}
+
+/** Sets the Animations switch; on (the default) is not stored. */
+export function setAnimationsSwitch(on: boolean): void {
+  write(ANIMATIONS_KEY, on ? undefined : false);
+}
+
+/** Whether the app animates: the switch is on and the system does not ask for reduced motion. */
+export function animationsOn(): boolean {
+  return motionAllowed(getAnimationsSwitch(), systemPrefersReducedMotion());
 }
