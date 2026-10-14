@@ -36,6 +36,9 @@ import {
   setPadSizeScope,
   getContentWidth,
   setContentWidth,
+  animationsOn,
+  getAnimationsSwitch,
+  setAnimationsSwitch,
 } from '../../src/state/prefs';
 import { BACKUP_REMINDER_DAYS } from '../../src/lib/backupExport';
 
@@ -312,6 +315,21 @@ describe('content width (Settings → APPEARANCE, settings.md S3)', () => {
     await kvPut('content-width', 'huge');
     await loadPrefs();
     expect(getContentWidth()).toBe('auto');
+  });
+});
+
+describe('animations switch (Settings → VISUALS, settings.md S6)', () => {
+  it('on until switched off; off is kept after a reload; on again stores nothing', async () => {
+    expect(getAnimationsSwitch()).toBe(true);
+    expect(animationsOn()).toBe(true); // no matchMedia in this environment: no reduced motion
+    setAnimationsSwitch(false);
+    expect(animationsOn()).toBe(false);
+    await settled();
+    await loadPrefs();
+    expect(getAnimationsSwitch()).toBe(false);
+    setAnimationsSwitch(true);
+    await settled();
+    expect((await kvGetAll()).map(([k]) => k)).not.toContain('animations');
   });
 });
 

@@ -7,6 +7,21 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.237 — 2026-10-14
+
+### Added
+
+- feat(settings): Slice 14c — Settings → VISUALS → Animations (settings.md S6): one switch stops all motion, as WCAG 2.2 SC 2.2.2 Pause, Stop, Hide (Level A) asks for the always-moving flame — the flame draws one still frame and takes no taps, the mode switch throws no sparks; it only adds to the system's reduce motion (S12): while the system asks for less, the flame stands still and the switch is off and fixed (decided by Claude 2026-10-14); lib motion (motionAllowed, systemPrefersReducedMotion), prefs animations
+- feat: component Switch (WAI-ARIA APG Switch: a button with role switch and aria-checked, named by its label, the caption as description, 44px row); classes sb-switch, sb-switch-track, sb-switch-thumb
+
+### Fixed
+
+- fix(docs): ModeToggle claimed a 220 ms flash under reduced motion — it shows nothing; the comment now says so
+
+### Internal
+
+- test: unit tests motion and the switch preference; E2E settings — the flame moves, stops with the switch and stays still after a reload, and with reducedMotion reduce stands still with the switch off and disabled (canvas frames compared after the first draw); each counter-checked
+
 ## 3.0.236 — 2026-10-14
 
 ### Internal

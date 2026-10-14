@@ -101,6 +101,12 @@ export function withEarlyVersions(
 /** The release notes the main menu shows, newest first (checked by whatsNew.test.ts). */
 export const WHATS_NEW: WhatsNewNotes[] = [
   {
+    version: '3.0.237',
+    new: [
+      'Settings → VISUALS → Animations stops the moving flame and the sparks of the mode switch. On a device set to reduce motion they stay still anyway.',
+    ],
+  },
+  {
     version: '3.0.236',
     behindTheScenes: [
       'The settings plan is updated: the content width covers what the first version called density. The app works exactly as before.',

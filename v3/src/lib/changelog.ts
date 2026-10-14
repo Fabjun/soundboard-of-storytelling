@@ -17,10 +17,20 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.236';
+export const APP_VERSION = '3.0.237';
 
 /** The developer log, newest first; CHANGELOG.md is generated from it (sync-changelog). */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.237',
+    date: '2026-10-14',
+    items: [
+      "feat(settings): Slice 14c — Settings → VISUALS → Animations (settings.md S6): one switch stops all motion, as WCAG 2.2 SC 2.2.2 Pause, Stop, Hide (Level A) asks for the always-moving flame — the flame draws one still frame and takes no taps, the mode switch throws no sparks; it only adds to the system's reduce motion (S12): while the system asks for less, the flame stands still and the switch is off and fixed (decided by Claude 2026-10-14); lib motion (motionAllowed, systemPrefersReducedMotion), prefs animations",
+      'feat: component Switch (WAI-ARIA APG Switch: a button with role switch and aria-checked, named by its label, the caption as description, 44px row); classes sb-switch, sb-switch-track, sb-switch-thumb',
+      'fix(docs): ModeToggle claimed a 220 ms flash under reduced motion — it shows nothing; the comment now says so',
+      'test: unit tests motion and the switch preference; E2E settings — the flame moves, stops with the switch and stays still after a reload, and with reducedMotion reduce stands still with the switch off and disabled (canvas frames compared after the first draw); each counter-checked',
+    ],
+  },
   {
     version: '3.0.236',
     date: '2026-10-14',

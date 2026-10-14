@@ -12,13 +12,16 @@ import type { JSX } from 'preact';
 import { TopBar } from '../components/TopBar';
 import { PixelIcon } from '../components/PixelIcon';
 import { SegmentedChoice } from '../components/SegmentedChoice';
+import { Switch } from '../components/Switch';
 import { currentScreen, settingsReturn } from '../state/store';
 import {
+  getAnimationsSwitch,
   getBackupReminderDays,
   getContentWidth,
   getPadSizeScope,
   getTheme,
   prefsVersion,
+  setAnimationsSwitch,
   setBackupReminderDays,
   setContentWidth,
   setPadSizeScope,
@@ -27,6 +30,7 @@ import {
 import { BACKUP_REMINDER_CHOICES } from '../lib/backupExport';
 import { THEMES } from '../lib/theme';
 import { CONTENT_WIDTHS } from '../lib/contentWidth';
+import { systemPrefersReducedMotion } from '../lib/motion';
 import type { PadSizeScope } from '../lib/padSize';
 import { APP_VERSION } from '../lib/changelog';
 
@@ -48,6 +52,7 @@ const REMINDER_OPTIONS = BACKUP_REMINDER_CHOICES.map((d) => ({ value: d, label: 
 export function SettingsScreen(): JSX.Element {
   void prefsVersion.value; // re-render when a setting changes
   const reminderDays = getBackupReminderDays();
+  const systemReduce = systemPrefersReducedMotion();
 
   return (
     <div class="sb-screen">
@@ -99,6 +104,26 @@ export function SettingsScreen(): JSX.Element {
             value={getPadSizeScope()}
             onChange={setPadSizeScope}
             testid="settings-screen-pad-size-region"
+          />
+        </section>
+
+        <section class="sb-settings-group" aria-labelledby="settings-screen-visuals-title">
+          <h2 class="sb-settings-group-title" id="settings-screen-visuals-title">
+            VISUALS
+          </h2>
+          {/* S6 + WCAG 2.2.2: one control stops all motion; S12: it only adds to the system's
+              "reduce motion", so it is off and fixed while the system asks for less */}
+          <Switch
+            label="Animations"
+            caption={
+              systemReduce
+                ? 'Off, because the device asks for reduced motion.'
+                : 'The moving flame and the sparks of the mode switch.'
+            }
+            checked={!systemReduce && getAnimationsSwitch()}
+            disabled={systemReduce}
+            onChange={setAnimationsSwitch}
+            testid="settings-screen-animations-switch"
           />
         </section>
 

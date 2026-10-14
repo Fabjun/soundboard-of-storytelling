@@ -4,13 +4,15 @@
  * - Reached from the main menu and from the board list; BACK returns to where it was opened (S14)
  * - APPEARANCE: the theme applies at once to the whole app and from the first screen on (S5); the
  *   content width limits every screen on a large window (S3)
+ * - VISUALS: the Animations switch stops the flame (S6, WCAG 2.2.2); with the system asking for
+ *   reduced motion the flame stands still and the switch is off and fixed (S12)
  * - DATA: the backup reminder's days apply at once and are kept after a reload (S7, S13)
  * - ABOUT: the version and the link to the license notices (S9)
  *
  * The backup's age comes from Playwright's clock: an EXPORT today, then the clock moves ten days on.
  */
 
-import { test, expect, type Locator } from '@playwright/test';
+import { test, expect, type Locator, type Page } from '@playwright/test';
 import { goToBoardList, openMainMenu, waitForSaves } from './helpers';
 import { APP_VERSION } from '../../src/lib/changelog';
 
@@ -23,6 +25,65 @@ async function rightEdge(locator: Locator): Promise<number> {
   if (!box) throw new Error('element has no box');
   return box.x + box.width;
 }
+
+/** What the flame's canvas shows now — compared over time, it tells whether the flame moves. */
+const flameFrame = (page: Page) =>
+  page
+    .getByRole('img', { name: 'Animated flame' })
+    .evaluate((c) => (c as HTMLCanvasElement).toDataURL());
+
+/**
+ * Tells whether the flame draws anything new over half a second. The first frame is taken only
+ * after the flame has drawn once — a canvas mounted a moment ago may still be blank.
+ */
+async function flameMoves(page: Page): Promise<boolean> {
+  const blank = await page.getByRole('img', { name: 'Animated flame' }).evaluate((c) => {
+    const empty = document.createElement('canvas');
+    empty.width = (c as HTMLCanvasElement).width;
+    empty.height = (c as HTMLCanvasElement).height;
+    return empty.toDataURL();
+  });
+  await expect.poll(() => flameFrame(page)).not.toBe(blank);
+  const before = await flameFrame(page);
+  await page.waitForTimeout(500); // the flame draws ~45 frames a second; half a second is many
+  return (await flameFrame(page)) !== before;
+}
+
+test('the Animations switch stops the flame, and it stays still after a reload', async ({
+  page,
+}) => {
+  await page.goto(APP);
+  await openMainMenu(page);
+  expect(await flameMoves(page)).toBe(true);
+
+  await page.getByRole('button', { name: 'SETTINGS' }).click();
+  const animations = page.getByRole('switch', { name: 'Animations' });
+  await expect(animations).toHaveAttribute('aria-checked', 'true');
+  await animations.click();
+  await expect(animations).toHaveAttribute('aria-checked', 'false');
+  await page.getByTestId('settings-screen-back-button').click();
+  expect(await flameMoves(page)).toBe(false);
+
+  await waitForSaves(page);
+  await page.goto(APP);
+  await expect(page.getByRole('button', { name: 'TAP TO START' })).toBeVisible();
+  expect(await flameMoves(page)).toBe(false);
+});
+
+test.describe('with the system asking for reduced motion', () => {
+  test.use({ reducedMotion: 'reduce' });
+
+  test('the flame stands still and the switch is off and fixed', async ({ page }) => {
+    await page.goto(APP);
+    await openMainMenu(page);
+    expect(await flameMoves(page)).toBe(false);
+    await page.getByRole('button', { name: 'SETTINGS' }).click();
+    const animations = page.getByRole('switch', { name: 'Animations' });
+    await expect(animations).toHaveAttribute('aria-checked', 'false');
+    await expect(animations).toBeDisabled();
+    await expect(animations).toHaveAccessibleDescription(/reduced motion/);
+  });
+});
 
 test('Settings opens from the main menu and goes back there', async ({ page }) => {
   await page.goto(APP);

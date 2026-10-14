@@ -1475,10 +1475,13 @@ Neon's electricity, Crimson's blood (`flame-themes.jsx` draw / onTap per theme);
 flame engine to take a per-theme behavior.
 **When:** Slice 14c (visuals), or on demand.
 
-### Settings: reduce motion (animated flame and other animations)
+### Settings: reduce motion (animated flame and other animations) ✅ Done (3.0.237)
 
 Parked 2026-09-29. The StartScreen flame animates continuously on purpose — users are meant to tap it and freeze it for fun; it does not honor `prefers-reduced-motion`. A Settings option to reduce or stop animations comes with the Settings screen. Record: `docs/design/imports/animated-flame.md`.
-**When:** Slice 14 (settings & polish).
+Built in Slice 14c: Settings → VISUALS → Animations stops the flame (one still frame, no tap
+effects) and the mode switch sparks — the control WCAG 2.2.2 Pause, Stop, Hide (Level A) asks
+for; while the system asks for reduced motion the flame stands still and the switch is off and
+fixed (settings.md S6, S12; `v3/src/lib/motion.ts`).
 
 ### Board pad pool (data model)
 
