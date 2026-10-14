@@ -101,6 +101,12 @@ export function withEarlyVersions(
 /** The release notes the main menu shows, newest first (checked by whatsNew.test.ts). */
 export const WHATS_NEW: WhatsNewNotes[] = [
   {
+    version: '3.0.231',
+    behindTheScenes: [
+      'The tool that makes the app work offline is up to date. The app works exactly as before.',
+    ],
+  },
+  {
     version: '3.0.230',
     behindTheScenes: ['A development tool is up to date. The app works exactly as before.'],
   },

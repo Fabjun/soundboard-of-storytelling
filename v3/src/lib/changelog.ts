@@ -17,10 +17,17 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.230';
+export const APP_VERSION = '3.0.231';
 
 /** The developer log, newest first; CHANGELOG.md is generated from it (sync-changelog). */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.231',
+    date: '2026-10-14',
+    items: [
+      'build(deps-dev): vite-plugin-pwa 2.0 (major, Dependabot PR #107) — only a wider @vite-pwa/assets-generator peer range and Node >= 20.19; dist of 1.3.0 and 2.0.0 measured byte-identical (32 files incl. sw.js)',
+    ],
+  },
   {
     version: '3.0.230',
     date: '2026-10-14',

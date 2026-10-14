@@ -1809,6 +1809,10 @@ then applied with the full gate):
   `PixelIcon` style type; then the upgrade itself: `CSSProperties` is a top-level export of
   `preact` in 11. Visual 9/9, all dev-server E2E 64/64, production-build E2E 36/36. **Owner
   check:** open the live app on the iPhone once after the deploy.
+- ✅ vite-plugin-pwa 1 → 2 (3.0.231, Dependabot PR #107; decided by Claude 2026-10-14) — the
+  major only widens the `@vite-pwa/assets-generator` peer range and requires Node 20.19 (the
+  project runs Node 24); no source change between the tags (GitHub compare v1.3.0...v2.0.0).
+  Measured: `dist/` of 1.3.0 and 2.0.0 byte-identical (32 files, `sw.js` included).
 
 ### knip: vite unlisted in production mode
 
