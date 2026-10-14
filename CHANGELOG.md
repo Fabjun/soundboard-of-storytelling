@@ -7,6 +7,17 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.238 — 2026-10-14
+
+### Added
+
+- feat(settings): Slice 14d, Enter key — Settings → CONTROLS → Enter key: STOP LAST (K5, default) or STOP ALL — V1's ENTER KEY STOP (SERIAL / TOTAL), settings.md S2 / K12; STOP ALL is the same two-stage action as the STOP ALL button and the numpad decimal (K16), for the numpad Enter and the main Enter alike; read at each press; prefs enter-stop (decided by Claude 2026-10-14)
+
+### Internal
+
+- test: keyControl — both Enter keys stop all when set, read at each press; prefs enter-stop; E2E stop-all — set in Settings, the numpad Enter fades every sound (STOP NOW); each counter-checked
+- docs: settings.md S2, product K12, SettingsScreen header lists every group
+
 ## 3.0.237 — 2026-10-14
 
 ### Added

@@ -257,3 +257,20 @@ export function setAnimationsSwitch(on: boolean): void {
 export function animationsOn(): boolean {
   return motionAllowed(getAnimationsSwitch(), systemPrefersReducedMotion());
 }
+
+// ── Enter key (Settings → CONTROLS, settings.md S2) ──────────────────────────
+
+/** What Enter stops: the sound started last (K5, the default) or all sounds (as STOP ALL, K16). */
+export type EnterStop = 'last' | 'all';
+
+const ENTER_STOP_KEY = 'enter-stop';
+
+/** What Enter stops — the sound started last until changed. */
+export function getEnterStop(): EnterStop {
+  return cache.get(ENTER_STOP_KEY) === 'all' ? 'all' : 'last';
+}
+
+/** Sets what Enter stops; the default (the last sound) is not stored. */
+export function setEnterStop(stop: EnterStop): void {
+  write(ENTER_STOP_KEY, stop === 'last' ? undefined : stop);
+}
