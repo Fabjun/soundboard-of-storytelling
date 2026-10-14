@@ -17,10 +17,20 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.231';
+export const APP_VERSION = '3.0.232';
 
 /** The developer log, newest first; CHANGELOG.md is generated from it (sync-changelog). */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.232',
+    date: '2026-10-14',
+    items: [
+      'feat(settings): Slice 14b, theme — Settings → APPEARANCE chooses Hearth, Verdant, Neon or Crimson for the whole app (settings.md S5; app-wide as V1 had it, decided by Claude 2026-10-14); stored as the preference `theme` (Hearth not stored), put on the root element in a layout effect so the first frame already shows it; lib theme (THEMES, applyTheme)',
+      'refactor(settings): component SegmentedChoice — the one segmented choice (S13), used by the theme and the backup reminder; the reserved placeholder signal activeTheme is replaced by the theme preference (one scheme for settings, ADR-0062)',
+      'test: unit tests theme (list matches the tokens.css theme blocks, class switch) and the theme preference; E2E settings — the theme applies at once (palette token changes), is kept and shows on the start screen after a reload, Hearth removes the class; each counter-checked',
+      'docs: settings.md S5 and step 14b; theme inventory notes in tokens.css',
+    ],
+  },
   {
     version: '3.0.231',
     date: '2026-10-14',

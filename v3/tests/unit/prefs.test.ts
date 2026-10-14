@@ -2,7 +2,7 @@
  * @fileoverview prefs — UI preferences in IndexedDB (ADR-0062; owner decision 2026-10-02)
  * Real IndexedDB semantics via fake-indexeddb. Cases: nothing stored, round trip incl. a reload
  * (loadPrefs), per-board keys, unknown values, clear, writes counted in pendingSaves, a failing
- * database never breaks the app, the backup reminder days.
+ * database never breaks the app, the backup reminder days, the theme.
  */
 
 import { IDBFactory } from 'fake-indexeddb';
@@ -27,6 +27,8 @@ import {
   setLastView,
   getBackupReminderDays,
   setBackupReminderDays,
+  getTheme,
+  setTheme,
 } from '../../src/state/prefs';
 import { BACKUP_REMINDER_DAYS } from '../../src/lib/backupExport';
 
@@ -236,6 +238,27 @@ describe('backup reminder days (Settings → DATA, settings.md S7)', () => {
     await kvPut('backup-reminder-days', '14');
     await loadPrefs();
     expect(getBackupReminderDays()).toBe(BACKUP_REMINDER_DAYS);
+  });
+});
+
+describe('theme (Settings → APPEARANCE, settings.md S5)', () => {
+  it('Hearth until chosen; the choice is kept after a reload; Hearth again stores nothing', async () => {
+    expect(getTheme()).toBe('hearth');
+    setTheme('neon');
+    expect(getTheme()).toBe('neon');
+    await settled();
+    await loadPrefs();
+    expect(getTheme()).toBe('neon');
+    setTheme('hearth');
+    await settled();
+    expect(getTheme()).toBe('hearth');
+    expect((await kvGetAll()).map(([k]) => k)).not.toContain('theme');
+  });
+
+  it('a stored value that is no theme counts as Hearth', async () => {
+    await kvPut('theme', 'modern');
+    await loadPrefs();
+    expect(getTheme()).toBe('hearth');
   });
 });
 

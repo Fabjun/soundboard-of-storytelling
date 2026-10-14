@@ -310,7 +310,7 @@
 
 /* Verdant — fantasy / forest / leather-bound book */
 .sb-theme-verdant {
-  /* @inventory: Theme override (unused until Slice 14 settings) — green fantasy palette; re-declares color tokens. */
+  /* @inventory: Theme override (chosen in Settings → APPEARANCE, src/lib/theme.ts) — green fantasy palette; re-declares color tokens. */
   --night: #07120d;
   --deep: #0b1e16;
   --surface: #102a20;
@@ -346,7 +346,7 @@
 
 /* Neon — sci-fi / cyberpunk */
 .sb-theme-neon {
-  /* @inventory: Theme override (unused until Slice 14 settings) — neon sci-fi palette; re-declares color tokens. */
+  /* @inventory: Theme override (chosen in Settings → APPEARANCE, src/lib/theme.ts) — neon sci-fi palette; re-declares color tokens. */
   --night: #050816;
   --deep: #0a1228;
   --surface: #111e40;
@@ -379,7 +379,7 @@
 
 /* Crimson — horror / gothic */
 .sb-theme-crimson {
-  /* @inventory: Theme override (unused until Slice 14 settings) — crimson horror palette; re-declares color tokens. */
+  /* @inventory: Theme override (chosen in Settings → APPEARANCE, src/lib/theme.ts) — crimson horror palette; re-declares color tokens. */
   --night: #0a0606;
   --deep: #16090a;
   --surface: #20121a;

@@ -7,6 +7,21 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.232 — 2026-10-14
+
+### Added
+
+- feat(settings): Slice 14b, theme — Settings → APPEARANCE chooses Hearth, Verdant, Neon or Crimson for the whole app (settings.md S5; app-wide as V1 had it, decided by Claude 2026-10-14); stored as the preference `theme` (Hearth not stored), put on the root element in a layout effect so the first frame already shows it; lib theme (THEMES, applyTheme)
+
+### Changed
+
+- refactor(settings): component SegmentedChoice — the one segmented choice (S13), used by the theme and the backup reminder; the reserved placeholder signal activeTheme is replaced by the theme preference (one scheme for settings, ADR-0062)
+
+### Internal
+
+- test: unit tests theme (list matches the tokens.css theme blocks, class switch) and the theme preference; E2E settings — the theme applies at once (palette token changes), is kept and shows on the start screen after a reload, Hearth removes the class; each counter-checked
+- docs: settings.md S5 and step 14b; theme inventory notes in tokens.css
+
 ## 3.0.231 — 2026-10-14
 
 ### Internal

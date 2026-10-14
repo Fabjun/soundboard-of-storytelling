@@ -97,7 +97,7 @@ Paths, dependencies and issues excluded from formatting, linting, knip or doc gu
 | knip ignoreBinaries     | `vale`                                      | Installed by scripts/vale-install.ts (a Go binary, not an npm package)                                                                                                                                                                                                                                                |
 | knip ignoreIssues       | `playwright.config.ts`                      | Production mode falsely reports vite unlisted (BACKLOG "knip: vite unlisted in production mode")                                                                                                                                                                                                                      |
 
-## Reserved code (4)
+## Reserved code (3)
 
 Unused today, kept for a later slice or a parked feature (`@reserved`, ADR-0064); the slice is the review trigger — `codeGuards` reports a reservation whose slice is complete.
 
@@ -105,8 +105,7 @@ Unused today, kept for a later slice or a parked feature (`@reserved`, ADR-0064)
 | --------------------------- | -------------- | ---------------------------------------------------------------------------------------------- |
 | `v3/src/audio/index.ts:182` | `fadeOutAll`   | Parked — one fade for everything at once; STOP ALL fades pad by pad (src/state/stopControl.ts) |
 | `v3/src/audio/index.ts:228` | `crossfade`    | Parked — crossfade between pads (docs/product/README.md#pad-options)                           |
-| `v3/src/state/store.ts:73`  | `activeTheme`  | Slice 14 — themes                                                                              |
-| `v3/src/state/store.ts:127` | `masterVolume` | Parked — master volume (docs/product/README.md#pad-options)                                    |
+| `v3/src/state/store.ts:118` | `masterVolume` | Parked — master volume (docs/product/README.md#pad-options)                                    |
 
 ## Prose lint exceptions (Vale) (14)
 

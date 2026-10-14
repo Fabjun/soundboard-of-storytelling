@@ -3,14 +3,17 @@
  *
  * Top-level screen routing via the currentScreen signal. The stored state (library list,
  * boards) is already loaded when App first renders — see src/state/boot.ts and main.tsx.
- * On mount it asks once for persistent storage (ADR-0061). The update prompt shows on every screen
+ * On mount it asks once for persistent storage (ADR-0061) and puts the chosen theme on the root
+ * element (docs/product/features/settings.md S5). The update prompt shows on every screen
  * (ADR-0066). In GAME on a board the screen stays on (docs/product/README.md K11).
  */
 
-import { useEffect } from 'preact/hooks';
+import { useEffect, useLayoutEffect } from 'preact/hooks';
 import { effect } from '@preact/signals';
 import type { JSX } from 'preact';
 import { currentMode, currentScreen, screenKeptOn } from './state/store';
+import { getTheme, prefsVersion } from './state/prefs';
+import { applyTheme } from './lib/theme';
 import { requestPersistentStorage } from './db/persistentStorage';
 import { createScreenKeeper } from './lib/wakeLock';
 import { StartScreen } from './screens/StartScreen';
@@ -30,6 +33,17 @@ export function App(): JSX.Element {
   useEffect(() => {
     void requestPersistentStorage();
   }, []);
+
+  // S5: the theme chosen in Settings, on the root element — a layout effect, so the first frame
+  // already shows it; re-applied whenever a preference changes
+  useLayoutEffect(
+    () =>
+      effect(() => {
+        void prefsVersion.value;
+        applyTheme(document.documentElement, getTheme());
+      }),
+    [],
+  );
 
   // K11: in GAME on a board the screen stays on — not switchable (owner decision 2026-10-04)
   useEffect(() => {

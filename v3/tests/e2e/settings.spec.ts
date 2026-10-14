@@ -2,6 +2,7 @@
  * @fileoverview Full E2E — the Settings screen (Slice 14a, docs/product/features/settings.md)
  *
  * - Reached from the main menu and from the board list; BACK returns to where it was opened (S14)
+ * - APPEARANCE: the theme applies at once to the whole app and from the first screen on (S5)
  * - DATA: the backup reminder's days apply at once and are kept after a reload (S7, S13)
  * - ABOUT: the version and the link to the license notices (S9)
  *
@@ -29,6 +30,37 @@ test('Settings opens from the main menu and goes back there', async ({ page }) =
   );
   await page.getByTestId('settings-screen-back-button').click();
   await expect(page.getByTestId('main-menu-screen')).toBeVisible();
+});
+
+test('the theme applies at once, to the whole app, and from the first screen after a reload', async ({
+  page,
+}) => {
+  // The palette as the page resolves it: the base color every screen is drawn on
+  const night = () =>
+    page.evaluate(() =>
+      getComputedStyle(document.documentElement).getPropertyValue('--night').trim(),
+    );
+  await page.goto(APP);
+  await openMainMenu(page);
+  const hearthNight = await night();
+  await page.getByRole('button', { name: 'SETTINGS' }).click();
+  await expect(page.getByRole('radio', { name: 'HEARTH' })).toBeChecked();
+  await page.getByText('NEON', { exact: true }).click();
+  await expect(page.getByRole('radio', { name: 'NEON' })).toBeChecked();
+  await expect.poll(night).not.toBe(hearthNight);
+  const neonNight = await night();
+
+  // Kept: the start screen already shows it, before TAP TO START
+  await waitForSaves(page);
+  await page.goto(APP);
+  await expect(page.getByRole('button', { name: 'TAP TO START' })).toBeVisible();
+  expect(await night()).toBe(neonNight);
+
+  // Back to Hearth
+  await openMainMenu(page);
+  await page.getByRole('button', { name: 'SETTINGS' }).click();
+  await page.getByText('HEARTH', { exact: true }).click();
+  await expect.poll(night).toBe(hearthNight);
 });
 
 test('the backup reminder follows the days chosen in Settings, also after a reload', async ({
