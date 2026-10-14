@@ -391,7 +391,11 @@ ZIP archive one audio file at a time (owner decision B1). V1 itself still read i
 
 #### UI / Appearance
 
-### Theme switcher (Crimson, Verdant, Neon)
+### Theme switcher (Crimson, Verdant, Neon) ✅ Done (3.0.232)
+
+**Built in 3.0.232 (Slice 14b):** Settings → APPEARANCE chooses Hearth, Verdant, Neon or Crimson
+for the whole app (`THEMES` in `v3/src/lib/theme.ts`, settings.md S5); the flame colors followed
+in 3.0.233.
 
 CSS-class on root element (trivial per ADR-0022); legacy-alias scope bug already fixed in
 Slice 1+2 audit.
@@ -485,9 +489,16 @@ Expose cols × rows in a popover. Mobile hard cap: 5×4 (no 6×4 or 6×6 in the 
 — avoids "tooltip warning the user not to do the thing the UI offers").
 **Why deferred:** Grid is currently hardcoded 4×4. Slice 3 decision to defer.
 **When:** Slice 8.
+**State 2026-10-15:** the columns shown no longer come from the stored grid — they follow the
+window and PAD SIZE (ADR-0075, 3.0.177). The stored `cols × rows` still sets how many pads a deck
+holds (`nextFreeSlot` in `v3/src/components/PadEditorPanel.tsx`), so whether that capacity
+becomes configurable is still open.
 **Source:** ADR-0032, docs/design/design-notes.md §Slice 8 — A4 Mobile preset ceiling.
 
-### Cell-size setting
+### Cell-size setting ✅ Done (3.0.177, 3.0.234)
+
+**Built as PAD SIZE (ADR-0075):** a slider sets the pad size, 44 to 160 px (3.0.177); Settings →
+APPEARANCE decides whether it applies per board or to every board (3.0.234, settings.md S4).
 
 Global preference in Settings → Display (compact / normal / spacious). Per-scene cell-size
 multiplies the variation space without much real benefit.
@@ -508,7 +519,11 @@ grid re-places them automatically if the slot is still free.
 **When:** Slice 8.
 **Source:** ADR-0009, docs/design/design-notes.md §Slice 8 — A4 Unplaced pads.
 
-### Mobile layout adaptation
+### Mobile layout adaptation ✅ Done (3.0.210, 3.0.211)
+
+**Built in Slice 13:** two frames by window width (ADR-0082, 3.0.210 — below 600 px the dock at
+the bottom); the deck switcher as tabs above the grid on a phone (3.0.211); the PAD editor is a
+full-screen dialog on every screen size (ADR-0074).
 
 Make SceneRail collapsible or overlay at narrow viewports (≤ 390 px). Make inspector panels
 (PadEditorPanel, LibraryPanel) slide over the pad grid rather than pushing it, or use a
@@ -543,14 +558,15 @@ on click. Escape cancels. Visual: reuse SETUP-mode hatch during the listening wi
 **Partly built 3.0.182 (Slice 12a, ADR-0077):** the KEY field listens after a tap ("PRESS A
 KEY…"), Escape cancels; still open: the pulsing border / hatch while listening, MIDI and gamepad.
 
-### Inline conflict feedback
+### Inline conflict feedback ✅ Done (3.0.215)
 
 Live ✓/⚠ hint under KEY field as a binding is chosen — don't wait for save.
 **Scope:** conflicts are checked **per deck** (formerly "scene"), not per board — keys apply per deck ([docs/product/README.md §6](product/README.md#input-keyboard--numpad) K2, 2026-09-28). Quick-access keys are board-wide (K13) and conflict with every deck.
 **Source:** docs/design/design-notes.md §PAD Editor — Inline conflict feedback.
 **Partly built 3.0.182 (Slice 12a, ADR-0077):** per deck — a taken key shows "Key N1 is on …"
-with MOVE KEY HERE at once; a reserved key shows why. Still open: the quick-access keys (K13,
-Slice 13).
+with MOVE KEY HERE at once; a reserved key shows why. The quick-access keys followed in 3.0.215
+(Slice 13d: a key is never both a deck key and a quick-access key, refused with its holder), the
+keys of STOP ALL and PAUSE in Settings in 3.0.245 (K12, refused when a pad plays them).
 
 ### Snap-to-zero-crossing on waveform drag
 
@@ -820,7 +836,7 @@ mood (theme) are orthogonal; both must remain independently configurable.
 **Status:** Freshly decided, not yet tested in practice. Disableable comfort feature; no hard
 dependencies.
 **When:** Slice 8.
-**→ Slice 8:** [Theme switcher](#theme-switcher-crimson-verdant-neon) — night vision layers
+**→ Slice 8:** [Theme switcher](#theme-switcher-crimson-verdant-neon--done-30232) — night vision layers
 over the active theme.
 
 ### Quick-Access content deferred _(pending real scene experience)_
@@ -876,13 +892,13 @@ origin-disambiguated). Applies to all summon-driven surfaces.
 
 #### Per-surface assignment (from panel-fit check)
 
-| Surface                              | Layer 1 Resize | Layer 2 Summon | Spring-loaded | Notes                                                                                                                                                                                                                                           |
-| ------------------------------------ | :------------: | :------------: | :-----------: | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Quick-Pads _(planned)_               |       ✅       |       ✅       |      ✅       | The design-canonical case of the full contract.                                                                                                                                                                                                 |
-| LibraryPanel                         |       ✅       |       ✅       |       —       | Coexists with existing place-mode auto-close (long-press on library row sets panel to `'empty'`).                                                                                                                                               |
-| Mixer _(planned, v8-atmosphere.jsx)_ |       ✅       |       ✅       |       —       | Same model as LibraryPanel.                                                                                                                                                                                                                     |
-| PadEditorPanel                       |       ✅       |       —        |       —       | **Resize only.** Selection-driven (opens on pad select, closes on deselect) — not summon-driven. A summon handle would have no coherent state here. Editor retains its existing selection-driven open/close logic.                              |
-| SceneRail                            |       —        |       —        |       —       | **No layer today** — permanently present; no toggle state in the code. Contract applies only if SceneRail becomes collapsible on mobile (see [Mobile layout adaptation](#mobile-layout-adaptation)). At that point Layer 2 becomes a candidate. |
+| Surface                              | Layer 1 Resize | Layer 2 Summon | Spring-loaded | Notes                                                                                                                                                                                                                                                             |
+| ------------------------------------ | :------------: | :------------: | :-----------: | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Quick-Pads _(planned)_               |       ✅       |       ✅       |      ✅       | The design-canonical case of the full contract.                                                                                                                                                                                                                   |
+| LibraryPanel                         |       ✅       |       ✅       |       —       | Coexists with existing place-mode auto-close (long-press on library row sets panel to `'empty'`).                                                                                                                                                                 |
+| Mixer _(planned, v8-atmosphere.jsx)_ |       ✅       |       ✅       |       —       | Same model as LibraryPanel.                                                                                                                                                                                                                                       |
+| PadEditorPanel                       |       ✅       |       —        |       —       | **Resize only.** Selection-driven (opens on pad select, closes on deselect) — not summon-driven. A summon handle would have no coherent state here. Editor retains its existing selection-driven open/close logic.                                                |
+| SceneRail                            |       —        |       —        |       —       | **No layer today** — permanently present; no toggle state in the code. Contract applies only if SceneRail becomes collapsible on mobile (see [Mobile layout adaptation](#mobile-layout-adaptation--done-30210-30211)). At that point Layer 2 becomes a candidate. |
 
 #### Visual requirement _(for later elaboration)_
 
@@ -898,7 +914,7 @@ originally monolithic contract did not fit PadEditor (selection-driven) or Scene
 This documents the decision as tested, not assumed. Source: Claude Design concept session +
 panel-fit check 2026-06-04.
 
-**→ Slice 8:** [Mobile layout adaptation](#mobile-layout-adaptation).
+**→ Slice 8:** [Mobile layout adaptation](#mobile-layout-adaptation--done-30210-30211).
 
 ---
 
@@ -1056,7 +1072,7 @@ Both are exceptions for users who want it differently — consistent with the gu
 
 Before building: check interaction expectations for existing saved boards. The new gesture model (point 7) changes the current SETUP reorder, which starts immediately on `pointerdown` (new: long hold instead of immediate drag). A migration/compatibility question to keep in mind when building.
 
-**→ Slice 8:** [Mobile layout adaptation](#mobile-layout-adaptation) · [Grid configurability](#grid-configurability-gridconfig-popover) · [Cell-size setting](#cell-size-setting).
+**→ Slice 8:** [Mobile layout adaptation](#mobile-layout-adaptation--done-30210-30211) · [Grid configurability](#grid-configurability-gridconfig-popover) · [Cell-size setting](#cell-size-setting--done-30177-30234).
 **Cross-references:** Settings architecture (point 8) → full model in [2e — Multi-level settings hierarchy](#2e--multi-level-settings-hierarchy); display setting scope per surface → [2c — Modular display controls](#2c--modular-display-controls); quick-access/quick-menu display consistency → [Quick-Access content deferred](#quick-access-content-deferred-pending-real-scene-experience) and [B9](#b9--gap-classification-three-confirmations-two-new-candidates).
 
 ---

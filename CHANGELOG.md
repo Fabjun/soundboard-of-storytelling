@@ -7,6 +7,12 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.247 — 2026-10-15
+
+### Internal
+
+- docs: backlog — the old Slice 8 block checked against the code (Slice 14 completion, workflow rule 14): theme switcher done (3.0.232), cell size done as PAD SIZE (3.0.177, 3.0.234), mobile layout done in Slice 13 (3.0.210, 3.0.211), inline key conflict feedback done (3.0.215, 3.0.245); grid configurability noted as still open — the stored cols × rows still sets how many pads a deck holds
+
 ## 3.0.246 — 2026-10-14
 
 ### Internal

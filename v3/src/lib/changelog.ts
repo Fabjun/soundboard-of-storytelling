@@ -17,10 +17,17 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.246';
+export const APP_VERSION = '3.0.247';
 
 /** The developer log, newest first; CHANGELOG.md is generated from it (sync-changelog). */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.247',
+    date: '2026-10-15',
+    items: [
+      'docs: backlog — the old Slice 8 block checked against the code (Slice 14 completion, workflow rule 14): theme switcher done (3.0.232), cell size done as PAD SIZE (3.0.177, 3.0.234), mobile layout done in Slice 13 (3.0.210, 3.0.211), inline key conflict feedback done (3.0.215, 3.0.245); grid configurability noted as still open — the stored cols × rows still sets how many pads a deck holds',
+    ],
+  },
   {
     version: '3.0.246',
     date: '2026-10-14',
