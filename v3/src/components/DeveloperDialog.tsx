@@ -9,7 +9,7 @@
  * behind is inert, the focus starts on CLOSE and Escape closes it.
  */
 
-import { useLayoutEffect, useRef, useState } from 'preact/hooks';
+import { useRef, useState } from 'preact/hooks';
 import type { JSX } from 'preact';
 import { UiIcon } from './UiIcon';
 import { boards, libraryItems } from '../state/store';
@@ -22,7 +22,7 @@ import {
   debugLogText,
   debugLogVersion,
 } from '../lib/debugLog';
-import { inertOutside } from '../lib/inertOutside';
+import { useModalDialog } from '../lib/modalDialog';
 import { useEscapeKey } from '../lib/escapeKey';
 import { APP_VERSION } from '../lib/changelog';
 
@@ -42,18 +42,7 @@ export function DeveloperDialog({
   const [copied, setCopied] = useState<string | null>(null);
 
   useEscapeKey(onClose);
-  useLayoutEffect(() => {
-    const el = dialog.current;
-    if (!el) return;
-    // The control that opened it gets the focus back — once the page is no longer inert (W3C APG)
-    const opener = document.activeElement instanceof HTMLElement ? document.activeElement : null;
-    const restore = inertOutside(el, document.body);
-    el.querySelector<HTMLButtonElement>('[data-autofocus]')?.focus();
-    return () => {
-      restore();
-      opener?.focus({ preventScroll: true });
-    };
-  }, []);
+  useModalDialog(dialog);
 
   const items = libraryItems.value;
   const allBoards = boards.value;

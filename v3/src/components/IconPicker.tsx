@@ -19,6 +19,7 @@
 
 import { useEffect, useLayoutEffect, useRef, useState } from 'preact/hooks';
 import { useEscapeKey } from '../lib/escapeKey';
+import { useModalDialog } from '../lib/modalDialog';
 import type { JSX } from 'preact';
 import {
   elementScroll,
@@ -63,10 +64,14 @@ export function IconPicker({ chosen, onPick, onClose }: IconPickerProps): JSX.El
   const body = useRef<HTMLDivElement>(null);
   const search = useRef<HTMLInputElement>(null);
 
+  // A modal dialog on top of the PAD editor (ADR-0074): the editor behind is inert, the focus
+  // starts in the search field (as V1) and goes back to the control that opened the list
+  const dialog = useRef<HTMLDivElement>(null);
+  useModalDialog(dialog, { initialFocus: () => search.current });
+
   useEffect(() => {
     let live = true;
     void Promise.all([loadIconSets(), loadIconCatalog()]).then(([, c]) => live && setCatalog(c));
-    search.current?.focus();
     return () => {
       live = false;
     };
@@ -98,6 +103,7 @@ export function IconPicker({ chosen, onPick, onClose }: IconPickerProps): JSX.El
 
   return (
     <div
+      ref={dialog}
       class="sb-overlay"
       role="dialog"
       aria-modal="true"

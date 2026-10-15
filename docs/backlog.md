@@ -1713,6 +1713,26 @@ themes, onboarding, among others. Each needs a slice (or a deliberate **Rejected
 **When:** together with the owner, before Slice 15 is planned; then a docsGuards check that every
 row not built names a slice, Parked or Rejected.
 
+### Local E2E: one test in about thirty stalls for 15 minutes (2026-10-15)
+
+**Explained — system load, not the app.** During the later stalls the machine was measured: load
+average 78–88 with no test running, `kernel_task` at 190 % CPU, 163 runnable macOS system
+daemons, the disk at about 120 MB/s; on AC power, no thermal warning. The page snapshot of a
+stalled test showed the button its locator waited for — the browser did not answer, the app was
+there. For the early stalls no load was recorded; the same cause is likely. What to do: check the
+load at once when a run stalls, stop own runs, rerun when the 1-minute load is below 10.
+
+Recorded before the measurement: in local Playwright runs on 2026-10-15 a single test now and then
+stalled for 15.3–15.5 minutes although its timeout is 30 s, then failed with "Target page,
+context or browser has been closed"; every other test of the run passed in seconds. Measured: 4
+stalls (settings developer view, a11y contrast twice, pad-icons `beforeEach`), one of them on
+`origin/main` (1 of 30 runs of the contrast test) — so not caused by the change under test. Two
+stalled right after a board was created, waiting for the deck-rail toggle. `caffeinate -i` did
+not prevent it; at the same time a `gh` API call failed with "read: operation timed out". CI
+(`e2e-full`) passed on every pull request of that day. The constant length points to the
+machine or a connection rather than the app (a renderer loop would not end by itself after 15
+minutes). **When:** reopen only if a stall happens while the load is low.
+
 ### Flaky smoke test: a new board vanished right after NEW BOARD (WebKit, 2026-10-02)
 
 Seen once, in the pre-commit smoke run of a stack merge (`board-writes`): `mode-toggle.spec.ts`
@@ -2120,12 +2140,31 @@ a fixed window height; (5) a separate `test:` commit with a changelog entry.
 now would be done twice.
 **When:** before the next change to the deck rail or the menus; `deck-crud` with the rail redesign.
 
-### Full-screen dialogs per ADR-0074
+### Full-screen dialogs per ADR-0074 ✅ Done (3.0.248)
+
+**Done in 3.0.248:** both follow ADR-0074 through one hook, `useModalDialog`
+(`v3/src/lib/modalDialog.ts`), with an E2E check each; the pad type confirmation, found without a
+dialog role, too; a `codeGuards` rule keeps every dialog on the hook (ADR-0074 amendment
+2026-10-15). One part stays open: [Icon list: first focus](#icon-list-first-focus).
 
 The icon list (`v3/src/components/IconPicker.tsx`) and What's new (`v3/src/screens/StartScreen.tsx`)
 were built before ADR-0074: neither makes the page behind inert nor returns focus on close, and
 What's new has no Escape. **Plan:** give both the ADR-0074 behavior (inert outside, focus in and
 back, Escape), with an E2E check each. **When:** by 2026-10-31 (exception review date in ADR-0074).
+
+### Icon list: first focus
+
+**Open — owner decision.** ADR-0074 rule 2 puts the first focus on the dialog itself when the first
+field would open the phone keyboard; the icon list puts it in its search field (as V1, tested in
+`v3/tests/e2e/pad-icons.spec.ts`), so on a phone the keyboard opens with the list and covers part
+of it. W3C APG, Dialog (Modal), note 1 on initial focus (read 2026-10-15): "Generally, focus is
+initially set on the first focusable element", but where "focusing the first interactive element
+could cause the beginning of content to scroll out of view", "add `tabindex="-1"` to a static
+element at the start of the content and initially focus that element". Options: (a) follow the
+rule — focus the list, a tap into the search opens the keyboard; (b) keep the search focus everywhere — fast typing on a laptop, the keyboard on a
+phone; (c) the search on a wide window, the list on a phone. Recommendation: (c) — the
+keyboard on a laptop costs nothing, on a phone it hides half the icons. Registered as an
+ADR-0074 exception until decided. **When:** the owner's next review.
 
 ### Type-check every TypeScript file (T12)
 

@@ -7,8 +7,10 @@
  * how it went (owner decision 2026-10-05).
  */
 
-import { useState } from 'preact/hooks';
+import { useRef, useState } from 'preact/hooks';
 import type { JSX } from 'preact';
+import { useEscapeKey } from '../lib/escapeKey';
+import { useModalDialog } from '../lib/modalDialog';
 import { UiIcon } from '../components/UiIcon';
 import { AnimatedFlame } from '../components/AnimatedFlame';
 import { audioContextState, currentScreen, settingsReturn } from '../state/store';
@@ -45,17 +47,32 @@ function VersionDetails({ version }: { version: string }): JSX.Element | null {
 
 /**
  * The release notes for the people who use the app, newest version first (ADR-0063); each version
- * folds out its full developer changelog under "Details" (HTML disclosure element).
+ * folds out its full developer changelog under "Details" (HTML disclosure element). A modal
+ * dialog (ADR-0074): the menu behind is inert, the focus starts on the close button, Escape
+ * closes it and the focus goes back to the version that opened it.
  */
 function WhatsNewOverlay({ onClose }: { onClose: () => void }): JSX.Element {
+  const dialog = useRef<HTMLDivElement>(null);
+  useEscapeKey(onClose);
+  useModalDialog(dialog);
   return (
-    <div class="sb-overlay" data-testid="main-menu-screen-whats-new-region">
+    <div
+      ref={dialog}
+      class="sb-overlay"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="main-menu-screen-whats-new-title"
+      data-testid="main-menu-screen-whats-new-region"
+    >
       <div class="sb-overlay-header">
-        <div class="sb-overlay-title">WHAT'S NEW</div>
+        <h2 class="sb-overlay-title" id="main-menu-screen-whats-new-title">
+          WHAT'S NEW
+        </h2>
         <button
           class="sb-btn sb-btn-sm sb-btn-ghost"
           onClick={onClose}
           aria-label="Close What's new"
+          data-autofocus
         >
           <UiIcon name="close" />
         </button>

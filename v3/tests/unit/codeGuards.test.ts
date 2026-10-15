@@ -580,6 +580,45 @@ describe('guard: dialogs close on Escape through useEscapeKey (ADR-0074)', () =>
   });
 });
 
+describe('guard: every dialog is modal through useModalDialog (ADR-0074)', () => {
+  // Each dialog had its own copy of the open / close effect, and two dialogs had none — the page
+  // behind stayed reachable and the focus was lost on close (found 2026-10-15, the ADR-0074
+  // exception review); src/lib/modalDialog.ts is the one copy
+  const walkSrc = (dir: string): string[] =>
+    readdirSync(dir, { withFileTypes: true }).flatMap((e) =>
+      e.isDirectory() ? walkSrc(join(dir, e.name)) : [join(dir, e.name)],
+    );
+  const files = walkSrc(SRC)
+    .filter((f) => /\.tsx?$/.test(f))
+    .map((f) => ({ file: relative(SRC, f).split('\\').join('/'), text: readFileSync(f, 'utf8') }));
+  const dialogs = files.filter(({ text }) => /role="(?:alert)?dialog"/.test(text));
+
+  it('finds the dialogs (sanity)', () => {
+    expect(dialogs.map((d) => d.file)).toContain('components/PadEditorPanel.tsx');
+  });
+
+  it('a file with a dialog makes it modal and closes it on Escape through the hooks', () => {
+    const missing = dialogs.flatMap(({ file, text }) => [
+      ...(/useModalDialog\(/.test(text) ? [] : [`${file}: useModalDialog`]),
+      ...(/useEscapeKey\(/.test(text) ? [] : [`${file}: useEscapeKey`]),
+    ]);
+    expect(missing, 'role="dialog" needs useModalDialog(ref) and useEscapeKey(onClose)').toEqual(
+      [],
+    );
+  });
+
+  it('only the hook makes the page inert', () => {
+    const callers = files
+      .filter(({ text }) => /\binertOutside\(/.test(text))
+      .map(({ file }) => file)
+      .sort();
+    expect(callers, 'use useModalDialog(ref, options) instead of inertOutside').toEqual([
+      'lib/inertOutside.ts',
+      'lib/modalDialog.ts',
+    ]);
+  });
+});
+
 describe('guard: narrow or wide is asked in one place (src/state/windowClass.ts)', () => {
   // Three components each compared window.innerWidth once while rendering, at 480 or 600 px, and
   // missed a rotation (found 2026-10-10, Slice 13a); the frame follows narrowWindow instead

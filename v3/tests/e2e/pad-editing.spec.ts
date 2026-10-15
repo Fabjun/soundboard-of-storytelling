@@ -105,7 +105,26 @@ test('19 — lossy type change → PadTypeConfirmDialog appears', async ({ page 
   await page.getByTestId('pad-editor-panel-type-button-combo').click();
   await expect(dialog).toBeVisible();
 
+  // A modal alert dialog (ADR-0074): the focus starts on the safe answer, the editor is inert
+  await expect(page.getByRole('alertdialog', { name: 'Change pad type?' })).toBeVisible();
+  await expect(page.getByTestId('pad-type-confirm-dialog-cancel-button')).toBeFocused();
+  const typeRow = page.getByTestId('pad-editor-panel-type-button-single');
+  expect(await typeRow.evaluate((el) => el.closest('[inert]') !== null)).toBe(true);
+
+  // Escape cancels, and the focus goes back to the type that asked (opened from the keyboard)
+  await page.keyboard.press('Escape');
+  await expect(dialog).not.toBeVisible({ timeout: 2000 });
+  expect(await typeRow.evaluate((el) => el.closest('[inert]') !== null)).toBe(false);
+  const combo = page.getByTestId('pad-editor-panel-type-button-combo');
+  await combo.focus();
+  await page.keyboard.press('Enter');
+  await expect(dialog).toBeVisible();
+  await page.keyboard.press('Escape');
+  await expect(combo).toBeFocused();
+  await expect(page.getByTestId('pad-editor-panel')).toBeVisible(); // only the question closed
+
   // Cancel: the type stays SINGLE
+  await page.getByTestId('pad-editor-panel-type-button-combo').click();
   await page.getByTestId('pad-type-confirm-dialog-cancel-button').click();
   await expect(dialog).not.toBeVisible({ timeout: 2000 });
   await expect(page.getByTestId('pad-editor-panel-type-button-single')).toHaveAttribute(

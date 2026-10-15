@@ -3,7 +3,9 @@
  *
  * The version in the main menu's footer opens the release notes: versions with their groups
  * (New / Improved / Fixed / Removed / Behind the scenes) in plain sentences, each with its full
- * developer changelog folded under "Details"; the close button returns to the menu.
+ * developer changelog folded under "Details"; the close button returns to the menu. A modal dialog
+ * (ADR-0074): the menu behind is inert, the focus starts on the close button, Escape closes it and
+ * the focus goes back to the version.
  */
 
 import { test, expect } from '@playwright/test';
@@ -50,4 +52,25 @@ test("the version link opens What's new, grouped per version, and closes again",
 
   await page.getByRole('button', { name: "Close What's new" }).click();
   await expect(notes).toBeHidden();
+});
+
+test("What's new is a modal dialog: the menu behind is inert, Escape closes, the focus goes back", async ({
+  page,
+}) => {
+  await page.goto('/soundboard-of-storytelling/');
+  await openMainMenu(page);
+  const version = page.getByRole('button', { name: "Open What's new" });
+  await version.focus(); // the keyboard user the focus return is for
+  await page.keyboard.press('Enter');
+
+  const notes = page.getByRole('dialog', { name: "WHAT'S NEW" });
+  await expect(notes).toBeVisible();
+  await expect(page.getByRole('button', { name: "Close What's new" })).toBeFocused();
+  const menu = page.locator('nav[aria-label="Main menu"]');
+  expect(await menu.evaluate((el) => el.closest('[inert]') !== null)).toBe(true);
+
+  await page.keyboard.press('Escape');
+  await expect(notes).toBeHidden();
+  await expect(version).toBeFocused();
+  expect(await menu.evaluate((el) => el.closest('[inert]') !== null)).toBe(false);
 });
