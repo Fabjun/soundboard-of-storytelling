@@ -176,3 +176,19 @@ test('the icon list is a modal dialog: the editor behind is inert, the focus goe
   expect(await add.evaluate((el) => el.closest('[inert]') !== null)).toBe(false);
   await expect(page.getByTestId('pad-editor-panel')).toBeVisible(); // only the list closed
 });
+
+test.describe('on a touch screen', () => {
+  test.use({ hasTouch: true });
+
+  test('the icon list takes the first focus itself, so the keyboard stays closed until the search is tapped', async ({
+    page,
+  }) => {
+    // The case the rule is for: a finger is the main pointer (else the test checks nothing)
+    expect(await page.evaluate(() => matchMedia('(pointer: coarse)').matches)).toBe(true);
+    await page.getByTestId('pad-editor-panel-add-icon-button').click();
+    await expect(page.getByRole('dialog', { name: 'Choose an icon' })).toBeFocused();
+    await expect(page.getByTestId('icon-picker-search-input')).not.toBeFocused();
+    await page.getByTestId('icon-picker-search-input').tap();
+    await expect(page.getByTestId('icon-picker-search-input')).toBeFocused();
+  });
+});

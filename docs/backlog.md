@@ -2145,16 +2145,22 @@ now would be done twice.
 **Done in 3.0.248:** both follow ADR-0074 through one hook, `useModalDialog`
 (`v3/src/lib/modalDialog.ts`), with an E2E check each; the pad type confirmation, found without a
 dialog role, too; a `codeGuards` rule keeps every dialog on the hook (ADR-0074 amendment
-2026-10-15). One part stays open: [Icon list: first focus](#icon-list-first-focus).
+2026-10-15). The icon list's first focus followed in 3.0.249: [Icon list: first focus](#icon-list-first-focus--done-30249).
 
 The icon list (`v3/src/components/IconPicker.tsx`) and What's new (`v3/src/screens/StartScreen.tsx`)
 were built before ADR-0074: neither makes the page behind inert nor returns focus on close, and
 What's new has no Escape. **Plan:** give both the ADR-0074 behavior (inert outside, focus in and
 back, Escape), with an E2E check each. **When:** by 2026-10-31 (exception review date in ADR-0074).
 
-### Icon list: first focus
+### Icon list: first focus ✅ Done (3.0.249)
 
-**Open — owner decision.** ADR-0074 rule 2 puts the first focus on the dialog itself when the first
+**Done in 3.0.249 — option (c), decided by Claude while the owner was away (owner review with
+pull request):** on a touch screen the list itself takes the first focus, the search field
+everywhere else. The line is drawn by the main pointer (`pointer: coarse`), not by the window
+width: a tablet is wide and still opens an on-screen keyboard. ADR-0074 amendment 2026-10-19; its
+exception is resolved.
+
+Recorded before: ADR-0074 rule 2 puts the first focus on the dialog itself when the first
 field would open the phone keyboard; the icon list puts it in its search field (as V1, tested in
 `v3/tests/e2e/pad-icons.spec.ts`), so on a phone the keyboard opens with the list and covers part
 of it. W3C APG, Dialog (Modal), note 1 on initial focus (read 2026-10-15): "Generally, focus is

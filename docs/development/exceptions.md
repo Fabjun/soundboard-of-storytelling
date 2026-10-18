@@ -7,7 +7,7 @@ Permanent exceptions carry a reason; temporary ones also a `BACKLOG "…"` refer
 when they are reviewed. To add or remove one, change it at its source and run
 `npm run sync:docs`.
 
-## Design and rule exceptions — ADRs (11)
+## Design and rule exceptions — ADRs (10)
 
 From the `## Exceptions` section of each ADR.
 
@@ -22,7 +22,6 @@ From the `## Exceptions` section of each ADR.
 | [ADR-0060](../architecture/0060-commit-message-convention.md)     | `subject-case` off                                                                              | subjects often start with a proper noun ("Preact 11", "ESLint …"); the rule rejected 13 of the last 60 commits for that alone                                                        | `v3/commitlint.config.mjs`               | permanent                                |
 | [ADR-0067](../architecture/0067-browser-gestures-off.md)          | Pinch zoom is off everywhere, against WCAG 2.2 SC 1.4.4 Resize text (AA)                        | Owner decision 2026-10-03: the app owns two-finger gestures (pad size, Slice 13); iOS Zoom (accessibility setting) still magnifies                                                   | BACKLOG "App gestures"                   | pad zoom gesture built or dropped        |
 | [ADR-0067](../architecture/0067-browser-gestures-off.md)          | Text selection is off in text fields too                                                        | Owner decision 2026-10-03: no exceptions; WebKit may then refuse typing in a field (WebKit bugs 82692, 156518) — checked on the iPhone                                               | BACKLOG "Text fields with selection off" | first iPhone check of 3.0.159            |
-| [ADR-0074](../architecture/0074-full-screen-modal-dialogs.md)     | Icon list: the focus starts in the search field, which opens the phone keyboard (rule 2)        | built so, as V1, and tested (`pad-icons.spec.ts`); rule 2 says the dialog itself — the owner decides                                                                                 | BACKLOG "Icon list: first focus"         | the owner's decision                     |
 | [ADR-0085](../architecture/0085-ui-icons-from-the-collection.md)  | The menu button's "⋯" stays a character (`MenuButton.tsx`)                                      | The collection has no "more" icon — nikoichu's only candidate, "hamburger", draws a burger (preview, 2026-10-14)                                                                     | ADR-0085                                 | a fitting icon comes into the collection |
 
 ## ESLint rule suppressions (3)
@@ -31,7 +30,7 @@ Inline: `// eslint-disable-next-line <rule> -- <reason>` (enforced by `require-d
 
 | Location                               | Rule                                      | Reason                                                                                                               |
 | -------------------------------------- | ----------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
-| `v3/src/components/IconPicker.tsx:269` | `react-hooks/exhaustive-deps`             | measured after every layout (as TanStack's adapter updates the virtualizer); setShape runs only when a value changed |
+| `v3/src/components/IconPicker.tsx:280` | `react-hooks/exhaustive-deps`             | measured after every layout (as TanStack's adapter updates the virtualizer); setShape runs only when a value changed |
 | `v3/src/screens/BoardScreen.tsx:131`   | `react-hooks/exhaustive-deps`             | auto-select only on board identity change, never override the user's deck choice                                     |
 | `v3/eslint.config.js:21`               | `@typescript-eslint/no-unused-vars` (off) | tsc noUnusedLocals/noUnusedParameters report it                                                                      |
 
