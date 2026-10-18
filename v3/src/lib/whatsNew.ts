@@ -101,6 +101,12 @@ export function withEarlyVersions(
 /** The release notes the main menu shows, newest first (checked by whatsNew.test.ts). */
 export const WHATS_NEW: WhatsNewNotes[] = [
   {
+    version: '3.0.249',
+    improved: [
+      'On a phone or tablet the icon list opens without the keyboard, so all icons stay in view; a tap into the search brings the keyboard.',
+    ],
+  },
+  {
     version: '3.0.248',
     improved: [
       "What's new, the icon list and the question before a pad changes type keep the keyboard inside while open, close with Escape and give the focus back to where it was.",

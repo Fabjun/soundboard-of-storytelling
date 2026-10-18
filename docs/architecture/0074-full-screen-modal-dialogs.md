@@ -56,12 +56,6 @@ The W3C and MDN pages could not be opened from the cloud container on 2026-10-05
 policy); their content was taken from search results quoting them — to be read again in the
 original.
 
-## Exceptions
-
-| Exception                                                                                | Reason                                                                                               | Reference                        | Review               |
-| ---------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- | -------------------------------- | -------------------- |
-| Icon list: the focus starts in the search field, which opens the phone keyboard (rule 2) | built so, as V1, and tested (`pad-icons.spec.ts`); rule 2 says the dialog itself — the owner decides | BACKLOG "Icon list: first focus" | the owner's decision |
-
 ## Consequences
 
 **Positive:**
@@ -117,3 +111,13 @@ through useModalDialog") requires both hooks in every file with `role="dialog"` 
 `"alertdialog"` and allows `inertOutside` only in the hook. The W3C APG page was read in the
 original on 2026-10-15 and confirms rule 2 as written ("Windows under a modal dialog are inert",
 "focus returns to the element that invoked the dialog", "Escape: Closes the dialog").
+
+**2026-10-19 (3.0.249) — the icon list follows rule 2 on a touch screen; its exception is
+resolved.** The icon list put the first focus in its search field (as V1), which opens the
+on-screen keyboard over half the icons. Now the list itself takes the focus where a finger is the
+main pointer (`pointer: coarse`, MDN `@media/pointer`), and the search field keeps it everywhere
+else, where no on-screen keyboard opens. W3C APG Dialog (Modal), note 1 on initial focus: where
+"focusing the first interactive element could cause the beginning of content to scroll out of
+view", focus a static element at the start instead. iOS opens the keyboard on a programmatic
+focus only after a user gesture (WebKit bug 195884), Android Chrome always — so the change counts
+most on Android. Tested in `v3/tests/e2e/pad-icons.spec.ts` with touch on and off.

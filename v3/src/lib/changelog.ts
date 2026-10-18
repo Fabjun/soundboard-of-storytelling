@@ -17,10 +17,19 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.248';
+export const APP_VERSION = '3.0.249';
 
 /** The developer log, newest first; CHANGELOG.md is generated from it (sync-changelog). */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.249',
+    date: '2026-10-19',
+    items: [
+      'a11y(icons): on a touch screen (pointer: coarse) the icon list takes the first focus itself, so the on-screen keyboard no longer opens over half the icons; the search field keeps it with mouse or trackpad, as V1 (ADR-0074 rule 2, W3C APG Dialog note 1)',
+      'test: E2E pad-icons — with touch the dialog has the focus, not the search field, a tap into the search moves it there; counter-checked (condition off → red, without tabIndex -1 → red)',
+      'docs: ADR-0074 amendment 2026-10-19, its exception for the icon list resolved; BACKLOG "Icon list: first focus" done with option (c), decided while the owner was away (review with the pull request)',
+    ],
+  },
   {
     version: '3.0.248',
     date: '2026-10-15',

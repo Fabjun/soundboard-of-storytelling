@@ -1,9 +1,9 @@
 /**
  * @fileoverview IconPicker — choose one icon from the collection (ADR-0070)
  *
- * Built on V1's picker: a search field (focused on open), the categories as sections that open
- * and close (their icons are drawn only while open — iPhone memory, as V1), a switch for the names
- * under the icons, a tap picks and closes. Beyond V1: the search reads names AND search words
+ * Built on V1's picker: a search field (focused on open, except on a touch screen), the categories
+ * as sections that open and close (their icons are drawn only while open — iPhone memory, as V1),
+ * a switch for the names under the icons, a tap picks and closes. Beyond V1: the search reads names AND search words
  * (src/lib/iconSet.ts). The packs and the catalog load when the picker opens.
  *
  * Keyboard (W3C APG grid pattern, https://www.w3.org/WAI/ARIA/apg/patterns/grid/): each icon grid
@@ -45,6 +45,14 @@ import { UiIcon } from './UiIcon';
 /** Rows drawn beyond the visible ones on each side, so a quick scroll shows no gap. */
 const OVERSCAN = 4;
 
+/**
+ * True where a finger is the main pointer (`pointer: coarse`, Media Queries Level 4) — there a
+ * focused field opens the on-screen keyboard.
+ */
+function touchFirst(): boolean {
+  return typeof window.matchMedia === 'function' && window.matchMedia('(pointer: coarse)').matches;
+}
+
 // Kept between openings (UI rule: an overlay reopens where it was left)
 const memory = { open: new Set<IconCategory>(), scroll: 0, names: false };
 
@@ -65,9 +73,11 @@ export function IconPicker({ chosen, onPick, onClose }: IconPickerProps): JSX.El
   const search = useRef<HTMLInputElement>(null);
 
   // A modal dialog on top of the PAD editor (ADR-0074): the editor behind is inert, the focus
-  // starts in the search field (as V1) and goes back to the control that opened the list
+  // goes back to the control that opened the list. It starts in the search field (as V1), but
+  // on a touch screen the keyboard that field opens would cover half the icons — there the list
+  // itself takes it (ADR-0074 rule 2; W3C APG Dialog (Modal), note 1 on initial focus)
   const dialog = useRef<HTMLDivElement>(null);
-  useModalDialog(dialog, { initialFocus: () => search.current });
+  useModalDialog(dialog, { initialFocus: (el) => (touchFirst() ? el : search.current) });
 
   useEffect(() => {
     let live = true;
@@ -108,6 +118,7 @@ export function IconPicker({ chosen, onPick, onClose }: IconPickerProps): JSX.El
       role="dialog"
       aria-modal="true"
       aria-label="Choose an icon"
+      tabIndex={-1}
       data-testid="icon-picker"
     >
       <div class="sb-overlay-header">

@@ -7,6 +7,17 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.249 — 2026-10-19
+
+### Changed
+
+- a11y(icons): on a touch screen (pointer: coarse) the icon list takes the first focus itself, so the on-screen keyboard no longer opens over half the icons; the search field keeps it with mouse or trackpad, as V1 (ADR-0074 rule 2, W3C APG Dialog note 1)
+
+### Internal
+
+- test: E2E pad-icons — with touch the dialog has the focus, not the search field, a tap into the search moves it there; counter-checked (condition off → red, without tabIndex -1 → red)
+- docs: ADR-0074 amendment 2026-10-19, its exception for the icon list resolved; BACKLOG "Icon list: first focus" done with option (c), decided while the owner was away (review with the pull request)
+
 ## 3.0.248 — 2026-10-15
 
 ### Changed
