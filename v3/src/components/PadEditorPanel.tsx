@@ -4,7 +4,7 @@
  * Covers the whole window on every screen size, the board's top bar included (owner decision
  * 2026-10-05); the fields scroll, centered and limited in width on a wide window. A modal dialog
  * after the WAI-ARIA APG pattern: focus moves into it, the board behind is inert
- * (src/lib/inertOutside.ts), Escape closes it — unless the icon list or the type confirmation
+ * (src/lib/modalDialog.ts), Escape closes it — unless the icon list or the type confirmation
  * on top of it is open, which close first — and focus returns to the pad that opened it.
  * Closing stays with the ✕ button and Escape (design-notes B7: no swipe-away).
  *
@@ -92,7 +92,7 @@ import { clearPadDraft, getControlKeys, getPadDraft, setPadDraft } from '../stat
 import { fromPad, moveHandle, toPad, type Handle, type TrimValues } from '../lib/trimRange';
 import { previewPosition, startPreview, stopPreview } from '../lib/preview';
 import { ensureFinePeaks } from '../lib/upload';
-import { inertOutside } from '../lib/inertOutside';
+import { useModalDialog } from '../lib/modalDialog';
 import { useEscapeKey, useKeydown } from '../lib/escapeKey';
 
 interface PadEditorPanelProps {
@@ -223,18 +223,10 @@ export function PadEditorPanel({
   // A modal dialog: focus moves in, the board behind is inert, and on close focus goes back to
   // the element that opened it (the pad) while that is still on the page
   const dialog = useRef<HTMLDivElement>(null);
-  useLayoutEffect(() => {
-    const el = dialog.current;
-    if (!el) return;
-    const opener = document.activeElement;
-    const restore = inertOutside(el, el.closest('.sb-screen') ?? document.body);
-    el.focus({ preventScroll: true });
-    return () => {
-      restore();
-      if (opener instanceof HTMLElement && opener.isConnected)
-        opener.focus({ preventScroll: true });
-    };
-  }, []);
+  useModalDialog(dialog, {
+    root: (el) => el.closest('.sb-screen') ?? document.body,
+    initialFocus: (el) => el,
+  });
 
   /** Index of the selected file, kept inside the list (files can be removed). */
   const selected = Math.min(selectedIndex, Math.max(0, files.length - 1));
@@ -694,18 +686,11 @@ export function PadEditorPanel({
   // on the safe answer — KEEP EDITING — and goes back to ✕ when the question closes
   const discardRef = useRef<HTMLDivElement>(null);
   const closeRef = useRef<HTMLButtonElement>(null);
-  useLayoutEffect(() => {
-    const el = discardRef.current;
-    const host = dialog.current;
-    if (!confirmDiscard || !el || !host) return;
-    const restore = inertOutside(el, host);
-    const close = closeRef.current;
-    el.querySelector<HTMLButtonElement>('[data-autofocus]')?.focus();
-    return () => {
-      restore();
-      close?.focus({ preventScroll: true });
-    };
-  }, [confirmDiscard]);
+  useModalDialog(discardRef, {
+    active: confirmDiscard,
+    root: () => dialog.current ?? document.body,
+    returnFocus: () => closeRef.current,
+  });
 
   return (
     <div

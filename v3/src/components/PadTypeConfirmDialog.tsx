@@ -11,7 +11,9 @@
  * Mobile: renders as a bottom sheet; desktop: centered popover.
  */
 
+import { useRef } from 'preact/hooks';
 import { useEscapeKey } from '../lib/escapeKey';
+import { useModalDialog } from '../lib/modalDialog';
 import type { JSX } from 'preact';
 import type { PadType } from '../types';
 import { padMigrationMatrix, type MigrationVerdict } from '../lib/padUtils';
@@ -53,27 +55,28 @@ export function PadTypeConfirmDialog({
   const { verdict, keeps, migrates, drops } = padMigrationMatrix(fromType, toType);
   const isDangerous = verdict === 'reset';
 
+  // A modal alert dialog (W3C APG, ADR-0074): the editor behind is inert, the focus starts on the
+  // safe answer — CANCEL — and goes back to the type control that asked
+  const dialog = useRef<HTMLDivElement>(null);
   useEscapeKey(onCancel);
+  useModalDialog(dialog);
 
   const isMobile = narrowWindow.value;
 
   const dialogContent = (
     <div
-      class={isMobile ? 'sb-creation-sheet' : 'sb-type-confirm'}
+      ref={dialog}
+      class={isMobile ? 'sb-creation-sheet' : 'sb-type-confirm sb-type-confirm-centered'}
+      role="alertdialog"
+      aria-modal="true"
+      aria-labelledby="pad-type-confirm-dialog-title"
       data-testid="pad-type-confirm-dialog"
-      style={
-        isMobile
-          ? {}
-          : {
-              top: '50%',
-              left: '50%',
-              transform: 'translate(-50%, -50%)',
-            }
-      }
     >
       {/* Header */}
       <div class="sb-dialog-header">
-        <div class="sb-dialog-title">Change pad type?</div>
+        <div class="sb-dialog-title" id="pad-type-confirm-dialog-title">
+          Change pad type?
+        </div>
         <div class="sb-type-change-row">
           <span class="sb-type-change-from">{TYPE_LABELS[fromType]}</span>
           <span class="sb-type-change-arrow">→</span>
@@ -102,6 +105,7 @@ export function PadTypeConfirmDialog({
           class="sb-btn sb-btn-sm sb-btn-ghost sb-dialog-action-btn"
           data-testid="pad-type-confirm-dialog-cancel-button"
           onClick={onCancel}
+          data-autofocus
         >
           CANCEL
         </button>

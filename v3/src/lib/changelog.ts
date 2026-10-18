@@ -17,10 +17,21 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.247';
+export const APP_VERSION = '3.0.248';
 
 /** The developer log, newest first; CHANGELOG.md is generated from it (sync-changelog). */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.248',
+    date: '2026-10-15',
+    items: [
+      "a11y: every dialog is modal (ADR-0074, exception review) — What's new is a dialog now (role, name, the menu behind inert, the focus on its close button, Escape closes, the focus back to the version); the icon list makes the PAD editor behind inert and gives the focus back to the control that opened it; the pad type confirmation is an alert dialog (it had no role): the editor behind inert, the focus on CANCEL, back to the type on close, and centered by its class instead of an inline style",
+      'refactor(dialogs): lib modalDialog — useModalDialog(ref, { active, root, initialFocus, returnFocus }) replaces the three copies of the open / close effect (PAD editor, its discard question, developer view); inert marks are lifted before the focus goes back',
+      'test: unit modalDialog (inert outside, first focus, order of lift and focus back — jsdom lets an inert element take the focus, so read through a spy, a first draft passed with the order broken —, an opener that left the page, root, inactive, inert before); codeGuards ("every dialog is modal through useModalDialog": both hooks in every dialog file, inertOutside only in the hook); E2E What\'s new, icon list, type confirmation (inert, focus in and back, Escape); each counter-checked',
+      'docs: ADR-0074 amendment, its exception for the icon list and What\'s new resolved; a new one for the icon list\'s first focus in the search field (owner decision open, BACKLOG "Icon list: first focus")',
+      'docs: BACKLOG "Local E2E: one test in about thirty stalls for 15 minutes" — stalls in local runs, one on origin/main; explained by measured system load (load 78–88, kernel_task 190 %, macOS daemons), not the app',
+    ],
+  },
   {
     version: '3.0.247',
     date: '2026-10-15',

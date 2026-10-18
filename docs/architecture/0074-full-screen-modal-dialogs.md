@@ -58,9 +58,9 @@ original.
 
 ## Exceptions
 
-| Exception                                                                          | Reason                                                | Reference                                  | Review     |
-| ---------------------------------------------------------------------------------- | ----------------------------------------------------- | ------------------------------------------ | ---------- |
-| Icon list and What's new: no inert page, no focus return; What's new has no Escape | built before this ADR; aligned in a step of their own | BACKLOG "Full-screen dialogs per ADR-0074" | 2026-10-31 |
+| Exception                                                                                | Reason                                                                                               | Reference                        | Review               |
+| ---------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- | -------------------------------- | -------------------- |
+| Icon list: the focus starts in the search field, which opens the phone keyboard (rule 2) | built so, as V1, and tested (`pad-icons.spec.ts`); rule 2 says the dialog itself — the owner decides | BACKLOG "Icon list: first focus" | the owner's decision |
 
 ## Consequences
 
@@ -98,5 +98,22 @@ Safari; and the editor only needs the app window. Rejected.
   `v3/src/lib/escapeKey.ts`, `v3/src/components/IconPicker.tsx`,
   `v3/src/components/PadTypeConfirmDialog.tsx`, `v3/src/components/PadCreationPopover.tsx`,
   `v3/src/styles/tokens.css` (`sb-pad-editor`, `sb-overlay-header`),
-  `v3/tests/e2e/pad-editor-fullscreen.spec.ts`, `v3/tests/unit/inertOutside.test.ts`
+  `v3/tests/e2e/pad-editor-fullscreen.spec.ts`, `v3/tests/unit/inertOutside.test.ts`,
+  `v3/src/lib/modalDialog.ts`, `v3/tests/unit/modalDialog.test.ts`
 - **ADRs:** ADR-0054 (test locators — the new spec finds the editor by role and name)
+
+## Amendments
+
+**2026-10-15 (3.0.248) — one hook for rule 2; every dialog aligned.** The exception review found
+the open / close effect of rule 2 copied into three dialogs (PAD editor, its "Discard changes?"
+question, the developer view) and missing in three more: the icon list and What's new (the
+registered exception) and the pad type confirmation, which had no dialog role at all (not
+registered). `useModalDialog(ref, options)` (`v3/src/lib/modalDialog.ts`) is the effect once, in a
+layout effect like `useEscapeKey`: the page outside inert up to a root, the focus on the
+`data-autofocus` element or the dialog itself, and on close the inert marks lifted before the
+focus goes back to the opener while that is still on the page. All six use it; the type
+confirmation is an alert dialog with the focus on CANCEL. `codeGuards` ("every dialog is modal
+through useModalDialog") requires both hooks in every file with `role="dialog"` or
+`"alertdialog"` and allows `inertOutside` only in the hook. The W3C APG page was read in the
+original on 2026-10-15 and confirms rule 2 as written ("Windows under a modal dialog are inert",
+"focus returns to the element that invoked the dialog", "Escape: Closes the dialog").

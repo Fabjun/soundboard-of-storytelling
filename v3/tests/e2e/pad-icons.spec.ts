@@ -161,3 +161,18 @@ test('the picker lists categories that open and close, moves by arrow keys, and 
   await expect(page.getByTestId('icon-picker')).toBeHidden();
   expect(await slotKeys(page)).toEqual([]); // closing picks nothing
 });
+
+test('the icon list is a modal dialog: the editor behind is inert, the focus goes back on close', async ({
+  page,
+}) => {
+  const add = page.getByTestId('pad-editor-panel-add-icon-button');
+  await add.focus(); // the keyboard user the focus return is for
+  await page.keyboard.press('Enter');
+  await expect(page.getByRole('dialog', { name: 'Choose an icon' })).toBeVisible();
+  expect(await add.evaluate((el) => el.closest('[inert]') !== null)).toBe(true);
+  await page.keyboard.press('Escape');
+  await expect(page.getByTestId('icon-picker')).toBeHidden();
+  await expect(add).toBeFocused();
+  expect(await add.evaluate((el) => el.closest('[inert]') !== null)).toBe(false);
+  await expect(page.getByTestId('pad-editor-panel')).toBeVisible(); // only the list closed
+});
