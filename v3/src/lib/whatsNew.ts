@@ -103,6 +103,12 @@ export function withEarlyVersions(
 /** The release notes the main menu shows, newest first (checked by whatsNew.test.ts). */
 export const WHATS_NEW: WhatsNewNotes[] = [
   {
+    version: '3.0.262',
+    behindTheScenes: [
+      'The weekly quality check is stricter: the automatic tests now have to catch at least 90 of every 100 deliberately planted mistakes, up from 84.',
+    ],
+  },
+  {
     version: '3.0.261',
     fixed: [
       'On the iPhone a quick double tap no longer zooms the page, on any screen; before, only the flame was protected.',

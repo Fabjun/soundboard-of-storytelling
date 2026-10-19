@@ -7,6 +7,12 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.262 — 2026-10-19
+
+### Internal
+
+- test(mutation): the break threshold rises from 84 to 90 — weekly run 39253051778 measured 90.32 % (5868 of 6497 mutants, timeouts 0.37 %) over every logic module after Slice 18; the longest module job, boardModel.ts, ran 26 min of its 60 (the job fails from 42)
+
 ## 3.0.261 — 2026-10-19
 
 ### Fixed
