@@ -7,6 +7,14 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.257 — 2026-10-19
+
+### Internal
+
+- docs(whats-new): every statement carries information (owner decision 2026-10-19) — a closing sentence that called the app unchanged dropped from 30 entries; four more sentences about what stayed the same dropped or turned into what is kept ("existing pads keep their files and settings")
+- test(guards): Vale rule SoS.EmptyStatements (existence, error) lists the known empty forms for the active Markdown files; docsGuards reads the same list for whatsNew.ts and changelog.ts; each pattern measured against the checked text first ("as before" alone matched six clauses that mark the limit of a change and stays allowed); both counter-checked
+- docs: ADR-0056 and ADR-0063 amendments; CLAUDE.md — the principle under project identity, a question in the structure review; BACKLOG "Help screen and context help" and the Slice 17 row — a searchable help screen, ? opens the topic of the current place, short but complete texts (owner decision 2026-10-19)
+
 ## 3.0.256 — 2026-10-19
 
 ### Changed

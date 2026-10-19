@@ -80,9 +80,26 @@ reliable; the reference format itself was made uniform instead (decision 6).
 
 ## Related
 
-- **Files:** `v3/package.json` (`github-slugger`), `.vale.ini`, `.vale/styles/SoS/SupersededTerms.yml`, `scripts/vale-install.ts`,
+- **Files:** `v3/package.json` (`github-slugger`), `.vale.ini`, `.vale/styles/SoS/SupersededTerms.yml`,
+  `.vale/styles/SoS/EmptyStatements.yml`, `scripts/vale-install.ts`,
   `v3/package.json` (`link:check`, `lint:docs`, `vale:install`), `v3/tests/unit/docsGuards.test.ts`
 - **ADRs:** ADR-0047 (documentation architecture), ADR-0053 (exceptions)
 - **Sources:** https://github.com/remarkjs/remark-validate-links · https://vale.sh/docs ·
   https://lwn.net/Articles/964075/ · https://grafana.com/docs/writers-toolkit/review/lint-prose/rules/
 - **Commits:** see git log "(T13" (first part was titled "T13 1/2" before the scope grew)
+
+## Amendments
+
+**2026-10-19 (3.0.257) — every statement carries information.** Owner decision 2026-10-19
+(`CLAUDE.md`, "Project identity"; the principle also in the owner's global working rules): each
+sentence tells the reader something new — what changed, why, what to do; none says what stayed the
+same, repeats what the heading already shows, or announces changes without naming them. "The app
+works exactly as before" stood in 30 What's new entries before it was noticed. A new Vale rule,
+`.vale/styles/SoS/EmptyStatements.yml` (existence, error), lists the known empty forms for the
+active Markdown files; `docsGuards` reads the same list for `v3/src/lib/whatsNew.ts` and
+`v3/src/lib/changelog.ts`. The list is narrow on purpose: every pattern is measured against the
+whole checked text first — "as before" alone matched six clauses that mark the limit of a change
+("a mouse drags at once, as before"), which is information; FreeBSD removed a broad "weasel
+words" rule after 18,805 hits. What a pattern cannot see (a sentence that repeats the one before
+in other words) is a question in the structure review; each new empty form found there is added
+after measuring it.
