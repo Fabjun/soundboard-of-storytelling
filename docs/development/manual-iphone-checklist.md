@@ -105,9 +105,12 @@ because Playwright runs against a simulated environment:
     Open the picker again, open several categories one after another and scroll through them;
     search a single letter ("a") and flick through the whole result list to its end; close it and
     reopen it. Then import the V1 backup into a new board.
-  - Expected: The picker opens at once with the search field focused; categories open and close
-    without the app slowing down or reloading, and no open category covers the headers below it;
-    the one-letter list scrolls to its last icon without empty gaps; it reopens where it was left;
+  - Expected: The picker opens at once without the on-screen keyboard (3.0.249: on a touch screen
+    the list takes the first focus); a tap into the search field brings the keyboard; categories
+    open and close without the app slowing down or reloading, and no open category covers the
+    headers below it; the one-letter list scrolls to its last icon without empty gaps, also when
+    flicked hard (scrolling fixes for iOS in @tanstack/virtual-core 3.19.5); it reopens where it
+    was left;
     each pad shows its icons, a pad without icons the placeholder of its type; the V1 pads show
     their V1 icons.
   - Why manual: Memory and scrolling with thousands of icons on a real iPhone; V1 data.
