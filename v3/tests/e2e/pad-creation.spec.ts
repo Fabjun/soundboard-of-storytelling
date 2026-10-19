@@ -6,16 +6,18 @@
  * 14. Library drag to empty cell → pad created there (real pointer drag)
  * 15. BROWSE tab in popover → source select + ADD PAD
  * Later tests (no Slice-3 number): a new pad is SINGLE unless the user picks a type; the suggested name follows the file, a typed
- * name is kept.
+ * name is kept; ADD PAD in a full deck adds a row.
  */
 
 import { test, expect } from '@playwright/test';
 import {
+  addNamedPad,
   ensureTestAudio,
   goToBoardList,
   createBoardAndNavigate,
   createDeck,
   enterSetupMode,
+  padPosition,
   pointerDrag,
   reopenFirstBoard,
   seedTestAudio,
@@ -186,4 +188,20 @@ test('the suggested name follows the chosen file; a typed name is kept', async (
   await item('long-12s').click();
   await page.getByTestId('pad-creation-popover-add-button').click();
   await expect(pads.filter({ hasText: 'Rain' })).toHaveCount(1);
+});
+
+// A deck has no fixed capacity (owner decision 2026-10-19, ADR-0075 amendment): a new deck has
+// 4 × 4 cells, and ADD PAD in a full deck did nothing before
+test('ADD PAD in a full deck adds a row; the pad and the row stay after a reload', async ({
+  page,
+}) => {
+  for (let n = 1; n <= 16; n++) await addNamedPad(page, `Pad ${n}`);
+  await expect(page.locator('[data-testid^="pad-grid-cell-empty-slot-"]')).toHaveCount(0);
+  const last = await addNamedPad(page, 'Pad 17');
+  expect(await padPosition(page, last)).toBe('0,4');
+  await expect(page.getByTestId('pad-grid-cell-empty-slot-3-4')).toHaveCount(1); // the new row
+
+  await reopenFirstBoard(page);
+  await expect(page.locator(PAD_CELL)).toHaveCount(17);
+  expect(await padPosition(page, last)).toBe('0,4');
 });

@@ -62,19 +62,36 @@ const withDeck = (board: Board, deckId: string, change: (deck: Deck) => Deck): B
   decks: board.decks.map((d) => (d.id === deckId ? change(d) : d)),
 });
 
-/** Adds a new pad to the pool and places it in one deck. */
+// A deck has no fixed capacity: a placement below its last row adds the rows it needs, so the
+// grid shows it (owner decision 2026-10-19, docs/architecture/0075-flowing-pad-grid-and-pad-size.md)
+const withPlacement = (deck: Deck, placement: Placement): Deck => ({
+  ...deck,
+  gridConfig:
+    placement.position.row < deck.gridConfig.rows
+      ? deck.gridConfig
+      : { ...deck.gridConfig, rows: placement.position.row + 1 },
+  placements: [...deck.placements, placement],
+});
+
+// The next free cell in reading order; when every cell is taken, the first one of a new row
+const freeCell = (deck: Deck): PadPosition =>
+  nextFreeSlot(deck.placements, deck.gridConfig.cols, deck.gridConfig.rows) ?? {
+    col: 0,
+    row: deck.gridConfig.rows,
+  };
+
+/** Adds a new pad to the pool and places it in one deck; a cell below the last row adds rows. */
 export function addPadToDeck(board: Board, deckId: string, pad: Pad, position: PadPosition): Board {
-  return withDeck({ ...board, pads: [...board.pads, pad] }, deckId, (deck) => ({
-    ...deck,
-    placements: [...deck.placements, { padId: pad.id, position }],
-  }));
+  return withDeck({ ...board, pads: [...board.pads, pad] }, deckId, (deck) =>
+    withPlacement(deck, { padId: pad.id, position }),
+  );
 }
 
 /**
  * Adds a new pad to the pool and places it in a deck: on `preferred` when that cell is free,
- * otherwise on the next free cell (row-major). Decided on the board passed in — callers pass the
- * latest one (updateBoard), so two quick adds never pick the same cell. Unchanged when the deck
- * is unknown or full.
+ * otherwise on the next free cell (row-major) — in a full deck the first cell of a new row.
+ * Decided on the board passed in — callers pass the latest one (updateBoard), so two quick adds
+ * never pick the same cell. Unchanged when the deck is unknown.
  */
 export function addPadToFreeCell(
   board: Board,
@@ -89,11 +106,8 @@ export function addPadToFreeCell(
     deck.placements.some((p) => p.position.col === pos.col && p.position.row === pos.row);
   const inGrid = (pos: PadPosition) =>
     pos.col >= 0 && pos.col < cols && pos.row >= 0 && pos.row < rows;
-  const position =
-    preferred && inGrid(preferred) && !taken(preferred)
-      ? preferred
-      : nextFreeSlot(deck.placements, cols, rows);
-  return position ? addPadToDeck(board, deckId, pad, position) : board;
+  const position = preferred && inGrid(preferred) && !taken(preferred) ? preferred : freeCell(deck);
+  return addPadToDeck(board, deckId, pad, position);
 }
 
 /** Adds a new pad to the pool only — it sits in no deck (All pads view, owner decision 2026-10-02). */
@@ -145,20 +159,15 @@ export function removeFromDeck(board: Board, deckId: string, padId: string): Boa
 }
 
 /**
- * Places a pool pad in a deck on the next free cell (row-major). Returns the board unchanged when
- * the pad is already in that deck, the deck is unknown or the grid is full — the caller can tell
- * by identity (`result === board`).
+ * Places a pool pad in a deck on the next free cell (row-major) — in a full deck the first cell of
+ * a new row. Returns the board unchanged when the pad is already in that deck or the deck is
+ * unknown — the caller can tell by identity (`result === board`).
  */
 export function placeInDeck(board: Board, deckId: string, padId: string): Board {
   const deck = findDeck(board, deckId);
   if (!deck || !findPad(board, padId) || deck.placements.some((p) => p.padId === padId))
     return board;
-  const position = nextFreeSlot(deck.placements, deck.gridConfig.cols, deck.gridConfig.rows);
-  if (!position) return board;
-  return withDeck(board, deckId, (d) => ({
-    ...d,
-    placements: [...d.placements, { padId, position }],
-  }));
+  return withDeck(board, deckId, (d) => withPlacement(d, { padId, position: freeCell(d) }));
 }
 
 /** The whole pool for the All pads view: sorted by name (case-insensitive), then by id. */
@@ -272,7 +281,7 @@ export function deletedPad(board: Board, padId: string): DeletedPad | null {
 /**
  * Puts a deleted pad back — the undo of a pad delete (Slice 18b, ADR-0086), built on the LATEST
  * board, so changes made since the delete stay: back in the pool where it was, in each deck that
- * still exists (on its cell, or the next free one; not when the deck is full), in the quick-access
+ * still exists (on its cell, or the next free one — a full deck grows a row), in the quick-access
  * bar (when there is room), and in each combo step that still exists. A key another pad took
  * meanwhile stays with that pad (K2: never a deck key and a quick-access key at once); a step
  * that would now close a cycle does not take the pad back; a combo's own steps keep only pads
@@ -306,20 +315,15 @@ export function restorePad(board: Board, deleted: DeletedPad): Board {
       col < cols &&
       row < rows &&
       !deck.placements.some((p) => p.position.col === col && p.position.row === row);
-    const position = free ? placement.position : nextFreeSlot(deck.placements, cols, rows);
-    if (!position) continue;
+    const position = free ? placement.position : freeCell(deck);
     const { hotkey, ...rest } = placement;
     const keyFree =
       hotkey !== undefined &&
       !qaKeys.has(hotkey) &&
       !deck.placements.some((p) => p.hotkey === hotkey);
-    next = withDeck(next, deckId, (d) => ({
-      ...d,
-      placements: [
-        ...d.placements,
-        keyFree ? { ...rest, position, hotkey } : { ...rest, position },
-      ],
-    }));
+    next = withDeck(next, deckId, (d) =>
+      withPlacement(d, keyFree ? { ...rest, position, hotkey } : { ...rest, position }),
+    );
   }
 
   const qa = deleted.quickAccess;

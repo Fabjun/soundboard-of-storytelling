@@ -2,7 +2,8 @@
  * @fileoverview boardModel — property-based tests (T11b, Slice 9c)
  *
  * Random sequences of the operations the UI performs keep every board consistent
- * (boardProblems is empty after each step), and deleting a pad leaves no reference to it.
+ * (boardProblems is empty after each step), a deck takes every new pad (a full one grows a row),
+ * and deleting a pad leaves no reference to it.
  * On failure fast-check prints the seed and the shrunk sequence; pass `{ seed, path }` as fc
  * options to reproduce it. Example-based tests: boardModel.test.ts.
  */
@@ -147,6 +148,27 @@ describe('board model', () => {
         b = apply(b, o, n);
         expect(boardProblems(b), `after step ${n}: ${o.kind}`).toEqual([]);
       });
+    },
+  );
+
+  // A deck has no fixed capacity (owner decision 2026-10-19): ADD PAD never does nothing
+  // The random sequences seldom fill a deck, so the deck is filled here: up to, onto and past full
+  test.prop([fc.array(op, { maxLength: 30 }), fc.nat(5), fc.nat(20)])(
+    'a deck takes every new pad; only a full deck grows, by one row',
+    (ops, which, fill) => {
+      let b = start();
+      ops.forEach((o, n) => (b = apply(b, o, n)));
+      if (b.decks.length === 0) return;
+      const deck = b.decks[which % b.decks.length];
+      const { cols, rows } = deck.gridConfig;
+      const free = cols * rows - deck.placements.length; // cells are unique and in the grid
+      const count = fill % (free + 2);
+      for (let i = 0; i < count; i++)
+        b = addPadToFreeCell(b, deck.id, newPad(`f${i}`, 'single', `Fill ${i}`));
+      const after = b.decks.find((d) => d.id === deck.id)!;
+      expect(after.placements).toHaveLength(deck.placements.length + count);
+      expect(after.gridConfig.rows).toBe(count > free ? rows + 1 : rows);
+      expect(boardProblems(b)).toEqual([]);
     },
   );
 

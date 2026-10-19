@@ -184,7 +184,7 @@ export function BoardScreen(): JSX.Element {
     const pad = newPad(nanoid(), DEFAULT_PAD_TYPE, '', [], Date.now());
     // All pads: the pad goes to the pool only (owner decision 2026-10-02). In a deck the cell is
     // chosen on the latest board: a held or double-pressed A key adds pads to different cells.
-    // Null = grid full (or save failed) — nothing to open.
+    // A full deck grows a row (ADR-0075). Null = the board or deck is gone — nothing to open.
     const { board: added } = applyBoardChange(board.id, 'add pad', (b) =>
       deckId ? addPadToFreeCell(b, deckId, pad) : addPadToPool(b, pad),
     );
@@ -252,8 +252,8 @@ export function BoardScreen(): JSX.Element {
 
     const pad = newPad(nanoid(), DEFAULT_PAD_TYPE, item.name, [itemId], Date.now());
 
-    // Deck: on the target cell; when it is taken, on the next free one (nothing when the grid is
-    // full). All pads: into the pool, the drop position does not matter there.
+    // Deck: on the target cell; when it is taken, on the next free one (a full deck grows a row).
+    // All pads: into the pool, the drop position does not matter there.
     await updateBoard(board.id, `add pad '${item.name}'`, (b) =>
       deckId ? addPadToFreeCell(b, deckId, pad, targetPos) : addPadToPool(b, pad),
     );

@@ -619,7 +619,7 @@ the animations switch of 14c.
 
 #### Grid / Layout
 
-### Grid configurability (gridConfig popover)
+### Grid configurability (gridConfig popover) — Rejected (2026-10-19)
 
 Expose cols × rows in a popover. Mobile hard cap: 5×4 (no 6×4 or 6×6 in the mobile popover
 — avoids "tooltip warning the user not to do the thing the UI offers").
@@ -632,6 +632,9 @@ window and PAD SIZE (ADR-0075, 3.0.177). The stored `cols × rows` still sets ho
 holds (`nextFreeSlot` in `v3/src/components/PadEditorPanel.tsx`), so whether that capacity
 becomes configurable is still open.
 **Source:** ADR-0032, docs/design/design-notes.md §Slice 8 — A4 Mobile preset ceiling.
+**Rejected (owner decision 2026-10-19):** a deck has no capacity to set — a full deck grows a row
+(ADR-0075 amendment 2026-10-19, BACKLOG "A full deck takes no more pads"), and the columns follow
+the window.
 
 ### Cell-size setting ✅ Done (3.0.177, 3.0.234)
 
@@ -643,19 +646,35 @@ multiplies the variation space without much real benefit.
 **When:** Slice 8.
 **Source:** docs/design/design-notes.md §Slice 8 — A4 Cell-size.
 
-### Default new-scene grid as user preference
+### Default new-scene grid as user preference — Rejected (2026-10-19)
 
 Currently hardcoded 4×4 for every new scene. Expose an override in Settings → Display.
 Then 4×4 becomes the default until it is changed once.
 **When:** with "Grid configurability (gridConfig popover)".
+**Rejected (owner decision 2026-10-19):** the size of a new deck limits nothing any more — a full
+deck grows a row (ADR-0075 amendment 2026-10-19).
 **Source:** docs/design/design-notes.md §Slice 8 — A4 Default new-scene grid.
 
-### Unplaced pads remember desired position
+### Unplaced pads remember desired position — Rejected (2026-10-19)
 
 When shrinking a grid pushes pads off, they retain their wanted (col, row). Enlarging the
 grid re-places them automatically if the slot is still free.
 **When:** with "Grid configurability (gridConfig popover)" — the case arises only if a deck's
 capacity can shrink.
+**Rejected (owner decision 2026-10-19):** a deck's grid never shrinks — it only grows a row when it
+is full (ADR-0075 amendment 2026-10-19).
+
+### A full deck takes no more pads ✅ Done (3.0.267)
+
+Found 2026-10-19 while triaging the grid items: a new deck has 4 × 4 cells, and ADD PAD in a full
+deck did nothing and said nothing (`addPadToFreeCell` returned the board unchanged); the DECKS
+checkbox of the PAD editor was disabled with "(full)", and a library drop or the undo of a pad
+delete placed nothing there. V1 had no limit.
+✅ **Done (3.0.267, owner decision 2026-10-19):** a full deck grows a row — one rule in
+`v3/src/lib/boardModel.ts` for every way in (ADR-0075 amendment 2026-10-19). Tests:
+`v3/tests/unit/boardModel.test.ts`, the property "a deck takes every new pad" in
+`v3/tests/unit/boardModel.property.test.ts`, and `v3/tests/e2e/pad-creation.spec.ts` (17 pads,
+Chromium and WebKit); each counter-checked against the old behavior.
 **Source:** ADR-0009, docs/design/design-notes.md §Slice 8 — A4 Unplaced pads.
 
 ### Mobile layout adaptation ✅ Done (3.0.210, 3.0.211)
@@ -970,7 +989,7 @@ the user-agent string, while the physical viewport and the `pointer` media query
 unchanged. UA-based detection is unreliable and unnecessary under the adaptive model.
 
 **4-column grid is binding across all screen formats**
-(→ [Grid configurability](#grid-configurability-gridconfig-popover)).
+(→ [Grid configurability](#grid-configurability-gridconfig-popover--rejected-2026-10-19)).
 **→ ADR:** [ADR-0045](architecture/0045-two-axis-adaptive-model.md) · **→ Boundary:**
 Axis-1 frame-layout adaptation ≠ pad-grid column reflow
 (→ [ADR-0032](architecture/0032-grid-4col-constant.md)).
@@ -1224,7 +1243,7 @@ Both are exceptions for users who want it differently — consistent with the gu
 
 Before building: check interaction expectations for existing saved boards. The new gesture model (point 7) changes the current SETUP reorder, which starts immediately on `pointerdown` (new: long hold instead of immediate drag). A migration/compatibility question to keep in mind when building.
 
-**→ Slice 8:** [Mobile layout adaptation](#mobile-layout-adaptation--done-30210-30211) · [Grid configurability](#grid-configurability-gridconfig-popover) · [Cell-size setting](#cell-size-setting--done-30177-30234).
+**→ Slice 8:** [Mobile layout adaptation](#mobile-layout-adaptation--done-30210-30211) · [Grid configurability](#grid-configurability-gridconfig-popover--rejected-2026-10-19) · [Cell-size setting](#cell-size-setting--done-30177-30234).
 **Cross-references:** Settings architecture (point 8) → full model in [2e — Multi-level settings hierarchy](#2e--multi-level-settings-hierarchy); display setting scope per surface → [2c — Modular display controls](#2c--modular-display-controls); quick-access/quick-menu display consistency → [Quick-Access content deferred](#quick-access-content-deferred-pending-real-scene-experience) and [B9](#b9--gap-classification-three-confirmations-two-new-candidates).
 
 ---
