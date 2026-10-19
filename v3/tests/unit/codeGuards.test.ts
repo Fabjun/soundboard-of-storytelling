@@ -472,7 +472,10 @@ describe('guard: board writes go through boardWrites (BACKLOG "board writes from
   });
 
   it('components and screens use updateBoard / createBoard, never boardPut / upsertBoard', () => {
-    expect(calls, 'write: await updateBoard(board.id, (b) => change(b, …))').toEqual([]);
+    expect(
+      calls,
+      "write: await updateBoard(board.id, 'name of the change', (b) => change(b, …))",
+    ).toEqual([]);
   });
 });
 

@@ -49,7 +49,13 @@ test('↶ and ↷ step through the changes; an undo is stored, the history ends 
   page,
 }) => {
   const pad = padCells(page);
+  // The buttons say which change they take back or bring back, in their description (ADR-0086)
+  await expect(undoButton(page)).toHaveAccessibleName('Undo');
+  await expect(undoButton(page)).toHaveAccessibleDescription(/^Undo: edit pad 'Rain'/);
+  await expect(redoButton(page)).toHaveAccessibleDescription(/^Nothing to redo/);
   await undoButton(page).click(); // the name, saved in the PAD editor
+  await expect(undoButton(page)).toHaveAccessibleDescription(/^Undo: add pad/);
+  await expect(redoButton(page)).toHaveAccessibleDescription(/^Redo: edit pad 'Rain'/);
   await expect(pad).toHaveCount(1);
   await expect(pad.first()).not.toContainText('Rain');
   await undoButton(page).click(); // ADD PAD

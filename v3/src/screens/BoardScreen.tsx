@@ -34,7 +34,7 @@ import {
   playingPads,
 } from '../state/store';
 import { applyBoardChange, stepBoard, updateBoard } from '../state/boardWrites';
-import { canRedoBoard, canUndoBoard } from '../state/boardHistory';
+import { redoLabel, undoLabel } from '../state/boardHistory';
 import { useKeydown } from '../lib/escapeKey';
 import { announceUndo } from '../state/undoNotice';
 import { UndoNoticeRegion } from '../components/UndoNoticeRegion';
@@ -185,7 +185,7 @@ export function BoardScreen(): JSX.Element {
     // All pads: the pad goes to the pool only (owner decision 2026-10-02). In a deck the cell is
     // chosen on the latest board: a held or double-pressed A key adds pads to different cells.
     // Null = grid full (or save failed) — nothing to open.
-    const { board: added } = applyBoardChange(board.id, (b) =>
+    const { board: added } = applyBoardChange(board.id, 'add pad', (b) =>
       deckId ? addPadToFreeCell(b, deckId, pad) : addPadToPool(b, pad),
     );
     // Open the new pad at once, not after the save — a name typed meanwhile belongs to it
@@ -254,7 +254,7 @@ export function BoardScreen(): JSX.Element {
 
     // Deck: on the target cell; when it is taken, on the next free one (nothing when the grid is
     // full). All pads: into the pool, the drop position does not matter there.
-    await updateBoard(board.id, (b) =>
+    await updateBoard(board.id, `add pad '${item.name}'`, (b) =>
       deckId ? addPadToFreeCell(b, deckId, pad, targetPos) : addPadToPool(b, pad),
     );
   }
@@ -285,8 +285,9 @@ export function BoardScreen(): JSX.Element {
     // Delete pad (ADR-0048): from the pool, every deck, quick access and combo steps. The toast's
     // UNDO puts it back where it was, keeping every change made since (restorePad).
     const boardId = board.id;
+    const name = board.pads.find((p) => p.id === padId)?.name || 'without a name';
     const taken: { pad: DeletedPad | null } = { pad: null };
-    const { board: changed } = applyBoardChange(boardId, (b) => {
+    const { board: changed } = applyBoardChange(boardId, `delete pad '${name}'`, (b) => {
       taken.pad = deletedPad(b, padId);
       return deletePad(b, padId);
     });
@@ -300,7 +301,9 @@ export function BoardScreen(): JSX.Element {
     announceUndo(
       `${removed.pad.name ? `Deleted '${removed.pad.name}'` : 'Deleted a pad'}${from}`,
       () => {
-        void updateBoard(boardId, (b) => restorePad(b, removed));
+        void updateBoard(boardId, `bring back pad '${removed.pad.name || 'without a name'}'`, (b) =>
+          restorePad(b, removed),
+        );
       },
     );
   }
@@ -309,7 +312,10 @@ export function BoardScreen(): JSX.Element {
     if (!deck || !board) return;
     // Remove from deck (ADR-0048): only this placement; the pad stays in the pool and other decks.
     const deckId = deck.id;
-    if (applyBoardChange(board.id, (b) => removeFromDeck(b, deckId, padId)).board) {
+    if (
+      applyBoardChange(board.id, 'take pad out of deck', (b) => removeFromDeck(b, deckId, padId))
+        .board
+    ) {
       setSelectedPadId(null);
       setRightPanel('empty');
     }
@@ -488,7 +494,7 @@ export function BoardScreen(): JSX.Element {
                 // Stored once, when the move ends — with the board, or for every board (settings.md
                 // S4); shown at once, so the preview can go
                 if (getPadSizeScope() === 'app') setAppPadSize(px);
-                else applyBoardChange(board.id, (b) => setBoardPadSize(b, px));
+                else applyBoardChange(board.id, 'change pad size', (b) => setBoardPadSize(b, px));
                 setPadSizePreview(null);
               },
             }
@@ -511,8 +517,8 @@ export function BoardScreen(): JSX.Element {
         }}
         toggles={narrowWindow.value ? undefined : barToggles(false)}
         history={{
-          canUndo: canUndoBoard(board.id),
-          canRedo: canRedoBoard(board.id),
+          undo: undoLabel(board.id),
+          redo: redoLabel(board.id),
           onUndo: () => handleHistory('undo'),
           onRedo: () => handleHistory('redo'),
         }}
@@ -558,7 +564,7 @@ export function BoardScreen(): JSX.Element {
             <EmptyBoardState
               onAddDeck={async () => {
                 const id = nanoid();
-                const { board: added } = applyBoardChange(board.id, (b) =>
+                const { board: added } = applyBoardChange(board.id, 'add deck', (b) =>
                   addDeck(b, { id, name: nextDeckName(b), gridConfig: { ...DEFAULT_GRID } }),
                 );
                 if (added) currentDeckId.value = id;

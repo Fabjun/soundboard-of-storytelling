@@ -12,7 +12,7 @@ import { boardGet, _resetDB } from '../../src/db/idb';
 import { boards, lastSaveFailed, pendingSaves, removeBoardFromStore } from '../../src/state/store';
 import { LIMIT } from '../../src/lib/editHistory';
 import { applyBoardChange, createBoard, stepBoard, updateBoard } from '../../src/state/boardWrites';
-import { canRedoBoard, canUndoBoard } from '../../src/state/boardHistory';
+import { redoLabel, undoLabel } from '../../src/state/boardHistory';
 
 const board = (id = 'b'): Board => ({
   id,
@@ -44,8 +44,8 @@ beforeEach(() => {
 describe('a new board', () => {
   it('has nothing to undo or redo', async () => {
     await createBoard(board());
-    expect(canUndoBoard('b')).toBe(false);
-    expect(canRedoBoard('b')).toBe(false);
+    expect(undoLabel('b')).toBeNull();
+    expect(redoLabel('b')).toBeNull();
     expect(stepBoard('b', 'undo')).toBeNull();
     expect(stepBoard('b', 'redo')).toBeNull();
     expect(stepBoard('nope', 'undo')).toBeNull();
@@ -56,27 +56,27 @@ describe('undo and redo', () => {
   it('undo shows the board before the change and saves it; redo brings the change back', async () => {
     await createBoard(board());
     const before = shown();
-    applyBoardChange('b', named('A'));
-    expect(canUndoBoard('b')).toBe(true);
+    applyBoardChange('b', 'change', named('A'));
+    expect(undoLabel('b')).not.toBeNull();
 
     expect(stepBoard('b', 'undo')).toBe(before);
     expect(shown()).toBe(before);
     await saved();
     expect((await boardGet('b'))!.name).toBe('Board');
-    expect(canUndoBoard('b')).toBe(false);
-    expect(canRedoBoard('b')).toBe(true);
+    expect(undoLabel('b')).toBeNull();
+    expect(redoLabel('b')).not.toBeNull();
 
     expect(stepBoard('b', 'redo')!.name).toBe('A');
     await saved();
     expect((await boardGet('b'))!.name).toBe('A');
-    expect(canRedoBoard('b')).toBe(false);
+    expect(redoLabel('b')).toBeNull();
   });
 
   it('steps back through several changes in order, and forward again', async () => {
     await createBoard(board());
-    applyBoardChange('b', named('A'));
-    applyBoardChange('b', named('B'));
-    applyBoardChange('b', named('C'));
+    applyBoardChange('b', 'change', named('A'));
+    applyBoardChange('b', 'change', named('B'));
+    applyBoardChange('b', 'change', named('C'));
     expect(stepBoard('b', 'undo')!.name).toBe('B');
     expect(stepBoard('b', 'undo')!.name).toBe('A');
     expect(stepBoard('b', 'undo')!.name).toBe('Board');
@@ -86,10 +86,25 @@ describe('undo and redo', () => {
     await saved();
   });
 
+  it('names the change ↶ takes back and the change ↷ brings back', async () => {
+    await createBoard(board());
+    applyBoardChange('b', 'rename to A', named('A'));
+    applyBoardChange('b', 'rename to B', named('B'));
+    expect(undoLabel('b')).toBe('rename to B');
+    expect(redoLabel('b')).toBeNull();
+    stepBoard('b', 'undo');
+    expect(undoLabel('b')).toBe('rename to A');
+    expect(redoLabel('b')).toBe('rename to B');
+    stepBoard('b', 'undo');
+    expect(undoLabel('b')).toBeNull();
+    expect(redoLabel('b')).toBe('rename to A');
+    await saved();
+  });
+
   it('an undo is not a step of its own: undoing twice goes back two changes', async () => {
     await createBoard(board());
-    applyBoardChange('b', named('A'));
-    applyBoardChange('b', named('B'));
+    applyBoardChange('b', 'change', named('A'));
+    applyBoardChange('b', 'change', named('B'));
     stepBoard('b', 'undo');
     expect(stepBoard('b', 'undo')!.name).toBe('Board');
     await saved();
@@ -97,23 +112,23 @@ describe('undo and redo', () => {
 
   it('a new change after an undo drops what could be redone', async () => {
     await createBoard(board());
-    applyBoardChange('b', named('A'));
+    applyBoardChange('b', 'change', named('A'));
     stepBoard('b', 'undo');
-    await updateBoard('b', named('X'));
-    expect(canRedoBoard('b')).toBe(false);
+    await updateBoard('b', 'change', named('X'));
+    expect(redoLabel('b')).toBeNull();
     expect(stepBoard('b', 'undo')!.name).toBe('Board');
     await saved();
   });
 
   it('a change that changes nothing is no step', async () => {
     await createBoard(board());
-    applyBoardChange('b', (b) => b);
-    expect(canUndoBoard('b')).toBe(false);
+    applyBoardChange('b', 'change', (b) => b);
+    expect(undoLabel('b')).toBeNull();
   });
 
   it('keeps the last LIMIT steps', async () => {
     await createBoard(board());
-    for (let i = 1; i <= LIMIT + 1; i++) applyBoardChange('b', named(`n${i}`));
+    for (let i = 1; i <= LIMIT + 1; i++) applyBoardChange('b', 'change', named(`n${i}`));
     let undone = 0;
     while (stepBoard('b', 'undo')) undone++;
     expect(undone).toBe(LIMIT);
@@ -124,10 +139,10 @@ describe('undo and redo', () => {
   it('each board has its own history', async () => {
     await createBoard(board('a'));
     await createBoard(board('b'));
-    applyBoardChange('a', named('A'));
-    expect(canUndoBoard('a')).toBe(true);
-    expect(canUndoBoard('b')).toBe(false);
-    applyBoardChange('b', named('B'));
+    applyBoardChange('a', 'change', named('A'));
+    expect(undoLabel('a')).not.toBeNull();
+    expect(undoLabel('b')).toBeNull();
+    applyBoardChange('b', 'change', named('B'));
     stepBoard('a', 'undo');
     expect(shown('b').name).toBe('B');
     expect(shown('a').name).toBe('Board');
@@ -138,24 +153,24 @@ describe('undo and redo', () => {
 describe('the store is the truth', () => {
   it('a failed save shows the stored board, and the history starts again from it', async () => {
     await createBoard(board());
-    await updateBoard('b', named('A'));
+    await updateBoard('b', 'change', named('A'));
     const error = vi.spyOn(console, 'error').mockImplementation(() => {});
     // A function cannot be stored in IndexedDB (structured clone) → the save fails.
-    await updateBoard('b', (b) => ({ ...b, name: 'broken', extra: () => 0 }) as Board);
+    await updateBoard('b', 'change', (b) => ({ ...b, name: 'broken', extra: () => 0 }) as Board);
     error.mockRestore();
     expect(shown().name).toBe('A');
-    expect(canUndoBoard('b')).toBe(false);
+    expect(undoLabel('b')).toBeNull();
     expect(stepBoard('b', 'undo')).toBeNull();
     expect(shown().name).toBe('A');
   });
 
   it('a board deleted and created again with the same id has no steps of its old life', async () => {
     await createBoard(board());
-    applyBoardChange('b', named('old'));
+    applyBoardChange('b', 'change', named('old'));
     await saved();
     removeBoardFromStore('b');
     await createBoard(board());
-    expect(canUndoBoard('b')).toBe(false);
+    expect(undoLabel('b')).toBeNull();
     expect(stepBoard('b', 'undo')).toBeNull();
     expect(shown().name).toBe('Board');
   });

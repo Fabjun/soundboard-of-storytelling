@@ -127,7 +127,9 @@ export function DeckRail({
     committingForRef.current = deckId;
     try {
       // Shown at once and saved; Escape during the save is too late to cancel — the rename commits.
-      await updateBoard(board.id, (b) => renameDeck(b, deckId, newName));
+      await updateBoard(board.id, `rename deck to '${newName}'`, (b) =>
+        renameDeck(b, deckId, newName),
+      );
     } finally {
       committingForRef.current = null;
       // Functional update: don't clobber a different deck's active edit
@@ -148,7 +150,9 @@ export function DeckRail({
     const suffix = existing.length > 1 ? ` · ${existing.length}` : ' · 2';
     // Same pads, new placements (docs/architecture/0048-pad-pool-decks.md#2-behavior-final-not-provisional) — no pad copies.
     const copyId = nanoid();
-    await updateBoard(board.id, (b) => duplicateDeckIn(b, deck.id, copyId, deck.name + suffix));
+    await updateBoard(board.id, `duplicate deck '${deck.name}'`, (b) =>
+      duplicateDeckIn(b, deck.id, copyId, deck.name + suffix),
+    );
   }
 
   // ── Delete ────────────────────────────────────────────────────────────────
@@ -159,14 +163,20 @@ export function DeckRail({
     // The toast's UNDO puts back only the deck, as it was on the latest board — not a copy of
     // the whole board, which would undo every change made since.
     let removed = deck;
-    const { board: updatedBoard } = applyBoardChange(board.id, (b) => {
-      removed = b.decks.find((d) => d.id === deck.id) ?? deck;
-      return deleteDeck(b, deck.id);
-    });
+    const { board: updatedBoard } = applyBoardChange(
+      board.id,
+      `delete deck '${deck.name}'`,
+      (b) => {
+        removed = b.decks.find((d) => d.id === deck.id) ?? deck;
+        return deleteDeck(b, deck.id);
+      },
+    );
     if (updatedBoard) {
       const count = removed.placements.length;
       announceUndo(`Deleted '${removed.name}' · ${count} pad${count !== 1 ? 's' : ''}`, () => {
-        void updateBoard(board.id, (b) => restoreDeck(b, removed));
+        void updateBoard(board.id, `bring back deck '${removed.name}'`, (b) =>
+          restoreDeck(b, removed),
+        );
       });
       // If deleted deck was active, switch to first remaining
       if (activeDeckId === deck.id && updatedBoard.decks.length > 0) {
@@ -181,7 +191,7 @@ export function DeckRail({
     const id = nanoid();
     // Smallest unused "Deck N" (never the deck count — after a delete the count can repeat a
     // name still in use); addDeck appends it at the end.
-    const { board: added } = applyBoardChange(board.id, (b) =>
+    const { board: added } = applyBoardChange(board.id, 'add deck', (b) =>
       addDeckTo(b, { id, name: nextDeckName(b), gridConfig: { ...DEFAULT_GRID } }),
     );
     if (added) onDeckSelect(id);
@@ -195,7 +205,7 @@ export function DeckRail({
   const dragStartRef = useRef<{ y: number; from: number; moved: boolean } | null>(null);
 
   function moveTo(deckId: string, to: number) {
-    void updateBoard(board.id, (b) => moveDeck(b, deckId, to));
+    void updateBoard(board.id, 'move deck', (b) => moveDeck(b, deckId, to));
   }
 
   function onHandleDown(e: PointerEvent, from: number) {

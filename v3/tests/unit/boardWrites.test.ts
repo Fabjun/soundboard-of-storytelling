@@ -43,8 +43,8 @@ describe('updateBoard', () => {
     await createBoard(board());
     // Not awaited one by one: the second starts while the first is still saving.
     await Promise.all([
-      updateBoard('b', (b) => ({ ...b, name: `${b.name} A` })),
-      updateBoard('b', (b) => ({ ...b, name: `${b.name} B` })),
+      updateBoard('b', 'change', (b) => ({ ...b, name: `${b.name} A` })),
+      updateBoard('b', 'change', (b) => ({ ...b, name: `${b.name} B` })),
     ]);
     expect(stored()!.name).toBe('Board A B');
     expect((await boardGet('b'))!.name).toBe('Board A B');
@@ -52,15 +52,15 @@ describe('updateBoard', () => {
 
   it('shows the change before the save has finished', async () => {
     await createBoard(board());
-    const saving = updateBoard('b', (b) => ({ ...b, name: 'Now' }));
+    const saving = updateBoard('b', 'change', (b) => ({ ...b, name: 'Now' }));
     expect(stored()!.name).toBe('Now');
     await saving;
   });
 
   it('writes nothing when the change returns the same board or the board is unknown', async () => {
     await createBoard(board());
-    expect(await updateBoard('b', (b) => b)).toBeNull();
-    expect(await updateBoard('nope', (b) => ({ ...b, name: 'x' }))).toBeNull();
+    expect(await updateBoard('b', 'change', (b) => b)).toBeNull();
+    expect(await updateBoard('nope', 'change', (b) => ({ ...b, name: 'x' }))).toBeNull();
     expect(boards.value).toHaveLength(1);
   });
 
@@ -68,7 +68,7 @@ describe('updateBoard', () => {
     await createBoard(board());
     const error = vi.spyOn(console, 'error').mockImplementation(() => {});
     // A function cannot be stored in IndexedDB (structured clone) → the save fails.
-    const result = await updateBoard('b', (b) => ({
+    const result = await updateBoard('b', 'change', (b) => ({
       ...b,
       name: 'unsaved',
       bad: () => 0,
@@ -109,7 +109,7 @@ describe('updateBoard', () => {
     await createBoard(board());
     const error = vi.spyOn(console, 'error').mockImplementation(() => {});
     breakStorage();
-    expect(await updateBoard('b', (b) => ({ ...b, name: 'unsaved' }))).toBeNull();
+    expect(await updateBoard('b', 'change', (b) => ({ ...b, name: 'unsaved' }))).toBeNull();
     expect(stored()!.name).toBe('unsaved');
     expect(saveState.value).toBe('failed');
     error.mockRestore();
@@ -122,7 +122,7 @@ describe('updateBoard', () => {
     await creating;
     expect(pendingSaves.value).toBe(0);
     const error = vi.spyOn(console, 'error').mockImplementation(() => {});
-    await updateBoard('b', (b) => Object.assign({ ...b }, { bad: () => 0 }));
+    await updateBoard('b', 'change', (b) => Object.assign({ ...b }, { bad: () => 0 }));
     expect(pendingSaves.value).toBe(0);
     error.mockRestore();
   });
@@ -131,7 +131,7 @@ describe('updateBoard', () => {
 describe('applyBoardChange', () => {
   it('returns the shown board at once; the save settles later', async () => {
     await createBoard(board());
-    const { board: now, saved } = applyBoardChange('b', (b) => ({ ...b, name: 'Now' }));
+    const { board: now, saved } = applyBoardChange('b', 'change', (b) => ({ ...b, name: 'Now' }));
     expect(now?.name).toBe('Now');
     expect(stored()).toBe(now);
     expect(pendingSaves.value).toBe(1);
@@ -141,8 +141,8 @@ describe('applyBoardChange', () => {
 
   it('board is null when nothing changed or the board is unknown', async () => {
     await createBoard(board());
-    expect(applyBoardChange('b', (b) => b).board).toBeNull();
-    expect(await applyBoardChange('nope', (b) => ({ ...b, name: 'x' })).saved).toBeNull();
+    expect(applyBoardChange('b', 'change', (b) => b).board).toBeNull();
+    expect(await applyBoardChange('nope', 'change', (b) => ({ ...b, name: 'x' })).saved).toBeNull();
   });
 });
 
@@ -153,7 +153,7 @@ describe('whenSaved', () => {
 
   it('waits for a running save — the board is stored when it resolves', async () => {
     await createBoard(board());
-    const { saved } = applyBoardChange('b', (b) => ({ ...b, name: 'Later' }));
+    const { saved } = applyBoardChange('b', 'change', (b) => ({ ...b, name: 'Later' }));
     let settled = false;
     const waiting = whenSaved().then(() => (settled = true));
     await Promise.resolve();
@@ -174,12 +174,12 @@ describe('save state (status bar, Slice 12e)', () => {
     expect(saveState.value).toBe('saved');
 
     const error = vi.spyOn(console, 'error').mockImplementation(() => {});
-    await updateBoard('b', (b) => Object.assign({ ...b }, { bad: () => 0 }));
+    await updateBoard('b', 'change', (b) => Object.assign({ ...b }, { bad: () => 0 }));
     expect(lastSaveFailed.value).toBe(true);
     expect(saveState.value).toBe('failed');
     error.mockRestore();
 
-    const fixing = updateBoard('b', (b) => ({ ...b, name: 'Again' }));
+    const fixing = updateBoard('b', 'change', (b) => ({ ...b, name: 'Again' }));
     expect(saveState.value).toBe('saving'); // a running save wins over the failure
     await fixing;
     expect(saveState.value).toBe('saved');

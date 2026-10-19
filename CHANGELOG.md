@@ -7,6 +7,20 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.263 — 2026-10-19
+
+### Added
+
+- feat(board): ↶ and ↷ say which change they take back or bring back ("Undo: delete pad 'Rain'", "Redo: add pad") in their tooltip, which is also their accessible description; their name stays Undo / Redo — a name with the pad's name in it gave voice control and role locators two targets (the first gate failed on five specs); with nothing to undo they say so and are dimmed (BACKLOG "Undo names the change it undoes", ADR-0086 amendment)
+
+### Changed
+
+- refactor(state): every board change carries a name — applyBoardChange and updateBoard require it (21 writers named, a later one cannot forget it); boardHistory keeps it per step and gives undoLabel / redoLabel instead of canUndoBoard / canRedoBoard
+
+### Internal
+
+- test: unit boardHistory names the change for undo and redo; E2E board-undo reads the buttons' names and descriptions; counter-checked (a redo name taken from the wrong step)
+
 ## 3.0.262 — 2026-10-19
 
 ### Internal

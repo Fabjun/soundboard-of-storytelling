@@ -71,8 +71,7 @@ two-tap delete stays; no undo in GAME.
 - Memory: up to 100 boards per board touched in a session. Unchanged parts are shared between
   the steps (each change copies only what it changes), so a step costs the changed decks and pads,
   not the whole document; a full copy of a large board is about 50 KB (ADR-0010).
-- The undo buttons do not say what they will undo (such as "Undo delete deck"); each writer would
-  need a name for its change. Left for later (BACKLOG "Undo names the change it undoes").
+- The undo buttons name the change they take back since 3.0.263 (amendment below).
 - Two ways back after a delete: the toast's UNDO takes back just that deletion, ↶ steps back in
   order (amendment 2026-10-19). After ↶ has put the deck back, the toast's UNDO does nothing
   (`restoreDeck` leaves a deck that is there already).
@@ -142,3 +141,12 @@ board keeps the two taps — its undo lasts only the toast's 6 s, no ↶ reaches
 library file, which has no undo yet (Slice 16). NN/g, confirmation dialogs: "Do not use
 confirmation dialogs for routine actions"; "consider a confirmation dialog before actions that
 cannot be undone"; "An even better design would provide the user with the opportunity to undo".
+
+**2026-10-19 (3.0.263) — the buttons name the change.** Each history step keeps the name of the
+change that made it; `applyBoardChange` and `updateBoard` take it as a required argument, so every
+writer — and every later one — names its change ("delete pad 'Rain'", "move deck", "change pad
+size"). ↶ and ↷ show it in their tooltip, which is also their accessible description ("Undo:
+delete pad 'Rain'"); their name stays "Undo" / "Redo" — a name that held the pad's name gave
+voice control and role locators two targets (the pad "Rain" and "Undo: … 'Rain'"). With nothing to
+take back they say so and are dimmed. Closes the trade-off "the undo
+buttons do not say what they will undo".
