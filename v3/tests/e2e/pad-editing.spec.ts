@@ -83,7 +83,9 @@ test('18 — trivial type change (single→loop) → no confirmation dialog', as
   await page.getByTestId('pad-editor-panel-type-button-loop').click();
 
   // No dialog should appear
-  await expect(page.getByTestId('pad-type-confirm-dialog')).not.toBeVisible({
+  await expect(
+    page.getByRole('alertdialog', { name: 'Change pad type?', exact: true }),
+  ).not.toBeVisible({
     timeout: 1000,
   });
   // Type button should be the selected one (loop)
@@ -101,7 +103,8 @@ test('19 — lossy type change → PadTypeConfirmDialog appears', async ({ page 
   await page.getByTestId('pad-editor-panel').waitFor();
 
   // single→combo drops the audio files (padMigrationMatrix 'reset', ADR-0048): the dialog appears
-  const dialog = page.getByTestId('pad-type-confirm-dialog');
+  const dialog = page.getByRole('alertdialog', { name: 'Change pad type?', exact: true });
+  const cancel = dialog.getByRole('button', { name: 'CANCEL', exact: true });
   await page.getByTestId('pad-editor-panel-type-button-combo').click();
   await expect(dialog).toBeVisible();
 
@@ -109,7 +112,7 @@ test('19 — lossy type change → PadTypeConfirmDialog appears', async ({ page 
   await expect(
     page.getByRole('alertdialog', { name: 'Change pad type?', exact: true }),
   ).toBeVisible();
-  await expect(page.getByTestId('pad-type-confirm-dialog-cancel-button')).toBeFocused();
+  await expect(cancel).toBeFocused();
   const typeRow = page.getByTestId('pad-editor-panel-type-button-single');
   expect(await typeRow.evaluate((el) => el.closest('[inert]') !== null)).toBe(true);
 
@@ -127,7 +130,7 @@ test('19 — lossy type change → PadTypeConfirmDialog appears', async ({ page 
 
   // Cancel: the type stays SINGLE
   await page.getByTestId('pad-editor-panel-type-button-combo').click();
-  await page.getByTestId('pad-type-confirm-dialog-cancel-button').click();
+  await cancel.click();
   await expect(dialog).not.toBeVisible({ timeout: 2000 });
   await expect(page.getByTestId('pad-editor-panel-type-button-single')).toHaveAttribute(
     'aria-pressed',
@@ -136,7 +139,7 @@ test('19 — lossy type change → PadTypeConfirmDialog appears', async ({ page 
 
   // Confirm: the pad becomes a COMBO
   await page.getByTestId('pad-editor-panel-type-button-combo').click();
-  await page.getByTestId('pad-type-confirm-dialog-switch-button').click();
+  await page.getByRole('button', { name: 'SWITCH', exact: true }).click();
   await expect(dialog).not.toBeVisible({ timeout: 2000 });
   await expect(page.getByTestId('pad-editor-panel-type-button-combo')).toHaveAttribute(
     'aria-pressed',

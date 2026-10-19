@@ -57,7 +57,22 @@ reference to a file that is gone. Undo would need the audio kept, and it may not
 screen is left or the page is hidden, counted as a running save) or a trash in IndexedDB. Each has
 edges: the same file uploaded again while its delete waits, a delete that waits when the app is
 closed. Slice 16 brings multi-select and bulk delete to the library; one way for single and bulk
-deletes is decided there (decision 2026-10-19, ADR-0086 amendment). **When:** Slice 16.
+deletes is decided there (decision 2026-10-19, ADR-0086 amendment). **When:** Slice 16a — a trash
+in its own IndexedDB store ([library.md](product/features/library.md#l1-undo-for-a-deleted-file)
+L1, 2026-10-20).
+
+### Two-tap confirmations
+
+Found 2026-10-20, when the owner chose a confirmation dialog over a second tap for deletes that
+cannot be undone (an accidental double tap on a button in a fixed place confirms at once): six
+places still confirm with a second tap on the same button — the board delete
+(`v3/src/screens/BoardListScreen.tsx`, which also offers UNDO since 3.0.254), removing a file
+(`v3/src/components/PadFileList.tsx`), an icon or the pad from the deck
+(`v3/src/components/PadEditorPanel.tsx`), a combo step or a pad of a step
+(`v3/src/components/ComboStepsEditor.tsx`). Most of them can be undone (UNDO, the editor's ↶, the
+board's ↶), so by the rule above they would need no confirmation at all. **Open:** one tap where
+it can be undone, the dialog where not, or keep. **When:** the owner's decision, to be put on its
+own.
 
 ### Undo names the change it undoes ✅ Done (3.0.263)
 
@@ -882,7 +897,7 @@ the project file. Decision deferred until playlist UX is built.
 **When:** Same as multi-file playlist UX.
 **Source:** docs/design/design-notes.md §Audio file management.
 
-### Tag autocomplete with keyboard
+### Tag autocomplete with keyboard — Rejected (2026-10-20)
 
 Typing in the tag field surfaces matching tags from the project pool (case-insensitive, fuzzy
 on substring). ↵ commits, ⌫ on empty input removes last chip. Chips render in pad-type color
@@ -890,15 +905,17 @@ family if a semantic mapping exists.
 **When:** Slice 16 (library), once L2 in
 [product/features/library.md](product/features/library.md#l2-folders-tags-or-both) decides
 whether tags stay search words.
+**Rejected (decided by Claude on the owner's instruction of 2026-10-20, for review):** L2 keeps
+tags as search words that are not edited — there is no tag field to complete.
 **Source:** docs/design/design-notes.md §Tags & folders.
 
 ### Folder picker as a tree
 
 The FOLDER field opens a narrow tree column inside the inspector, not a separate dialog. New
 folder via a `+ NEW` row at the bottom.
-**When:** Slice 16 (library), once L2 in
-[product/features/library.md](product/features/library.md#l2-folders-tags-or-both) decides
-whether the library has folders.
+**When:** Slice 16c — L2 in
+[product/features/library.md](product/features/library.md#l2-folders-tags-or-both) chose folders
+(2026-10-20, for review).
 **Source:** docs/design/design-notes.md §Tags & folders.
 
 ---
