@@ -32,6 +32,10 @@
  * 12. A pad's cell is found through `PAD_CELL` / `padCells` (tests/e2e/helpers.ts) — a selector
  *    copied into 25 places matched every test ID of PadGridCell by its prefix and counted a new
  *    drag handle as a pad (2026-10-14); no spec writes it itself.
+ * 13. A spec that installs the page clock stops it (`pauseAt`) or says, in a `// clock flows:`
+ *    comment next to it, why time that runs on cannot make it pass: `page.clock.install()` lets
+ *    time flow in real time, so a long wait passes by itself — two counter-checks stayed green
+ *    for that reason (testing.md pitfall 9, then the undo toast test on 2026-10-19).
  */
 
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
@@ -455,5 +459,37 @@ describe('guard: a pad cell is found in one place (2026-10-14)', () => {
       return src.split('\n').some((line) => PREFIX_ONLY.test(line) && !/\[data-pos/.test(line));
     });
     expect(bad.map((f) => relative(V3, f))).toEqual([]);
+  });
+});
+
+describe('guard: an installed page clock is stopped or its flowing time is explained', () => {
+  const E2E = join(V3, 'tests', 'e2e');
+  const specs = repoFiles(E2E)
+    .filter((f) => f.endsWith('.spec.ts'))
+    .map((f) => join(E2E, f));
+  /** Each `clock.install(` with the lines around it: 3 before, 8 after. */
+  const installs = specs.flatMap((f) => {
+    const lines = readFileSync(f, 'utf8').split('\n');
+    return lines.flatMap((line, i) =>
+      line.includes('clock.install(')
+        ? [{ at: `${relative(V3, f)}:${i + 1}`, near: lines.slice(Math.max(0, i - 3), i + 9) }]
+        : [],
+    );
+  });
+
+  it('finds the clock installs (sanity)', () => {
+    expect(installs.length).toBeGreaterThanOrEqual(3);
+  });
+
+  it('every install is followed by pauseAt or explained by a "// clock flows:" comment', () => {
+    const bad = installs
+      .filter(
+        ({ near }) => !near.some((l) => l.includes('pauseAt(') || l.includes('// clock flows:')),
+      )
+      .map(({ at }) => at);
+    expect(
+      bad,
+      'stop the clock (pauseAt) or explain why flowing time cannot pass the test',
+    ).toEqual([]);
   });
 });

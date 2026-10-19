@@ -18,7 +18,7 @@ import type {
 } from '../types';
 import { REPEAT_MAX } from '../types';
 import { nextFreeSlot } from './padUtils';
-import { combosInCycles } from './comboModel';
+import { canStartInCombo, combosInCycles } from './comboModel';
 import { migratePad, type StoredPad } from './padFiles';
 import { clampPadSize, migratePadSize, type StoredDeck } from './padSize';
 import { isIconKey, PAD_ICONS_MAX } from './iconSet';
@@ -228,6 +228,126 @@ export function deletePad(board: Board, padId: string): Board {
     })),
     quickAccess: board.quickAccess.filter((q) => q.padId !== padId),
   };
+}
+
+/**
+ * Everything deletePad takes away, kept to put the pad back with restorePad: the pad and where it
+ * sat in the pool, its placements, its quick-access entry and the combo steps that started it.
+ */
+export interface DeletedPad {
+  pad: Pad;
+  poolIndex: number;
+  placements: { deckId: string; placement: Placement }[];
+  quickAccess?: { index: number; entry: QuickAccessEntry };
+  /** Each combo step that started the pad: the combo, the step and the pad's place in it. */
+  steps: { comboId: string; step: number; index: number }[];
+}
+
+/** Returns what deleting the pad would take away (for restorePad), or null when it is unknown. */
+export function deletedPad(board: Board, padId: string): DeletedPad | null {
+  const poolIndex = board.pads.findIndex((p) => p.id === padId);
+  if (poolIndex < 0) return null;
+  const qa = board.quickAccess.findIndex((q) => q.padId === padId);
+  return {
+    pad: board.pads[poolIndex],
+    poolIndex,
+    placements: board.decks.flatMap((d) =>
+      d.placements
+        .filter((p) => p.padId === padId)
+        .map((placement) => ({ deckId: d.id, placement })),
+    ),
+    quickAccess: qa < 0 ? undefined : { index: qa, entry: board.quickAccess[qa] },
+    steps: board.pads.flatMap((p) =>
+      p.type === 'combo'
+        ? p.steps.flatMap((s, step) =>
+            s.padIds.includes(padId)
+              ? [{ comboId: p.id, step, index: s.padIds.indexOf(padId) }]
+              : [],
+          )
+        : [],
+    ),
+  };
+}
+
+/**
+ * Puts a deleted pad back — the undo of a pad delete (Slice 18b, ADR-0086), built on the LATEST
+ * board, so changes made since the delete stay: back in the pool where it was, in each deck that
+ * still exists (on its cell, or the next free one; not when the deck is full), in the quick-access
+ * bar (when there is room), and in each combo step that still exists. A key another pad took
+ * meanwhile stays with that pad (K2: never a deck key and a quick-access key at once); a step
+ * that would now close a cycle does not take the pad back; a combo's own steps keep only pads
+ * that still exist. The same board when the pad is in the pool already.
+ */
+export function restorePad(board: Board, deleted: DeletedPad): Board {
+  const { pad } = deleted;
+  if (findPad(board, pad.id)) return board;
+  const ids = new Set(board.pads.map((p) => p.id));
+  const restored: Pad =
+    pad.type === 'combo'
+      ? {
+          ...pad,
+          steps: pad.steps.map((s) => ({ ...s, padIds: s.padIds.filter((id) => ids.has(id)) })),
+        }
+      : pad;
+  const pads = [...board.pads];
+  pads.splice(Math.min(deleted.poolIndex, pads.length), 0, restored);
+  let next: Board = { ...board, pads };
+
+  const qaKeys = new Set(next.quickAccess.map((q) => q.hotkey).filter(Boolean));
+  const deckKeys = new Set(
+    next.decks.flatMap((d) => d.placements.map((p) => p.hotkey)).filter(Boolean),
+  );
+  for (const { deckId, placement } of deleted.placements) {
+    const deck = findDeck(next, deckId);
+    if (!deck) continue;
+    const { cols, rows } = deck.gridConfig;
+    const { col, row } = placement.position;
+    const free =
+      col < cols &&
+      row < rows &&
+      !deck.placements.some((p) => p.position.col === col && p.position.row === row);
+    const position = free ? placement.position : nextFreeSlot(deck.placements, cols, rows);
+    if (!position) continue;
+    const { hotkey, ...rest } = placement;
+    const keyFree =
+      hotkey !== undefined &&
+      !qaKeys.has(hotkey) &&
+      !deck.placements.some((p) => p.hotkey === hotkey);
+    next = withDeck(next, deckId, (d) => ({
+      ...d,
+      placements: [
+        ...d.placements,
+        keyFree ? { ...rest, position, hotkey } : { ...rest, position },
+      ],
+    }));
+  }
+
+  const qa = deleted.quickAccess;
+  if (qa && next.quickAccess.length < QUICK_ACCESS_MAX) {
+    const { hotkey, ...entry } = qa.entry;
+    const keyFree = hotkey !== undefined && !qaKeys.has(hotkey) && !deckKeys.has(hotkey);
+    const quickAccess = [...next.quickAccess];
+    quickAccess.splice(
+      Math.min(qa.index, quickAccess.length),
+      0,
+      keyFree ? { ...entry, hotkey } : entry,
+    );
+    next = { ...next, quickAccess };
+  }
+
+  for (const { comboId, step, index } of deleted.steps) {
+    const combo = findPad(next, comboId);
+    if (combo?.type !== 'combo' || step >= combo.steps.length) continue;
+    if (!canStartInCombo(next, comboId, pad.id)) continue;
+    const steps = combo.steps.map((s, i) => {
+      if (i !== step) return s;
+      const padIds = [...s.padIds];
+      padIds.splice(Math.min(index, padIds.length), 0, pad.id);
+      return { ...s, padIds };
+    });
+    next = updatePad(next, { ...combo, steps });
+  }
+  return next;
 }
 
 /** How many pads the quick-access bar holds — as V1's strip (up to 5; Slice 13d). */

@@ -17,10 +17,23 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.251';
+export const APP_VERSION = '3.0.252';
 
 /** The developer log, newest first; CHANGELOG.md is generated from it (sync-changelog). */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.252',
+    date: '2026-10-19',
+    items: [
+      'feat(board): Slice 18b — a deleted pad shows the undo toast too; its UNDO puts the pad back where it was (pool, decks on its cell or the next free one, quick-access bar, combo steps) and keeps every change made since; one toast for decks and pads, shown by the board screen in SETUP, one at a time, gone after 6 s or when the board is left',
+      'fix(toast): the undo toast counts its 6 s from when it appears — the timer restarted with each new render of the board screen (a new onDismiss each time), so the toast could stay as long as the screen re-rendered; the deck toast also vanished while the deck list was folded',
+      'a11y(toast): the undo toast sits in a status region that stays in the page, so screen readers read it (WCAG 4.1.3, ARIA22)',
+      'refactor(board): lib boardModel deletedPad / restorePad (the undo of a pad delete on the latest board: keys taken meanwhile stay, a step that would close a cycle does not take the pad back, a restored combo keeps only pads that exist); state undoNotice; DeckRail announces through it',
+      'test: unit restorePad (back as it was, changes since kept, taken cell, full deck, deleted deck, full bar, keys, K2, combo steps, cycle, restored combo), property operation undoPad, undoNotice; E2E board-undo — pad toast UNDO keeps a rename made since, toast gone when the board is left, 6 s from appearing despite a re-render; each counter-checked (the timer test was vacuous twice: the installed page clock flows in real time)',
+      'test(guards): testGuards "an installed page clock is stopped or its flowing time is explained" — every page.clock.install is followed by pauseAt or explained by a "// clock flows:" comment (second vacuous clock test, testing.md pitfall 9)',
+      'docs: ADR-0086 amendment (the toast takes back one deletion, not a shortcut for ↶); testing.md pitfall 9 (a flowing clock with short waits); BACKLOG Slice 18b done, the two-tap question due for the owner',
+    ],
+  },
   {
     version: '3.0.251',
     date: '2026-10-19',

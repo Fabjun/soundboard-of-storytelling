@@ -193,6 +193,8 @@ test('the backup reminder follows the days chosen in Settings, also after a relo
   page,
 }) => {
   const start = Date.UTC(2026, 9, 1, 12);
+  // clock flows: only the date matters here — the reminder counts whole days, which the seconds
+  // of the run cannot reach; setSystemTime jumps the days
   await page.clock.install({ time: start });
   await page.goto(APP);
   await goToBoardList(page);

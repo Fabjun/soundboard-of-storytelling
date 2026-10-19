@@ -8,7 +8,7 @@
  *   - Active tab highlight
  *   - Inline rename (double-click)
  *   - A "⋯" actions menu (rename, duplicate, delete) on hover and on the active deck (MenuButton)
- *   - Delete with confirmation + UndoToast
+ *   - Delete with confirmation, then a toast with UNDO (src/state/undoNotice.ts)
  *   - Duplicate: the copy places the same pads of the pool (shared, not copied) and appears
  *     directly after the original
  *   - Reorder (Slice 13g): in SETUP the active deck moves with ▲ / ▼ or its drag handle
@@ -29,8 +29,8 @@ import { useEffect, useState, useRef } from 'preact/hooks';
 import type { ComponentChildren, JSX } from 'preact';
 import type { Deck, Board } from '../types';
 import { UiIcon } from './UiIcon';
-import { UndoToast } from './UndoToast';
 import { applyBoardChange, updateBoard } from '../state/boardWrites';
+import { announceUndo } from '../state/undoNotice';
 import {
   DEFAULT_GRID,
   addDeck as addDeckTo,
@@ -96,10 +96,6 @@ export function DeckRail({
   const [editValue, setEditValue] = useState('');
   const [conflictOwner, setConflictOwner] = useState<Deck | null>(null);
   const committingForRef = useRef<string | null>(null);
-  const [deletedDeck, setDeletedDeck] = useState<{
-    deck: Deck;
-    message: string;
-  } | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const decks = [...board.decks].sort((a, b) => a.order - b.order);
@@ -161,13 +157,17 @@ export function DeckRail({
 
   async function requestDelete(deck: Deck) {
     if (pendingDeleteId === deck.id) {
-      // Second tap: execute. Undo keeps only the deck — not a copy of the whole board, which
-      // would undo every other change made while the toast is shown.
-      const { board: updatedBoard } = applyBoardChange(board.id, (b) => deleteDeck(b, deck.id));
+      // Second tap: execute. The toast's UNDO puts back only the deck, as it was on the latest
+      // board — not a copy of the whole board, which would undo every change made since.
+      let removed = deck;
+      const { board: updatedBoard } = applyBoardChange(board.id, (b) => {
+        removed = b.decks.find((d) => d.id === deck.id) ?? deck;
+        return deleteDeck(b, deck.id);
+      });
       if (updatedBoard) {
-        setDeletedDeck({
-          deck,
-          message: `Deleted '${deck.name}' · ${deck.placements.length} pad${deck.placements.length !== 1 ? 's' : ''}`,
+        const count = removed.placements.length;
+        announceUndo(`Deleted '${removed.name}' · ${count} pad${count !== 1 ? 's' : ''}`, () => {
+          void updateBoard(board.id, (b) => restoreDeck(b, removed));
         });
         // If deleted deck was active, switch to first remaining
         if (activeDeckId === deck.id && updatedBoard.decks.length > 0) {
@@ -178,13 +178,6 @@ export function DeckRail({
     } else {
       setPendingDeleteId(deck.id);
     }
-  }
-
-  async function undoDelete() {
-    if (!deletedDeck) return;
-    const { deck } = deletedDeck;
-    await updateBoard(board.id, (b) => restoreDeck(b, deck));
-    setDeletedDeck(null);
   }
 
   // ── New Deck ─────────────────────────────────────────────────────────────
@@ -487,15 +480,6 @@ export function DeckRail({
     </>
   );
 
-  const undoToast = deletedDeck && (
-    <UndoToast
-      message={deletedDeck.message}
-      durationMs={6000}
-      onUndo={undoDelete}
-      onDismiss={() => setDeletedDeck(null)}
-    />
-  );
-
   if (variant === 'tabs') {
     return (
       <div class="sb-tab-bar sb-deck-tabs" data-testid="deck-rail">
@@ -546,7 +530,6 @@ export function DeckRail({
             {content}
           </div>
         )}
-        {undoToast}
       </div>
     );
   }
@@ -563,7 +546,6 @@ export function DeckRail({
     <div class="sb-deck-rail" data-testid="deck-rail">
       {toggle}
       {content}
-      {undoToast}
     </div>
   );
 }
