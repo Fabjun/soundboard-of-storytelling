@@ -92,8 +92,9 @@ export function ModeToggle({
           --spark-dy: ${spark.dy}px;
           --spark-duration: ${spark.duration}ms;
           animation-delay: ${spark.delay}ms;
-          position: fixed;
         `;
+        // On document.body, not inside the toggle: the sparks fly beyond it, and no container
+        // of the toggle (overflow, stacking) may clip them — the portal pattern
         document.body.appendChild(el);
         sparksRef.current.push(el);
         setTimeout(

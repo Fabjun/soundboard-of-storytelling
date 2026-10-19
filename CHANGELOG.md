@@ -7,6 +7,17 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.268 — 2026-10-20
+
+### Changed
+
+- refactor(mode): the mode-switch sparks stay on document.body, now with the reason in the code — they fly beyond the toggle and no container may clip them (the portal pattern, react.dev createPortal; decided by Claude on the owner's instruction of 2026-10-20); position: fixed moved from the inline style into .sb-mode-toggle-spark (a static value); the unused .sb-mode-toggle-sparks, .sb-mode-toggle-flash and @keyframes sb-mode-flash removed
+
+### Internal
+
+- test(e2e): mode-toggle — a switch throws sparks that are children of the body with position fixed (Chromium, WebKit; counter-checked with position absolute, 20 repeats green)
+- docs(backlog): "ModeToggle sparks" and "Reduced-motion fallback for ModeToggle" done
+
 ## 3.0.267 — 2026-10-20
 
 ### Fixed
