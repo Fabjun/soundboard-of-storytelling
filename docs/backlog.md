@@ -419,7 +419,7 @@ The visual regression tests show no pad, so the pad's picture area (icons, place
 PAD editor are not covered visually (noticed in Slice 15d).
 **When:** with the pad design review (Slice 13 / the design pass).
 
-### Visual tests miss low-contrast changes
+### Visual tests miss low-contrast changes ✅ Done (3.0.196)
 
 The pad grid changed from 4 × 4 fixed cells to cells that flow into the window's columns (3.0.177),
 yet the board baseline flagged only the deck rail: the dashed empty cells differ from the
@@ -446,12 +446,15 @@ its baselines updated on a Mac before the next work starts.
 
 ### Slice 5 — Scene Switching
 
-### Scene navigation
+### Scene navigation ✅ Done (Slice 9)
 
 Switch between multiple scenes on a board during play. The primary GAME-time interaction
 after Slice 4 audio playback is live.
 **Why deferred:** Slice 5 in the plan; scene data model and CRUD are complete (Slice 3).
 **When:** Slice 5.
+✅ **Done (Slice 9; tabs on a phone 3.0.211):** in GAME the decks are switched in the deck rail,
+below 600 px in the tabs above the pad grid — `v3/tests/e2e/deck-switcher.spec.ts` ("below 600 px
+the decks are tabs above the grid: All pads first, one tap switches" enters GAME first).
 **Source:** docs/architecture/concept-brief.md §5.1, CLAUDE.md Slice Progress table.
 **Session 2026-06-04:** Audio-during-switch explicitly confirmed as the correct behavior — no
 code change needed. → [Design Session 2026-06-04](#design--feature-clarification-session--2026-06-04).
@@ -480,16 +483,16 @@ code change needed. → [Design Session 2026-06-04](#design--feature-clarificati
 
 → moved to [docs/product/features/data-backup.md](product/features/data-backup.md) (2026-09-28), D5 + import rules. Revised there: the V1-readable export is **dropped**. **When:** Slice 10 (new plan).
 
-### Stream-based export/import (V1 lessons warning)
+### Stream-based export/import (V1 lessons warning) ✅ Done (3.0.145)
 
 Must stream one library entry at a time — never JSON-load the entire library at once (iOS
 memory safety; 150–300 MB string would OOM older iPhones). **V1 had memory-related crashes
 on import/export that were solved by streaming.** V3 must port the V1 streaming pattern, not
 re-invent it. Read `v1-reference/index.html` export/import code before designing Slice 7 —
 same discipline as reading the V1 audio engine before Slice 4.
-**Built on main (Slice 10, ADR-0061 Accepted 2026-10-03):** import reads the file as a stream
-(one library entry in memory at a time, two passes, audio first and boards last); export writes a
-ZIP archive one audio file at a time (owner decision B1). V1 itself still read imports whole
+✅ **Done (Slice 10, ADR-0061 Accepted 2026-10-03):** import reads the file as a stream
+(one library entry in memory at a time, two passes, audio first and boards last — 3.0.102); export
+writes a ZIP archive one audio file at a time (owner decision B1 — 3.0.145). V1 itself still read imports whole
 (`file.text()` + `JSON.parse`) — V3 does not port that part.
 **Why deferred:** Same as above.
 **When:** Slice 7.
@@ -577,7 +580,7 @@ available.
 **When:** Slice 8 (only if iOS 18+ has reached the minimum-supported threshold by then).
 **Source:** ADR-0006.
 
-### PANIC / fade-all button
+### PANIC / fade-all button ✅ Done (3.0.183)
 
 ✅ Done (3.0.183, Slice 12b). Global fade button alongside the hard STOP. `fadeOutAll(duration)` is already implemented and
 exported — pure UI work; no audio changes needed. See [Design Session 2026-06-04](#design--feature-clarification-session--2026-06-04) for full context
@@ -788,7 +791,9 @@ the need surfaces in real play sessions.
 ### Real crossfade
 
 Currently a stub: `stop(from)` + `play(to)`. Implement proper crossfade in Slice 8.
-**When:** Slice 8.
+**When:** Parked — crossfade between pads is Parked in
+[product/README.md §Pad options](product/README.md#pad-options) (`crossfade` in
+`v3/src/audio/index.ts` carries `@reserved Parked`).
 **Source:** CLAUDE.md Slice 4 deviations.
 
 ### `is-scheduled` pad state (combo + ducking)
@@ -810,7 +815,8 @@ tokens before the state has a use makes the §A cheat-sheet noisier without solv
 
 The audio engine has analyser node infrastructure, but per-pad metering UI is deferred.
 Adds CSS animation complexity and is a polish concern, not functional.
-**When:** Slice 8 (Polish).
+**When:** Parked — the level meter is Parked in
+[product/README.md §Pad options](product/README.md#pad-options).
 **Source:** Slice 4 plan, scope notes ("Nicht in Slice 4").
 
 ---
@@ -836,14 +842,18 @@ the project file. Decision deferred until playlist UX is built.
 Typing in the tag field surfaces matching tags from the project pool (case-insensitive, fuzzy
 on substring). ↵ commits, ⌫ on empty input removes last chip. Chips render in pad-type color
 family if a semantic mapping exists.
-**When:** Slice 8 or library polish pass.
+**When:** Slice 16 (library), once L2 in
+[product/features/library.md](product/features/library.md#l2-folders-tags-or-both) decides
+whether tags stay search words.
 **Source:** docs/design/design-notes.md §Tags & folders.
 
 ### Folder picker as a tree
 
 The FOLDER field opens a narrow tree column inside the inspector, not a separate dialog. New
 folder via a `+ NEW` row at the bottom.
-**When:** Slice 8 or library polish pass.
+**When:** Slice 16 (library), once L2 in
+[product/features/library.md](product/features/library.md#l2-folders-tags-or-both) decides
+whether the library has folders.
 **Source:** docs/design/design-notes.md §Tags & folders.
 
 ---
@@ -885,7 +895,7 @@ is administrative, not dramatic — the audio experience must not change. Curren
 is correct; no implementation change needed.
 **Discarded:** Hard stop (disrupts player experience); crossfade = separate Slice 8 work
 (→ [Real crossfade stub](#real-crossfade)).
-**→ Slice 5:** [Scene navigation](#scene-navigation).
+**→ Slice 5:** [Scene navigation](#scene-navigation--done-slice-9).
 
 ### Code is the authoritative truth; design library is archive
 
@@ -1123,7 +1133,7 @@ Claude Design's five flagged gaps were classified:
   → [Audio continues during scene switch](#audio-continues-during-scene-switch-confirmed-correct--slice-5).
 - **Panic/fade-all** = existing quick win (`fadeOutAll()` done). New addition: guard the
   trigger against accidental activation ("guarded").
-  → [PANIC / fade-all button](#panic--fade-all-button).
+  → [PANIC / fade-all button](#panic--fade-all-button--done-30183).
 - **Unambiguous mode signal** = v25 mode awareness + Stage Lock candidate.
   → [Stage Lock](#stage-lock).
 
@@ -1344,14 +1354,14 @@ Palette (power-user escape hatch).
 
 #### Quick-wins _(engine work complete; UI-only remaining)_
 
-### PANIC / fade-all button _(see also Slice 8)_
+### PANIC / fade-all button _(see also Slice 8)_ ✅ Done (3.0.183)
 
 `fadeOutAll(duration)` is fully implemented and publicly exported:
 `v3/src/audio/engine.ts:375–412` · `v3/src/audio/index.ts:83–85`
 Only missing: a UI button alongside the hard STOP. Pure UI work; no audio changes needed.
 **Note:** This is the global per-pad fade — not the scene-to-scene crossfade stub
 (→ [Real crossfade stub](#real-crossfade)).
-**→ Slice 8:** [PANIC / fade-all (Slice 8)](#panic--fade-all-button) — built in 3.0.183 as the
+**→ Slice 8:** [PANIC / fade-all (Slice 8)](#panic--fade-all-button--done-30183) — built in 3.0.183 as the
 first stage of STOP ALL (Slice 12b).
 
 ### Glanceable loop state _(see also Slice 8)_
@@ -1405,7 +1415,7 @@ Continuous column-change with ~64 pads must not be visually violent. Dragging th
 ### STOP ALL: dedicated, oversized, high-contrast real estate _(settled refinement)_
 
 STOP ALL gets dedicated, oversized, high-contrast real estate (likely a fixed corner). It is the one control that must never be mis-hit or hard to find, in the dark, mid-performance. This constrains the whole bottom-band layout, so STOP's priority is explicit. Related: the expanded now-playing overlay (when 6–8 loops run) is a scrollable overlay, but STOP ALL stays reachable from the thumb zone regardless of that overlay's state — the user is never trapped scrolling a mixer to kill sound.
-**→ Cross-reference:** [PANIC / fade-all button](#panic--fade-all-button) (engine already done; this refinement constrains its placement in the layout) · [Glanceable loop state](#glanceable-loop-state) (the now-playing overlay context where the scroll-vs-STOP conflict arises).
+**→ Cross-reference:** [PANIC / fade-all button](#panic--fade-all-button--done-30183) (engine already done; this refinement constrains its placement in the layout) · [Glanceable loop state](#glanceable-loop-state) (the now-playing overlay context where the scroll-vs-STOP conflict arises).
 
 ### Color-independent mode legibility _(settled refinement)_
 
@@ -1585,7 +1595,7 @@ comments with "sub-token: deliberate" justification notes.
 
 ## 3. Deferred Design Decisions
 
-### Playlist → Loop merge (data model)
+### Playlist → Loop merge (data model) ✅ Done (36ba75c)
 
 Decided 2026-09-28 ([docs/product/README.md §5 Pads](product/README.md#pads)): three pad types — Single, Loop, Combo. Loop and Single accept several files (Loop: in order / shuffle; Single: random / in turn). Requires an ADR superseding the `PadType` part of ADR-0042, a migration of stored `playlist` pads, and engine/editor changes (engine change needs explicit approval).
 ✅ **Done (PR #36, squash-merged 2026-10-03 as `36ba75c`):** `Pad = Single | Loop | Combo`;
@@ -1614,7 +1624,7 @@ effects) and the mode switch sparks — the control WCAG 2.2.2 Pause, Stop, Hide
 for; while the system asks for reduced motion the flame stands still and the switch is off and
 fixed (settings.md S6, S12; `v3/src/lib/motion.ts`).
 
-### Board pad pool (data model)
+### Board pad pool (data model) ✅ Done (Slice 9)
 
 Decided 2026-09-28 ([docs/product/README.md §5](product/README.md#board-decks--quick-access)): pads belong to the board; decks (formerly "scenes") and the quick-access bar reference pads with their own position and key; "All pads" view; `PadSet` dropped. Today `Scene.pads: Pad[]` owns pads and `position` / `hotkey` sit on the pad (`types.ts`).
 Requires an ADR (superseding the ownership parts of the current model) and a data migration. **Same change: rename Scene → Deck** in UI, code (`Scene`, `Board.scenes`, `SceneRail`, …) and stored data (docs/product/README.md Q1, 2026-09-28). **Do together with the Playlist → Loop merge above** — both reshape `types.ts` and stored boards.
@@ -1637,7 +1647,7 @@ The two-axis adaptive model (→ [Stable directions](#two-axis-adaptive-model)) 
 Exact breakpoint values at which the SceneRail dock moves from bottom-bar to side-rail are
 explicitly not yet defined — empirical calibration on real devices is required (ref ADR-0045
 §Consequences). Record here so this open decision is not lost.
-**When:** Before or during Slice 8 layout work.
+**When:** the calibration on the owner's phone and tablet (Slice 13, iPhone checklist session).
 **Source:** ADR-0045.
 **Owner decision 2026-10-10:** start value **600 px** (Material 3: compact below 600 dp, medium
 from 600 dp) — `docs/product/features/adaptive-layout.md` L1. **Open:** the calibration on the
@@ -1878,7 +1888,7 @@ we run 1.63 since 2026-09-30, green for ~20 runs before). Mitigation: the seed n
 build that passes (the issue names 1.59) as an exception with this entry as trigger.
 **When:** on the next occurrence — read the trace from `v3/test-results/` and note the load.
 
-### Bug: combo "stop all" step stops the combo itself
+### Bug: combo "stop all" step stops the combo itself ✅ Done (3.0.208)
 
 Found 2026-09-29 by the T4 characterization tests. A combo step with `stopAll` calls
 `stopAllInternal()` (`v3/src/audio/engine.ts:600-603`), which also stops the running combo
@@ -1911,7 +1921,7 @@ effects of the same cause — a sibling still playing was cut short, and the ste
 fade-out delay was skipped. The owner's playback check passed (a combo with an empty pad in step 1
 plays step 2 once); the owner approved the engine change (ADR-0048 §4).
 
-### Bug: board writes from an outdated board copy lose changes
+### Bug: board writes from an outdated board copy lose changes ✅ Done (e341d7a)
 
 Found 2026-10-01 (Slice 9e work). Two writers save a copy of the board taken some time earlier
 and so overwrite every change made in between:
@@ -2080,7 +2090,7 @@ Found 2026-09-30 during S5: stale facts and dead references were found only by c
   audit — fixed. Remaining pattern for the structure audit: hook/CI step lists in the docs are
   still hand-maintained copies of `.husky/*` and `tests.yml` — candidate for generation.
 
-### Structure audit 2026-09-30
+### Structure audit 2026-09-30 ✅ Done
 
 Owner decisions 2026-09-30: A1–A3 as recommended.
 
@@ -2287,7 +2297,7 @@ phone; (c) the search on a wide window, the list on a phone. Recommendation: (c)
 keyboard on a laptop costs nothing, on a phone it hides half the icons. Registered as an
 ADR-0074 exception until decided. **When:** the owner's next review.
 
-### Type-check every TypeScript file (T12)
+### Type-check every TypeScript file (T12) ✅ Done
 
 Found 2026-09-30 during S4: unit tests, E2E tests and two tool configs were never type-checked
 (Vitest and Playwright do not check types) — 7 hidden errors (6 unit-test fixtures not matching
@@ -2295,7 +2305,7 @@ the `Pad` union, 1 E2E config). **Done:** `v3/tsconfig.json` references every pr
 in `npm run build` checks everything; `strict` explicit; fixtures typed; guard that every
 `.ts`/`.tsx` file belongs to a checked project (ADR-0055). **Status:** ✅ Done (see git log: "…(T12)").
 
-### Re-enable mobile layout tests
+### Re-enable mobile layout tests ✅ Done (3.0.198)
 
 `touch-targets.spec.ts` and `overflow.spec.ts` have FIXME markers because the
 desktop-first layout fails them at 390 px (layout geometry is broken by design until Slice 8).
@@ -2308,7 +2318,7 @@ is a full-screen dialog since ADR-0074, the deck list starts folded): 35 of 35 r
 bar forced to 500 px → "right edge 500px exceeds viewport 390px"). The quarantine is lifted, so
 both specs guard the phone layout while Slice 13 rebuilds it.
 
-### Re-enable DnD E2E tests
+### Re-enable DnD E2E tests ✅ Done
 
 Tests 9, 14, 20, 21 in `pad-dnd.spec.ts` are `test.skip` (Scene reorder, Library drag Path B,
 Pad SWAP, Pad INSERT). Need a stable Pointer Events drag sequence in Playwright.
@@ -2363,9 +2373,9 @@ with `prefers-reduced-motion: reduce`, but `ModeToggle.tsx` skips the animation 
 rather than applying the fallback class. Behavior is correct (no animation = honoring
 reduced-motion), but the CSS rule for `.sb-mode-toggle-flash` is confirmed dead code.
 
-**Action:** Remove `.sb-mode-toggle-flash` from `v3/src/styles/tokens.css` when next
-touching that file (e.g., during Slice 8 polish).
-**When:** Slice 8, or opportunistically when tokens.css is edited.
+**Action:** Remove `.sb-mode-toggle-flash` from `v3/src/styles/components.css` (line 1368 on
+2026-10-19; the entry first named `tokens.css`) when next touching that file.
+**When:** the next change to the mode switch's styles in `v3/src/styles/components.css`.
 **Source:** Truth-check commit `e207a0b`; class marked `[unused-css]` in docs/design/design-system.md §6.
 
 ### ✅ Dead CSS: `sb-creation-popover-section` — Resolved (4210405)
@@ -2666,7 +2676,7 @@ Moderate-confidence:
 
 ---
 
-### Sorte-2 Bet Index (consolidated)
+### Sorte-2 Bet Index (consolidated) ✅ Done
 
 > **Canonical status source.** Future sessions (3f–3h, Slice 8) update this table — not their individual session entries. Session entries remain as historical context; when a bet is won or lost, mark it here first. If a session entry says "PENDING" and this table says "OPEN-pending-3g", they mean the same thing — the table wording is authoritative. Do not create new per-session bet sections; extend this index instead.
 
@@ -2698,9 +2708,9 @@ Moderate-confidence:
 | 15  | `sb-btn-muted`                | 3d     | 3h               | **FINALLY LOST → screen-local** | No 3h file has a visually recessive de-emphasized button. Stays on PadCreationPopover. Consolidation-pass candidate.                                                                                                                                                                                     |
 | 16  | `sb-tab-sm`                   | 3d     | 3h               | **FINALLY LOST → screen-local** | No 3h file has tabs. Stays on PadCreationPopover. Consolidation-pass candidate.                                                                                                                                                                                                                          |
 | 17  | `sb-source-tabs`              | 3d     | 3h               | **FINALLY LOST → screen-local** | No 3h file has a source tab row. Stays on PadCreationPopover. Consolidation-pass candidate.                                                                                                                                                                                                              |
-| 18  | `sb-overlay`                  | 3e     | Slice 8          | **SPECULATIVE — far**           | Promote to confirmed multi-use if settings screen or future overlays appear in Slice 8.                                                                                                                                                                                                                  |
-| 19  | `sb-overlay-header`           | 3e     | Slice 8          | **SPECULATIVE — far**           | Same as `sb-overlay`.                                                                                                                                                                                                                                                                                    |
-| 20  | `sb-overlay-body`             | 3e     | Slice 8          | **SPECULATIVE — far**           | Same as `sb-overlay`.                                                                                                                                                                                                                                                                                    |
+| 18  | `sb-overlay`                  | 3e     | Slice 8          | **WON (2026-10-19, 4-use)**     | Promote to confirmed multi-use if settings screen or future overlays appear in Slice 8. Won: the full-screen dialogs (ADR-0074) use it in `MainMenuScreen`, `PadEditorPanel`, `IconPicker`, `DeveloperDialog`.                                                                                           |
+| 19  | `sb-overlay-header`           | 3e     | Slice 8          | **WON (2026-10-19, 4-use)**     | Same as `sb-overlay`.                                                                                                                                                                                                                                                                                    |
+| 20  | `sb-overlay-body`             | 3e     | Slice 8          | **WON (2026-10-19, 3-use)**     | Same as `sb-overlay`, without `PadEditorPanel`.                                                                                                                                                                                                                                                          |
 | 21  | `sb-row-rename-input`         | 3f     | —                | **LOST — but class justified**  | AudioRow rename uses font-ui fs-sm/14px, no uppercase — fundamentally different typography from board names (fs-lg/18px, 0.08em, uppercase). Created sb-audio-row-rename. sb-row-rename-input stays in use on BLS BoardRow.                                                                              |
 | 22  | `sb-row-actions`              | 3f     | —                | **LOST — but class justified**  | AudioRow uses 5-column CSS Grid (not flex with trailing action group). No trailing action group wrapper. sb-row-actions stays in BLS BoardRow.                                                                                                                                                           |
 | 23  | `sb-btn-icon-sm`              | 3f     | —                | **LOST — but class justified**  | SceneRail action buttons = 28px (uses sb-btn-icon). AudioRow delete = 44px (iOS touch target). 36px fits neither. sb-btn-icon-sm stays in BLS BoardRow (2-use).                                                                                                                                          |
@@ -2708,6 +2718,7 @@ Moderate-confidence:
 | 25  | `sb-panel-empty`              | 3g     | 3h               | **WON (3g, 2-use)**             | 2-use intra-session (SceneRail + LibraryPanel). No 3h file has panel empty states; WON confirmed in 3g.                                                                                                                                                                                                  |
 
 **Count check (final — all 25 closed):** WON: 7 (#1,3,5,6,8,12,25) · LOST-justified: 8 (#4,7,9,10,11,21,22,23) · FINALLY-LOST→consolidation: 7 (#2,13,14,15,16,17,24) · SPECULATIVE-Slice8: 3 (#18,19,20) = 7+8+7+3 = 25 ✓. No OPEN or PARTIALLY-FAILED bets remain. Index closed (2026-05-31, 994d2eb).
+**Speculative bets settled (2026-10-19):** #18–20 won — WON: 10, SPECULATIVE: 0.
 
 ---
 
@@ -2982,7 +2993,7 @@ comparison in BoardRow JSX is the natural implementation point.
 
 ---
 
-### AudioRow grid overflow on iPhone 13 Pro (390px viewport) — Slice 8 responsive
+### AudioRow grid overflow on iPhone 13 Pro (390px viewport)
 
 `sb-audio-row` (Session 3g) has `grid-template-columns: 160px 1fr 70px 90px 44px`.
 Fixed widths: 160+70+90+44 = 364px. Gaps: 4 × var(--space-3) = 4 × 12px = 48px.
@@ -3005,8 +3016,10 @@ behavior. Not a regression from 3g; the commit that introduced the grid was in S
 - Priority: HIGH — this is the Library's core audio-file list on the primary target device
 
 **Verify:** Upload audio files on iPhone 13 Pro to confirm the overflow is visible in practice.
-**When:** Slice 8 (responsive/polish). **Source:** Session 3g spot-check, 2026-05-31.
+**When:** Slice 16 (library). **Source:** Session 3g spot-check, 2026-05-31.
 Measured: content column = 170px, grid minimum = 412px, deficit = 242px.
+**Still so on 2026-10-19:** Slice 13 rebuilt the board, not the library — `.sb-audio-row` keeps
+`160px 1fr 70px 90px 44px` and `.sb-screen-layout` its `220px 1fr` (`v3/src/styles/components.css`).
 
 ---
 

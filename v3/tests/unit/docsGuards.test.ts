@@ -33,6 +33,8 @@
  *    (src/lib/whatsNew.ts) and the developer log (src/lib/changelog.ts) contain none of the empty
  *    forms Vale's SoS.EmptyStatements lists for the Markdown files — one list for both. "The app
  *    works exactly as before" stood in 30 entries before it was noticed.
+ * 13. A done backlog item says so in its heading: an item whose text has a status line "✅ Done" or
+ *    "✅ Fixed" carries ✅ in its heading — 7 items said so only in their text (2026-10-19).
  */
 
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
@@ -600,5 +602,29 @@ describe('guard: every statement carries information (owner decision 2026-10-19)
         .flatMap((line, i) => [...line.matchAll(empty)].map((m) => `${f}:${i + 1}: ${m[0]}`)),
     );
     expect(bad, 'say what changed, why or what to do — or drop the sentence').toEqual([]);
+  });
+});
+
+describe('guard: a done backlog item says so in its heading (2026-10-19)', () => {
+  const text = readFileSync(join(ROOT, 'docs', 'backlog.md'), 'utf8');
+  // An item runs from its heading to the next heading of any level
+  const items = text.split(/^(?=#{2,4} )/m).map((part) => {
+    const [heading, ...body] = part.split('\n');
+    return { heading, body: body.join('\n') };
+  });
+  // A status line, not a table cell or a list item: "✅ Done", "✅ **Fixed", "**Status:** ✅ Done"
+  const DONE = /^(?:\*\*Status:\*\* )?✅ (?:\*\*)?(?:Done|Fixed)\b/m;
+
+  it('reads the items and finds done ones (sanity)', () => {
+    expect(items.length).toBeGreaterThan(100);
+    expect(items.filter((i) => DONE.test(i.body)).length).toBeGreaterThanOrEqual(7);
+    expect(DONE.test('| T1 | … | ✅ Done (60a0f0c) |')).toBe(false); // a step of a larger item
+  });
+
+  it('every item whose text says done carries ✅ in its heading', () => {
+    const bad = items
+      .filter((i) => DONE.test(i.body) && !i.heading.includes('✅'))
+      .map((i) => i.heading);
+    expect(bad, 'add "✅ Done (version)" to the heading, where the status is read').toEqual([]);
   });
 });

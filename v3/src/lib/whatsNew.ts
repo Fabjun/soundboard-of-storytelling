@@ -103,6 +103,12 @@ export function withEarlyVersions(
 /** The release notes the main menu shows, newest first (checked by whatsNew.test.ts). */
 export const WHATS_NEW: WhatsNewNotes[] = [
   {
+    version: '3.0.265',
+    behindTheScenes: [
+      'The list of open work marks every finished item as done in its title, and an automatic check keeps it that way.',
+    ],
+  },
+  {
     version: '3.0.264',
     behindTheScenes: [
       "The automatic tests find buttons and texts by their exact name, so a new button whose name contains another one's no longer confuses them.",
