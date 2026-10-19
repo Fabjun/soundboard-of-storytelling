@@ -9,15 +9,9 @@
 import { IDBFactory } from 'fake-indexeddb';
 import type { Board } from '../../src/types';
 import { boardGet, _resetDB } from '../../src/db/idb';
-import { boards, lastSaveFailed, removeBoardFromStore } from '../../src/state/store';
+import { boards, lastSaveFailed, pendingSaves, removeBoardFromStore } from '../../src/state/store';
 import { LIMIT } from '../../src/lib/editHistory';
-import {
-  applyBoardChange,
-  createBoard,
-  stepBoard,
-  updateBoard,
-  whenSaved,
-} from '../../src/state/boardWrites';
+import { applyBoardChange, createBoard, stepBoard, updateBoard } from '../../src/state/boardWrites';
 import { canRedoBoard, canUndoBoard } from '../../src/state/boardHistory';
 
 const board = (id = 'b'): Board => ({
@@ -31,6 +25,13 @@ const board = (id = 'b'): Board => ({
 });
 
 const named = (name: string) => (b: Board) => ({ ...b, name });
+
+/**
+ * Waits until no save runs — bounded, so a broken save count fails the test within a second
+ * instead of hanging it (whenSaved waits for ever; under a mutant that never lets the count reach
+ * 0 every test using it ran into the mutation run's timeout, 2026-10-19).
+ */
+const saved = () => vi.waitFor(() => expect(pendingSaves.value).toBe(0), { timeout: 1_000 });
 const shown = (id = 'b') => boards.value.find((b) => b.id === id)!;
 
 beforeEach(() => {
@@ -60,13 +61,13 @@ describe('undo and redo', () => {
 
     expect(stepBoard('b', 'undo')).toBe(before);
     expect(shown()).toBe(before);
-    await whenSaved();
+    await saved();
     expect((await boardGet('b'))!.name).toBe('Board');
     expect(canUndoBoard('b')).toBe(false);
     expect(canRedoBoard('b')).toBe(true);
 
     expect(stepBoard('b', 'redo')!.name).toBe('A');
-    await whenSaved();
+    await saved();
     expect((await boardGet('b'))!.name).toBe('A');
     expect(canRedoBoard('b')).toBe(false);
   });
@@ -82,7 +83,7 @@ describe('undo and redo', () => {
     expect(stepBoard('b', 'undo')).toBeNull();
     expect(stepBoard('b', 'redo')!.name).toBe('A');
     expect(stepBoard('b', 'redo')!.name).toBe('B');
-    await whenSaved();
+    await saved();
   });
 
   it('an undo is not a step of its own: undoing twice goes back two changes', async () => {
@@ -91,7 +92,7 @@ describe('undo and redo', () => {
     applyBoardChange('b', named('B'));
     stepBoard('b', 'undo');
     expect(stepBoard('b', 'undo')!.name).toBe('Board');
-    await whenSaved();
+    await saved();
   });
 
   it('a new change after an undo drops what could be redone', async () => {
@@ -101,7 +102,7 @@ describe('undo and redo', () => {
     await updateBoard('b', named('X'));
     expect(canRedoBoard('b')).toBe(false);
     expect(stepBoard('b', 'undo')!.name).toBe('Board');
-    await whenSaved();
+    await saved();
   });
 
   it('a change that changes nothing is no step', async () => {
@@ -117,7 +118,7 @@ describe('undo and redo', () => {
     while (stepBoard('b', 'undo')) undone++;
     expect(undone).toBe(LIMIT);
     expect(shown().name).toBe('n1');
-    await whenSaved();
+    await saved();
   });
 
   it('each board has its own history', async () => {
@@ -130,7 +131,7 @@ describe('undo and redo', () => {
     stepBoard('a', 'undo');
     expect(shown('b').name).toBe('B');
     expect(shown('a').name).toBe('Board');
-    await whenSaved();
+    await saved();
   });
 });
 
@@ -151,7 +152,7 @@ describe('the store is the truth', () => {
   it('a board deleted and created again with the same id has no steps of its old life', async () => {
     await createBoard(board());
     applyBoardChange('b', named('old'));
-    await whenSaved();
+    await saved();
     removeBoardFromStore('b');
     await createBoard(board());
     expect(canUndoBoard('b')).toBe(false);
