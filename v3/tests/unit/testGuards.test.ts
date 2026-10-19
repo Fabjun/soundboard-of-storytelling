@@ -36,6 +36,11 @@
  *    comment next to it, why time that runs on cannot make it pass: `page.clock.install()` lets
  *    time flow in real time, so a long wait passes by itself — two counter-checks stayed green
  *    for that reason (testing.md pitfall 9, then the undo toast test on 2026-10-19).
+ * 14. A locator compares a text exactly (owner decision 2026-10-19): every `getByRole(…, { name:
+ *    '…' })` and `getByText('…')` with a text sets `exact: true`; a regular expression is an
+ *    explicit pattern and stays allowed. Playwright matches names "case-insensitive and searches
+ *    for a substring" by default, so a new control whose name contains another's ("Undo: edit
+ *    pad 'Rain'" next to the pad "Rain") broke unrelated specs — twice on 2026-10-19.
  */
 
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
@@ -491,5 +496,63 @@ describe('guard: an installed page clock is stopped or its flowing time is expla
       bad,
       'stop the clock (pauseAt) or explain why flowing time cannot pass the test',
     ).toEqual([]);
+  });
+});
+
+describe('guard: a locator compares a text exactly (owner decision 2026-10-19)', () => {
+  const E2E = join(V3, 'tests', 'e2e');
+  const specs = repoFiles(E2E)
+    .filter((f) => f.endsWith('.ts'))
+    .map((f) => join(E2E, f));
+  const STR = String.raw`(?:'(?:[^'\\]|\\.)*'|"(?:[^"\\]|\\.)*"|` + '`(?:[^`\\\\]|\\\\.)*`)';
+
+  /** The argument text of each getByRole / getByText call in `src`, with its line number. */
+  function calls(src: string): { kind: string; args: string; line: number }[] {
+    const found: { kind: string; args: string; line: number }[] = [];
+    for (const m of src.matchAll(/\bgetBy(Role|Text)\(/g)) {
+      let depth = 0;
+      let quote = '';
+      let i = m.index! + m[0].length - 1;
+      for (; i < src.length; i++) {
+        const c = src[i];
+        if (quote) {
+          if (c === '\\') i++;
+          else if (c === quote) quote = '';
+        } else if (c === "'" || c === '"' || c === '`') quote = c;
+        else if (c === '(') depth++;
+        else if (c === ')' && --depth === 0) break;
+      }
+      const args = src.slice(m.index! + m[0].length, i);
+      found.push({ kind: m[1], args, line: src.slice(0, m.index).split('\n').length });
+    }
+    return found;
+  }
+
+  /** True when the call compares a text without `exact: true`. */
+  const loose = ({ kind, args }: { kind: string; args: string }) =>
+    !/\bexact:\s*true\b/.test(args) &&
+    (kind === 'Role'
+      ? new RegExp(String.raw`\bname:\s*` + STR).test(args)
+      : new RegExp('^\\s*' + STR).test(args));
+
+  it('finds the locators (sanity) and tells a loose one from an exact one', () => {
+    expect(specs.flatMap((f) => calls(readFileSync(f, 'utf8'))).length).toBeGreaterThan(200);
+    expect(loose({ kind: 'Role', args: "'button', { name: 'Rain' }" })).toBe(true);
+    expect(loose({ kind: 'Role', args: "'button', { name: 'Rain', exact: true }" })).toBe(false);
+    expect(loose({ kind: 'Role', args: "'button', { name: /^Delete/ }" })).toBe(false);
+    expect(loose({ kind: 'Text', args: "'ADD PAD'" })).toBe(true);
+    expect(loose({ kind: 'Text', args: '/Saved/' })).toBe(false);
+  });
+
+  it('every getByRole name and getByText text sets exact: true — a regular expression may stay', () => {
+    const bad = specs.flatMap((f) =>
+      calls(readFileSync(f, 'utf8'))
+        .filter(loose)
+        .map(
+          (c) =>
+            `${relative(V3, f)}:${c.line}: getBy${c.kind}(${c.args.replace(/\s+/g, ' ').slice(0, 80)})`,
+        ),
+    );
+    expect(bad, 'add exact: true, or use an explicit pattern (/^…$/)').toEqual([]);
   });
 });

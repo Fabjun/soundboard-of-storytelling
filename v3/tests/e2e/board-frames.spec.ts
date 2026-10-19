@@ -25,8 +25,10 @@ test('below 600 px STOP ALL sits in the dock at the bottom, at least 48 px tall'
   page,
 }) => {
   await page.setViewportSize({ width: 390, height: 844 });
-  await expect(bottomBar(page).getByRole('button', { name: 'STOP ALL' })).toBeVisible();
-  await expect(topBar(page).getByRole('button', { name: 'STOP ALL' })).toHaveCount(0);
+  await expect(
+    bottomBar(page).getByRole('button', { name: 'STOP ALL', exact: true }),
+  ).toBeVisible();
+  await expect(topBar(page).getByRole('button', { name: 'STOP ALL', exact: true })).toHaveCount(0);
   const box = (await stopAll(page).boundingBox())!;
   expect(box.height).toBeGreaterThanOrEqual(48);
   expect(box.y + box.height).toBeLessThanOrEqual(844);
@@ -37,18 +39,22 @@ test('from 600 px STOP ALL stays in the top bar; the bottom bar shows the board 
   page,
 }) => {
   await page.setViewportSize({ width: 600, height: 800 });
-  await expect(topBar(page).getByRole('button', { name: 'STOP ALL' })).toBeVisible();
-  await expect(bottomBar(page).getByRole('button', { name: 'STOP ALL' })).toHaveCount(0);
+  await expect(topBar(page).getByRole('button', { name: 'STOP ALL', exact: true })).toBeVisible();
+  await expect(bottomBar(page).getByRole('button', { name: 'STOP ALL', exact: true })).toHaveCount(
+    0,
+  );
   await expect(bottomBar(page)).toContainText('Deck 1');
 });
 
 test('a resize or a rotation moves STOP ALL at once, both ways', async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 800 });
-  await expect(topBar(page).getByRole('button', { name: 'STOP ALL' })).toBeVisible();
+  await expect(topBar(page).getByRole('button', { name: 'STOP ALL', exact: true })).toBeVisible();
   await page.setViewportSize({ width: 599, height: 800 });
-  await expect(bottomBar(page).getByRole('button', { name: 'STOP ALL' })).toBeVisible();
+  await expect(
+    bottomBar(page).getByRole('button', { name: 'STOP ALL', exact: true }),
+  ).toBeVisible();
   await page.setViewportSize({ width: 844, height: 390 });
-  await expect(topBar(page).getByRole('button', { name: 'STOP ALL' })).toBeVisible();
+  await expect(topBar(page).getByRole('button', { name: 'STOP ALL', exact: true })).toBeVisible();
 });
 
 test('in SETUP the dock shows the save status and no STOP ALL', async ({ page }) => {

@@ -8,7 +8,7 @@ import { openMainMenu } from './helpers';
 test('LIBRARY button navigates to LibraryScreen', async ({ page }) => {
   await page.goto('/soundboard-of-storytelling/');
   await openMainMenu(page);
-  await page.getByRole('button', { name: 'LIBRARY' }).click();
+  await page.getByRole('button', { name: 'LIBRARY', exact: true }).click();
   // IMPORT button is unique to LibraryScreen (not present on Start or BoardList)
   // Note: the actual button text is "IMPORT" — CLAUDE.md says "UPLOAD" which is wrong.
   await expect(page.getByRole('button', { name: /IMPORT/ })).toBeVisible();

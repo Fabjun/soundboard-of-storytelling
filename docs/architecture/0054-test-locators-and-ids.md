@@ -85,6 +85,15 @@ tests visit. In the same change, the PAD editor's playback position became a see
 by role and name (WAI-ARIA APG Media Seek Slider) instead of getting a test ID with a new element
 kind — the element kinds above stay unchanged.
 
+**2026-10-19 (3.0.264) — names and texts are compared exactly.** Owner decision 2026-10-19:
+Playwright's `getByRole` name and `getByText` match "case-insensitive and searches for a
+substring" by default (Playwright API, `page.getByRole`), so a test that looks for the pad "Rain"
+also finds a later control named "Undo: edit pad 'Rain'" — two gates failed on that on
+2026-10-19. Every text locator now sets `exact: true` (164 calls in 44 specs, changed by a script);
+a part of a name, or a changing one, is an explicit regular expression. Five locators had relied
+on a part of a name and now use the whole one ("LIB, open the library", the title heading) or a
+pattern (the version link). `testGuards` ("a locator compares a text exactly") keeps it so.
+
 ## Related
 
 - **Files:** `v3/tests/e2e/**`, `v3/tests/unit/codeGuards.test.ts`,

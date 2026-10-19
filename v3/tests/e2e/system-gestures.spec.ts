@@ -71,7 +71,7 @@ test('no browser gestures and no small text fields on any screen', async ({ page
   await page.locator('[data-testid^="pad-creation-popover-source-item-"]').first().click();
   await page.getByTestId('pad-creation-popover-add-button').click();
   await padCells(page).first().click();
-  await page.getByRole('button', { name: 'BROWSE' }).click();
+  await page.getByRole('button', { name: 'BROWSE', exact: true }).click();
   expect(await offenders(page), 'PAD editor with library picker').toEqual([]);
 });
 
@@ -98,7 +98,7 @@ test.describe('with a touch screen', () => {
           { once: true },
         );
       });
-      await page.getByRole('img', { name: 'Animated flame' }).tap();
+      await page.getByRole('img', { name: 'Animated flame', exact: true }).tap();
       return page.evaluate(
         () => (window as { lastTouchEndPrevented?: boolean }).lastTouchEndPrevented,
       );
@@ -110,7 +110,7 @@ test.describe('with a touch screen', () => {
     // A swipe still scrolls from the flame: its touch-action is the global one (codeGuards)
     expect(
       await page
-        .getByRole('img', { name: 'Animated flame' })
+        .getByRole('img', { name: 'Animated flame', exact: true })
         .evaluate((c) => getComputedStyle(c).getPropertyValue('touch-action')),
     ).toBe('pan-x pan-y');
   });
@@ -139,7 +139,7 @@ test('a mouse over a button changes nothing; a press shows only while it lasts',
 }) => {
   await page.goto('/soundboard-of-storytelling/');
   await openMainMenu(page);
-  const library = page.getByRole('button', { name: 'LIBRARY' });
+  const library = page.getByRole('button', { name: 'LIBRARY', exact: true });
   const idle = await looks(library);
   await library.hover();
   expect(await looks(library)).toEqual(idle);

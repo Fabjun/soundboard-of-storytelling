@@ -7,6 +7,14 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.264 — 2026-10-19
+
+### Internal
+
+- test(e2e): names and texts are compared exactly (owner decision 2026-10-19, ADR-0054 amendment) — 164 getByRole / getByText calls in 44 specs set exact: true; five that relied on part of a name use the whole name or an explicit pattern (LIB, open the library; the title heading; the version link); Playwright matches by substring by default, and two gates failed on it on 2026-10-19
+- test(guards): testGuards "a locator compares a text exactly" — a text locator without exact: true fails, a regular expression stays allowed; counter-checked
+- docs: testing.md test locators — a text is compared exactly
+
 ## 3.0.263 — 2026-10-19
 
 ### Added

@@ -58,7 +58,7 @@ test('17 — change pad name in editor → persists after page reload', async ({
   // Reload page and navigate back to the board — reloadApp waits for the saves
   await reloadApp(page);
   await openMainMenu(page);
-  await page.getByRole('button', { name: 'BOARD' }).click();
+  await page.getByRole('button', { name: 'BOARD', exact: true }).click();
   // Board should still exist
   const boardRow = page.locator('[data-testid^="board-list-screen-row-"]').first();
   await boardRow.waitFor();
@@ -106,7 +106,9 @@ test('19 — lossy type change → PadTypeConfirmDialog appears', async ({ page 
   await expect(dialog).toBeVisible();
 
   // A modal alert dialog (ADR-0074): the focus starts on the safe answer, the editor is inert
-  await expect(page.getByRole('alertdialog', { name: 'Change pad type?' })).toBeVisible();
+  await expect(
+    page.getByRole('alertdialog', { name: 'Change pad type?', exact: true }),
+  ).toBeVisible();
   await expect(page.getByTestId('pad-type-confirm-dialog-cancel-button')).toBeFocused();
   const typeRow = page.getByTestId('pad-editor-panel-type-button-single');
   expect(await typeRow.evaluate((el) => el.closest('[inert]') !== null)).toBe(true);
@@ -188,7 +190,7 @@ test('a draft left when the page is hidden comes back in the editor; SAVE keeps 
 
   await reloadApp(page);
   await openMainMenu(page);
-  await page.getByRole('button', { name: 'BOARD' }).click();
+  await page.getByRole('button', { name: 'BOARD', exact: true }).click();
   await page.locator('[data-testid^="board-list-screen-name-text-"]').first().click();
   await page.getByTestId('mode-toggle').waitFor();
   await enterSetupMode(page);

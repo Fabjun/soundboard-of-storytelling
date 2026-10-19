@@ -22,8 +22,8 @@ import {
   uploadTestAudio,
 } from './helpers';
 
-const bar = (page: Page) => page.getByRole('group', { name: 'Quick access' });
-const star = (page: Page) => page.getByRole('button', { name: 'In quick access' });
+const bar = (page: Page) => page.getByRole('group', { name: 'Quick access', exact: true });
+const star = (page: Page) => page.getByRole('button', { name: 'In quick access', exact: true });
 
 /** Opens the pad in the n-th cell in the PAD editor and toggles ★ there (SETUP). */
 async function togglePin(page: Page, n: number) {
@@ -81,7 +81,7 @@ test('the bar is the same in every deck and in All pads; in SETUP it opens the p
   // A pad not in the shown deck opens in the editor from the bar
   await page.getByText('Deck 2', { exact: true }).click();
   await bar(page).getByRole('button').click();
-  await expect(page.getByRole('dialog', { name: 'Pad editor' })).toBeVisible();
+  await expect(page.getByRole('dialog', { name: 'Pad editor', exact: true })).toBeVisible();
   await expect(star(page)).toHaveAttribute('aria-pressed', 'true');
 });
 
@@ -117,7 +117,7 @@ async function starOutAndBackFromBar(page: Page) {
   await star(page).click();
   await expect(star(page)).toHaveAttribute('aria-pressed', 'false');
   await expect(bar(page)).toHaveCount(0);
-  await expect(page.getByRole('dialog', { name: 'Pad editor' })).toBeVisible();
+  await expect(page.getByRole('dialog', { name: 'Pad editor', exact: true })).toBeVisible();
   await star(page).click();
   await expect(star(page)).toHaveAttribute('aria-pressed', 'true');
 }

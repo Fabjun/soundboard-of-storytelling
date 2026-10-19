@@ -24,7 +24,7 @@ const PHONE = { width: 390, height: 844 };
 const toggle = (page: Page, name: 'search' | 'quick-access' | 'decks') =>
   page.getByTestId(`board-screen-${name}-toggle-button`);
 const searchInput = (page: Page) => page.getByTestId('board-screen-search-input');
-const quickAccess = (page: Page) => page.getByRole('group', { name: 'Quick access' });
+const quickAccess = (page: Page) => page.getByRole('group', { name: 'Quick access', exact: true });
 
 async function boardWithTwoPads(page: Page) {
   await page.goto('/soundboard-of-storytelling/');
@@ -85,7 +85,7 @@ test('the quick-access bar folds behind the star, which is marked while the bar 
 }) => {
   await boardWithTwoPads(page);
   await padCells(page).first().getByRole('button').click();
-  await page.getByRole('button', { name: 'In quick access' }).click();
+  await page.getByRole('button', { name: 'In quick access', exact: true }).click();
   await closePadEditor(page);
   await expect(quickAccess(page)).toBeVisible();
 

@@ -103,7 +103,7 @@ test('on a phone a deck moves in the DECKS list, and the tab row follows (Slice 
   await decksButton(page).click();
   const panel = page.getByTestId('deck-rail-sheet-region');
   // The newest deck is active; its ▲ is a whole touch target inside the panel
-  const up = panel.getByRole('button', { name: 'Move deck Deck 3 up' });
+  const up = panel.getByRole('button', { name: 'Move deck Deck 3 up', exact: true });
   await expect(up).toBeInViewport({ ratio: 1 });
   const box = (await up.boundingBox())!;
   expect(box.width).toBeGreaterThanOrEqual(44);

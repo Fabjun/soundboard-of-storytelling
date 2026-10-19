@@ -18,18 +18,18 @@ import { test, expect } from '@playwright/test';
 
 test('A — TAP TO START button tap opens the main menu', async ({ page }) => {
   await page.goto('/soundboard-of-storytelling/');
-  await expect(page.getByRole('button', { name: 'TAP TO START' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'TAP TO START', exact: true })).toBeVisible();
 
-  await page.getByRole('button', { name: 'TAP TO START' }).tap();
+  await page.getByRole('button', { name: 'TAP TO START', exact: true }).tap();
 
   await expect(page.getByTestId('main-menu-screen')).toBeVisible();
 });
 
 test('B — LIBRARY button tap opens LibraryScreen', async ({ page }) => {
   await page.goto('/soundboard-of-storytelling/');
-  await page.getByRole('button', { name: 'TAP TO START' }).tap();
+  await page.getByRole('button', { name: 'TAP TO START', exact: true }).tap();
 
-  await page.getByRole('button', { name: 'LIBRARY' }).tap();
+  await page.getByRole('button', { name: 'LIBRARY', exact: true }).tap();
 
   // IMPORT button signals we're on LibraryScreen
   await expect(page.getByRole('button', { name: /IMPORT/ })).toBeVisible();
@@ -37,9 +37,9 @@ test('B — LIBRARY button tap opens LibraryScreen', async ({ page }) => {
 
 test('C — BOARD button tap opens BoardListScreen', async ({ page }) => {
   await page.goto('/soundboard-of-storytelling/');
-  await page.getByRole('button', { name: 'TAP TO START' }).tap();
+  await page.getByRole('button', { name: 'TAP TO START', exact: true }).tap();
 
-  await page.getByRole('button', { name: 'BOARD' }).tap();
+  await page.getByRole('button', { name: 'BOARD', exact: true }).tap();
 
   await expect(page.getByTestId('board-list-screen-new-button')).toBeVisible();
 });

@@ -24,7 +24,7 @@ export const TEST_AUDIO_NAME = 'test-audio-1s';
  * (settings.md S15) — or stays when the menu is shown already.
  */
 export async function openMainMenu(page: Page): Promise<void> {
-  const start = page.getByRole('button', { name: 'TAP TO START' });
+  const start = page.getByRole('button', { name: 'TAP TO START', exact: true });
   const menu = page.getByTestId('main-menu-screen');
   await start.or(menu).first().waitFor();
   if (await start.isVisible()) await start.click();
@@ -34,14 +34,14 @@ export async function openMainMenu(page: Page): Promise<void> {
 /** Navigate to the LibraryScreen from the start screen or the main menu. */
 export async function goToLibrary(page: Page): Promise<void> {
   await openMainMenu(page);
-  await page.getByRole('button', { name: 'LIBRARY' }).click();
+  await page.getByRole('button', { name: 'LIBRARY', exact: true }).click();
   await page.getByRole('button', { name: /IMPORT/ }).waitFor();
 }
 
 /** Navigate to the BoardListScreen from the start screen or the main menu. */
 export async function goToBoardList(page: Page): Promise<void> {
   await openMainMenu(page);
-  await page.getByRole('button', { name: 'BOARD' }).click();
+  await page.getByRole('button', { name: 'BOARD', exact: true }).click();
   await page.getByTestId('board-list-screen-new-button').waitFor();
 }
 
@@ -208,7 +208,8 @@ export async function createDeck(page: Page): Promise<string> {
   const narrow = (await page.getByTestId('deck-rail-toggle-button').count()) === 0;
   const wasGame =
     narrow &&
-    (await page.getByRole('button', { name: 'GAME' }).getAttribute('aria-pressed')) === 'true';
+    (await page.getByRole('button', { name: 'GAME', exact: true }).getAttribute('aria-pressed')) ===
+      'true';
   if (narrow) {
     await enterSetupMode(page);
     if ((await manage.getAttribute('aria-expanded')) === 'false') await manage.click();
@@ -247,18 +248,18 @@ export async function openDeckActions(deckTab: Locator): Promise<void> {
 
 /** Switch the ModeToggle to SETUP mode. No-op if already in SETUP. */
 export async function enterSetupMode(page: Page): Promise<void> {
-  const setup = page.getByRole('button', { name: 'SETUP' });
+  const setup = page.getByRole('button', { name: 'SETUP', exact: true });
   if ((await setup.getAttribute('aria-pressed')) === 'true') return;
   await setup.click();
-  await page.getByRole('button', { name: 'SETUP', pressed: true }).waitFor();
+  await page.getByRole('button', { name: 'SETUP', exact: true, pressed: true }).waitFor();
 }
 
 /** Switch the ModeToggle to GAME mode. No-op if already in GAME. */
 export async function enterGameMode(page: Page): Promise<void> {
-  const game = page.getByRole('button', { name: 'GAME' });
+  const game = page.getByRole('button', { name: 'GAME', exact: true });
   if ((await game.getAttribute('aria-pressed')) === 'true') return;
   await game.click();
-  await page.getByRole('button', { name: 'GAME', pressed: true }).waitFor();
+  await page.getByRole('button', { name: 'GAME', exact: true, pressed: true }).waitFor();
 }
 
 // ── Compound helpers ──────────────────────────────────────────────────────────
@@ -389,7 +390,7 @@ export async function addLoopPad(page: Page, col: number): Promise<void> {
   const before = await padCells(page).count();
   await page.getByTestId(`pad-grid-cell-empty-slot-${col}-0`).click();
   await page.locator('[data-testid^="pad-creation-popover-source-item-"]').first().click();
-  await page.getByRole('button', { name: 'LOOP' }).click();
+  await page.getByRole('button', { name: 'LOOP', exact: true }).click();
   await page.getByTestId('pad-creation-popover-add-button').click();
   await expect(padCells(page)).toHaveCount(before + 1);
 }
@@ -400,14 +401,14 @@ export async function addLoopPad(page: Page, col: number): Promise<void> {
  * person closes it first, and so do the specs. The discard question has tests of its own.
  */
 export async function closePadEditor(page: Page): Promise<void> {
-  const close = page.getByRole('button', { name: 'Close the pad editor' });
+  const close = page.getByRole('button', { name: 'Close the pad editor', exact: true });
   if (await close.isVisible()) {
     // The editor keeps a draft until SAVE (ADR-0084): a test that edits means to keep the edit
     const save = page.getByTestId('pad-editor-panel-save-button');
     if (await save.isEnabled()) await save.click();
     await close.click();
   }
-  await expect(page.getByRole('dialog', { name: 'Pad editor' })).toBeHidden();
+  await expect(page.getByRole('dialog', { name: 'Pad editor', exact: true })).toBeHidden();
 }
 
 /**

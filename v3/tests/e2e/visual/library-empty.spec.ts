@@ -12,7 +12,7 @@ import { stableScreenshot } from './helpers';
 test('LibraryScreen — empty state', async ({ page }) => {
   await page.goto('/soundboard-of-storytelling/');
   await openMainMenu(page);
-  await page.getByRole('button', { name: 'LIBRARY' }).click();
+  await page.getByRole('button', { name: 'LIBRARY', exact: true }).click();
   await page.getByRole('button', { name: /IMPORT/ }).waitFor();
   await stableScreenshot(page);
   await expect(page).toHaveScreenshot('library-empty.png', { fullPage: false });

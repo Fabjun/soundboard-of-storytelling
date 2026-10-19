@@ -29,10 +29,10 @@ import {
 test('A — TAP TO START opens the main menu and initializes audio', async ({ page }) => {
   await page.goto('/soundboard-of-storytelling/');
   // The start screen has one action (settings.md S15)
-  await page.getByRole('button', { name: 'TAP TO START' }).click();
+  await page.getByRole('button', { name: 'TAP TO START', exact: true }).click();
   // The main menu is shown; the AudioContext was started in the tap handler
   await expect(page.getByTestId('main-menu-screen')).toBeVisible();
-  await expect(page.getByText('audio context running · ready')).toBeVisible();
+  await expect(page.getByText('audio context running · ready', { exact: true })).toBeVisible();
 });
 
 // ── Shared setup (Tests B + C) ────────────────────────────────────────────────
@@ -94,7 +94,7 @@ test('C — LOOP pad: tap → is-looping; tap again → is-looping removed', asy
   await sourceItem.waitFor({ timeout: 5_000 });
   await sourceItem.click();
   // Select the LOOP type pill (label "LOOP")
-  await page.getByRole('button', { name: 'LOOP' }).click();
+  await page.getByRole('button', { name: 'LOOP', exact: true }).click();
   await page.getByTestId('pad-creation-popover-add-button').click();
 
   const padCell = page.locator(PAD_CELL).first();

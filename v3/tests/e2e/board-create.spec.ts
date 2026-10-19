@@ -8,7 +8,7 @@ import { openMainMenu } from './helpers';
 test('create board → appears in list → BoardScreen loads with pad grid', async ({ page }) => {
   await page.goto('/soundboard-of-storytelling/');
   await openMainMenu(page);
-  await page.getByRole('button', { name: 'BOARD' }).click();
+  await page.getByRole('button', { name: 'BOARD', exact: true }).click();
 
   // Create new board
   await page.getByRole('button', { name: /NEW BOARD/ }).click();

@@ -17,10 +17,19 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.263';
+export const APP_VERSION = '3.0.264';
 
 /** The developer log, newest first; CHANGELOG.md is generated from it (sync-changelog). */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.264',
+    date: '2026-10-19',
+    items: [
+      'test(e2e): names and texts are compared exactly (owner decision 2026-10-19, ADR-0054 amendment) — 164 getByRole / getByText calls in 44 specs set exact: true; five that relied on part of a name use the whole name or an explicit pattern (LIB, open the library; the title heading; the version link); Playwright matches by substring by default, and two gates failed on it on 2026-10-19',
+      'test(guards): testGuards "a locator compares a text exactly" — a text locator without exact: true fails, a regular expression stays allowed; counter-checked',
+      'docs: testing.md test locators — a text is compared exactly',
+    ],
+  },
   {
     version: '3.0.263',
     date: '2026-10-19',

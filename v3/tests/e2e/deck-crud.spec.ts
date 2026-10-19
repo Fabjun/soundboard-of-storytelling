@@ -115,8 +115,8 @@ test('9b — ▲ / ▼ move the active deck one place; at the ends the button is
   page,
 }) => {
   await threeDecks(page);
-  const down = page.getByRole('button', { name: 'Move deck Deck 3 down' });
-  const up = page.getByRole('button', { name: 'Move deck Deck 3 up' });
+  const down = page.getByRole('button', { name: 'Move deck Deck 3 down', exact: true });
+  const up = page.getByRole('button', { name: 'Move deck Deck 3 up', exact: true });
   await expect(down).toBeDisabled();
 
   await up.click();
@@ -135,7 +135,7 @@ test('9c — only the active deck in SETUP shows the reorder line; GAME shows no
   page,
 }) => {
   await threeDecks(page);
-  await expect(page.getByRole('group', { name: 'Move deck Deck 3' })).toBeVisible();
+  await expect(page.getByRole('group', { name: 'Move deck Deck 3', exact: true })).toBeVisible();
   await expect(page.getByRole('group', { name: /^Move deck/ })).toHaveCount(1);
   await enterGameMode(page);
   await expect(page.getByRole('group', { name: /^Move deck/ })).toHaveCount(0);
@@ -304,7 +304,7 @@ test('the "⋯" menu works with the keyboard: opens on Enter, arrows move, Escap
   page,
 }) => {
   await page.getByTestId('deck-rail-new-button').click();
-  const actions = page.getByRole('button', { name: 'Actions for deck Deck 1' });
+  const actions = page.getByRole('button', { name: 'Actions for deck Deck 1', exact: true });
   await expect(actions).toHaveAttribute('aria-haspopup', 'menu');
   await expect(actions).toHaveAttribute('aria-expanded', 'false');
 
@@ -337,6 +337,6 @@ test('the "⋯" menu closes on a press outside; Rename from it starts the rename
   await expect(page.getByRole('menu')).toHaveCount(0);
 
   await openDeckActions(tab);
-  await page.getByRole('menuitem', { name: 'Rename' }).click();
+  await page.getByRole('menuitem', { name: 'Rename', exact: true }).click();
   await expect(page.getByTestId('deck-rail-name-input')).toBeFocused();
 });

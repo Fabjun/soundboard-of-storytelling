@@ -76,7 +76,7 @@ test('loads nothing from other origins', async ({ page, baseURL }) => {
     if (new URL(req.url()).origin !== new URL(baseURL!).origin) foreign.push(req.url());
   });
   await page.goto(APP);
-  await expect(page.getByRole('button', { name: 'TAP TO START' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'TAP TO START', exact: true })).toBeVisible();
   for (const family of FONTS) await fontLoaded(page, family);
   expect(foreign).toEqual([]);
 });
@@ -189,7 +189,7 @@ test('the update prompt saves a backup first, then RELOAD still takes over (sett
 test('the UPDATE button says when this is the newest version', async ({ page }) => {
   await loadControlled(page);
   await openMainMenu(page);
-  await page.getByRole('button', { name: 'UPDATE' }).click();
+  await page.getByRole('button', { name: 'UPDATE', exact: true }).click();
   await expect(page.getByRole('status').filter({ hasText: 'newest version' })).toBeVisible();
   await expect(page.getByTestId('update-prompt')).toBeHidden();
 });
@@ -200,7 +200,7 @@ test('the UPDATE button finds a new version and brings back a prompt put off wit
   await loadControlled(page);
   await whileANewVersionWaits(async () => {
     await openMainMenu(page);
-    await page.getByRole('button', { name: 'UPDATE' }).click();
+    await page.getByRole('button', { name: 'UPDATE', exact: true }).click();
     await expect(
       page.getByRole('status').filter({ hasText: 'new version was found' }),
     ).toBeVisible();
@@ -210,7 +210,7 @@ test('the UPDATE button finds a new version and brings back a prompt put off wit
     await page.getByTestId('update-prompt-later-button').click();
     await expect(page.getByTestId('update-prompt')).toBeHidden();
     await openMainMenu(page);
-    await page.getByRole('button', { name: 'UPDATE' }).click();
+    await page.getByRole('button', { name: 'UPDATE', exact: true }).click();
     await expect(page.getByTestId('update-prompt')).toBeVisible();
   });
 });
@@ -229,7 +229,7 @@ test('app starts offline after the first visit', async ({ page, context }) => {
   await loadControlled(page);
   await context.setOffline(true);
   await reloadApp(page);
-  await expect(page.getByRole('button', { name: 'TAP TO START' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'TAP TO START', exact: true })).toBeVisible();
 });
 
 test('fonts are available offline', async ({ page, context }) => {

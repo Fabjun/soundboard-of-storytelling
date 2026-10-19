@@ -68,7 +68,7 @@ test.beforeEach(async ({ page }) => {
   await addLoopPad(page, 0);
   // The largest pads: the deck's empty cells reach far below the window, so the grid scrolls
   await page.getByTestId('deck-rail-manage-button').click();
-  await page.getByRole('slider', { name: 'PAD SIZE' }).focus();
+  await page.getByRole('slider', { name: 'PAD SIZE', exact: true }).focus();
   await page.keyboard.press('End');
   await page.getByTestId('deck-rail-manage-button').click();
   cdp = await page.context().newCDPSession(page);

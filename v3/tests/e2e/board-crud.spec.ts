@@ -70,7 +70,7 @@ test('3 — renamed board persists after page reload', async ({ page }) => {
 
   await reloadApp(page);
   await openMainMenu(page);
-  await page.getByRole('button', { name: 'BOARD' }).click();
+  await page.getByRole('button', { name: 'BOARD', exact: true }).click();
   await page.getByTestId('board-list-screen-new-button').waitFor();
 
   // Board should still exist with the renamed title

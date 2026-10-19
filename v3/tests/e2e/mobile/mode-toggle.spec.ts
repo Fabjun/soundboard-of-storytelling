@@ -21,8 +21,8 @@ test.beforeEach(async ({ page }) => {
 });
 
 test('A — GAME half tap switches mode to GAME', async ({ page }) => {
-  const setup = page.getByRole('button', { name: 'SETUP' });
-  const game = page.getByRole('button', { name: 'GAME' });
+  const setup = page.getByRole('button', { name: 'SETUP', exact: true });
+  const game = page.getByRole('button', { name: 'GAME', exact: true });
   // Default state after createBoardAndNavigate may be either mode; force SETUP first
   await setup.tap();
   await expect(setup).toHaveAttribute('aria-pressed', 'true');
@@ -35,8 +35,8 @@ test('A — GAME half tap switches mode to GAME', async ({ page }) => {
 });
 
 test('B — SETUP half tap switches mode to SETUP', async ({ page }) => {
-  const setup = page.getByRole('button', { name: 'SETUP' });
-  const game = page.getByRole('button', { name: 'GAME' });
+  const setup = page.getByRole('button', { name: 'SETUP', exact: true });
+  const game = page.getByRole('button', { name: 'GAME', exact: true });
   // Force GAME mode first
   await game.tap();
   await expect(game).toHaveAttribute('aria-pressed', 'true');

@@ -46,7 +46,10 @@ test.describe('touch targets on a 390px phone', () => {
 
   test('StartScreen: TAP TO START button is >= 44×44px', async ({ page }) => {
     await page.goto('/soundboard-of-storytelling/');
-    await assertTarget(page.getByRole('button', { name: 'TAP TO START' }), 'TAP TO START');
+    await assertTarget(
+      page.getByRole('button', { name: 'TAP TO START', exact: true }),
+      'TAP TO START',
+    );
   });
 
   test('MainMenuScreen: every menu button is >= 44×44px', async ({ page }) => {

@@ -84,7 +84,7 @@ test('a Loop preview runs, holds on pause and goes back to the trim start on sto
   page,
 }) => {
   await page.getByTestId('pad-editor-panel-type-button-loop').click();
-  const position = page.getByRole('slider', { name: 'Playback position' });
+  const position = page.getByRole('slider', { name: 'Playback position', exact: true });
   await expect(position).toHaveAttribute('aria-valuenow', '0');
 
   await page.getByTestId('pad-editor-panel-preview-play-button').click();
@@ -108,15 +108,16 @@ test('a Single preview ends on its own', async ({ page }) => {
   await expect(page.getByTestId('pad-editor-panel-preview-play-button')).toBeVisible({
     timeout: 5_000,
   });
-  await expect(page.getByRole('slider', { name: 'Playback position' })).toHaveAttribute(
-    'aria-valuenow',
-    '0',
-  );
+  await expect(
+    page.getByRole('slider', { name: 'Playback position', exact: true }),
+  ).toHaveAttribute('aria-valuenow', '0');
 });
 
 test('a tap on the waveform sets where the preview starts', async ({ page }) => {
   await page.getByTestId('waveform-editor').click(); // Playwright clicks the middle
-  await expect(page.getByRole('slider', { name: 'Playback position' })).toHaveAttribute(
+  await expect(
+    page.getByRole('slider', { name: 'Playback position', exact: true }),
+  ).toHaveAttribute(
     'aria-valuenow',
     /^0\.(49|5|51)$/, // the middle, to the pixel
   );
@@ -129,7 +130,7 @@ test('the playback position moves with the slider keys, within the trimmed regio
   await end.fill('0.6');
   await end.press('Enter');
 
-  const position = page.getByRole('slider', { name: 'Playback position' });
+  const position = page.getByRole('slider', { name: 'Playback position', exact: true });
   await position.press('ArrowRight');
   await expect(position).toHaveAttribute('aria-valuenow', '0.1');
   await position.press('End');
