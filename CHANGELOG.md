@@ -7,6 +7,18 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.269 — 2026-10-20
+
+### Changed
+
+- refactor(ui): ConfirmDialog — the one confirmation dialog (alertdialog, the focus on the safe answer, Escape and the backdrop cancel, the action named after what it does); "Change pad type?" and "Discard changes?" use it; the type dialog's CANCEL takes the primary look of the safe answer, its type row moves into the body
+
+### Internal
+
+- docs(product): Slice 16 plan released by the owner (2026-10-20, ahead of the iPhone session); L1–L9 decided by Claude on the owner's instruction, for review — a trash in its own IndexedDB store (the engine reads files straight from the library), folders with tags as search words, a Select mode, the BOARDS tab Rejected, "in N pads", templates as V1, own SVG icons drawn only through <img> (MDN, OWASP ASVS 5.2.7), preview, sort; D7 — a delete that cannot be undone is confirmed in a dialog, never by a second tap (owner decision 2026-10-20)
+- test(e2e): pad-editing locates the type dialog by its role and name (alertdialog "Change pad type?", CANCEL, SWITCH); counter-checked — without the safe-answer focus both dialog tests fail
+- docs: CLAUDE.md delete rules (library files undoable from 16a, the dialog for what cannot be undone) and Slice 16 row; BACKLOG "Two-tap confirmations" (open, for the owner), tag autocomplete Rejected (L2), folder tree with 16c; v1-v2-inventory boards tab Rejected
+
 ## 3.0.268 — 2026-10-20
 
 ### Changed

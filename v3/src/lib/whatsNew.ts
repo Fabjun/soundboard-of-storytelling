@@ -103,6 +103,12 @@ export function withEarlyVersions(
 /** The release notes the main menu shows, newest first (checked by whatsNew.test.ts). */
 export const WHATS_NEW: WhatsNewNotes[] = [
   {
+    version: '3.0.269',
+    improved: [
+      'The questions before changing a pad type and before discarding changes look and work the same way: the safe answer is ready first, and Escape or a tap beside the question keeps everything as it is.',
+    ],
+  },
+  {
     version: '3.0.268',
     behindTheScenes: [
       'Unused styles of the mode switch are gone, and a test checks that its sparks can fly beyond the switch.',

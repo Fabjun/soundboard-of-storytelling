@@ -51,6 +51,7 @@ import { WaveformEditor } from './WaveformEditor';
 import { PadFileList } from './PadFileList';
 import { addFiles, moveFile, removeFile, setFileTrim } from '../lib/padFiles';
 import { PadTypeConfirmDialog } from './PadTypeConfirmDialog';
+import { ConfirmDialog } from './ConfirmDialog';
 import { SliderRow } from './SliderRow';
 import { ComboStepsEditor } from './ComboStepsEditor';
 import { IconGlyph, useIconDrawings } from './PadIcons';
@@ -675,18 +676,10 @@ export function PadEditorPanel({
   // Escape closes the editor — not while the icon list or the type confirmation is open on top:
   // those close first (src/lib/escapeKey.ts decides at the moment the key is pressed)
   useEscapeKey(requestClose, pickerSlot === null && pendingType === null && !confirmDiscard);
-  // The question on top closes first: Escape keeps editing
-  useEscapeKey(() => setConfirmDiscard(false), confirmDiscard);
 
-  // The question is a modal alert dialog (W3C APG): the editor behind is inert, the focus starts
-  // on the safe answer — KEEP EDITING — and goes back to ✕ when the question closes
-  const discardRef = useRef<HTMLDivElement>(null);
+  // The discard question (ConfirmDialog): the editor behind is inert, the focus starts on the safe
+  // answer — KEEP EDITING — and goes back to ✕ when the question closes; Escape keeps editing
   const closeRef = useRef<HTMLButtonElement>(null);
-  useModalDialog(discardRef, {
-    active: confirmDiscard,
-    root: () => dialog.current ?? document.body,
-    returnFocus: () => closeRef.current,
-  });
 
   return (
     <div
@@ -778,51 +771,23 @@ export function PadEditorPanel({
       )}
 
       {confirmDiscard && (
-        <>
-          <div
-            class="sb-type-confirm-backdrop"
-            aria-hidden="true"
-            onClick={() => setConfirmDiscard(false)}
-          />
-          <div
-            ref={discardRef}
-            class="sb-type-confirm sb-type-confirm-centered"
-            role="alertdialog"
-            aria-modal="true"
-            aria-labelledby="pad-editor-panel-discard-title"
-            aria-describedby="pad-editor-panel-discard-text"
-            data-testid="pad-editor-panel-discard-region"
-          >
-            <div class="sb-dialog-header">
-              <div class="sb-dialog-title" id="pad-editor-panel-discard-title">
-                Discard changes?
-              </div>
-            </div>
-            <div class="sb-dialog-section" id="pad-editor-panel-discard-text">
-              The changes to this pad are not saved. Discarding them keeps the pad as it was saved.
-            </div>
-            <div class="sb-dialog-actions">
-              <button
-                class="sb-btn sb-btn-sm sb-btn-primary sb-dialog-action-btn"
-                data-testid="pad-editor-panel-keep-editing-button"
-                data-autofocus
-                onClick={() => setConfirmDiscard(false)}
-              >
-                KEEP EDITING
-              </button>
-              <button
-                class="sb-btn sb-btn-sm sb-btn-danger sb-dialog-action-btn"
-                data-testid="pad-editor-panel-discard-button"
-                onClick={() => {
-                  dropDraft();
-                  onClose();
-                }}
-              >
-                DISCARD CHANGES
-              </button>
-            </div>
+        <ConfirmDialog
+          title="Discard changes?"
+          cancelLabel="KEEP EDITING"
+          confirmLabel="DISCARD CHANGES"
+          danger
+          onCancel={() => setConfirmDiscard(false)}
+          onConfirm={() => {
+            dropDraft();
+            onClose();
+          }}
+          root={() => dialog.current ?? document.body}
+          returnFocus={() => closeRef.current}
+        >
+          <div class="sb-dialog-section">
+            The changes to this pad are not saved. Discarding them keeps the pad as it was saved.
           </div>
-        </>
+        </ConfirmDialog>
       )}
 
       <div class="sb-pad-editor">
