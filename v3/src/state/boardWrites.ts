@@ -12,11 +12,15 @@
  * A failed save reloads the stored board, so the screen never shows unsaved data as saved; when
  * nothing can be read either, a new board is removed and a known one stays with NOT SAVED.
  *
+ * Every change is a step of the board's undo history (src/state/boardHistory.ts, ADR-0086): it is
+ * recorded here, the one write path, and an undo or redo is written here like any change.
+ *
  * Guarded: components and screens never call boardPut / upsertBoard (codeGuards).
  */
 
 import type { Board } from '../types';
 import { boardGet, boardPut } from '../db/idb';
+import { boardStep, recordBoardChange } from './boardHistory';
 import { boards, lastSaveFailed, pendingSaves, removeBoardFromStore, upsertBoard } from './store';
 
 /**
@@ -46,8 +50,24 @@ export function applyBoardChange(
   if (!latest) return { board: null, saved: Promise.resolve(null) };
   const next = change(latest);
   if (next === latest) return { board: null, saved: Promise.resolve(null) };
+  recordBoardChange(latest, next);
   upsertBoard(next);
   return { board: next, saved: save(next) };
+}
+
+/**
+ * Undoes the board's last change (`undo`) or redoes the last undone one (`redo`): shows the board
+ * of that step and saves it, as any change. Returns the board now shown, or null when there was
+ * no step.
+ */
+export function stepBoard(boardId: string, direction: 'undo' | 'redo'): Board | null {
+  const latest = boards.value.find((b) => b.id === boardId);
+  const step = latest ? boardStep(latest, direction) : null;
+  if (!step) return null;
+  upsertBoard(step.board);
+  step.done();
+  void save(step.board);
+  return step.board;
 }
 
 /** Adds a new board to the store and saves it. Returns null when the save failed. */

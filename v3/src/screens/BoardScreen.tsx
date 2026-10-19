@@ -33,8 +33,11 @@ import {
   libraryItems,
   playingPads,
 } from '../state/store';
-import { applyBoardChange, updateBoard } from '../state/boardWrites';
+import { applyBoardChange, stepBoard, updateBoard } from '../state/boardWrites';
+import { canRedoBoard, canUndoBoard } from '../state/boardHistory';
+import { useKeydown } from '../lib/escapeKey';
 import { switchMode } from '../state/modeControl';
+import { takesText } from '../state/keyControl';
 import {
   getLastPlayed,
   getLastView,
@@ -138,6 +141,34 @@ export function BoardScreen(): JSX.Element {
       setSelectedPadId(null);
     }
   }, [mode]);
+
+  /**
+   * Undoes or redoes a board change (ADR-0086). An undo can take away the deck shown (NEW DECK
+   * undone): then the first deck is shown, as after a delete.
+   */
+  function handleHistory(direction: 'undo' | 'redo') {
+    const id = currentBoard.value?.id;
+    const shown = id ? stepBoard(id, direction) : null;
+    if (!shown || allPadsView.value) return;
+    if (shown.decks.some((d) => d.id === currentDeckId.value)) return;
+    const first = [...shown.decks].sort((a, b) => a.order - b.order)[0];
+    currentDeckId.value = first?.id ?? null;
+    if (first) setLastView(shown.id, { kind: 'deck', deckId: first.id });
+  }
+
+  // Cmd / Ctrl + Z undoes, with Shift (or Ctrl + Y) redoes — in SETUP only (P6), never in a text
+  // field (it keeps its own) and never while a modal dialog is open: the PAD editor's draft has
+  // its own history (ADR-0084) and the board behind it is inert (ADR-0074)
+  useKeydown((e) => {
+    if (currentMode.value !== 'edit' || !(e.metaKey || e.ctrlKey) || e.altKey) return;
+    if (takesText(e.target) || document.querySelector('[aria-modal="true"]')) return;
+    const key = e.key.toLowerCase();
+    const direction =
+      key === 'z' ? (e.shiftKey ? 'redo' : 'undo') : key === 'y' && !e.shiftKey ? 'redo' : null;
+    if (!direction) return;
+    e.preventDefault();
+    handleHistory(direction);
+  });
 
   // Path C — ADD PAD. No keyboard shortcut: the app is operated by its buttons (owner decision
   // 2026-10-02 — keyboard control of the app is Parked; pad keys in GAME are Slice 12).
@@ -458,6 +489,12 @@ export function BoardScreen(): JSX.Element {
           currentScreen.value = 'board-list';
         }}
         toggles={narrowWindow.value ? undefined : barToggles(false)}
+        history={{
+          canUndo: canUndoBoard(board.id),
+          canRedo: canRedoBoard(board.id),
+          onUndo: () => handleHistory('undo'),
+          onRedo: () => handleHistory('redo'),
+        }}
       />
 
       {/* Main content */}

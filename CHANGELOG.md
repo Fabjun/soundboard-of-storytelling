@@ -7,6 +7,21 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.250 — 2026-10-19
+
+### Added
+
+- feat(board): Slice 18a — every board change can be undone and redone (ADR-0086): ↶ / ↷ in the top bar and Cmd / Ctrl + Z, Shift + Cmd / Ctrl + Z or Ctrl + Y, in SETUP only; each step is saved at once; not in a text field and not while a modal dialog is open (the PAD editor keeps its draft history); undoing NEW DECK of the shown deck shows the first deck
+
+### Changed
+
+- refactor(state): boardHistory — one history of whole boards per board (the History of lib/editHistory), recorded in applyBoardChange, the one write path; stepBoard in boardWrites writes an undo or redo step; when the store's board is not the history's present (failed save, import, a board created again with the same id) the history starts again; keyControl exports takesText for the undo keys
+
+### Internal
+
+- test: unit boardHistory (nothing to undo on a new board, undo / redo saved, several steps, an undo is no step, redo dropped by a new change, an unchanged change is no step, LIMIT, per board, failed save, a board created again); E2E board-undo in Chromium and WebKit (buttons, saved undo and no history after a new start, keys, text field, PAD editor open, GAME, NEW DECK undone); visual baseline of the SETUP board with ↶ / ↷; each counter-checked; E2E pad-editor-save finds the editor's own ↶ / ↷ inside the editor dialog, as the board now has a pair too
+- docs: ADR-0086 board undo history; CLAUDE.md slice table — Slice 18 steps, order 18 → 16 → 17 (owner decision 2026-10-19); BACKLOG Slice 18b, 18c, undo names, two-tap delete once undo exists
+
 ## 3.0.249 — 2026-10-19
 
 ### Changed

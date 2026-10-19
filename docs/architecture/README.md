@@ -97,6 +97,7 @@ file. Format: `docs/architecture/_template.md`.
 | [ADR-0083](0083-menu-button.md)                   | Action menus — one MenuButton after the W3C menu button pattern                | Accepted               | Slice 13       | 2026-10-11 |
 | [ADR-0084](0084-pad-editor-draft-and-save.md)     | PAD editor — a draft until SAVE, the discard question, undo and redo           | Accepted               | cross-cutting  | 2026-10-12 |
 | [ADR-0085](0085-ui-icons-from-the-collection.md)  | Every icon of the interface comes from the pad icon collection                 | Accepted               | cross-cutting  | 2026-10-14 |
+| [ADR-0086](0086-board-undo-history.md)            | Board undo history — every board change can be undone and redone               | Accepted               | Slice 18       | 2026-10-19 |
 
 ### Interaction
 

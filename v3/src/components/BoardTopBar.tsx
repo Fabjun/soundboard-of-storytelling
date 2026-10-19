@@ -29,11 +29,13 @@ interface BoardTopBarProps {
   onBack: () => void;
   /** The bar toggles (search, quick access) — given in the wide frame, where the top bar has room. */
   toggles?: ComponentChildren;
+  /** Undo and redo of the board's changes (ADR-0086) — shown in SETUP only. */
+  history: { canUndo: boolean; canRedo: boolean; onUndo: () => void; onRedo: () => void };
 }
 
 /**
- * Shows the board screen's header: back button and board / deck name, the mode toggle, and the
- * library button.
+ * Shows the board screen's header: back button and board / deck name, the mode toggle, undo and
+ * redo in SETUP, and the library button.
  */
 export function BoardTopBar({
   boardName,
@@ -44,6 +46,7 @@ export function BoardTopBar({
   onLibraryToggle,
   onBack,
   toggles,
+  history,
 }: BoardTopBarProps): JSX.Element {
   const compact = narrowWindow.value;
 
@@ -96,9 +99,35 @@ export function BoardTopBar({
         {toggles}
       </div>
 
-      {/* Right: PAUSED and STOP ALL (GAME, wide frame), library toggle */}
+      {/* Right: PAUSED and STOP ALL (GAME, wide frame) or undo and redo (SETUP), library toggle */}
       <div class="sb-board-topbar-right">
         {mode === 'play' && !compact && <LiveControls place="top-bar" />}
+        {mode === 'edit' && (
+          <>
+            <button
+              type="button"
+              class="sb-btn sb-btn-sm sb-btn-ghost sb-topbar-icon-btn"
+              data-testid="board-top-bar-undo-button"
+              aria-label="Undo"
+              title="Undo (Ctrl / Cmd + Z)"
+              disabled={!history.canUndo}
+              onClick={history.onUndo}
+            >
+              <UiIcon name="undo" class="sb-toolbar-icon" />
+            </button>
+            <button
+              type="button"
+              class="sb-btn sb-btn-sm sb-btn-ghost sb-topbar-icon-btn"
+              data-testid="board-top-bar-redo-button"
+              aria-label="Redo"
+              title="Redo (Shift + Ctrl / Cmd + Z)"
+              disabled={!history.canRedo}
+              onClick={history.onRedo}
+            >
+              <UiIcon name="redo" class="sb-toolbar-icon" />
+            </button>
+          </>
+        )}
         <button
           class={`sb-btn sb-btn-sm ${libraryOpen ? 'sb-btn-primary' : 'sb-btn-ghost'} sb-topbar-icon-btn`}
           onClick={onLibraryToggle}

@@ -101,6 +101,12 @@ export function withEarlyVersions(
 /** The release notes the main menu shows, newest first (checked by whatsNew.test.ts). */
 export const WHATS_NEW: WhatsNewNotes[] = [
   {
+    version: '3.0.250',
+    new: [
+      'In SETUP every change to a board can be undone and redone — with the arrows in the top bar or with Ctrl / Cmd + Z — as long as the app stays open.',
+    ],
+  },
+  {
     version: '3.0.249',
     improved: [
       'On a phone or tablet the icon list opens without the keyboard, so all icons stay in view; a tap into the search brings the keyboard.',
