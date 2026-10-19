@@ -21,8 +21,9 @@ import {
 const editor = (page: Page) => page.getByRole('dialog', { name: 'Pad editor' });
 const nameInput = (page: Page) => page.getByTestId('pad-editor-panel-name-input');
 const save = (page: Page) => page.getByTestId('pad-editor-panel-save-button');
-const undo = (page: Page) => page.getByRole('button', { name: 'Undo' });
-const redo = (page: Page) => page.getByRole('button', { name: 'Redo' });
+// The editor's own ↶ / ↷ — the board has a pair of its own behind it (ADR-0086)
+const undo = (page: Page) => editor(page).getByRole('button', { name: 'Undo' });
+const redo = (page: Page) => editor(page).getByRole('button', { name: 'Redo' });
 const close = (page: Page) => page.getByRole('button', { name: 'Close the pad editor' });
 const question = (page: Page) => page.getByRole('alertdialog', { name: 'Discard changes?' });
 

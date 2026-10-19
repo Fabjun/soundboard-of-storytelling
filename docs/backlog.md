@@ -34,6 +34,33 @@ during the slice. This is the only defense against backlog drift.
 
 ## 1. Features (Slice-bound)
 
+### Undo: the deck-delete toast on the board history (Slice 18b)
+
+Since 3.0.250 every board change can be undone (ADR-0086). The toast after a deck delete still
+has its own UNDO (`v3/src/components/DeckRail.tsx`, `undoDelete`), which puts the deck back
+through `restoreDeck`; both lead to the same board, and `restoreDeck` does nothing when the deck
+is there already. 18b moves the toast's UNDO onto the history and shows the same toast after a
+pad delete. **When:** Slice 18b.
+
+### Undo: deleting a board or a library file (Slice 18c)
+
+The board history covers changes inside a board. Deleting a whole board (board list) or an audio
+file (library) is final behind the two-tap confirmation. Undo there needs the deleted data kept:
+a board document is small, an audio file is not (iPhone memory rules: never hold raw audio in
+working state) — a trash in IndexedDB is the likely way. **When:** Slice 18c, its own decision.
+
+### Undo names the change it undoes
+
+The board's ↶ / ↷ say only Undo and Redo, not what they would undo, such as "Undo delete deck"
+(ADR-0086, trade-offs). Each writer would pass a name with its change. **When:** after
+Slice 18b, when the toasts show such names already.
+
+### Two-tap delete once undo exists
+
+A List Apart, "Never Use a Warning When you Mean Undo": with undo, a confirmation is a habit that
+protects little. The owner keeps the two taps for now (2026-10-19, ADR-0086 alternatives).
+**When:** after Slice 18b, with the owner.
+
 ### Deck reorder (drag & drop) ✅ Done (3.0.217)
 
 Found 2026-09-29 (T3): DeckRail has no reorder at all, although Slice 3 docs and the V1/V2

@@ -4,6 +4,7 @@
 **Date:** 2026-10-12
 **Slice:** cross-cutting
 **Refines:** ADR-0074
+**Refined by:** ADR-0086 (the board's undo history, the same `History` as the draft)
 **Category:** UI architecture
 
 ## Context
