@@ -7,6 +7,17 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.258 — 2026-10-19
+
+### Added
+
+- feat(board): one tap deletes a pad or a deck, the undo toast follows (owner decision 2026-10-19, ADR-0086 amendment; NN/g: no confirmation for routine actions that can be undone) — the pad's toast says in how many decks it was ("Deleted 'Rain' · from 2 decks"), the hint the first tap showed before; a whole board and a library file keep the two taps
+
+### Internal
+
+- test: E2E deck-crud, pad-pool, board-undo, layout-reach follow the one tap; the deck count in the pad toast and the deck delete counter-checked
+- docs: CLAUDE.md delete rules (one tap where undo exists, two taps where not); BACKLOG "Two-tap delete once undo exists" done; iPhone checklist — an Undo section for Slice 18, UPDATE sits in the main menu, the PAD editor test saves before ✕
+
 ## 3.0.257 — 2026-10-19
 
 ### Internal

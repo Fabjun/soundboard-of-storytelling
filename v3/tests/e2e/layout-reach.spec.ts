@@ -70,8 +70,8 @@ test("the pad editor's delete button can be reached on a short window", async ({
   await page.getByTestId('pad-editor-panel').hover();
   await page.mouse.wheel(0, 2000);
   await expect(remove).toBeInViewport({ ratio: 1 });
-  await remove.click();
-  await expect(remove).toContainText('CONFIRM DELETE');
+  await remove.click(); // one tap deletes: the pad is gone and the undo toast offers it back
+  await expect(page.getByTestId('undo-toast')).toBeVisible();
 });
 
 // Found 2026-10-04: in the icon picker an open category shrank to a sliver (a child of a

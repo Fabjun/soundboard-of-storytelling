@@ -286,8 +286,10 @@ pixel-art details and touch minimums — ADR-0081, guarded by `codeGuards` ("typ
 ### UI rules
 
 - No emojis. Use Unicode/ASCII glyphs from the design's icon system.
-- Every delete button: 2-tap confirmation (first tap shows confirm
-  state, second tap executes)
+- A delete that can be undone is one tap and shows the undo toast (pads, decks); a delete that
+  cannot be undone — a whole board, a library file — keeps the 2-tap confirmation (first tap
+  shows the confirm state, the second executes). Owner decision 2026-10-19; NN/g: confirm only
+  what has serious consequences and cannot be undone (ADR-0086 amendment)
 - All counts/labels: dynamic from data, never hardcoded
 - Scroll position of overlays/list views: save and restore on re-open
 - Every area whose content can be larger than the window scrolls — nothing is cut off or hidden
@@ -339,7 +341,8 @@ pixel-art details and touch minimums — ADR-0081, guarded by `codeGuards` ("typ
 - **Single Source of Truth for components**: one function per UI
   element type, variants via props. Never parallel components for
   "slightly different" needs. If tempted, ask.
-- **Delete buttons**: always 2-tap confirmation.
+- **Delete buttons**: one tap with the undo toast where the delete can be undone; 2-tap
+  confirmation where it cannot (UI rules above).
 - **Stored state loads before the first render** (2026-10-02): library list and boards are
   loaded in `v3/src/state/boot.ts`, and `main.tsx` renders only afterwards (like redux-persist's
   PersistGate) — a load that finishes later would replace what the user created meanwhile

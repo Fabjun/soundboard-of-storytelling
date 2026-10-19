@@ -17,10 +17,19 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.257';
+export const APP_VERSION = '3.0.258';
 
 /** The developer log, newest first; CHANGELOG.md is generated from it (sync-changelog). */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.258',
+    date: '2026-10-19',
+    items: [
+      "feat(board): one tap deletes a pad or a deck, the undo toast follows (owner decision 2026-10-19, ADR-0086 amendment; NN/g: no confirmation for routine actions that can be undone) — the pad's toast says in how many decks it was (\"Deleted 'Rain' · from 2 decks\"), the hint the first tap showed before; a whole board and a library file keep the two taps",
+      'test: E2E deck-crud, pad-pool, board-undo, layout-reach follow the one tap; the deck count in the pad toast and the deck delete counter-checked',
+      'docs: CLAUDE.md delete rules (one tap where undo exists, two taps where not); BACKLOG "Two-tap delete once undo exists" done; iPhone checklist — an Undo section for Slice 18, UPDATE sits in the main menu, the PAD editor test saves before ✕',
+    ],
+  },
   {
     version: '3.0.257',
     date: '2026-10-19',
