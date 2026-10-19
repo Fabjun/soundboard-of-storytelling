@@ -29,6 +29,10 @@
  *    branches add rules, and a numbered reference then points at another rule (2026-10-03:
  *    CLAUDE.md cited number 7 for plan names, which was number 8 on the stack). The review log
  *    is exempt — its dated entries record what was true at the time.
+ * 12. Every statement carries information (owner decision 2026-10-19): the release notes
+ *    (src/lib/whatsNew.ts) and the developer log (src/lib/changelog.ts) contain none of the empty
+ *    forms Vale's SoS.EmptyStatements lists for the Markdown files — one list for both. "The app
+ *    works exactly as before" stood in 30 entries before it was noticed.
  */
 
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
@@ -569,5 +573,32 @@ describe('guard: generated docs come from one list (2026-10-08)', () => {
     const stray = join(tmpdir(), `sos-not-generated-${process.pid}.md`);
     await expect(writeGenerated(stray, '# x\n')).rejects.toThrow('GENERATED_DOCS');
     expect(existsSync(stray)).toBe(false);
+  });
+});
+
+describe('guard: every statement carries information (owner decision 2026-10-19)', () => {
+  const RULE = '.vale/styles/SoS/EmptyStatements.yml';
+  const lines = readFileSync(join(ROOT, RULE), 'utf8').split('\n');
+  const tokens = lines
+    .slice(lines.indexOf('tokens:') + 1)
+    .map((l) => /^ {2}- (.+)$/.exec(l)?.[1])
+    .filter((t): t is string => t !== undefined);
+  // As Vale: case ignored, whole words
+  const empty = new RegExp(`\\b(?:${tokens.join('|')})\\b`, 'gi');
+  const NOTES = ['v3/src/lib/whatsNew.ts', 'v3/src/lib/changelog.ts'];
+
+  it('reads the list of the Vale rule and matches its own example (sanity)', () => {
+    expect(tokens.length).toBeGreaterThanOrEqual(5);
+    expect('The app works exactly as before.'.match(empty)).toHaveLength(1);
+    expect('A mouse drags at once, as before.'.match(empty)).toBeNull(); // a limit of a change
+  });
+
+  it('the release notes and the developer log contain no empty form', () => {
+    const bad = NOTES.flatMap((f) =>
+      readFileSync(join(ROOT, f), 'utf8')
+        .split('\n')
+        .flatMap((line, i) => [...line.matchAll(empty)].map((m) => `${f}:${i + 1}: ${m[0]}`)),
+    );
+    expect(bad, 'say what changed, why or what to do — or drop the sentence').toEqual([]);
   });
 });

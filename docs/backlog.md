@@ -160,6 +160,30 @@ merged icons need an icon concept first. Minimal-first: the Combo editor (Slice 
 first, gestures later.
 **When:** after Slice 11, discussed with the owner before any plan.
 
+### Help screen and context help — Slice 17 (owner decision 2026-10-19)
+
+Owner idea, agreed on Claude's proposal (chat 2026-10-19), building on V1 (a three-card welcome on
+first launch — "Welcome / How it works / Get started" — and a ? per screen):
+
+- **One help screen** with a topic for every place of the app: start, main menu, board list, board
+  in SETUP, GAME, PAD editor, combo editor, library, settings, backup and import, keys and numpad.
+  The topics can be searched.
+- **? in every header** opens the help at the topic of the place it is pressed in; in the PAD
+  editor the help opens as a dialog on top and closing it returns to the editor (ADR-0074, nested
+  dialogs). In GAME the ? is small and away from the pads (P4, P6).
+- **Texts:** short, but complete and in plain words — a user who opens the help expects all of it
+  (owner, 2026-10-19); concrete steps (NN/g heuristic 10: "easy to search", "focused on the user's
+  task", "concrete steps"); the owner corrects them by hand. App UI text, so it may address the
+  user (owner decision 2026-10-03).
+- **Start:** the empty states (no board, empty board) say the next step in a sentence; a short,
+  skippable three-card welcome on first launch, reopened from the help (NN/g "Mobile Tutorials":
+  tutorials do not make users faster — kept short).
+- **Structure:** the help texts as data in one place, each topic with an id; a guard that every
+  screen has a topic, so a new screen without help fails; precached for offline use.
+- **Order:** after Slice 16 — the help describes the screens, and Slice 16 changes the library.
+
+**When:** Slice 17.
+
 ### Built-in sample sounds — idea (Open)
 
 Owner idea 2026-10-03: the app ships a small set of sample sounds, so a new installation can

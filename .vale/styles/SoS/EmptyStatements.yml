@@ -1,0 +1,24 @@
+# Every statement carries information (owner decision 2026-10-19, ~/.claude/CLAUDE.md and
+# CLAUDE.md "Project identity"): a sentence tells the reader something new — what changed, why,
+# what to do. This list catches the known empty forms; it is also read by
+# v3/tests/unit/docsGuards.test.ts for the release notes in v3/src/lib/whatsNew.ts and
+# v3/src/lib/changelog.ts. Kept narrow on purpose: every pattern was measured against the whole
+# checked text before it was added (FreeBSD removed a broad "weasel words" rule after 18,805
+# hits). A clause that marks the limit of a change ("a mouse drags at once, as before") is
+# information and is not matched. Add a pattern when the structure review finds a new empty
+# form, after measuring it.
+extends: existence
+message: "Says nothing new: '%s'. Name what changed, why or what to do — or drop the sentence."
+level: error
+ignorecase: true
+tokens:
+  # What stayed the same, said of the whole app
+  - (?:the app|everything) (?:works|looks|behaves) (?:exactly |just )?(?:as|like) before
+  # Changes announced without naming them
+  - (?:various|several|minor|small|general) (?:improvements|fixes|tweaks|updates)
+  - bug ?fixes and (?:performance )?improvements
+  - (?:general|overall) (?:polish|clean-?up)
+  # Phrases that say only that something was or need not be said
+  - as (?:already |previously )?(?:mentioned|noted|stated|said) (?:above|before|earlier)
+  - needless to say
+  - it goes without saying

@@ -7,7 +7,9 @@
  * hand-written ones plus one generated entry per other version of the early development, which
  * shows its changes under "Details" (`withEarlyVersions`). Grouped per version as
  * New / Improved / Fixed / Removed, newest first; a version without a visible change says in
- * "Behind the scenes" what was done, in plain words. The technical detail stays in
+ * "Behind the scenes" what was done, in plain words. Every sentence says something new — never
+ * what stayed the same (owner decision 2026-10-19; tests/unit/docsGuards.test.ts checks the
+ * known empty forms of .vale/styles/SoS/EmptyStatements.yml). The technical detail stays in
  * src/lib/changelog.ts (CHANGELOG.md is generated from it); the app folds it out per version
  * under "Details" (ADR-0063 amendment). The notes never address the reader —
  * no "you", no commands; the app or the feature is the subject (owner rule 2026-10-03).
@@ -101,6 +103,12 @@ export function withEarlyVersions(
 /** The release notes the main menu shows, newest first (checked by whatsNew.test.ts). */
 export const WHATS_NEW: WhatsNewNotes[] = [
   {
+    version: '3.0.257',
+    behindTheScenes: [
+      'These notes are shorter: a sentence that told nothing new is gone from 30 entries, and a check keeps such sentences out. The plan for a help screen that opens at the topic of the current place is written down.',
+    ],
+  },
+  {
     version: '3.0.256',
     improved: [
       "Voice control finds the version link, the LIB button and the key field by the words they show; screen readers now also hear a pad's key.",
@@ -109,7 +117,7 @@ export const WHATS_NEW: WhatsNewNotes[] = [
   {
     version: '3.0.255',
     behindTheScenes: [
-      'A building block of the icon list was updated; it scrolls more reliably on iPhones. The app works as before.',
+      'A building block of the icon list was updated; it scrolls more reliably on iPhones.',
     ],
   },
   {
@@ -121,7 +129,7 @@ export const WHATS_NEW: WhatsNewNotes[] = [
   {
     version: '3.0.253',
     behindTheScenes: [
-      'Notes on the light idea: how the pad editor would show sound and light, and the questions to settle first. The app works exactly as before.',
+      'Notes on the light idea: how the pad editor would show sound and light, and the questions to settle first.',
     ],
   },
   {
@@ -136,7 +144,7 @@ export const WHATS_NEW: WhatsNewNotes[] = [
   {
     version: '3.0.251',
     behindTheScenes: [
-      'Notes on the plan: the app is meant for private use, and an idea for light effects that start with a pad was written down. The app works exactly as before.',
+      'Notes on the plan: the app is meant for private use, and an idea for light effects that start with a pad was written down.',
     ],
   },
   {
@@ -159,15 +167,11 @@ export const WHATS_NEW: WhatsNewNotes[] = [
   },
   {
     version: '3.0.247',
-    behindTheScenes: [
-      'The list of planned work now marks what is already built. The app works exactly as before.',
-    ],
+    behindTheScenes: ['The list of planned work now marks what is already built.'],
   },
   {
     version: '3.0.246',
-    behindTheScenes: [
-      'The settings plan now shows what is already built. The app works exactly as before.',
-    ],
+    behindTheScenes: ['The settings plan now shows what is already built.'],
   },
   {
     version: '3.0.245',
@@ -227,7 +231,7 @@ export const WHATS_NEW: WhatsNewNotes[] = [
   {
     version: '3.0.236',
     behindTheScenes: [
-      'The settings plan is updated: the content width covers what the first version called density. The app works exactly as before.',
+      'The settings plan is updated: the content width covers what the first version called density.',
     ],
   },
   {
@@ -256,30 +260,26 @@ export const WHATS_NEW: WhatsNewNotes[] = [
   },
   {
     version: '3.0.231',
-    behindTheScenes: [
-      'The tool that makes the app work offline is up to date. The app works exactly as before.',
-    ],
+    behindTheScenes: ['The tool that makes the app work offline is up to date.'],
   },
   {
     version: '3.0.230',
-    behindTheScenes: ['A development tool is up to date. The app works exactly as before.'],
+    behindTheScenes: ['A development tool is up to date.'],
   },
   {
     version: '3.0.229',
-    behindTheScenes: [
-      'The libraries the app is built on are up to date. The app works exactly as before.',
-    ],
+    behindTheScenes: ['The libraries the app is built on are up to date.'],
   },
   {
     version: '3.0.228',
     behindTheScenes: [
-      'The plan for making text larger is written down: the page zoom of the browser does it, and a check on the iPhone confirms it. The app works exactly as before.',
+      'The plan for making text larger is written down: the page zoom of the browser does it, and a check on the iPhone confirms it.',
     ],
   },
   {
     version: '3.0.227',
     behindTheScenes: [
-      'The development tools are up to date, and their updates now arrive together where they belong together. The app works exactly as before.',
+      'The development tools are up to date, and their updates now arrive together where they belong together.',
     ],
   },
   {
@@ -397,7 +397,7 @@ export const WHATS_NEW: WhatsNewNotes[] = [
   {
     version: '3.0.209',
     behindTheScenes: [
-      'The plan for the phone layout is written down: what goes where on a narrow and on a wide screen. The app works exactly as before.',
+      'The plan for the phone layout is written down: what goes where on a narrow and on a wide screen.',
     ],
   },
   {
@@ -414,74 +414,70 @@ export const WHATS_NEW: WhatsNewNotes[] = [
   },
   {
     version: '3.0.206',
-    behindTheScenes: [
-      'Automatic tests now check more of the icon search in the pad editor. The app works exactly as before.',
-    ],
+    behindTheScenes: ['Automatic tests now check more of the icon search in the pad editor.'],
   },
   {
     version: '3.0.205',
     behindTheScenes: [
-      'Automatic tests now check more of how backups — also from the first version of the app — are brought in. The app works exactly as before.',
+      'Automatic tests now check more of how backups — also from the first version of the app — are brought in.',
     ],
   },
   {
     version: '3.0.204',
     behindTheScenes: [
-      'Automatic tests now check more of the keyboard and numpad control and of how pads saved by older versions are brought up to date. The app works exactly as before.',
+      'Automatic tests now check more of the keyboard and numpad control and of how pads saved by older versions are brought up to date.',
     ],
   },
   {
     version: '3.0.203',
     behindTheScenes: [
-      'Automatic tests now check more of how audio files and backups are read, stored and deleted — among them that a stored sound keeps every byte. The app works exactly as before.',
+      'Automatic tests now check more of how audio files and backups are read, stored and deleted — among them that a stored sound keeps every byte.',
     ],
   },
   {
     version: '3.0.202',
     behindTheScenes: [
-      'Automatic tests now check that every sound the app plays is actually routed to the speakers, and what happens when a sound is stopped while it loads. The app works exactly as before.',
+      'Automatic tests now check that every sound the app plays is actually routed to the speakers, and what happens when a sound is stopped while it loads.',
     ],
   },
   {
     version: '3.0.201',
     behindTheScenes: [
-      'The date of each version in these notes now comes from one place, and the preview playhead is checked more thoroughly. The app works exactly as before.',
+      'The date of each version in these notes now comes from one place, and the preview playhead is checked more thoroughly.',
     ],
   },
   {
     version: '3.0.200',
     behindTheScenes: [
-      'Reading backup files and keeping several boards are now checked more thoroughly by automatic tests. The app works exactly as before.',
+      'Reading backup files and keeping several boards are now checked more thoroughly by automatic tests.',
     ],
   },
   {
     version: '3.0.199',
     behindTheScenes: [
-      'Saving a backup and the keys on the pads are now checked more thoroughly by automatic tests. The app works exactly as before.',
+      'Saving a backup and the keys on the pads are now checked more thoroughly by automatic tests.',
     ],
   },
   {
     version: '3.0.198',
     behindTheScenes: [
-      'Two automatic checks for phone screens run again, and the quality bar for the tests is higher. The app works exactly as before.',
+      'Two automatic checks for phone screens run again, and the quality bar for the tests is higher.',
     ],
   },
   {
     version: '3.0.197',
     behindTheScenes: [
-      'A known problem with long pad names on narrow phone screens is recorded for the upcoming phone layout. The app works exactly as before.',
+      'A known problem with long pad names on narrow phone screens is recorded for the upcoming phone layout.',
     ],
   },
   {
     version: '3.0.196',
-    behindTheScenes: [
-      'The automatic screen comparisons now notice even small color changes. The app works exactly as before.',
-    ],
+    behindTheScenes: ['The automatic screen comparisons now notice even small color changes.'],
   },
   {
     version: '3.0.195',
     behindTheScenes: [
-      'The project description now lists everything that live control and the pad editor can do. The app works exactly as before.',
+      'The project description now lists everything that live control and the pad editor can do.',
     ],
   },
   {
@@ -505,14 +501,12 @@ export const WHATS_NEW: WhatsNewNotes[] = [
   {
     version: '3.0.191',
     behindTheScenes: [
-      'The weekly quality check no longer fails by chance on small parts of the code. The app works exactly as before.',
+      'The weekly quality check no longer fails by chance on small parts of the code.',
     ],
   },
   {
     version: '3.0.190',
-    behindTheScenes: [
-      'A new check keeps notes in the code up to date once a decision is made. The app works exactly as before.',
-    ],
+    behindTheScenes: ['A new check keeps notes in the code up to date once a decision is made.'],
   },
   {
     version: '3.0.189',
@@ -523,7 +517,7 @@ export const WHATS_NEW: WhatsNewNotes[] = [
   {
     version: '3.0.188',
     improved: [
-      'Text and spacing now grow with the text size set in the browser or on the phone, so the app stays readable for anyone who needs larger text. At the normal size it looks exactly as before.',
+      'Text and spacing now grow with the text size set in the browser or on the phone, so the app stays readable for anyone who needs larger text.',
     ],
   },
   {
@@ -536,7 +530,7 @@ export const WHATS_NEW: WhatsNewNotes[] = [
   {
     version: '3.0.186',
     behindTheScenes: [
-      'A check before each saved change now keeps every generated document up to date. The app works exactly as before.',
+      'A check before each saved change now keeps every generated document up to date.',
     ],
   },
   {
@@ -572,20 +566,18 @@ export const WHATS_NEW: WhatsNewNotes[] = [
   },
   {
     version: '3.0.181',
-    behindTheScenes: [
-      'A change now reaches the app only after every automatic check has passed. The app works exactly as before.',
-    ],
+    behindTheScenes: ['A change now reaches the app only after every automatic check has passed.'],
   },
   {
     version: '3.0.180',
     behindTheScenes: [
-      'Two development tools got small bug-fix updates, and the automatic checks were confirmed to run on the next server system. The app works exactly as before.',
+      'Two development tools got small bug-fix updates, and the automatic checks were confirmed to run on the next server system.',
     ],
   },
   {
     version: '3.0.179',
     behindTheScenes: [
-      'A check of the pad layout on short windows sometimes failed for no real reason. It now waits until the pads have settled. The app works exactly as before.',
+      'A check of the pad layout on short windows sometimes failed for no real reason. It now waits until the pads have settled.',
     ],
   },
   {
@@ -612,7 +604,7 @@ export const WHATS_NEW: WhatsNewNotes[] = [
   {
     version: '3.0.175',
     new: [
-      'An UPDATE button on the start screen looks for a new version at once and says what it found. A new version then offers RELOAD, as before.',
+      'An UPDATE button on the start screen looks for a new version at once and says what it found. A new version then offers RELOAD.',
     ],
     improved: [
       'Pads adapt to the display: they shrink so that the whole grid is seen, with the width always fitting and the height as far as the touch size allows. Only what still does not fit scrolls down.',
@@ -642,7 +634,7 @@ export const WHATS_NEW: WhatsNewNotes[] = [
   {
     version: '3.0.171',
     behindTheScenes: [
-      "The app's own small icons are now stored in the same format as the pad icons. They look exactly as before.",
+      "The app's own small icons are now stored in the same format as the pad icons.",
     ],
   },
   {
@@ -703,7 +695,7 @@ export const WHATS_NEW: WhatsNewNotes[] = [
     ],
     fixed: ['A Loop with several files plays each file only within its own trimmed part.'],
     behindTheScenes: [
-      'Stored boards and older backups are converted to the new format automatically; existing pads sound as before.',
+      'Stored boards and older backups are converted to the new format automatically; existing pads keep their files and settings.',
     ],
   },
   {

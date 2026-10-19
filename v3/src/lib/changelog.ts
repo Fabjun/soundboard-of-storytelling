@@ -17,10 +17,19 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.256';
+export const APP_VERSION = '3.0.257';
 
 /** The developer log, newest first; CHANGELOG.md is generated from it (sync-changelog). */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.257',
+    date: '2026-10-19',
+    items: [
+      'docs(whats-new): every statement carries information (owner decision 2026-10-19) — a closing sentence that called the app unchanged dropped from 30 entries; four more sentences about what stayed the same dropped or turned into what is kept ("existing pads keep their files and settings")',
+      'test(guards): Vale rule SoS.EmptyStatements (existence, error) lists the known empty forms for the active Markdown files; docsGuards reads the same list for whatsNew.ts and changelog.ts; each pattern measured against the checked text first ("as before" alone matched six clauses that mark the limit of a change and stays allowed); both counter-checked',
+      'docs: ADR-0056 and ADR-0063 amendments; CLAUDE.md — the principle under project identity, a question in the structure review; BACKLOG "Help screen and context help" and the Slice 17 row — a searchable help screen, ? opens the topic of the current place, short but complete texts (owner decision 2026-10-19)',
+    ],
+  },
   {
     version: '3.0.256',
     date: '2026-10-19',

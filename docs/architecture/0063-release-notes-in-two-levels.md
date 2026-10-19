@@ -81,6 +81,11 @@ cutover, with one plain sentence and the changes under Details — generated fro
 never typed. It generates nothing from the cutover on, so a missing hand-written entry still fails
 the check (counter-checked).
 
+**2026-10-19 (3.0.257):** A "Behind the scenes" entry says what was done and nothing about what
+stayed the same: "The app works exactly as before" was dropped from 30 entries (owner decision
+2026-10-19, every statement carries information). The known empty forms are checked by `docsGuards`
+with the list of Vale's `SoS.EmptyStatements` (ADR-0056 amendment 2026-10-19).
+
 ## Related
 
 - **Files:** `v3/src/lib/whatsNew.ts`, `v3/src/lib/changelog.ts`, `v3/scripts/sync-changelog.ts`,
