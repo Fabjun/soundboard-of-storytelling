@@ -101,6 +101,12 @@ export function withEarlyVersions(
 /** The release notes the main menu shows, newest first (checked by whatsNew.test.ts). */
 export const WHATS_NEW: WhatsNewNotes[] = [
   {
+    version: '3.0.253',
+    behindTheScenes: [
+      'Notes on the light idea: how the pad editor would show sound and light, and the questions to settle first. The app works exactly as before.',
+    ],
+  },
+  {
     version: '3.0.252',
     new: [
       'A deleted pad can be brought back with UNDO in the message that appears, just like a deleted deck; changes made in between stay.',

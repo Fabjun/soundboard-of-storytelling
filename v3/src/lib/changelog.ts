@@ -17,10 +17,17 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.252';
+export const APP_VERSION = '3.0.253';
 
 /** The developer log, newest first; CHANGELOG.md is generated from it (sync-changelog). */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.253',
+    date: '2026-10-19',
+    items: [
+      'docs: BACKLOG "Smart light per pad" — the PAD editor gets two tabs, SOUND and LIGHT, with the light (owner agreed 2026-10-19; NN/g "Tabs, Used Right", WAI-ARIA tabs pattern); open questions before a slice (light on stop and STOP ALL, combo per step, a base light per board)',
+    ],
+  },
   {
     version: '3.0.252',
     date: '2026-10-19',
