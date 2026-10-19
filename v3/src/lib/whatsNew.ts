@@ -101,6 +101,12 @@ export function withEarlyVersions(
 /** The release notes the main menu shows, newest first (checked by whatsNew.test.ts). */
 export const WHATS_NEW: WhatsNewNotes[] = [
   {
+    version: '3.0.256',
+    improved: [
+      "Voice control finds the version link, the LIB button and the key field by the words they show; screen readers now also hear a pad's key.",
+    ],
+  },
+  {
     version: '3.0.255',
     behindTheScenes: [
       'A building block of the icon list was updated; it scrolls more reliably on iPhones. The app works as before.',

@@ -246,7 +246,7 @@ test('the library panel opens and closes with LIB, and closes with its ×', asyn
   await page.getByTestId('deck-rail-new-button').click();
   const lib = page
     .getByTestId('board-top-bar')
-    .getByRole('button', { name: /^(Open|Close) the library$/ });
+    .getByRole('button', { name: /^LIB, (open|close) the library$/ }); // the visible LIB first (WCAG 2.5.3)
   const panel = page.getByRole('region', { name: 'Library' });
 
   await lib.click();

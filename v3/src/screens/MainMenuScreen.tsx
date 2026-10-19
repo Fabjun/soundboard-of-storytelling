@@ -211,7 +211,8 @@ export function MainMenuScreen(): JSX.Element {
         <button
           class="sb-version-link"
           onClick={() => setShowWhatsNew(true)}
-          aria-label="Open What's new"
+          // WCAG 2.5.3 Label in Name: the visible version first, then what the button does
+          aria-label={`v ${APP_VERSION}, open What's new`}
         >
           v {APP_VERSION}
         </button>

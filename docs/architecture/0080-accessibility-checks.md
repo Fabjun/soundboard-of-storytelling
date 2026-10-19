@@ -40,6 +40,12 @@ Industry standard: Playwright, "Accessibility testing" (axe-core); WAI-ARIA Auth
 button pattern; W3C WAI tutorial "Decorative Images"; first rule of ARIA use (native elements
 first).
 
+## Exceptions
+
+| Exception                                                                                            | Reason                                                                                                                                                                                                                                               | Reference | Review                                           |
+| ---------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------- | ------------------------------------------------ |
+| axe `label-content-name-mismatch` on pads (`.sb-pad`, `NOT_FAILURES` in `v3/tests/e2e/a11y.spec.ts`) | a pad's name is its own name; type, running time and key are badges a screen reader hears in the description — W3C Understanding 2.5.3: supplementary text "may be optionally considered a description"; axe 4.14 counts every visible word in order | ADR-0080  | when axe tells supplementary text from the label |
+
 ## Consequences
 
 **Positive:**

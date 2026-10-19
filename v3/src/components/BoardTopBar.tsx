@@ -132,7 +132,8 @@ export function BoardTopBar({
           class={`sb-btn sb-btn-sm ${libraryOpen ? 'sb-btn-primary' : 'sb-btn-ghost'} sb-topbar-icon-btn`}
           onClick={onLibraryToggle}
           title={libraryOpen ? 'Close the library' : 'Open the library'}
-          aria-label={libraryOpen ? 'Close the library' : 'Open the library'}
+          // WCAG 2.5.3 Label in Name: LIB, when shown, starts the name
+          aria-label={`${compact ? '' : 'LIB, '}${libraryOpen ? 'close' : 'open'} the library`}
           aria-pressed={libraryOpen}
         >
           <UiIcon name="library" size={12} />

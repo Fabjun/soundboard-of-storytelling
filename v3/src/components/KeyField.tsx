@@ -102,7 +102,7 @@ export function KeyField({
               ? `Press a key for ${subject}`
               : hotkey
                 ? `Key ${keyLabel(hotkey)}, tap to change`
-                : 'No key, tap and press a key'
+                : 'Not assigned, tap and press a key' // WCAG 2.5.3: the visible words first
           }
           onClick={(e) => {
             // Safari does not focus a tapped button; the key must reach this one
