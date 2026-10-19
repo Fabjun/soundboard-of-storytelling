@@ -101,6 +101,12 @@ export function withEarlyVersions(
 /** The release notes the main menu shows, newest first (checked by whatsNew.test.ts). */
 export const WHATS_NEW: WhatsNewNotes[] = [
   {
+    version: '3.0.251',
+    behindTheScenes: [
+      'Notes on the plan: the app is meant for private use, and an idea for light effects that start with a pad was written down. The app works exactly as before.',
+    ],
+  },
+  {
     version: '3.0.250',
     new: [
       'In SETUP every change to a board can be undone and redone — with the arrows in the top bar or with Ctrl / Cmd + Z — as long as the app stays open.',

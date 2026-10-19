@@ -7,6 +7,13 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.251 — 2026-10-19
+
+### Internal
+
+- docs: CLAUDE.md license and status — V3 serves private use; a commercial product would be a separate program written anew, so commercial concerns never decide a V3 trade-off (owner decision 2026-10-19)
+- docs: BACKLOG "Smart light per pad — idea (Open)" — research of 2026-10-19 (browser limits on iPhone, iPad and Mac, WLED effects, Zigbee and Hue rates, Home Assistant as hub), a practice test as the first step
+
 ## 3.0.250 — 2026-10-19
 
 ### Added

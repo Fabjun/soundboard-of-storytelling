@@ -17,10 +17,18 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.250';
+export const APP_VERSION = '3.0.251';
 
 /** The developer log, newest first; CHANGELOG.md is generated from it (sync-changelog). */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.251',
+    date: '2026-10-19',
+    items: [
+      'docs: CLAUDE.md license and status — V3 serves private use; a commercial product would be a separate program written anew, so commercial concerns never decide a V3 trade-off (owner decision 2026-10-19)',
+      'docs: BACKLOG "Smart light per pad — idea (Open)" — research of 2026-10-19 (browser limits on iPhone, iPad and Mac, WLED effects, Zigbee and Hue rates, Home Assistant as hub), a practice test as the first step',
+    ],
+  },
   {
     version: '3.0.250',
     date: '2026-10-19',

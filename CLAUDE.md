@@ -30,7 +30,7 @@
   uses no commands — the app or the subject is the subject. Verbatim quotations stay as quoted;
   app UI texts may address the user. Guarded by `docsGuards` and `whatsNew.test.ts`.
 - **Chat with the user**: German only
-- **License and status**: V3 is a private tool under an "All Rights Reserved" license (see `LICENSE`). A potential commercial product in the long term. No open-source contributions planned. When adding code, make sure no open-source licenses are violated. Contact: soundboard_of_storytelling@pm.me
+- **License and status**: V3 is a private tool under an "All Rights Reserved" license (see `LICENSE`). It serves private use (owner decision 2026-10-19): a commercial product is only a possibility and would be a separate program written anew, so commercial concerns (setup effort for strangers, mass-market fit) never decide a V3 trade-off. No open-source contributions planned. When adding code, make sure no open-source licenses are violated. Contact: soundboard_of_storytelling@pm.me
 
 ---
 
