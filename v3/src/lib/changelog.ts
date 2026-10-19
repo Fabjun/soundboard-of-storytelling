@@ -17,10 +17,17 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.259';
+export const APP_VERSION = '3.0.260';
 
 /** The developer log, newest first; CHANGELOG.md is generated from it (sync-changelog). */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.260',
+    date: '2026-10-19',
+    items: [
+      'docs(product): features/library.md — the Slice 16 plan draft: what is decided (D1–D6), proposed steps 16a "in use" and undo for a deleted file → 16b preview, sort, original name → 16c folders and multi-select → 16d pad templates → 16e own icons → 16f boards tab, and open questions L1–L9 with options and the industry standard each (trash 30 days as Apple and Google Photos, folders vs tags, select mode per Apple HIG); linked from both hubs and the Slice 16 row',
+    ],
+  },
   {
     version: '3.0.259',
     date: '2026-10-19',

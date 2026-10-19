@@ -125,9 +125,9 @@ Historical docs excluded in `.vale.ini`, and passages marked `<!-- vale … = NO
 | `CLAUDE.md:929`                                        | `SoS.SupersededTerms` off         | historical slice records keep the names valid at the time (Scene before Slice 9b) |
 | `docs/architecture/0056-documentation-freshness.md:33` | `SoS.SupersededTerms` off         | …                                                                                 |
 | `docs/architecture/concept-brief.md:75`                | `SoS.SupersededTerms` off         | explains the rename                                                               |
-| `docs/product/README.md:114`                           | `SoS.SupersededTerms` off         | records the rename decision                                                       |
-| `docs/product/README.md:288`                           | `SoS.SupersededTerms` off         | records the rename                                                                |
-| `docs/product/README.md:307`                           | `SoS.SupersededTerms` off         | records the rename decision (Q1)                                                  |
+| `docs/product/README.md:115`                           | `SoS.SupersededTerms` off         | records the rename decision                                                       |
+| `docs/product/README.md:289`                           | `SoS.SupersededTerms` off         | records the rename                                                                |
+| `docs/product/README.md:308`                           | `SoS.SupersededTerms` off         | records the rename decision (Q1)                                                  |
 
 ## To-do markers (0)
 

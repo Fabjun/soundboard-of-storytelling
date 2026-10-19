@@ -103,6 +103,12 @@ export function withEarlyVersions(
 /** The release notes the main menu shows, newest first (checked by whatsNew.test.ts). */
 export const WHATS_NEW: WhatsNewNotes[] = [
   {
+    version: '3.0.260',
+    behindTheScenes: [
+      'A plan for the full library is written down: which files pads use, getting a deleted file back, preview, sorting, folders, pad templates and own icons.',
+    ],
+  },
+  {
     version: '3.0.259',
     behindTheScenes: [
       'Automatic tests of undo now fail within a second when something breaks, instead of waiting for minutes; the weekly quality run had stopped on them.',
