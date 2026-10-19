@@ -16,43 +16,54 @@ import type { Board } from '../types';
 import { record, redo, startHistory, undo, type History } from '../lib/editHistory';
 import { boards } from './store';
 
+/** A board in the history, with the name of the change that made it ("delete pad 'Rain'"). */
+interface Step {
+  board: Board;
+  label: string;
+}
+
 /** The history of each board changed in this session, by board id. */
-const histories = signal<ReadonlyMap<string, History<Board>>>(new Map());
+const histories = signal<ReadonlyMap<string, History<Step>>>(new Map());
 
 /** The history of `latest`'s board, with `latest` as its present (see the file overview). */
-function inStep(latest: Board): History<Board> {
+function inStep(latest: Board): History<Step> {
   const h = histories.value.get(latest.id);
-  return h && h.present === latest ? h : startHistory(latest);
+  return h && h.present.board === latest ? h : startHistory({ board: latest, label: '' });
 }
 
 /** Stores the history of a board; histories of boards no longer in the store are dropped. */
-function keep(h: History<Board>): void {
+function keep(h: History<Step>): void {
   const live = new Set(boards.value.map((b) => b.id));
   const next = new Map([...histories.value].filter(([id]) => live.has(id)));
-  next.set(h.present.id, h);
+  next.set(h.present.board.id, h);
   histories.value = next;
 }
 
 /** The history of the board as the store shows it now, or null when it has none in step. */
-function current(boardId: string): History<Board> | null {
+function current(boardId: string): History<Step> | null {
   const h = histories.value.get(boardId);
   const latest = boards.value.find((b) => b.id === boardId);
-  return h && latest && h.present === latest ? h : null;
+  return h && latest && h.present.board === latest ? h : null;
 }
 
-/** Records a board change: `before` was the board in the store, `after` replaces it. */
-export function recordBoardChange(before: Board, after: Board): void {
-  keep(record(inStep(before), after));
+/**
+ * Records a board change: `before` was the board in the store, `after` replaces it; `label`
+ * names the change for the undo and redo buttons ("delete pad 'Rain'").
+ */
+export function recordBoardChange(before: Board, after: Board, label: string): void {
+  keep(record(inStep(before), { board: after, label }));
 }
 
-/** Tells whether the board has a step to undo. */
-export function canUndoBoard(boardId: string): boolean {
-  return (current(boardId)?.past.length ?? 0) > 0;
+/** The name of the change ↶ would take back, or null when there is none. */
+export function undoLabel(boardId: string): string | null {
+  const h = current(boardId);
+  return h && h.past.length > 0 ? h.present.label : null;
 }
 
-/** Tells whether the board has a step to redo. */
-export function canRedoBoard(boardId: string): boolean {
-  return (current(boardId)?.future.length ?? 0) > 0;
+/** The name of the change ↷ would bring back, or null when there is none. */
+export function redoLabel(boardId: string): string | null {
+  const h = current(boardId);
+  return h && h.future.length > 0 ? h.future[0].label : null;
 }
 
 /**
@@ -66,5 +77,5 @@ export function boardStep(
   const h = inStep(latest);
   const moved = direction === 'undo' ? undo(h) : redo(h);
   if (moved === h) return null;
-  return { board: moved.present, done: () => keep(moved) };
+  return { board: moved.present.board, done: () => keep(moved) };
 }

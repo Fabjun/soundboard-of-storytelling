@@ -29,8 +29,11 @@ interface BoardTopBarProps {
   onBack: () => void;
   /** The bar toggles (search, quick access) — given in the wide frame, where the top bar has room. */
   toggles?: ComponentChildren;
-  /** Undo and redo of the board's changes (ADR-0086) — shown in SETUP only. */
-  history: { canUndo: boolean; canRedo: boolean; onUndo: () => void; onRedo: () => void };
+  /**
+   * Undo and redo of the board's changes (ADR-0086) — shown in SETUP only. `undo` and `redo` name
+   * the change each would take back or bring back ("delete pad 'Rain'"), null when there is none.
+   */
+  history: { undo: string | null; redo: string | null; onUndo: () => void; onRedo: () => void };
 }
 
 /**
@@ -108,9 +111,12 @@ export function BoardTopBar({
               type="button"
               class="sb-btn sb-btn-sm sb-btn-ghost sb-topbar-icon-btn"
               data-testid="board-top-bar-undo-button"
+              // The name stays "Undo"; what it takes back is the description (the title), so the
+              // name never contains another control's name ("Rain") — voice control and role
+              // locators would find two targets
               aria-label="Undo"
-              title="Undo (Ctrl / Cmd + Z)"
-              disabled={!history.canUndo}
+              title={`${history.undo ? `Undo: ${history.undo}` : 'Nothing to undo'} (Ctrl / Cmd + Z)`}
+              disabled={history.undo === null}
               onClick={history.onUndo}
             >
               <UiIcon name="undo" class="sb-toolbar-icon" />
@@ -120,8 +126,8 @@ export function BoardTopBar({
               class="sb-btn sb-btn-sm sb-btn-ghost sb-topbar-icon-btn"
               data-testid="board-top-bar-redo-button"
               aria-label="Redo"
-              title="Redo (Shift + Ctrl / Cmd + Z)"
-              disabled={!history.canRedo}
+              title={`${history.redo ? `Redo: ${history.redo}` : 'Nothing to redo'} (Shift + Ctrl / Cmd + Z)`}
+              disabled={history.redo === null}
               onClick={history.onRedo}
             >
               <UiIcon name="redo" class="sb-toolbar-icon" />

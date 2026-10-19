@@ -24,15 +24,17 @@ import { boardStep, recordBoardChange } from './boardHistory';
 import { boards, lastSaveFailed, pendingSaves, removeBoardFromStore, upsertBoard } from './store';
 
 /**
- * Applies `change` to the latest version of a board, shows the result and saves it.
+ * Applies `change` to the latest version of a board, shows the result and saves it. `label` names
+ * the change for the undo and redo buttons — a short phrase such as "delete pad 'Rain'" (ADR-0086).
  * Returns the new board, or null when the board is unknown, `change` returned it unchanged
  * (same object) or the save failed.
  */
 export async function updateBoard(
   boardId: string,
+  label: string,
   change: (board: Board) => Board,
 ): Promise<Board | null> {
-  return applyBoardChange(boardId, change).saved;
+  return applyBoardChange(boardId, label, change).saved;
 }
 
 /**
@@ -44,13 +46,14 @@ export async function updateBoard(
  */
 export function applyBoardChange(
   boardId: string,
+  label: string,
   change: (board: Board) => Board,
 ): { board: Board | null; saved: Promise<Board | null> } {
   const latest = boards.value.find((b) => b.id === boardId);
   if (!latest) return { board: null, saved: Promise.resolve(null) };
   const next = change(latest);
   if (next === latest) return { board: null, saved: Promise.resolve(null) };
-  recordBoardChange(latest, next);
+  recordBoardChange(latest, next, label);
   upsertBoard(next);
   return { board: next, saved: save(next) };
 }

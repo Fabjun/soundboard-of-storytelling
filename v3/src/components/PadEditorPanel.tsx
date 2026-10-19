@@ -315,7 +315,9 @@ export function PadEditorPanel({
    */
   function handleSave() {
     const draft = historyRef.current.present;
-    void updateBoard(board.id, (b) => updatePad(b, { ...draft, modifiedAt: Date.now() }));
+    void updateBoard(board.id, `edit pad '${draft.name || 'without a name'}'`, (b) =>
+      updatePad(b, { ...draft, modifiedAt: Date.now() }),
+    );
     savedRef.current = draft;
     setSaved(draft);
     // SAVE is a step boundary: typing on right after it does not merge into the saved step
@@ -637,7 +639,7 @@ export function PadEditorPanel({
   // ── Decks checklist / remove from deck ───────────────────────────────────
 
   function handleDeckToggle(deckId: string, checked: boolean) {
-    void updateBoard(board.id, (b) =>
+    void updateBoard(board.id, checked ? 'put pad in deck' : 'take pad out of deck', (b) =>
       checked ? placeInDeck(b, deckId, pad.id) : removeFromDeck(b, deckId, pad.id),
     );
   }
@@ -748,8 +750,11 @@ export function PadEditorPanel({
                 : 'Put the pad in the quick-access bar'
           }
           onClick={() =>
-            void updateBoard(board.id, (b) =>
-              inQuickAccess ? removeFromQuickAccess(b, pad.id) : addToQuickAccess(b, pad.id),
+            void updateBoard(
+              board.id,
+              inQuickAccess ? 'take pad out of quick access' : 'put pad in quick access',
+              (b) =>
+                inQuickAccess ? removeFromQuickAccess(b, pad.id) : addToQuickAccess(b, pad.id),
             )
           }
         >
@@ -1143,7 +1148,9 @@ export function PadEditorPanel({
               check={checkDeckKey}
               onAssign={(code) => {
                 const deckId = deck.id;
-                void updateBoard(board.id, (b) => setPlacementHotkey(b, deckId, pad.id, code));
+                void updateBoard(board.id, 'set pad key', (b) =>
+                  setPlacementHotkey(b, deckId, pad.id, code),
+                );
               }}
             />
           </div>
@@ -1159,7 +1166,9 @@ export function PadEditorPanel({
               reserved={reservedKeys(getControlKeys())}
               check={checkQuickKey}
               onAssign={(code) =>
-                void updateBoard(board.id, (b) => setQuickAccessHotkey(b, pad.id, code))
+                void updateBoard(board.id, 'set quick-access key', (b) =>
+                  setQuickAccessHotkey(b, pad.id, code),
+                )
               }
             />
           </div>

@@ -103,6 +103,12 @@ export function withEarlyVersions(
 /** The release notes the main menu shows, newest first (checked by whatsNew.test.ts). */
 export const WHATS_NEW: WhatsNewNotes[] = [
   {
+    version: '3.0.263',
+    improved: [
+      "The undo and redo buttons say what they would take back or bring back, for example “Undo: delete pad 'Rain'”, in their tooltip and to screen readers.",
+    ],
+  },
+  {
     version: '3.0.262',
     behindTheScenes: [
       'The weekly quality check is stricter: the automatic tests now have to catch at least 90 of every 100 deliberately planted mistakes, up from 84.',

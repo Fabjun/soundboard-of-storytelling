@@ -189,7 +189,7 @@ function BoardRow({ board, onOpen }: { board: Board; onOpen: () => void }): JSX.
       setEditing(false);
       return;
     }
-    await updateBoard(board.id, (b) => ({ ...b, name: newName }));
+    await updateBoard(board.id, `rename board to '${newName}'`, (b) => ({ ...b, name: newName }));
     setEditing(false);
   }
 

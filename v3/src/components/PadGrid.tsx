@@ -147,7 +147,7 @@ export function PadGrid({
     if (result.kind === 'cancel' || !deck) return;
 
     const deckId = deck.id;
-    await updateBoard(board.id, (b) => {
+    await updateBoard(board.id, 'move pad', (b) => {
       const latest = b.decks.find((d) => d.id === deckId);
       if (!latest) return b;
       const placements =
@@ -170,7 +170,7 @@ export function PadGrid({
   async function savePadToDeck(newPad: Pad, position: PadPosition) {
     if (!deck) return;
     const deckId = deck.id;
-    await updateBoard(board.id, (b) => addPadToDeck(b, deckId, newPad, position));
+    await updateBoard(board.id, 'add pad', (b) => addPadToDeck(b, deckId, newPad, position));
   }
 
   async function handleCreationResult(result: CreationResult) {

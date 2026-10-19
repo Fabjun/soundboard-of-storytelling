@@ -59,7 +59,12 @@ edges: the same file uploaded again while its delete waits, a delete that waits 
 closed. Slice 16 brings multi-select and bulk delete to the library; one way for single and bulk
 deletes is decided there (decision 2026-10-19, ADR-0086 amendment). **When:** Slice 16.
 
-### Undo names the change it undoes
+### Undo names the change it undoes ✅ Done (3.0.263)
+
+**Done in 3.0.263:** every board change carries a short name (`applyBoardChange` and
+`updateBoard` require it, so a new writer cannot forget it); ↶ and ↷ show it in their tooltip,
+which is their accessible description ("Undo: delete pad 'Rain'", "Redo: add pad"); the name stays
+Undo / Redo.
 
 The board's ↶ / ↷ say only Undo and Redo, not what they would undo, such as "Undo delete deck"
 (ADR-0086, trade-offs). Each writer would pass a name with its change; the undo toast names its
