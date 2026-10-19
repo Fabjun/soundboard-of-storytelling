@@ -101,6 +101,12 @@ export function withEarlyVersions(
 /** The release notes the main menu shows, newest first (checked by whatsNew.test.ts). */
 export const WHATS_NEW: WhatsNewNotes[] = [
   {
+    version: '3.0.255',
+    behindTheScenes: [
+      'A building block of the icon list was updated; it scrolls more reliably on iPhones. The app works as before.',
+    ],
+  },
+  {
     version: '3.0.254',
     new: [
       'A deleted board can be brought back with UNDO in the message that appears in the board list, with all its decks and pads.',

@@ -17,10 +17,18 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.254';
+export const APP_VERSION = '3.0.255';
 
 /** The developer log, newest first; CHANGELOG.md is generated from it (sync-changelog). */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.255',
+    date: '2026-10-19',
+    items: [
+      'build(deps): @tanstack/virtual-core 3.19.5 (Dependabot #139) — release notes read: fixes of scroll commands on iOS (a scrollToIndex during a fling, writes clamped by the browser, corrections held during a touch gesture); the icon list uses scrollToIndex for its arrow keys',
+      'docs: iPhone checklist — the icon list opens without the on-screen keyboard (stale since 3.0.249), and is flicked hard once',
+    ],
+  },
   {
     version: '3.0.254',
     date: '2026-10-19',

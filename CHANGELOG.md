@@ -7,6 +7,13 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.255 — 2026-10-19
+
+### Internal
+
+- build(deps): @tanstack/virtual-core 3.19.5 (Dependabot #139) — release notes read: fixes of scroll commands on iOS (a scrollToIndex during a fling, writes clamped by the browser, corrections held during a touch gesture); the icon list uses scrollToIndex for its arrow keys
+- docs: iPhone checklist — the icon list opens without the on-screen keyboard (stale since 3.0.249), and is flicked hard once
+
 ## 3.0.254 — 2026-10-19
 
 ### Added
