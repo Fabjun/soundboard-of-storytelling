@@ -525,20 +525,25 @@ Slice 1+2 audit.
 
 Crimson gets a COMBO color override (rose-magenta sits next to `--blood` red — not a hard
 conflict, but a missed opportunity). Verdant COMBO holds — the fairy-tale tone fits.
-**When:** Slice 8 (after themes land).
+**When:** Parked (owner decision 2026-10-19) — with the theme flames' personalities, at the next
+design pass for the themes (BACKLOG "Theme flames: Verdant, Neon, Crimson").
 **Source:** docs/design/design-notes.md §Theme integration.
 
-### Theme-conditional clock variants
+### Theme-conditional clock variants — Rejected (2026-10-19)
 
 Verdant Mushroom Clock is designed; Crimson candle-clock + Neon CRT-burn display are design
 explorations (~30 min each). Worth shipping if themes get a real release pass.
 **When:** Slice 8 (after themes land).
+**Rejected (owner decision 2026-10-19):** V3 has no clock, and neither the product concept nor the
+V1 / V2 inventory has one — a themed clock needs a clock feature first.
 **Source:** docs/design/design-notes.md §Theme integration.
 
 ### `is-deep` as user-configurable setting
 
 Settings → Display → "High quality pad visuals" toggle. Currently always-on for the DepthPad.
-**When:** Slice 8.
+**When:** Parked (owner decision 2026-10-19) — once a device shows a measured rendering problem
+with the depth stack (`sb-pad is-deep` in `v3/src/components/PadGridCell.tsx`); a setting without
+a problem behind it goes against P1, minimal first.
 **Source:** ADR-0025, docs/design/design-notes.md §DepthPad/pad rendering.
 
 ### Mode-awareness cues
@@ -550,34 +555,45 @@ bold full-fill mode badge in status-bar left slot. (3) Edge tint — 2 px inset 
 active mode color. (4) Spine saturation — pad type-spines dim to 45% opacity in SETUP
 (lowest priority; risks conflating mode and type semantics).
 Ship one, optionally two if they hit different screen regions and don't compete.
-**When:** Slice 8.
+**When:** Slice 14c — option (1) is the atmosphere of
+[settings.md](product/features/settings.md) S6, decided and not yet built. Options (2)–(4) are
+Rejected (owner decision 2026-10-19): the settled mode cues carry the mode without them
+(BACKLOG "Atmosphere stays provisional").
 **Source:** docs/design/design-notes.md §Slice 8 — Mode-awareness cues.
 
-### Pad Appearance settings persistence
+### Pad Appearance settings persistence — Rejected (2026-10-19)
 
 "APPLY TO ALL PADS" writes to project state system-wide, not per-pad. Per-pad override is
 a separate future feature.
 **When:** Slice 8.
+**Rejected (owner decision 2026-10-19):** PAD SIZE per board or for every board covers it
+([settings.md](product/features/settings.md) S4, 3.0.234); the other appearance scales were
+dropped in S3.
 **Source:** docs/design/design-notes.md §Settings & system polish.
 
-### Settings search across submenus
+### Settings search across submenus — Rejected (2026-10-19)
 
 Typing filters all rows across all submenus, jumps to first match, highlights the term.
 **When:** Slice 8.
+**Rejected (owner decision 2026-10-19):** the Settings screen is one screen with group headings,
+without submenus ([settings.md](product/features/settings.md) S11); a search pays off in long,
+nested settings such as the iOS or Android system settings.
 **Source:** docs/design/design-notes.md §Settings & system polish.
 
 ### Mode-toggle SFX preview
 
 Settings → Controls "Mode toggle SFX" file slot: preview the chosen sound at current MASTER
 volume. Reuse the pad PREVIEW button code path — no separate "test sound" feature.
-**When:** Slice 8.
+**When:** Parked (owner decision 2026-10-19) — with the own sound on a mode switch, which is
+Parked in [v1-v2-inventory.md](product/v1-v2-inventory.md) ("Custom sound on mode switch").
 **Source:** docs/design/design-notes.md §Settings & system polish.
 
 ### View Transitions API (optional polish)
 
 iOS 18+ only; never a hard dependency. Progressively enhance scene/screen transitions if
 available.
-**When:** Slice 8 (only if iOS 18+ has reached the minimum-supported threshold by then).
+**When:** Parked (owner decision 2026-10-19) — once a design asks for a transition between
+screens; the minimum stays iOS 15, so it is an enhancement only.
 **Source:** ADR-0006.
 
 ### PANIC / fade-all button ✅ Done (3.0.183)
@@ -597,7 +613,9 @@ the pads go at once.
 Breathing aura (v8 §5) + loop-spine animation (v8 §6) — designed in `design-sources/2026-05-25/`,
 not yet implemented. CSS animation + new `is-*` classes. On top of this design: One-Shot-Spark
 (see [Design Session 2026-06-04](#design--feature-clarification-session--2026-06-04) → Parked Candidates; not yet designed).
-**When:** Slice 8.
+**When:** Slice 14c — the breathing loops of the atmosphere
+([settings.md](product/features/settings.md) S6), decided and not yet built: 3.0.237 brought only
+the animations switch of 14c.
 
 #### Grid / Layout
 
@@ -606,7 +624,9 @@ not yet implemented. CSS animation + new `is-*` classes. On top of this design: 
 Expose cols × rows in a popover. Mobile hard cap: 5×4 (no 6×4 or 6×6 in the mobile popover
 — avoids "tooltip warning the user not to do the thing the UI offers").
 **Why deferred:** Grid is currently hardcoded 4×4. Slice 3 decision to defer.
-**When:** Slice 8.
+**When:** the owner's decision on a deck's capacity, put on 2026-10-19 — a new deck holds 16 pads
+(`DEFAULT_GRID` in `v3/src/lib/boardModel.ts`), and ADD PAD in a full deck does nothing, without a
+message (`addPadToFreeCell` returns the board unchanged).
 **State 2026-10-15:** the columns shown no longer come from the stored grid — they follow the
 window and PAD SIZE (ADR-0075, 3.0.177). The stored `cols × rows` still sets how many pads a deck
 holds (`nextFreeSlot` in `v3/src/components/PadEditorPanel.tsx`), so whether that capacity
@@ -627,14 +647,15 @@ multiplies the variation space without much real benefit.
 
 Currently hardcoded 4×4 for every new scene. Expose an override in Settings → Display.
 Then 4×4 becomes the default until it is changed once.
-**When:** Slice 8.
+**When:** with "Grid configurability (gridConfig popover)".
 **Source:** docs/design/design-notes.md §Slice 8 — A4 Default new-scene grid.
 
 ### Unplaced pads remember desired position
 
 When shrinking a grid pushes pads off, they retain their wanted (col, row). Enlarging the
 grid re-places them automatically if the slot is still free.
-**When:** Slice 8.
+**When:** with "Grid configurability (gridConfig popover)" — the case arises only if a deck's
+capacity can shrink.
 **Source:** ADR-0009, docs/design/design-notes.md §Slice 8 — A4 Unplaced pads.
 
 ### Mobile layout adaptation ✅ Done (3.0.210, 3.0.211)
@@ -651,7 +672,7 @@ states at 390 px.
 **When:** Slice 8.
 **Source:** docs/design/design-notes.md §Known limitation: SETUP layout.
 
-### Empty-SETUP affordance / placeholder
+### Empty-SETUP affordance / placeholder ✅ Done (ADR-0074)
 
 The empty-SETUP inspector placeholder ("Select a pad to edit or open the Library") was
 removed in commit 402b4c2 as a side-effect of a test fix. What the empty SETUP state
@@ -659,6 +680,9 @@ should show — guidance text, a wider bare grid, or something else — is an op
 Decide after real-use data is available, likely with Claude Design.
 **When:** Slice 8, after real sessions.
 **Source:** docs/design/design-notes.md §Known limitation: SETUP layout.
+✅ **Done (settled by ADR-0074, owner decision 2026-10-19):** the inspector beside the grid is gone
+— the PAD editor is a full-screen dialog — and an empty deck says "No pads yet. Add one with ADD
+PAD or drop a file from the library." (`v3/src/screens/BoardScreen.tsx`).
 
 ---
 
@@ -801,7 +825,9 @@ Currently a stub: `stop(from)` + `play(to)`. Implement proper crossfade in Slice
 A third visual state for pads that will fire on the next downbeat (combo scheduling, ducking
 release). Softer outline in pad-type color, no inset fill — distinct from idle and `is-hot`.
 Hold until combo timing is real in the UI.
-**When:** After combo scheduling lands (Slice 8+).
+**When:** Parked (owner decision 2026-10-19) — with audio ducking, Parked in
+[product/README.md §Pad options](product/README.md#pad-options); V3's combos have no beat to wait
+for.
 **Source:** docs/design/design-notes.md §Slice 4 — C1.
 
 ### `--pad-soft-outline` token family
@@ -960,7 +986,8 @@ red-shift, contrast reduction. Not a separate theme — ergonomics (not seeing t
 mood (theme) are orthogonal; both must remain independently configurable.
 **Status:** Freshly decided, not yet tested in practice. Disableable comfort feature; no hard
 dependencies.
-**When:** Slice 8.
+**When:** Parked (owner decision 2026-10-19) — once a game night shows the screen too bright in a
+dark room.
 **→ Slice 8:** [Theme switcher](#theme-switcher-crimson-verdant-neon--done-30232) — night vision layers
 over the active theme.
 
@@ -1373,7 +1400,7 @@ Designed in `design-sources/2026-05-25/` (v8 §5–§6), not yet implemented:
 - **Idle-Loop Breathing Spine** — type-color spine breathes continuously in loop state.
   Implementation: CSS animation + one new `is-*` class per state.
   New on top of this design: [One-Shot-Spark](#one-shot-spark) (not yet designed; truly new).
-  **→ Slice 8:** [Glanceable loop state (Slice 8)](#glanceable-loop-state).
+  **→ Slice 8:** [Glanceable loop state (Slice 8)](#glanceable-loop-state) — now with Slice 14c.
 
 ---
 
@@ -1523,7 +1550,8 @@ functions (Slice 15a) are listed only once the generator exists.
 
 Sections §1–§5 currently exist but are stubs or placeholder content. Need to be filled with
 actual system documentation.
-**When:** As design documentation catch-up, likely before Slice 8.
+**When:** now (owner decision 2026-10-19) — §2, §4 and §5 still hold a TODO; §1 and §3 are
+written.
 **Source:** Referenced in multiple sessions as "not yet written."
 
 ### docs/design/design-system.md §5 — inset box-shadow exception undocumented
@@ -1653,10 +1681,11 @@ explicitly not yet defined — empirical calibration on real devices is required
 from 600 dp) — `docs/product/features/adaptive-layout.md` L1. **Open:** the calibration on the
 owner's phone and tablet, with step 13a.
 
-### Empty-SETUP affordance
+### Empty-SETUP affordance ✅ Done (ADR-0074)
 
 See Features → Slice 8 above. Duplicated here as a reminder that it is a design decision,
 not just a feature.
+✅ **Done:** settled by ADR-0074 — BACKLOG "Empty-SETUP affordance / placeholder".
 
 ### Delete-last-scene behavior ✅ SETTLED (Slice 3)
 
@@ -1720,8 +1749,8 @@ all overlays) or an oversight?
   `.sb-mode-toggle-sparks` CSS.
 - If **oversight:** wire sparks through the contained element to match the design intent.
 
-**When:** Slice 8 (Polish), or earlier if mode-toggle animation needs revisiting for
-z-index/overlay issues.
+**When:** now (owner decision 2026-10-19): find the reason, record it, remove the unused class —
+together with the dead `.sb-mode-toggle-flash` (BACKLOG "Reduced-motion fallback for ModeToggle").
 **Source:** Truth-check commit `e207a0b`; class marked `[unused-css]` in docs/design/design-system.md §6.
 
 ### Long-Press-Peek — GAME mode only, or SETUP coexistence?

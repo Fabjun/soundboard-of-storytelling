@@ -7,6 +7,14 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.266 — 2026-10-19
+
+### Internal
+
+- docs(backlog): the 17 open items with a Slice 8 trigger triaged one by one (owner decision 2026-10-19) — Rejected with their reason: theme clocks (V3 has no clock), "APPLY TO ALL PADS" (PAD SIZE covers it, S4), settings search (one Settings screen, S11), mode cues 2–4; Parked with a trigger: theme pad colors, is-deep as a setting, the mode-switch sound preview, View Transitions, is-scheduled, night vision; Slice 14c: the breathing loops and the atmosphere mode cue; done: the empty SETUP placeholder (ADR-0074); a deck's capacity goes to the owner next; design-system.md §2/§4/§5 and the mode-switch sparks follow in their own pull requests
+- docs: CLAUDE.md Slice 14 — the atmosphere of 14c (settings.md S6) is not built; 3.0.237 built only its animations switch
+- test(guards): docsGuards "no open backlog item waits for a superseded slice" — an open item's trigger names none of Slices 5–8; counter-checked with the backlog before the cleanup (28 items red)
+
 ## 3.0.265 — 2026-10-19
 
 ### Internal
