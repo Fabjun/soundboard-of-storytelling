@@ -1755,7 +1755,7 @@ sets show many sub-loops in this zone.
 → superseded 2026-10-02: no type inference any more — a new pad is SINGLE unless the user picks
 a type ([product/README.md §Pad types](product/README.md#pad-types--decided)).
 
-### ModeToggle sparks — design-implementation divergence
+### ModeToggle sparks — design-implementation divergence ✅ Done (3.0.268)
 
 The CSS class `sb-mode-toggle-sparks` was designed as a contained overflow element to hold
 spark particles during mode-toggle animation. However, `ModeToggle.tsx` appends spark elements
@@ -1771,6 +1771,14 @@ all overlays) or an oversight?
 **When:** now (owner decision 2026-10-19): find the reason, record it, remove the unused class —
 together with the dead `.sb-mode-toggle-flash` (BACKLOG "Reduced-motion fallback for ModeToggle").
 **Source:** Truth-check commit `e207a0b`; class marked `[unused-css]` in docs/design/design-system.md §6.
+✅ **Done (3.0.268) — deliberate, decided by Claude on the owner's instruction of 2026-10-20:** the
+sparks fly beyond the toggle, so they hang on `document.body` in viewport coordinates and no
+container of the toggle can clip them — the portal pattern ("escape from whatever containers it
+may be in … even if the component … is inside a container with `overflow: hidden`", react.dev,
+createPortal). The reason is a comment in `v3/src/components/ModeToggle.tsx`; `position: fixed`
+moved from the inline style into `.sb-mode-toggle-spark` (a static value, CLAUDE.md Path D);
+`.sb-mode-toggle-sparks` removed. Guarded by `v3/tests/e2e/mode-toggle.spec.ts` ("a switch throws
+sparks that hang on the page, fixed in the viewport").
 
 ### Long-Press-Peek — GAME mode only, or SETUP coexistence?
 
@@ -2414,7 +2422,7 @@ JSX). Currently English-only; no timeline.
 **When:** Only if a localization need is confirmed.
 **Source:** docs/architecture/concept-brief.md §4.11, ADR-0041.
 
-### Reduced-motion fallback for ModeToggle — resolved, cleanup pending
+### Reduced-motion fallback for ModeToggle — resolved, cleanup pending ✅ Done (3.0.268)
 
 The `sb-mode-toggle-flash` class is CSS-defined as a brightness-flash fallback for users
 with `prefers-reduced-motion: reduce`, but `ModeToggle.tsx` skips the animation entirely
@@ -2425,6 +2433,8 @@ reduced-motion), but the CSS rule for `.sb-mode-toggle-flash` is confirmed dead 
 2026-10-19; the entry first named `tokens.css`) when next touching that file.
 **When:** the next change to the mode switch's styles in `v3/src/styles/components.css`.
 **Source:** Truth-check commit `e207a0b`; class marked `[unused-css]` in docs/design/design-system.md §6.
+✅ **Done (3.0.268):** `.sb-mode-toggle-flash` and its `@keyframes sb-mode-flash` removed with the
+spark cleanup (BACKLOG "ModeToggle sparks").
 
 ### ✅ Dead CSS: `sb-creation-popover-section` — Resolved (4210405)
 

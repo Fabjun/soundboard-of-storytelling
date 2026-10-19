@@ -17,10 +17,19 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.267';
+export const APP_VERSION = '3.0.268';
 
 /** The developer log, newest first; CHANGELOG.md is generated from it (sync-changelog). */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.268',
+    date: '2026-10-20',
+    items: [
+      "refactor(mode): the mode-switch sparks stay on document.body, now with the reason in the code — they fly beyond the toggle and no container may clip them (the portal pattern, react.dev createPortal; decided by Claude on the owner's instruction of 2026-10-20); position: fixed moved from the inline style into .sb-mode-toggle-spark (a static value); the unused .sb-mode-toggle-sparks, .sb-mode-toggle-flash and @keyframes sb-mode-flash removed",
+      'test(e2e): mode-toggle — a switch throws sparks that are children of the body with position fixed (Chromium, WebKit; counter-checked with position absolute, 20 repeats green)',
+      'docs(backlog): "ModeToggle sparks" and "Reduced-motion fallback for ModeToggle" done',
+    ],
+  },
   {
     version: '3.0.267',
     date: '2026-10-20',

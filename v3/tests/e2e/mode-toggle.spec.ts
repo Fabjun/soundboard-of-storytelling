@@ -33,3 +33,21 @@ test('ModeToggle switches from GAME to SETUP and back', async ({ page }) => {
   await expect(game).toHaveAttribute('aria-pressed', 'true');
   await expect(setup).toHaveAttribute('aria-pressed', 'false');
 });
+
+// The sparks fly beyond the toggle: children of document.body in viewport coordinates, so no
+// container of the toggle can clip them (ModeToggle.tsx). A spark lives at least 430 ms.
+test('a switch throws sparks that hang on the page, fixed in the viewport', async ({ page }) => {
+  await page.goto('/soundboard-of-storytelling/');
+  await openMainMenu(page);
+  await page.getByRole('button', { name: 'BOARD', exact: true }).click();
+  await page.getByRole('button', { name: /NEW BOARD/ }).click();
+  await page.locator('[data-testid^="board-list-screen-row-"]').first().click();
+
+  await page.getByRole('button', { name: 'SETUP', exact: true }).click();
+  // One read of a spark that exists — it is removed after its flight
+  const position = await page
+    .locator('body > .sb-mode-toggle-spark')
+    .first()
+    .evaluate((el) => getComputedStyle(el).position);
+  expect(position).toBe('fixed');
+});

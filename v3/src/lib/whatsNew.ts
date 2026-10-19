@@ -103,6 +103,12 @@ export function withEarlyVersions(
 /** The release notes the main menu shows, newest first (checked by whatsNew.test.ts). */
 export const WHATS_NEW: WhatsNewNotes[] = [
   {
+    version: '3.0.268',
+    behindTheScenes: [
+      'Unused styles of the mode switch are gone, and a test checks that its sparks can fly beyond the switch.',
+    ],
+  },
+  {
     version: '3.0.267',
     fixed: [
       'A deck no longer stops at 16 pads: a new pad in a full deck starts a new row — also when it is added in the pad editor, dropped from the library or brought back with UNDO.',

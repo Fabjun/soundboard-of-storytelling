@@ -1334,17 +1334,11 @@
   cursor: not-allowed;
 }
 
-/* Spark layer — absolutely positioned sibling, not clipped by toggle */
-.sb-mode-toggle-sparks {
-  /* @inventory: Overflow container intended for spark particles during mode-switch. Not used; ModeToggle.tsx appends sparks to document.body instead. [unused-css] */
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  overflow: visible;
-}
+/* Sparks hang on document.body at viewport coordinates, so no container of the toggle can clip
+   them (the portal pattern, react.dev createPortal) */
 .sb-mode-toggle-spark {
-  /* @inventory: Individual animated spark particle emitted on mode switch. */
-  position: absolute;
+  /* @inventory: Individual animated spark particle emitted on mode switch; a child of document.body, placed in viewport coordinates. */
+  position: fixed;
   width: 4px;
   height: 4px;
   border-radius: 50%;
@@ -1364,18 +1358,6 @@
 @media (prefers-reduced-motion: reduce) {
   .sb-mode-toggle-spark {
     display: none;
-  }
-  .sb-mode-toggle-flash {
-    /* @inventory: Reduced-motion fallback for sb-mode-toggle (brightness flash instead of sparks). ModeToggle.tsx skips animation entirely rather than applying this class. [unused-css] */
-    animation: sb-mode-flash 220ms ease-out;
-  }
-}
-@keyframes sb-mode-flash {
-  0% {
-    filter: brightness(2);
-  }
-  100% {
-    filter: brightness(1);
   }
 }
 
