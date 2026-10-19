@@ -17,10 +17,19 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.264';
+export const APP_VERSION = '3.0.265';
 
 /** The developer log, newest first; CHANGELOG.md is generated from it (sync-changelog). */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.265',
+    date: '2026-10-19',
+    items: [
+      'docs(backlog): 14 items marked done in their heading after a check in the code — among them scene navigation (the deck rail and the phone tabs switch decks in GAME), the streaming backup import (3.0.102) and ZIP export (3.0.145), PANIC as the first stage of STOP ALL (3.0.183), the combo "stop all" fix (3.0.208); bets 18–20 of the class index won (sb-overlay in four full-screen dialogs)',
+      'docs(backlog): seven items with a trigger in superseded Slice 8 get one that exists — crossfade and level meter Parked as in product/README.md, tag autocomplete and the folder tree with Slice 16 L2, the library row overflow on a phone with Slice 16 (still 412 px minimum on 2026-10-19), the breakpoint calibration with the Slice 13 device check, the dead sb-mode-toggle-flash rule named in components.css, where it is',
+      'test(guards): docsGuards "a done backlog item says so in its heading" — a status line "✅ Done" or "✅ Fixed" needs ✅ in the heading; counter-checked',
+    ],
+  },
   {
     version: '3.0.264',
     date: '2026-10-19',
