@@ -30,6 +30,15 @@ import {
 const TAGS = ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'];
 
 /**
+ * axe findings that are not WCAG failures, each with its reason (ADR-0080 exceptions). A pad's
+ * name is its own name; its type, running time and key badges are supplementary text a screen
+ * reader hears in the description. W3C, Understanding SC 2.5.3: the label is "the adjacent text
+ * string" and supplementary text "may be optionally considered a description"; axe 4.14 counts
+ * every visible word, in order, as the label.
+ */
+const NOT_FAILURES = [{ rule: 'label-content-name-mismatch', target: '.sb-pad' }];
+
+/**
  * The themes of `v3/src/styles/tokens.css` (`.sb-theme-<name>` blocks) — read from the file, so a
  * new theme is scanned without a change here. The class is set as Settings → APPEARANCE sets it, on
  * the root element (src/lib/theme.ts).
@@ -52,7 +61,9 @@ async function violations(page: Page, rules?: string[]): Promise<string[]> {
   const axe = new AxeBuilder({ page });
   const result = await (rules ? axe.withRules(rules) : axe.withTags(TAGS)).analyze();
   return result.violations.flatMap((v) =>
-    v.nodes.map((n) => `${v.id}: ${n.target.join(' ')} — ${v.help}`),
+    v.nodes
+      .filter((n) => !NOT_FAILURES.some((x) => x.rule === v.id && n.target.join(' ') === x.target))
+      .map((n) => `${v.id}: ${n.target.join(' ')} — ${v.help}`),
   );
 }
 

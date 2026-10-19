@@ -7,6 +7,17 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.256 — 2026-10-19
+
+### Changed
+
+- a11y: WCAG 2.5.3 Label in Name — axe 4.14 checks it by default (label-content-name-mismatch): the version link is named "v <version>, open What's new", the LIB button "LIB, open the library" (the visible LIB first), the key field without a key "Not assigned, tap and press a key"; a pad's description now also says its key
+
+### Internal
+
+- build(deps-dev): vitest, @vitest/coverage-v8, @vitest/ui 5.0.5 (Dependabot #137); @axe-core/playwright 4.14.0, @playwright/test 1.64.1, eslint-plugin-jsdoc 65.3.6, jsdom 30.1.3 (Dependabot #138)
+- test(a11y): NOT_FAILURES in the axe scan — the rule on pads (.sb-pad) is not a WCAG failure: a pad's name is its own name, the type, time and key badges are supplementary text in the description (W3C Understanding 2.5.3); registered as an ADR-0080 exception
+
 ## 3.0.255 — 2026-10-19
 
 ### Internal

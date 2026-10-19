@@ -155,9 +155,12 @@ export function PadGridCell({
           {typeLabel}
           {duration && <span class="sb-pad-duration"> · {duration}</span>}
         </div>
-        {/* What a screen reader says after the name: the type in plain words and the running time */}
+        {/* What a screen reader says after the name: the type in plain words, the running time
+            and the key (the badges show them; the name is the pad's name alone, WCAG 2.5.3) */}
         <span id={descriptionId} class="sb-visually-hidden">
-          {duration ? `${padTypeName(p.type)}, ${duration}` : padTypeName(p.type)}
+          {[padTypeName(p.type), duration, hotkey && `key ${keyLabel(hotkey)}`]
+            .filter(Boolean)
+            .join(', ')}
         </span>
 
         {/* Picture area: the pad's icons, or its type's placeholder (ADR-0070) */}
