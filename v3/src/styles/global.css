@@ -43,6 +43,18 @@ body.sb {
   -webkit-tap-highlight-color: transparent;
 }
 
+/* iOS WebKit drops its double-tap zoom only for touch-action manipulation or none (WebKit blog
+   "More Responsive Tapping on iOS"; WebKit r247212) — the pan-x pan-y above stopped it nowhere
+   (owner reports 2026-10-14 and 2026-10-19). Only iOS WebKit knows -webkit-touch-callout, so the
+   rule reaches iOS alone; manipulation allows pinch zoom there, which src/lib/pinchGuard.ts
+   stops. Android keeps pan-x pan-y: no double-tap zoom on a width=device-width page (Chrome 32+),
+   and pinch stays off. A class's own value (none on drag handles) still wins. */
+@supports (-webkit-touch-callout: none) {
+  * {
+    touch-action: manipulation;
+  }
+}
+
 /* ─── Scroll containers ──────────────────────────────────────── */
 /* Apply .sb-scroll to any overflow-y:auto element */
 .sb-scroll {

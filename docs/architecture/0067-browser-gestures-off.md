@@ -97,11 +97,28 @@ tap's `touchend` arrives canceled, and the flame keeps `pan-x pan-y`. The pads k
 so a swipe on them scrolls (3.0.220); whether a quick double tap on a pad zooms on the iPhone is on
 the manual checklist ("Quick taps never zoom"), with an Android line.
 
+**2026-10-19 (3.0.261) — double-tap zoom off everywhere on iOS.** Owner report: quick taps on the
+flame no longer zoom, but a double tap anywhere else, in any menu, still does. The 2026-10-14 fix
+was the flame's own; the cause — iOS WebKit drops its double-tap zoom only for `touch-action:
+manipulation` or `none` (WebKit blog "More Responsive Tapping on iOS": WebKit "does not consider
+double-tap gestures on the element"; WebKit r247212) — acted on every element. The owner chose to
+fix the cause (2026-10-19). Fix: inside `@supports (-webkit-touch-callout: none)`, which only iOS
+WebKit matches (the property exists nowhere else; Playwright's WebKit on macOS does not match it),
+every element gets `touch-action: manipulation`; a class's own value (`none` on drag handles)
+still wins. `manipulation` allows pinch zoom, so `v3/src/lib/pinchGuard.ts` cancels Safari's
+gesture events (`gesturestart`, `gesturechange`; `preventDefault` stops the zoom since iOS 12.2,
+WebKit bug 195052) — rule 1's "no pinch zoom" holds; whether it holds on current iOS is checked
+on the device (manual checklist "Browser gestures are off"). Android keeps `pan-x pan-y`: no
+double-tap zoom on a `width=device-width` page (Chrome 32+) and pinch stays off. The flame keeps
+its own `touchend` cancel (tested in system-gestures). No test browser is iOS, so `codeGuards`
+("no double-tap or pinch zoom on iOS") keeps the block and the guard's start in place.
+
 ## Related
 
-- **Files:** `v3/src/styles/global.css`, `v3/src/styles/tokens.css`,
+- **Files:** `v3/src/styles/global.css`, `v3/src/styles/tokens.css`, `v3/src/lib/pinchGuard.ts`,
   `v3/tests/e2e/system-gestures.spec.ts`, `docs/development/manual-iphone-checklist.md`
 - **ADRs:** ADR-0053 (exceptions)
 - **Sources:** https://developer.mozilla.org/en-US/docs/Web/CSS/touch-action ·
   https://www.w3.org/TR/pointerevents/ · https://dequeuniversity.com/rules/axe/4.10/meta-viewport ·
-  https://456bereastreet.com/archive/201212/ios_webkit_browsers_and_auto-zooming_form_controls
+  https://456bereastreet.com/archive/201212/ios_webkit_browsers_and_auto-zooming_form_controls ·
+  https://webkit.org/blog/5610/more-responsive-tapping-on-ios/ · https://bugs.webkit.org/show_bug.cgi?id=195052

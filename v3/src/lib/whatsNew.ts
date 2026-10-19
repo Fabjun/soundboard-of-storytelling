@@ -103,6 +103,12 @@ export function withEarlyVersions(
 /** The release notes the main menu shows, newest first (checked by whatsNew.test.ts). */
 export const WHATS_NEW: WhatsNewNotes[] = [
   {
+    version: '3.0.261',
+    fixed: [
+      'On the iPhone a quick double tap no longer zooms the page, on any screen; before, only the flame was protected.',
+    ],
+  },
+  {
     version: '3.0.260',
     behindTheScenes: [
       'A plan for the full library is written down: which files pads use, getting a deleted file back, preview, sorting, folders, pad templates and own icons.',
