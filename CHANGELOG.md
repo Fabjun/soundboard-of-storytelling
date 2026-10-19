@@ -7,6 +7,12 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.253 — 2026-10-19
+
+### Internal
+
+- docs: BACKLOG "Smart light per pad" — the PAD editor gets two tabs, SOUND and LIGHT, with the light (owner agreed 2026-10-19; NN/g "Tabs, Used Right", WAI-ARIA tabs pattern); open questions before a slice (light on stop and STOP ALL, combo per step, a base light per board)
+
 ## 3.0.252 — 2026-10-19
 
 ### Added

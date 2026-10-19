@@ -191,6 +191,16 @@ entry; nothing tested in practice):
 - **Product rules:** sending a light command never waits and never touches the sound (P6); a
   user-entered device address is a new kind of runtime origin and needs its own ADR (ADR-0057);
   a Home Assistant token is stored on the device only and can be deleted.
+- **PAD editor (owner agreed 2026-10-19):** two tabs, SOUND (the default) and LIGHT, built
+  together with the light itself — a single tab would bring nothing. Name and icons above the
+  tabs, decks and DELETE PAD below them: they belong to the pad, not to its sound. WAI-ARIA tabs
+  pattern (tablist / tab / tabpanel, arrow keys), the existing `sb-tab` look. NN/g "Tabs, Used
+  Right": tabs fit "when lengthy content has clear groupings" and the content need not be seen
+  at once; content of non-default tabs is "supplemental rather than critical"; "the fewer tabs,
+  the better".
+- **Open questions before a slice:** what the light does when the pad stops or on STOP ALL (off,
+  back to a base light, or left as it is); light for a whole combo or per step (a flash with the
+  thunder of step 2); a base light per board, shown when the board opens or after a stop.
 
 **First step:** a practice test — one WLED bulb, a Mac with Chrome, the app starting one effect.
 **When:** after the test, decided with the owner (no slice yet; V3 serves private use).
