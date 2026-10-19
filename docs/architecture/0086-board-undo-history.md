@@ -73,8 +73,9 @@ two-tap delete stays; no undo in GAME.
   not the whole document; a full copy of a large board is about 50 KB (ADR-0010).
 - The undo buttons do not say what they will undo (such as "Undo delete deck"); each writer would
   need a name for its change. Left for later (BACKLOG "Undo names the change it undoes").
-- The deck-delete toast keeps its own UNDO until Slice 18b moves it onto the history; both put the
-  same deck back, and `restoreDeck` does nothing when the deck is there already.
+- Two ways back after a delete: the toast's UNDO takes back just that deletion, ↶ steps back in
+  order (amendment 2026-10-19). After ↶ has put the deck back, the toast's UNDO does nothing
+  (`restoreDeck` leaves a deck that is there already).
 - Deleting a whole board or a library file is not covered — that needs the audio kept in memory
   or a trash (Slice 18c, its own decision).
 
@@ -88,18 +89,36 @@ cover every writer at once (Redux guide). Rejected.
 with the boards and more writes per change; the owner chose the session (2026-10-19). Rejected.
 
 **Undo instead of the two-tap delete** (A List Apart, "Never Use a Warning When you Mean Undo"):
-the standard once undo exists; the owner keeps the two taps for now (2026-10-19). Revisited after
-Slice 18b.
+the standard once undo exists; the owner keeps the two taps for now (2026-10-19). Revisited with
+the owner now that Slice 18b is built (BACKLOG "Two-tap delete once undo exists").
 
 ## Related
 
 - **Files:** `v3/src/state/boardHistory.ts`, `v3/src/state/boardWrites.ts`,
   `v3/src/lib/editHistory.ts`, `v3/src/components/BoardTopBar.tsx`,
   `v3/src/screens/BoardScreen.tsx`, `v3/tests/unit/boardHistory.test.ts`,
-  `v3/tests/e2e/board-undo.spec.ts`
+  `v3/tests/e2e/board-undo.spec.ts`, `v3/src/state/undoNotice.ts`,
+  `v3/src/components/UndoToast.tsx`, `v3/src/lib/boardModel.ts` (`restoreDeck`, `restorePad`)
 - **ADRs:** ADR-0084 (the PAD editor's draft history), ADR-0010 (the board as one document),
   ADR-0074 (modal dialogs)
 - **Sources:** https://www.nngroup.com/articles/ten-usability-heuristics/ ·
   https://redux.js.org/usage/implementing-undo-history · https://support.apple.com/en-us/102650 ·
   https://support.microsoft.com/en-us/windows/keyboard-shortcuts-in-windows-dcc61a57-8ff0-cffe-9796-cb9706c75eec
-  · https://alistapart.com/article/neveruseawarning
+  · https://alistapart.com/article/neveruseawarning ·
+  https://www.w3.org/WAI/WCAG22/Understanding/status-messages.html ·
+  https://w3c.github.io/wcag/understanding/timing-adjustable
+
+## Amendments
+
+**2026-10-19 (3.0.252, Slice 18b) — the toast's UNDO takes back one deletion.** The plan was to
+make the toast's UNDO a shortcut for ↶. An existing test showed why not: a deck deleted, another
+deck renamed meanwhile, UNDO — the deck comes back and the rename stays. ↶ would undo the rename
+first. So the toast keeps undoing exactly its deletion on the latest board, as Gmail's undo does
+(A List Apart): `restoreDeck` for a deck, and the new `restorePad` for a pad — back in the pool,
+its decks (on its cell or the next free one), the quick-access bar and the combo steps that still
+exist; a key taken meanwhile stays with the pad that took it, and a step that would now close a
+cycle does not take it back. One toast for both (`v3/src/state/undoNotice.ts`), shown by the board
+screen: one at a time, gone after 6 s or when the board is left, in a status region that stays in
+the page (WCAG 4.1.3). Its 6 s count from when it appears — the timer restarted with each new
+render before. When the toast is gone, ↶ still undoes the deletion, so the time limit takes no
+ability away (WCAG 2.2.1).

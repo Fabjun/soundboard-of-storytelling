@@ -17,11 +17,13 @@ import {
   boardProblems,
   deleteDeck,
   deletePad,
+  deletedPad,
   duplicateDeck,
   placeInDeck,
   removeFromDeck,
   renameDeck,
   restoreDeck,
+  restorePad,
   setPlacementHotkey,
   updatePad,
 } from '../../src/lib/boardModel';
@@ -59,6 +61,13 @@ const op = fc.oneof(
   // delete a deck, delete a pad meanwhile, undo the deck delete
   fc.record({ kind: fc.constant('undoDeck' as const), deck: fc.nat(5), pad: fc.nat(9) }),
   fc.record({ kind: fc.constant('renameDeck' as const), deck: fc.nat(5) }),
+  // delete a pad, change something meanwhile (fill a cell, delete a deck or another pad), undo
+  fc.record({
+    kind: fc.constant('undoPad' as const),
+    deck: fc.nat(5),
+    pad: fc.nat(9),
+    meanwhile: fc.nat(3),
+  }),
 );
 
 /** Applies one operation the way the UI would (free cell, existing ids) and returns the board. */
@@ -110,6 +119,17 @@ function apply(b: Board, o: Op, n: number): Board {
       let next = deleteDeck(b, deck.id);
       if (pad) next = deletePad(next, pad.id);
       return restoreDeck(next, deck);
+    }
+    case 'undoPad': {
+      if (!pad) return b;
+      const gone = deletedPad(b, pad.id)!;
+      let next = deletePad(b, pad.id);
+      const other = next.pads[0];
+      if (o.meanwhile === 0 && deck)
+        next = addPadToFreeCell(next, deck.id, newPad(`m${n}`, 'single', `Pad ${n}`));
+      if (o.meanwhile === 1 && deck) next = deleteDeck(next, deck.id);
+      if (o.meanwhile === 2 && other) next = deletePad(next, other.id);
+      return restorePad(next, gone);
     }
     case 'renameDeck':
       return deck ? renameDeck(b, deck.id, `${deck.name}!`) : b;

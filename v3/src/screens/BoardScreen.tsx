@@ -36,6 +36,8 @@ import {
 import { applyBoardChange, stepBoard, updateBoard } from '../state/boardWrites';
 import { canRedoBoard, canUndoBoard } from '../state/boardHistory';
 import { useKeydown } from '../lib/escapeKey';
+import { announceUndo, clearUndoNotice, undoNotice } from '../state/undoNotice';
+import { UndoToast } from '../components/UndoToast';
 import { switchMode } from '../state/modeControl';
 import { takesText } from '../state/keyControl';
 import {
@@ -76,8 +78,11 @@ import {
   deckCount,
   deckPadsInOrder,
   deletePad,
+  deletedPad,
   nextDeckName,
   removeFromDeck,
+  restorePad,
+  type DeletedPad,
   setBoardPadSize,
 } from '../lib/boardModel';
 import { type LibDndDropResult } from '../lib/libDnd';
@@ -133,6 +138,9 @@ export function BoardScreen(): JSX.Element {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- auto-select only on board identity change, never override the user's deck choice
   }, [board?.id]);
+
+  // The undo toast belongs to the board it was made on: gone when the board is left or changed
+  useEffect(() => () => clearUndoNotice(), [board?.id]);
 
   // Close editor panel when mode switches to GAME
   useEffect(() => {
@@ -277,11 +285,21 @@ export function BoardScreen(): JSX.Element {
 
   async function handlePadDelete(padId: string) {
     if (!board) return;
-    // Delete pad (ADR-0048): from the pool, every deck, quick access and combo steps.
-    if (applyBoardChange(board.id, (b) => deletePad(b, padId)).board) {
-      setSelectedPadId(null);
-      setRightPanel('empty');
-    }
+    // Delete pad (ADR-0048): from the pool, every deck, quick access and combo steps. The toast's
+    // UNDO puts it back where it was, keeping every change made since (restorePad).
+    const boardId = board.id;
+    const taken: { pad: DeletedPad | null } = { pad: null };
+    const { board: changed } = applyBoardChange(boardId, (b) => {
+      taken.pad = deletedPad(b, padId);
+      return deletePad(b, padId);
+    });
+    const removed = taken.pad;
+    if (!changed || !removed) return;
+    setSelectedPadId(null);
+    setRightPanel('empty');
+    announceUndo(removed.pad.name ? `Deleted '${removed.pad.name}'` : 'Deleted a pad', () => {
+      void updateBoard(boardId, (b) => restorePad(b, removed));
+    });
   }
 
   async function handleRemoveFromDeck(padId: string) {
@@ -329,6 +347,8 @@ export function BoardScreen(): JSX.Element {
   const selectedPad = board.pads.find((p) => p.id === selectedPadId) ?? null;
 
   // ── Layout ─────────────────────────────────────────────────────────────────
+
+  const notice = undoNotice.value;
 
   // A search that finds nothing says so, in plain words (Nielsen 9) — the grid alone would just
   // be empty
@@ -620,6 +640,19 @@ export function BoardScreen(): JSX.Element {
                 the available width on all viewport sizes. On 390px, DeckRail
                 (220px) + a 280px placeholder would squeeze the grid to 0px. */}
           </>
+        )}
+      </div>
+
+      {/* The undo toast after a deletion (Slice 18b), in SETUP only. The status region stays in
+          the page, so screen readers read the toast when it appears (WCAG 4.1.3, ARIA22). */}
+      <div role="status">
+        {mode === 'edit' && notice && (
+          <UndoToast
+            key={notice.id}
+            message={notice.message}
+            onUndo={notice.undo}
+            onDismiss={() => clearUndoNotice(notice.id)}
+          />
         )}
       </div>
 

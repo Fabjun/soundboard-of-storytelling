@@ -1,8 +1,8 @@
 /**
  * @fileoverview UndoToast — temporary notification with timed UNDO action
  *
- * Renders above the StatusBar (fixed bottom). Auto-dismisses after durationMs.
- * Caller is responsible for handling onUndo (restore data snapshot + IDB).
+ * Renders above the StatusBar (fixed bottom). Auto-dismisses after durationMs, counted from when
+ * it appears. Caller is responsible for handling onUndo (src/state/undoNotice.ts).
  */
 
 import { useEffect, useRef } from 'preact/hooks';
@@ -26,16 +26,17 @@ export function UndoToast({
   onDismiss,
 }: UndoToastProps): JSX.Element {
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // The latest onDismiss, read when the time is up: callers pass a new function on every render,
+  // and a timer that restarted with each one kept the toast as long as the screen re-rendered
+  const dismiss = useRef(onDismiss);
+  dismiss.current = onDismiss;
 
   useEffect(() => {
-    timerRef.current = setTimeout(() => {
-      onDismiss();
-    }, durationMs);
-
+    timerRef.current = setTimeout(() => dismiss.current(), durationMs);
     return () => {
       if (timerRef.current !== null) clearTimeout(timerRef.current);
     };
-  }, [durationMs, onDismiss]);
+  }, [durationMs]);
 
   function handleUndo() {
     if (timerRef.current !== null) clearTimeout(timerRef.current);

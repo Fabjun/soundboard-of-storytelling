@@ -4,7 +4,9 @@
  * In SETUP ↶ / ↷ in the top bar and Cmd / Ctrl + Z, Shift + Cmd / Ctrl + Z step through every
  * change of the board; each step is saved. A text field keeps its own keys, the open PAD editor
  * its draft history (ADR-0084); GAME has no undo. Undoing NEW DECK of the shown deck shows the
- * first deck. The history lasts while the app is open. No playback — Chromium and WebKit.
+ * first deck. The history lasts while the app is open. A deleted pad or deck shows a toast whose
+ * UNDO puts back just that deletion (Slice 18b); it goes after 6 s or when the board is left.
+ * No playback — Chromium and WebKit.
  */
 
 import { test, expect, type Page } from '@playwright/test';
@@ -23,6 +25,16 @@ import {
 const undoButton = (page: Page) => page.getByTestId('board-top-bar-undo-button');
 const redoButton = (page: Page) => page.getByTestId('board-top-bar-redo-button');
 const deckTabs = (page: Page) => page.locator('[data-testid^="deck-rail-deck-tab-"]');
+const toast = (page: Page) => page.getByTestId('undo-toast');
+
+/** Opens the first pad's editor and deletes the pad (two taps). */
+async function deleteFirstPad(page: Page) {
+  await padCells(page).first().click();
+  const del = page.getByTestId('pad-editor-panel-delete-button');
+  await del.click();
+  await del.click();
+  await expect(padCells(page)).toHaveCount(0);
+}
 
 test.beforeEach(async ({ page }) => {
   await page.goto('/soundboard-of-storytelling/');
@@ -102,4 +114,45 @@ test('undoing NEW DECK of the deck shown shows the first deck', async ({ page })
   await expect(deckTabs(page)).toHaveCount(1);
   await expect(page.getByText('Select a deck')).toHaveCount(0);
   await expect(padCells(page).first()).toContainText('Rain'); // the first deck, with its pad
+});
+
+test("a deleted pad comes back with the toast's UNDO; a change made since stays", async ({
+  page,
+}) => {
+  await deleteFirstPad(page);
+  await expect(toast(page)).toContainText("Deleted 'Rain'");
+  await deckTabs(page).first().dblclick(); // rename the deck meanwhile
+  await page.getByTestId('deck-rail-name-input').fill('Storm');
+  await page.getByTestId('deck-rail-name-input').press('Enter');
+  await expect(deckTabs(page).first()).toContainText('Storm');
+
+  await page.getByTestId('undo-toast-undo-button').click();
+  await expect(padCells(page).first()).toContainText('Rain');
+  await expect(deckTabs(page).first()).toContainText('Storm');
+  await expect(toast(page)).toHaveCount(0);
+});
+
+test('the toast goes when the board is left', async ({ page }) => {
+  await deleteFirstPad(page);
+  await expect(toast(page)).toBeVisible();
+  await page.getByTestId('board-top-bar-back-button').click();
+  await page.locator('[data-testid^="board-list-screen-name-text-"]').first().click();
+  await expect(page.getByTestId('mode-toggle')).toBeVisible();
+  await expect(toast(page)).toHaveCount(0);
+});
+
+test('the toast goes 6 s after it appeared, also when the screen draws again meanwhile', async ({
+  page,
+}) => {
+  // clock flows: stopping it would stop Preact's passive effects, the toast's timer among them
+  // (testing.md pitfall 9) — so the final check waits 1 s only, far below the 4 s a restarted
+  // time would still have left
+  await page.clock.install();
+  await deleteFirstPad(page);
+  await expect(toast(page)).toBeVisible();
+  await page.clock.runFor(5_000);
+  // A preference changes, the board screen draws again: the toast's time must not start over
+  await page.getByTestId('board-screen-search-toggle-button').click();
+  await page.clock.runFor(2_000);
+  await expect(toast(page)).toHaveCount(0, { timeout: 1_000 });
 });

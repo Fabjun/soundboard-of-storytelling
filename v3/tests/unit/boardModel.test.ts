@@ -21,6 +21,7 @@ import {
   deckPadsInOrder,
   deleteDeck,
   deletePad,
+  deletedPad,
   duplicateDeck,
   findDeck,
   moveDeck,
@@ -34,6 +35,7 @@ import {
   renameDeck,
   setBoardPadSize,
   restoreDeck,
+  restorePad,
   setPlacementHotkey,
   setPlacements,
   setQuickAccessHotkey,
@@ -197,6 +199,122 @@ describe('deleting a pad', () => {
     const after = deletePad(b, 'nope');
     expect(after.pads).toEqual(b.pads);
     expect(after.decks).toEqual(b.decks);
+  });
+});
+
+describe('undoing a pad delete (restorePad, Slice 18b)', () => {
+  const combo = (id: string, steps: ComboPad['steps']): ComboPad =>
+    ({ ...single(id), type: 'combo', steps }) as ComboPad;
+
+  /** a in d1 (key Digit1) and d2, in the quick-access bar (key KeyQ) and in combo c; b in d1. */
+  function withPadA(): Board {
+    let b = addPadToDeck(emptyBoard(), 'd1', single('b'), { col: 0, row: 0 });
+    b = addPadToDeck(b, 'd1', single('a'), { col: 1, row: 0 });
+    b = setPlacementHotkey(b, 'd1', 'a', 'Digit1');
+    b = placeInDeck(b, 'd2', 'a');
+    b = addPadToPool(b, combo('c', [{ padIds: ['b', 'a'] }, { padIds: ['a'], duration: 2 }]));
+    return { ...b, quickAccess: [{ padId: 'b' }, { padId: 'a', hotkey: 'KeyQ' }] };
+  }
+
+  it('right after the delete it gives back the board as it was', () => {
+    const before = withPadA();
+    const after = restorePad(deletePad(before, 'a'), deletedPad(before, 'a')!);
+    expect(after.pads).toEqual(before.pads);
+    expect(after.quickAccess).toEqual(before.quickAccess);
+    for (const d of before.decks)
+      expect(findDeck(after, d.id)!.placements).toEqual(expect.arrayContaining(d.placements));
+    expect(boardProblems(after)).toEqual([]);
+  });
+
+  it('keeps changes made since the delete', () => {
+    const before = withPadA();
+    let b = deletePad(before, 'a');
+    b = renameDeck(b, 'd1', 'Renamed meanwhile');
+    b = restorePad(b, deletedPad(before, 'a')!);
+    expect(findDeck(b, 'd1')!.name).toBe('Renamed meanwhile');
+    expect(b.pads.map((p) => p.id)).toEqual(['b', 'a', 'c']);
+  });
+
+  it('a cell taken meanwhile: the next free one; a full deck: not placed there', () => {
+    const before = withPadA();
+    let b = deletePad(before, 'a');
+    b = addPadToDeck(b, 'd1', single('x'), { col: 1, row: 0 }); // a's cell
+    const tiny = { cols: 1, rows: 1, gap: 4 };
+    b = { ...b, decks: b.decks.map((d) => (d.id === 'd2' ? { ...d, gridConfig: tiny } : d)) };
+    b = addPadToDeck(b, 'd2', single('y'), { col: 0, row: 0 }); // d2 full
+    b = restorePad(b, deletedPad(before, 'a')!);
+    expect(findDeck(b, 'd1')!.placements.find((p) => p.padId === 'a')!.position).toEqual({
+      col: 2,
+      row: 0,
+    });
+    expect(findDeck(b, 'd2')!.placements.map((p) => p.padId)).toEqual(['y']);
+    expect(boardProblems(b)).toEqual([]);
+  });
+
+  it('a deck deleted meanwhile, a full quick-access bar: the pad is back in the pool only', () => {
+    const before = withPadA();
+    let b = deleteDeck(deleteDeck(deletePad(before, 'a'), 'd1'), 'd2');
+    for (const id of ['p', 'q', 'r', 's']) b = addToQuickAccess(addPadToPool(b, single(id)), id);
+    expect(b.quickAccess).toHaveLength(QUICK_ACCESS_MAX);
+    b = restorePad(b, deletedPad(before, 'a')!);
+    expect(b.pads.some((p) => p.id === 'a')).toBe(true);
+    expect(b.quickAccess.map((q) => q.padId)).not.toContain('a');
+    expect(boardProblems(b)).toEqual([]);
+  });
+
+  it('a key taken meanwhile stays with its new pad; the restored pad comes back without it', () => {
+    const before = withPadA();
+    let b = deletePad(before, 'a');
+    b = setPlacementHotkey(b, 'd1', 'b', 'Digit1');
+    b = { ...b, quickAccess: [{ padId: 'b', hotkey: 'KeyQ' }] };
+    b = restorePad(b, deletedPad(before, 'a')!);
+    expect(findDeck(b, 'd1')!.placements.find((p) => p.padId === 'a')!.hotkey).toBeUndefined();
+    expect(findDeck(b, 'd1')!.placements.find((p) => p.padId === 'b')!.hotkey).toBe('Digit1');
+    expect(b.quickAccess).toStrictEqual([{ padId: 'b', hotkey: 'KeyQ' }, { padId: 'a' }]);
+  });
+
+  it('a deck key does not come back as a quick-access key, nor the other way round (K2)', () => {
+    const before = withPadA();
+    let b = deletePad(before, 'a');
+    b = placeInDeck(b, 'd2', 'b');
+    b = setPlacementHotkey(b, 'd2', 'b', 'KeyQ'); // a's quick-access key, now a deck key
+    b = { ...b, quickAccess: [{ padId: 'b', hotkey: 'Digit1' }] }; // a's deck key, now quick access
+    b = restorePad(b, deletedPad(before, 'a')!);
+    expect(b.quickAccess.find((q) => q.padId === 'a')!.hotkey).toBeUndefined();
+    expect(findDeck(b, 'd1')!.placements.find((p) => p.padId === 'a')!.hotkey).toBeUndefined();
+  });
+
+  it('combo steps take the pad back where they still exist and no cycle would close', () => {
+    const before = withPadA();
+    let b = deletePad(before, 'a');
+    const c = b.pads.find((p) => p.id === 'c') as ComboPad;
+    b = updatePad(b, { ...c, steps: [c.steps[0]] }); // the second step is gone
+    b = restorePad(b, deletedPad(before, 'a')!);
+    expect((b.pads.find((p) => p.id === 'c') as ComboPad).steps).toEqual([{ padIds: ['b', 'a'] }]);
+
+    // Combo k (starts y) is started by z. After k's delete, y starts z: putting k back into z's
+    // step would close z → k → y → z, so z does not take it back.
+    let k = addPadToPool(emptyBoard(), combo('y', []));
+    k = addPadToPool(k, combo('z', [{ padIds: ['k'] }]));
+    k = addPadToPool(k, combo('k', [{ padIds: ['y'] }]));
+    const gone = deletedPad(k, 'k')!;
+    k = deletePad(k, 'k');
+    const y = k.pads.find((p) => p.id === 'y') as ComboPad;
+    k = updatePad(k, { ...y, steps: [{ padIds: ['z'] }] });
+    k = restorePad(k, gone);
+    expect((k.pads.find((p) => p.id === 'z') as ComboPad).steps).toEqual([{ padIds: [] }]);
+    expect(boardProblems(k)).toEqual([]);
+  });
+
+  it('a restored combo keeps only pads that still exist; no-op when the pad is back', () => {
+    let b = addPadToPool(emptyBoard(), single('s'));
+    b = addPadToPool(b, combo('c', [{ padIds: ['s'] }]));
+    const gone = deletedPad(b, 'c')!;
+    b = deletePad(deletePad(b, 'c'), 's');
+    b = restorePad(b, gone);
+    expect((b.pads.find((p) => p.id === 'c') as ComboPad).steps).toEqual([{ padIds: [] }]);
+    expect(restorePad(b, gone)).toBe(b);
+    expect(deletedPad(b, 'nope')).toBeNull();
   });
 });
 

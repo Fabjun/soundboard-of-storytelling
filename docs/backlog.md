@@ -34,13 +34,14 @@ during the slice. This is the only defense against backlog drift.
 
 ## 1. Features (Slice-bound)
 
-### Undo: the deck-delete toast on the board history (Slice 18b)
+### Undo toast for deleted decks and pads (Slice 18b) ✅ Done (3.0.252)
 
-Since 3.0.250 every board change can be undone (ADR-0086). The toast after a deck delete still
-has its own UNDO (`v3/src/components/DeckRail.tsx`, `undoDelete`), which puts the deck back
-through `restoreDeck`; both lead to the same board, and `restoreDeck` does nothing when the deck
-is there already. 18b moves the toast's UNDO onto the history and shows the same toast after a
-pad delete. **When:** Slice 18b.
+**Done in 3.0.252:** one toast for deleted decks and pads (`v3/src/state/undoNotice.ts`), shown
+by the board screen; its UNDO takes back just that deletion and keeps every change made since
+(`restoreDeck`, the new `restorePad`) — not a shortcut for ↶, as first planned: an existing test
+keeps a rename made between a deck delete and its UNDO (ADR-0086 amendment 2026-10-19). The toast
+counts its 6 s from when it appears (the timer restarted with each render before) and sits in a
+status region for screen readers.
 
 ### Undo: deleting a board or a library file (Slice 18c)
 
@@ -52,14 +53,14 @@ working state) — a trash in IndexedDB is the likely way. **When:** Slice 18c, 
 ### Undo names the change it undoes
 
 The board's ↶ / ↷ say only Undo and Redo, not what they would undo, such as "Undo delete deck"
-(ADR-0086, trade-offs). Each writer would pass a name with its change. **When:** after
-Slice 18b, when the toasts show such names already.
+(ADR-0086, trade-offs). Each writer would pass a name with its change; the undo toast names its
+deletion since 3.0.252. **When:** with Slice 18c.
 
 ### Two-tap delete once undo exists
 
 A List Apart, "Never Use a Warning When you Mean Undo": with undo, a confirmation is a habit that
 protects little. The owner keeps the two taps for now (2026-10-19, ADR-0086 alternatives).
-**When:** after Slice 18b, with the owner.
+**When:** due — the owner's next review (Slice 18b is built).
 
 ### Deck reorder (drag & drop) ✅ Done (3.0.217)
 

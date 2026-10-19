@@ -101,6 +101,15 @@ export function withEarlyVersions(
 /** The release notes the main menu shows, newest first (checked by whatsNew.test.ts). */
 export const WHATS_NEW: WhatsNewNotes[] = [
   {
+    version: '3.0.252',
+    new: [
+      'A deleted pad can be brought back with UNDO in the message that appears, just like a deleted deck; changes made in between stay.',
+    ],
+    fixed: [
+      'The message after deleting a deck or a pad now goes away after six seconds; before, it could stay much longer, and it vanished when the deck list was folded.',
+    ],
+  },
+  {
     version: '3.0.251',
     behindTheScenes: [
       'Notes on the plan: the app is meant for private use, and an idea for light effects that start with a pad was written down. The app works exactly as before.',
