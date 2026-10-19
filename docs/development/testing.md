@@ -718,3 +718,13 @@ delay") stops the page clock. Two traps, both found by a counter-check that stay
 `testGuards` ("an installed page clock is stopped or its flowing time is explained") requires
 every `page.clock.install(…)` to be followed by `pauseAt(…)` or explained by a `// clock flows:`
 comment next to it.
+
+### 10. A test waits with a limit, never on a promise of the code under test
+
+A unit test that awaits a promise of the module under test (`whenSaved()`) hangs when a mutant
+keeps that promise from settling — Stryker then counts a timeout, not a kill, and the weekly
+mutation job fails above 5 % timeouts (2026-10-19: 8 of 64 mutants of `boardWrites.ts`, all in
+`whenSaved` and the `pendingSaves` count, through `boardHistory.test.ts`). Wait with a limit
+instead — `vi.waitFor(() => expect(pendingSaves.value).toBe(0), { timeout: 1_000 })` — so a
+broken count fails the test within a second. Only the module's own test file awaits it directly
+(`v3/tests/unit/boardWrites.test.ts` tests `whenSaved` itself).

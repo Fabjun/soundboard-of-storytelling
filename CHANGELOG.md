@@ -7,6 +7,13 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.259 — 2026-10-19
+
+### Internal
+
+- test: boardHistory waits for the saves with a limit (vi.waitFor on pendingSaves, 1 s) instead of awaiting whenSaved — under mutants that keep the save count from reaching 0 eight tests hung into the mutation timeout, and the weekly run failed (8 of 64 boardWrites mutants, 12.5 % timeouts, limit 5 %); locally 0 timeouts, 59 of 64 killed, the old file brings the 8 back (counter-check)
+- docs: testing.md pitfall 10 — a test waits with a limit, never on a promise of the code under test
+
 ## 3.0.258 — 2026-10-19
 
 ### Added

@@ -17,10 +17,18 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.258';
+export const APP_VERSION = '3.0.259';
 
 /** The developer log, newest first; CHANGELOG.md is generated from it (sync-changelog). */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.259',
+    date: '2026-10-19',
+    items: [
+      'test: boardHistory waits for the saves with a limit (vi.waitFor on pendingSaves, 1 s) instead of awaiting whenSaved — under mutants that keep the save count from reaching 0 eight tests hung into the mutation timeout, and the weekly run failed (8 of 64 boardWrites mutants, 12.5 % timeouts, limit 5 %); locally 0 timeouts, 59 of 64 killed, the old file brings the 8 back (counter-check)',
+      'docs: testing.md pitfall 10 — a test waits with a limit, never on a promise of the code under test',
+    ],
+  },
   {
     version: '3.0.258',
     date: '2026-10-19',

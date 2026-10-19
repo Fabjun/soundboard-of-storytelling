@@ -103,6 +103,12 @@ export function withEarlyVersions(
 /** The release notes the main menu shows, newest first (checked by whatsNew.test.ts). */
 export const WHATS_NEW: WhatsNewNotes[] = [
   {
+    version: '3.0.259',
+    behindTheScenes: [
+      'Automatic tests of undo now fail within a second when something breaks, instead of waiting for minutes; the weekly quality run had stopped on them.',
+    ],
+  },
+  {
     version: '3.0.258',
     improved: [
       'A pad or a deck is deleted with one tap; the message that follows brings it back with UNDO and says in how many decks the pad was. Deleting a whole board or an audio file still asks twice.',
