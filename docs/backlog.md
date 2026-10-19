@@ -166,6 +166,37 @@ stays small (a few MB).
 sounds"); a license register (file, source, license) next to `third-party-licenses.txt`.
 **When:** with Slice 17 (help & onboarding), discussed with the owner before any plan.
 
+### Smart light per pad — idea (Open)
+
+Owner idea 2026-10-19: a pad can also start a light effect — a slow sunrise or sunset, a fast
+thunderstorm, colors — next to its sound. Research of that day (sources at the end of this
+entry; nothing tested in practice):
+
+- **The browser cannot reach a lamp directly from the HTTPS app on iPhone or iPad:** an HTTPS page
+  may not call an HTTP device (mixed content), local devices have no trusted certificate, and
+  WebKit — the only engine of every iPad browser and, outside the EU, every iPhone browser — has
+  no Web Bluetooth. Chrome and Brave on a Mac can allow insecure content per site plus the local
+  network permission (Chrome "Local Network Access"); Safari cannot.
+- **The effect runs in the lamp; the app only starts it.** WLED (open source, EUPL-1.2) has the
+  effects built in — "Lightning" (_"Short random white strobe similar to a lightning bolt"_),
+  "Sunrise", "Fire 2012", "Candle" — and runs on LED strips with an ESP32 controller or on bulbs
+  sold with WLED installed (Athom, about 15 W, 1400 lm; colors to be confirmed with the seller).
+  Zigbee bulbs fade well but flash slowly (one radio command per change); Philips advises about
+  10 commands per second to single Hue lamps.
+- **Two ways:** (a) Mac + Chrome straight to a WLED bulb, no hub — the simplest for game nights
+  anywhere; (b) Home Assistant (open source, Apache-2.0) as the hub with a valid HTTPS address
+  (DuckDNS + Let's Encrypt or Nabu Casa) — needed for iPhone and iPad. The app has no
+  Content-Security-Policy that would block either.
+- **Product rules:** sending a light command never waits and never touches the sound (P6); a
+  user-entered device address is a new kind of runtime origin and needs its own ADR (ADR-0057);
+  a Home Assistant token is stored on the device only and can be deleted.
+
+**First step:** a practice test — one WLED bulb, a Mac with Chrome, the app starting one effect.
+**When:** after the test, decided with the owner (no slice yet; V3 serves private use).
+Sources: kno.wled.ge/features/effects · developer.chrome.com/blog/local-network-access ·
+developer.apple.com/support/alternative-browser-engines · developers.home-assistant.io/docs/api/websocket ·
+developers.meethue.com (FAQ, command rate) · tindie.com/products/athom/pre-flashed-wled-wifi-smart-bulb-15w
+
 ### Test on a real Android device
 
 Android Chrome 100+ is a supported platform (CLAUDE.md "Supported Platforms"), but no test runs on
