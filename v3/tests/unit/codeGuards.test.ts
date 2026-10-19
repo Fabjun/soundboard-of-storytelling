@@ -65,6 +65,11 @@
  * 22. Symbols are icons (owner decision 2026-10-14, ADR-0085): no symbol character (× ✕ ▲ ▼ ◀ ▶
  *    ★ ≡ ⏸ ⏹ ⣿ …) in the markup of a component or screen — `UiIcon` draws them from the icon
  *    collection; the named exceptions say why (ADR-0053).
+ * 23. No double-tap or pinch zoom on iOS (ADR-0067 amendment 2026-10-19): global.css gives every
+ *    element `touch-action: manipulation` inside `@supports (-webkit-touch-callout: none)` (iOS
+ *    WebKit only), and main.tsx starts `blockPinchZoom`. No test browser is iOS — Playwright's
+ *    WebKit does not match the block — so only this guard keeps the two in place; the pan-x
+ *    pan-y of the flame-only fix (2026-10-14) let the double tap zoom everywhere else.
  */
 
 import { readdirSync, readFileSync } from 'node:fs';
@@ -1097,5 +1102,20 @@ describe('guard: symbols are icons (owner decision 2026-10-14, ADR-0085)', () =>
       return found.map((s) => `${f}: ${s}`);
     });
     expect(bad, 'use <UiIcon name=…> (ADR-0085), or name an exception with its reason').toEqual([]);
+  });
+});
+
+describe('guard: no double-tap or pinch zoom on iOS (ADR-0067 amendment 2026-10-19)', () => {
+  const css = readFileSync(join(V3, 'src', 'styles', 'global.css'), 'utf8');
+  const main = readFileSync(join(V3, 'src', 'main.tsx'), 'utf8');
+  const IOS_BLOCK =
+    /@supports \(-webkit-touch-callout: none\) \{\s*\* \{\s*touch-action: manipulation;\s*\}\s*\}/;
+
+  it('global.css gives every element touch-action manipulation on iOS WebKit only', () => {
+    expect(css).toMatch(IOS_BLOCK);
+  });
+
+  it('main.tsx starts the pinch guard', () => {
+    expect(main).toMatch(/^blockPinchZoom\(\);$/m);
   });
 });

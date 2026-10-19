@@ -75,8 +75,14 @@
 - **Try to refute every draft** — critically review every plan and result, including the
   counter-check itself (can it be vacuous or cause harm?), and improve it before presenting.
 - **A repeated error is a pattern** — when an error class occurs a second time, stop fixing
-  instances: find the root cause, search the whole project for further instances, remove the
-  source and add a systematic check (guard, lint rule, test) so it cannot recur.
+  instances: find the root cause and search the whole project for further instances; then put the
+  scope to the owner — remove the source and add a systematic check (guard, lint rule, test), or
+  fix only what was found.
+- **The scope of a fix is the owner's decision** (owner decision 2026-10-19) — with every
+  correction of a single case, also look where the same problem or its cause can occur elsewhere
+  (an impact analysis) and put the findings with the possible scopes to the owner: this case only,
+  every place found, or the cause at its source plus a check. The single case is fixed at once;
+  widening waits for the owner, unless the owner already chose the scope or an agreed rule does.
 
 ---
 
@@ -327,8 +333,10 @@ pixel-art details and touch minimums — ADR-0081, guarded by `codeGuards` ("typ
   `v3/tests/e2e/deck-switcher.spec.ts`, `v3/tests/e2e/board-frames.spec.ts`)
 - The browser's own gestures are off — no zoom, no selection, no long-press menu (global rule in
   `v3/src/styles/global.css`, ADR-0067); a gesture the app needs is built with Pointer Events and
-  has a non-gesture alternative; text fields have at least 16px text (iOS focus zoom); guarded by
-  `v3/tests/e2e/system-gestures.spec.ts`
+  has a non-gesture alternative; text fields have at least 16px text (iOS focus zoom); iOS WebKit
+  gets `touch-action: manipulation` and `v3/src/lib/pinchGuard.ts` (its double tap ignores
+  pan-x pan-y); guarded by `v3/tests/e2e/system-gestures.spec.ts` and `codeGuards` ("no double-tap
+  or pinch zoom on iOS")
 - `overscroll-behavior: none` on all fixed overlay panels
 - `-webkit-overflow-scrolling: touch` on all scroll containers
 

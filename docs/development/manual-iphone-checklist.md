@@ -287,19 +287,21 @@ because Playwright runs against a simulated environment:
     only on the device.
 
 - [ ] **Browser gestures are off** _(3.0.159, ADR-0067)_
-  - Action: On the board and in the library: double-tap, pinch with two fingers, long-press a pad
-    name and a label; tap into the library search field.
+  - Action: On the board and in the library: double-tap, pinch with two fingers (also after
+    3.0.261, which changes how iOS is kept from zooming), long-press a pad name and a label; tap
+    into the library search field.
   - Expected: No zoom, no text selection, no iOS menu, no gray tap flash; the search field does not
     zoom in when tapped.
   - Why manual: The iOS long-press menu and focus zoom exist only on iOS.
 
-- [ ] **Quick taps never zoom** _(3.0.240, ADR-0067 amendment 2026-10-14)_
-  - Action: Tap the flame on the start screen and in the main menu quickly several times. In GAME,
-    tap one pad quickly twice, and two pads one right after the other. Do the same on an Android
-    phone (Chrome).
-  - Expected: The flame freezes and thaws; the pads play — the page never zooms in or out. If a
-    pad tap zooms on the iPhone, note it: the pads keep pan-x pan-y so a swipe on them still
-    scrolls, and need their own fix.
+- [ ] **Quick taps never zoom** _(3.0.240; everywhere on iOS since 3.0.261, ADR-0067 amendments
+      2026-10-14 and 2026-10-19)_
+  - Action: Tap the flame on the start screen and in the main menu quickly several times. Then
+    double-tap anywhere else: an empty spot, a heading, a label, in the main menu, the board list,
+    the library, Settings and the PAD editor. In GAME, tap one pad quickly twice, and two pads one
+    right after the other. Do the same on an Android phone (Chrome).
+  - Expected: The flame freezes and thaws; the pads play; buttons react to both taps — the page
+    never zooms in or out, on any screen. Swipes still scroll.
   - Why manual: Double-tap zoom is a gesture of the phone's browser; Playwright's desktop engines
     do not zoom on a double tap, so the automatic test can only read the CSS (system-gestures).
 

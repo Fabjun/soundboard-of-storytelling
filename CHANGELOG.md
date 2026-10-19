@@ -7,6 +7,17 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.261 — 2026-10-19
+
+### Fixed
+
+- fix(gestures): a double tap no longer zooms the page anywhere on the iPhone (owner report 2026-10-19; the 2026-10-14 fix covered the flame only) — iOS WebKit drops its double-tap zoom only for touch-action manipulation or none, so every element gets manipulation inside @supports (-webkit-touch-callout: none), which only iOS WebKit matches; lib pinchGuard cancels Safari's gesturestart / gesturechange, so pinch zoom stays off; Android keeps pan-x pan-y (no double-tap zoom there since Chrome 32)
+
+### Internal
+
+- test: unit pinchGuard; codeGuards "no double-tap or pinch zoom on iOS" — no test browser is iOS (Playwright's WebKit does not match the block), so the guard keeps the block and the guard's start in place; both counter-checked
+- docs: ADR-0067 amendment 2026-10-19; CLAUDE.md gesture rule, and the owner's rule on the scope of a fix (impact analysis, widening put to the owner) beside "A repeated error is a pattern"; iPhone checklist — double tap on every screen, pinch after the change
+
 ## 3.0.260 — 2026-10-19
 
 ### Internal

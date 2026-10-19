@@ -19,6 +19,7 @@ import { pendingSaves } from './state/store';
 import { loadPrefs } from './state/prefs';
 import { startPlayHistory } from './state/playHistory';
 import { startKeyControl } from './state/keyControl';
+import { blockPinchZoom } from './lib/pinchGuard';
 import { startWindowClass } from './state/windowClass';
 import { loadStoredState } from './state/boot';
 
@@ -46,6 +47,9 @@ document.addEventListener('touchstart', () => {}, { passive: true });
 
 // Keys play pads in GAME (Slice 12a, ADR-0077).
 startKeyControl();
+
+// No pinch zoom on iOS, where the double-tap fix allows it (ADR-0067 amendment 2026-10-19).
+blockPinchZoom();
 
 // Narrow or wide window (Slice 13a, ADR-0082) — known before the first render, so no frame jumps.
 startWindowClass();
