@@ -94,9 +94,11 @@ test('on a phone the line is in the dock, next to STOP ALL, and stays inside the
 
   const dock = page.getByTestId('status-bar');
   await expect(dock.getByTestId('status-bar-playing-text')).toHaveText(/^2 playing: /);
-  await expect(dock.getByRole('button', { name: 'STOP ALL' })).toBeVisible();
+  await expect(dock.getByRole('button', { name: 'STOP ALL', exact: true })).toBeVisible();
   // A long line gives way and ends in …; it never pushes the dock wider than the window
-  await expect(dock.getByRole('button', { name: 'STOP ALL' })).toBeInViewport({ ratio: 1 });
+  await expect(dock.getByRole('button', { name: 'STOP ALL', exact: true })).toBeInViewport({
+    ratio: 1,
+  });
   const box = (await line(page).boundingBox())!;
   expect(box.x + box.width).toBeLessThanOrEqual(390);
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(390);

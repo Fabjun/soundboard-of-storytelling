@@ -18,7 +18,8 @@ import {
 
 const lock = (page: Page) => page.getByRole('button', { name: /lock the mode switch/i });
 const setupHalf = (page: Page) => page.getByTestId('mode-toggle-setup-button');
-const gameOn = (page: Page) => page.getByRole('button', { name: 'GAME', pressed: true });
+const gameOn = (page: Page) =>
+  page.getByRole('button', { name: 'GAME', exact: true, pressed: true });
 
 test.beforeEach(async ({ page }) => {
   await page.goto('/soundboard-of-storytelling/');
@@ -46,7 +47,9 @@ test('while locked the mode stays GAME; unlocked it switches again', async ({ pa
   await lock(page).click();
   await expect(lock(page)).toHaveAttribute('aria-pressed', 'false');
   await setupHalf(page).click();
-  await expect(page.getByRole('button', { name: 'SETUP', pressed: true })).toBeVisible();
+  await expect(
+    page.getByRole('button', { name: 'SETUP', exact: true, pressed: true }),
+  ).toBeVisible();
 });
 
 test('a reload turns the Lock off', async ({ page }) => {

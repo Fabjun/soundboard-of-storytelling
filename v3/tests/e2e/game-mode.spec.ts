@@ -29,7 +29,10 @@ test('22 — GAME mode: CRUD controls hidden, ModeToggle shows is-game', async (
   await enterGameMode(page);
 
   // ModeToggle shows game state
-  await expect(page.getByRole('button', { name: 'GAME' })).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.getByRole('button', { name: 'GAME', exact: true })).toHaveAttribute(
+    'aria-pressed',
+    'true',
+  );
 
   // GAME mode: pad editor should not be open
   await expect(page.getByTestId('pad-editor-panel')).not.toBeVisible();
@@ -48,5 +51,8 @@ test('22 — GAME mode: CRUD controls hidden, ModeToggle shows is-game', async (
 
   // Verify switching back to SETUP restores the toggle state
   await enterSetupMode(page);
-  await expect(page.getByRole('button', { name: 'SETUP' })).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.getByRole('button', { name: 'SETUP', exact: true })).toHaveAttribute(
+    'aria-pressed',
+    'true',
+  );
 });

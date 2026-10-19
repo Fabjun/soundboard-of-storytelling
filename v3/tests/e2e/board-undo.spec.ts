@@ -100,7 +100,7 @@ test('with the PAD editor open, Cmd / Ctrl + Z undoes its draft, not the board',
   await page.getByTestId('pad-editor-panel-undo-button').focus(); // out of the text field
   await page.keyboard.press('ControlOrMeta+z');
   await expect(name).toHaveValue('Rain');
-  await page.getByRole('button', { name: 'Close the pad editor' }).click();
+  await page.getByRole('button', { name: 'Close the pad editor', exact: true }).click();
   await expect(padCells(page)).toHaveCount(1);
   await expect(padCells(page).first()).toContainText('Rain');
 });
@@ -117,7 +117,7 @@ test('undoing NEW DECK of the deck shown shows the first deck', async ({ page })
   await expect(deckTabs(page)).toHaveCount(2);
   await undoButton(page).click();
   await expect(deckTabs(page)).toHaveCount(1);
-  await expect(page.getByText('Select a deck')).toHaveCount(0);
+  await expect(page.getByText('Select a deck', { exact: true })).toHaveCount(0);
   await expect(padCells(page).first()).toContainText('Rain'); // the first deck, with its pad
 });
 

@@ -72,7 +72,7 @@ test('a key another pad holds moves over on MOVE KEY HERE; Escape cancels and ke
   const rain = await addNamedPad(page, 'Rain');
 
   await assignKey(page, 'Escape');
-  await expect(page.getByRole('dialog', { name: 'Pad editor' })).toBeVisible();
+  await expect(page.getByRole('dialog', { name: 'Pad editor', exact: true })).toBeVisible();
   await expect(keyField(page)).toHaveText('— not assigned —');
 
   await assignKey(page, 'Numpad1');
@@ -138,11 +138,11 @@ test('a quick-access key is shown on the bar and plays its pad in another deck t
 }) => {
   await addNamedPad(page, 'Rooster');
   await expect(quickKey(page)).toHaveCount(0); // only for a pad in the bar
-  await page.getByRole('button', { name: 'In quick access' }).click();
+  await page.getByRole('button', { name: 'In quick access', exact: true }).click();
   await assignQuickKey(page, 'KeyQ');
   await expect(quickKey(page).getByTestId('key-field-button')).toHaveText('Q');
   await closePadEditor(page);
-  await expect(page.getByRole('group', { name: 'Quick access' })).toContainText('Q');
+  await expect(page.getByRole('group', { name: 'Quick access', exact: true })).toContainText('Q');
 
   await createDeck(page);
   await page.getByText('Deck 2', { exact: true }).click();
@@ -162,7 +162,7 @@ test('a key is never both a deck key and a quick-access key (K2) — refused wit
   await addNamedPad(page, 'Owl');
   await assignKey(page, 'Numpad1'); // a deck key in Deck 1
   await addNamedPad(page, 'Rooster');
-  await page.getByRole('button', { name: 'In quick access' }).click();
+  await page.getByRole('button', { name: 'In quick access', exact: true }).click();
   await assignQuickKey(page, 'Numpad1');
   await expect(quickKey(page).getByTestId('key-field-note-text')).toHaveText(
     'N1 plays Owl in Deck 1 — pick another key',
@@ -179,16 +179,16 @@ test('a key is never both a deck key and a quick-access key (K2) — refused wit
 
 test('a quick-access key another bar pad holds moves over on MOVE KEY HERE', async ({ page }) => {
   await addNamedPad(page, 'Day');
-  await page.getByRole('button', { name: 'In quick access' }).click();
+  await page.getByRole('button', { name: 'In quick access', exact: true }).click();
   await assignQuickKey(page, 'KeyQ');
   await addNamedPad(page, 'Night');
-  await page.getByRole('button', { name: 'In quick access' }).click();
+  await page.getByRole('button', { name: 'In quick access', exact: true }).click();
   await assignQuickKey(page, 'KeyQ');
   await expect(quickKey(page).getByTestId('key-field-conflict-text')).toHaveText('Key Q is on Day');
   await quickKey(page).getByTestId('key-field-move-button').click();
   await expect(quickKey(page).getByTestId('key-field-button')).toHaveText('Q');
   await closePadEditor(page);
-  const bar = page.getByRole('group', { name: 'Quick access' });
+  const bar = page.getByRole('group', { name: 'Quick access', exact: true });
   await expect(bar.getByRole('button', { name: /Night/ })).toContainText('Q');
   await expect(bar.getByRole('button', { name: /Day/ })).not.toContainText('Q');
 });

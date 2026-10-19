@@ -31,7 +31,7 @@ async function rightEdge(locator: Locator): Promise<number> {
 /** What the flame's canvas shows now — compared over time, it tells whether the flame moves. */
 const flameFrame = (page: Page) =>
   page
-    .getByRole('img', { name: 'Animated flame' })
+    .getByRole('img', { name: 'Animated flame', exact: true })
     .evaluate((c) => (c as HTMLCanvasElement).toDataURL());
 
 /**
@@ -39,12 +39,14 @@ const flameFrame = (page: Page) =>
  * after the flame has drawn once — a canvas mounted a moment ago may still be blank.
  */
 async function flameMoves(page: Page): Promise<boolean> {
-  const blank = await page.getByRole('img', { name: 'Animated flame' }).evaluate((c) => {
-    const empty = document.createElement('canvas');
-    empty.width = (c as HTMLCanvasElement).width;
-    empty.height = (c as HTMLCanvasElement).height;
-    return empty.toDataURL();
-  });
+  const blank = await page
+    .getByRole('img', { name: 'Animated flame', exact: true })
+    .evaluate((c) => {
+      const empty = document.createElement('canvas');
+      empty.width = (c as HTMLCanvasElement).width;
+      empty.height = (c as HTMLCanvasElement).height;
+      return empty.toDataURL();
+    });
   await expect.poll(() => flameFrame(page)).not.toBe(blank);
   const before = await flameFrame(page);
   await page.waitForTimeout(500); // the flame draws ~45 frames a second; half a second is many
@@ -58,8 +60,8 @@ test('the Animations switch stops the flame, and it stays still after a reload',
   await openMainMenu(page);
   expect(await flameMoves(page)).toBe(true);
 
-  await page.getByRole('button', { name: 'SETTINGS' }).click();
-  const animations = page.getByRole('switch', { name: 'Animations' });
+  await page.getByRole('button', { name: 'SETTINGS', exact: true }).click();
+  const animations = page.getByRole('switch', { name: 'Animations', exact: true });
   await expect(animations).toHaveAttribute('aria-checked', 'true');
   await animations.click();
   await expect(animations).toHaveAttribute('aria-checked', 'false');
@@ -68,7 +70,7 @@ test('the Animations switch stops the flame, and it stays still after a reload',
 
   await waitForSaves(page);
   await page.goto(APP);
-  await expect(page.getByRole('button', { name: 'TAP TO START' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'TAP TO START', exact: true })).toBeVisible();
   expect(await flameMoves(page)).toBe(false);
 });
 
@@ -79,8 +81,8 @@ test.describe('with the system asking for reduced motion', () => {
     await page.goto(APP);
     await openMainMenu(page);
     expect(await flameMoves(page)).toBe(false);
-    await page.getByRole('button', { name: 'SETTINGS' }).click();
-    const animations = page.getByRole('switch', { name: 'Animations' });
+    await page.getByRole('button', { name: 'SETTINGS', exact: true }).click();
+    const animations = page.getByRole('switch', { name: 'Animations', exact: true });
     await expect(animations).toHaveAttribute('aria-checked', 'false');
     await expect(animations).toBeDisabled();
     await expect(animations).toHaveAccessibleDescription(/reduced motion/);
@@ -92,8 +94,8 @@ test('the debug log keeps messages while on; the developer view shows, clears an
 }) => {
   await page.goto(APP);
   await openMainMenu(page);
-  await page.getByRole('button', { name: 'SETTINGS' }).click();
-  const debugLog = page.getByRole('switch', { name: 'Debug log' });
+  await page.getByRole('button', { name: 'SETTINGS', exact: true }).click();
+  const debugLog = page.getByRole('switch', { name: 'Debug log', exact: true });
   await expect(debugLog).toHaveAttribute('aria-checked', 'false');
   await page.evaluate(() => console.warn('before the switch'));
   await debugLog.click();
@@ -102,7 +104,7 @@ test('the debug log keeps messages while on; the developer view shows, clears an
 
   const open = page.getByTestId('settings-screen-developer-button');
   await open.click();
-  const dialog = page.getByRole('dialog', { name: 'DEVELOPER' });
+  const dialog = page.getByRole('dialog', { name: 'DEVELOPER', exact: true });
   const log = dialog.getByTestId('developer-dialog-log-text');
   await expect(log).toContainText('WARN a message for the log');
   await expect(log).not.toContainText('before the switch');
@@ -120,15 +122,14 @@ test('the debug log keeps messages while on; the developer view shows, clears an
 test('Settings opens from the main menu and goes back there', async ({ page }) => {
   await page.goto(APP);
   await openMainMenu(page);
-  await page.getByRole('button', { name: 'SETTINGS' }).click();
-  await expect(page.getByRole('heading', { name: 'DATA' })).toBeVisible();
+  await page.getByRole('button', { name: 'SETTINGS', exact: true }).click();
+  await expect(page.getByRole('heading', { name: 'DATA', exact: true })).toBeVisible();
   await expect(page.getByTestId('settings-screen-version-text')).toContainText(
     `Version ${APP_VERSION}`,
   );
-  await expect(page.getByRole('link', { name: 'Third-party licenses' })).toHaveAttribute(
-    'href',
-    'third-party-licenses.txt',
-  );
+  await expect(
+    page.getByRole('link', { name: 'Third-party licenses', exact: true }),
+  ).toHaveAttribute('href', 'third-party-licenses.txt');
   await page.getByTestId('settings-screen-back-button').click();
   await expect(page.getByTestId('main-menu-screen')).toBeVisible();
 });
@@ -144,22 +145,22 @@ test('the theme applies at once, to the whole app, and from the first screen aft
   await page.goto(APP);
   await openMainMenu(page);
   const hearthNight = await night();
-  await page.getByRole('button', { name: 'SETTINGS' }).click();
-  await expect(page.getByRole('radio', { name: 'HEARTH' })).toBeChecked();
+  await page.getByRole('button', { name: 'SETTINGS', exact: true }).click();
+  await expect(page.getByRole('radio', { name: 'HEARTH', exact: true })).toBeChecked();
   await page.getByText('NEON', { exact: true }).click();
-  await expect(page.getByRole('radio', { name: 'NEON' })).toBeChecked();
+  await expect(page.getByRole('radio', { name: 'NEON', exact: true })).toBeChecked();
   await expect.poll(night).not.toBe(hearthNight);
   const neonNight = await night();
 
   // Kept: the start screen already shows it, before TAP TO START
   await waitForSaves(page);
   await page.goto(APP);
-  await expect(page.getByRole('button', { name: 'TAP TO START' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'TAP TO START', exact: true })).toBeVisible();
   expect(await night()).toBe(neonNight);
 
   // Back to Hearth
   await openMainMenu(page);
-  await page.getByRole('button', { name: 'SETTINGS' }).click();
+  await page.getByRole('button', { name: 'SETTINGS', exact: true }).click();
   await page.getByText('HEARTH', { exact: true }).click();
   await expect.poll(night).toBe(hearthNight);
 });
@@ -172,8 +173,8 @@ test('the content width limits the screens on a large window, centered, also aft
   const right = (name: string) => rightEdge(page.getByRole('button', { name }));
   await page.goto(APP);
   await openMainMenu(page);
-  await page.getByRole('button', { name: 'SETTINGS' }).click();
-  await expect(page.getByRole('radio', { name: 'AUTO' })).toBeChecked();
+  await page.getByRole('button', { name: 'SETTINGS', exact: true }).click();
+  await expect(page.getByRole('radio', { name: 'AUTO', exact: true })).toBeChecked();
   expect(await right('BACK')).toBeGreaterThan(1550); // the whole window
 
   await page.getByText('COMPACT', { exact: true }).click();
@@ -219,9 +220,9 @@ test('the backup reminder follows the days chosen in Settings, also after a relo
 
   // 14 days in Settings, opened from the board list: no reminder, and BACK returns there
   await page.getByTestId('board-list-screen-settings-button').click();
-  const days14 = page.getByRole('radio', { name: '14 days' });
-  await expect(page.getByRole('radio', { name: '7 days' })).toBeChecked();
-  await page.getByText('14 days').click();
+  const days14 = page.getByRole('radio', { name: '14 days', exact: true });
+  await expect(page.getByRole('radio', { name: '7 days', exact: true })).toBeChecked();
+  await page.getByText('14 days', { exact: true }).click();
   await expect(days14).toBeChecked();
   await page.getByTestId('settings-screen-back-button').click();
   await expect(backupText).toHaveText('Last backup: 10 days ago');

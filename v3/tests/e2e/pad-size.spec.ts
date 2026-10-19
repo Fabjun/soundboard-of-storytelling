@@ -47,12 +47,12 @@ async function boxOf(locator: Locator) {
 
 /** Folds the deck rail — the wide frame has one; on a phone the decks are tabs (Slice 13b). */
 async function foldDeckList(page: Page) {
-  const hide = page.getByRole('button', { name: 'Hide the deck list' });
+  const hide = page.getByRole('button', { name: 'Hide the deck list', exact: true });
   if ((await hide.count()) > 0) await hide.click();
 }
 
 const cells = (page: Page) => page.locator('[data-testid^="pad-grid-cell-"][data-pos]');
-const slider = (page: Page) => page.getByRole('slider', { name: 'PAD SIZE' });
+const slider = (page: Page) => page.getByRole('slider', { name: 'PAD SIZE', exact: true });
 
 /** How many cells stand in the grid's first row. */
 async function columns(page: Page): Promise<number> {
@@ -82,7 +82,7 @@ test('on a phone 4 pads fill a row; a wide window holds more; the order stays', 
   await page.setViewportSize(WIDE);
   await expect.poll(() => columns(page)).toBeGreaterThanOrEqual(10);
   expect(await seenOrder(page)).toEqual(NAMES);
-  const pad = await boxOf(page.getByRole('button', { name: 'A1' }));
+  const pad = await boxOf(page.getByRole('button', { name: 'A1', exact: true }));
   expect(pad.width).toBeLessThanOrEqual(88.5);
   expect(pad.height).toBeCloseTo(pad.width, 0);
 });
@@ -124,7 +124,7 @@ test('the PAD SIZE slider sets fewer, larger pads per row; the size is kept', as
   await page.keyboard.press('End');
   await expect(slider(page)).toHaveValue('160');
   await expect.poll(() => columns(page)).toBeLessThan(before);
-  const big = await boxOf(page.getByRole('button', { name: 'A1' }));
+  const big = await boxOf(page.getByRole('button', { name: 'A1', exact: true }));
   expect(big.width).toBeGreaterThan(88);
   expect(big.width).toBeLessThanOrEqual(160.5);
 
@@ -151,14 +151,18 @@ test('the PAD SIZE slider sets the size for every deck and All pads, from any of
 
   await page.getByText('All pads', { exact: true }).click();
   await expect(slider(page)).toHaveValue('160');
-  expect((await boxOf(page.getByRole('button', { name: 'A1' }))).width).toBeGreaterThan(88);
+  expect(
+    (await boxOf(page.getByRole('button', { name: 'A1', exact: true }))).width,
+  ).toBeGreaterThan(88);
 
   await slider(page).focus();
   await page.keyboard.press('Home'); // in All pads
   await expect(slider(page)).toHaveValue('44');
   await page.getByText('Deck 1', { exact: true }).click();
   await expect(slider(page)).toHaveValue('44');
-  expect((await boxOf(page.getByRole('button', { name: 'A1' }))).width).toBeLessThanOrEqual(44.5);
+  expect(
+    (await boxOf(page.getByRole('button', { name: 'A1', exact: true }))).width,
+  ).toBeLessThanOrEqual(44.5);
 });
 
 /** Sets PAD SIZE with the slider's keys; on a phone the slider is in the DECKS panel (Slice 13b). */
@@ -182,7 +186,7 @@ for (const viewport of [PHONE, WIDE]) {
     await page.getByTestId('pad-editor-panel-name-input').waitFor({ state: 'detached' });
     for (const px of [44, 64, 88]) {
       await setPadSize(page, px);
-      const pad = page.getByRole('button', { name: 'A1' });
+      const pad = page.getByRole('button', { name: 'A1', exact: true });
       // Measured 2026-10-10: below 80 px the name stood 11 px out of the pad (Slice 13e)
       await expect
         .poll(
@@ -206,7 +210,7 @@ test('on a phone every pad size shows the name and the icon; the type row and th
   await page.setViewportSize(PHONE);
   await boardWithSixPads(page);
   await page.getByTestId('pad-editor-panel-name-input').waitFor({ state: 'detached' });
-  const pad = page.getByRole('button', { name: 'A1' });
+  const pad = page.getByRole('button', { name: 'A1', exact: true });
   await expect(pad).toHaveAccessibleDescription('Single');
   for (const px of [44, 68, 76, 88, 120]) {
     await setPadSize(page, px);

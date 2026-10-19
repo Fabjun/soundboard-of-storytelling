@@ -19,7 +19,7 @@ test('StartScreen — flame logo, TAP TO START', async ({ page }) => {
     fullPage: false,
     mask: [
       page.getByTestId('start-screen-flame-region'),
-      page.getByRole('img', { name: 'Animated flame' }),
+      page.getByRole('img', { name: 'Animated flame', exact: true }),
     ],
   });
 });

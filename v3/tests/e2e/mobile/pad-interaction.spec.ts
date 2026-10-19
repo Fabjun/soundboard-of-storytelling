@@ -88,7 +88,7 @@ test('C — LOOP pad: tap → is-looping; tap again → is-looping removed', asy
   await sourceItem.tap();
 
   // Select the LOOP type pill
-  await page.getByRole('button', { name: 'LOOP' }).tap();
+  await page.getByRole('button', { name: 'LOOP', exact: true }).tap();
   await page.getByTestId('pad-creation-popover-add-button').tap();
 
   const padCell = page.locator(PAD_CELL).first();

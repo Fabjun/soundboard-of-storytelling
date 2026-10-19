@@ -13,13 +13,13 @@ test('ModeToggle switches from GAME to SETUP and back', async ({ page }) => {
 
   // Navigate to a board (create one first)
   await openMainMenu(page);
-  await page.getByRole('button', { name: 'BOARD' }).click();
+  await page.getByRole('button', { name: 'BOARD', exact: true }).click();
   await page.getByRole('button', { name: /NEW BOARD/ }).click();
   await page.locator('[data-testid^="board-list-screen-row-"]').first().click();
 
   // Initial state: GAME is the pressed half (aria-pressed — user-facing state)
-  const setup = page.getByRole('button', { name: 'SETUP' });
-  const game = page.getByRole('button', { name: 'GAME' });
+  const setup = page.getByRole('button', { name: 'SETUP', exact: true });
+  const game = page.getByRole('button', { name: 'GAME', exact: true });
   await expect(page.getByTestId('mode-toggle')).toBeVisible();
   await expect(game).toHaveAttribute('aria-pressed', 'true');
 

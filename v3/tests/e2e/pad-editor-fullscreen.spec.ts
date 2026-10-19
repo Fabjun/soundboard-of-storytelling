@@ -16,7 +16,7 @@ import {
   goToBoardList,
 } from './helpers';
 
-const editor = (page: Page) => page.getByRole('dialog', { name: 'Pad editor' });
+const editor = (page: Page) => page.getByRole('dialog', { name: 'Pad editor', exact: true });
 
 /** A board with two pads, the editor closed; returns the first pad's button. */
 async function boardWithTwoPads(page: Page) {
@@ -28,7 +28,7 @@ async function boardWithTwoPads(page: Page) {
   await addNamedPad(page, 'Owl');
   await addNamedPad(page, 'Rain');
   await closePadEditor(page);
-  return page.getByRole('button', { name: 'Owl' });
+  return page.getByRole('button', { name: 'Owl', exact: true });
 }
 
 for (const viewport of [
@@ -57,7 +57,7 @@ for (const viewport of [
 test('the board behind the editor cannot be used, by pointer or by Tab', async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 800 });
   const owl = await boardWithTwoPads(page);
-  const rain = await page.getByRole('button', { name: 'Rain' }).boundingBox();
+  const rain = await page.getByRole('button', { name: 'Rain', exact: true }).boundingBox();
   await owl.click();
   await expect(page.getByTestId('pad-editor-panel-name-input')).toHaveValue('Owl');
 
@@ -91,7 +91,7 @@ test('Escape in the icon list closes only the icon list', async ({ page }) => {
   const owl = await boardWithTwoPads(page);
   await owl.click();
   await page.getByRole('button', { name: /add an icon/i }).click();
-  const picker = page.getByRole('dialog', { name: 'Choose an icon' });
+  const picker = page.getByRole('dialog', { name: 'Choose an icon', exact: true });
   await expect(picker).toBeVisible();
   await page.keyboard.press('Escape');
   await expect(picker).toBeHidden();

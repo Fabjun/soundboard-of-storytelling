@@ -19,8 +19,9 @@ import {
   padCells,
 } from './helpers';
 
-const search = (page: Page) => page.getByRole('searchbox', { name: 'Search pads by name' });
-const sortBy = (page: Page) => page.getByRole('combobox', { name: 'Sort pads by' });
+const search = (page: Page) =>
+  page.getByRole('searchbox', { name: 'Search pads by name', exact: true });
+const sortBy = (page: Page) => page.getByRole('combobox', { name: 'Sort pads by', exact: true });
 const emptyCells = (page: Page) => page.locator('[data-testid^="pad-grid-cell-empty-slot-"]');
 
 /** The pad names in the order they are seen: row by row, left to right. */
@@ -66,7 +67,7 @@ test('a sort in a deck lasts until it is set back or the view changes; the deck 
   await expect(sortBy(page)).toHaveValue(''); // Arrangement
   await sortBy(page).selectOption('name');
   await expect.poll(() => seen(page)).toEqual(['Applause', 'Owl', 'Storm bell', 'Thunder']);
-  await page.getByRole('button', { name: 'Reverse the order' }).click();
+  await page.getByRole('button', { name: 'Reverse the order', exact: true }).click();
   await expect.poll(() => seen(page)).toEqual(['Thunder', 'Storm bell', 'Owl', 'Applause']);
   await sortBy(page).selectOption('');
   await expect.poll(() => seen(page)).toEqual(['Thunder', 'Owl', 'Storm bell', 'Applause']);
@@ -117,6 +118,8 @@ test('a search finds pads in All pads and says so when nothing matches', async (
   // The view updates after the input event — wait for it, never read the grid at once
   await expect.poll(() => seen(page)).toEqual(['Owl']);
   await search(page).fill('xyzzy');
-  await expect(page.getByText('No pad here has "xyzzy" in its name.')).toBeVisible();
+  await expect(
+    page.getByText('No pad here has "xyzzy" in its name.', { exact: true }),
+  ).toBeVisible();
   await expect(padCells(page)).toHaveCount(0);
 });

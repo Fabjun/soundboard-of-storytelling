@@ -119,7 +119,7 @@ test('a short search lists every match but draws only the visible rows; arrow ke
   const count = Number(/^(\d+) icons match/.exec(countText)?.[1]);
   expect(count, countText).toBeGreaterThan(1000); // one letter matches most of the collection
 
-  const grid = page.getByRole('grid', { name: 'Search results' });
+  const grid = page.getByRole('grid', { name: 'Search results', exact: true });
   const cols = Number(await grid.getAttribute('aria-colcount'));
   await expect(grid).toHaveAttribute('aria-rowcount', String(Math.ceil(count / cols)));
   const rows = grid.getByRole('row');
@@ -168,7 +168,7 @@ test('the icon list is a modal dialog: the editor behind is inert, the focus goe
   const add = page.getByTestId('pad-editor-panel-add-icon-button');
   await add.focus(); // the keyboard user the focus return is for
   await page.keyboard.press('Enter');
-  await expect(page.getByRole('dialog', { name: 'Choose an icon' })).toBeVisible();
+  await expect(page.getByRole('dialog', { name: 'Choose an icon', exact: true })).toBeVisible();
   expect(await add.evaluate((el) => el.closest('[inert]') !== null)).toBe(true);
   await page.keyboard.press('Escape');
   await expect(page.getByTestId('icon-picker')).toBeHidden();
@@ -186,7 +186,7 @@ test.describe('on a touch screen', () => {
     // The case the rule is for: a finger is the main pointer (else the test checks nothing)
     expect(await page.evaluate(() => matchMedia('(pointer: coarse)').matches)).toBe(true);
     await page.getByTestId('pad-editor-panel-add-icon-button').click();
-    await expect(page.getByRole('dialog', { name: 'Choose an icon' })).toBeFocused();
+    await expect(page.getByRole('dialog', { name: 'Choose an icon', exact: true })).toBeFocused();
     await expect(page.getByTestId('icon-picker-search-input')).not.toBeFocused();
     await page.getByTestId('icon-picker-search-input').tap();
     await expect(page.getByTestId('icon-picker-search-input')).toBeFocused();

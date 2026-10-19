@@ -77,7 +77,7 @@ test('13 — Path A: select from RECENT tab → ADD PAD → pad appears in cell'
 
 test('14 — Path B: library drag to empty cell → pad created there', async ({ page }) => {
   // Open the library panel (right slot) — its rows start a Pointer-Events drag (libDnd.ts)
-  await page.getByRole('button', { name: 'Open the library' }).click();
+  await page.getByRole('button', { name: 'LIB, open the library', exact: true }).click();
   const row = page
     .locator('[data-testid^="library-panel-row-"]')
     .filter({ hasText: TEST_AUDIO_NAME })
@@ -158,7 +158,7 @@ test('a new pad is SGL unless the user picks a type — also for a long file', a
   await expect(padAt('1,0')).toContainText('LOOP');
 
   // Library drag (no type to pick) → SGL
-  await page.getByRole('button', { name: 'Open the library' }).click();
+  await page.getByRole('button', { name: 'LIB, open the library', exact: true }).click();
   const row = page.locator('[data-testid^="library-panel-row-"]').filter({ hasText: 'long-12s' });
   await pointerDrag(page, row, page.getByTestId('pad-grid-cell-empty-slot-2-1'));
   await expect(padAt('2,1')).toContainText('SGL');

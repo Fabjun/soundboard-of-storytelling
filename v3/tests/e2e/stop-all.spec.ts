@@ -102,7 +102,7 @@ test('with Enter set to STOP ALL in Settings, the numpad Enter stops every sound
   await page.getByTestId('board-top-bar-back-button').click();
   await page.getByTestId('board-list-screen-settings-button').click();
   await page.getByText('STOP ALL', { exact: true }).click();
-  await expect(page.getByRole('radio', { name: 'STOP ALL' })).toBeChecked();
+  await expect(page.getByRole('radio', { name: 'STOP ALL', exact: true })).toBeChecked();
   await page.getByTestId('settings-screen-back-button').click();
   await page.getByText('Board 1', { exact: true }).click();
   await page.getByTestId('mode-toggle').waitFor();

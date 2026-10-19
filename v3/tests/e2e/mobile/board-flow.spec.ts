@@ -44,7 +44,7 @@ test('on a phone the decks are tabs; in SETUP the DECKS tab opens and closes the
   // the folded rail of 2026-10-05 stays in the wide frame, deck-rail-fold.spec.ts)
   await expect(page.getByTestId('deck-rail-toggle-button')).toHaveCount(0);
   await expect(page.getByTestId('deck-rail-all-pads-tab-button')).toBeVisible();
-  await page.getByRole('button', { name: 'SETUP' }).tap();
+  await page.getByRole('button', { name: 'SETUP', exact: true }).tap();
   const decks = page.getByTestId('deck-rail-manage-button');
   const list = page.getByTestId('deck-rail-sheet-region');
   await decks.tap();

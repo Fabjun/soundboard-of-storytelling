@@ -103,14 +103,14 @@ test('a V1 backup imports its audio and its board; the pad plays', async ({ page
   await expect(pads.first()).toContainText('N1'); // the V1 key, on the placement
 
   // GAME mode: the imported pad plays its imported audio
-  await page.getByRole('button', { name: 'GAME' }).click();
+  await page.getByRole('button', { name: 'GAME', exact: true }).click();
   await pads.first().getByRole('button').click();
   await expect(pads.first().getByRole('button')).toHaveAttribute('aria-pressed', 'true');
 
   // The audio is in the library under its V1 name
   await page.goto('/soundboard-of-storytelling/');
   await goToLibrary(page);
-  await expect(page.getByText('owl.wav')).toBeVisible();
+  await expect(page.getByText('owl.wav', { exact: true })).toBeVisible();
 });
 
 test('importing the same backup twice adds the board again but not the audio', async ({ page }) => {

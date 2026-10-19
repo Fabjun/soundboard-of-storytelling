@@ -69,7 +69,7 @@ async function violations(page: Page, rules?: string[]): Promise<string[]> {
 
 test('start screen', async ({ page }) => {
   await page.goto('/soundboard-of-storytelling/');
-  await expect(page.getByRole('button', { name: 'TAP TO START' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'TAP TO START', exact: true })).toBeVisible();
   expect(await violations(page)).toEqual([]);
 });
 
@@ -77,11 +77,11 @@ test('main menu and Settings', async ({ page }) => {
   await page.goto('/soundboard-of-storytelling/');
   await openMainMenu(page);
   const found = (await violations(page)).map((v) => `main menu — ${v}`);
-  await page.getByRole('button', { name: 'SETTINGS' }).click();
-  await page.getByRole('heading', { name: 'DATA' }).waitFor();
+  await page.getByRole('button', { name: 'SETTINGS', exact: true }).click();
+  await page.getByRole('heading', { name: 'DATA', exact: true }).waitFor();
   found.push(...(await violations(page)).map((v) => `Settings — ${v}`));
   await page.getByTestId('settings-screen-developer-button').click();
-  await page.getByRole('dialog', { name: 'DEVELOPER' }).waitFor();
+  await page.getByRole('dialog', { name: 'DEVELOPER', exact: true }).waitFor();
   found.push(...(await violations(page)).map((v) => `developer view — ${v}`));
   expect(found).toEqual([]);
 });
@@ -126,9 +126,9 @@ test('board on a phone: deck tabs, the DECKS panel, the quick-access bar and the
   await createDeck(page);
   await enterSetupMode(page);
   await addNamedPad(page, 'Rooster');
-  await page.getByRole('button', { name: 'In quick access' }).click();
+  await page.getByRole('button', { name: 'In quick access', exact: true }).click();
   await closePadEditor(page);
-  await expect(page.getByRole('group', { name: 'Quick access' })).toBeVisible();
+  await expect(page.getByRole('group', { name: 'Quick access', exact: true })).toBeVisible();
   await page.getByTestId('deck-rail-manage-button').click();
   const found = (await violations(page)).map((v) => `SETUP, DECKS open — ${v}`);
   await page.getByTestId('deck-rail-manage-button').click();
@@ -235,7 +235,7 @@ test('a file that cannot be imported says why in plain words, opened with the ke
   });
   await expect(page.getByRole('alert')).toContainText('1 failed');
 
-  const why = page.getByText('Why it failed');
+  const why = page.getByText('Why it failed', { exact: true });
   await tabTo(page, why);
   await page.keyboard.press('Enter');
   await expect(page.getByTestId('library-screen-upload-errors-region')).toContainText(

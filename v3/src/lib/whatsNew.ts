@@ -103,6 +103,12 @@ export function withEarlyVersions(
 /** The release notes the main menu shows, newest first (checked by whatsNew.test.ts). */
 export const WHATS_NEW: WhatsNewNotes[] = [
   {
+    version: '3.0.264',
+    behindTheScenes: [
+      "The automatic tests find buttons and texts by their exact name, so a new button whose name contains another one's no longer confuses them.",
+    ],
+  },
+  {
     version: '3.0.263',
     improved: [
       "The undo and redo buttons say what they would take back or bring back, for example “Undo: delete pad 'Rain'”, in their tooltip and to screen readers.",

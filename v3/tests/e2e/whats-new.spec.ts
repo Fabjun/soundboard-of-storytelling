@@ -18,7 +18,7 @@ test("the version link opens What's new, grouped per version, and closes again",
 }) => {
   await page.goto('/soundboard-of-storytelling/');
   await openMainMenu(page);
-  await page.getByRole('button', { name: "Open What's new" }).click();
+  await page.getByRole('button', { name: /^v [\d.]+, open What's new$/ }).click();
 
   const notes = page.getByTestId('main-menu-screen-whats-new-region');
   await expect(notes).toBeVisible();
@@ -50,7 +50,7 @@ test("the version link opens What's new, grouped per version, and closes again",
   await oldestSection.getByText('Details', { exact: true }).click();
   await expect(oldestSection.getByText(oldest.items[0])).toBeVisible();
 
-  await page.getByRole('button', { name: "Close What's new" }).click();
+  await page.getByRole('button', { name: "Close What's new", exact: true }).click();
   await expect(notes).toBeHidden();
 });
 
@@ -59,13 +59,13 @@ test("What's new is a modal dialog: the menu behind is inert, Escape closes, the
 }) => {
   await page.goto('/soundboard-of-storytelling/');
   await openMainMenu(page);
-  const version = page.getByRole('button', { name: "Open What's new" });
+  const version = page.getByRole('button', { name: /^v [\d.]+, open What's new$/ });
   await version.focus(); // the keyboard user the focus return is for
   await page.keyboard.press('Enter');
 
-  const notes = page.getByRole('dialog', { name: "WHAT'S NEW" });
+  const notes = page.getByRole('dialog', { name: "WHAT'S NEW", exact: true });
   await expect(notes).toBeVisible();
-  await expect(page.getByRole('button', { name: "Close What's new" })).toBeFocused();
+  await expect(page.getByRole('button', { name: "Close What's new", exact: true })).toBeFocused();
   const menu = page.locator('nav[aria-label="Main menu"]');
   expect(await menu.evaluate((el) => el.closest('[inert]') !== null)).toBe(true);
 

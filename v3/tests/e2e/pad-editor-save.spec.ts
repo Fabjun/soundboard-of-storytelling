@@ -18,14 +18,16 @@ import {
   padCells,
 } from './helpers';
 
-const editor = (page: Page) => page.getByRole('dialog', { name: 'Pad editor' });
+const editor = (page: Page) => page.getByRole('dialog', { name: 'Pad editor', exact: true });
 const nameInput = (page: Page) => page.getByTestId('pad-editor-panel-name-input');
 const save = (page: Page) => page.getByTestId('pad-editor-panel-save-button');
 // The editor's own ↶ / ↷ — the board has a pair of its own behind it (ADR-0086)
-const undo = (page: Page) => editor(page).getByRole('button', { name: 'Undo' });
-const redo = (page: Page) => editor(page).getByRole('button', { name: 'Redo' });
-const close = (page: Page) => page.getByRole('button', { name: 'Close the pad editor' });
-const question = (page: Page) => page.getByRole('alertdialog', { name: 'Discard changes?' });
+const undo = (page: Page) => editor(page).getByRole('button', { name: 'Undo', exact: true });
+const redo = (page: Page) => editor(page).getByRole('button', { name: 'Redo', exact: true });
+const close = (page: Page) =>
+  page.getByRole('button', { name: 'Close the pad editor', exact: true });
+const question = (page: Page) =>
+  page.getByRole('alertdialog', { name: 'Discard changes?', exact: true });
 
 test.beforeEach(async ({ page }) => {
   await page.goto('/soundboard-of-storytelling/');
@@ -64,8 +66,8 @@ test('✕ with changes asks; KEEP EDITING and Escape stay, DISCARD CHANGES drops
   await close(page).click();
   await expect(question(page)).toBeVisible();
   // The focus starts on the safe answer
-  await expect(page.getByRole('button', { name: 'KEEP EDITING' })).toBeFocused();
-  await page.getByRole('button', { name: 'KEEP EDITING' }).click();
+  await expect(page.getByRole('button', { name: 'KEEP EDITING', exact: true })).toBeFocused();
+  await page.getByRole('button', { name: 'KEEP EDITING', exact: true }).click();
   await expect(question(page)).toHaveCount(0);
   await expect(nameInput(page)).toHaveValue('Wind');
 
@@ -76,7 +78,7 @@ test('✕ with changes asks; KEEP EDITING and Escape stay, DISCARD CHANGES drops
   await expect(editor(page)).toBeVisible();
 
   await close(page).click();
-  await page.getByRole('button', { name: 'DISCARD CHANGES' }).click();
+  await page.getByRole('button', { name: 'DISCARD CHANGES', exact: true }).click();
   await expect(editor(page)).toBeHidden();
   await expect(padCells(page).first()).toContainText('Rain');
   await padCells(page).first().click();

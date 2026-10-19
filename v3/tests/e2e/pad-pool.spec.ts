@@ -165,13 +165,13 @@ test('a library file dropped on All pads becomes a pad in no deck', async ({ pag
   await reopenFirstBoard(page);
   await enterSetupMode(page);
   await page.getByTestId('deck-rail-all-pads-tab').click();
-  await page.getByRole('button', { name: 'Open the library' }).click();
+  await page.getByRole('button', { name: 'LIB, open the library', exact: true }).click();
   const row = page
     .locator('[data-testid^="library-panel-row-"]')
     .filter({ hasText: TEST_AUDIO_NAME })
     .first();
   await row.waitFor();
-  await pointerDrag(page, row, page.getByText('No pads yet', { exact: false }));
+  await pointerDrag(page, row, page.getByText(/^No pads yet\./));
   await expect(padCells(page)).toHaveCount(1);
   await expect(padCells(page).first()).toContainText(TEST_AUDIO_NAME);
   await expect(page.getByTestId('deck-rail-all-pads-tab')).toContainText('1');
@@ -233,7 +233,7 @@ test('unchecking the deck the editor was opened from keeps the editor open; chec
 
   await own.uncheck();
   await expect(own).not.toBeChecked();
-  await expect(page.getByRole('dialog', { name: 'Pad editor' })).toBeVisible();
+  await expect(page.getByRole('dialog', { name: 'Pad editor', exact: true })).toBeVisible();
   await own.check();
   await expect(own).toBeChecked();
 
@@ -246,7 +246,7 @@ test('the library panel opens and closes with LIB, and closes with its ×', asyn
   const lib = page
     .getByTestId('board-top-bar')
     .getByRole('button', { name: /^LIB, (open|close) the library$/ }); // the visible LIB first (WCAG 2.5.3)
-  const panel = page.getByRole('region', { name: 'Library' });
+  const panel = page.getByRole('region', { name: 'Library', exact: true });
 
   await lib.click();
   await expect(lib).toHaveAttribute('aria-pressed', 'true');
@@ -256,7 +256,7 @@ test('the library panel opens and closes with LIB, and closes with its ×', asyn
   await expect(panel).toHaveCount(0);
 
   await lib.click();
-  await panel.getByRole('button', { name: 'Close the library' }).click();
+  await panel.getByRole('button', { name: 'Close the library', exact: true }).click();
   await expect(panel).toHaveCount(0);
   await expect(lib).toHaveAttribute('aria-pressed', 'false');
 });

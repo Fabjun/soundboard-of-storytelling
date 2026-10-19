@@ -21,7 +21,7 @@ test.describe('without a service worker', () => {
   test('the check says it cannot check here', async ({ page }) => {
     await page.goto(APP);
     await openMainMenu(page);
-    await page.getByRole('button', { name: 'UPDATE' }).click();
+    await page.getByRole('button', { name: 'UPDATE', exact: true }).click();
     await expect(page.getByRole('status')).toContainText('cannot check for updates');
   });
 });
@@ -33,6 +33,6 @@ test('offline the check says there is no connection and asks nothing', async ({
   await page.goto(APP);
   await context.setOffline(true);
   await openMainMenu(page);
-  await page.getByRole('button', { name: 'UPDATE' }).click();
+  await page.getByRole('button', { name: 'UPDATE', exact: true }).click();
   await expect(page.getByRole('status')).toContainText('No internet connection');
 });

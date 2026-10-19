@@ -12,7 +12,7 @@ import { stableScreenshot } from './helpers';
 test('BoardListScreen — empty state', async ({ page }) => {
   await page.goto('/soundboard-of-storytelling/');
   await openMainMenu(page);
-  await page.getByRole('button', { name: 'BOARD' }).click();
+  await page.getByRole('button', { name: 'BOARD', exact: true }).click();
   await page.getByTestId('board-list-screen-new-button').waitFor();
   await stableScreenshot(page);
   await expect(page).toHaveScreenshot('board-list-empty.png', { fullPage: false });
