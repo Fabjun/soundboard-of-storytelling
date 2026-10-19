@@ -60,7 +60,8 @@ reachable from the cloud container on 2026-10-06; to be read again in the origin
   else on a phone and on a laptop. Places count in reading order; a future feature that relies on
   a visual position (e.g. a numpad layout that mirrors the grid) must use the reading order.
 - The deck's stored `cols` now only defines the reading order and the number of places
-  (`cols × rows`), not what is seen.
+  (`cols × rows`), not what is seen. _(The number of places is no limit since 2026-10-19 — a
+  full deck grows a row, amendment below.)_
 - With a large pad size on a very narrow window the pads are smaller than the size (the width
   wins); below 44px of window per column they get smaller than a finger.
 
@@ -108,3 +109,14 @@ board". In the second case the slider writes one size for every board — the pr
 board's own size back. Decided by Claude on the owner's instruction of 2026-10-14 (S4 was decided,
 its form open): a preference rather than writing the size into every board, because a choice that
 can be undone should not overwrite the boards' own values.
+
+**2026-10-19 (3.0.267) — a full deck grows a row.** Owner decision: a deck has no fixed capacity.
+A new deck still starts with `DEFAULT_GRID` (4 × 4, `v3/src/lib/boardModel.ts`); a pad that comes
+into a deck whose cells are all taken goes to the first cell of a new row, and `gridConfig.rows`
+grows by one. One rule for every way in: ADD PAD and a library drop (`addPadToFreeCell`), the
+DECKS checkbox of the PAD editor (`placeInDeck`) and the undo of a pad delete (`restorePad`); a
+placement below the last row adds the rows it needs (`addPadToDeck`). Rows never shrink on their
+own — a deleted pad leaves an empty cell, as before. Before, a new deck held 16 pads, and the 17th
+ADD PAD did nothing and said nothing; V1 had no limit (`pads.push`), and a control should never
+fail silently (Nielsen, "Inactive Buttons", uxtigers.com). Imported V1 boards already got the rows
+they needed (`v3/src/lib/v1Import.ts`).

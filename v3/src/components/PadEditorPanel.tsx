@@ -84,7 +84,6 @@ import {
   reservedKeys,
 } from '../lib/padKeys';
 import { KeyField, type KeyCheck } from './KeyField';
-import { nextFreeSlot } from '../lib/padUtils';
 import { record, redo, seal, startHistory, undo, type History } from '../lib/editHistory';
 import { debouncedSave } from '../lib/debouncedSave';
 import { clearPadDraft, getControlKeys, getPadDraft, setPadDraft } from '../state/prefs';
@@ -1179,20 +1178,17 @@ export function PadEditorPanel({
           <label class="sb-field-label">DECKS</label>
           {decksByOrder.length === 0 && <div class="sb-hint-text">No decks yet</div>}
           {decksByOrder.map((d) => {
+            // A full deck grows a row (ADR-0075), so every deck can take the pad
             const placed = d.placements.some((p) => p.padId === pad.id);
-            const full =
-              !placed && nextFreeSlot(d.placements, d.gridConfig.cols, d.gridConfig.rows) === null;
             return (
               <label key={d.id} class="sb-check-row">
                 <input
                   type="checkbox"
                   data-testid={`pad-editor-panel-deck-input-${d.id}`}
                   checked={placed}
-                  disabled={full}
                   onChange={(e) => handleDeckToggle(d.id, (e.target as HTMLInputElement).checked)}
                 />
                 <span class="sb-flex-trunc">{d.name}</span>
-                {full && <span class="sb-hint-text">(full)</span>}
               </label>
             );
           })}

@@ -17,10 +17,19 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.266';
+export const APP_VERSION = '3.0.267';
 
 /** The developer log, newest first; CHANGELOG.md is generated from it (sync-changelog). */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.267',
+    date: '2026-10-20',
+    items: [
+      'fix(board): a full deck grows a row (owner decision 2026-10-19, ADR-0075 amendment) — a new deck has 4 × 4 cells, and the 17th ADD PAD did nothing and said nothing; now ADD PAD, a library drop, the DECKS checkbox of the PAD editor (no longer disabled with "(full)") and the undo of a pad delete put the pad in the first cell of a new row; one rule in boardModel (freeCell, withPlacement); rows never shrink on their own',
+      'test: unit boardModel — a full deck grows a row on add, place and restore, a cell below the last row adds the rows it needs; property "a deck takes every new pad" fills a deck up to, onto and past full (the first version never reached a full deck and stayed green against the old behavior); E2E pad-creation — 17 pads, the 17th in a fifth row, kept after reopening (Chromium, WebKit); each counter-checked',
+      'docs: ADR-0075 amendment; BACKLOG grid configurability, default new-deck grid and unplaced pads Rejected (no capacity to set), "A full deck takes no more pads" done',
+    ],
+  },
   {
     version: '3.0.266',
     date: '2026-10-19',

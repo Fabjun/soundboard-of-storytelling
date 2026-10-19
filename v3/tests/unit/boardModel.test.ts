@@ -235,7 +235,7 @@ describe('undoing a pad delete (restorePad, Slice 18b)', () => {
     expect(b.pads.map((p) => p.id)).toEqual(['b', 'a', 'c']);
   });
 
-  it('a cell taken meanwhile: the next free one; a full deck: not placed there', () => {
+  it('a cell taken meanwhile: the next free one; a full deck: a new row', () => {
     const before = withPadA();
     let b = deletePad(before, 'a');
     b = addPadToDeck(b, 'd1', single('x'), { col: 1, row: 0 }); // a's cell
@@ -247,7 +247,12 @@ describe('undoing a pad delete (restorePad, Slice 18b)', () => {
       col: 2,
       row: 0,
     });
-    expect(findDeck(b, 'd2')!.placements.map((p) => p.padId)).toEqual(['y']);
+    const d2 = findDeck(b, 'd2')!;
+    expect(d2.placements.map((p) => [p.padId, p.position])).toEqual([
+      ['y', { col: 0, row: 0 }],
+      ['a', { col: 0, row: 1 }],
+    ]);
+    expect(d2.gridConfig.rows).toBe(2);
     expect(boardProblems(b)).toEqual([]);
   });
 
@@ -441,17 +446,23 @@ describe('remove from deck, place in deck, All pads (Slice 9e)', () => {
     expect(boardProblems(b)).toEqual([]);
   });
 
-  it('placing changes nothing when the pad is already there, unknown, the deck unknown or full', () => {
-    let b = addPadToDeck(emptyBoard(), 'd1', single('a'), { col: 0, row: 0 });
+  it('placing changes nothing when the pad is already there, unknown or the deck unknown', () => {
+    const b = addPadToDeck(emptyBoard(), 'd1', single('a'), { col: 0, row: 0 });
     expect(placeInDeck(b, 'd1', 'a')).toBe(b); // already placed
     expect(placeInDeck(b, 'd2', 'ghost')).toBe(b); // unknown pad
     expect(placeInDeck(b, 'nope', 'a')).toBe(b); // unknown deck
+  });
+
+  it('placing in a full deck adds a row and places the pad in its first cell', () => {
+    let b = addPadToDeck(emptyBoard(), 'd1', single('a'), { col: 0, row: 0 });
     b = {
       ...b,
       decks: b.decks.map((d) => ({ ...d, gridConfig: { ...d.gridConfig, cols: 1, rows: 1 } })),
     };
-    b = addPadToDeck(b, 'd2', single('x'), { col: 0, row: 0 });
-    expect(placeInDeck(b, 'd2', 'a')).toBe(b); // 1×1 grid already full
+    b = addPadToDeck(b, 'd2', single('x'), { col: 0, row: 0 }); // 1×1 grid full
+    const d2 = findDeck(placeInDeck(b, 'd2', 'a'), 'd2')!;
+    expect(d2.placements.find((p) => p.padId === 'a')!.position).toEqual({ col: 0, row: 1 });
+    expect(d2.gridConfig).toEqual({ ...findDeck(b, 'd2')!.gridConfig, rows: 2 }); // cols, gap kept
   });
 
   it('All pads lists the whole pool by name, case-insensitive, ties by id', () => {
@@ -556,14 +567,28 @@ describe('changes applied to the latest board (board writes)', () => {
     ]);
   });
 
-  it('adding changes nothing when the deck is full or unknown', () => {
+  it('adding to a full deck adds a row; to an unknown deck changes nothing', () => {
     const tiny = {
       ...emptyBoard(),
-      decks: emptyBoard().decks.map((d) => ({ ...d, gridConfig: { ...grid, cols: 1, rows: 1 } })),
+      decks: emptyBoard().decks.map((d) => ({ ...d, gridConfig: { ...grid, cols: 2, rows: 1 } })),
     };
-    const one = addPadToFreeCell(tiny, 'd1', single('a'));
-    expect(addPadToFreeCell(one, 'd1', single('b'))).toBe(one);
-    expect(addPadToFreeCell(one, 'nope', single('b'))).toBe(one);
+    let b = addPadToFreeCell(addPadToFreeCell(tiny, 'd1', single('a')), 'd1', single('b'));
+    expect(findDeck(b, 'd1')!.gridConfig.rows).toBe(1); // the last cell taken: no row yet
+    b = addPadToFreeCell(b, 'd1', single('c'), { col: 1, row: 0 }); // preferred cell taken
+    const d1 = findDeck(b, 'd1')!;
+    expect(d1.placements.map((p) => p.position)).toEqual([
+      { col: 0, row: 0 },
+      { col: 1, row: 0 },
+      { col: 0, row: 1 },
+    ]);
+    expect(d1.gridConfig.rows).toBe(2);
+    expect(findDeck(b, 'd2')!.gridConfig.rows).toBe(1); // other decks keep theirs
+    expect(addPadToFreeCell(b, 'nope', single('d'))).toBe(b);
+  });
+
+  it('a pad placed below the last row adds the rows it needs', () => {
+    const b = addPadToDeck(emptyBoard(), 'd1', single('a'), { col: 0, row: grid.rows + 1 });
+    expect(findDeck(b, 'd1')!.gridConfig.rows).toBe(grid.rows + 2);
   });
 
   it('the next deck order is highest + 1, not the deck count', () => {
