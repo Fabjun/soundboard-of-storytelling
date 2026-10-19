@@ -134,3 +134,11 @@ audio may not be held in memory, so undo needs a delete delayed until the toast 
 IndexedDB, each with its own edges (the same file uploaded again while the delete waits; the app
 closed meanwhile). Slice 16 brings multi-select and bulk delete to the library, so the way is
 decided there once, for single and bulk deletes (BACKLOG "Undo: deleting a library file").
+
+**2026-10-19 (3.0.258) — one tap deletes what can be undone.** Owner decision 2026-10-19: a pad
+and a deck are deleted with one tap; the undo toast follows, and the pad's toast says in how many
+decks it was ("Deleted 'Rain' · from 2 decks"), the hint the first tap showed before. A whole
+board keeps the two taps — its undo lasts only the toast's 6 s, no ↶ reaches it — and so does a
+library file, which has no undo yet (Slice 16). NN/g, confirmation dialogs: "Do not use
+confirmation dialogs for routine actions"; "consider a confirmation dialog before actions that
+cannot be undone"; "An even better design would provide the user with the opportunity to undo".

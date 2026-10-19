@@ -65,11 +65,14 @@ The board's ↶ / ↷ say only Undo and Redo, not what they would undo, such as 
 (ADR-0086, trade-offs). Each writer would pass a name with its change; the undo toast names its
 deletion since 3.0.252. **When:** with Slice 18c.
 
-### Two-tap delete once undo exists
+### Two-tap delete once undo exists ✅ Done (3.0.258)
 
-A List Apart, "Never Use a Warning When you Mean Undo": with undo, a confirmation is a habit that
-protects little. The owner keeps the two taps for now (2026-10-19, ADR-0086 alternatives).
-**When:** due — the owner's next review (Slice 18b is built).
+**Decided by the owner 2026-10-19, built in 3.0.258:** pads and decks are deleted with one tap and
+the undo toast follows (the pad's toast says in how many decks it was — the hint the first tap
+showed before); a whole board and a library file keep the two taps (a board's undo lasts only the
+toast's 6 s; a file's undo comes with Slice 16). NN/g, confirmation dialogs: "Do not use
+confirmation dialogs for routine actions"; "consider a confirmation dialog before actions that
+cannot be undone".
 
 ### Deck reorder (drag & drop) ✅ Done (3.0.217)
 

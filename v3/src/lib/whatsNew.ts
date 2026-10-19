@@ -103,6 +103,12 @@ export function withEarlyVersions(
 /** The release notes the main menu shows, newest first (checked by whatsNew.test.ts). */
 export const WHATS_NEW: WhatsNewNotes[] = [
   {
+    version: '3.0.258',
+    improved: [
+      'A pad or a deck is deleted with one tap; the message that follows brings it back with UNDO and says in how many decks the pad was. Deleting a whole board or an audio file still asks twice.',
+    ],
+  },
+  {
     version: '3.0.257',
     behindTheScenes: [
       'These notes are shorter: a sentence that told nothing new is gone from 30 entries, and a check keeps such sentences out. The plan for a help screen that opens at the topic of the current place is written down.',

@@ -152,14 +152,10 @@ test('10 — delete deck → tab removed from DeckRail', async ({ page }) => {
   await openDeckActions(deckTab);
   const deleteBtn = deckTab.getByRole('menuitem', { name: /^Delete/ });
 
-  // Two-tap confirm: the first tap asks and the menu stays open
+  // One tap deletes, the undo toast follows (owner decision 2026-10-19, ADR-0086 amendment)
   await deleteBtn.click();
-  await expect(deleteBtn).toHaveText('Delete — tap again');
-  await expect(deckTab).toBeVisible();
-  await deleteBtn.click();
-
-  // Tab should disappear
   await expect(deckTab).not.toBeVisible({ timeout: 3000 });
+  await expect(page.getByTestId('undo-toast')).toContainText("Deleted '");
 });
 
 // ── Test 11: Undo delete deck ────────────────────────────────────────────────
@@ -172,10 +168,9 @@ test('11 — undo deck delete → tab restored', async ({ page }) => {
   // Get the deck name before delete
   const deckText = await deckTab.textContent();
 
-  // Delete it (two taps)
+  // Delete it (one tap, the undo toast follows — owner decision 2026-10-19)
   await openDeckActions(deckTab);
   const deleteBtn = deckTab.locator('[data-testid^="deck-rail-delete-button-"]');
-  await deleteBtn.click();
   await deleteBtn.click();
   await expect(deckTab).not.toBeVisible({ timeout: 3000 });
 
@@ -243,10 +238,9 @@ test('undo of a deck delete keeps a deck rename made while the toast is shown', 
   await page.getByTestId('deck-rail-new-button').click();
   await expect(tabs).toHaveCount(2);
 
-  // Delete the second deck (two taps)
+  // Delete the second deck (one tap)
   await openDeckActions(tabs.nth(1));
   const deleteBtn = tabs.nth(1).locator('[data-testid^="deck-rail-delete-button-"]');
-  await deleteBtn.click();
   await deleteBtn.click();
   await expect(tabs).toHaveCount(1);
 
@@ -272,7 +266,6 @@ test('a new deck after deleting a middle one: badges stay 1, 2, 3; the name fill
 
   await openDeckActions(tabs.nth(1));
   const deleteBtn = tabs.nth(1).locator('[data-testid^="deck-rail-delete-button-"]');
-  await deleteBtn.click();
   await deleteBtn.click();
   await expect(tabs).toHaveCount(2);
 

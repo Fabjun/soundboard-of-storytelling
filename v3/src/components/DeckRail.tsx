@@ -153,30 +153,25 @@ export function DeckRail({
 
   // ── Delete ────────────────────────────────────────────────────────────────
 
-  const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
-
-  async function requestDelete(deck: Deck) {
-    if (pendingDeleteId === deck.id) {
-      // Second tap: execute. The toast's UNDO puts back only the deck, as it was on the latest
-      // board — not a copy of the whole board, which would undo every change made since.
-      let removed = deck;
-      const { board: updatedBoard } = applyBoardChange(board.id, (b) => {
-        removed = b.decks.find((d) => d.id === deck.id) ?? deck;
-        return deleteDeck(b, deck.id);
+  // One tap deletes (owner decision 2026-10-19): the toast's UNDO brings the deck back, so a
+  // confirmation would only be a habit (NN/g, confirmation dialogs; ADR-0086 amendment)
+  async function deleteDeckNow(deck: Deck) {
+    // The toast's UNDO puts back only the deck, as it was on the latest board — not a copy of
+    // the whole board, which would undo every change made since.
+    let removed = deck;
+    const { board: updatedBoard } = applyBoardChange(board.id, (b) => {
+      removed = b.decks.find((d) => d.id === deck.id) ?? deck;
+      return deleteDeck(b, deck.id);
+    });
+    if (updatedBoard) {
+      const count = removed.placements.length;
+      announceUndo(`Deleted '${removed.name}' · ${count} pad${count !== 1 ? 's' : ''}`, () => {
+        void updateBoard(board.id, (b) => restoreDeck(b, removed));
       });
-      if (updatedBoard) {
-        const count = removed.placements.length;
-        announceUndo(`Deleted '${removed.name}' · ${count} pad${count !== 1 ? 's' : ''}`, () => {
-          void updateBoard(board.id, (b) => restoreDeck(b, removed));
-        });
-        // If deleted deck was active, switch to first remaining
-        if (activeDeckId === deck.id && updatedBoard.decks.length > 0) {
-          onDeckSelect([...updatedBoard.decks].sort((a, b) => a.order - b.order)[0].id);
-        }
+      // If deleted deck was active, switch to first remaining
+      if (activeDeckId === deck.id && updatedBoard.decks.length > 0) {
+        onDeckSelect([...updatedBoard.decks].sort((a, b) => a.order - b.order)[0].id);
       }
-      setPendingDeleteId(null);
-    } else {
-      setPendingDeleteId(deck.id);
     }
   }
 
@@ -291,7 +286,6 @@ export function DeckRail({
           data-testid="deck-rail-all-pads-button"
           onClick={() => {
             onAllPadsSelect();
-            setPendingDeleteId(null);
           }}
         >
           <span class="sb-deck-num-badge">
@@ -318,7 +312,6 @@ export function DeckRail({
                   'sb-deck-tab' +
                   (activeDeckId === deck.id ? ' is-active' : '') +
                   (editingId === deck.id ? ' is-editing' : '') +
-                  (pendingDeleteId === deck.id ? ' is-danger' : '') +
                   (isConflict ? ' is-conflict' : '') +
                   (drag?.deckId === deck.id ? ' is-drag-source' : '') +
                   (drag && drag.to !== drag.from && drag.to === position
@@ -371,7 +364,6 @@ export function DeckRail({
                     data-testid={`deck-rail-select-button-${deck.id}`}
                     onClick={() => {
                       onDeckSelect(deck.id);
-                      setPendingDeleteId(null);
                     }}
                     onDblClick={() => startRename(deck)}
                   >
@@ -402,15 +394,11 @@ export function DeckRail({
                           onSelect: () => void duplicateDeck(deck),
                         },
                         {
-                          // 2-tap delete (CLAUDE.md UI rules): the first tap asks, the menu stays
-                          label: pendingDeleteId === deck.id ? 'Delete — tap again' : 'Delete',
+                          // One tap: the undo toast follows (owner decision 2026-10-19)
+                          label: 'Delete',
                           testid: `deck-rail-delete-button-${deck.id}`,
                           danger: true,
-                          onSelect: () => {
-                            const asking = pendingDeleteId !== deck.id;
-                            void requestDelete(deck);
-                            return asking;
-                          },
+                          onSelect: () => void deleteDeckNow(deck),
                         },
                       ]}
                     />

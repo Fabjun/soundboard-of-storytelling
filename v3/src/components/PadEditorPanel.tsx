@@ -69,7 +69,6 @@ import { updateBoard } from '../state/boardWrites';
 import {
   QUICK_ACCESS_MAX,
   addToQuickAccess,
-  deckCount,
   placeInDeck,
   removeFromDeck,
   removeFromQuickAccess,
@@ -153,7 +152,6 @@ export function PadEditorPanel({
   const [previewOn, setPreviewOn] = useState(false);
   const [playhead, setPlayhead] = useState<number | null>(null);
   const [pendingType, setPendingType] = useState<PadType | null>(null);
-  const [deleteConfirm, setDeleteConfirm] = useState(false);
   const [removeConfirm, setRemoveConfirm] = useState(false);
   const [libSearch, setLibSearch] = useState('');
   const [libPickerOpen, setLibPickerOpen] = useState(false);
@@ -593,13 +591,11 @@ export function PadEditorPanel({
 
   // ── Delete ───────────────────────────────────────────────────────────────
 
+  // One tap deletes (owner decision 2026-10-19): the undo toast that follows brings the pad back,
+  // and says in how many decks it was (ADR-0086 amendment)
   function handleDelete() {
-    if (deleteConfirm) {
-      dropDraft();
-      onDelete(pad.id);
-    } else {
-      setDeleteConfirm(true);
-    }
+    dropDraft();
+    onDelete(pad.id);
   }
 
   // ── Keys (K1, K2, K13; ADR-0077) ─────────────────────────────────────────
@@ -655,7 +651,6 @@ export function PadEditorPanel({
   }
 
   const decksByOrder = [...board.decks].sort((a, b) => a.order - b.order);
-  const usedIn = deckCount(board, pad.id);
 
   // ── Library picker ───────────────────────────────────────────────────────
 
@@ -1217,16 +1212,10 @@ export function PadEditorPanel({
             class="sb-btn sb-btn-danger sb-btn-block"
             data-testid="pad-editor-panel-delete-button"
             onClick={handleDelete}
-            onBlur={() => setDeleteConfirm(false)}
           >
             <UiIcon name="delete" size={12} />
-            {deleteConfirm ? 'CONFIRM DELETE' : 'DELETE PAD'}
+            DELETE PAD
           </button>
-          {deleteConfirm && (
-            <div class="sb-hint-text" data-testid="pad-editor-panel-delete-text">
-              Used in {usedIn} {usedIn === 1 ? 'deck' : 'decks'} — deleting removes it everywhere.
-            </div>
-          )}
         </div>
       </div>
 

@@ -28,12 +28,10 @@ const redoButton = (page: Page) => page.getByTestId('board-top-bar-redo-button')
 const deckTabs = (page: Page) => page.locator('[data-testid^="deck-rail-deck-tab-"]');
 const toast = (page: Page) => page.getByTestId('undo-toast');
 
-/** Opens the first pad's editor and deletes the pad (two taps). */
+/** Opens the first pad's editor and deletes the pad (one tap). */
 async function deleteFirstPad(page: Page) {
   await padCells(page).first().click();
-  const del = page.getByTestId('pad-editor-panel-delete-button');
-  await del.click();
-  await del.click();
+  await page.getByTestId('pad-editor-panel-delete-button').click();
   await expect(padCells(page)).toHaveCount(0);
 }
 
@@ -121,7 +119,7 @@ test("a deleted pad comes back with the toast's UNDO; a change made since stays"
   page,
 }) => {
   await deleteFirstPad(page);
-  await expect(toast(page)).toContainText("Deleted 'Rain'");
+  await expect(toast(page)).toContainText("Deleted 'Rain' · from 1 deck");
   await deckTabs(page).first().dblclick(); // rename the deck meanwhile
   await page.getByTestId('deck-rail-name-input').fill('Storm');
   await page.getByTestId('deck-rail-name-input').press('Enter');

@@ -89,10 +89,9 @@ test('delete pad shows its decks and removes it everywhere', async ({ page }) =>
   await expect(tabs(page)).toHaveCount(2);
 
   await page.getByTestId(cell).click();
-  const del = page.getByTestId('pad-editor-panel-delete-button');
-  await del.click();
-  await expect(page.getByTestId('pad-editor-panel-delete-text')).toContainText('Used in 2 decks');
-  await del.click();
+  // One tap deletes; the undo toast says in how many decks the pad was (owner decision 2026-10-19)
+  await page.getByTestId('pad-editor-panel-delete-button').click();
+  await expect(page.getByTestId('undo-toast')).toContainText("Deleted 'Thunder' · from 2 decks");
 
   await expect(page.getByTestId(cell)).toHaveCount(0);
   await tabs(page).nth(1).click();

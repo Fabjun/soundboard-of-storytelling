@@ -294,9 +294,15 @@ export function BoardScreen(): JSX.Element {
     if (!changed || !removed) return;
     setSelectedPadId(null);
     setRightPanel('empty');
-    announceUndo(removed.pad.name ? `Deleted '${removed.pad.name}'` : 'Deleted a pad', () => {
-      void updateBoard(boardId, (b) => restorePad(b, removed));
-    });
+    // The count of decks moved here from the second tap the delete no longer has
+    const decks = removed.placements.length;
+    const from = decks ? ` · from ${decks} deck${decks !== 1 ? 's' : ''}` : '';
+    announceUndo(
+      `${removed.pad.name ? `Deleted '${removed.pad.name}'` : 'Deleted a pad'}${from}`,
+      () => {
+        void updateBoard(boardId, (b) => restorePad(b, removed));
+      },
+    );
   }
 
   async function handleRemoveFromDeck(padId: string) {

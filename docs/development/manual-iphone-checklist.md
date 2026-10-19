@@ -328,7 +328,7 @@ because Playwright runs against a simulated environment:
   - Why manual: The WebKit fault (selection off blocks typing) shows only on the device.
 
 - [ ] **PAD editor full screen** _(3.0.176, ADR-0074)_
-  - Action: In SETUP, tap a pad; type a name; scroll down to DELETE PAD; tap ✕.
+  - Action: In SETUP, tap a pad; type a name and tap SAVE; scroll down to DELETE PAD; tap ✕.
   - Expected: The editor covers the whole screen, the top bar too; the keyboard does not hide the
     name field; everything scrolls into reach; after ✕ the grid shows the new name.
   - Why manual: The iOS keyboard, the safe areas and the real touch scroll.
@@ -345,12 +345,45 @@ because Playwright runs against a simulated environment:
   - Action: Keep the app open while a new version is published (or open it after one), wait a
     moment.
   - Expected: "A new version is ready." appears; LATER hides it; RELOAD reloads, and the version
-    in the start screen footer is the new one.
+    at the bottom of the main menu is the new one.
   - Why manual: A real deploy and the installed app on the phone.
 
 - [ ] **UPDATE button** _(3.0.175, ADR-0066)_
-  - Action: In the installed app, tap UPDATE on the start screen — once with nothing new
+  - Action: In the installed app, tap UPDATE in the main menu — once with nothing new
     published, once after a new version was published, once in flight mode.
   - Expected: "This is the newest version (v …)"; "A new version was found …" and then the prompt
     with RELOAD; "No internet connection …".
   - Why manual: A real deploy, the installed app and the iOS service worker.
+
+---
+
+## Section 4 — Undo
+
+- [ ] **Undo and redo in SETUP** _(Slice 18a, ADR-0086)_
+  - Action: In SETUP tap ADD PAD, type a name, SAVE, close the editor; tap ↶ (top right) twice,
+    then ↷ twice; switch to GAME.
+  - Expected: the first ↶ takes the name back, the second removes the new pad; ↷ brings both back;
+    a button is dimmed when there is nothing to undo or redo; in GAME ↶ and ↷ are not there.
+  - Why manual: the touch targets in the top bar and the saved undo on the device's storage.
+
+- [ ] **A deleted pad comes back** _(Slice 18b, one tap since 3.0.258)_
+  - Action: In SETUP open a pad that has a key and sits in two decks; tap DELETE PAD once; in the
+    message at the bottom ("Deleted '…' · from 2 decks") tap UNDO.
+  - Expected: the pad is back in its place in both decks, with its key and icons.
+  - Why manual: the toast above the dock and the home indicator on a real phone.
+
+- [ ] **A deleted deck comes back** _(Slice 18b)_
+  - Action: In SETUP, in the deck list, tap ⋯ on a deck, then Delete once; tap UNDO in the message.
+  - Expected: the deck is back with its pads.
+  - Why manual: the actions menu and the toast by touch.
+
+- [ ] **A deleted board comes back** _(Slice 18c)_
+  - Action: In the board list tap the delete button of a test board twice; in the message
+    "Deleted board '…'" tap UNDO; open the board.
+  - Expected: the board is back with all its decks and pads.
+  - Why manual: the board is written to the device's storage again.
+
+- [ ] **The message goes after 6 seconds** _(Slice 18b)_
+  - Action: Delete a pad and do nothing; once the message is gone, tap ↶.
+  - Expected: the message goes after about 6 seconds; ↶ still brings the pad back.
+  - Why manual: the real timing on the device.
