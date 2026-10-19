@@ -35,6 +35,8 @@
  *    works exactly as before" stood in 30 entries before it was noticed.
  * 13. A done backlog item says so in its heading: an item whose text has a status line "✅ Done" or
  *    "✅ Fixed" carries ✅ in its heading — 7 items said so only in their text (2026-10-19).
+ * 14. No open backlog item waits for a superseded slice: the triggers ("When:") of items that are
+ *    neither done nor Rejected name none of the May plan's Slices 5–8 — 28 did (2026-10-19).
  */
 
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
@@ -605,13 +607,16 @@ describe('guard: every statement carries information (owner decision 2026-10-19)
   });
 });
 
-describe('guard: a done backlog item says so in its heading (2026-10-19)', () => {
-  const text = readFileSync(join(ROOT, 'docs', 'backlog.md'), 'utf8');
-  // An item runs from its heading to the next heading of any level
-  const items = text.split(/^(?=#{2,4} )/m).map((part) => {
+/** The items of docs/backlog.md: each runs from its heading to the next heading of any level. */
+function backlogItems(text: string): { heading: string; body: string }[] {
+  return text.split(/^(?=#{2,4} )/m).map((part) => {
     const [heading, ...body] = part.split('\n');
     return { heading, body: body.join('\n') };
   });
+}
+
+describe('guard: a done backlog item says so in its heading (2026-10-19)', () => {
+  const items = backlogItems(readFileSync(join(ROOT, 'docs', 'backlog.md'), 'utf8'));
   // A status line, not a table cell or a list item: "✅ Done", "✅ **Fixed", "**Status:** ✅ Done"
   const DONE = /^(?:\*\*Status:\*\* )?✅ (?:\*\*)?(?:Done|Fixed)\b/m;
 
@@ -626,5 +631,31 @@ describe('guard: a done backlog item says so in its heading (2026-10-19)', () =>
       .filter((i) => DONE.test(i.body) && !i.heading.includes('✅'))
       .map((i) => i.heading);
     expect(bad, 'add "✅ Done (version)" to the heading, where the status is read').toEqual([]);
+  });
+});
+
+describe('guard: no open backlog item waits for a superseded slice (2026-10-19)', () => {
+  const items = backlogItems(readFileSync(join(ROOT, 'docs', 'backlog.md'), 'utf8'));
+  // Open: neither done (✅) nor Rejected. Slices 5–8 of the May plan were superseded on 2026-09-28
+  // and their numbers are never reused (CLAUDE.md#slice-progress) — such a trigger never comes.
+  const open = items.filter((i) => !i.heading.includes('✅') && !i.heading.includes('Rejected'));
+  const triggers = (body: string): string[] => body.match(/\*\*When:\*\*[^\n]*/g) ?? [];
+  const SUPERSEDED = /\bSlices? [5-8]\b/;
+
+  it('reads the triggers of the open items (sanity)', () => {
+    expect(open.flatMap((i) => triggers(i.body)).length).toBeGreaterThan(50);
+    expect(SUPERSEDED.test('**When:** Slice 8 (after themes land).')).toBe(true);
+    expect(SUPERSEDED.test('**When:** Slice 14c — the atmosphere.')).toBe(false);
+  });
+
+  it('every open item names a trigger that can still come', () => {
+    const bad = open.flatMap((i) =>
+      triggers(i.body)
+        .filter((w) => SUPERSEDED.test(w))
+        .map((w) => `${i.heading}: ${w}`),
+    );
+    expect(bad, 'give a slice of the current plan, Parked with its trigger, or Rejected').toEqual(
+      [],
+    );
   });
 });

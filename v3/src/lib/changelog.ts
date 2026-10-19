@@ -17,10 +17,19 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.265';
+export const APP_VERSION = '3.0.266';
 
 /** The developer log, newest first; CHANGELOG.md is generated from it (sync-changelog). */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.266',
+    date: '2026-10-19',
+    items: [
+      'docs(backlog): the 17 open items with a Slice 8 trigger triaged one by one (owner decision 2026-10-19) — Rejected with their reason: theme clocks (V3 has no clock), "APPLY TO ALL PADS" (PAD SIZE covers it, S4), settings search (one Settings screen, S11), mode cues 2–4; Parked with a trigger: theme pad colors, is-deep as a setting, the mode-switch sound preview, View Transitions, is-scheduled, night vision; Slice 14c: the breathing loops and the atmosphere mode cue; done: the empty SETUP placeholder (ADR-0074); a deck\'s capacity goes to the owner next; design-system.md §2/§4/§5 and the mode-switch sparks follow in their own pull requests',
+      'docs: CLAUDE.md Slice 14 — the atmosphere of 14c (settings.md S6) is not built; 3.0.237 built only its animations switch',
+      'test(guards): docsGuards "no open backlog item waits for a superseded slice" — an open item\'s trigger names none of Slices 5–8; counter-checked with the backlog before the cleanup (28 items red)',
+    ],
+  },
   {
     version: '3.0.265',
     date: '2026-10-19',
