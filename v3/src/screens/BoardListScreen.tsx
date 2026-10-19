@@ -22,7 +22,15 @@ import {
   removeBoardFromStore,
 } from '../state/store';
 import { boardDelete } from '../db/idb';
-import { clearLastView, getBackupReminderDays, getLastBackup } from '../state/prefs';
+import {
+  clearLastView,
+  getBackupReminderDays,
+  getLastBackup,
+  getLastView,
+  setLastView,
+} from '../state/prefs';
+import { announceUndo } from '../state/undoNotice';
+import { UndoNoticeRegion } from '../components/UndoNoticeRegion';
 import { createBoard, updateBoard } from '../state/boardWrites';
 import type { Board } from '../types';
 import { nanoid } from '../lib/nanoid';
@@ -154,6 +162,8 @@ export function BoardListScreen(): JSX.Element {
         )}
       </div>
 
+      <UndoNoticeRegion scope="board-list" />
+
       <StatusBar
         mode="edit"
         boardName="Board List"
@@ -188,13 +198,22 @@ function BoardRow({ board, onOpen }: { board: Board; onOpen: () => void }): JSX.
       setDeleteConfirm(true);
       return;
     }
+    // A board document holds no audio (ADR-0010), so the deleted one stays in memory while the
+    // toast offers UNDO, which creates it again — with the view it was left in (ADR-0086)
+    const view = getLastView(board.id);
     try {
       await boardDelete(board.id);
       removeBoardFromStore(board.id);
       clearLastView(board.id);
     } catch (e) {
       console.error('Board delete failed:', e);
+      return;
     }
+    announceUndo(`Deleted board '${board.name}'`, () => {
+      void createBoard(board).then((created) => {
+        if (created && view) setLastView(created.id, view);
+      });
+    });
   }
 
   return (

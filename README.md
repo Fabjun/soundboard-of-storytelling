@@ -33,14 +33,18 @@ Available now:
   controls sit in a bar at the bottom; pads stay readable and never smaller than a fingertip
 - A quick-access bar with up to five pads and their own keys, the same in every deck
 - Search and sort in every view; decks in any order; a status line that names the sounds playing
+- Undo and redo for every change to a board; a deleted deck, pad or board can be brought back
+  from the message that follows
+- Settings: color themes, content width, keys for stop all and pause, what the Enter key stops,
+  an animations switch, the backup reminder interval, license notices and a developer view
 - Works with the keyboard alone and with screen readers; text follows the system text size
 - Installable, offline-capable web app
 
 Planned next:
 
 - A card format for larger pads
-- Settings and themes
-- Library at the prototype's full scope with pad templates, help on first launch, undo and redo
+- Library at the prototype's full scope with pad templates
+- Help on first launch
 
 ## Technology
 

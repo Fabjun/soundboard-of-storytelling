@@ -43,12 +43,21 @@ keeps a rename made between a deck delete and its UNDO (ADR-0086 amendment 2026-
 counts its 6 s from when it appears (the timer restarted with each render before) and sits in a
 status region for screen readers.
 
-### Undo: deleting a board or a library file (Slice 18c)
+### Undo: deleting a board (Slice 18c) ✅ Done (3.0.254)
 
-The board history covers changes inside a board. Deleting a whole board (board list) or an audio
-file (library) is final behind the two-tap confirmation. Undo there needs the deleted data kept:
-a board document is small, an audio file is not (iPhone memory rules: never hold raw audio in
-working state) — a trash in IndexedDB is the likely way. **When:** Slice 18c, its own decision.
+**Done in 3.0.254:** a board deleted in the board list shows the undo toast; its UNDO creates the
+board again, with the view it was left in. A board document holds no audio (ADR-0010), so the
+deleted one stays in memory while the toast is shown (ADR-0086 amendment 2026-10-19).
+
+### Undo: deleting a library file (Slice 16)
+
+Deleting an audio file stays final behind the two-tap confirmation; pads that used it keep a
+reference to a file that is gone. Undo would need the audio kept, and it may not stay in memory
+(iPhone memory rules) — so either a delete delayed until the toast ends (written at once when the
+screen is left or the page is hidden, counted as a running save) or a trash in IndexedDB. Each has
+edges: the same file uploaded again while its delete waits, a delete that waits when the app is
+closed. Slice 16 brings multi-select and bulk delete to the library; one way for single and bulk
+deletes is decided there (decision 2026-10-19, ADR-0086 amendment). **When:** Slice 16.
 
 ### Undo names the change it undoes
 
@@ -202,7 +211,12 @@ entry; nothing tested in practice):
   back to a base light, or left as it is); light for a whole combo or per step (a flash with the
   thunder of step 2); a base light per board, shown when the board opens or after a stop.
 
-**First step:** a practice test — one WLED bulb, a Mac with Chrome, the app starting one effect.
+**First step:** a practice test — one WLED bulb, a Mac with Chrome, the app starting one effect,
+in the owner's own lamp: a floor lamp with a round milk-glass shade that also shows the sun
+(2026-10-19). Sunrise, thunderstorm and one color in a darkened room show whether the bulb is
+bright enough: the bulb's 1400 lm are for white light, its colors are likely far dimmer, and opal
+glass passes roughly 30–40 % in lab values. Plan B: a WLED LED ring or strip inside the shade
+(every LED in color, effects that move across the globe).
 **When:** after the test, decided with the owner (no slice yet; V3 serves private use).
 Sources: kno.wled.ge/features/effects · developer.chrome.com/blog/local-network-access ·
 developer.apple.com/support/alternative-browser-engines · developers.home-assistant.io/docs/api/websocket ·

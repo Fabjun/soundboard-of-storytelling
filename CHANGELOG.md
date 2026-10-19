@@ -7,6 +7,22 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.254 — 2026-10-19
+
+### Added
+
+- feat(boards): Slice 18c — a board deleted in the board list shows the undo toast; its UNDO creates the board again, with the view it was left in (a board document holds no audio, ADR-0010, so it stays in memory for the toast); undo for a deleted library file moves to Slice 16, decided there with bulk delete
+
+### Changed
+
+- refactor(toast): UndoNoticeRegion — the one place a screen shows the undo toast (status region, cleared when the screen or its board is left), used by the board screen and the board list
+
+### Internal
+
+- test: E2E board-undo — a deleted board comes back with its decks and pads, also after a reload; counter-checked (UNDO without effect, no region on the board list)
+- test: coverage floor raised to the measured values (lines 98, statements 97, functions 97, branches 95) at the Slice 18 close-out; the mutation break stays until a weekly run has measured the Slice 18 code
+- docs: ADR-0086 amendment (Slice 18c); README — undo and settings under available now; CLAUDE.md Slice 18 on main, Slice 16 takes the library-file undo; BACKLOG 18c done, "Undo: deleting a library file" for Slice 16, the light idea's practice test in the owner's milk-glass lamp
+
 ## 3.0.253 — 2026-10-19
 
 ### Internal

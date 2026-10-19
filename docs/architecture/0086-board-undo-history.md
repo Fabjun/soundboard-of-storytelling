@@ -76,8 +76,8 @@ two-tap delete stays; no undo in GAME.
 - Two ways back after a delete: the toast's UNDO takes back just that deletion, ↶ steps back in
   order (amendment 2026-10-19). After ↶ has put the deck back, the toast's UNDO does nothing
   (`restoreDeck` leaves a deck that is there already).
-- Deleting a whole board or a library file is not covered — that needs the audio kept in memory
-  or a trash (Slice 18c, its own decision).
+- Deleting a library file is not covered — it needs the audio kept, which may not stay in memory
+  (amendment 2026-10-19, Slice 18c: decided with the library's bulk delete in Slice 16).
 
 ## Alternatives considered
 
@@ -98,7 +98,8 @@ the owner now that Slice 18b is built (BACKLOG "Two-tap delete once undo exists"
   `v3/src/lib/editHistory.ts`, `v3/src/components/BoardTopBar.tsx`,
   `v3/src/screens/BoardScreen.tsx`, `v3/tests/unit/boardHistory.test.ts`,
   `v3/tests/e2e/board-undo.spec.ts`, `v3/src/state/undoNotice.ts`,
-  `v3/src/components/UndoToast.tsx`, `v3/src/lib/boardModel.ts` (`restoreDeck`, `restorePad`)
+  `v3/src/components/UndoToast.tsx`, `v3/src/components/UndoNoticeRegion.tsx`,
+  `v3/src/lib/boardModel.ts` (`restoreDeck`, `restorePad`), `v3/src/screens/BoardListScreen.tsx`
 - **ADRs:** ADR-0084 (the PAD editor's draft history), ADR-0010 (the board as one document),
   ADR-0074 (modal dialogs)
 - **Sources:** https://www.nngroup.com/articles/ten-usability-heuristics/ ·
@@ -122,3 +123,14 @@ screen: one at a time, gone after 6 s or when the board is left, in a status reg
 the page (WCAG 4.1.3). Its 6 s count from when it appears — the timer restarted with each new
 render before. When the toast is gone, ↶ still undoes the deletion, so the time limit takes no
 ability away (WCAG 2.2.1).
+
+**2026-10-19 (3.0.254, Slice 18c) — a deleted board comes back; a deleted library file not yet.**
+A board deleted in the board list shows the same toast; its UNDO creates the board again
+(`createBoard`), with the view it was left in. A board document holds no audio (ADR-0010), so
+keeping the deleted one in memory for the toast's 6 s follows the iPhone memory rules. Both
+screens show the toast through one component, `v3/src/components/UndoNoticeRegion.tsx`, which
+clears it when the screen or its board is left. A deleted audio file is not brought back yet: its
+audio may not be held in memory, so undo needs a delete delayed until the toast ends or a trash in
+IndexedDB, each with its own edges (the same file uploaded again while the delete waits; the app
+closed meanwhile). Slice 16 brings multi-select and bulk delete to the library, so the way is
+decided there once, for single and bulk deletes (BACKLOG "Undo: deleting a library file").

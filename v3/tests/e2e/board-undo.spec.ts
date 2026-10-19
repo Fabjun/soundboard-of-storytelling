@@ -5,7 +5,8 @@
  * change of the board; each step is saved. A text field keeps its own keys, the open PAD editor
  * its draft history (ADR-0084); GAME has no undo. Undoing NEW DECK of the shown deck shows the
  * first deck. The history lasts while the app is open. A deleted pad or deck shows a toast whose
- * UNDO puts back just that deletion (Slice 18b); it goes after 6 s or when the board is left.
+ * UNDO puts back just that deletion (Slice 18b); it goes after 6 s or when the board is left. A
+ * board deleted in the board list comes back the same way, with its decks and pads (Slice 18c).
  * No playback — Chromium and WebKit.
  */
 
@@ -155,4 +156,23 @@ test('the toast goes 6 s after it appeared, also when the screen draws again mea
   await page.getByTestId('board-screen-search-toggle-button').click();
   await page.clock.runFor(2_000);
   await expect(toast(page)).toHaveCount(0, { timeout: 1_000 });
+});
+
+test("a deleted board comes back with the toast's UNDO, with its decks and pads, also after a reload", async ({
+  page,
+}) => {
+  await page.getByTestId('board-top-bar-back-button').click();
+  const rows = page.locator('[data-testid^="board-list-screen-row-"]');
+  await expect(rows).toHaveCount(1);
+  const del = rows.first().locator('[data-testid^="board-list-screen-delete-button-"]');
+  await del.click();
+  await del.click();
+  await expect(rows).toHaveCount(0);
+  await expect(toast(page)).toContainText("Deleted board '");
+
+  await page.getByTestId('undo-toast-undo-button').click();
+  await expect(rows).toHaveCount(1);
+  await reopenFirstBoard(page);
+  await expect(deckTabs(page)).toHaveCount(1);
+  await expect(padCells(page).first()).toContainText('Rain');
 });
