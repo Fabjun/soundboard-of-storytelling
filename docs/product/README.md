@@ -12,7 +12,8 @@
 > import, V1 migration. · [features/adaptive-layout.md](features/adaptive-layout.md) — the
 > narrow and wide frames, the deck switcher on a phone (Slice 13). ·
 > [features/settings.md](features/settings.md) — the Settings screen, the start screen and the
-> main menu (Slice 14).
+> main menu (Slice 14). · [features/library.md](features/library.md) — the library at V1's scope
+> (Slice 16; draft, open questions L1–L9).
 
 ## Status legend
 

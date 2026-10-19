@@ -7,6 +7,12 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.260 — 2026-10-19
+
+### Internal
+
+- docs(product): features/library.md — the Slice 16 plan draft: what is decided (D1–D6), proposed steps 16a "in use" and undo for a deleted file → 16b preview, sort, original name → 16c folders and multi-select → 16d pad templates → 16e own icons → 16f boards tab, and open questions L1–L9 with options and the industry standard each (trash 30 days as Apple and Google Photos, folders vs tags, select mode per Apple HIG); linked from both hubs and the Slice 16 row
+
 ## 3.0.259 — 2026-10-19
 
 ### Internal
