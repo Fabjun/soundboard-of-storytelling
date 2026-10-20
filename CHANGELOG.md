@@ -7,6 +7,18 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.270 — 2026-10-20
+
+### Added
+
+- feat(library): Slice 16a — a delete is one tap: the file moves to "Recently deleted" and the toast offers UNDO, saying how many pads lose their sound; Recently deleted keeps files 30 days with RESTORE, delete for good and EMPTY ask in the confirmation dialog (D7); each row says in how many pads the file plays (L5); the empty BOARDS tab is gone (L4); the filter rail's categories are buttons (All, Recently deleted)
+- feat(db): DB version 11 adds the store trash (ADR-0087) — a delete and a restore move one entry between library and trash in one transaction, so the audio engine finds no trashed file and stays unchanged; the app start removes what waited 30 days (loadTrash in boot); trash writes count as running saves
+
+### Internal
+
+- test: unit idb (move, restore, the same file uploaded again, delete for good, upgrade to v11), libraryTrash (the trash list, 30-day purge at the boundary, oldest first), fileUses, boot; E2E library-trash (Chromium, WebKit); counter-checked — a restore that does nothing, a delete for good without the dialog and a purge that keeps day 30 each turn their tests red; mutation fileUses 100 %, libraryTrash 98.5 %, idb 93.5 % (9 survivors are equivalent upgrade conditions)
+- docs: ADR-0087; library.md 16a built; BACKLOG "Undo: deleting a library file" done; iPhone checklist — delete, UNDO and restore after a restart; delete for good with a fast double tap
+
 ## 3.0.269 — 2026-10-20
 
 ### Changed

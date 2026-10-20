@@ -6,6 +6,7 @@
  *   'library'  (keyPath: 'id')  — LibraryItem entries (includes blob) [since v1]
  *   'boards'   (keyPath: 'id')  — Board documents (JSON, no blobs)    [since v2]
  *   'keyval'   (out-of-line keys) — small preferences and stats       [since v6]
+ *   'trash'    (keyPath: 'id')  — deleted library entries (with blob) [since v11, ADR-0087]
  *
  * MEMORY SAFETY RULES (carried over from V1 — see CLAUDE.md#iphone--ios-safari--memory--stability-rules-critical):
  *   - libGetAllMeta() uses a cursor and NEVER references cursor.value.blob.
@@ -15,6 +16,9 @@
  *   - libRename() briefly holds one Blob in RAM (IDB has no partial-update;
  *     it must read the full entry, patch the name, and re-put). The Blob is
  *     released as soon as libRename() returns. This is intentional and safe.
+ *   - libMoveToTrash() / trashRestore() move ONE entry between 'library' and 'trash' in one
+ *     transaction — one Blob in RAM for that call, as libRename(); trashGetAllMeta() is a
+ *     metadata cursor like libGetAllMeta().
  *
  * BOARD PERSISTENCE TRADE-OFF (conscious decision):
  *   Boards are stored as complete JSON documents containing embedded Decks and
@@ -26,13 +30,13 @@
  */
 
 import { openDB, type IDBPDatabase, type IDBPObjectStore } from 'idb';
-import type { Board, LibraryItem, LibraryItemMeta } from '../types';
+import type { Board, LibraryItem, LibraryItemMeta, TrashItem, TrashItemMeta } from '../types';
 import { migrateBoard } from '../lib/padFiles';
 
 // ── DB singleton ─────────────────────────────────────────────────────────────
 
 const DB_NAME = 'sos-v3';
-const DB_VERSION = 10;
+const DB_VERSION = 11;
 
 let _db: IDBPDatabase | null = null;
 
@@ -84,6 +88,11 @@ async function getDB(): Promise<IDBPDatabase> {
       if (oldVersion >= 5 && oldVersion < 10) {
         void migrateStoredBoards(tx.objectStore('boards'));
       }
+      // v11: the library's trash (ADR-0087) — a deleted file waits there 30 days. Only ADDS a
+      // store: library, boards and keyval stay as they are.
+      if (oldVersion < 11) {
+        db.createObjectStore('trash', { keyPath: 'id' });
+      }
     },
   });
   return _db;
@@ -104,6 +113,12 @@ async function migrateStoredBoards(
   }
 }
 
+// The metadata of an entry, without its blob — the one list of meta fields
+const metaOf = (item: LibraryItem): LibraryItemMeta => {
+  const { id, type, name, size, tags, addedAt, duration, peaks } = item;
+  return { id, type, name, size, tags, addedAt, duration, peaks };
+};
+
 // ── Public API ───────────────────────────────────────────────────────────────
 
 /**
@@ -120,10 +135,9 @@ export async function libGetAllMeta(): Promise<LibraryItemMeta[]> {
   const results: LibraryItemMeta[] = [];
   let cursor = await db.transaction('library', 'readonly').store.openCursor();
   while (cursor) {
-    // Destructure only the meta fields — blob is intentionally NOT referenced.
+    // Only the meta fields (metaOf) — blob is intentionally NOT referenced.
     // cursor.value goes out of scope after this block; Blob is GC-eligible.
-    const { id, type, name, size, tags, addedAt, duration, peaks } = cursor.value as LibraryItem;
-    results.push({ id, type, name, size, tags, addedAt, duration, peaks });
+    results.push(metaOf(cursor.value as LibraryItem));
     cursor = await cursor.continue();
   }
   return results;
@@ -171,6 +185,72 @@ export async function libRename(id: string, newName: string): Promise<void> {
   const entry = await libGet(id);
   if (!entry) return;
   await libPut({ ...entry, name: newName });
+}
+
+// ── Trash API (ADR-0087) ─────────────────────────────────────────────────────
+
+/**
+ * Moves a library entry to the trash, stamped `deletedAt`, in one transaction — it is in exactly
+ * one of the two stores at any time. Resolves with its metadata, or null when it is not in the
+ * library.
+ */
+export async function libMoveToTrash(id: string, deletedAt: number): Promise<TrashItemMeta | null> {
+  const db = await getDB();
+  const tx = db.transaction(['library', 'trash'], 'readwrite');
+  const item = (await tx.objectStore('library').get(id)) as LibraryItem | undefined;
+  if (!item) {
+    await tx.done;
+    return null;
+  }
+  await tx.objectStore('trash').put({ ...item, deletedAt } satisfies TrashItem);
+  await tx.objectStore('library').delete(id);
+  await tx.done;
+  return { ...metaOf(item), deletedAt };
+}
+
+/**
+ * Lists the trash — metadata only, blob excluded (a cursor, as libGetAllMeta). Read at app start.
+ */
+export async function trashGetAllMeta(): Promise<TrashItemMeta[]> {
+  const db = await getDB();
+  const results: TrashItemMeta[] = [];
+  let cursor = await db.transaction('trash', 'readonly').store.openCursor();
+  while (cursor) {
+    const item = cursor.value as TrashItem;
+    results.push({ ...metaOf(item), deletedAt: item.deletedAt });
+    cursor = await cursor.continue();
+  }
+  return results;
+}
+
+/**
+ * Puts a trashed entry back into the library, in one transaction. When the library holds the same
+ * file again (uploaded since — the id is its content hash), only the trash copy goes. Resolves
+ * with the library entry's metadata, or null when the entry is not in the trash.
+ */
+export async function trashRestore(id: string): Promise<LibraryItemMeta | null> {
+  const db = await getDB();
+  const tx = db.transaction(['library', 'trash'], 'readwrite');
+  const item = (await tx.objectStore('trash').get(id)) as TrashItem | undefined;
+  if (!item) {
+    await tx.done;
+    return null;
+  }
+  const { deletedAt: _deletedAt, ...entry } = item;
+  const there = (await tx.objectStore('library').get(id)) as LibraryItem | undefined;
+  if (!there) await tx.objectStore('library').put(entry);
+  await tx.objectStore('trash').delete(id);
+  await tx.done;
+  return metaOf(there ?? entry);
+}
+
+/** Deletes trashed entries for good: the given ids, or every one when `ids` is omitted. */
+export async function trashDelete(ids?: string[]): Promise<void> {
+  const db = await getDB();
+  const tx = db.transaction('trash', 'readwrite');
+  if (ids) await Promise.all(ids.map((id) => tx.store.delete(id)));
+  else await tx.store.clear();
+  await tx.done;
 }
 
 // ── Board API ─────────────────────────────────────────────────────────────────

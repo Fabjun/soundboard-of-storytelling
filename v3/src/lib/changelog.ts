@@ -17,10 +17,20 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.269';
+export const APP_VERSION = '3.0.270';
 
 /** The developer log, newest first; CHANGELOG.md is generated from it (sync-changelog). */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.270',
+    date: '2026-10-20',
+    items: [
+      'feat(library): Slice 16a — a delete is one tap: the file moves to "Recently deleted" and the toast offers UNDO, saying how many pads lose their sound; Recently deleted keeps files 30 days with RESTORE, delete for good and EMPTY ask in the confirmation dialog (D7); each row says in how many pads the file plays (L5); the empty BOARDS tab is gone (L4); the filter rail\'s categories are buttons (All, Recently deleted)',
+      'feat(db): DB version 11 adds the store trash (ADR-0087) — a delete and a restore move one entry between library and trash in one transaction, so the audio engine finds no trashed file and stays unchanged; the app start removes what waited 30 days (loadTrash in boot); trash writes count as running saves',
+      'test: unit idb (move, restore, the same file uploaded again, delete for good, upgrade to v11), libraryTrash (the trash list, 30-day purge at the boundary, oldest first), fileUses, boot; E2E library-trash (Chromium, WebKit); counter-checked — a restore that does nothing, a delete for good without the dialog and a purge that keeps day 30 each turn their tests red; mutation fileUses 100 %, libraryTrash 98.5 %, idb 93.5 % (9 survivors are equivalent upgrade conditions)',
+      'docs: ADR-0087; library.md 16a built; BACKLOG "Undo: deleting a library file" done; iPhone checklist — delete, UNDO and restore after a restart; delete for good with a fast double tap',
+    ],
+  },
   {
     version: '3.0.269',
     date: '2026-10-20',

@@ -1,7 +1,9 @@
 /**
  * @fileoverview AudioRow — single row in the Library audio list
  *
- * Shows: type icon | name (renameable) + filename | waveform | duration | size | delete
+ * Shows: type icon | name (renameable) + "in N pads" and the hash start | waveform | duration |
+ * size | delete. In the trash ("Recently deleted", ADR-0087) the same row shows the days left,
+ * RESTORE instead of the size, and a delete that asks before it removes the file for good.
  */
 
 import { useRef, useState, useEffect } from 'preact/hooks';
@@ -10,12 +12,24 @@ import { Waveform } from './Waveform';
 import { formatBytes, formatDuration } from '../lib/upload';
 import type { LibraryItemMeta } from '../types';
 
+/** The row of a file in the trash: what it shows and does instead (Slice 16a). */
+interface TrashRowOptions {
+  daysLeft: number;
+  onRestore: () => void;
+  /** Asks before it deletes for good (the caller shows the ConfirmDialog). */
+  onDeleteForGood: () => void;
+}
+
 interface AudioRowProps {
   meta: LibraryItemMeta;
   selected: boolean;
   onSelect: () => void;
-  onDelete: () => void;
-  onRename: (newName: string) => void;
+  /** How many pads play the file (src/lib/fileUses.ts). */
+  uses?: number;
+  onDelete?: () => void;
+  onRename?: (newName: string) => void;
+  /** Shows the row of a file in the trash. */
+  trash?: TrashRowOptions;
 }
 
 // ── RenameField — inline <input> toggle (no contentEditable — iOS Safari issues) ───
@@ -108,43 +122,48 @@ function RenameField({ name, hint, onCommit, onSelect }: RenameFieldProps) {
 // ── AudioRow ─────────────────────────────────────────────────────────────────
 
 /**
- * Shows one audio file of the library: name (tap to rename), waveform, duration, size and a
- * delete button that needs two taps.
+ * Shows one audio file of the library: name (tap to rename), how many pads play it, waveform,
+ * duration, size and a delete button — one tap, the file goes to the trash and the toast offers
+ * UNDO (ADR-0087). With `trash` it is the row of a deleted file: days left, RESTORE, delete for good.
  */
-export function AudioRow({ meta, selected, onSelect, onDelete, onRename }: AudioRowProps) {
-  const [deleteStep, setDeleteStep] = useState<'idle' | 'confirm'>('idle');
-
-  function handleDeleteClick(e: MouseEvent) {
-    e.stopPropagation();
-    if (deleteStep === 'idle') {
-      setDeleteStep('confirm');
-    } else {
-      onDelete();
-    }
-  }
-
-  function resetDelete() {
-    setDeleteStep('idle');
-  }
+export function AudioRow({
+  meta,
+  selected,
+  onSelect,
+  uses = 0,
+  onDelete,
+  onRename,
+  trash,
+}: AudioRowProps) {
+  const hash = `${meta.id.slice(0, 8)}…`;
+  const usedIn = uses === 0 ? '' : uses === 1 ? 'in 1 pad · ' : `in ${uses} pads · `;
 
   return (
     <div
       class="sb-audio-row"
-      onMouseLeave={resetDelete}
       style={{
         background: selected ? 'var(--top)' : 'var(--raised)',
         borderLeft: selected ? '2px solid var(--gold)' : '2px solid transparent',
       }}
     >
-      {/* Col 1: type icon + name + filename — the name is the row's button (select, rename) */}
+      {/* Col 1: type icon + name + a hint — the name is the row's button (select, rename) */}
       <div class="sb-row">
         <UiIcon name="play" size={14} color="var(--gold)" />
-        <RenameField
-          name={meta.name}
-          hint={`${meta.id.slice(0, 8)}…`}
-          onCommit={onRename}
-          onSelect={onSelect}
-        />
+        {trash ? (
+          <span class="sb-flex-min sb-col">
+            <span class="sb-audio-row-name">{meta.name}</span>
+            <span class="sb-hint-text">
+              {trash.daysLeft === 1 ? '1 day left' : `${trash.daysLeft} days left`}
+            </span>
+          </span>
+        ) : (
+          <RenameField
+            name={meta.name}
+            hint={`${usedIn}${hash}`}
+            onCommit={(name) => onRename?.(name)}
+            onSelect={onSelect}
+          />
+        )}
       </div>
 
       {/* Col 2: waveform thumbnail */}
@@ -153,23 +172,28 @@ export function AudioRow({ meta, selected, onSelect, onDelete, onRename }: Audio
       {/* Col 3: duration */}
       <span class="sb-audio-col-duration">{formatDuration(meta.duration)}</span>
 
-      {/* Col 4: file size */}
-      <span class="sb-audio-col-size">{formatBytes(meta.size)}</span>
+      {/* Col 4: file size — in the trash, RESTORE */}
+      {trash ? (
+        <button
+          class="sb-btn sb-btn-sm sb-btn-ghost"
+          aria-label={`Restore ${meta.name}`}
+          onClick={trash.onRestore}
+        >
+          RESTORE
+        </button>
+      ) : (
+        <span class="sb-audio-col-size">{formatBytes(meta.size)}</span>
+      )}
 
-      {/* Col 5: delete (2-tap confirm) */}
+      {/* Col 5: delete — to the trash in one tap; in the trash, for good after the question */}
       <button
         class="sb-audio-row-delete-btn"
-        title={deleteStep === 'idle' ? 'Delete' : 'Confirm delete'}
-        aria-label={
-          deleteStep === 'idle'
-            ? `Delete ${meta.name}`
-            : `Delete ${meta.name} — press again to confirm`
-        }
-        onClick={handleDeleteClick}
-        onBlur={resetDelete}
-        style={{
-          border: deleteStep === 'confirm' ? '1px solid var(--blood)' : 'none',
-          color: deleteStep === 'confirm' ? 'var(--blood-bright)' : 'var(--text-mute)',
+        title={trash ? 'Delete for good' : 'Delete'}
+        aria-label={trash ? `Delete ${meta.name} for good` : `Delete ${meta.name}`}
+        onClick={(e) => {
+          e.stopPropagation();
+          if (trash) trash.onDeleteForGood();
+          else onDelete?.();
         }}
       >
         <UiIcon name="delete" size={12} />

@@ -4,11 +4,13 @@
  * Layout: 2-column CSS grid (220px filter rail | 1fr audio list)
  * Source reference: design-sources/2026-05-25/v2-screens.jsx LibraryV2
  *
- * Built so far (Slice 2; the V1 library at full scope is Slice 16):
- *   - AUDIO tab: fully functional (upload, rename, delete, waveform, search)
- *   - ICONS / PADS / BOARDS tabs: placeholder (empty state)
- *   - No inspector panel
- *   - Tags: shown in the filter rail when any file has one; not editable yet
+ * Built so far (Slice 2, Slice 16a; the V1 library at full scope is Slice 16 —
+ * docs/product/features/library.md):
+ *   - AUDIO tab: upload, rename, waveform, search; each row says in how many pads the file plays
+ *   - Delete in one tap: the file goes to "Recently deleted" (ADR-0087) and the toast offers
+ *     UNDO; there RESTORE, or delete for good and EMPTY after the confirmation dialog
+ *   - ICONS / PADS tabs: placeholder (empty state); the BOARDS tab is Rejected (library.md L4)
+ *   - Tags: shown in the filter rail when any file has one; search words, not edited (L2)
  */
 
 import { useState, useRef } from 'preact/hooks';
@@ -17,20 +19,38 @@ import { TopBar } from '../components/TopBar';
 import { StatusBar } from '../components/StatusBar';
 import { UiIcon } from '../components/UiIcon';
 import { AudioRow } from '../components/AudioRow';
+import { ConfirmDialog } from '../components/ConfirmDialog';
+import { UndoNoticeRegion } from '../components/UndoNoticeRegion';
 import {
+  boards,
   currentScreen,
   libraryItems,
   uploadStatus,
-  removeLibraryItemMeta,
   renameLibraryItemMeta,
 } from '../state/store';
+import {
+  daysLeft,
+  deleteForGood,
+  restoreFile,
+  TRASH_DAYS,
+  trashFile,
+  trashItems,
+} from '../state/libraryTrash';
+import { announceUndo } from '../state/undoNotice';
+import { fileUses, soundLossText } from '../lib/fileUses';
 import { processFilesSerial, formatBytes, totalLibraryBytes } from '../lib/upload';
-import { libDelete, libRename } from '../db/idb';
+import { libRename } from '../db/idb';
 
 // ── Constants ────────────────────────────────────────────────────────────────
 
-type LibTab = 'AUDIO' | 'ICONS' | 'PADS' | 'BOARDS';
-const TABS: LibTab[] = ['AUDIO', 'ICONS', 'PADS', 'BOARDS'];
+type LibTab = 'AUDIO' | 'ICONS' | 'PADS';
+const TABS: LibTab[] = ['AUDIO', 'ICONS', 'PADS'];
+
+/** What the list shows: the library, or its trash ("Recently deleted", ADR-0087). */
+type LibView = 'all' | 'trash';
+
+/** The question asked before something is deleted for good (D7, ConfirmDialog). */
+type ForGood = { kind: 'one'; id: string; name: string } | { kind: 'all'; count: number };
 
 // ── EmptyState — generic empty placeholder ───────────────────────────────────
 
@@ -88,13 +108,18 @@ export function LibraryScreen(): JSX.Element {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [search, setSearch] = useState('');
   const [isDragOver, setIsDragOver] = useState(false);
+  const [view, setView] = useState<LibView>('all');
+  const [forGood, setForGood] = useState<ForGood | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Derived: filtered list for current search
+  // Derived: filtered list for current search, and which pads play each file (L5)
   const items = libraryItems.value;
-  const filtered = search.trim()
-    ? items.filter((m) => m.name.toLowerCase().includes(search.toLowerCase()))
-    : items;
+  const trash = trashItems.value;
+  const matches = (name: string) => name.toLowerCase().includes(search.trim().toLowerCase());
+  const filtered = search.trim() ? items.filter((m) => matches(m.name)) : items;
+  const trashFiltered = search.trim() ? trash.filter((t) => matches(t.name)) : trash;
+  const uses = fileUses(boards.value);
+  const now = Date.now();
 
   const totalSize = totalLibraryBytes(items);
 
@@ -145,13 +170,36 @@ export function LibraryScreen(): JSX.Element {
 
   // ── Row action handlers ────────────────────────────────────────────────────
 
+  // One tap: the file goes to the trash and the toast offers UNDO — it can be undone, so it is not
+  // asked (CLAUDE.md delete rules); the toast says how many pads lose their sound (V1's warning)
   async function handleDelete(id: string) {
+    const name = items.find((m) => m.id === id)?.name ?? 'the file';
+    const lost = soundLossText(uses.get(id)?.length ?? 0);
     try {
-      await libDelete(id);
-      removeLibraryItemMeta(id);
+      const moved = await trashFile(id);
       if (selectedId === id) setSelectedId(null);
+      if (moved) {
+        announceUndo(`Deleted '${name}'${lost ? ` · ${lost}` : ''}`, () => void restoreFile(id));
+      }
     } catch (e) {
       console.error('Library delete failed:', e);
+    }
+  }
+
+  async function handleRestore(id: string) {
+    try {
+      await restoreFile(id);
+    } catch (e) {
+      console.error('Restoring a library file failed:', e);
+    }
+  }
+
+  async function handleDeleteForGood(question: ForGood) {
+    setForGood(null);
+    try {
+      await deleteForGood(question.kind === 'one' ? [question.id] : undefined);
+    } catch (e) {
+      console.error('Deleting for good failed:', e);
     }
   }
 
@@ -236,13 +284,25 @@ export function LibraryScreen(): JSX.Element {
         <div class="sb-screen-layout">
           {/* Left rail — filter */}
           <aside class="sb-filter-rail">
-            {/* Category: only "All" in Slice 2 */}
+            {/* Category: the library and its trash (folders follow in Slice 16c) */}
             <div class="sb-rail-section has-divider">
               <div class="sb-rail-label">CATEGORY</div>
-              <div class="sb-category-item">
+              <button
+                class={'sb-category-item' + (view === 'all' ? ' is-active' : '')}
+                aria-pressed={view === 'all'}
+                onClick={() => setView('all')}
+              >
                 <span>All</span>
                 <span class="sb-count-text">{items.length}</span>
-              </div>
+              </button>
+              <button
+                class={'sb-category-item' + (view === 'trash' ? ' is-active' : '')}
+                aria-pressed={view === 'trash'}
+                onClick={() => setView('trash')}
+              >
+                <span>Recently deleted</span>
+                <span class="sb-count-text">{trash.length}</span>
+              </button>
             </div>
 
             {/* Tags — read-only, shown if any item has tags */}
@@ -282,7 +342,11 @@ export function LibraryScreen(): JSX.Element {
                 <input
                   class="sb-search-input sb-flex-1"
                   type="text"
-                  placeholder={`Search ${items.length} files…`}
+                  placeholder={
+                    view === 'trash'
+                      ? `Search ${trash.length} deleted files…`
+                      : `Search ${items.length} files…`
+                  }
                   value={search}
                   onInput={(e) => setSearch((e.target as HTMLInputElement).value)}
                 />
@@ -298,9 +362,51 @@ export function LibraryScreen(): JSX.Element {
               </div>
             </div>
 
-            {/* Audio list */}
+            {/* Recently deleted: how long files stay, and EMPTY (asked first, D7) */}
+            {view === 'trash' && (
+              <div class="sb-list-bar">
+                <span class="sb-hint-text">
+                  Deleted files stay here for {TRASH_DAYS} days. Pads that use them stay silent
+                  until they are restored.
+                </span>
+                {trash.length > 0 && (
+                  <button
+                    class="sb-btn sb-btn-sm sb-btn-danger"
+                    onClick={() => setForGood({ kind: 'all', count: trash.length })}
+                  >
+                    EMPTY
+                  </button>
+                )}
+              </div>
+            )}
+
+            {/* Audio list — or the trash */}
             <div class="sb-item-list">
-              {filtered.length === 0 ? (
+              {view === 'trash' ? (
+                trashFiltered.length === 0 ? (
+                  <EmptyState
+                    label={
+                      trash.length === 0
+                        ? 'Nothing deleted recently.'
+                        : `No deleted files matching "${search}"`
+                    }
+                  />
+                ) : (
+                  trashFiltered.map((t) => (
+                    <AudioRow
+                      key={t.id}
+                      meta={t}
+                      selected={selectedId === t.id}
+                      onSelect={() => setSelectedId(t.id)}
+                      trash={{
+                        daysLeft: daysLeft(t, now),
+                        onRestore: () => void handleRestore(t.id),
+                        onDeleteForGood: () => setForGood({ kind: 'one', id: t.id, name: t.name }),
+                      }}
+                    />
+                  ))
+                )
+              ) : filtered.length === 0 ? (
                 items.length === 0 ? (
                   <EmptyState
                     label={
@@ -319,6 +425,7 @@ export function LibraryScreen(): JSX.Element {
                     meta={meta}
                     selected={selectedId === meta.id}
                     onSelect={() => setSelectedId(meta.id)}
+                    uses={uses.get(meta.id)?.length ?? 0}
                     onDelete={() => handleDelete(meta.id)}
                     onRename={(newName) => handleRename(meta.id, newName)}
                   />
@@ -330,6 +437,28 @@ export function LibraryScreen(): JSX.Element {
             <UploadStatusBar />
           </main>
         </div>
+      )}
+
+      <UndoNoticeRegion scope="library" />
+
+      {/* Deleting for good cannot be undone: asked in a dialog, never by a second tap (D7) */}
+      {forGood && (
+        <ConfirmDialog
+          title={
+            forGood.kind === 'one'
+              ? `Delete '${forGood.name}' for good?`
+              : `Delete ${forGood.count === 1 ? '1 file' : `${forGood.count} files`} for good?`
+          }
+          confirmLabel="DELETE"
+          danger
+          onConfirm={() => void handleDeleteForGood(forGood)}
+          onCancel={() => setForGood(null)}
+        >
+          <div class="sb-dialog-section">
+            {forGood.kind === 'one' ? 'The file is' : 'The files are'} removed from this device and
+            cannot be restored. Pads that use {forGood.kind === 'one' ? 'it' : 'them'} stay silent.
+          </div>
+        </ConfirmDialog>
       )}
 
       {/* Status bar */}

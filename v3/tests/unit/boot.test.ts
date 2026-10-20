@@ -7,9 +7,10 @@
 
 import { IDBFactory } from 'fake-indexeddb';
 import type { Board, LibraryItem } from '../../src/types';
-import { _resetDB, boardPut, libPut } from '../../src/db/idb';
+import { _resetDB, boardPut, libMoveToTrash, libPut } from '../../src/db/idb';
 import type * as IdbModule from '../../src/db/idb';
 import { boards, libraryItems } from '../../src/state/store';
+import { trashItems } from '../../src/state/libraryTrash';
 import { loadStoredState } from '../../src/state/boot';
 
 const failing = vi.hoisted(() => ({ library: false }));
@@ -67,6 +68,16 @@ describe('loadStoredState', () => {
   test('an empty database gives empty lists', async () => {
     await loadStoredState();
     expect(boards.value).toEqual([]);
+    expect(libraryItems.value).toEqual([]);
+    expect(trashItems.value).toEqual([]);
+  });
+
+  test("the library's trash is in the store too (ADR-0087)", async () => {
+    await libPut(item);
+    await libMoveToTrash(item.id, Date.now());
+    trashItems.value = [];
+    await loadStoredState();
+    expect(trashItems.value.map((t) => t.id)).toEqual(['h1']);
     expect(libraryItems.value).toEqual([]);
   });
 

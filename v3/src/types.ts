@@ -175,6 +175,14 @@ export type LibraryItem = LibraryItemMeta & {
   blob: Blob; // raw audio — only lives in IDB, never in working memory
 };
 
+/** A deleted library entry in the trash, metadata only (ADR-0087): kept until `deletedAt` + 30 days. */
+export type TrashItemMeta = LibraryItemMeta & {
+  deletedAt: number; // ms since epoch
+};
+
+/** A deleted library entry as the IndexedDB store `trash` holds it — with its audio (ADR-0087). */
+export type TrashItem = LibraryItem & { deletedAt: number };
+
 /**
  * Result of a batch upload operation.
  */
