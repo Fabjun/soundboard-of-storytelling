@@ -12,7 +12,7 @@ release notes the app shows are written separately for its users (`v3/src/lib/wh
 ### Added
 
 - feat(library): Slice 16a — a delete is one tap: the file moves to "Recently deleted" and the toast offers UNDO, saying how many pads lose their sound; Recently deleted keeps files 30 days with RESTORE, delete for good and EMPTY ask in the confirmation dialog (D7); each row says in how many pads the file plays (L5); the empty BOARDS tab is gone (L4); the filter rail's categories are buttons (All, Recently deleted)
-- feat(db): DB version 11 adds the store trash (ADR-0087) — a delete and a restore move one entry between library and trash in one transaction, so the audio engine finds no trashed file and stays unchanged; the app start removes what waited 30 days (loadTrash in boot); trash writes count as running saves
+- feat(db): DB version 11 adds the store trash (ADR-0087) — a delete and a restore move one entry between library and trash in one transaction, so the audio engine finds no trashed file and stays unchanged; the app start removes what waited 30 days (loadTrash in boot); trash writes count as running saves; libDelete removed — every library delete goes through the trash now, and knip reported it unused
 
 ### Internal
 

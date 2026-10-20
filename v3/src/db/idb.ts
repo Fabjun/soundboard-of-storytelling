@@ -165,14 +165,6 @@ export async function libPut(item: LibraryItem): Promise<void> {
 }
 
 /**
- * Deletes a library entry by id (SHA-256 hash).
- */
-export async function libDelete(id: string): Promise<void> {
-  const db = await getDB();
-  await db.delete('library', id);
-}
-
-/**
  * Renames a library entry.
  *
  * Note: IDB has no partial-update — this reads the full entry (including Blob),

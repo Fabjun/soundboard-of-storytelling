@@ -744,9 +744,6 @@ libPut(item: LibraryItem): Promise<void>
   // peaks/duration are computed, and to write an entry back whole (rename, fine peaks) — IndexedDB
   // has no partial update.
 
-libDelete(id: string): Promise<void>
-  // Deletes a library entry by id (SHA-256 hash).
-
 libRename(id: string, newName: string): Promise<void>
   // Renames a library entry.
   //

@@ -19,7 +19,6 @@ import {
   boardGet,
   boardGetAll,
   boardDelete,
-  libDelete,
   libGet,
   libPut,
   libGetAllMeta,
@@ -199,19 +198,6 @@ describe('libRename', () => {
 
   test('rename of non-existent id is a no-op (no throw)', async () => {
     await expect(libRename('GHOST', 'new.mp3')).resolves.not.toThrow();
-  });
-});
-
-// ── libDelete ────────────────────────────────────────────────────────────────
-
-describe('libDelete', () => {
-  test('removes only the target entry, audio included; a missing id is no error', async () => {
-    await libPut(makeLibraryItem('a'));
-    await libPut(makeLibraryItem('b'));
-    await libDelete('a');
-    expect((await libGetAllMeta()).map((m) => m.id)).toEqual(['b']);
-    expect(await libGet('a')).toBeNull();
-    await expect(libDelete('gone')).resolves.toBeUndefined();
   });
 });
 
