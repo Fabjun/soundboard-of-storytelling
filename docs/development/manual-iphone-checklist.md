@@ -213,6 +213,23 @@ because Playwright runs against a simulated environment:
     and its pads play. No crash, also with the full library (about 227 MB).
   - Why manual: the largest file the app reads; memory limits only show on a device.
 
+- [ ] **Delete a file, UNDO it, and restore it after a restart** _(Slice 16a, ADR-0087)_
+  - Action: Library → a file that a pad uses (its row says "in 1 pad · …") → tap the bin once; in
+    the message at the bottom ("Deleted '…' · 1 pad loses its sound") tap UNDO. Delete it again;
+    close the app completely and open it; Library → "Recently deleted" → RESTORE; then open the
+    board and play the pad.
+  - Expected: after UNDO the file is back at once; after the restart it is listed under "Recently
+    deleted" with "30 days left"; after RESTORE it is back in All and the pad plays.
+  - Why manual: the move of a whole audio file between two stores on the device's storage, and the
+    restart, which only an installed app on the phone shows as it is used.
+
+- [ ] **Delete for good asks first** _(Slice 16a, owner decision 2026-10-20)_
+  - Action: Library → "Recently deleted" → tap the bin of a file quickly twice.
+  - Expected: the first tap opens the question "Delete '…' for good?"; the second tap lands beside
+    it and closes it again — the file stays. Opened once more, CANCEL keeps the file and DELETE
+    removes it.
+  - Why manual: a fast double tap with a finger on the phone.
+
 ---
 
 ## Section 3 — Layout and Platform

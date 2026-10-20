@@ -19,7 +19,6 @@ import {
   boardGet,
   boardGetAll,
   boardDelete,
-  libDelete,
   libGet,
   libPut,
   libGetAllMeta,
@@ -28,6 +27,10 @@ import {
   kvDelete,
   kvGetAll,
   kvPut,
+  libMoveToTrash,
+  trashDelete,
+  trashGetAllMeta,
+  trashRestore,
 } from '../../src/db/idb';
 import { newPad } from '../../src/lib/padUtils';
 
@@ -195,19 +198,6 @@ describe('libRename', () => {
 
   test('rename of non-existent id is a no-op (no throw)', async () => {
     await expect(libRename('GHOST', 'new.mp3')).resolves.not.toThrow();
-  });
-});
-
-// ── libDelete ────────────────────────────────────────────────────────────────
-
-describe('libDelete', () => {
-  test('removes only the target entry, audio included; a missing id is no error', async () => {
-    await libPut(makeLibraryItem('a'));
-    await libPut(makeLibraryItem('b'));
-    await libDelete('a');
-    expect((await libGetAllMeta()).map((m) => m.id)).toEqual(['b']);
-    expect(await libGet('a')).toBeNull();
-    await expect(libDelete('gone')).resolves.toBeUndefined();
   });
 });
 
@@ -508,4 +498,70 @@ describe('DB upgrade to v10', () => {
       expect(await kvGetAll()).toEqual([['last-backup', 7]]);
     },
   );
+});
+
+describe('DB upgrade to v11', () => {
+  test('from v10 the trash store is added; library, boards and keyval are kept', async () => {
+    const old = await openDB('sos-v3', 10, {
+      upgrade(db) {
+        db.createObjectStore('library', { keyPath: 'id' });
+        db.createObjectStore('boards', { keyPath: 'id' });
+        db.createObjectStore('keyval');
+      },
+    });
+    await old.put('library', makeLibraryItem('h1', 'owl.mp3'));
+    await old.put('boards', makeBoard('MINE'));
+    await old.put('keyval', 7, 'last-backup');
+    old.close();
+
+    expect((await libGetAllMeta()).map((m) => m.name)).toEqual(['owl.mp3']);
+    expect((await boardGetAll()).map((b) => b.id)).toEqual(['MINE']);
+    expect(await kvGetAll()).toEqual([['last-backup', 7]]);
+    expect(await trashGetAllMeta()).toEqual([]);
+  });
+});
+
+describe('trash (ADR-0087)', () => {
+  test('moving to the trash takes the entry out of the library, with its audio and the date', async () => {
+    await libPut(makeLibraryItem('h1', 'owl.mp3'));
+    const moved = await libMoveToTrash('h1', 5_000);
+    expect(moved).toMatchObject({ id: 'h1', name: 'owl.mp3', deletedAt: 5_000 });
+    expect(moved && 'blob' in moved).toBe(false); // metadata only
+    expect(await libGet('h1')).toBeNull();
+    expect(await trashGetAllMeta()).toEqual([moved]);
+    expect(await libMoveToTrash('h1', 6_000)).toBeNull(); // no longer in the library
+  });
+
+  test('restoring puts the entry back with its audio; a missing one resolves null', async () => {
+    await libPut(makeLibraryItem('h1', 'owl.mp3'));
+    await libMoveToTrash('h1', 5_000);
+    const meta = await trashRestore('h1');
+    expect(meta).toMatchObject({ id: 'h1', name: 'owl.mp3' });
+    expect(meta && 'deletedAt' in meta).toBe(false);
+    const back = await libGet('h1');
+    expect(back?.blob.size).toBeGreaterThan(0);
+    expect(back && 'deletedAt' in back).toBe(false);
+    expect(await trashGetAllMeta()).toEqual([]);
+    expect(await trashRestore('h1')).toBeNull();
+  });
+
+  test('restoring a file the library holds again drops only the trash copy', async () => {
+    await libPut(makeLibraryItem('h1', 'owl.mp3'));
+    await libMoveToTrash('h1', 5_000);
+    await libPut(makeLibraryItem('h1', 'owl again.mp3')); // uploaded since: same content, same id
+    expect(await trashRestore('h1')).toMatchObject({ name: 'owl again.mp3' });
+    expect((await libGetAllMeta()).map((m) => m.name)).toEqual(['owl again.mp3']);
+    expect(await trashGetAllMeta()).toEqual([]);
+  });
+
+  test('deleting for good removes the given entries, or all of them', async () => {
+    for (const id of ['a', 'b', 'c']) {
+      await libPut(makeLibraryItem(id));
+      await libMoveToTrash(id, 1);
+    }
+    await trashDelete(['b']);
+    expect((await trashGetAllMeta()).map((t) => t.id)).toEqual(['a', 'c']);
+    await trashDelete();
+    expect(await trashGetAllMeta()).toEqual([]);
+  });
 });

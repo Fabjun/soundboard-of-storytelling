@@ -305,6 +305,7 @@
 .sb-row-button:active,
 .sb-segmented-option:active,
 .sb-switch:active,
+.sb-category-item:active,
 .sb-pad-grid-cell.is-empty:active {
   transform: translateY(1px);
   filter: brightness(1.25);
@@ -2420,15 +2421,26 @@
   padding: 0.25rem 0.625rem 0.5rem;
 }
 .sb-category-item {
-  /* @inventory: Active category row in filter rail — gold left border indicator, flex space-between, VT323 font. Only "All" so far; library groups and folders add more (Slice 16). */
+  /* @inventory: Category button in the library's filter rail (All, Recently deleted; folders follow in Slice 16c) — flex space-between, VT323; is-active marks the category shown with a gold left border. */
+  width: 100%;
+  min-height: 44px;
   padding: 0.375rem 0.625rem;
-  border-left: 2px solid var(--gold);
+  background: none;
+  border: none;
+  border-left: 2px solid transparent;
   font-family: var(--font-ui);
   font-size: var(--fs-sm);
-  color: var(--gold);
+  color: var(--text-dim);
   display: flex;
+  align-items: center;
   justify-content: space-between;
   letter-spacing: 0.04em;
+  text-align: left;
+  cursor: pointer;
+}
+.sb-category-item.is-active {
+  border-left-color: var(--gold);
+  color: var(--gold);
 }
 .sb-count-text {
   /* @inventory: Inline count/quantity text — mono xs muted, no flex-shrink. Used in category rows and similar metadata contexts. */
@@ -2459,6 +2471,17 @@
 .sb-search-bar {
   /* @inventory: Outer search section bar — deep background, bottom border, no-shrink. Wraps sb-search-field. */
   padding: 0.625rem 0.875rem;
+  background: var(--deep);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.sb-list-bar {
+  /* @inventory: Bar above a list with a note and its actions (the library's "Recently deleted": how long files stay, EMPTY) — flex row, space-between, deep background, bottom border. */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  padding: 0.375rem 0.875rem;
   background: var(--deep);
   border-bottom: 1px solid var(--border);
   flex-shrink: 0;
@@ -2751,8 +2774,10 @@
   color: var(--text-dim);
 }
 .sb-audio-row-delete-btn {
-  /* @inventory: Bare 44×44px delete button in AudioRow — centered flex icon container, no background, pointer cursor. Border and color set inline for deleteStep confirm state (2-tap confirmation pattern). */
+  /* @inventory: Bare 44×44px delete button in AudioRow — centered flex icon container, no background, pointer cursor; one tap (the file goes to the trash, ADR-0087). */
   background: none;
+  border: none;
+  color: var(--text-mute);
   cursor: pointer;
   padding: 0.375rem;
   min-height: 44px;

@@ -40,7 +40,8 @@ Safety first, then the everyday tools, then what builds on them:
 | 16d  | Pad templates in the PADS tab (L6)                                                                                                              | needs the library's list patterns from 16b and 16c             |
 | 16e  | Own icons in the ICONS tab (L7)                                                                                                                 | its own security question                                      |
 
-The BOARDS tab is Rejected (L4). "The list fits a phone" in 16b is BACKLOG "AudioRow grid overflow on
+**Built:** 16a in 3.0.270 ([ADR-0087](../../architecture/0087-library-trash.md)). The BOARDS tab is
+Rejected (L4). "The list fits a phone" in 16b is BACKLOG "AudioRow grid overflow on
 iPhone 13 Pro (390px viewport)": a row needs 412 px, an iPhone 13 Pro has 390.
 
 ## Decisions L1–L9 (Decided — for review)

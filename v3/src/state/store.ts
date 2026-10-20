@@ -197,8 +197,8 @@ export function removeBoardFromStore(id: string): void {
 // ── Saves in flight ──────────────────────────────────────────────────────────
 
 /**
- * Writes to IndexedDB still running (boards, preferences). A change shows before it is stored, so
- * "visible" is not "saved": whatever must not lose a change (a future "Saving…" hint, E2E tests
+ * Writes to IndexedDB still running (boards, preferences, the library's trash). A change shows
+ * before it is stored, so "visible" is not "saved": whatever must not lose a change (a future "Saving…" hint, E2E tests
  * before a reload) waits for 0. main.tsx mirrors it as the `data-saving` attribute on <html>.
  */
 export const pendingSaves = signal(0);

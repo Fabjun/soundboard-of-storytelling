@@ -49,7 +49,7 @@ status region for screen readers.
 board again, with the view it was left in. A board document holds no audio (ADR-0010), so the
 deleted one stays in memory while the toast is shown (ADR-0086 amendment 2026-10-19).
 
-### Undo: deleting a library file (Slice 16)
+### Undo: deleting a library file (Slice 16) ✅ Done (3.0.270)
 
 Deleting an audio file stays final behind the two-tap confirmation; pads that used it keep a
 reference to a file that is gone. Undo would need the audio kept, and it may not stay in memory
@@ -60,6 +60,11 @@ closed. Slice 16 brings multi-select and bulk delete to the library; one way for
 deletes is decided there (decision 2026-10-19, ADR-0086 amendment). **When:** Slice 16a — a trash
 in its own IndexedDB store ([library.md](product/features/library.md#l1-undo-for-a-deleted-file)
 L1, 2026-10-20).
+✅ **Done (3.0.270, ADR-0087):** a delete is one tap; the file moves to the store `trash` and the
+toast offers UNDO, saying how many pads lose their sound; "Recently deleted" restores it for 30 days;
+delete for good and EMPTY ask in the confirmation dialog. Tests: `v3/tests/unit/libraryTrash.test.ts`,
+`v3/tests/unit/idb.test.ts` (trash, upgrade to v11), `v3/tests/e2e/library-trash.spec.ts` (Chromium,
+WebKit); the iPhone checklist has two new items.
 
 ### Two-tap confirmations
 

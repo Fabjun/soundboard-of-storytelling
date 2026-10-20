@@ -103,6 +103,17 @@ export function withEarlyVersions(
 /** The release notes the main menu shows, newest first (checked by whatsNew.test.ts). */
 export const WHATS_NEW: WhatsNewNotes[] = [
   {
+    version: '3.0.270',
+    new: [
+      'A deleted library file can be brought back: UNDO in the message right after deleting, or RESTORE under "Recently deleted", where files stay for 30 days.',
+      'Each library file says in how many pads it plays, and deleting one says how many pads lose their sound.',
+    ],
+    improved: [
+      'Deleting a library file takes one tap; deleting it for good asks first in a question that a quick double tap cannot confirm.',
+    ],
+    removed: ['The empty BOARDS tab of the library is gone; boards are listed on the board list.'],
+  },
+  {
     version: '3.0.269',
     improved: [
       'The questions before changing a pad type and before discarding changes look and work the same way: the safe answer is ready first, and Escape or a tap beside the question keeps everything as it is.',

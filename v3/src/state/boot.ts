@@ -9,16 +9,23 @@
  */
 
 import { boardGetAll, libGetAllMeta } from '../db/idb';
+import { loadTrash } from './libraryTrash';
 import { boards, libraryItems } from './store';
 
 /**
- * Library list (metadata only — a cursor, no audio in RAM) and boards (JSON documents) into
- * the store. One failing load does not stop the other; the app still starts.
+ * Library list (metadata only — a cursor, no audio in RAM), the library's trash (metadata; what
+ * waited 30 days goes for good, ADR-0087) and boards (JSON documents) into the store. One failing
+ * load does not stop the others; the app still starts.
  */
 export async function loadStoredState(): Promise<void> {
-  const [items, all] = await Promise.allSettled([libGetAllMeta(), boardGetAll()]);
+  const [items, all, trash] = await Promise.allSettled([
+    libGetAllMeta(),
+    boardGetAll(),
+    loadTrash(),
+  ]);
   if (items.status === 'fulfilled') libraryItems.value = items.value;
   else console.error('Library bootstrap failed:', items.reason);
   if (all.status === 'fulfilled') boards.value = all.value;
   else console.error('Board bootstrap failed:', all.reason);
+  if (trash.status === 'rejected') console.error('Trash bootstrap failed:', trash.reason);
 }
