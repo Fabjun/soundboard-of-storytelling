@@ -9,6 +9,7 @@
  *   - AUDIO tab: upload, rename, waveform, search; each row says in how many pads the file plays
  *   - Delete in one tap: the file goes to "Recently deleted" (ADR-0087) and the toast offers
  *     UNDO; there RESTORE, or delete for good and EMPTY after the confirmation dialog
+ *   - Select mode (Slice 16c, L3): SELECT, a checkbox per row, SELECT ALL and DELETE in a bar
  *   - ICONS / PADS tabs: placeholder (empty state); the BOARDS tab is Rejected (library.md L4)
  *   - Tags: shown in the filter rail when any file has one; search words, not edited (L2)
  */
@@ -36,14 +37,15 @@ import {
   daysLeft,
   deleteForGood,
   restoreFile,
+  restoreFiles,
   TRASH_DAYS,
-  trashFile,
+  trashFiles,
   trashItems,
 } from '../state/libraryTrash';
 import { announceUndo } from '../state/undoNotice';
 import { getLibrarySort, prefsVersion, setLibrarySort } from '../state/prefs';
 import { narrowWindow } from '../state/windowClass';
-import { fileUses, soundLossText } from '../lib/fileUses';
+import { fileUses, padsUsing, soundLossText } from '../lib/fileUses';
 import { LIBRARY_SORT_KEYS, PAD_SORT_LABELS, sortLibrary } from '../lib/padSort';
 import { processFilesSerial, formatBytes, totalLibraryBytes } from '../lib/upload';
 import { libRename } from '../db/idb';
@@ -151,6 +153,28 @@ export function LibraryScreen(): JSX.Element {
     void startPreview(pad, { hash: meta.id }, 0, meta.duration);
   }
 
+  // Select mode (library.md L3): SELECT shows a checkbox on each row and a bar with its actions;
+  // DONE ends it (Apple HIG: an edit mode before selecting list items). It acts on the files
+  // shown — a file the search hides is not deleted unseen
+  const [choosing, setChoosing] = useState(false);
+  const [chosen, setChosen] = useState<ReadonlySet<string>>(new Set());
+  const chosenShown = filtered.filter((m) => chosen.has(m.id));
+  const allShownChosen = filtered.length > 0 && chosenShown.length === filtered.length;
+  function startChoosing() {
+    stopPreview();
+    setChosen(new Set());
+    setChoosing(true);
+  }
+  function endChoosing() {
+    setChoosing(false);
+    setChosen(new Set());
+  }
+  function toggleChosen(id: string) {
+    const next = new Set(chosen);
+    if (!next.delete(id)) next.add(id);
+    setChosen(next);
+  }
+
   const totalSize = totalLibraryBytes(items);
 
   // Breadcrumb: "124 audio files · 38.2 MB"
@@ -200,16 +224,20 @@ export function LibraryScreen(): JSX.Element {
 
   // ── Row action handlers ────────────────────────────────────────────────────
 
-  // One tap: the file goes to the trash and the toast offers UNDO — it can be undone, so it is not
-  // asked (CLAUDE.md delete rules); the toast says how many pads lose their sound (V1's warning)
-  async function handleDelete(id: string) {
-    const name = items.find((m) => m.id === id)?.name ?? 'the file';
-    const lost = soundLossText(uses.get(id)?.length ?? 0);
+  // One tap: the files go to the trash and the toast offers UNDO — it can be undone, so it is not
+  // asked (CLAUDE.md delete rules); the toast says how many pads lose their sound (V1's warning).
+  // One way for a single and a bulk delete (D4)
+  async function handleDelete(ids: string[]) {
+    const lost = soundLossText(padsUsing(boards.value, ids));
     try {
-      const moved = await trashFile(id);
-      if (selectedId === id) setSelectedId(null);
-      if (moved) {
-        announceUndo(`Deleted '${name}'${lost ? ` · ${lost}` : ''}`, () => void restoreFile(id));
+      const moved = await trashFiles(ids);
+      if (selectedId !== null && ids.includes(selectedId)) setSelectedId(null);
+      if (moved.length > 0) {
+        const what = moved.length === 1 ? `'${moved[0].name}'` : `${moved.length} files`;
+        announceUndo(
+          `Deleted ${what}${lost ? ` · ${lost}` : ''}`,
+          () => void restoreFiles(moved.map((t) => t.id)),
+        );
       }
     } catch (e) {
       console.error('Library delete failed:', e);
@@ -330,7 +358,10 @@ export function LibraryScreen(): JSX.Element {
               <button
                 class={'sb-category-item' + (view === 'trash' ? ' is-active' : '')}
                 aria-pressed={view === 'trash'}
-                onClick={() => setView('trash')}
+                onClick={() => {
+                  endChoosing();
+                  setView('trash');
+                }}
               >
                 <span>Recently deleted</span>
                 <span class="sb-count-text">{trash.length}</span>
@@ -419,9 +450,48 @@ export function LibraryScreen(): JSX.Element {
                   >
                     {librarySort.reversed ? '↑' : '↓'}
                   </button>
+                  <button
+                    class="sb-btn sb-btn-sm sb-btn-ghost"
+                    disabled={!choosing && items.length === 0}
+                    onClick={choosing ? endChoosing : startChoosing}
+                  >
+                    {choosing ? 'DONE' : 'SELECT'}
+                  </button>
                 </>
               )}
             </div>
+
+            {/* Select mode: how many files are chosen, and what can be done with them (L3) */}
+            {view === 'all' && choosing && (
+              <div class="sb-list-bar" role="toolbar" aria-label="Selected files">
+                <span class="sb-caption">
+                  {chosenShown.length === 1
+                    ? '1 file selected'
+                    : `${chosenShown.length} files selected`}
+                </span>
+                <div class="sb-row">
+                  <button
+                    class="sb-btn sb-btn-sm sb-btn-ghost"
+                    disabled={filtered.length === 0}
+                    onClick={() =>
+                      setChosen(allShownChosen ? new Set() : new Set(filtered.map((m) => m.id)))
+                    }
+                  >
+                    {allShownChosen ? 'SELECT NONE' : 'SELECT ALL'}
+                  </button>
+                  <button
+                    class="sb-btn sb-btn-sm sb-btn-danger"
+                    disabled={chosenShown.length === 0}
+                    onClick={() => {
+                      void handleDelete(chosenShown.map((m) => m.id));
+                      endChoosing();
+                    }}
+                  >
+                    DELETE
+                  </button>
+                </div>
+              </div>
+            )}
 
             {/* Recently deleted: how long files stay, and EMPTY (asked first, D7) */}
             {view === 'trash' && (
@@ -488,11 +558,20 @@ export function LibraryScreen(): JSX.Element {
                     selected={selectedId === meta.id}
                     onSelect={() => setSelectedId(meta.id)}
                     uses={uses.get(meta.id)?.length ?? 0}
-                    preview={{
-                      playing: playingId === meta.id,
-                      onToggle: () => togglePreview(meta),
-                    }}
-                    onDelete={() => handleDelete(meta.id)}
+                    {...(choosing
+                      ? {
+                          choose: {
+                            chosen: chosen.has(meta.id),
+                            onToggle: () => toggleChosen(meta.id),
+                          },
+                        }
+                      : {
+                          preview: {
+                            playing: playingId === meta.id,
+                            onToggle: () => togglePreview(meta),
+                          },
+                        })}
+                    onDelete={() => handleDelete([meta.id])}
                     onRename={(newName) => handleRename(meta.id, newName)}
                   />
                 ))
@@ -535,7 +614,7 @@ export function LibraryScreen(): JSX.Element {
           items.length === 0
             ? 'No files'
             : `${items.length} file${items.length !== 1 ? 's' : ''} · ${formatBytes(totalSize)}` +
-              (selectedId ? ' · 1 selected' : '')
+              (choosing ? ` · ${chosenShown.length} selected` : selectedId ? ' · 1 selected' : '')
         }
       />
     </div>

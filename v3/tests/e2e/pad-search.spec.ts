@@ -106,9 +106,13 @@ test('a search belongs to its view: another view starts without it', async ({ pa
 test('on a phone the search field keeps room to type in next to the sort', async ({ page }) => {
   // Found in the screenshot review: the sort choice took the whole bar, the field was a sliver
   await page.setViewportSize({ width: 390, height: 844 });
+  // The narrow frame renders after the resize — wait for it, never read the layout at once (read
+  // at once, it measured 72 px under the load of parallel workers, 2026-10-22)
+  await expect
+    .poll(async () => (await search(page).boundingBox())?.width ?? 0)
+    .toBeGreaterThanOrEqual(140);
   const field = (await search(page).boundingBox())!;
   const sort = (await sortBy(page).boundingBox())!;
-  expect(field.width).toBeGreaterThanOrEqual(140);
   expect(sort.width).toBeLessThanOrEqual(field.width);
 });
 

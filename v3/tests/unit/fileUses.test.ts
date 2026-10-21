@@ -4,7 +4,7 @@
 
 import { describe, expect, it } from 'vitest';
 import type { Board, Pad } from '../../src/types';
-import { fileUses, soundLossText } from '../../src/lib/fileUses';
+import { fileUses, padsUsing, soundLossText } from '../../src/lib/fileUses';
 import { newPad } from '../../src/lib/padUtils';
 
 const board = (id: string, name: string, pads: Pad[]): Board => ({
@@ -42,6 +42,29 @@ describe('fileUses', () => {
     expect(uses.get('h1')).toHaveLength(1);
     expect(uses.has('nobody')).toBe(false);
     expect(fileUses([])).toEqual(new Map());
+  });
+});
+
+describe('padsUsing', () => {
+  const boards = [
+    board('b1', 'Night', [
+      newPad('p1', 'single', 'Rain', ['h1']),
+      newPad('p2', 'loop', 'Wind', ['h2', 'h1']),
+      newPad('c', 'combo', 'Storm'),
+    ]),
+    board('b2', 'Day', [newPad('p3', 'single', 'Birds', ['h3'])]),
+  ];
+
+  it('counts each pad that plays any of the files once, over all boards', () => {
+    expect(padsUsing(boards, ['h1', 'h2'])).toBe(2); // Wind plays both, counted once
+    expect(padsUsing(boards, ['h1', 'h3'])).toBe(3);
+    expect(padsUsing(boards, ['h2'])).toBe(1);
+  });
+
+  it('counts none for files no pad plays, for no files, and for no boards', () => {
+    expect(padsUsing(boards, ['nobody'])).toBe(0);
+    expect(padsUsing(boards, [])).toBe(0);
+    expect(padsUsing([], ['h1'])).toBe(0);
   });
 });
 

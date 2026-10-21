@@ -57,6 +57,27 @@ export async function trashFile(id: string, now = Date.now()): Promise<TrashItem
   return moved;
 }
 
+/**
+ * Moves library files to the trash one after another — the one way for a single and a bulk delete
+ * (library.md D4). Resolves with the entries that reached the trash, in the order given.
+ */
+export async function trashFiles(
+  ids: readonly string[],
+  now = Date.now(),
+): Promise<TrashItemMeta[]> {
+  const moved: TrashItemMeta[] = [];
+  for (const id of ids) {
+    const entry = await trashFile(id, now);
+    if (entry) moved.push(entry);
+  }
+  return moved;
+}
+
+/** Puts trashed files back into the library one after another — the UNDO of `trashFiles`. */
+export async function restoreFiles(ids: readonly string[]): Promise<void> {
+  for (const id of ids) await restoreFile(id);
+}
+
 /** Puts a trashed file back into the library; resolves false when it was not in the trash. */
 export async function restoreFile(id: string): Promise<boolean> {
   const meta = await counted(() => trashRestore(id));

@@ -44,7 +44,8 @@ Safety first, then the everyday tools, then what builds on them:
 original file name and D5 in 3.0.271 (ADR-0061 amendment 2026-10-21), the sort (L9) in 3.0.272 —
 newest first by default, as V1's library (`date-desc`) — and the list on a phone in 3.0.272
 (BACKLOG "AudioRow grid overflow on iPhone 13 Pro (390px viewport)"), the preview (L8) in 3.0.273
-— 16b is complete. The BOARDS tab is Rejected (L4).
+— 16b is complete. Of 16c the select mode with bulk delete (L3) in 3.0.276; folders (L2) and bulk
+move are left. The BOARDS tab is Rejected (L4).
 
 ## Decisions L1–L9 (Decided — for review)
 

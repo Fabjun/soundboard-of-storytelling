@@ -230,6 +230,14 @@ because Playwright runs against a simulated environment:
     removes it.
   - Why manual: a fast double tap with a finger on the phone.
 
+- [ ] **Select several files and delete them** _(Slice 16c, library.md L3)_
+  - Action: Library → SELECT → tap the names of two files (each row's checkbox ticks) → DELETE; in
+    the message at the bottom ("Deleted 2 files") tap UNDO.
+  - Expected: a tap anywhere on the name ticks the box; the bar says "2 files selected"; after
+    DELETE both files are gone and SELECT is back; after UNDO both are back at once.
+  - Why manual: ticking checkboxes with a finger on the phone, and two audio files moved between
+    two stores on the device's storage.
+
 ---
 
 ## Section 3 — Layout and Platform
