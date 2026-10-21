@@ -103,6 +103,12 @@ export function withEarlyVersions(
 /** The release notes the main menu shows, newest first (checked by whatsNew.test.ts). */
 export const WHATS_NEW: WhatsNewNotes[] = [
   {
+    version: '3.0.275',
+    behindTheScenes: [
+      'The largest set of automated browser tests before each update runs several tests at once and takes under 4 minutes instead of 9.',
+    ],
+  },
+  {
     version: '3.0.274',
     behindTheScenes: [
       'The order of priorities for the work on the app now cites its sources: a quality standard and a book on interface design.',

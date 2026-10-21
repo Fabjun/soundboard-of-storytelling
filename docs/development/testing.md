@@ -538,7 +538,11 @@ test('describes the user flow in one sentence', async ({ page }) => {
 
 **Guidelines:**
 
-- Every test is self-contained (own state, no dependency on other tests)
+- Every test is self-contained (own state, no dependency on other tests) — locally the spec files
+  run in parallel (Playwright's default: half the logical cores), in CI one at a time
+  (`v3/playwright.config.ts`); the tests of one file always run one after another
+- A test that changes a shared file on disk (`v3/tests/e2e/pwa.spec.ts` rewrites the built service worker, v3/dist/sw.js)
+  belongs to a script that runs with `--workers=1` — `test:e2e:prod`, like the visual scripts
 - `page.goto('/soundboard-of-storytelling/')` at the start of every test (IndexedDB is isolated per browser context)
 - **Locators:** role first, test ID as fallback, never CSS classes — see [Test locators (ADR-0054)](#test-locators-adr-0054)
 - Tests in the `full` suite must pass in Chromium; smoke also in WebKit

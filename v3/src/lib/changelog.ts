@@ -17,10 +17,18 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.274';
+export const APP_VERSION = '3.0.275';
 
 /** The developer log, newest first; CHANGELOG.md is generated from it (sync-changelog). */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.275',
+    date: '2026-10-21',
+    items: [
+      'test(e2e): locally the E2E suites run with Playwright\'s default worker count (half the logical cores), CI keeps one worker (Playwright\'s CI advice) — test:e2e:all took 3.1–3.8 min in five runs with 5 workers, all 369 tests green without a retry, instead of 8.8 min with one (measured 2026-10-21 on main 1793ae5); test:e2e:prod and the visual scripts keep --workers=1: pwa.spec.ts rewrites dist/sw.js while it runs, and screenshots differ under load; testing.md "Writing E2E tests" names the rule',
+      'test(e2e): counter-check of the prod exception — test:e2e:prod with 5 workers passed once (211 tests, 1.1 min instead of 3.5): within one file the tests run in order, and another test only meets the changed sw.js when it reloads during those seconds; the exception stays as protection (owner decision 2026-10-21)',
+    ],
+  },
   {
     version: '3.0.274',
     date: '2026-10-21',
