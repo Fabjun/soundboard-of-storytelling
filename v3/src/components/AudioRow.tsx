@@ -32,6 +32,8 @@ interface AudioRowProps {
   onRename?: (newName: string) => void;
   /** Shows the row of a file in the trash. */
   trash?: TrashRowOptions;
+  /** The preview of the file (library.md L8): whether it plays now, and ▶ / ■. */
+  preview?: { playing: boolean; onToggle: () => void };
 }
 
 // ── RenameField — inline <input> toggle (no contentEditable — iOS Safari issues) ───
@@ -136,6 +138,7 @@ export function AudioRow({
   onDelete,
   onRename,
   trash,
+  preview,
 }: AudioRowProps) {
   const usedIn = uses === 0 ? '' : uses === 1 ? 'in 1 pad · ' : `in ${uses} pads · `;
   // A renamed file shows the name it came with (V1: "← original.mp3"); otherwise the hash start
@@ -153,9 +156,23 @@ export function AudioRow({
         borderLeft: selected ? '2px solid var(--gold)' : '2px solid transparent',
       }}
     >
-      {/* Col 1: type icon + name + a hint — the name is the row's button (select, rename) */}
+      {/* Col 1: ▶ / ■ (the preview) or the type icon, name + a hint — the name is the row's
+          button (select, rename) */}
       <div class="sb-row">
-        <UiIcon name="play" size={14} color="var(--gold)" />
+        {preview ? (
+          <button
+            class="sb-btn sb-btn-ghost sb-btn-icon"
+            aria-label={preview.playing ? `Stop ${meta.name}` : `Play ${meta.name}`}
+            onClick={(e) => {
+              e.stopPropagation();
+              preview.onToggle();
+            }}
+          >
+            <UiIcon name={preview.playing ? 'stop' : 'play'} size={14} color="var(--gold)" />
+          </button>
+        ) : (
+          <UiIcon name="play" size={14} color="var(--gold)" />
+        )}
         {trash ? (
           <span class="sb-flex-min sb-col">
             <span class="sb-audio-row-name">{meta.name}</span>

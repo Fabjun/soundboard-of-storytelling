@@ -29,6 +29,7 @@ during the slice. This is the only defense against backlog drift.
 5. [CSS Class Discipline](#5-css-class-discipline-complete)
 6. [Known Limitations](#6-known-limitations)
 7. [Manual Verification Reference](#7-manual-verification-reference)
+8. [Open source requests](#8-open-source-requests)
 
 ---
 
@@ -3278,3 +3279,16 @@ that touches audio code (`src/audio/`), the IDB layer (`src/db/`), or file-handl
 - Backup import/export via iOS Files app
 
 See `docs/development/testing.md §Mobile testing` for the full rationale.
+
+---
+
+## 8. Open source requests
+
+Primary sources a decision rests on but that were reachable only second-hand; the owner is asked
+for each. A source once provided is kept in the owner's literature folder (outside the repository)
+and its row is marked ✅ with the date.
+
+| Source (authors, title, edition, part)                                                                                 | Needed for                                                                                                                                               | Status                                                                                            |
+| ---------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| ISO/IEC 25010:2023, Systems and software engineering — SQuaRE — Product quality model (full text)                      | CLAUDE.md "Guiding priorities" (2026-10-21): check the quality characteristics and whether the standard ranks them — known only from secondary summaries | Open — the file provided on 2026-10-21 is a 6-page sample of ISO/IEC 25000:2014 (Guide to SQuaRE) |
+| Aarron Walter, _Designing for Emotion_, 2nd edition, A Book Apart, 2020 — the chapter with the hierarchy of user needs | CLAUDE.md "Guiding priorities" (2026-10-21): the order functional → reliable → usable → pleasurable, cited from secondary sources                        | Open                                                                                              |

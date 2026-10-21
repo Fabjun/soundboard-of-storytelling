@@ -17,10 +17,19 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.272';
+export const APP_VERSION = '3.0.273';
 
 /** The developer log, newest first; CHANGELOG.md is generated from it (sync-changelog). */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.273',
+    date: '2026-10-21',
+    items: [
+      "feat(library): Slice 16b, part 4 — the preview (library.md L8): ▶ on a row of All plays the file once through the PAD editor's preview path (startPreview, the engine unchanged, one file decoded at a time); ■ stops it, ▶ on another row switches to that file, leaving the library stops it, and a file played to its end shows ▶ again; Slice 16b is complete",
+      'test(e2e): library-preview, Chromium only (headless WebKit cannot decode audio) — ▶ then ■, and a file that ends on its own; counter-checked — a ■ that does nothing turns the stop test red (it requires ▶ within 400 ms, before the 1 s file would end on its own; without that limit it stayed green), a row that ignores the end of the file turns both red',
+      'docs: CLAUDE.md guiding priorities in the owner\'s order of 2026-10-21 — safety, functionality, structure, optimization, design; BACKLOG "Open source requests" (ISO/IEC 25010:2023, Walter\'s Designing for Emotion); library.md 16b complete',
+    ],
+  },
   {
     version: '3.0.272',
     date: '2026-10-21',

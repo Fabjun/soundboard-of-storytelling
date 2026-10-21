@@ -56,6 +56,7 @@ export const FULL_TESTS = [
   'settings',
   'library-trash',
   'library-list',
+  'library-preview',
 ];
 
 /**

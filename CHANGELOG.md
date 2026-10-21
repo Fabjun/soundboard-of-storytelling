@@ -7,6 +7,17 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.273 — 2026-10-21
+
+### Added
+
+- feat(library): Slice 16b, part 4 — the preview (library.md L8): ▶ on a row of All plays the file once through the PAD editor's preview path (startPreview, the engine unchanged, one file decoded at a time); ■ stops it, ▶ on another row switches to that file, leaving the library stops it, and a file played to its end shows ▶ again; Slice 16b is complete
+
+### Internal
+
+- test(e2e): library-preview, Chromium only (headless WebKit cannot decode audio) — ▶ then ■, and a file that ends on its own; counter-checked — a ■ that does nothing turns the stop test red (it requires ▶ within 400 ms, before the 1 s file would end on its own; without that limit it stayed green), a row that ignores the end of the file turns both red
+- docs: CLAUDE.md guiding priorities in the owner's order of 2026-10-21 — safety, functionality, structure, optimization, design; BACKLOG "Open source requests" (ISO/IEC 25010:2023, Walter's Designing for Emotion); library.md 16b complete
+
 ## 3.0.272 — 2026-10-21
 
 ### Added

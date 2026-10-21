@@ -40,11 +40,17 @@
 
 ---
 
-## Guiding priorities (user decision 2026-09-29)
+## Guiding priorities (owner decisions 2026-09-29, 2026-10-21)
 
-1. **Safety** — a trustworthy test environment and secure development and deployment
-   come first (Workflow rule 15, `docs/development/testing.md`).
-2. **Structure and clarity** — work strictly structured. One uniform scheme for everything
+Highest first; the order of 2026-10-21 puts functionality before structure and splits the former
+"Features" into optimization and design (Kent Beck: make it work, make it right, make it fast;
+Aarron Walter's hierarchy of user needs: functional, reliable, usable, pleasurable).
+
+1. **Safety** — the user's data, a trustworthy test environment and secure development and
+   deployment come first (Workflow rule 15, `docs/development/testing.md`).
+2. **Functionality** — what the app does for its user; usability and accessibility count here.
+3. **Structure and clarity** — follows each working change at once: a change is done only when it
+   is also clean, never postponed. Work strictly structured. One uniform scheme for everything
    of a kind (file and folder names, code identifiers, components, CSS classes, test IDs,
    docs, commit messages) is the minimum:
    - never introduce a second style next to an existing one;
@@ -63,7 +69,9 @@
      referenced becomes a real heading (docsGuards);
    - derivable facts (counts, lists of specs/steps) are generated or referenced, never typed —
      e.g. test counts live only in the generated test inventory.
-3. **Features** — only on top of 1 and 2.
+4. **Optimization** — speed of the app and of the workflow (e.g. the test gate), when a
+   measurement shows the need.
+5. **Design** — visual appearance.
 
 ### Working principles (user decisions 2026-09-29)
 

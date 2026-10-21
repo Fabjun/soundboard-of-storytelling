@@ -13,7 +13,7 @@
  *   - Tags: shown in the filter rail when any file has one; search words, not edited (L2)
  */
 
-import { useState, useRef } from 'preact/hooks';
+import { useLayoutEffect, useState, useRef } from 'preact/hooks';
 import type { JSX } from 'preact';
 import { TopBar } from '../components/TopBar';
 import { StatusBar } from '../components/StatusBar';
@@ -25,9 +25,13 @@ import {
   boards,
   currentScreen,
   libraryItems,
+  previewPlaying,
   uploadStatus,
   renameLibraryItemMeta,
 } from '../state/store';
+import { startPreview, stopPreview } from '../lib/preview';
+import { newPad } from '../lib/padUtils';
+import type { LibraryItemMeta } from '../types';
 import {
   daysLeft,
   deleteForGood,
@@ -130,6 +134,22 @@ export function LibraryScreen(): JSX.Element {
   const uses = fileUses(boards.value);
   const now = Date.now();
   const narrow = narrowWindow.value;
+
+  // Preview (library.md L8): ▶ plays the file once through the PAD editor's preview path (the
+  // engine unchanged, one file decoded at a time); ■, the next ▶ or leaving the library stops it
+  const [previewId, setPreviewId] = useState<string | null>(null);
+  const playingId = previewPlaying.value ? previewId : null;
+  useLayoutEffect(() => () => stopPreview(), []);
+  function togglePreview(meta: LibraryItemMeta) {
+    if (playingId === meta.id) {
+      stopPreview();
+      return;
+    }
+    const pad = newPad('library-preview', 'single', meta.name, [meta.id]);
+    if (pad.type === 'combo') return; // a Single always — this narrows the type
+    setPreviewId(meta.id);
+    void startPreview(pad, { hash: meta.id }, 0, meta.duration);
+  }
 
   const totalSize = totalLibraryBytes(items);
 
@@ -468,6 +488,10 @@ export function LibraryScreen(): JSX.Element {
                     selected={selectedId === meta.id}
                     onSelect={() => setSelectedId(meta.id)}
                     uses={uses.get(meta.id)?.length ?? 0}
+                    preview={{
+                      playing: playingId === meta.id,
+                      onToggle: () => togglePreview(meta),
+                    }}
                     onDelete={() => handleDelete(meta.id)}
                     onRename={(newName) => handleRename(meta.id, newName)}
                   />
