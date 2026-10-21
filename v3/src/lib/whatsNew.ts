@@ -103,6 +103,12 @@ export function withEarlyVersions(
 /** The release notes the main menu shows, newest first (checked by whatsNew.test.ts). */
 export const WHATS_NEW: WhatsNewNotes[] = [
   {
+    version: '3.0.273',
+    new: [
+      'A library file can be heard before it goes on a pad: ▶ on its row plays it once, ■ stops it.',
+    ],
+  },
+  {
     version: '3.0.272',
     new: [
       'The library list can be sorted by date added, name or duration, and reversed; newest files come first until another order is chosen.',
