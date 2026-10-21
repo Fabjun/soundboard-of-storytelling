@@ -53,7 +53,12 @@ const hash = (b: Uint8Array) => computeHash(b.slice().buffer);
 
 /** One board with a deck, a Single on A, a Loop on A + B and a combo; both files in the library. */
 async function seed(): Promise<Board> {
-  await addAudioFile(new File([A], 'owl.mp3', { type: 'audio/mpeg' }), { tags: ['Forest'] });
+  // owl: uploaded long ago as OWL_raw.mp3, renamed since
+  await addAudioFile(new File([A], 'owl.mp3', { type: 'audio/mpeg' }), {
+    tags: ['Forest'],
+    addedAt: 1_000,
+    originalName: 'OWL_raw.mp3',
+  });
   await addAudioFile(new File([B], 'rain.wav', { type: 'audio/wav' }));
   const owl = newPad('p1', 'single', 'Owl', [hash(A)]);
   const rain = { ...newPad('p2', 'loop', 'Rain', [hash(A), hash(B)]), order: 'shuffle' as const };
@@ -105,6 +110,10 @@ describe('buildBackup', () => {
         [hash(B), 'rain.wav', []],
       ].sort(),
     );
+    // D5: the date added and the original name come back, not today and the display name
+    const owl = metas.find((m) => m.id === hash(A))!;
+    expect([owl.addedAt, owl.originalName]).toEqual([1_000, 'OWL_raw.mp3']);
+    expect(metas.find((m) => m.id === hash(B))!.originalName).toBe('rain.wav');
     expect((await libGet(hash(A)))!.blob.type).toBe('audio/mpeg');
     expect(Array.from(new Uint8Array(await (await libGet(hash(B)))!.blob.arrayBuffer()))).toEqual([
       9, 8, 7,
@@ -152,6 +161,7 @@ describe('buildBackup', () => {
       'file',
       'id',
       'name',
+      'originalName',
       'tags',
       'type',
     ]);

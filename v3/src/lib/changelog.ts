@@ -17,10 +17,21 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.270';
+export const APP_VERSION = '3.0.271';
 
 /** The developer log, newest first; CHANGELOG.md is generated from it (sync-changelog). */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.271',
+    date: '2026-10-21',
+    items: [
+      'feat(library): Slice 16b, part 1 — a library entry keeps the file name it was uploaded with (originalName, V1 origName), across renames, the trash, export and import; a renamed file shows "← original name" in its row (V1\'s look); entries stored before have none and show the hash start',
+      'feat(backup): an import restores the date added (V3 addedAt, V1 added) and the original name (V3 originalName, V1 origName) instead of today and the display name (library.md D5); the export writes originalName — an optional manifest field, formatVersion stays 2 (ADR-0061 amendment)',
+      'test: unit backupImport (V1 and V3 restore, fallbacks, invalid values), backupExport (round trip keeps date and original name; manifest fields), upload (originalName stored), idb (original name through the list, the trash and back); E2E library-list — a renamed file shows its original name after a reload (Chromium, WebKit; the WebKit seed stores the original name as an upload does); counter-checked — a row without the original name and an import without the date each turn their tests red',
+      'docs: BACKLOG "Import: date added and original file name from a backup" done; "Smart light per pad" — the owner orders the Athom WLED 12W Color Bulb (2026-10-21), the 15 W bulb is discontinued; library.md 16b progress',
+      'build(hooks): the pre-commit hook generates the docs again after lint-staged — the first commit of this version carried an API list from before Prettier wrapped the addAudioFile signature (the second time, after #156, that generated docs ran a step behind their inputs); counter-checked with real commits on a throwaway branch: the old hook leaves CLAUDE.md stale, the new one does not',
+    ],
+  },
   {
     version: '3.0.270',
     date: '2026-10-20',

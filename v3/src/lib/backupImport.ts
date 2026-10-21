@@ -60,6 +60,24 @@ export const entryTags = (e: Entry): string[] => {
   return typeof e.folder === 'string' && e.folder !== '' ? [e.folder] : [];
 };
 
+/**
+ * The date the file was added, to restore (D5): `addedAt` in V3 files, `added` in V1 files; none
+ * when the file holds no valid time — the import then takes now.
+ */
+export const entryAddedAt = (e: Entry): number | undefined => {
+  const t = e.addedAt ?? e.added;
+  return typeof t === 'number' && Number.isFinite(t) && t > 0 ? t : undefined;
+};
+
+/**
+ * The file name at upload, to restore (D5): `originalName` in V3 files, `origName` in V1 files;
+ * none when empty — the import then takes the entry's name, as V1 did.
+ */
+export const entryOriginalName = (e: Entry): string | undefined => {
+  const n = e.originalName ?? e.origName;
+  return typeof n === 'string' && n !== '' ? n : undefined;
+};
+
 /** Audio — not a V1 pad template (`type: 'pad'`) or an image, which are not imported. */
 const isAudioEntry = (e: Entry): boolean => {
   return (
@@ -105,8 +123,9 @@ export async function planImport(file: Blob): Promise<ImportPlan> {
 }
 
 /**
- * Adds one entry's audio to the library through the upload pipeline, with its tags. Records the
- * stored id under the backup's hash. Returns a message when the audio could not be added.
+ * Adds one entry's audio to the library through the upload pipeline, with its tags, its date added
+ * and its original name (D5). Records the stored id under the backup's hash. Returns a message when
+ * the audio could not be added.
  */
 async function importAudio(
   e: Entry,
@@ -124,7 +143,11 @@ async function importAudio(
   }
   if (!data) return `${name}: the backup holds no audio for this file`;
   const type = typeof e.type === 'string' && e.type.startsWith('audio/') ? e.type : '';
-  const r = await addAudioFile(new File([data], name, { type }), { tags: entryTags(e) });
+  const r = await addAudioFile(new File([data], name, { type }), {
+    tags: entryTags(e),
+    addedAt: entryAddedAt(e),
+    originalName: entryOriginalName(e),
+  });
   if (r.kind === 'error') return r.error;
   if (hash) stored.set(hash, r.id);
   if (r.kind === 'imported') result.audioAdded++;

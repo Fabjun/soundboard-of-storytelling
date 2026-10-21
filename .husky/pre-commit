@@ -40,6 +40,19 @@ echo "🎨 Pre-commit: running lint-staged (format + lint on staged files)..."
 }
 echo "✅ lint-staged passed."
 
+# lint-staged may have reformatted sources the generators read (the API list renders signatures as
+# written): generate once more from the formatted sources, so no commit carries a stale list
+# (3.0.271 — the first sync had seen addAudioFile before Prettier wrapped it)
+echo "📚 Pre-commit: syncing the generated docs again from the formatted sources..."
+npm run sync:docs > /dev/null || {
+  printf '\n❌ sync:docs failed after lint-staged — commit aborted.\n'
+  printf '   Fix the generator error (run npm run sync:docs in v3/ to see it), then git commit.\n\n'
+  exit 1
+}
+# shellcheck disable=SC2086 # the list is space-separated paths without spaces
+git -C "$ROOT" add $GENERATED
+echo "✅ Generated docs match the formatted sources."
+
 echo "🧪 Pre-commit: running unit tests in v3/..."
 npm run test || {
   printf '\n❌ Unit tests failed — commit aborted.\n'

@@ -145,6 +145,17 @@ describe('boardDelete', () => {
 // ── libGetAllMeta ─────────────────────────────────────────────────────────────
 
 describe('libGetAllMeta', () => {
+  test('keeps the original name through the list, the trash and back (Slice 16b)', async () => {
+    await libPut({ ...makeLibraryItem('h1', 'owl.mp3'), originalName: 'OWL_raw.mp3' });
+    await libPut(makeLibraryItem('h2', 'old.mp3')); // stored before 16b: no original name
+    const [owl, old] = await libGetAllMeta();
+    expect(owl.originalName).toBe('OWL_raw.mp3');
+    expect(old).not.toHaveProperty('originalName');
+    expect((await libMoveToTrash('h1', 5))?.originalName).toBe('OWL_raw.mp3');
+    expect((await trashGetAllMeta())[0].originalName).toBe('OWL_raw.mp3');
+    expect((await trashRestore('h1'))?.originalName).toBe('OWL_raw.mp3');
+  });
+
   test('returns empty array when library is empty', async () => {
     const metas = await libGetAllMeta();
     expect(metas).toEqual([]);
