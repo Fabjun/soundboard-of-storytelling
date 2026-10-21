@@ -17,7 +17,14 @@
  */
 
 import { test, expect, type Locator, type Page } from '@playwright/test';
-import { goToBoardList, createBoardAndNavigate, createDeck } from '../helpers';
+import {
+  goToBoardList,
+  goToLibrary,
+  createBoardAndNavigate,
+  createDeck,
+  seedTestAudio,
+  TEST_AUDIO_NAME,
+} from '../helpers';
 
 test.describe('no horizontal overflow on a 390px phone', () => {
   async function assertNoOverflow(page: Page, locator: Locator, label: string): Promise<void> {
@@ -56,6 +63,38 @@ test.describe('no horizontal overflow on a 390px phone', () => {
 
     // Deck rail — the rail itself must not overflow
     await assertNoOverflow(page, page.getByTestId('deck-rail'), 'deck-rail');
+  });
+
+  // Slice 16b (BACKLOG "AudioRow grid overflow on iPhone 13 Pro (390px viewport)"): a library row
+  // needed 412 px beside a 220 px filter rail — its delete button sat off the screen
+  test('the library with a file does not overflow 390px viewport', async ({ page }) => {
+    await page.goto('/soundboard-of-storytelling/');
+    await seedTestAudio(page); // the app reads it at its next start
+    await page.goto('/soundboard-of-storytelling/');
+    await goToLibrary(page);
+    const name = `${TEST_AUDIO_NAME}.wav`;
+    await assertNoOverflow(
+      page,
+      page.getByRole('button', { name: `Rename ${name}`, exact: true }),
+      'file name',
+    );
+    await assertNoOverflow(
+      page,
+      page.getByRole('button', { name: `Delete ${name}`, exact: true }),
+      'delete button',
+    );
+    await assertNoOverflow(
+      page,
+      page.getByRole('button', { name: /^Recently deleted/ }),
+      'Recently deleted',
+    );
+    // The sort beside the search must leave the field room to type (it once shrank to its icon)
+    const search = await page.getByRole('textbox', { name: /^Search/ }).boundingBox();
+    expect(search!.width, `search field ${search!.width}px wide`).toBeGreaterThanOrEqual(120);
+    const scrollWidth = await page.evaluate(() => document.body.scrollWidth);
+    expect(scrollWidth, `library body.scrollWidth ${scrollWidth}px`).toBeLessThanOrEqual(
+      page.viewportSize()!.width,
+    );
   });
 
   test('StartScreen does not overflow 390px viewport', async ({ page }) => {

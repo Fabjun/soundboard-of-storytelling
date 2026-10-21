@@ -107,6 +107,9 @@ export const WHATS_NEW: WhatsNewNotes[] = [
     new: [
       'The library list can be sorted by date added, name or duration, and reversed; newest files come first until another order is chosen.',
     ],
+    fixed: [
+      'On a phone the library fits the screen: the categories sit above the list, and each file shows its name, length and delete button.',
+    ],
   },
   {
     version: '3.0.271',

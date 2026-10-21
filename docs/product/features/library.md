@@ -42,9 +42,9 @@ Safety first, then the everyday tools, then what builds on them:
 
 **Built:** 16a in 3.0.270 ([ADR-0087](../../architecture/0087-library-trash.md)); of 16b the
 original file name and D5 in 3.0.271 (ADR-0061 amendment 2026-10-21), the sort (L9) in 3.0.272 —
-newest first by default, as V1's library (`date-desc`). The BOARDS tab is
-Rejected (L4). "The list fits a phone" in 16b is BACKLOG "AudioRow grid overflow on
-iPhone 13 Pro (390px viewport)": a row needs 412 px, an iPhone 13 Pro has 390.
+newest first by default, as V1's library (`date-desc`) — and the list on a phone in 3.0.272
+(BACKLOG "AudioRow grid overflow on iPhone 13 Pro (390px viewport)"). Of 16b the preview (L8) is
+left. The BOARDS tab is Rejected (L4).
 
 ## Decisions L1–L9 (Decided — for review)
 
