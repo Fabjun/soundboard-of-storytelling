@@ -2389,11 +2389,15 @@
   margin-left: 0.25rem;
 }
 .sb-screen-layout {
-  /* @inventory: 2-column content grid for LibraryScreen — 220px filter rail + 1fr content, fills parent, min-height:0 for scroll. */
+  /* @inventory: 2-column content grid for LibraryScreen — 220px filter rail + 1fr content, fills parent, min-height:0 for scroll; is-narrow stacks the rail above the list (phone). */
   display: grid;
   grid-template-columns: 220px 1fr;
   flex: 1;
   min-height: 0;
+}
+.sb-screen-layout.is-narrow {
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: auto minmax(0, 1fr);
 }
 .sb-filter-rail {
   /* @inventory: Left sidebar filter column — deep background, right border, flex column, iOS-touch scroll. */
@@ -2404,6 +2408,21 @@
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   overscroll-behavior: none;
+}
+/* On a phone the rail is a row above the list (ADR-0082 narrow frame, Slice 16b) */
+.sb-filter-rail.is-narrow {
+  border-right: none;
+  border-bottom: 1px solid var(--border);
+  overflow: visible;
+}
+.sb-filter-rail.is-narrow .sb-rail-section {
+  display: flex;
+  gap: var(--space-1);
+  padding: var(--space-1) var(--space-2);
+}
+.sb-filter-rail.is-narrow .sb-category-item {
+  flex: 1;
+  width: auto;
 }
 .sb-rail-section {
   /* @inventory: Padded section container in a sidebar rail. Add .has-divider for a bottom border separator. */
@@ -2485,6 +2504,20 @@
   background: var(--deep);
   border-bottom: 1px solid var(--border);
   flex-shrink: 0;
+}
+/* The library's search bar with its sort (Slice 16b): the search field takes the room, the sort
+   choice and the reverse button only their own width (sb-text-input is 100% wide), and they wrap
+   below the field when the row is too narrow — as .sb-pool-toolbar on the board */
+.sb-search-bar.sb-row {
+  flex-wrap: wrap;
+}
+.sb-search-bar > .sb-search-field {
+  flex: 1 1 12rem;
+  min-width: 0;
+}
+.sb-search-bar > .sb-text-input {
+  width: auto;
+  min-width: 0;
 }
 .sb-search-field {
   /* @inventory: Inner search input row — flex, sunk background, bordered. Wraps icon + input + optional clear button. */
@@ -2727,7 +2760,7 @@
 /* ── AudioRow (Session 3g) ───────────────────────────────────────── */
 
 .sb-audio-row {
-  /* @inventory: Main container grid for AudioRow — 5-column table layout (name 160px | waveform 1fr | duration 70px | size 90px | delete 44px). Cursor + userSelect for row click; background and borderLeft set inline for selected state. NOTE: fixed columns (364px) + gaps (48px) = 412px min — overflows 390px mobile viewport; pre-existing design, for the adaptive layout (Slice 13). */
+  /* @inventory: Main container grid for AudioRow — 5-column table layout (name 160px | waveform 1fr | duration 70px | size 90px | delete 44px); is-narrow (phone) has 3 columns: name, duration or RESTORE, delete. Cursor + userSelect for row click; background and borderLeft set inline for selected state. */
   display: grid;
   grid-template-columns: 160px 1fr 70px 90px 44px;
   gap: var(--space-3);
@@ -2736,6 +2769,10 @@
   min-height: 44px;
   cursor: pointer;
   user-select: none;
+}
+.sb-audio-row.is-narrow {
+  grid-template-columns: minmax(0, 1fr) auto 44px;
+  gap: var(--space-2);
 }
 .sb-audio-row-rename {
   /* @inventory: Editing-state input in RenameField within AudioRow — font-ui fs-sm (14px), sunk background, strong border. Distinct from sb-row-rename-input (fs-lg/18px, uppercase for board names). */

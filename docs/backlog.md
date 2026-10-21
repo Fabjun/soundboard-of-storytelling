@@ -3083,7 +3083,7 @@ comparison in BoardRow JSX is the natural implementation point.
 
 ---
 
-### AudioRow grid overflow on iPhone 13 Pro (390px viewport)
+### AudioRow grid overflow on iPhone 13 Pro (390px viewport) ✅ Done (3.0.272)
 
 `sb-audio-row` (Session 3g) has `grid-template-columns: 160px 1fr 70px 90px 44px`.
 Fixed widths: 160+70+90+44 = 364px. Gaps: 4 × var(--space-3) = 4 × 12px = 48px.
@@ -3110,6 +3110,12 @@ behavior. Not a regression from 3g; the commit that introduced the grid was in S
 Measured: content column = 170px, grid minimum = 412px, deficit = 242px.
 **Still so on 2026-10-19:** Slice 13 rebuilt the board, not the library — `.sb-audio-row` keeps
 `160px 1fr 70px 90px 44px` and `.sb-screen-layout` its `220px 1fr` (`v3/src/styles/components.css`).
+✅ **Done (3.0.272, Slice 16b):** options B and C — in the narrow frame (ADR-0082) the filter
+rail is a row of categories above the list, and a row shows name, duration (in the trash RESTORE)
+and delete; waveform and size stay in the wide frame. Measured before with
+`v3/tests/e2e/mobile/overflow.spec.ts` ("the library with a file does not overflow 390px viewport"):
+the file name ended at 402 px on a 390 px screen; now every checked element fits, and the search
+field keeps at least 120 px beside the sort.
 
 ---
 

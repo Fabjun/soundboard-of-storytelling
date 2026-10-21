@@ -2,8 +2,8 @@
  * @fileoverview AudioRow — single row in the Library audio list
  *
  * Shows: type icon | name (renameable) + "in N pads" and the original name of a renamed file (else
- * the hash start) | waveform | duration |
- * size | delete. In the trash ("Recently deleted", ADR-0087) the same row shows the days left,
+ * the hash start) | waveform | duration | size | delete; on a phone (narrow frame) name, duration
+ * and delete. In the trash ("Recently deleted", ADR-0087) the same row shows the days left,
  * RESTORE instead of the size, and a delete that asks before it removes the file for good.
  */
 
@@ -11,6 +11,7 @@ import { useRef, useState, useEffect } from 'preact/hooks';
 import { UiIcon } from './UiIcon';
 import { Waveform } from './Waveform';
 import { formatBytes, formatDuration } from '../lib/upload';
+import { narrowWindow } from '../state/windowClass';
 import type { LibraryItemMeta } from '../types';
 
 /** The row of a file in the trash: what it shows and does instead (Slice 16a). */
@@ -140,10 +141,13 @@ export function AudioRow({
   // A renamed file shows the name it came with (V1: "← original.mp3"); otherwise the hash start
   const renamed = meta.originalName !== undefined && meta.originalName !== meta.name;
   const origin = renamed ? `← ${meta.originalName}` : `${meta.id.slice(0, 8)}…`;
+  // A phone has room for name, duration and delete (Material 3 list item: headline with supporting
+  // text, one trailing element); the waveform and the size stay in the wide frame (ADR-0082)
+  const narrow = narrowWindow.value;
 
   return (
     <div
-      class="sb-audio-row"
+      class={'sb-audio-row' + (narrow ? ' is-narrow' : '')}
       style={{
         background: selected ? 'var(--top)' : 'var(--raised)',
         borderLeft: selected ? '2px solid var(--gold)' : '2px solid transparent',
@@ -169,13 +173,15 @@ export function AudioRow({
         )}
       </div>
 
-      {/* Col 2: waveform thumbnail */}
-      <Waveform peaks={meta.peaks} height={28} dim={!selected} />
+      {/* Col 2: waveform thumbnail (wide frame only) */}
+      {!narrow && <Waveform peaks={meta.peaks} height={28} dim={!selected} />}
 
-      {/* Col 3: duration */}
-      <span class="sb-audio-col-duration">{formatDuration(meta.duration)}</span>
+      {/* Col 3: duration — on a phone a file in the trash shows RESTORE here instead */}
+      {!(narrow && trash) && (
+        <span class="sb-audio-col-duration">{formatDuration(meta.duration)}</span>
+      )}
 
-      {/* Col 4: file size — in the trash, RESTORE */}
+      {/* Col 4: file size (wide frame only) — in the trash, RESTORE */}
       {trash ? (
         <button
           class="sb-btn sb-btn-sm sb-btn-ghost"
@@ -185,7 +191,7 @@ export function AudioRow({
           RESTORE
         </button>
       ) : (
-        <span class="sb-audio-col-size">{formatBytes(meta.size)}</span>
+        !narrow && <span class="sb-audio-col-size">{formatBytes(meta.size)}</span>
       )}
 
       {/* Col 5: delete — to the trash in one tap; in the trash, for good after the question */}

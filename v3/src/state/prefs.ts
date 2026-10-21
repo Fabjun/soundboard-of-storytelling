@@ -11,7 +11,14 @@
 
 import { signal } from '@preact/signals';
 import { kvDelete, kvGetAll, kvPut } from '../db/idb';
-import { DEFAULT_PAD_SORT, isPadSort, type PadSort } from '../lib/padSort';
+import {
+  DEFAULT_LIBRARY_SORT,
+  DEFAULT_PAD_SORT,
+  isLibrarySort,
+  isPadSort,
+  type LibrarySort,
+  type PadSort,
+} from '../lib/padSort';
 import { parsePad } from '../lib/boardModel';
 import { BACKUP_REMINDER_CHOICES, BACKUP_REMINDER_DAYS } from '../lib/backupExport';
 import { DEFAULT_THEME, isThemeId, type ThemeId } from '../lib/theme';
@@ -106,6 +113,19 @@ export function getPadSort(boardId: string): PadSort {
 /** Remembers the sort chosen for this board's All pads view. */
 export function setPadSort(boardId: string, sort: PadSort): void {
   write(padSortKey(boardId), { key: sort.key, reversed: sort.reversed });
+}
+
+// ── Sort of the library's file list (Slice 16b, library.md L9) ──────────────
+
+/** The sort chosen for the library's file list — newest first until one is chosen. */
+export function getLibrarySort(): LibrarySort {
+  const v = cache.get('library-sort');
+  return isLibrarySort(v) ? v : DEFAULT_LIBRARY_SORT;
+}
+
+/** Remembers the sort chosen for the library's file list. */
+export function setLibrarySort(sort: LibrarySort): void {
+  write('library-sort', { key: sort.key, reversed: sort.reversed });
 }
 
 // ── Last played, per pad (owner decision 2026-10-02, E1 "Last played") ──────

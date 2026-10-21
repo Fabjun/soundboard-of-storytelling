@@ -115,14 +115,23 @@ function sortValue(pad: Pad, key: PadSortKey, ctx: PadSortContext): number | und
   }
 }
 
-const byName = (a: Pad, b: Pad) =>
+type Named = { id: string; name: string };
+
+const byName = (a: Named, b: Named) =>
   a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }) || a.id.localeCompare(b.id);
 
-/** The pads in the chosen order (a new array). */
-export function sortPads(pads: readonly Pad[], sort: PadSort, ctx: PadSortContext): Pad[] {
-  const dir = sort.reversed ? -1 : 1;
-  const values = new Map(pads.map((p) => [p.id, sortValue(p, sort.key, ctx)]));
-  return [...pads].sort((a, b) => {
+// The one ordering of both lists: by a value in its natural direction (smaller first), no value
+// always last, equal values by name then id; the name order follows the direction only when
+// sorting by name
+function inOrder<T extends Named>(
+  items: readonly T[],
+  valueOf: (item: T) => number | undefined,
+  byNameKey: boolean,
+  reversed: boolean,
+): T[] {
+  const dir = reversed ? -1 : 1;
+  const values = new Map(items.map((t) => [t.id, valueOf(t)]));
+  return [...items].sort((a, b) => {
     const va = values.get(a.id);
     const vb = values.get(b.id);
     if (va === undefined || vb === undefined) {
@@ -130,7 +139,48 @@ export function sortPads(pads: readonly Pad[], sort: PadSort, ctx: PadSortContex
     } else if (va !== vb) {
       return (va - vb) * dir;
     }
-    // Name order follows the direction only when sorting by name
-    return sort.key === 'name' ? byName(a, b) * dir : byName(a, b);
+    return byNameKey ? byName(a, b) * dir : byName(a, b);
   });
+}
+
+/** The pads in the chosen order (a new array). */
+export function sortPads(pads: readonly Pad[], sort: PadSort, ctx: PadSortContext): Pad[] {
+  return inOrder(pads, (p) => sortValue(p, sort.key, ctx), sort.key === 'name', sort.reversed);
+}
+
+// ── The library's file list (Slice 16b, docs/product/features/library.md#l9-sort) ─────────────
+
+/** What the library's file list can be sorted by — the keys of All pads a file has. */
+export type LibrarySortKey = Extract<PadSortKey, 'name' | 'added' | 'duration'>;
+
+/** A sort choice for the library: the key, and whether its natural direction is reversed. */
+export type LibrarySort = { key: LibrarySortKey; reversed: boolean };
+
+/** The library's keys in menu order (labels: `PAD_SORT_LABELS`). */
+export const LIBRARY_SORT_KEYS: readonly LibrarySortKey[] = ['added', 'name', 'duration'];
+
+/** The library's order when none was chosen: newest first, as V1's library (`date-desc`). */
+export const DEFAULT_LIBRARY_SORT: LibrarySort = { key: 'added', reversed: false };
+
+/** A stored library sort choice, if it is a valid one. */
+export function isLibrarySort(v: unknown): v is LibrarySort {
+  return isPadSort(v) && LIBRARY_SORT_KEYS.some((k) => k === v.key);
+}
+
+/** Library files in the chosen order (a new array): date added newest first, name A→Z, duration shortest first. */
+export function sortLibrary<T extends Named & { addedAt: number; duration: number }>(
+  files: readonly T[],
+  sort: LibrarySort,
+): T[] {
+  const valueOf = (f: T): number | undefined => {
+    switch (sort.key) {
+      case 'name':
+        return 0;
+      case 'added':
+        return -f.addedAt;
+      case 'duration':
+        return f.duration > 0 ? f.duration : undefined;
+    }
+  };
+  return inOrder(files, valueOf, sort.key === 'name', sort.reversed);
 }

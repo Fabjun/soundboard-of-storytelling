@@ -103,6 +103,15 @@ export function withEarlyVersions(
 /** The release notes the main menu shows, newest first (checked by whatsNew.test.ts). */
 export const WHATS_NEW: WhatsNewNotes[] = [
   {
+    version: '3.0.272',
+    new: [
+      'The library list can be sorted by date added, name or duration, and reversed; newest files come first until another order is chosen.',
+    ],
+    fixed: [
+      'On a phone the library fits the screen: the categories sit above the list, and each file shows its name, length and delete button.',
+    ],
+  },
+  {
     version: '3.0.271',
     new: ['A renamed library file shows the name it was imported with, under its new name.'],
     improved: [

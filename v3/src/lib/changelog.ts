@@ -17,10 +17,22 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.271';
+export const APP_VERSION = '3.0.272';
 
 /** The developer log, newest first; CHANGELOG.md is generated from it (sync-changelog). */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.272',
+    date: '2026-10-21',
+    items: [
+      "feat(library): Slice 16b, part 2 — the library list sorts by date added (newest first, the default as V1's library), name or duration, reversible, chosen next to the search as on the board; the choice is kept (preference library-sort); Recently deleted keeps its own order (library.md L9)",
+      'refactor(sort): one ordering for All pads and the library (inOrder in padSort): no value always last, ties by name then id, the name order reversed only when sorting by name; LibrarySortKey is the part of PadSortKey a file has, with the same labels',
+      'test: unit padSort (every library key both ways, unknown duration last, ties, input unchanged, valid keys, the default), prefs (library sort kept, a pad-only key falls back); E2E library-list — newest first, Duration, reverse, kept after a reload (Chromium, WebKit); counter-checked — an unsorted list turns three unit tests and the E2E test red',
+      'fix(library): Slice 16b, part 3 — the library fits a phone (BACKLOG "AudioRow grid overflow on iPhone 13 Pro (390px viewport)"): in the narrow frame (ADR-0082) the filter rail is a row of categories above the list (no tags, no drop hint), and a row shows name, duration — in the trash RESTORE — and delete, without waveform and size; the sort beside the search wraps below it when the row is too narrow; the trash note wraps instead of being cut off',
+      'test(e2e): mobile overflow — the library with a file fits 390 px (red before: the file name ended at 402 px) and its search field keeps at least 120 px (red without the new search bar rules: 81 px); visual baseline library-empty updated on purpose (sort beside the search)',
+      'docs: BACKLOG "AudioRow grid overflow on iPhone 13 Pro (390px viewport)" done; library.md 16b progress (the preview is left)',
+    ],
+  },
   {
     version: '3.0.271',
     date: '2026-10-21',

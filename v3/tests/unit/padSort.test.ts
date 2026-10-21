@@ -6,11 +6,15 @@
 
 import type { ComboPad, LoopPad, Pad, SinglePad } from '../../src/types';
 import {
+  DEFAULT_LIBRARY_SORT,
   DEFAULT_PAD_SORT,
+  isLibrarySort,
   isPadSort,
+  LIBRARY_SORT_KEYS,
   PAD_SORT_KEYS,
   PAD_SORT_LABELS,
   padDuration,
+  sortLibrary,
   sortPads,
   type PadSortContext,
   type PadSortKey,
@@ -178,5 +182,65 @@ describe('isPadSort / labels', () => {
   it('every key has a label and the default sorts by name A→Z', () => {
     expect(PAD_SORT_KEYS.every((k) => PAD_SORT_LABELS[k].length > 0)).toBe(true);
     expect(DEFAULT_PAD_SORT).toEqual({ key: 'name', reversed: false });
+  });
+});
+
+describe('sortLibrary (Slice 16b, library.md L9)', () => {
+  const file = (id: string, name: string, addedAt: number, duration: number) => ({
+    id,
+    name,
+    addedAt,
+    duration,
+  });
+  const files = [
+    file('a', 'owl.wav', 300, 4),
+    file('b', 'Rain.wav', 100, 0), // duration unknown
+    file('c', 'bell.wav', 200, 2),
+    file('d', 'drum.wav', 200, 2), // ties c on date and duration
+  ];
+  const ids = (sorted: { id: string }[]) => sorted.map((f) => f.id);
+
+  it('date added: newest first, reversed oldest first; ties by name', () => {
+    expect(ids(sortLibrary(files, { key: 'added', reversed: false }))).toEqual([
+      'a',
+      'c',
+      'd',
+      'b',
+    ]);
+    expect(ids(sortLibrary(files, { key: 'added', reversed: true }))).toEqual(['b', 'c', 'd', 'a']);
+  });
+
+  it('name: A→Z ignoring case, reversed Z→A', () => {
+    expect(ids(sortLibrary(files, { key: 'name', reversed: false }))).toEqual(['c', 'd', 'a', 'b']);
+    expect(ids(sortLibrary(files, { key: 'name', reversed: true }))).toEqual(['b', 'a', 'd', 'c']);
+  });
+
+  it('duration: shortest first; an unknown duration always last, also reversed', () => {
+    expect(ids(sortLibrary(files, { key: 'duration', reversed: false }))).toEqual([
+      'c',
+      'd',
+      'a',
+      'b',
+    ]);
+    expect(ids(sortLibrary(files, { key: 'duration', reversed: true }))).toEqual([
+      'a',
+      'c',
+      'd',
+      'b',
+    ]);
+  });
+
+  it('leaves the list it got unchanged', () => {
+    const before = ids(files);
+    sortLibrary(files, { key: 'name', reversed: false });
+    expect(ids(files)).toEqual(before);
+  });
+
+  it('accepts only its own keys; the default is newest first, as V1', () => {
+    for (const key of LIBRARY_SORT_KEYS) expect(isLibrarySort({ key, reversed: false })).toBe(true);
+    for (const bad of [{ key: 'played', reversed: false }, { key: 'kind', reversed: true }, null])
+      expect(isLibrarySort(bad)).toBe(false);
+    expect(DEFAULT_LIBRARY_SORT).toEqual({ key: 'added', reversed: false });
+    expect(LIBRARY_SORT_KEYS.every((k) => PAD_SORT_LABELS[k].length > 0)).toBe(true);
   });
 });

@@ -37,7 +37,10 @@ import {
   trashItems,
 } from '../state/libraryTrash';
 import { announceUndo } from '../state/undoNotice';
+import { getLibrarySort, prefsVersion, setLibrarySort } from '../state/prefs';
+import { narrowWindow } from '../state/windowClass';
 import { fileUses, soundLossText } from '../lib/fileUses';
+import { LIBRARY_SORT_KEYS, PAD_SORT_LABELS, sortLibrary } from '../lib/padSort';
 import { processFilesSerial, formatBytes, totalLibraryBytes } from '../lib/upload';
 import { libRename } from '../db/idb';
 
@@ -116,10 +119,17 @@ export function LibraryScreen(): JSX.Element {
   const items = libraryItems.value;
   const trash = trashItems.value;
   const matches = (name: string) => name.toLowerCase().includes(search.trim().toLowerCase());
-  const filtered = search.trim() ? items.filter((m) => matches(m.name)) : items;
+  void prefsVersion.value; // re-render when the stored sort changes
+  // The sort of All pads with the keys a file has (L9): newest first until another is chosen
+  const librarySort = getLibrarySort();
+  const filtered = sortLibrary(
+    search.trim() ? items.filter((m) => matches(m.name)) : items,
+    librarySort,
+  );
   const trashFiltered = search.trim() ? trash.filter((t) => matches(t.name)) : trash;
   const uses = fileUses(boards.value);
   const now = Date.now();
+  const narrow = narrowWindow.value;
 
   const totalSize = totalLibraryBytes(items);
 
@@ -281,12 +291,14 @@ export function LibraryScreen(): JSX.Element {
           <EmptyState label="No items yet" />
         </div>
       ) : (
-        <div class="sb-screen-layout">
-          {/* Left rail — filter */}
-          <aside class="sb-filter-rail">
+        <div class={'sb-screen-layout' + (narrow ? ' is-narrow' : '')}>
+          {/* Left rail — filter; on a phone a row of categories above the list (ADR-0082: the
+              frame decides what is rendered — no tags, no drop hint, as files are not dropped
+              on a phone) */}
+          <aside class={'sb-filter-rail' + (narrow ? ' is-narrow' : '')}>
             {/* Category: the library and its trash (folders follow in Slice 16c) */}
             <div class="sb-rail-section has-divider">
-              <div class="sb-rail-label">CATEGORY</div>
+              {!narrow && <div class="sb-rail-label">CATEGORY</div>}
               <button
                 class={'sb-category-item' + (view === 'all' ? ' is-active' : '')}
                 aria-pressed={view === 'all'}
@@ -306,7 +318,7 @@ export function LibraryScreen(): JSX.Element {
             </div>
 
             {/* Tags — read-only, shown if any item has tags */}
-            {items.some((m) => m.tags.length > 0) && (
+            {!narrow && items.some((m) => m.tags.length > 0) && (
               <div class="sb-rail-section">
                 <div class="sb-rail-label">TAGS</div>
                 <div class="sb-tag-list">
@@ -320,7 +332,7 @@ export function LibraryScreen(): JSX.Element {
             )}
 
             {/* Drop zone hint — shown when no files or when dragging */}
-            {(items.length === 0 || isDragOver) && (
+            {!narrow && (items.length === 0 || isDragOver) && (
               <div
                 class="sb-drop-hint"
                 style={{
@@ -335,8 +347,8 @@ export function LibraryScreen(): JSX.Element {
 
           {/* Center — list */}
           <main class="sb-col">
-            {/* Search bar */}
-            <div class="sb-search-bar">
+            {/* Search bar — and in All the sort, as on the board: a key, reversible (L9) */}
+            <div class="sb-search-bar sb-row">
               <div class="sb-search-field">
                 <UiIcon name="search" size={12} color="var(--text-mute)" />
                 <input
@@ -360,12 +372,42 @@ export function LibraryScreen(): JSX.Element {
                   </button>
                 )}
               </div>
+              {view === 'all' && (
+                <>
+                  <select
+                    class="sb-text-input"
+                    aria-label="Sort files by"
+                    value={librarySort.key}
+                    onChange={(e) => {
+                      const key = LIBRARY_SORT_KEYS.find((k) => k === e.currentTarget.value);
+                      if (key) setLibrarySort({ key, reversed: false });
+                    }}
+                  >
+                    {LIBRARY_SORT_KEYS.map((k) => (
+                      <option key={k} value={k}>
+                        {PAD_SORT_LABELS[k]}
+                      </option>
+                    ))}
+                  </select>
+                  <button
+                    class="sb-btn sb-btn-sm sb-btn-ghost"
+                    aria-label="Reverse the order"
+                    aria-pressed={librarySort.reversed}
+                    onClick={() =>
+                      setLibrarySort({ ...librarySort, reversed: !librarySort.reversed })
+                    }
+                  >
+                    {librarySort.reversed ? '↑' : '↓'}
+                  </button>
+                </>
+              )}
             </div>
 
             {/* Recently deleted: how long files stay, and EMPTY (asked first, D7) */}
             {view === 'trash' && (
               <div class="sb-list-bar">
-                <span class="sb-hint-text">
+                {/* sb-caption wraps — the note is read whole, never cut off */}
+                <span class="sb-caption">
                   Deleted files stay here for {TRASH_DAYS} days. Pads that use them stay silent
                   until they are restored.
                 </span>
