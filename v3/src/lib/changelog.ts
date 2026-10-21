@@ -17,10 +17,17 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.273';
+export const APP_VERSION = '3.0.274';
 
 /** The developer log, newest first; CHANGELOG.md is generated from it (sync-changelog). */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.274',
+    date: '2026-10-21',
+    items: [
+      'docs: CLAUDE.md guiding priorities cite their primary sources — Walter, Designing for Emotion, 1st edition 2011, ch. 1, fig. 1.3 (functional, reliable, usable, pleasurable), and ISO/IEC 25010:2023 clause 4.2, which ranks no quality characteristic and leaves the priorities to the context of use; BACKLOG "Open source requests": both rows done (the 2nd edition of Walter was not found, the 1st is the model\'s origin)',
+    ],
+  },
   {
     version: '3.0.273',
     date: '2026-10-21',

@@ -44,7 +44,11 @@
 
 Highest first; the order of 2026-10-21 puts functionality before structure and splits the former
 "Features" into optimization and design (Kent Beck: make it work, make it right, make it fast;
-Aarron Walter's hierarchy of user needs: functional, reliable, usable, pleasurable).
+Aarron Walter's hierarchy of user needs: functional, reliable, usable, pleasurable — _Designing for
+Emotion_, 1st ed. 2011, ch. 1, fig. 1.3). ISO/IEC 25010:2023 clause 4.2 ranks no quality characteristic
+above another — "the priorities assigned to the quality characteristics in each model depend on
+the context in which the information system is used" — so this order is the project's own choice
+for its context of use.
 
 1. **Safety** — the user's data, a trustworthy test environment and secure development and
    deployment come first (Workflow rule 15, `docs/development/testing.md`).

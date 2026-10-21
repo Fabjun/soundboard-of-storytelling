@@ -103,6 +103,12 @@ export function withEarlyVersions(
 /** The release notes the main menu shows, newest first (checked by whatsNew.test.ts). */
 export const WHATS_NEW: WhatsNewNotes[] = [
   {
+    version: '3.0.274',
+    behindTheScenes: [
+      'The order of priorities for the work on the app now cites its sources: a quality standard and a book on interface design.',
+    ],
+  },
+  {
     version: '3.0.273',
     new: [
       'A library file can be heard before it goes on a pad: ▶ on its row plays it once, ■ stops it.',

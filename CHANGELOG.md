@@ -7,6 +7,12 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.274 — 2026-10-21
+
+### Internal
+
+- docs: CLAUDE.md guiding priorities cite their primary sources — Walter, Designing for Emotion, 1st edition 2011, ch. 1, fig. 1.3 (functional, reliable, usable, pleasurable), and ISO/IEC 25010:2023 clause 4.2, which ranks no quality characteristic and leaves the priorities to the context of use; BACKLOG "Open source requests": both rows done (the 2nd edition of Walter was not found, the 1st is the model's origin)
+
 ## 3.0.273 — 2026-10-21
 
 ### Added
