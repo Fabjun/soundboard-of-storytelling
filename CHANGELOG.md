@@ -16,6 +16,7 @@ release notes the app shows are written separately for its users (`v3/src/lib/wh
 ### Internal
 
 - test: unit fileUses (padsUsing: a pad with several of the files counted once, combos, none), libraryTrash (trashFiles in order, skips what is not stored, one UNDO, no files); E2E library-select (Chromium, WebKit) — two files deleted and back with one UNDO, SELECT ALL takes what the search shows, a hidden file is not deleted; mobile overflow — select mode fits 390 px; counter-checked: a pad counted per file, a missing entry kept, DELETE on hidden files, an UNDO of the first file only and a too wide bar each turn their test red
+- test(e2e): pad-search's phone test waits for the narrow frame instead of measuring the search field at once after the resize — under the load of parallel workers it measured 72 px and failed this version's first gate (the race 3.0.275 named); counter-checked: without the toolbar's width rules the field is 18 px and the test red; the other resizing specs were checked, none measures at once
 - style: every checkbox of a check row (sb-check-row: the PAD editor's deck list and file picker, a combo step's options, the library's select mode) in the gold accent, as the sliders — they were the browser's blue; visual baseline library-empty updated on purpose (SELECT beside the sort)
 - docs: library.md 16c progress; iPhone checklist "Select several files and delete them"; CLAUDE.md Slice 16 status (16b was on main but not listed)
 
