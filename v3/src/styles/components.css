@@ -813,7 +813,7 @@
 }
 
 .sb-check-row {
-  /* @inventory: A row with a checkbox and its label — 44px touch target; the whole row toggles. Used for the PAD editor's deck checklist and a combo step's "stop everything first" (Slice 9e / 11). */
+  /* @inventory: A row with a checkbox and its label — 44px touch target; the whole row toggles; the box in the gold accent, as sb-range-input. Used for the PAD editor's deck checklist, a combo step's "stop everything first" (Slice 9e / 11) and the library's select mode (Slice 16c). */
   display: flex;
   align-items: center;
   gap: var(--space-2);
@@ -822,6 +822,9 @@
   font-family: var(--font-mono);
   font-size: var(--fs-sm);
   color: var(--text);
+}
+.sb-check-row > input[type='checkbox'] {
+  accent-color: var(--gold);
 }
 .sb-combo-step {
   /* @inventory: One step of a combo in the PAD editor — bordered block, its parts stacked with a small gap (Slice 11). */
@@ -2495,7 +2498,7 @@
   flex-shrink: 0;
 }
 .sb-list-bar {
-  /* @inventory: Bar above a list with a note and its actions (the library's "Recently deleted": how long files stay, EMPTY) — flex row, space-between, deep background, bottom border. */
+  /* @inventory: Bar above a list with a note and its actions (the library's "Recently deleted": how long files stay, EMPTY; its select mode: how many files are chosen, SELECT ALL, DELETE) — flex row, space-between, deep background, bottom border. */
   display: flex;
   align-items: center;
   justify-content: space-between;

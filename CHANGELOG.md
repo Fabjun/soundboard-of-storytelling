@@ -7,6 +7,18 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.276 — 2026-10-22
+
+### Added
+
+- feat(library): Slice 16c, part 1 — select mode (library.md L3): SELECT shows a checkbox on each row (name and hint are its label) and a bar with the count, SELECT ALL / SELECT NONE and DELETE; DONE ends it (Apple HIG: an edit mode before selecting list items); it acts on the files shown, so a file the search hides is not deleted unseen; a bulk delete is the single delete's way (D4) — the files go to "Recently deleted" and one toast offers UNDO for all (trashFiles, restoreFiles); the toast counts each pad that loses its sound once (padsUsing)
+
+### Internal
+
+- test: unit fileUses (padsUsing: a pad with several of the files counted once, combos, none), libraryTrash (trashFiles in order, skips what is not stored, one UNDO, no files); E2E library-select (Chromium, WebKit) — two files deleted and back with one UNDO, SELECT ALL takes what the search shows, a hidden file is not deleted; mobile overflow — select mode fits 390 px; counter-checked: a pad counted per file, a missing entry kept, DELETE on hidden files, an UNDO of the first file only and a too wide bar each turn their test red
+- style: every checkbox of a check row (sb-check-row: the PAD editor's deck list and file picker, a combo step's options, the library's select mode) in the gold accent, as the sliders — they were the browser's blue; visual baseline library-empty updated on purpose (SELECT beside the sort)
+- docs: library.md 16c progress; iPhone checklist "Select several files and delete them"; CLAUDE.md Slice 16 status (16b was on main but not listed)
+
 ## 3.0.275 — 2026-10-21
 
 ### Internal

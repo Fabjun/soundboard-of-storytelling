@@ -34,6 +34,18 @@ export function fileUses(boards: readonly Board[]): Map<string, FileUse[]> {
   return uses;
 }
 
+/** Counts the pads that play at least one of `hashes`; a pad that plays several counts once. */
+export function padsUsing(boards: readonly Board[], hashes: readonly string[]): number {
+  const wanted = new Set(hashes);
+  let count = 0;
+  for (const board of boards) {
+    for (const pad of board.pads) {
+      if (!isComboPad(pad) && pad.files.some((f) => wanted.has(f.hash))) count++;
+    }
+  }
+  return count;
+}
+
 /** Says how many pads lose their sound, e.g. "1 pad loses its sound"; empty when none does. */
 export function soundLossText(count: number): string {
   if (count === 0) return '';

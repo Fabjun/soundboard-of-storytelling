@@ -103,6 +103,12 @@ export function withEarlyVersions(
 /** The release notes the main menu shows, newest first (checked by whatsNew.test.ts). */
 export const WHATS_NEW: WhatsNewNotes[] = [
   {
+    version: '3.0.276',
+    new: [
+      'SELECT in the library picks several files at once and deletes them together; one UNDO brings them all back.',
+    ],
+  },
+  {
     version: '3.0.275',
     behindTheScenes: [
       'The largest set of automated browser tests before each update runs several tests at once and takes under 4 minutes instead of 9.',

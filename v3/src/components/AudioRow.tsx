@@ -4,7 +4,8 @@
  * Shows: type icon | name (renameable) + "in N pads" and the original name of a renamed file (else
  * the hash start) | waveform | duration | size | delete; on a phone (narrow frame) name, duration
  * and delete. In the trash ("Recently deleted", ADR-0087) the same row shows the days left,
- * RESTORE instead of the size, and a delete that asks before it removes the file for good.
+ * RESTORE instead of the size, and a delete that asks before it removes the file for good. In select
+ * mode (L3) name and hint are the label of a checkbox, and the row has no delete of its own.
  */
 
 import { useRef, useState, useEffect } from 'preact/hooks';
@@ -34,6 +35,8 @@ interface AudioRowProps {
   trash?: TrashRowOptions;
   /** The preview of the file (library.md L8): whether it plays now, and ▶ / ■. */
   preview?: { playing: boolean; onToggle: () => void };
+  /** Select mode (library.md L3): the row is a checkbox — no preview, rename or delete. */
+  choose?: { chosen: boolean; onToggle: () => void };
 }
 
 // ── RenameField — inline <input> toggle (no contentEditable — iOS Safari issues) ───
@@ -139,6 +142,7 @@ export function AudioRow({
   onRename,
   trash,
   preview,
+  choose,
 }: AudioRowProps) {
   const usedIn = uses === 0 ? '' : uses === 1 ? 'in 1 pad · ' : `in ${uses} pads · `;
   // A renamed file shows the name it came with (V1: "← original.mp3"); otherwise the hash start
@@ -157,38 +161,48 @@ export function AudioRow({
       }}
     >
       {/* Col 1: ▶ / ■ (the preview) or the type icon, name + a hint — the name is the row's
-          button (select, rename) */}
-      <div class="sb-row">
-        {preview ? (
-          <button
-            class="sb-btn sb-btn-ghost sb-btn-icon"
-            aria-label={preview.playing ? `Stop ${meta.name}` : `Play ${meta.name}`}
-            onClick={(e) => {
-              e.stopPropagation();
-              preview.onToggle();
-            }}
-          >
-            <UiIcon name={preview.playing ? 'stop' : 'play'} size={14} color="var(--gold)" />
-          </button>
-        ) : (
-          <UiIcon name="play" size={14} color="var(--gold)" />
-        )}
-        {trash ? (
+          button (select, rename); in select mode the whole cell is the checkbox's label */}
+      {choose ? (
+        <label class="sb-check-row sb-flex-min">
+          <input type="checkbox" checked={choose.chosen} onChange={choose.onToggle} />
           <span class="sb-flex-min sb-col">
             <span class="sb-audio-row-name">{meta.name}</span>
-            <span class="sb-hint-text">
-              {trash.daysLeft === 1 ? '1 day left' : `${trash.daysLeft} days left`}
-            </span>
+            <span class="sb-hint-text">{`${usedIn}${origin}`}</span>
           </span>
-        ) : (
-          <RenameField
-            name={meta.name}
-            hint={`${usedIn}${origin}`}
-            onCommit={(name) => onRename?.(name)}
-            onSelect={onSelect}
-          />
-        )}
-      </div>
+        </label>
+      ) : (
+        <div class="sb-row">
+          {preview ? (
+            <button
+              class="sb-btn sb-btn-ghost sb-btn-icon"
+              aria-label={preview.playing ? `Stop ${meta.name}` : `Play ${meta.name}`}
+              onClick={(e) => {
+                e.stopPropagation();
+                preview.onToggle();
+              }}
+            >
+              <UiIcon name={preview.playing ? 'stop' : 'play'} size={14} color="var(--gold)" />
+            </button>
+          ) : (
+            <UiIcon name="play" size={14} color="var(--gold)" />
+          )}
+          {trash ? (
+            <span class="sb-flex-min sb-col">
+              <span class="sb-audio-row-name">{meta.name}</span>
+              <span class="sb-hint-text">
+                {trash.daysLeft === 1 ? '1 day left' : `${trash.daysLeft} days left`}
+              </span>
+            </span>
+          ) : (
+            <RenameField
+              name={meta.name}
+              hint={`${usedIn}${origin}`}
+              onCommit={(name) => onRename?.(name)}
+              onSelect={onSelect}
+            />
+          )}
+        </div>
+      )}
 
       {/* Col 2: waveform thumbnail (wide frame only) */}
       {!narrow && <Waveform peaks={meta.peaks} height={28} dim={!selected} />}
@@ -211,19 +225,24 @@ export function AudioRow({
         !narrow && <span class="sb-audio-col-size">{formatBytes(meta.size)}</span>
       )}
 
-      {/* Col 5: delete — to the trash in one tap; in the trash, for good after the question */}
-      <button
-        class="sb-audio-row-delete-btn"
-        title={trash ? 'Delete for good' : 'Delete'}
-        aria-label={trash ? `Delete ${meta.name} for good` : `Delete ${meta.name}`}
-        onClick={(e) => {
-          e.stopPropagation();
-          if (trash) trash.onDeleteForGood();
-          else onDelete?.();
-        }}
-      >
-        <UiIcon name="delete" size={12} />
-      </button>
+      {/* Col 5: delete — to the trash in one tap; in the trash, for good after the question; in
+          select mode the selection bar deletes, the cell stays empty so the columns keep their place */}
+      {choose ? (
+        <span />
+      ) : (
+        <button
+          class="sb-audio-row-delete-btn"
+          title={trash ? 'Delete for good' : 'Delete'}
+          aria-label={trash ? `Delete ${meta.name} for good` : `Delete ${meta.name}`}
+          onClick={(e) => {
+            e.stopPropagation();
+            if (trash) trash.onDeleteForGood();
+            else onDelete?.();
+          }}
+        >
+          <UiIcon name="delete" size={12} />
+        </button>
+      )}
     </div>
   );
 }

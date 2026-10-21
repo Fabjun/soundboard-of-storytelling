@@ -95,6 +95,21 @@ test.describe('no horizontal overflow on a 390px phone', () => {
     expect(scrollWidth, `library body.scrollWidth ${scrollWidth}px`).toBeLessThanOrEqual(
       page.viewportSize()!.width,
     );
+
+    // Select mode (Slice 16c): the checkbox row and the bar's actions stay on the screen
+    await page.getByRole('button', { name: 'SELECT', exact: true }).click();
+    await assertNoOverflow(
+      page,
+      page.getByRole('checkbox', { name: new RegExp(`^${name.replace('.', '\\.')}`) }),
+      'checkbox',
+    );
+    for (const action of ['SELECT ALL', 'DELETE', 'DONE']) {
+      await assertNoOverflow(page, page.getByRole('button', { name: action, exact: true }), action);
+    }
+    const selectWidth = await page.evaluate(() => document.body.scrollWidth);
+    expect(selectWidth, `select mode body.scrollWidth ${selectWidth}px`).toBeLessThanOrEqual(
+      page.viewportSize()!.width,
+    );
   });
 
   test('StartScreen does not overflow 390px viewport', async ({ page }) => {

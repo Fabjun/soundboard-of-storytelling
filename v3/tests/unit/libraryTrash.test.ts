@@ -12,8 +12,10 @@ import {
   deleteForGood,
   loadTrash,
   restoreFile,
+  restoreFiles,
   TRASH_DAYS,
   trashFile,
+  trashFiles,
   trashItems,
 } from '../../src/state/libraryTrash';
 import { libraryItems, pendingSaves } from '../../src/state/store';
@@ -113,6 +115,39 @@ describe('restoreFile', () => {
     expect(await restoreFile('nope')).toBe(false);
     expect(libraryItems.value.map((m) => m.id)).toEqual(['a']);
     expect(pendingSaves.value).toBe(0);
+  });
+});
+
+describe('trashFiles / restoreFiles (a bulk delete and its UNDO)', () => {
+  test('moves the files to the trash in the given order and resolves with those that got there', async () => {
+    await inLibrary('a', 'b', 'c');
+    const { blob: _blob, ...ghost } = item('ghost'); // listed, but not stored
+    libraryItems.value = [...libraryItems.value, ghost];
+    const moved = await trashFiles(['c', 'ghost', 'a'], 7_000);
+    expect(moved.map((t) => [t.id, t.deletedAt])).toEqual([
+      ['c', 7_000],
+      ['a', 7_000],
+    ]);
+    expect(libraryItems.value.map((m) => m.id)).toEqual(['b']);
+    expect(trashItems.value.map((t) => t.id)).toEqual(['c', 'a']);
+    expect(pendingSaves.value).toBe(0);
+  });
+
+  test('the UNDO puts every file back and leaves files deleted before in the trash', async () => {
+    await inLibrary('a', 'b', 'c');
+    await trashFile('b', 6_000);
+    const moved = await trashFiles(['a', 'c'], 7_000);
+    await restoreFiles(moved.map((t) => t.id));
+    expect(libraryItems.value.map((m) => m.id).sort()).toEqual(['a', 'c']);
+    expect(trashItems.value.map((t) => t.id)).toEqual(['b']);
+    expect((await libGet('c'))?.name).toBe('c.mp3');
+  });
+
+  test('no files: nothing moves, nothing is written', async () => {
+    await inLibrary('a');
+    expect(await trashFiles([], 7_000)).toEqual([]);
+    expect(await trashGetAllMeta()).toEqual([]);
+    expect(libraryItems.value.map((m) => m.id)).toEqual(['a']);
   });
 });
 
