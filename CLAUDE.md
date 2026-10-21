@@ -828,7 +828,7 @@ ensureFinePeaks(id: string): Promise<number[] | null>
   // left alone. Resolves with the entry's peaks, or null when it is missing or cannot be decoded.
   // Calls wait for each other, so two entries are never decoded at the same time (memory rule 2).
 
-addAudioFile(file: File, { tags, addedAt, originalName }?: { tags?: string[]; addedAt?: number; originalName?: string; }): Promise<AddAudioResult>
+addAudioFile(file: File, { tags, addedAt, originalName, }?: { tags?: string[]; addedAt?: number; originalName?: string; }): Promise<AddAudioResult>
   // Adds ONE audio file to the library — the single path for uploads and backup imports. Hash →
   // duplicate check → serial decode (duration, peaks) → IDB → signal. The decoded buffer is
   // released before the function returns (iPhone memory rules); call it for one file at a time.

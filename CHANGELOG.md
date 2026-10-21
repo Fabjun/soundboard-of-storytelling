@@ -18,6 +18,7 @@ release notes the app shows are written separately for its users (`v3/src/lib/wh
 
 - test: unit backupImport (V1 and V3 restore, fallbacks, invalid values), backupExport (round trip keeps date and original name; manifest fields), upload (originalName stored), idb (original name through the list, the trash and back); E2E library-list — a renamed file shows its original name after a reload (Chromium, WebKit; the WebKit seed stores the original name as an upload does); counter-checked — a row without the original name and an import without the date each turn their tests red
 - docs: BACKLOG "Import: date added and original file name from a backup" done; "Smart light per pad" — the owner orders the Athom WLED 12W Color Bulb (2026-10-21), the 15 W bulb is discontinued; library.md 16b progress
+- build(hooks): the pre-commit hook generates the docs again after lint-staged — the first commit of this version carried an API list from before Prettier wrapped the addAudioFile signature (the second time, after #156, that generated docs ran a step behind their inputs); counter-checked with real commits on a throwaway branch: the old hook leaves CLAUDE.md stale, the new one does not
 
 ## 3.0.270 — 2026-10-20
 

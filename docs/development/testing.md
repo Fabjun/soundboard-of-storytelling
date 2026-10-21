@@ -305,16 +305,17 @@ from the hook's step messages:
 
 <!-- AUTO-GENERATED:pre-commit-steps START — do not edit by hand (npm run sync:steps) -->
 
-| #   | Step                                                | Command                       |
-| --- | --------------------------------------------------- | ----------------------------- |
-| 1   | syncing auto-generated docs                         | `npm run sync:docs`           |
-| 2   | staging the generated docs                          | `npx tsx`                     |
-| 3   | running build check in v3/                          | `npm run build`               |
-| 4   | running lint-staged (format + lint on staged files) | `npx --prefix v3 lint-staged` |
-| 5   | running unit tests in v3/                           | `npm run test`                |
-| 6   | running smoke E2E tests                             | `npm run test:e2e:smoke`      |
-| 7   | Vale — superseded terms in active docs              | `npm run lint:docs`           |
-| 8   | checking markdown link integrity                    | `npm run link:check`          |
+| #   | Step                                                        | Command                       |
+| --- | ----------------------------------------------------------- | ----------------------------- |
+| 1   | syncing auto-generated docs                                 | `npm run sync:docs`           |
+| 2   | staging the generated docs                                  | `npx tsx`                     |
+| 3   | running build check in v3/                                  | `npm run build`               |
+| 4   | running lint-staged (format + lint on staged files)         | `npx --prefix v3 lint-staged` |
+| 5   | syncing the generated docs again from the formatted sources | `npm run sync:docs`           |
+| 6   | running unit tests in v3/                                   | `npm run test`                |
+| 7   | running smoke E2E tests                                     | `npm run test:e2e:smoke`      |
+| 8   | Vale — superseded terms in active docs                      | `npm run lint:docs`           |
+| 9   | checking markdown link integrity                            | `npm run link:check`          |
 
 <!-- AUTO-GENERATED:pre-commit-steps END -->
 
