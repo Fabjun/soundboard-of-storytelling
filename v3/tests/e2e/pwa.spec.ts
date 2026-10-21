@@ -39,8 +39,8 @@ async function loadControlled(page: Page): Promise<void> {
  * Runs `steps` while a new version waits on the server — a deploy, simulated: dist/sw.js gets other
  * bytes. Playwright's routes do not reach the browser's fetch of a service worker script (measured
  * 2026-10-03: 0 requests routed), so the file itself changes — one character, same length (the
- * preview server knows each file's size) — and is restored afterwards. The pwa project runs one
- * test at a time (workers: 1).
+ * preview server knows each file's size) — and is restored afterwards. No other test may load the
+ * app meanwhile: test:e2e:prod runs with --workers=1 (v3/package.json).
  */
 async function whileANewVersionWaits(steps: () => Promise<void>): Promise<void> {
   const swFile = new URL('../../dist/sw.js', import.meta.url);

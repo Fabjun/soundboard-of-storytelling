@@ -64,7 +64,11 @@ export default defineConfig({
   testDir: './tests/e2e',
   fullyParallel: false,
   retries: process.env.CI ? 2 : 0,
-  workers: 1,
+  // CI: one worker, "to prioritize stability and reproducibility" (playwright.dev/docs/ci). Locally
+  // the default, half the logical cores: test:e2e:all took 3.1–3.8 min instead of 8.8 (five runs,
+  // 2026-10-21). test:e2e:prod and the visual scripts pass --workers=1: pwa.spec.ts changes
+  // dist/sw.js while it runs, and screenshots differ under load.
+  workers: process.env.CI ? 1 : undefined,
   // list: failing tests with name + error in the terminal (pre-push hook, CI log);
   // html: full report in playwright-report/ (overwritten by the next run).
   reporter: [['list'], ['html', { open: 'never' }]],
