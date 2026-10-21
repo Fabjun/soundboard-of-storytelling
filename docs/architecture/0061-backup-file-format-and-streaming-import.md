@@ -156,6 +156,14 @@ not shown (D4: invisible).
 at 999 (ADR-0069, owner decision 2026-10-04). The import summary no longer notes dropped loop
 counts.
 
+**2026-10-21 (3.0.271, Slice 16b, D5 of docs/product/features/library.md):** a library entry keeps
+the file name it was uploaded with, `originalName` (V1 `origName`), across renames. The manifest's
+library entries carry it as an optional field — `{id, name, type, tags, addedAt, originalName?,
+file}`; `formatVersion` stays 2, as a reader that does not know the field ignores it. An import
+restores the date added (`addedAt`, V1 `added`) and the original name (`originalName`, V1
+`origName`) of a new entry instead of today and the display name; without them it takes now and
+the entry's name, as V1 did (`entryAddedAt`, `entryOriginalName` in `v3/src/lib/backupImport.ts`).
+
 ## Related
 
 - **Files:** v3/src/lib/backupReader.ts, v3/src/lib/zipArchive.ts, v3/src/lib/backupExport.ts,

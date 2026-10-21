@@ -182,9 +182,10 @@ describe('processFilesSerial — memory safety', () => {
     expect(libraryItems.value).toHaveLength(1);
     const meta = libraryItems.value[0] as unknown as Record<string, unknown>;
     expect(Object.keys(meta).sort()).toEqual(
-      ['addedAt', 'duration', 'id', 'name', 'peaks', 'size', 'tags', 'type'].sort(),
+      ['addedAt', 'duration', 'id', 'name', 'originalName', 'peaks', 'size', 'tags', 'type'].sort(),
     );
     expect(meta).not.toHaveProperty('blob');
+    expect(meta.originalName).toBe('a.wav'); // the file name at upload (Slice 16b)
   });
 });
 

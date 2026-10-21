@@ -115,8 +115,9 @@ async function migrateStoredBoards(
 
 // The metadata of an entry, without its blob — the one list of meta fields
 const metaOf = (item: LibraryItem): LibraryItemMeta => {
-  const { id, type, name, size, tags, addedAt, duration, peaks } = item;
-  return { id, type, name, size, tags, addedAt, duration, peaks };
+  const { id, type, name, size, tags, addedAt, duration, peaks, originalName } = item;
+  const meta: LibraryItemMeta = { id, type, name, size, tags, addedAt, duration, peaks };
+  return originalName === undefined ? meta : { ...meta, originalName };
 };
 
 // ── Public API ───────────────────────────────────────────────────────────────

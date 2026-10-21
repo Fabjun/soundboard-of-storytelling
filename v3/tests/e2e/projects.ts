@@ -55,6 +55,7 @@ export const FULL_TESTS = [
   'pad-editor-save',
   'settings',
   'library-trash',
+  'library-list',
 ];
 
 /**
@@ -88,6 +89,7 @@ export const FULL_WEBKIT_TESTS = [
   'bar-toggles',
   'pad-editor-save',
   'library-trash',
+  'library-list',
 ];
 
 /** tests/e2e/mobile/<name>.spec.ts — audio-free, WebKit / iPhone 13 Pro (real Safari engine path). */

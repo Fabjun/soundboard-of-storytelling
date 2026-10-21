@@ -103,6 +103,13 @@ export function withEarlyVersions(
 /** The release notes the main menu shows, newest first (checked by whatsNew.test.ts). */
 export const WHATS_NEW: WhatsNewNotes[] = [
   {
+    version: '3.0.271',
+    new: ['A renamed library file shows the name it was imported with, under its new name.'],
+    improved: [
+      'Restoring a backup keeps the date each file was added and its original name, also from the old app.',
+    ],
+  },
+  {
     version: '3.0.270',
     new: [
       'A deleted library file can be brought back: UNDO in the message right after deleting, or RESTORE under "Recently deleted", where files stay for 30 days.',

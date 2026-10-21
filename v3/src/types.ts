@@ -164,6 +164,9 @@ export type LibraryItemMeta = {
   addedAt: number; // ms since epoch
   duration: number; // seconds (0 for non-audio types)
   peaks: number[]; // 30 peak values [0–1], computed once at upload time
+  /** The file name at upload, kept across renames, exports and imports (V1 `origName`, Slice 16b);
+   * missing on entries stored before 3.0.271. */
+  originalName?: string;
 };
 
 /**

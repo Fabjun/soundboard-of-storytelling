@@ -62,6 +62,7 @@ export async function buildBackup(
         type,
         tags: item.tags,
         addedAt: item.addedAt,
+        ...(item.originalName === undefined ? {} : { originalName: item.originalName }),
         file,
       });
     }

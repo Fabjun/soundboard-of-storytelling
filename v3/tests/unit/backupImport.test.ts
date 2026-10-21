@@ -10,7 +10,13 @@ import { IDBFactory } from 'fake-indexeddb';
 import type { Board, ComboPad, LoopPad, SinglePad } from '../../src/types';
 import { _resetDB, boardGetAll, libGet, libGetAllMeta } from '../../src/db/idb';
 import { boards, lastSaveFailed, libraryItems } from '../../src/state/store';
-import { entryTags, planImport, runImport } from '../../src/lib/backupImport';
+import {
+  entryAddedAt,
+  entryOriginalName,
+  entryTags,
+  planImport,
+  runImport,
+} from '../../src/lib/backupImport';
 import { V3_BACKUP_FORMAT } from '../../src/lib/backupReader';
 import { computeHash } from '../../src/lib/upload';
 import { boardProblems } from '../../src/lib/boardModel';
@@ -293,6 +299,50 @@ describe('library tags (owner decision B9)', () => {
     expect(entryTags({ folder: '' })).toEqual([]);
     expect(entryTags({ folder: 7, tags: 'x' })).toEqual([]);
     expect(entryTags({})).toEqual([]);
+  });
+});
+
+describe('date added and original name (D5, Slice 16b)', () => {
+  it('restores V3 addedAt / originalName and V1 added / origName; without them: now and the name', async () => {
+    const before = Date.now();
+    const doc = {
+      version: 1,
+      boards: [],
+      library: [
+        { ...v1Entry(A, 'owl.wav'), added: 5_000, origName: 'OWL_raw.wav' },
+        {
+          id: hash(B),
+          name: 'rain.wav',
+          addedAt: 7_000,
+          originalName: 'rain_take2.wav',
+          data: b64(B),
+        },
+        { ...v1Entry(new Uint8Array([8, 8]), 'wind.wav') },
+      ],
+    };
+    await runImport(file(doc), await planImport(file(doc)));
+    const byName = Object.fromEntries((await libGetAllMeta()).map((m) => [m.name, m]));
+    expect([byName['owl.wav'].addedAt, byName['owl.wav'].originalName]).toEqual([
+      5_000,
+      'OWL_raw.wav',
+    ]);
+    expect([byName['rain.wav'].addedAt, byName['rain.wav'].originalName]).toEqual([
+      7_000,
+      'rain_take2.wav',
+    ]);
+    expect(byName['wind.wav'].addedAt).toBeGreaterThanOrEqual(before);
+    expect(byName['wind.wav'].originalName).toBe('wind.wav'); // as V1: origName || name
+  });
+
+  it('entryAddedAt / entryOriginalName: V3 fields win, invalid values give none', () => {
+    expect(entryAddedAt({ addedAt: 3, added: 9 })).toBe(3);
+    expect(entryAddedAt({ added: 9 })).toBe(9);
+    for (const bad of [0, -1, Number.NaN, Number.POSITIVE_INFINITY, '5', null, undefined])
+      expect(entryAddedAt({ addedAt: bad })).toBeUndefined();
+    expect(entryOriginalName({ originalName: 'a.wav', origName: 'b.wav' })).toBe('a.wav');
+    expect(entryOriginalName({ origName: 'b.wav' })).toBe('b.wav');
+    for (const bad of ['', 7, null, undefined])
+      expect(entryOriginalName({ originalName: bad })).toBeUndefined();
   });
 });
 

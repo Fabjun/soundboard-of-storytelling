@@ -121,6 +121,7 @@ export async function seedTestAudio(page: Page, audio: SeedAudio = TEST_AUDIO_SE
                     id: entry.id,
                     type: 'audio',
                     name: entry.name,
+                    originalName: entry.name, // as an upload stores it (Slice 16b)
                     size: 44,
                     tags: [],
                     addedAt: Date.now(),

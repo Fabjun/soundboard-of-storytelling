@@ -265,7 +265,13 @@ entry; nothing tested in practice):
 
 **First step:** a practice test — one WLED bulb, a Mac with Chrome, the app starting one effect,
 in the owner's own lamp: a floor lamp with a round milk-glass shade that also shows the sun
-(2026-10-19). Sunrise, thunderstorm and one color in a darkened room show whether the bulb is
+(2026-10-19). **Bulb chosen 2026-10-21:** the owner orders the Athom "WLED 12W Color Bulb"
+(athom.tech/blank-1/wled-12w-color-bulb; ESP32-C3, RGB + cold and warm white, E27; about 1000 lm,
+the figure of the identical ESPHome variant; firmware "WLED" selected when ordering). The 15 W bulb
+named below (1400 lm) is discontinued at Athom, and Athom's Tindie shop is "taking a break".
+Postponed by the owner on 2026-10-21 ("later"); next stages discussed: a WLED analog RGBCCT COB
+strip in the shade for more light, an addressable IP67 neon strip (WS2815) on the floor, synced
+through WLED's UDP sync. Sunrise, thunderstorm and one color in a darkened room show whether the bulb is
 bright enough: the bulb's 1400 lm are for white light, its colors are likely far dimmer, and opal
 glass passes roughly 30–40 % in lab values. Plan B: a WLED LED ring or strip inside the shade
 (every LED in color, effects that move across the globe).
@@ -337,13 +343,17 @@ Owner decision B5 (2026-10-02): the board list reminds after seven days without 
 Built in Slice 14a: Settings → DATA offers 3, 7, 14 or 30 days
 (docs/product/features/settings.md S7).
 
-### Import: date added and original file name from a backup
+### Import: date added and original file name from a backup ✅ Done (3.0.271)
 
 An import adds each audio file with today's date and the backup's display name: a V3 entry's
 `addedAt` and a V1 entry's `added` and `origName` are not restored (tags are — owner decision B9).
 Sort by date added (All pads) and the original filename (V1 library feature, P8) would use them.
 The V3 library has no field for the original name yet.
 **When:** Slice 16 (Library), with the original-filename feature; decided with the owner.
+✅ **Done (3.0.271, Slice 16b, library.md D5):** a library entry keeps `originalName` from its
+upload; an import restores `addedAt` / V1 `added` and `originalName` / V1 `origName`; the export
+writes `originalName` (ADR-0061 amendment 2026-10-21). A renamed file shows "← original name" in
+its row. Entries stored before 3.0.271 have no original name and show the hash start as before.
 
 ### Pad icon from the pad name
 

@@ -1,7 +1,8 @@
 /**
  * @fileoverview AudioRow — single row in the Library audio list
  *
- * Shows: type icon | name (renameable) + "in N pads" and the hash start | waveform | duration |
+ * Shows: type icon | name (renameable) + "in N pads" and the original name of a renamed file (else
+ * the hash start) | waveform | duration |
  * size | delete. In the trash ("Recently deleted", ADR-0087) the same row shows the days left,
  * RESTORE instead of the size, and a delete that asks before it removes the file for good.
  */
@@ -36,7 +37,7 @@ interface AudioRowProps {
 
 interface RenameFieldProps {
   name: string;
-  /** The short line under the name (the start of the file's hash). */
+  /** The short line under the name: how many pads use it, and the original name or hash start. */
   hint: string;
   onCommit: (newName: string) => void;
   /** Selects the row — on focus and on click of the name (Tab access, owner rule 2026-10-02). */
@@ -135,8 +136,10 @@ export function AudioRow({
   onRename,
   trash,
 }: AudioRowProps) {
-  const hash = `${meta.id.slice(0, 8)}…`;
   const usedIn = uses === 0 ? '' : uses === 1 ? 'in 1 pad · ' : `in ${uses} pads · `;
+  // A renamed file shows the name it came with (V1: "← original.mp3"); otherwise the hash start
+  const renamed = meta.originalName !== undefined && meta.originalName !== meta.name;
+  const origin = renamed ? `← ${meta.originalName}` : `${meta.id.slice(0, 8)}…`;
 
   return (
     <div
@@ -159,7 +162,7 @@ export function AudioRow({
         ) : (
           <RenameField
             name={meta.name}
-            hint={`${usedIn}${hash}`}
+            hint={`${usedIn}${origin}`}
             onCommit={(name) => onRename?.(name)}
             onSelect={onSelect}
           />
