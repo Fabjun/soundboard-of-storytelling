@@ -7,6 +7,20 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.272 — 2026-10-21
+
+### Added
+
+- feat(library): Slice 16b, part 2 — the library list sorts by date added (newest first, the default as V1's library), name or duration, reversible, chosen next to the search as on the board; the choice is kept (preference library-sort); Recently deleted keeps its own order (library.md L9)
+
+### Changed
+
+- refactor(sort): one ordering for All pads and the library (inOrder in padSort): no value always last, ties by name then id, the name order reversed only when sorting by name; LibrarySortKey is the part of PadSortKey a file has, with the same labels
+
+### Internal
+
+- test: unit padSort (every library key both ways, unknown duration last, ties, input unchanged, valid keys, the default), prefs (library sort kept, a pad-only key falls back); E2E library-list — newest first, Duration, reverse, kept after a reload (Chromium, WebKit); counter-checked — an unsorted list turns three unit tests and the E2E test red
+
 ## 3.0.271 — 2026-10-21
 
 ### Added

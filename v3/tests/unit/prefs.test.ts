@@ -15,6 +15,8 @@ import {
   getLastBackup,
   getLastPlayed,
   getPadSort,
+  getLibrarySort,
+  setLibrarySort,
   clearPadDraft,
   getPadDraft,
   isBarOpen,
@@ -162,6 +164,22 @@ describe('sort of the All pads view, per board (E1)', () => {
     await kvPut('pad-sort:b1', { key: 'size', reversed: false });
     await loadPrefs();
     expect(getPadSort('b1')).toEqual({ key: 'name', reversed: false });
+  });
+});
+
+describe('sort of the library file list (Slice 16b)', () => {
+  it('is newest first until chosen; the choice is kept after a reload', async () => {
+    expect(getLibrarySort()).toEqual({ key: 'added', reversed: false });
+    setLibrarySort({ key: 'duration', reversed: true });
+    await settled();
+    await loadPrefs();
+    expect(getLibrarySort()).toEqual({ key: 'duration', reversed: true });
+  });
+
+  it('a stored value that is no library sort (a pad-only key) falls back to newest first', async () => {
+    await kvPut('library-sort', { key: 'played', reversed: false });
+    await loadPrefs();
+    expect(getLibrarySort()).toEqual({ key: 'added', reversed: false });
   });
 });
 

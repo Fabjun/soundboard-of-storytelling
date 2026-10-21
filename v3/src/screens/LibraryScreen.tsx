@@ -37,7 +37,9 @@ import {
   trashItems,
 } from '../state/libraryTrash';
 import { announceUndo } from '../state/undoNotice';
+import { getLibrarySort, prefsVersion, setLibrarySort } from '../state/prefs';
 import { fileUses, soundLossText } from '../lib/fileUses';
+import { LIBRARY_SORT_KEYS, PAD_SORT_LABELS, sortLibrary } from '../lib/padSort';
 import { processFilesSerial, formatBytes, totalLibraryBytes } from '../lib/upload';
 import { libRename } from '../db/idb';
 
@@ -116,7 +118,13 @@ export function LibraryScreen(): JSX.Element {
   const items = libraryItems.value;
   const trash = trashItems.value;
   const matches = (name: string) => name.toLowerCase().includes(search.trim().toLowerCase());
-  const filtered = search.trim() ? items.filter((m) => matches(m.name)) : items;
+  void prefsVersion.value; // re-render when the stored sort changes
+  // The sort of All pads with the keys a file has (L9): newest first until another is chosen
+  const librarySort = getLibrarySort();
+  const filtered = sortLibrary(
+    search.trim() ? items.filter((m) => matches(m.name)) : items,
+    librarySort,
+  );
   const trashFiltered = search.trim() ? trash.filter((t) => matches(t.name)) : trash;
   const uses = fileUses(boards.value);
   const now = Date.now();
@@ -335,9 +343,9 @@ export function LibraryScreen(): JSX.Element {
 
           {/* Center — list */}
           <main class="sb-col">
-            {/* Search bar */}
-            <div class="sb-search-bar">
-              <div class="sb-search-field">
+            {/* Search bar — and in All the sort, as on the board: a key, reversible (L9) */}
+            <div class="sb-search-bar sb-row">
+              <div class="sb-search-field sb-flex-1">
                 <UiIcon name="search" size={12} color="var(--text-mute)" />
                 <input
                   class="sb-search-input sb-flex-1"
@@ -360,6 +368,35 @@ export function LibraryScreen(): JSX.Element {
                   </button>
                 )}
               </div>
+              {view === 'all' && (
+                <>
+                  <select
+                    class="sb-text-input"
+                    aria-label="Sort files by"
+                    value={librarySort.key}
+                    onChange={(e) => {
+                      const key = LIBRARY_SORT_KEYS.find((k) => k === e.currentTarget.value);
+                      if (key) setLibrarySort({ key, reversed: false });
+                    }}
+                  >
+                    {LIBRARY_SORT_KEYS.map((k) => (
+                      <option key={k} value={k}>
+                        {PAD_SORT_LABELS[k]}
+                      </option>
+                    ))}
+                  </select>
+                  <button
+                    class="sb-btn sb-btn-sm sb-btn-ghost"
+                    aria-label="Reverse the order"
+                    aria-pressed={librarySort.reversed}
+                    onClick={() =>
+                      setLibrarySort({ ...librarySort, reversed: !librarySort.reversed })
+                    }
+                  >
+                    {librarySort.reversed ? '↑' : '↓'}
+                  </button>
+                </>
+              )}
             </div>
 
             {/* Recently deleted: how long files stay, and EMPTY (asked first, D7) */}
