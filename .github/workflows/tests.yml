@@ -86,6 +86,11 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     needs: unit-build-lint
+    # Playwright's own image: browsers and their system packages preinstalled — no apt step,
+    # which hung on the Ubuntu mirror twice on 2026-10-22 (ADR-0089; playwright.dev/docs/ci)
+    container:
+      image: mcr.microsoft.com/playwright:v1.64.1-noble
+      options: --user 1001
     steps:
       - uses: actions/checkout@v7
 
@@ -98,10 +103,6 @@ jobs:
       - name: Install dependencies
         working-directory: v3
         run: npm ci
-
-      - name: Install Playwright browsers
-        working-directory: v3
-        run: npx playwright install --with-deps chromium webkit
 
       - name: Run smoke E2E tests
         working-directory: v3
@@ -118,6 +119,11 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     needs: unit-build-lint
+    # Playwright's own image: browsers and their system packages preinstalled — no apt step,
+    # which hung on the Ubuntu mirror twice on 2026-10-22 (ADR-0089; playwright.dev/docs/ci)
+    container:
+      image: mcr.microsoft.com/playwright:v1.64.1-noble
+      options: --user 1001
     steps:
       - uses: actions/checkout@v7
 
@@ -130,10 +136,6 @@ jobs:
       - name: Install dependencies
         working-directory: v3
         run: npm ci
-
-      - name: Install Playwright browsers (WebKit + Chromium)
-        working-directory: v3
-        run: npx playwright install --with-deps webkit chromium
 
       - name: Run mobile E2E tests
         working-directory: v3
@@ -150,6 +152,11 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 25
     needs: unit-build-lint
+    # Playwright's own image: browsers and their system packages preinstalled — no apt step,
+    # which hung on the Ubuntu mirror twice on 2026-10-22 (ADR-0089; playwright.dev/docs/ci)
+    container:
+      image: mcr.microsoft.com/playwright:v1.64.1-noble
+      options: --user 1001
     steps:
       - uses: actions/checkout@v7
 
@@ -162,10 +169,6 @@ jobs:
       - name: Install dependencies
         working-directory: v3
         run: npm ci
-
-      - name: Install Playwright browsers (Chromium + WebKit)
-        working-directory: v3
-        run: npx playwright install --with-deps chromium webkit
 
       - name: Run full E2E tests (Chromium + WebKit subset)
         working-directory: v3
@@ -182,6 +185,11 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     needs: unit-build-lint
+    # Playwright's own image: browsers and their system packages preinstalled — no apt step,
+    # which hung on the Ubuntu mirror twice on 2026-10-22 (ADR-0089; playwright.dev/docs/ci)
+    container:
+      image: mcr.microsoft.com/playwright:v1.64.1-noble
+      options: --user 1001
     steps:
       - uses: actions/checkout@v7
 
@@ -194,10 +202,6 @@ jobs:
       - name: Install dependencies
         working-directory: v3
         run: npm ci
-
-      - name: Install Playwright browsers (Chromium only)
-        working-directory: v3
-        run: npx playwright install --with-deps chromium
 
       - name: Run E2E against the production build (smoke + full + PWA)
         working-directory: v3

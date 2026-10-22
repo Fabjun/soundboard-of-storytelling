@@ -17,10 +17,19 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.278';
+export const APP_VERSION = '3.0.279';
 
 /** The developer log, newest first; CHANGELOG.md is generated from it (sync-changelog). */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.279',
+    date: '2026-10-23',
+    items: [
+      "ci: the four E2E jobs run in Playwright's own image (mcr.microsoft.com/playwright:v1.64.1-noble, --user 1001, as playwright.dev/docs/ci shows) instead of installing browsers with --with-deps — its apt step took the browsers' system packages from the runner's Ubuntu mirror, which hung three times: over 13 minutes on 2026-10-09, 25 minutes (PR #163, no test ran) and 13 minutes (PR #164, 16.7 MB at 21.2 kB/s, the job hit its limit at test 88) on 2026-10-22; the browsers themselves always came in seconds (ADR-0089)",
+      'test: testGuards ("CI runs Playwright in its own image, of the installed version") — every Playwright image in a workflow is the installed @playwright/test version, and no workflow installs browsers itself; Dependabot raises the npm version but not an image tag, so its pull request fails here until the tag follows; counter-checked with an older tag and an added install, each red',
+      'docs: ADR-0089; ADR-0049 refined by it',
+    ],
+  },
   {
     version: '3.0.278',
     date: '2026-10-22',

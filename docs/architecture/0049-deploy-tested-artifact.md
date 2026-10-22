@@ -4,6 +4,7 @@
 **Date:** 2026-09-29
 **Slice:** infrastructure
 **Refines:** ADR-0040
+**Refined by:** ADR-0089 (CI runs the browser tests in Playwright's own image)
 **Category:** Test infrastructure & workflow
 
 ## Context
