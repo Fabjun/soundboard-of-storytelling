@@ -103,6 +103,13 @@ export function withEarlyVersions(
 /** The release notes the main menu shows, newest first (checked by whatsNew.test.ts). */
 export const WHATS_NEW: WhatsNewNotes[] = [
   {
+    version: '3.0.277',
+    new: [
+      'The library has folders: MOVE puts selected files into one (also a new one), a folder can be renamed or removed, and files imported while a folder is open land in it.',
+      "Folders from the old app's library show up as folders right away.",
+    ],
+  },
+  {
     version: '3.0.276',
     new: [
       'SELECT in the library picks several files at once and deletes them together; one UNDO brings them all back.',

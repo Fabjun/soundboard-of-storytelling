@@ -17,10 +17,22 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.276';
+export const APP_VERSION = '3.0.277';
 
 /** The developer log, newest first; CHANGELOG.md is generated from it (sync-changelog). */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.277',
+    date: '2026-10-22',
+    items: [
+      "feat(library): Slice 16c, part 2 — folders (library.md L2, ADR-0088): a file is in one folder or in none; the folders are listed in the filter rail (on a phone one choice in a row of its own); an open folder narrows the list and has RENAME (in place) and REMOVE FOLDER (its files stay, UNDO in the toast); MOVE in the select bar puts the chosen files into an existing folder, a new one or none, with UNDO (FolderMoveDialog on ConfirmDialog); a new name that differs only in case joins the folder; files uploaded while a folder is open land in it, as in V1; in All a row's hint names its folder; the search also finds a file by a tag",
+      "feat(library): the folders live in one map from file id to folder name in the key-value store (library-folders), not on the library entries — a move or a rename writes no audio record (IndexedDB has no partial update); while the map was never written it is derived from the single tags a V1 import kept (owner decision B9), so the old app's folders are folders at once without an upgrade step or a changed record; a file keeps its folder in the trash",
+      "feat(backup): the export writes each file's folder (optional manifest field, formatVersion stays 2) and the import restores it from V3 and V1 entries for newly added files (ADR-0061 amendment); buildBackup takes the folder map as a parameter, so the export reads no state",
+      'style(library): the TAGS list in the filter rail gave way to the folders (it showed the same names, B9); sb-pill marked [unused-css]; radio buttons of a check row in the gold accent too; "1 file", not "1 files", in the search field',
+      'test: unit libraryFolders (derived from single tags while nothing is stored, the first change stores it, move / UNDO, rename onto an existing folder, remove / UNDO, names cleaned and matched without case, files that are gone dropped, a trashed file keeps its folder, saves counted), backupImport (V1 / V3 folder, an existing file keeps its own, case joins, entryFolder), backupExport (manifest carries the folder, round trip), upload (onImported hears only new files); E2E library-folders (Chromium, WebKit) — a V1 tag is a folder, MOVE to a new folder with UNDO and over a reload, a case-different name joins, RENAME, REMOVE FOLDER with UNDO; mobile overflow — the folder choice and the folder bar fit 390 px; counter-checked: no tag folders, a move not stored, case not matched, a remove UNDO that does nothing, no pruning and multi-tag files as folders each turn their test red',
+      'docs: ADR-0088 (library folders); ADR-0061 amendment (the folder field); ADR-0062 refined by ADR-0088; library.md — 16c complete; iPhone checklist "Folders"; CLAUDE.md Slice 16 status',
+    ],
+  },
   {
     version: '3.0.276',
     date: '2026-10-22',

@@ -206,6 +206,16 @@ describe('processFilesSerial — behavior', () => {
     expect(FakeOfflineAudioContext.maxActive).toBe(1);
   });
 
+  test('tells each newly added file as it arrives — not a duplicate, not a failure (ADR-0088)', async () => {
+    const heard: string[] = [];
+    await processFilesSerial(
+      [audioFile('a.wav', [3, 3]), audioFile('copy.wav', [3, 3]), audioFile('bad.wav', [0xff])],
+      (id) => heard.push(id),
+    );
+    expect(heard).toEqual((await libGetAllMeta()).map((m) => m.id));
+    expect(heard).toHaveLength(1);
+  });
+
   test('reports a corrupt file and still imports the others', async () => {
     await processFilesSerial([
       audioFile('ok1.wav', [1]),

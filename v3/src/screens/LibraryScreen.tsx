@@ -9,9 +9,11 @@
  *   - AUDIO tab: upload, rename, waveform, search; each row says in how many pads the file plays
  *   - Delete in one tap: the file goes to "Recently deleted" (ADR-0087) and the toast offers
  *     UNDO; there RESTORE, or delete for good and EMPTY after the confirmation dialog
- *   - Select mode (Slice 16c, L3): SELECT, a checkbox per row, SELECT ALL and DELETE in a bar
+ *   - Select mode (Slice 16c, L3): SELECT, a checkbox per row, SELECT ALL, MOVE and DELETE in a bar
+ *   - Folders (Slice 16c, L2, ADR-0088): listed in the filter rail (on a phone a choice above the
+ *     list); an open folder can be renamed or removed, and files uploaded meanwhile land in it
  *   - ICONS / PADS tabs: placeholder (empty state); the BOARDS tab is Rejected (library.md L4)
- *   - Tags: shown in the filter rail when any file has one; search words, not edited (L2)
+ *   - Tags: search words, not edited (L2) — the search finds a file by its name or a tag
  */
 
 import { useLayoutEffect, useState, useRef } from 'preact/hooks';
@@ -21,6 +23,7 @@ import { StatusBar } from '../components/StatusBar';
 import { UiIcon } from '../components/UiIcon';
 import { AudioRow } from '../components/AudioRow';
 import { ConfirmDialog } from '../components/ConfirmDialog';
+import { FolderMoveDialog } from '../components/FolderMoveDialog';
 import { UndoNoticeRegion } from '../components/UndoNoticeRegion';
 import {
   boards,
@@ -43,6 +46,17 @@ import {
   trashItems,
 } from '../state/libraryTrash';
 import { announceUndo } from '../state/undoNotice';
+import {
+  assignFolders,
+  cleanFolderName,
+  FOLDER_NAME_MAX,
+  folderList,
+  folderMap,
+  moveToFolder,
+  removeFolder,
+  renameFolder,
+  restoreFolders,
+} from '../state/libraryFolders';
 import { getLibrarySort, prefsVersion, setLibrarySort } from '../state/prefs';
 import { narrowWindow } from '../state/windowClass';
 import { fileUses, padsUsing, soundLossText } from '../lib/fileUses';
@@ -60,6 +74,9 @@ type LibView = 'all' | 'trash';
 
 /** The question asked before something is deleted for good (D7, ConfirmDialog). */
 type ForGood = { kind: 'one'; id: string; name: string } | { kind: 'all'; count: number };
+
+/** "1 file", "3 files" — `noun` in the singular. */
+const filesText = (count: number, noun: string) => `${count} ${noun}${count === 1 ? '' : 's'}`;
 
 // ── EmptyState — generic empty placeholder ───────────────────────────────────
 
@@ -125,11 +142,19 @@ export function LibraryScreen(): JSX.Element {
   const items = libraryItems.value;
   const trash = trashItems.value;
   const matches = (name: string) => name.toLowerCase().includes(search.trim().toLowerCase());
-  void prefsVersion.value; // re-render when the stored sort changes
+  void prefsVersion.value; // re-render when the stored sort or the folders change
+  // Folders (L2, ADR-0088): the open one narrows the list; a folder whose last file left it is gone
+  const [folder, setFolder] = useState<string | null>(null);
+  const [renaming, setRenaming] = useState<string | null>(null);
+  const [moving, setMoving] = useState(false);
+  const folders = folderMap();
+  const folderInfos = folderList(items, folders);
+  const openFolder = folderInfos.some((f) => f.name === folder) ? folder : null;
+  const inScope = openFolder === null ? items : items.filter((m) => folders[m.id] === openFolder);
   // The sort of All pads with the keys a file has (L9): newest first until another is chosen
   const librarySort = getLibrarySort();
   const filtered = sortLibrary(
-    search.trim() ? items.filter((m) => matches(m.name)) : items,
+    search.trim() ? inScope.filter((m) => matches(m.name) || m.tags.some(matches)) : inScope,
     librarySort,
   );
   const trashFiltered = search.trim() ? trash.filter((t) => matches(t.name)) : trash;
@@ -185,10 +210,17 @@ export function LibraryScreen(): JSX.Element {
 
   // ── Upload handlers ────────────────────────────────────────────────────────
 
+  // Files uploaded while a folder is open land in it, as in V1 (ADR-0088)
+  function upload(files: File[]) {
+    const into = openFolder;
+    const onImported = into === null ? undefined : (id: string) => assignFolders({ [id]: into });
+    processFilesSerial(files, onImported).catch(console.error);
+  }
+
   function handleFileInputChange(e: Event) {
     const input = e.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
-      processFilesSerial(Array.from(input.files)).catch(console.error);
+      upload(Array.from(input.files));
       input.value = ''; // allow re-upload of same file
     }
   }
@@ -216,9 +248,7 @@ export function LibraryScreen(): JSX.Element {
     const files = e.dataTransfer?.files;
     if (files && files.length > 0) {
       const audioFiles = Array.from(files).filter((f) => f.type.startsWith('audio/'));
-      if (audioFiles.length > 0) {
-        processFilesSerial(audioFiles).catch(console.error);
-      }
+      if (audioFiles.length > 0) upload(audioFiles);
     }
   }
 
@@ -242,6 +272,39 @@ export function LibraryScreen(): JSX.Element {
     } catch (e) {
       console.error('Library delete failed:', e);
     }
+  }
+
+  // ── Folder handlers (L2, ADR-0088) ─────────────────────────────────────────
+
+  // Moving changes no audio and can be undone, so it is not asked; the toast offers UNDO
+  function handleMove(ids: string[], into: string | null) {
+    const before = moveToFolder(ids, into);
+    setMoving(false);
+    endChoosing();
+    const what = ids.length === 1 ? '1 file' : `${ids.length} files`;
+    announceUndo(
+      into === null ? `Took ${what} out of their folder` : `Moved ${what} to '${into}'`,
+      () => restoreFolders(ids, before),
+    );
+  }
+
+  function commitRename(from: string) {
+    const others = folderInfos.map((f) => f.name).filter((n) => n !== from);
+    const to = cleanFolderName(renaming ?? '', others);
+    setRenaming(null);
+    if (!to || to === from) return;
+    renameFolder(from, to);
+    setFolder(to);
+  }
+
+  // Removing a folder keeps its files (they are in no folder then) — one tap, UNDO in the toast
+  function handleRemoveFolder(name: string) {
+    const ids = removeFolder(name);
+    setFolder(null);
+    const what = ids.length === 1 ? 'its file stays' : `its ${ids.length} files stay`;
+    announceUndo(`Removed folder '${name}' · ${what} in the library`, () =>
+      moveToFolder(ids, name),
+    );
   }
 
   async function handleRestore(id: string) {
@@ -341,16 +404,21 @@ export function LibraryScreen(): JSX.Element {
       ) : (
         <div class={'sb-screen-layout' + (narrow ? ' is-narrow' : '')}>
           {/* Left rail — filter; on a phone a row of categories above the list (ADR-0082: the
-              frame decides what is rendered — no tags, no drop hint, as files are not dropped
-              on a phone) */}
+              frame decides what is rendered — the folders as one choice, no drop hint, as files
+              are not dropped on a phone) */}
           <aside class={'sb-filter-rail' + (narrow ? ' is-narrow' : '')}>
-            {/* Category: the library and its trash (folders follow in Slice 16c) */}
+            {/* Category: the library and its trash */}
             <div class="sb-rail-section has-divider">
               {!narrow && <div class="sb-rail-label">CATEGORY</div>}
               <button
-                class={'sb-category-item' + (view === 'all' ? ' is-active' : '')}
-                aria-pressed={view === 'all'}
-                onClick={() => setView('all')}
+                class={
+                  'sb-category-item' + (view === 'all' && openFolder === null ? ' is-active' : '')
+                }
+                aria-pressed={view === 'all' && openFolder === null}
+                onClick={() => {
+                  setView('all');
+                  setFolder(null);
+                }}
               >
                 <span>All</span>
                 <span class="sb-count-text">{items.length}</span>
@@ -366,19 +434,48 @@ export function LibraryScreen(): JSX.Element {
                 <span>Recently deleted</span>
                 <span class="sb-count-text">{trash.length}</span>
               </button>
+              {narrow && folderInfos.length > 0 && (
+                <select
+                  class="sb-text-input"
+                  aria-label="Folder"
+                  value={view === 'all' && openFolder !== null ? openFolder : ''}
+                  onChange={(e) => {
+                    const name = e.currentTarget.value;
+                    setView('all');
+                    setFolder(name === '' ? null : name);
+                  }}
+                >
+                  <option value="">Folders…</option>
+                  {folderInfos.map((f) => (
+                    <option key={f.name} value={f.name}>
+                      {f.name} ({f.count})
+                    </option>
+                  ))}
+                </select>
+              )}
             </div>
 
-            {/* Tags — read-only, shown if any item has tags */}
-            {!narrow && items.some((m) => m.tags.length > 0) && (
+            {/* Folders (L2): a file is in one or in none; a folder lists what is in it */}
+            {!narrow && folderInfos.length > 0 && (
               <div class="sb-rail-section">
-                <div class="sb-rail-label">TAGS</div>
-                <div class="sb-tag-list">
-                  {[...new globalThis.Set(items.flatMap((m) => m.tags))].map((tag) => (
-                    <span key={tag} class="sb-pill">
-                      {tag}
-                    </span>
-                  ))}
-                </div>
+                <div class="sb-rail-label">FOLDERS</div>
+                {folderInfos.map((f) => (
+                  <button
+                    key={f.name}
+                    class={
+                      'sb-category-item' +
+                      (view === 'all' && openFolder === f.name ? ' is-active' : '')
+                    }
+                    aria-pressed={view === 'all' && openFolder === f.name}
+                    onClick={() => {
+                      setView('all');
+                      setFolder(f.name);
+                    }}
+                  >
+                    <span class="sb-flex-trunc">{f.name}</span>
+                    <span class="sb-count-text">{f.count}</span>
+                  </button>
+                ))}
               </div>
             )}
 
@@ -407,8 +504,10 @@ export function LibraryScreen(): JSX.Element {
                   type="text"
                   placeholder={
                     view === 'trash'
-                      ? `Search ${trash.length} deleted files…`
-                      : `Search ${items.length} files…`
+                      ? `Search ${filesText(trash.length, 'deleted file')}…`
+                      : openFolder === null
+                        ? `Search ${filesText(items.length, 'file')}…`
+                        : `Search ${filesText(inScope.length, 'file')} in ${openFolder}…`
                   }
                   value={search}
                   onInput={(e) => setSearch((e.target as HTMLInputElement).value)}
@@ -480,6 +579,13 @@ export function LibraryScreen(): JSX.Element {
                     {allShownChosen ? 'SELECT NONE' : 'SELECT ALL'}
                   </button>
                   <button
+                    class="sb-btn sb-btn-sm sb-btn-ghost"
+                    disabled={chosenShown.length === 0}
+                    onClick={() => setMoving(true)}
+                  >
+                    MOVE
+                  </button>
+                  <button
                     class="sb-btn sb-btn-sm sb-btn-danger"
                     disabled={chosenShown.length === 0}
                     onClick={() => {
@@ -490,6 +596,63 @@ export function LibraryScreen(): JSX.Element {
                     DELETE
                   </button>
                 </div>
+              </div>
+            )}
+
+            {/* An open folder: its name, RENAME (in place) and REMOVE FOLDER (its files stay) */}
+            {view === 'all' && openFolder !== null && !choosing && (
+              <div class="sb-list-bar" role="toolbar" aria-label="Folder">
+                {renaming === null ? (
+                  <>
+                    <span class="sb-caption">
+                      Folder '{openFolder}' ·{' '}
+                      {inScope.length === 1 ? '1 file' : `${inScope.length} files`}
+                    </span>
+                    <div class="sb-row">
+                      <button
+                        class="sb-btn sb-btn-sm sb-btn-ghost"
+                        onClick={() => setRenaming(openFolder)}
+                      >
+                        RENAME
+                      </button>
+                      <button
+                        class="sb-btn sb-btn-sm sb-btn-ghost"
+                        onClick={() => handleRemoveFolder(openFolder)}
+                      >
+                        REMOVE FOLDER
+                      </button>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <input
+                      class="sb-text-input sb-flex-1"
+                      aria-label="Folder name"
+                      maxLength={FOLDER_NAME_MAX}
+                      value={renaming}
+                      ref={(el) => el?.focus()}
+                      onInput={(e) => setRenaming(e.currentTarget.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') commitRename(openFolder);
+                        if (e.key === 'Escape') setRenaming(null);
+                      }}
+                    />
+                    <div class="sb-row">
+                      <button
+                        class="sb-btn sb-btn-sm sb-btn-primary"
+                        onClick={() => commitRename(openFolder)}
+                      >
+                        SAVE
+                      </button>
+                      <button
+                        class="sb-btn sb-btn-sm sb-btn-ghost"
+                        onClick={() => setRenaming(null)}
+                      >
+                        CANCEL
+                      </button>
+                    </div>
+                  </>
+                )}
               </div>
             )}
 
@@ -558,6 +721,9 @@ export function LibraryScreen(): JSX.Element {
                     selected={selectedId === meta.id}
                     onSelect={() => setSelectedId(meta.id)}
                     uses={uses.get(meta.id)?.length ?? 0}
+                    {...(openFolder === null && folders[meta.id] !== undefined
+                      ? { folder: folders[meta.id] }
+                      : {})}
                     {...(choosing
                       ? {
                           choose: {
@@ -585,6 +751,21 @@ export function LibraryScreen(): JSX.Element {
       )}
 
       <UndoNoticeRegion scope="library" />
+
+      {/* MOVE: which folder the chosen files go to (L3) */}
+      {moving && (
+        <FolderMoveDialog
+          count={chosenShown.length}
+          folders={folderInfos.map((f) => f.name)}
+          onMove={(into) =>
+            handleMove(
+              chosenShown.map((m) => m.id),
+              into,
+            )
+          }
+          onCancel={() => setMoving(false)}
+        />
+      )}
 
       {/* Deleting for good cannot be undone: asked in a dialog, never by a second tap (D7) */}
       {forGood && (

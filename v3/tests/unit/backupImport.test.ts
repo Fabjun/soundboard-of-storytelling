@@ -12,11 +12,13 @@ import { _resetDB, boardGetAll, libGet, libGetAllMeta } from '../../src/db/idb';
 import { boards, lastSaveFailed, libraryItems } from '../../src/state/store';
 import {
   entryAddedAt,
+  entryFolder,
   entryOriginalName,
   entryTags,
   planImport,
   runImport,
 } from '../../src/lib/backupImport';
+import { getLibraryFolderMap, loadPrefs } from '../../src/state/prefs';
 import { V3_BACKUP_FORMAT } from '../../src/lib/backupReader';
 import { computeHash } from '../../src/lib/upload';
 import { boardProblems } from '../../src/lib/boardModel';
@@ -299,6 +301,46 @@ describe('library tags (owner decision B9)', () => {
     expect(entryTags({ folder: '' })).toEqual([]);
     expect(entryTags({ folder: 7, tags: 'x' })).toEqual([]);
     expect(entryTags({})).toEqual([]);
+  });
+});
+
+describe('folders (ADR-0088, Slice 16c)', () => {
+  beforeEach(async () => {
+    await loadPrefs(); // a fresh database: no folder map stored
+  });
+
+  it('puts newly added files in the folder the V1 or V3 entry names, in one stored map', async () => {
+    const doc = {
+      version: 1,
+      boards: [],
+      library: [
+        { ...v1Entry(A, 'owl.wav'), folder: 'Forest' },
+        { id: hash(B), name: 'rain.wav', folder: ' weather ', data: b64(B) },
+        { ...v1Entry(new Uint8Array([8, 8]), 'wind.wav') },
+      ],
+    };
+    await runImport(file(doc), await planImport(file(doc)));
+    expect(getLibraryFolderMap()).toEqual({ [hash(A)]: 'Forest', [hash(B)]: 'weather' });
+  });
+
+  it('a file already in the library keeps its own folder; a name that differs in case joins', async () => {
+    const first = { version: 1, library: [{ ...v1Entry(A, 'owl.wav'), folder: 'Forest' }] };
+    await runImport(file(first), await planImport(file(first)));
+    const again = {
+      version: 1,
+      library: [
+        { ...v1Entry(A, 'owl.wav'), folder: 'Elsewhere' },
+        { ...v1Entry(B, 'rain.wav'), folder: 'FOREST' },
+      ],
+    };
+    await runImport(file(again), await planImport(file(again)));
+    expect(getLibraryFolderMap()).toEqual({ [hash(A)]: 'Forest', [hash(B)]: 'Forest' });
+  });
+
+  it('entryFolder: a non-empty string, else none', () => {
+    expect(entryFolder({ folder: 'Forest' })).toBe('Forest');
+    for (const bad of ['', '   ', 7, null, undefined])
+      expect(entryFolder({ folder: bad })).toBeUndefined();
   });
 });
 

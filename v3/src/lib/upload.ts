@@ -229,16 +229,23 @@ export async function addAudioFile(
  *
  * Sets uploadStatus signal to null at start, then to the result when done.
  * Errors are collected per-file; the pipeline continues on individual failures.
+ * `onImported` hears each newly added file's id as it arrives — the library puts it into the
+ * folder that is open (ADR-0088); a file that was there already is not passed.
  */
-export async function processFilesSerial(files: File[]): Promise<void> {
+export async function processFilesSerial(
+  files: File[],
+  onImported?: (id: string) => void,
+): Promise<void> {
   uploadStatus.value = null;
 
   const result: UploadResult = { imported: 0, skipped: 0, errors: [] };
 
   for (const file of files) {
     const r = await addAudioFile(file); // serial: one file at a time, never Promise.all
-    if (r.kind === 'imported') result.imported++;
-    else if (r.kind === 'skipped') result.skipped++;
+    if (r.kind === 'imported') {
+      result.imported++;
+      onImported?.(r.id);
+    } else if (r.kind === 'skipped') result.skipped++;
     else result.errors.push(r.error);
   }
 

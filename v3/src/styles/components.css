@@ -504,7 +504,7 @@
 
 /* ── Pill ───────────────────────────────────────────────────── */
 .sb-pill {
-  /* @inventory: Compact pixel-frame badge; type-color variants via is-on, is-loop, is-combo. */
+  /* @inventory: Compact pixel-frame badge; type-color variants via is-on, is-loop, is-combo. Currently no TSX usage — the library's TAGS list that used it gave way to its folders (Slice 16c, ADR-0088). [unused-css] */
   --pix-step: 3px;
   display: inline-flex;
   align-items: center;
@@ -813,7 +813,7 @@
 }
 
 .sb-check-row {
-  /* @inventory: A row with a checkbox and its label — 44px touch target; the whole row toggles; the box in the gold accent, as sb-range-input. Used for the PAD editor's deck checklist, a combo step's "stop everything first" (Slice 9e / 11) and the library's select mode (Slice 16c). */
+  /* @inventory: A row with a checkbox or radio button and its label — 44px touch target; the whole row toggles; the box in the gold accent, as sb-range-input. Used for the PAD editor's deck checklist, a combo step's "stop everything first" (Slice 9e / 11), the library's select mode and the folder choice of MOVE (Slice 16c). */
   display: flex;
   align-items: center;
   gap: var(--space-2);
@@ -823,7 +823,8 @@
   font-size: var(--fs-sm);
   color: var(--text);
 }
-.sb-check-row > input[type='checkbox'] {
+.sb-check-row > input[type='checkbox'],
+.sb-check-row > input[type='radio'] {
   accent-color: var(--gold);
 }
 .sb-combo-step {
@@ -2420,12 +2421,17 @@
 }
 .sb-filter-rail.is-narrow .sb-rail-section {
   display: flex;
+  flex-wrap: wrap;
   gap: var(--space-1);
   padding: var(--space-1) var(--space-2);
 }
 .sb-filter-rail.is-narrow .sb-category-item {
   flex: 1;
   width: auto;
+}
+/* The folder choice takes a row of its own below the categories (Slice 16c) */
+.sb-filter-rail.is-narrow .sb-rail-section > select {
+  flex: 1 1 100%;
 }
 .sb-rail-section {
   /* @inventory: Padded section container in a sidebar rail. Add .has-divider for a bottom border separator. */

@@ -12,6 +12,7 @@
 import type { Board } from '../types';
 import { boards as boardsSignal, libraryItems } from '../state/store';
 import { createBoard } from '../state/boardWrites';
+import { assignFolders } from '../state/libraryFolders';
 import { readBackup } from './backupReader';
 import { parseBoard, withNewIds } from './boardModel';
 import { nanoid } from './nanoid';
@@ -78,6 +79,14 @@ export const entryOriginalName = (e: Entry): string | undefined => {
   return typeof n === 'string' && n !== '' ? n : undefined;
 };
 
+/**
+ * The folder to restore (ADR-0088): `folder` in V3 and V1 files alike; none when empty.
+ */
+export const entryFolder = (e: Entry): string | undefined => {
+  const f = e.folder;
+  return typeof f === 'string' && f.trim() !== '' ? f : undefined;
+};
+
 /** Audio — not a V1 pad template (`type: 'pad'`) or an image, which are not imported. */
 const isAudioEntry = (e: Entry): boolean => {
   return (
@@ -124,8 +133,9 @@ export async function planImport(file: Blob): Promise<ImportPlan> {
 
 /**
  * Adds one entry's audio to the library through the upload pipeline, with its tags, its date added
- * and its original name (D5). Records the stored id under the backup's hash. Returns a message when
- * the audio could not be added.
+ * and its original name (D5). Records the stored id under the backup's hash, and the folder of a
+ * newly added file in `folders` (a file already in the library keeps its own). Returns a message
+ * when the audio could not be added.
  */
 async function importAudio(
   e: Entry,
@@ -133,6 +143,7 @@ async function importAudio(
   audio: () => Promise<Blob | null>,
   hash: string | undefined,
   stored: Map<string, string>,
+  folders: Record<string, string>,
   result: ImportResult,
 ): Promise<string | null> {
   let data: Blob | null;
@@ -150,6 +161,8 @@ async function importAudio(
   });
   if (r.kind === 'error') return r.error;
   if (hash) stored.set(hash, r.id);
+  const folder = entryFolder(e);
+  if (r.kind === 'imported' && folder) folders[r.id] = folder;
   if (r.kind === 'imported') result.audioAdded++;
   else result.audioSkipped++;
   return null;
@@ -197,6 +210,8 @@ export async function runImport(
   };
   /** File hash in the backup → library id the bytes were stored under. */
   const stored = new Map<string, string>();
+  /** Library id of a newly added file → the folder the backup names for it. */
+  const folders: Record<string, string> = {};
   let done = 0;
 
   await readBackup(file, {
@@ -208,12 +223,13 @@ export async function runImport(
         stored.set(h, h);
         result.audioSkipped++;
       } else {
-        const failure = await importAudio(e, name, audio, h, stored, result);
+        const failure = await importAudio(e, name, audio, h, stored, folders, result);
         if (failure) result.audioFailed.push(failure);
       }
       onProgress?.(++done);
     },
   });
+  assignFolders(folders); // one write for all files (ADR-0088)
 
   // Boards last — every file they can point at is in the library by now
   const inLibrary = new Set(libraryItems.value.map((m) => m.id));

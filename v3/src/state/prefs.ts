@@ -128,6 +128,29 @@ export function setLibrarySort(sort: LibrarySort): void {
   write('library-sort', { key: sort.key, reversed: sort.reversed });
 }
 
+// ── The library's folders (Slice 16c, ADR-0088) ──────────────────────────────
+
+const LIBRARY_FOLDERS_KEY = 'library-folders';
+
+/**
+ * The stored map from file id to folder name, or null while it was never written
+ * (src/state/libraryFolders.ts then derives it). Entries that are not a non-empty name are left out.
+ */
+export function getLibraryFolderMap(): Record<string, string> | null {
+  const v = cache.get(LIBRARY_FOLDERS_KEY);
+  if (typeof v !== 'object' || v === null || Array.isArray(v)) return null;
+  const map: Record<string, string> = {};
+  for (const [id, name] of Object.entries(v)) {
+    if (typeof name === 'string' && name !== '') map[id] = name;
+  }
+  return map;
+}
+
+/** Stores the map from file id to folder name — through src/state/libraryFolders.ts only. */
+export function setLibraryFolderMap(map: Readonly<Record<string, string>>): void {
+  write(LIBRARY_FOLDERS_KEY, { ...map });
+}
+
 // ── Last played, per pad (owner decision 2026-10-02, E1 "Last played") ──────
 
 const lastPlayedKey = (padId: string) => `last-played:${padId}`;
