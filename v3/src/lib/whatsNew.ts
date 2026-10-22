@@ -103,6 +103,12 @@ export function withEarlyVersions(
 /** The release notes the main menu shows, newest first (checked by whatsNew.test.ts). */
 export const WHATS_NEW: WhatsNewNotes[] = [
   {
+    version: '3.0.278',
+    behindTheScenes: [
+      'Most of the checks made by hand on an iPhone are now also simulated by automated tests before each update: returning to the app, many sounds at once, typing, turning the phone and the library by touch.',
+    ],
+  },
+  {
     version: '3.0.277',
     new: [
       'The library has folders: MOVE puts selected files into one (also a new one), a folder can be renamed or removed, and files imported while a folder is open land in it.',

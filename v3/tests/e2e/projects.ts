@@ -104,13 +104,21 @@ export const MOBILE_WEBKIT_TESTS = [
   'mode-toggle',
   'touch-targets',
   'overflow',
+  'library-touch',
+  'typing',
+  'orientation',
 ];
 
 /**
  * tests/e2e/mobile/<name>.spec.ts — audio-dependent, Chromium / iPhone 13 Pro
  * (headless WebKit has no audio codec support → decodeAudioData fails).
  */
-export const MOBILE_CHROMIUM_TESTS = ['pad-interaction', 'pad-creation', 'touch-scroll'];
+export const MOBILE_CHROMIUM_TESTS = [
+  'pad-interaction',
+  'pad-creation',
+  'touch-scroll',
+  'lifecycle',
+];
 
 /**
  * tests/e2e/<name>.spec.ts — only against the PRODUCTION BUILD (E2E_TARGET=prod):
