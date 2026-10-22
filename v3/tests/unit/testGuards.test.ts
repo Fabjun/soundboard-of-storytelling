@@ -41,6 +41,11 @@
  *    explicit pattern and stays allowed. Playwright matches names "case-insensitive and searches
  *    for a substring" by default, so a new control whose name contains another's ("Undo: edit
  *    pad 'Rain'" next to the pad "Rain") broke unrelated specs — twice on 2026-10-19.
+ * 15. Every CI job runs Playwright in Playwright's image of the installed `@playwright/test` version
+ *    (ADR-0089), and no workflow installs browsers itself: `playwright install --with-deps` took
+ *    its system packages from the Ubuntu mirror, which hung three times (2026-10-09; 25 and 13
+ *    minutes on 2026-10-22). Dependabot raises the npm version but not the image tag — the
+ *    mismatch fails here instead of in a job.
  */
 
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
@@ -554,5 +559,38 @@ describe('guard: a locator compares a text exactly (owner decision 2026-10-19)',
         ),
     );
     expect(bad, 'add exact: true, or use an explicit pattern (/^…$/)').toEqual([]);
+  });
+});
+
+describe('guard: CI runs Playwright in its own image, of the installed version (ADR-0089)', () => {
+  const ROOT = join(V3, '..');
+  const workflows = repoFiles(ROOT).filter((f) => /^\.github\/workflows\/[^/]+\.ya?ml$/.test(f));
+  const installed = (
+    JSON.parse(
+      readFileSync(join(V3, 'node_modules', '@playwright', 'test', 'package.json'), 'utf8'),
+    ) as { version: string }
+  ).version;
+  const images = workflows.flatMap((f) =>
+    [
+      ...readFileSync(join(ROOT, f), 'utf8').matchAll(
+        /image: mcr\.microsoft\.com\/playwright:v([\d.]+)-/g,
+      ),
+    ].map((m) => ({ file: f, version: m[1] })),
+  );
+
+  it('finds the installed version and the images (sanity)', () => {
+    expect(installed).toMatch(/^\d+\.\d+\.\d+$/);
+    expect(images.length).toBeGreaterThanOrEqual(4); // the four E2E jobs of tests.yml
+  });
+
+  it('every image is the installed version — raise the tag with @playwright/test', () => {
+    expect(images.filter((i) => i.version !== installed)).toEqual([]);
+  });
+
+  it('no workflow installs browsers itself', () => {
+    const installing = workflows.filter((f) =>
+      /playwright install/.test(readFileSync(join(ROOT, f), 'utf8')),
+    );
+    expect(installing, 'run the job in the Playwright image instead').toEqual([]);
   });
 });
