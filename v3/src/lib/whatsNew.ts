@@ -103,6 +103,12 @@ export function withEarlyVersions(
 /** The release notes the main menu shows, newest first (checked by whatsNew.test.ts). */
 export const WHATS_NEW: WhatsNewNotes[] = [
   {
+    version: '3.0.279',
+    behindTheScenes: [
+      'The automated checks on the server prepare their browsers in a way that no longer stalls, so updates reach the app without needless delays.',
+    ],
+  },
+  {
     version: '3.0.278',
     behindTheScenes: [
       'Most of the checks made by hand on an iPhone are now also simulated by automated tests before each update: returning to the app, many sounds at once, typing, turning the phone and the library by touch.',
