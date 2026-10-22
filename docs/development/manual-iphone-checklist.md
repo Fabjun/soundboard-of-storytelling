@@ -24,6 +24,12 @@ because Playwright runs against a simulated environment:
 - **Backgrounding / interruptions**: iOS tab-switch and phone-call behavior requires a
   real device session.
 
+**Simulated:** under an item names the automated tests that simulate what a browser can of it
+(owner request 2026-10-22: simulate every user check, however much work, and keep the simulation
+for later tests). They run in every pre-push and in CI; the device check stays for what "Why
+manual" names. An item without the line has no simulation (e.g. the Ringer Switch). The paths are
+checked to exist (docsGuards).
+
 ---
 
 ## Section 1 — Audio
@@ -32,21 +38,25 @@ because Playwright runs against a simulated environment:
   - Action: Open the app, tap TAP TO START.
   - Expected: Button disappears, the main menu opens. No "audio context suspended" message in the footer.
   - Why manual: AudioContext init from a user gesture requires the real iOS user-gesture window.
+  - Simulated: `v3/tests/e2e/mobile/unlock-nav.spec.ts` (TAP TO START by touch, WebKit), `v3/tests/e2e/audio.spec.ts` (the audio starts).
 
 - [ ] **Single pad plays sound**
   - Action: In GAME mode, tap a pad configured as SINGLE.
   - Expected: Sound plays audibly, pad glows (is-hot).
   - Why manual: Audio output is not testable in headless WebKit.
+  - Simulated: `v3/tests/e2e/mobile/pad-interaction.spec.ts` (a tap lights the pad, touch).
 
 - [ ] **Loop pad starts and loops**
   - Action: In GAME mode, tap a pad configured as LOOP.
   - Expected: Sound loops continuously, pad shows looping state. Tap again → stops.
   - Why manual: Same — audio output and loop scheduling require real audio hardware.
+  - Simulated: `v3/tests/e2e/mobile/pad-interaction.spec.ts` (a tap starts and a second stops the loop, touch).
 
 - [ ] **Stop pad stops playback**
   - Action: Tap a playing pad again.
   - Expected: Sound stops cleanly (no cut-off artifact). is-hot / is-looping removed.
   - Why manual: Fade-out behavior requires audible verification.
+  - Simulated: `v3/tests/e2e/mobile/pad-interaction.spec.ts` (the playing state ends).
 
 - [ ] **Ringer Switch — pads play on silent**
   - Action: Set the physical Ringer Switch to silent, then tap a pad.
@@ -58,16 +68,19 @@ because Playwright runs against a simulated environment:
   - Action: Start a looping pad, switch to another app or tab, return to the soundboard.
   - Expected: Looping pad resumes or is cleanly stopped. No crash or frozen state.
   - Why manual: iOS Safari background/resume lifecycle requires a real device.
+  - Simulated: `v3/tests/e2e/mobile/lifecycle.spec.ts` (the audio halted as iOS does, the page hidden and shown: the engine starts the audio again and the loop plays on).
 
 - [ ] **Simultaneous loops**
   - Action: Start 3+ loop pads at the same time.
   - Expected: All loops play simultaneously without dropout or crash.
   - Why manual: Memory + audio pipeline behavior under load requires a real device.
+  - Simulated: `v3/tests/e2e/mobile/lifecycle.spec.ts` (three loops at once, STOP ALL ends them).
 
 - [ ] **Short clip (< 0.5s)**
   - Action: Upload a very short clip (< 0.5s), configure as SINGLE, tap rapidly.
   - Expected: No crash, no double-play artifacts.
   - Why manual: Edge case in the `onended` handler lifecycle.
+  - Simulated: `v3/tests/e2e/mobile/lifecycle.spec.ts` (a 0.2 s Single tapped six times quickly ends unlit, no error).
 
 - [ ] **Trimmed Loop repeats only its trimmed part** _(Slice 15a)_
   - Action: In the PAD editor, make a Loop pad, move the trim start and end inward, then play the
@@ -75,6 +88,7 @@ because Playwright runs against a simulated environment:
   - Expected: Each repeat starts at the trim start and ends at the trim end — nothing from before
     or after is heard.
   - Why manual: The loop region is an engine change (owner approval); only hearing proves it.
+  - Simulated: `v3/tests/e2e/pad-editor-preview.spec.ts` (the trim is kept; the preview stays within it).
 
 - [ ] **Preview in the PAD editor** _(Slice 15a)_
   - Action: Open a Single or Loop pad in the PAD editor, tap ▶, then ⏸, ▶ again, ⏹; tap the
@@ -82,6 +96,7 @@ because Playwright runs against a simulated environment:
   - Expected: The preview sounds like the pad (trim, fades, volume); ⏸ holds the position, ▶ goes
     on from there; a tap on the waveform starts it there; closing the editor stops the sound.
   - Why manual: Audible playback and the touch drag of the handles need a real device.
+  - Simulated: `v3/tests/e2e/pad-editor-preview.spec.ts` (play, pause, stop, a tap on the waveform).
 
 - [ ] **Several files, each with its own trim** _(Slice 15b, engine change ADR-0068)_
   - Action: Before the update, export a backup. After it: open a Loop pad, BROWSE, tick two or
@@ -90,6 +105,7 @@ because Playwright runs against a simulated environment:
   - Expected: The Loop plays its files one after another, each only within its own trim; a file
     without a trim plays whole. The existing pads sound as before the update.
   - Why manual: The playlist trim is an engine change (owner approval); only hearing proves it.
+  - Simulated: `v3/tests/e2e/pad-files.spec.ts` (several files at once, each with its own trim).
 
 - [ ] **REPEAT** _(Slice 15c, engine change ADR-0069)_
   - Action: Open a Loop pad with one short file, set REPEAT to 3, play it in GAME mode. Then a
@@ -99,6 +115,7 @@ because Playwright runs against a simulated environment:
     longer shows as playing); the two-file Loop plays its list twice, then stops; ∞ plays until
     stopped; the combo's Loop child stops after its passes.
   - Why manual: The count is an engine change (owner approval); only hearing proves gapless passes.
+  - Simulated: `v3/tests/e2e/pad-files.spec.ts` (the count is kept; ∞).
 
 - [ ] **Pad icons** _(Slice 15d, ADR-0070)_
   - Action: In SETUP, open a pad, tap + under ICONS; search "dragon", pick it; add three more.
@@ -114,6 +131,7 @@ because Playwright runs against a simulated environment:
     each pad shows its icons, a pad without icons the placeholder of its type; the V1 pads show
     their V1 icons.
   - Why manual: Memory and scrolling with thousands of icons on a real iPhone; V1 data.
+  - Simulated: `v3/tests/e2e/pad-icons.spec.ts` (picking, the long search list, categories), `v3/tests/e2e/layout-reach.spec.ts` (every category reachable).
 
 - [ ] **Numpad plays pads** _(Slice 12a, ADR-0077)_
   - Action: Pair the Bluetooth numpad. In SETUP, open a pad, tap the HOTKEY field and press
@@ -126,6 +144,7 @@ because Playwright runs against a simulated environment:
     the second press does not stop it; in All pads it still plays. In SETUP the key plays nothing.
   - Why manual: Which codes a real Bluetooth numpad sends to iOS (NumLock, decimal key) is only
     known on the device.
+  - Simulated: `v3/tests/e2e/pad-keys.spec.ts` (keys with the codes a desktop keyboard sends).
 
 - [ ] **STOP ALL and the stop keys** _(Slice 12b)_
   - Action: In GAME start two Loop pads, tap STOP ALL once and listen; start them again, tap STOP
@@ -135,6 +154,7 @@ because Playwright runs against a simulated environment:
     two taps stop at once. The numpad Enter stops the pad started last, then the other one; the
     decimal key does what STOP ALL does (if it sends `NumpadDecimal` — see "Numpad plays pads").
   - Why manual: Only hearing proves the fade is smooth and the second tap cuts it.
+  - Simulated: `v3/tests/e2e/stop-all.spec.ts` (two stages, Enter, the numpad decimal).
 
 - [ ] **Fade out all in a combo** _(engine fix 3.0.194)_
   - Action: Import a V1 backup that has a combo with "fade out all" (V1's fade-out-all step). In
@@ -154,6 +174,7 @@ because Playwright runs against a simulated environment:
     combo ends and its Loop stops; the combo pad stays lit until then. A V1 combo "stop all →
     sound" (e.g. a "DAY" combo) plays its sound.
   - Why manual: An engine change (owner approval, ADR-0048); only hearing proves the order.
+  - Simulated: `v3/tests/e2e/combo-editor.spec.ts` (the option is kept with the step).
 
 - [ ] **Mode switch stops sounds; the Lock** _(Slice 12c)_
   - Action: In GAME start two pads, switch to SETUP. Back in GAME tap the lock next to the mode
@@ -161,6 +182,7 @@ because Playwright runs against a simulated environment:
   - Expected: The switch to SETUP silences both pads at once. While locked SETUP is dimmed and a
     tap does nothing; unlocked it switches. After the reload the lock is off.
   - Why manual: The silence on switching is heard, not seen; the tap targets on the phone.
+  - Simulated: `v3/tests/e2e/stop-all.spec.ts` (switching to SETUP stops every sound), `v3/tests/e2e/mode-lock.spec.ts`.
 
 - [ ] **Pause** _(Slice 12d, engine change ADR-0079 — before the merge)_
   - Action: In GAME start a Loop and a long Single, press Space (main keyboard; the numpad has
@@ -172,6 +194,7 @@ because Playwright runs against a simulated environment:
     pause — all three play. STOP ALL during the pause stops everything at once, PAUSED goes away.
     After the call, PAUSED still shows and a tap on it resumes.
   - Why manual: Suspend and resume of the iOS audio session can only be heard on the device.
+  - Simulated: `v3/tests/e2e/pause.spec.ts` (Space, PAUSED, a new sound, STOP ALL during a pause).
 
 ---
 
@@ -191,6 +214,7 @@ because Playwright runs against a simulated environment:
   - Action: Same as above but with a `.wav` file.
   - Expected: Same result.
   - Why manual: Same MIME type handling.
+  - Simulated: `v3/tests/e2e/mobile/pad-interaction.spec.ts` (a WAV through IMPORT and the file chooser, which stands in for the picker).
 
 - [ ] **Backup export** _(Slice 10)_
   - Action: board list → EXPORT → wait for "Backup ready: soundboard-backup-YYYY-MM-DD.zip (…)" →
@@ -198,6 +222,7 @@ because Playwright runs against a simulated environment:
   - Expected: the share sheet opens on SAVE; the ZIP file is in Files with a size above zero; the
     panel says "Backup saved." and the board list "Last backup: today".
   - Why manual: iOS share sheet / file system access is not testable in Playwright.
+  - Simulated: `v3/tests/e2e/backup.spec.ts` (EXPORT restores the board and its audio in a fresh browser).
 
 - [ ] **Backup import** _(Slice 10)_
   - Action: board list → IMPORT → choose the ZIP saved above → IMPORT.
@@ -206,12 +231,14 @@ because Playwright runs against a simulated environment:
     device as a copy "Name (2)" with every audio file "already there" — and, opened, its pads
     play. No crash. (V1 had a crash here — regression risk.)
   - Why manual: Same file system access. V1 crash was iOS-specific memory issue.
+  - Simulated: `v3/tests/e2e/backup.spec.ts` (an import twice adds the board again, not the audio).
 
 - [ ] **V1 backup import** _(Slice 10)_
   - Action: board list → IMPORT → choose a V1 backup (`.json.gz`) → IMPORT.
   - Expected: the summary starts "Backup from the old app (V1)."; afterwards the board is there
     and its pads play. No crash, also with the full library (about 227 MB).
   - Why manual: the largest file the app reads; memory limits only show on a device.
+  - Simulated: `v3/tests/e2e/backup.spec.ts` (a V1 backup with audio and board; the pad plays).
 
 - [ ] **Delete a file, UNDO it, and restore it after a restart** _(Slice 16a, ADR-0087)_
   - Action: Library → a file that a pad uses (its row says "in 1 pad · …") → tap the bin once; in
@@ -222,6 +249,7 @@ because Playwright runs against a simulated environment:
     deleted" with "30 days left"; after RESTORE it is back in All and the pad plays.
   - Why manual: the move of a whole audio file between two stores on the device's storage, and the
     restart, which only an installed app on the phone shows as it is used.
+  - Simulated: `v3/tests/e2e/library-trash.spec.ts` (UNDO, kept over a reload, RESTORE).
 
 - [ ] **Delete for good asks first** _(Slice 16a, owner decision 2026-10-20)_
   - Action: Library → "Recently deleted" → tap the bin of a file quickly twice.
@@ -229,6 +257,7 @@ because Playwright runs against a simulated environment:
     it and closes it again — the file stays. Opened once more, CANCEL keeps the file and DELETE
     removes it.
   - Why manual: a fast double tap with a finger on the phone.
+  - Simulated: `v3/tests/e2e/library-trash.spec.ts`, `v3/tests/e2e/mobile/library-touch.spec.ts` (two quick touch taps on the same bin: the second lands on the dialog and deletes nothing).
 
 - [ ] **Select several files and delete them** _(Slice 16c, library.md L3)_
   - Action: Library → SELECT → tap the names of two files (each row's checkbox ticks) → DELETE; in
@@ -237,6 +266,7 @@ because Playwright runs against a simulated environment:
     DELETE both files are gone and SELECT is back; after UNDO both are back at once.
   - Why manual: ticking checkboxes with a finger on the phone, and two audio files moved between
     two stores on the device's storage.
+  - Simulated: `v3/tests/e2e/library-select.spec.ts`, `v3/tests/e2e/mobile/library-touch.spec.ts` (a tap on the name ticks the box).
 
 - [ ] **Folders** _(Slice 16c, library.md L2, ADR-0088)_
   - Action: Library → (with the old app's library imported: its folders are listed under the
@@ -247,6 +277,7 @@ because Playwright runs against a simulated environment:
     imported meanwhile lands in "Storms"; after REMOVE FOLDER the files are still in All, after UNDO
     the folder is back; after the restart the folder and its files are unchanged.
   - Why manual: the phone's keyboard and native folder choice, the file picker, and the restart.
+  - Simulated: `v3/tests/e2e/library-folders.spec.ts`, `v3/tests/e2e/mobile/library-touch.spec.ts` (MOVE by touch, the folder choice, kept over a reload).
 
 ---
 
@@ -256,6 +287,7 @@ because Playwright runs against a simulated environment:
   - Action: Open StartScreen, BoardListScreen, BoardScreen (with pad grid), LibraryScreen. Swipe horizontally on each.
   - Expected: No unintended horizontal scroll. Only the deck rail should scroll horizontally.
   - Why manual: `document.body.scrollWidth` check in automated tests is coarse. Subtle overflow in sub-elements requires manual inspection.
+  - Simulated: `v3/tests/e2e/mobile/overflow.spec.ts`, `v3/tests/e2e/mobile/orientation.spec.ts` (every visible control within the width).
 
 - [ ] **Keyboard does not cover rename input**
   - Action: Long-press or tap-to-rename a pad or board. Begin typing.
@@ -266,6 +298,7 @@ because Playwright runs against a simulated environment:
   - Action: In Brave, use "Add to Home Screen". Open the installed PWA.
   - Expected: App icon appears, app opens in standalone mode without browser chrome.
   - Why manual: PWA install / standalone mode cannot be simulated.
+  - Simulated: `v3/tests/e2e/pwa.spec.ts` (manifest, service worker, offline start).
 
 - [ ] **Screen stays on in GAME** _(3.0.173, docs/product/README.md K11)_
   - Action: Set the iPhone's Auto-Lock to 30 seconds. Open a board in GAME and wait 2 minutes
@@ -274,11 +307,13 @@ because Playwright runs against a simulated environment:
     after coming back from another app; in SETUP SCREEN ON is gone and the screen locks after
     the Auto-Lock time. (In Brave from iOS 16.4; as a home-screen app from iOS 18.4.)
   - Why manual: Headless browsers have no real screen timeout; only the device shows it.
+  - Simulated: `v3/tests/e2e/wake-lock.spec.ts` (the Wake Lock is taken in GAME and released in SETUP).
 
 - [ ] **Portrait and landscape orientation**
   - Action: Rotate the device while using the app.
   - Expected: Layout reflows correctly in both orientations. No elements off-screen.
   - Why manual: Orientation change events and viewport resize require a real device.
+  - Simulated: `v3/tests/e2e/mobile/orientation.spec.ts` (each core screen turned both ways), `v3/tests/e2e/board-frames.spec.ts`.
 
 - [ ] **The dock on a phone; the 600 px boundary** _(Slice 13a, ADR-0082)_
   - Action: Open a board in GAME on the iPhone, in portrait, in Brave and as a home-screen app;
@@ -291,6 +326,7 @@ because Playwright runs against a simulated environment:
     top bar sits under the clock in the home-screen app (BACKLOG "Top bar under the iPhone status
     bar").
   - Why manual: The reach of the thumb, the home indicator and the real widths of the devices.
+  - Simulated: `v3/tests/e2e/board-frames.spec.ts` (the dock below 600 px, the switch on a rotation).
 
 - [ ] **Deck tabs on a phone** _(Slice 13b)_
   - Action: On a board with about eight decks, in portrait: swipe the tab row above the pads
@@ -301,6 +337,7 @@ because Playwright runs against a simulated environment:
     list over the pads — it scrolls on its own, the page behind does not —, NEW DECK adds a tab,
     DECKS closes it. In GAME there is no DECKS tab.
   - Why manual: Sideways swiping, momentum scrolling and overscroll exist only on the device.
+  - Simulated: `v3/tests/e2e/deck-switcher.spec.ts` (tabs, the row scrolls sideways, DECKS in SETUP only).
 
 - [ ] **Decks move by touch** _(Slice 13g)_
   - Action: In SETUP on a board with five decks: on a tablet in the rail, on a phone in the DECKS
@@ -311,6 +348,7 @@ because Playwright runs against a simulated environment:
     moves nothing. ▲ / ▼ move it one place; the order is the same after a reload.
   - Why manual: Touch dragging, its scroll handling (touch-action) and the iOS gestures exist only
     on the device; the E2E tests drag with a mouse.
+  - Simulated: `v3/tests/e2e/deck-switcher.spec.ts` (a deck moves in the DECKS list — with the mouse).
 
 - [ ] **Now playing in the dock** _(Slice 13f)_
   - Action: In portrait, in GAME: start three pads with long names, then a fourth; stop them one by
@@ -320,6 +358,7 @@ because Playwright runs against a simulated environment:
     stopped it says "No sound". VoiceOver reads the new line without moving away from the pad.
   - Why manual: The real font width, the home-indicator inset and VoiceOver's announcements exist
     only on the device.
+  - Simulated: `v3/tests/e2e/now-playing.spec.ts` (the line in the dock stays inside the window).
 
 - [ ] **Browser gestures are off** _(3.0.159, ADR-0067)_
   - Action: On the board and in the library: double-tap, pinch with two fingers (also after
@@ -328,6 +367,7 @@ because Playwright runs against a simulated environment:
   - Expected: No zoom, no text selection, no iOS menu, no gray tap flash; the search field does not
     zoom in when tapped.
   - Why manual: The iOS long-press menu and focus zoom exist only on iOS.
+  - Simulated: `v3/tests/e2e/system-gestures.spec.ts` (the CSS that turns the gestures off, text fields at least 16 px).
 
 - [ ] **Quick taps never zoom** _(3.0.240; everywhere on iOS since 3.0.261, ADR-0067 amendments
       2026-10-14 and 2026-10-19)_
@@ -339,6 +379,7 @@ because Playwright runs against a simulated environment:
     never zooms in or out, on any screen. Swipes still scroll.
   - Why manual: Double-tap zoom is a gesture of the phone's browser; Playwright's desktop engines
     do not zoom on a double tap, so the automatic test can only read the CSS (system-gestures).
+  - Simulated: `v3/tests/e2e/system-gestures.spec.ts` (the CSS only — see "Why manual").
 
 - [ ] **Page zoom to 200 %** _(3.0.228, ADR-0067 amendment 2026-10-14)_
   - Action: In Brave, look for the page zoom or text size in the browser menu and set 200 %; in
@@ -347,6 +388,7 @@ because Playwright runs against a simulated environment:
     Note whether Brave offers a page zoom at all.
   - Why manual: Pinch zoom is off in the app (ADR-0067), so text resizing (WCAG 1.4.4) rests on
     the browser's own page zoom, which exists only in the browser's menu on the device.
+  - Simulated: `v3/tests/e2e/a11y.spec.ts` (type and spacing follow the browser's text size).
 
 - [ ] **A swipe scrolls wherever it starts** _(3.0.220)_
   - Action: On a board with more pads than fit, in GAME and in SETUP: swipe up and down starting on
@@ -357,18 +399,21 @@ because Playwright runs against a simulated environment:
     is let go; the page does not scroll while it is dragged.
   - Why manual: The real finger timing and iOS's scrolling exist only on the device; the E2E tests
     send Chromium touch events.
+  - Simulated: `v3/tests/e2e/mobile/touch-scroll.spec.ts` (Chromium touch events).
 
 - [ ] **Typing in text fields still works** _(3.0.159 — selection is off in fields too)_
   - Action: Rename a pad in the PAD editor, type in the library search, type a trim value.
   - Expected: Typing works in every field. If a field takes no input, report it — selection in
     text fields then comes back (BACKLOG "Text fields with selection off").
   - Why manual: The WebKit fault (selection off blocks typing) shows only on the device.
+  - Simulated: `v3/tests/e2e/mobile/typing.spec.ts` (keys typed one by one in WebKit: search, pad name, trim value).
 
 - [ ] **PAD editor full screen** _(3.0.176, ADR-0074)_
   - Action: In SETUP, tap a pad; type a name and tap SAVE; scroll down to DELETE PAD; tap ✕.
   - Expected: The editor covers the whole screen, the top bar too; the keyboard does not hide the
     name field; everything scrolls into reach; after ✕ the grid shows the new name.
   - Why manual: The iOS keyboard, the safe areas and the real touch scroll.
+  - Simulated: `v3/tests/e2e/pad-editor-fullscreen.spec.ts`.
 
 - [ ] **Pads per row and PAD SIZE** _(3.0.177, one size per board 3.0.178, ADR-0075)_
   - Action: Open a deck in portrait and in landscape; in SETUP open the deck list and move PAD
@@ -377,6 +422,7 @@ because Playwright runs against a simulated environment:
     scrolling; the slider changes the size live; the other deck and All pads show the same size;
     after reopening the app the board keeps its size.
   - Why manual: The real screen sizes, rotation and the touch slider.
+  - Simulated: `v3/tests/e2e/pad-size.spec.ts`.
 
 - [ ] **Update prompt** _(3.0.159, ADR-0066)_
   - Action: Keep the app open while a new version is published (or open it after one), wait a
@@ -384,6 +430,7 @@ because Playwright runs against a simulated environment:
   - Expected: "A new version is ready." appears; LATER hides it; RELOAD reloads, and the version
     at the bottom of the main menu is the new one.
   - Why manual: A real deploy and the installed app on the phone.
+  - Simulated: `v3/tests/e2e/pwa.spec.ts` (a new version waits until RELOAD).
 
 - [ ] **UPDATE button** _(3.0.175, ADR-0066)_
   - Action: In the installed app, tap UPDATE in the main menu — once with nothing new
@@ -391,6 +438,7 @@ because Playwright runs against a simulated environment:
   - Expected: "This is the newest version (v …)"; "A new version was found …" and then the prompt
     with RELOAD; "No internet connection …".
   - Why manual: A real deploy, the installed app and the iOS service worker.
+  - Simulated: `v3/tests/e2e/pwa.spec.ts`, `v3/tests/e2e/update-check.spec.ts` (newest, found, offline).
 
 ---
 
@@ -402,25 +450,30 @@ because Playwright runs against a simulated environment:
   - Expected: the first ↶ takes the name back, the second removes the new pad; ↷ brings both back;
     a button is dimmed when there is nothing to undo or redo; in GAME ↶ and ↷ are not there.
   - Why manual: the touch targets in the top bar and the saved undo on the device's storage.
+  - Simulated: `v3/tests/e2e/board-undo.spec.ts`.
 
 - [ ] **A deleted pad comes back** _(Slice 18b, one tap since 3.0.258)_
   - Action: In SETUP open a pad that has a key and sits in two decks; tap DELETE PAD once; in the
     message at the bottom ("Deleted '…' · from 2 decks") tap UNDO.
   - Expected: the pad is back in its place in both decks, with its key and icons.
   - Why manual: the toast above the dock and the home indicator on a real phone.
+  - Simulated: `v3/tests/e2e/board-undo.spec.ts`, `v3/tests/e2e/pad-pool.spec.ts`.
 
 - [ ] **A deleted deck comes back** _(Slice 18b)_
   - Action: In SETUP, in the deck list, tap ⋯ on a deck, then Delete once; tap UNDO in the message.
   - Expected: the deck is back with its pads.
   - Why manual: the actions menu and the toast by touch.
+  - Simulated: `v3/tests/e2e/deck-crud.spec.ts`.
 
 - [ ] **A deleted board comes back** _(Slice 18c)_
   - Action: In the board list tap the delete button of a test board twice; in the message
     "Deleted board '…'" tap UNDO; open the board.
   - Expected: the board is back with all its decks and pads.
   - Why manual: the board is written to the device's storage again.
+  - Simulated: `v3/tests/e2e/board-undo.spec.ts`.
 
 - [ ] **The message goes after 6 seconds** _(Slice 18b)_
   - Action: Delete a pad and do nothing; once the message is gone, tap ↶.
   - Expected: the message goes after about 6 seconds; ↶ still brings the pad back.
   - Why manual: the real timing on the device.
+  - Simulated: `v3/tests/e2e/board-undo.spec.ts` (6 s from when it appears).

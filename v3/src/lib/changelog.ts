@@ -17,10 +17,19 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.277';
+export const APP_VERSION = '3.0.278';
 
 /** The developer log, newest first; CHANGELOG.md is generated from it (sync-changelog). */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.278',
+    date: '2026-10-22',
+    items: [
+      "test(e2e): the iPhone checklist simulated as far as a browser can (owner request 2026-10-22, kept for later tests) — mobile/lifecycle (Chromium, iPhone profile): the AudioContext halted as iOS does in the background, the page hidden and shown, the engine starts it again and the loop plays on; three loops at once and STOP ALL; a 0.2 s WAV made in the test, tapped six times quickly, ends unlit without an error. mobile/library-touch (WebKit): two quick touch taps on 'delete for good' — the second lands on the dialog's text (measured) and deletes nothing; a tap on a name ticks its box; MOVE by touch kept over a reload. mobile/typing (WebKit): keys typed one by one reach the search, a pad name and a trim value, and the app reacts. mobile/orientation (WebKit): every core screen turned to landscape and back, no control outside the width",
+      'test: counter-checked — the engine ignoring the return to the page, STOP ALL doing nothing, an ended pad staying lit, a read-only search and name field, a layout wider than the phone, a delete for good without the question, a name that is not the checkbox label and folders not stored each turn their test red; two first counter-checks stayed green and showed weak tests, fixed: the loops faded out by themselves within the wait (the break now hits STOP ALL itself), and an input that ignores keys still shows them (the break now blocks the keys, and the tests check that the app reacts); an orientation check read the layout before the narrow frame had rendered (it now waits, the error class of pad-search in 3.0.276); the lifecycle check could pass on an empty list of contexts (it now requires a halted one first)',
+      'docs: manual-iphone-checklist — every item that a test simulates names it ("Simulated:", 47 items; paths checked by docsGuards, counter-checked with a misspelled path); testing.md "Mobile testing" — the spec table brought up to date (touch-targets and overflow had been listed as skipped since they run), the new simulations and the helpers kept for later ones; eslint expect-expect knows assertFitsBothWays',
+    ],
+  },
   {
     version: '3.0.277',
     date: '2026-10-22',
