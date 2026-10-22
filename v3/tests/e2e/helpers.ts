@@ -69,6 +69,8 @@ export interface SeedAudio {
   name: string;
   /** Seconds. */
   duration: number;
+  /** As a V1 import keeps a file's folder (owner decision B9); none by default. */
+  tags?: string[];
 }
 
 /** The seeded stand-in for the test WAV (WebKit). */
@@ -123,7 +125,7 @@ export async function seedTestAudio(page: Page, audio: SeedAudio = TEST_AUDIO_SE
                     name: entry.name,
                     originalName: entry.name, // as an upload stores it (Slice 16b)
                     size: 44,
-                    tags: [],
+                    tags: entry.tags ?? [],
                     addedAt: Date.now(),
                     duration: entry.duration,
                     peaks: new Array(30).fill(0.5),

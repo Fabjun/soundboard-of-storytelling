@@ -37,13 +37,15 @@ interface AudioRowProps {
   preview?: { playing: boolean; onToggle: () => void };
   /** Select mode (library.md L3): the row is a checkbox — no preview, rename or delete. */
   choose?: { chosen: boolean; onToggle: () => void };
+  /** The file's folder, shown first in the hint where the list is not one folder (ADR-0088). */
+  folder?: string;
 }
 
 // ── RenameField — inline <input> toggle (no contentEditable — iOS Safari issues) ───
 
 interface RenameFieldProps {
   name: string;
-  /** The short line under the name: how many pads use it, and the original name or hash start. */
+  /** The short line under the name: its folder, how many pads use it, the original name or hash start. */
   hint: string;
   onCommit: (newName: string) => void;
   /** Selects the row — on focus and on click of the name (Tab access, owner rule 2026-10-02). */
@@ -143,11 +145,13 @@ export function AudioRow({
   trash,
   preview,
   choose,
+  folder,
 }: AudioRowProps) {
   const usedIn = uses === 0 ? '' : uses === 1 ? 'in 1 pad · ' : `in ${uses} pads · `;
   // A renamed file shows the name it came with (V1: "← original.mp3"); otherwise the hash start
   const renamed = meta.originalName !== undefined && meta.originalName !== meta.name;
   const origin = renamed ? `← ${meta.originalName}` : `${meta.id.slice(0, 8)}…`;
+  const hint = `${folder === undefined ? '' : `${folder} · `}${usedIn}${origin}`;
   // A phone has room for name, duration and delete (Material 3 list item: headline with supporting
   // text, one trailing element); the waveform and the size stay in the wide frame (ADR-0082)
   const narrow = narrowWindow.value;
@@ -167,7 +171,7 @@ export function AudioRow({
           <input type="checkbox" checked={choose.chosen} onChange={choose.onToggle} />
           <span class="sb-flex-min sb-col">
             <span class="sb-audio-row-name">{meta.name}</span>
-            <span class="sb-hint-text">{`${usedIn}${origin}`}</span>
+            <span class="sb-hint-text">{hint}</span>
           </span>
         </label>
       ) : (
@@ -196,7 +200,7 @@ export function AudioRow({
           ) : (
             <RenameField
               name={meta.name}
-              hint={`${usedIn}${origin}`}
+              hint={hint}
               onCommit={(name) => onRename?.(name)}
               onSelect={onSelect}
             />

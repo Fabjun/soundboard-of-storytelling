@@ -238,6 +238,16 @@ because Playwright runs against a simulated environment:
   - Why manual: ticking checkboxes with a finger on the phone, and two audio files moved between
     two stores on the device's storage.
 
+- [ ] **Folders** _(Slice 16c, library.md L2, ADR-0088)_
+  - Action: Library → (with the old app's library imported: its folders are listed under the
+    categories) SELECT → tick two files → MOVE → New folder, type "Storm" with the phone's keyboard
+    → MOVE; pick "Storm" in the folder choice; RENAME it to "Storms"; IMPORT a file while "Storms"
+    is open; REMOVE FOLDER, then UNDO; close the app completely and open it.
+  - Expected: the keyboard leaves the name field in view; "Storm" lists the two files; the file
+    imported meanwhile lands in "Storms"; after REMOVE FOLDER the files are still in All, after UNDO
+    the folder is back; after the restart the folder and its files are unchanged.
+  - Why manual: the phone's keyboard and native folder choice, the file picker, and the restart.
+
 ---
 
 ## Section 3 — Layout and Platform

@@ -24,6 +24,7 @@ import {
   createDeck,
   seedTestAudio,
   TEST_AUDIO_NAME,
+  TEST_AUDIO_SEED,
 } from '../helpers';
 
 test.describe('no horizontal overflow on a 390px phone', () => {
@@ -69,7 +70,8 @@ test.describe('no horizontal overflow on a 390px phone', () => {
   // needed 412 px beside a 220 px filter rail — its delete button sat off the screen
   test('the library with a file does not overflow 390px viewport', async ({ page }) => {
     await page.goto('/soundboard-of-storytelling/');
-    await seedTestAudio(page); // the app reads it at its next start
+    // In a folder kept from V1 as a tag (B9), so the folder choice shows (Slice 16c)
+    await seedTestAudio(page, { ...TEST_AUDIO_SEED, tags: ['Forest'] }); // read at the next start
     await page.goto('/soundboard-of-storytelling/');
     await goToLibrary(page);
     const name = `${TEST_AUDIO_NAME}.wav`;
@@ -103,11 +105,24 @@ test.describe('no horizontal overflow on a 390px phone', () => {
       page.getByRole('checkbox', { name: new RegExp(`^${name.replace('.', '\\.')}`) }),
       'checkbox',
     );
-    for (const action of ['SELECT ALL', 'DELETE', 'DONE']) {
+    for (const action of ['SELECT ALL', 'MOVE', 'DELETE', 'DONE']) {
       await assertNoOverflow(page, page.getByRole('button', { name: action, exact: true }), action);
     }
     const selectWidth = await page.evaluate(() => document.body.scrollWidth);
     expect(selectWidth, `select mode body.scrollWidth ${selectWidth}px`).toBeLessThanOrEqual(
+      page.viewportSize()!.width,
+    );
+    await page.getByRole('button', { name: 'DONE', exact: true }).click();
+
+    // Folders (Slice 16c): one choice above the list; the open folder's bar stays on the screen
+    const choice = page.getByRole('combobox', { name: 'Folder', exact: true });
+    await assertNoOverflow(page, choice, 'folder choice');
+    await choice.selectOption('Forest');
+    for (const action of ['RENAME', 'REMOVE FOLDER']) {
+      await assertNoOverflow(page, page.getByRole('button', { name: action, exact: true }), action);
+    }
+    const folderWidth = await page.evaluate(() => document.body.scrollWidth);
+    expect(folderWidth, `folder body.scrollWidth ${folderWidth}px`).toBeLessThanOrEqual(
       page.viewportSize()!.width,
     );
   });

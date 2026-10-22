@@ -40,10 +40,12 @@ export function audioPath(id: string, type: string): string {
 }
 
 /**
- * Builds the backup of all boards and all library audio as one ZIP Blob (D1). `onProgress` gets
- * the number of audio files written so far and the total.
+ * Builds the backup of all boards and all library audio as one ZIP Blob (D1). `folders` maps a
+ * file id to its folder (ADR-0088; src/state/libraryFolders.ts `folderMap`) — passed in, so the
+ * export reads no state. `onProgress` gets the number of audio files written so far and the total.
  */
 export async function buildBackup(
+  folders: Readonly<Record<string, string>>,
   onProgress?: (done: number, total: number) => void,
 ): Promise<Blob> {
   const zip = createZipWriter();
@@ -63,6 +65,7 @@ export async function buildBackup(
         tags: item.tags,
         addedAt: item.addedAt,
         ...(item.originalName === undefined ? {} : { originalName: item.originalName }),
+        ...(folders[item.id] === undefined ? {} : { folder: folders[item.id] }),
         file,
       });
     }

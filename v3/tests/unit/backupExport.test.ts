@@ -23,6 +23,7 @@ import { BACKUP_MANIFEST } from '../../src/lib/backupReader';
 import { readZipDirectory, zipEntryBlob } from '../../src/lib/zipArchive';
 import { newPad } from '../../src/lib/padUtils';
 import type { Board } from '../../src/types';
+import { getLibraryFolderMap, loadPrefs } from '../../src/state/prefs';
 
 class FakeOfflineAudioContext {
   decodeAudioData(): Promise<AudioBuffer> {
@@ -92,7 +93,7 @@ describe('buildBackup', () => {
   it('round trip: export, then import into an empty app restores boards and audio', async () => {
     const original = await seed();
     const progress: string[] = [];
-    const blob = await buildBackup((d, t) => progress.push(`${d}/${t}`));
+    const blob = await buildBackup({}, (d, t) => progress.push(`${d}/${t}`));
     expect(blob.type).toBe('application/zip'); // the share sheet / download name the type
     expect(progress).toEqual(['1/2', '2/2']);
 
@@ -138,7 +139,7 @@ describe('buildBackup', () => {
 
   it('the archive holds each audio file as it is and the manifest, which names them', async () => {
     await seed();
-    const blob = await buildBackup();
+    const blob = await buildBackup({});
     const entries = await readZipDirectory(blob);
     const owl = audioPath(hash(A), 'audio/mpeg');
     const rain = audioPath(hash(B), 'audio/wav');
@@ -167,8 +168,26 @@ describe('buildBackup', () => {
     ]);
   });
 
+  it('a file in a folder carries it in the manifest, and the import puts it back (ADR-0088)', async () => {
+    await seed();
+    const blob = await buildBackup({ [hash(A)]: 'Forest', gone: 'Elsewhere' });
+    const entries = await readZipDirectory(blob);
+    const manifest = JSON.parse(
+      await (await zipEntryBlob(blob, entries.get(BACKUP_MANIFEST)!)).text(),
+    ) as { library: { id: string; folder?: string }[] };
+    expect(Object.fromEntries(manifest.library.map((e) => [e.id, e.folder]))).toEqual({
+      [hash(A)]: 'Forest',
+      [hash(B)]: undefined,
+    });
+
+    freshApp();
+    await loadPrefs();
+    await runImport(blob, await planImport(blob));
+    expect(getLibraryFolderMap()).toEqual({ [hash(A)]: 'Forest' });
+  });
+
   it('an empty app exports a valid backup with no boards and no audio', async () => {
-    const blob = await buildBackup();
+    const blob = await buildBackup({});
     const plan = await planImport(blob);
     expect(plan).toMatchObject({ kind: 'v3', boards: [], audio: 0 });
   });

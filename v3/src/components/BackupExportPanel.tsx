@@ -11,6 +11,7 @@ import type { JSX } from 'preact';
 import { backupFileName, buildBackup, saveBackupFile } from '../lib/backupExport';
 import { formatBytes } from '../lib/upload';
 import { setLastBackup } from '../state/prefs';
+import { folderMap } from '../state/libraryFolders';
 
 type Step =
   | { kind: 'building'; done: number; total: number }
@@ -34,7 +35,10 @@ export function BackupExportPanel({
 
   useEffect(() => {
     let canceled = false;
-    buildBackup((done, total) => !canceled && setStep({ kind: 'building', done, total }))
+    buildBackup(
+      folderMap(),
+      (done, total) => !canceled && setStep({ kind: 'building', done, total }),
+    )
       .then(
         (blob) => !canceled && setStep({ kind: 'ready', blob, name: backupFileName(new Date()) }),
       )

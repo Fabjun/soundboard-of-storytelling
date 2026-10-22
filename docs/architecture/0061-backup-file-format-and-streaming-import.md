@@ -164,6 +164,12 @@ restores the date added (`addedAt`, V1 `added`) and the original name (`original
 `origName`) of a new entry instead of today and the display name; without them it takes now and
 the entry's name, as V1 did (`entryAddedAt`, `entryOriginalName` in `v3/src/lib/backupImport.ts`).
 
+**2026-10-22 (3.0.277, Slice 16c, ADR-0088):** the manifest's library entries carry the file's
+folder as an optional field `folder?`; `formatVersion` stays 2. An import puts a newly added file
+in the folder its V3 or V1 entry names (`entryFolder`); a file already in the library keeps its
+own. V1's `folder` still becomes the entry's one tag as well (B9), so nothing an older reader
+expects goes missing.
+
 ## Related
 
 - **Files:** v3/src/lib/backupReader.ts, v3/src/lib/zipArchive.ts, v3/src/lib/backupExport.ts,
