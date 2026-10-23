@@ -8,8 +8,12 @@ tested with a real lamp yet; the owner's Athom WLED 12W Color Bulb is on order.
 
 **Built:** step 1 in 3.0.282 — Settings → LIGHT keeps the lamps (name, address) with TEST and
 REMOVE, and the WLED client (`v3/src/light/wled.ts`) sends a preset or "off" with a 1 s limit
-([ADR-0091](../../architecture/0091-light-lamps-as-runtime-origins.md)). Step 2 — a pad's light,
-the SOUND / LIGHT tabs, the trigger — is next.
+([ADR-0091](../../architecture/0091-light-lamps-as-runtime-origins.md)). Step 2 in 3.0.283 — a
+pad's light (`PadBase.light`: a preset or off, for all lamps or one), the PAD editor's SOUND /
+LIGHT tabs (G3) with TRY, and the trigger in the audio bridge (`v3/src/light/padLight.ts`): every
+pad that starts sends its light, also a pad a combo step plays (C4), with no change to the audio
+engine; a lamp that does not answer leaves the sound alone (C6). Not built yet: the status bar's
+"LIGHT ✕" of C6 (`lightTrouble` holds it), and the iPhone / iPad path (C5, owner decision).
 
 ## Why
 

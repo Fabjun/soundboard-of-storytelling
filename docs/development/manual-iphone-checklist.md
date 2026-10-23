@@ -288,6 +288,18 @@ checked to exist (docsGuards).
   - Why manual: the phone's keyboard, and hearing that the copy plays like the original.
   - Simulated: `v3/tests/e2e/library-templates.spec.ts` (save, ADD to a deck, kept over a reload, rename, delete with UNDO, no template from a combo).
 
+- [ ] **Light per pad** _(light.md, ADR-0091 — on a computer with Chrome or Brave, the WLED lamp in
+      the same network)_
+  - Action: Settings → LIGHT: add the lamp by its IP address → TEST; allow "local network" when the
+    browser asks. In the lamp's own app make preset 1 (e.g. Lightning). In SETUP open a pad → LIGHT
+    → Preset 1 → TRY → SAVE; in GAME play the pad, then a combo whose step plays it. Once more on the
+    iPhone.
+  - Expected: TEST says "Connected to …"; TRY and each start of the pad (also from the combo) show
+    the preset on the lamp at once, and the sound starts as before; the light stays when the pad
+    stops. On the iPhone TEST says that this browser does not let the app reach the lamp (C5).
+  - Why manual: a real lamp, the browser's permission prompt, and the iPhone's block of the call.
+  - Simulated: `v3/tests/e2e/light-settings.spec.ts` (lamps, TEST, a refused call), `v3/tests/e2e/pad-light.spec.ts` (TRY and the start in GAME send the preset; a combo has no light).
+
 ---
 
 ## Section 3 — Layout and Platform

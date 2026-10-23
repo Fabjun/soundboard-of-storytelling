@@ -103,6 +103,12 @@ export function withEarlyVersions(
 /** The release notes the main menu shows, newest first (checked by whatsNew.test.ts). */
 export const WHATS_NEW: WhatsNewNotes[] = [
   {
+    version: '3.0.283',
+    new: [
+      'A pad can start light: the PAD editor has a LIGHT tab that names a preset of a WLED lamp, or switches it off, and TRY shows it at once. Each time the pad plays — also inside a combo — the lamp shows that light.',
+    ],
+  },
+  {
     version: '3.0.282',
     new: [
       'Settings has a LIGHT group: WLED lamps in the home network can be added and tested — the first step towards pads that start light.',

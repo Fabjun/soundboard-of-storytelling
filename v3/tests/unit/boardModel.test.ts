@@ -897,6 +897,37 @@ describe('parseBoard (untrusted boards from a backup file)', () => {
     }
   });
 
+  it("keeps a pad's light (light.md C1): a preset 1–250 or off, for all lamps or one", () => {
+    for (const light of [
+      { lamp: 'all', preset: 1 },
+      { lamp: 'lamp-1', preset: 250 },
+      { lamp: 'all', off: true },
+    ]) {
+      expect(parseBoard(withPad(valid(), 0, { light }))?.pads[0]).toEqual({
+        ...valid().pads[0],
+        light,
+      });
+    }
+  });
+
+  it('refuses a light that is no light, and any light on a combo (C4)', () => {
+    const lights = [
+      { lamp: 'all', preset: 0 },
+      { lamp: 'all', preset: 251 },
+      { lamp: 'all', preset: 2.5 },
+      { lamp: '', preset: 3 },
+      { lamp: 'all', off: false },
+      { lamp: 'all', off: true, preset: 3 },
+      { preset: 3 },
+      'red',
+    ];
+    // The list names each light that got through
+    expect(lights.filter((light) => parseBoard(withPad(valid(), 0, { light })) !== null)).toEqual(
+      [],
+    );
+    expect(parseBoard(withPad(valid(), 2, { light: { lamp: 'all', off: true } }))).toBeNull();
+  });
+
   /** [description, change] — each one makes the board invalid. */
   const broken: [string, (b: ReturnType<typeof valid>) => unknown][] = [
     ['not an object', () => 'board'],

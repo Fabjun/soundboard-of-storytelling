@@ -61,6 +61,7 @@ export const FULL_TESTS = [
   'library-folders',
   'library-templates',
   'light-settings',
+  'pad-light',
 ];
 
 /**

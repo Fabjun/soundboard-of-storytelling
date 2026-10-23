@@ -12,6 +12,7 @@ import type {
   Deck,
   Pad,
   PadFile,
+  PadLight,
   PadPosition,
   Placement,
   QuickAccessEntry,
@@ -22,6 +23,7 @@ import { canStartInCombo, combosInCycles } from './comboModel';
 import { migratePad, type StoredPad } from './padFiles';
 import { clampPadSize, migratePadSize, type StoredDeck } from './padSize';
 import { isIconKey, PAD_ICONS_MAX } from './iconSet';
+import { isPreset } from '../light/wled';
 
 /** A pad as one deck shows it: the pad from the pool plus its placement in that deck. */
 export type PlacedPad = { pad: Pad; placement: Placement };
@@ -572,7 +574,11 @@ function isStoredPad(v: unknown): v is StoredPad {
   if (!optional(v.iconRef, isStr) || !optional(v.icons, isIconList) || !optional(v.color, isStr))
     return false;
   if (!optional(v.addedAt, isNum) || !optional(v.modifiedAt, isNum)) return false;
-  if (v.type === 'combo') return Array.isArray(v.steps) && v.steps.every(isStep);
+  // A pad's light (light.md C1): a preset or off for all lamps or one; a combo has none (C4)
+  if (!optional(v.light, isPadLight)) return false;
+  if (v.type === 'combo') {
+    return v.light === undefined && Array.isArray(v.steps) && v.steps.every(isStep);
+  }
   const current = Array.isArray(v.files) && v.files.every(isPadFile);
   const legacy = isStrArray(v.files) && optional(v.trimStart, isNum) && optional(v.trimEnd, isNum);
   return (
@@ -582,6 +588,13 @@ function isStoredPad(v: unknown): v is StoredPad {
     // A Loop's repeat count (ADR-0069): a whole number 1–999; a Single has none
     (v.repeat === undefined || (v.type === 'loop' && isRepeatCount(v.repeat)))
   );
+}
+
+/** A pad's light (light.md C1, C2): `{lamp, preset}` with a preset of 1–250, or `{lamp, off: true}`. */
+function isPadLight(v: unknown): v is PadLight {
+  if (!isRec(v) || !isStr(v.lamp) || v.lamp === '') return false;
+  if ('off' in v) return v.off === true && !('preset' in v);
+  return isPreset(v.preset);
 }
 
 /** A pad's icons (ADR-0070): up to `PAD_ICONS_MAX` well-formed keys `set:name`. */

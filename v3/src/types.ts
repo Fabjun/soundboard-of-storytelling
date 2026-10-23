@@ -74,7 +74,16 @@ export type PadBase = {
   addedAt?: number;
   /** When the pad was last edited in the PAD editor (ms since epoch) — "Date Modified" sort. */
   modifiedAt?: number;
+  /** The light it starts with its sound (light.md C1); none on a combo (C4). */
+  light?: PadLight;
 };
+
+/**
+ * A pad's light (docs/product/features/light.md C1, C2): a preset of the lamp (1–250, made in the
+ * lamp's own app) or off, sent to every lamp of Settings → LIGHT or to the one named by its id.
+ */
+export type PadLight =
+  { lamp: 'all' | string; preset: number } | { lamp: 'all' | string; off: true };
 
 /** One step in a combo sequence. */
 export type ComboStep = {

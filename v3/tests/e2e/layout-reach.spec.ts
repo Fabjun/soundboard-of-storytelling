@@ -74,6 +74,71 @@ test("the pad editor's delete button can be reached on a short window", async ({
   await expect(page.getByTestId('undo-toast')).toBeVisible();
 });
 
+// Found 2026-10-23 — the second time after the icon picker below: the PAD editor's tab panels
+// were sb-col (min-height 0) inside its scrolling column, got squeezed, and the settings below
+// the cut could not be reached. Every control of both tabs, scrolled to with the wheel.
+test('every control of both PAD editor tabs can be reached on a short window', async ({ page }) => {
+  // A short phone: the narrow frame builds the editor as one scrolling column (ADR-0082)
+  await page.setViewportSize({ width: 390, height: 500 });
+  await page.getByText('ADD PAD', { exact: true }).click();
+  const editor = page.getByTestId('pad-editor-panel');
+  /**
+   * How much of the element is in view, its parents' clipping included (IntersectionObserver) —
+   * 0 when something else lies over its center, as a squeezed section overlaps the next one.
+   */
+  const shown = (el: Element) =>
+    new Promise<number>((resolve) => {
+      const io = new IntersectionObserver(([entry]) => {
+        io.disconnect();
+        const r = entry.boundingClientRect;
+        const top = document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2);
+        resolve(top !== null && el.contains(top) ? entry.intersectionRatio : 0);
+      });
+      io.observe(el);
+    });
+  const tabs = [
+    { tab: 'SOUND', prepare: async () => {} },
+    { tab: 'LIGHT', prepare: async () => {} },
+    // "Off" shows the lamp choice and TRY — a tap on its label, as a person chooses it
+    {
+      tab: 'LIGHT',
+      prepare: () =>
+        page
+          .getByRole('tabpanel', { name: 'LIGHT', exact: true })
+          .getByText('Off', { exact: true })
+          .click(),
+    },
+  ];
+  for (const { tab, prepare } of tabs) {
+    await page.getByRole('tab', { name: tab, exact: true }).click();
+    await prepare();
+    const panel = page.getByRole('tabpanel', { name: tab, exact: true });
+    // A choice of a SegmentedChoice is tapped on its label; the radio itself is hidden
+    const controls = panel.locator(
+      'button:visible, select:visible, input:not([type="radio"]):visible, label:has(input[type="radio"]):visible',
+    );
+    const count = await controls.count();
+    expect(count, `${tab}: controls found`).toBeGreaterThan(0);
+    for (let i = 0; i < count; i++) {
+      const control = controls.nth(i);
+      const name = (await control.getAttribute('aria-label')) ?? (await control.textContent());
+      await editor.hover();
+      await page.mouse.wheel(0, -10_000); // from the top, as a person would scroll down
+      // Measured first, then one wheel step on — until the control is wholly in view
+      await expect
+        .poll(
+          async () => {
+            const ratio = await control.evaluate(shown);
+            await page.mouse.wheel(0, 120);
+            return ratio;
+          },
+          { message: `${tab}: "${name}" can be scrolled wholly into view`, intervals: [50] },
+        )
+        .toBeGreaterThan(0.99);
+    }
+  }
+});
+
 // Found 2026-10-04: in the icon picker an open category shrank to a sliver (a child of a
 // scrolling flex column with min-height 0), its icons covered the category headers below it
 test('in the icon picker, each category can be reached and opened while others are open', async ({

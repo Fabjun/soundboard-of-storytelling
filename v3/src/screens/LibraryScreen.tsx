@@ -26,6 +26,7 @@ import { ConfirmDialog } from '../components/ConfirmDialog';
 import { FolderMoveDialog } from '../components/FolderMoveDialog';
 import { UndoNoticeRegion } from '../components/UndoNoticeRegion';
 import { PadTemplatesTab } from '../components/PadTemplatesTab';
+import { Tabs, tabPanelProps } from '../components/Tabs';
 import { padTemplates } from '../state/padTemplates';
 import {
   boards,
@@ -382,379 +383,390 @@ export function LibraryScreen(): JSX.Element {
         }
       />
 
-      {/* Tabs */}
+      {/* Tabs — the app's one tab row (WAI-ARIA tabs); each panel stays in the page, the others
+          hidden, so every tab's aria-controls names an element */}
       <div class="sb-tab-bar">
-        <div class="sb-tabs">
-          {TABS.map((tab) => (
-            <button
-              key={tab}
-              class={'sb-tab' + (activeTab === tab ? ' is-active' : '')}
-              onClick={() => setActiveTab(tab)}
-            >
-              {tab}
-              <span class="sb-tab-badge">
-                {tab === 'AUDIO' ? items.length : tab === 'PADS' ? padTemplates.value.length : 0}
-              </span>
-            </button>
-          ))}
-        </div>
+        <Tabs
+          label="Library"
+          prefix="library"
+          tabs={TABS.map((tab) => ({
+            id: tab,
+            label: (
+              <>
+                {tab}
+                <span class="sb-tab-badge">
+                  {tab === 'AUDIO' ? items.length : tab === 'PADS' ? padTemplates.value.length : 0}
+                </span>
+              </>
+            ),
+          }))}
+          selected={activeTab}
+          onSelect={setActiveTab}
+        />
       </div>
 
       {/* Main content */}
-      {activeTab === 'PADS' ? (
+      <div
+        class="sb-col sb-flex-1"
+        {...tabPanelProps('library', 'PADS')}
+        hidden={activeTab !== 'PADS'}
+      >
         <PadTemplatesTab />
-      ) : activeTab !== 'AUDIO' ? (
-        <div class="sb-row-fill">
-          <EmptyState label="No items yet" />
-        </div>
-      ) : (
-        <div class={'sb-screen-layout' + (narrow ? ' is-narrow' : '')}>
-          {/* Left rail — filter; on a phone a row of categories above the list (ADR-0082: the
+      </div>
+      <div
+        class="sb-row-fill"
+        {...tabPanelProps('library', 'ICONS')}
+        hidden={activeTab !== 'ICONS'}
+      >
+        <EmptyState label="No items yet" />
+      </div>
+      <div
+        class={'sb-screen-layout' + (narrow ? ' is-narrow' : '')}
+        {...tabPanelProps('library', 'AUDIO')}
+        hidden={activeTab !== 'AUDIO'}
+      >
+        {/* Left rail — filter; on a phone a row of categories above the list (ADR-0082: the
               frame decides what is rendered — the folders as one choice, no drop hint, as files
               are not dropped on a phone) */}
-          <aside class={'sb-filter-rail' + (narrow ? ' is-narrow' : '')}>
-            {/* Category: the library and its trash */}
-            <div class="sb-rail-section has-divider">
-              {!narrow && <div class="sb-rail-label">CATEGORY</div>}
-              <button
-                class={
-                  'sb-category-item' + (view === 'all' && openFolder === null ? ' is-active' : '')
-                }
-                aria-pressed={view === 'all' && openFolder === null}
-                onClick={() => {
+        <aside class={'sb-filter-rail' + (narrow ? ' is-narrow' : '')}>
+          {/* Category: the library and its trash */}
+          <div class="sb-rail-section has-divider">
+            {!narrow && <div class="sb-rail-label">CATEGORY</div>}
+            <button
+              class={
+                'sb-category-item' + (view === 'all' && openFolder === null ? ' is-active' : '')
+              }
+              aria-pressed={view === 'all' && openFolder === null}
+              onClick={() => {
+                setView('all');
+                setFolder(null);
+              }}
+            >
+              <span>All</span>
+              <span class="sb-count-text">{items.length}</span>
+            </button>
+            <button
+              class={'sb-category-item' + (view === 'trash' ? ' is-active' : '')}
+              aria-pressed={view === 'trash'}
+              onClick={() => {
+                endChoosing();
+                setView('trash');
+              }}
+            >
+              <span>Recently deleted</span>
+              <span class="sb-count-text">{trash.length}</span>
+            </button>
+            {narrow && folderInfos.length > 0 && (
+              <select
+                class="sb-text-input"
+                aria-label="Folder"
+                value={view === 'all' && openFolder !== null ? openFolder : ''}
+                onChange={(e) => {
+                  const name = e.currentTarget.value;
                   setView('all');
-                  setFolder(null);
+                  setFolder(name === '' ? null : name);
                 }}
               >
-                <span>All</span>
-                <span class="sb-count-text">{items.length}</span>
-              </button>
-              <button
-                class={'sb-category-item' + (view === 'trash' ? ' is-active' : '')}
-                aria-pressed={view === 'trash'}
-                onClick={() => {
-                  endChoosing();
-                  setView('trash');
-                }}
-              >
-                <span>Recently deleted</span>
-                <span class="sb-count-text">{trash.length}</span>
-              </button>
-              {narrow && folderInfos.length > 0 && (
-                <select
-                  class="sb-text-input"
-                  aria-label="Folder"
-                  value={view === 'all' && openFolder !== null ? openFolder : ''}
-                  onChange={(e) => {
-                    const name = e.currentTarget.value;
+                <option value="">Folders…</option>
+                {folderInfos.map((f) => (
+                  <option key={f.name} value={f.name}>
+                    {f.name} ({f.count})
+                  </option>
+                ))}
+              </select>
+            )}
+          </div>
+
+          {/* Folders (L2): a file is in one or in none; a folder lists what is in it */}
+          {!narrow && folderInfos.length > 0 && (
+            <div class="sb-rail-section">
+              <div class="sb-rail-label">FOLDERS</div>
+              {folderInfos.map((f) => (
+                <button
+                  key={f.name}
+                  class={
+                    'sb-category-item' +
+                    (view === 'all' && openFolder === f.name ? ' is-active' : '')
+                  }
+                  aria-pressed={view === 'all' && openFolder === f.name}
+                  onClick={() => {
                     setView('all');
-                    setFolder(name === '' ? null : name);
+                    setFolder(f.name);
                   }}
                 >
-                  <option value="">Folders…</option>
-                  {folderInfos.map((f) => (
-                    <option key={f.name} value={f.name}>
-                      {f.name} ({f.count})
+                  <span class="sb-flex-trunc">{f.name}</span>
+                  <span class="sb-count-text">{f.count}</span>
+                </button>
+              ))}
+            </div>
+          )}
+
+          {/* Drop zone hint — shown when no files or when dragging */}
+          {!narrow && (items.length === 0 || isDragOver) && (
+            <div
+              class="sb-drop-hint"
+              style={{
+                border: `2px dashed ${isDragOver ? 'var(--gold)' : 'var(--border)'}`,
+                color: isDragOver ? 'var(--gold)' : 'var(--text-mute)',
+              }}
+            >
+              {isDragOver ? 'DROP FILES' : 'Drop audio files\nanywhere on screen'}
+            </div>
+          )}
+        </aside>
+
+        {/* Center — list */}
+        <main class="sb-col">
+          {/* Search bar — and in All the sort, as on the board: a key, reversible (L9) */}
+          <div class="sb-search-bar sb-row">
+            <div class="sb-search-field">
+              <UiIcon name="search" size={12} color="var(--text-mute)" />
+              <input
+                class="sb-search-input sb-flex-1"
+                type="text"
+                placeholder={
+                  view === 'trash'
+                    ? `Search ${filesText(trash.length, 'deleted file')}…`
+                    : openFolder === null
+                      ? `Search ${filesText(items.length, 'file')}…`
+                      : `Search ${filesText(inScope.length, 'file')} in ${openFolder}…`
+                }
+                value={search}
+                onInput={(e) => setSearch((e.target as HTMLInputElement).value)}
+              />
+              {search && (
+                <button
+                  class="sb-btn-clear"
+                  onClick={() => setSearch('')}
+                  aria-label="Clear the search"
+                >
+                  <UiIcon name="close" />
+                </button>
+              )}
+            </div>
+            {view === 'all' && (
+              <>
+                <select
+                  class="sb-text-input"
+                  aria-label="Sort files by"
+                  value={librarySort.key}
+                  onChange={(e) => {
+                    const key = LIBRARY_SORT_KEYS.find((k) => k === e.currentTarget.value);
+                    if (key) setLibrarySort({ key, reversed: false });
+                  }}
+                >
+                  {LIBRARY_SORT_KEYS.map((k) => (
+                    <option key={k} value={k}>
+                      {PAD_SORT_LABELS[k]}
                     </option>
                   ))}
                 </select>
-              )}
-            </div>
-
-            {/* Folders (L2): a file is in one or in none; a folder lists what is in it */}
-            {!narrow && folderInfos.length > 0 && (
-              <div class="sb-rail-section">
-                <div class="sb-rail-label">FOLDERS</div>
-                {folderInfos.map((f) => (
-                  <button
-                    key={f.name}
-                    class={
-                      'sb-category-item' +
-                      (view === 'all' && openFolder === f.name ? ' is-active' : '')
-                    }
-                    aria-pressed={view === 'all' && openFolder === f.name}
-                    onClick={() => {
-                      setView('all');
-                      setFolder(f.name);
-                    }}
-                  >
-                    <span class="sb-flex-trunc">{f.name}</span>
-                    <span class="sb-count-text">{f.count}</span>
-                  </button>
-                ))}
-              </div>
-            )}
-
-            {/* Drop zone hint — shown when no files or when dragging */}
-            {!narrow && (items.length === 0 || isDragOver) && (
-              <div
-                class="sb-drop-hint"
-                style={{
-                  border: `2px dashed ${isDragOver ? 'var(--gold)' : 'var(--border)'}`,
-                  color: isDragOver ? 'var(--gold)' : 'var(--text-mute)',
-                }}
-              >
-                {isDragOver ? 'DROP FILES' : 'Drop audio files\nanywhere on screen'}
-              </div>
-            )}
-          </aside>
-
-          {/* Center — list */}
-          <main class="sb-col">
-            {/* Search bar — and in All the sort, as on the board: a key, reversible (L9) */}
-            <div class="sb-search-bar sb-row">
-              <div class="sb-search-field">
-                <UiIcon name="search" size={12} color="var(--text-mute)" />
-                <input
-                  class="sb-search-input sb-flex-1"
-                  type="text"
-                  placeholder={
-                    view === 'trash'
-                      ? `Search ${filesText(trash.length, 'deleted file')}…`
-                      : openFolder === null
-                        ? `Search ${filesText(items.length, 'file')}…`
-                        : `Search ${filesText(inScope.length, 'file')} in ${openFolder}…`
+                <button
+                  class="sb-btn sb-btn-sm sb-btn-ghost"
+                  aria-label="Reverse the order"
+                  aria-pressed={librarySort.reversed}
+                  onClick={() =>
+                    setLibrarySort({ ...librarySort, reversed: !librarySort.reversed })
                   }
-                  value={search}
-                  onInput={(e) => setSearch((e.target as HTMLInputElement).value)}
-                />
-                {search && (
-                  <button
-                    class="sb-btn-clear"
-                    onClick={() => setSearch('')}
-                    aria-label="Clear the search"
-                  >
-                    <UiIcon name="close" />
-                  </button>
-                )}
+                >
+                  {librarySort.reversed ? '↑' : '↓'}
+                </button>
+                <button
+                  class="sb-btn sb-btn-sm sb-btn-ghost"
+                  disabled={!choosing && items.length === 0}
+                  onClick={choosing ? endChoosing : startChoosing}
+                >
+                  {choosing ? 'DONE' : 'SELECT'}
+                </button>
+              </>
+            )}
+          </div>
+
+          {/* Select mode: how many files are chosen, and what can be done with them (L3) */}
+          {view === 'all' && choosing && (
+            <div class="sb-list-bar" role="toolbar" aria-label="Selected files">
+              <span class="sb-caption">
+                {chosenShown.length === 1
+                  ? '1 file selected'
+                  : `${chosenShown.length} files selected`}
+              </span>
+              <div class="sb-row">
+                <button
+                  class="sb-btn sb-btn-sm sb-btn-ghost"
+                  disabled={filtered.length === 0}
+                  onClick={() =>
+                    setChosen(allShownChosen ? new Set() : new Set(filtered.map((m) => m.id)))
+                  }
+                >
+                  {allShownChosen ? 'SELECT NONE' : 'SELECT ALL'}
+                </button>
+                <button
+                  class="sb-btn sb-btn-sm sb-btn-ghost"
+                  disabled={chosenShown.length === 0}
+                  onClick={() => setMoving(true)}
+                >
+                  MOVE
+                </button>
+                <button
+                  class="sb-btn sb-btn-sm sb-btn-danger"
+                  disabled={chosenShown.length === 0}
+                  onClick={() => {
+                    void handleDelete(chosenShown.map((m) => m.id));
+                    endChoosing();
+                  }}
+                >
+                  DELETE
+                </button>
               </div>
-              {view === 'all' && (
+            </div>
+          )}
+
+          {/* An open folder: its name, RENAME (in place) and REMOVE FOLDER (its files stay) */}
+          {view === 'all' && openFolder !== null && !choosing && (
+            <div class="sb-list-bar" role="toolbar" aria-label="Folder">
+              {renaming === null ? (
                 <>
-                  <select
-                    class="sb-text-input"
-                    aria-label="Sort files by"
-                    value={librarySort.key}
-                    onChange={(e) => {
-                      const key = LIBRARY_SORT_KEYS.find((k) => k === e.currentTarget.value);
-                      if (key) setLibrarySort({ key, reversed: false });
+                  <span class="sb-caption">
+                    Folder '{openFolder}' ·{' '}
+                    {inScope.length === 1 ? '1 file' : `${inScope.length} files`}
+                  </span>
+                  <div class="sb-row">
+                    <button
+                      class="sb-btn sb-btn-sm sb-btn-ghost"
+                      onClick={() => setRenaming(openFolder)}
+                    >
+                      RENAME
+                    </button>
+                    <button
+                      class="sb-btn sb-btn-sm sb-btn-ghost"
+                      onClick={() => handleRemoveFolder(openFolder)}
+                    >
+                      REMOVE FOLDER
+                    </button>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <input
+                    class="sb-text-input sb-flex-1"
+                    aria-label="Folder name"
+                    maxLength={FOLDER_NAME_MAX}
+                    value={renaming}
+                    ref={(el) => el?.focus()}
+                    onInput={(e) => setRenaming(e.currentTarget.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') commitRename(openFolder);
+                      if (e.key === 'Escape') setRenaming(null);
                     }}
-                  >
-                    {LIBRARY_SORT_KEYS.map((k) => (
-                      <option key={k} value={k}>
-                        {PAD_SORT_LABELS[k]}
-                      </option>
-                    ))}
-                  </select>
-                  <button
-                    class="sb-btn sb-btn-sm sb-btn-ghost"
-                    aria-label="Reverse the order"
-                    aria-pressed={librarySort.reversed}
-                    onClick={() =>
-                      setLibrarySort({ ...librarySort, reversed: !librarySort.reversed })
-                    }
-                  >
-                    {librarySort.reversed ? '↑' : '↓'}
-                  </button>
-                  <button
-                    class="sb-btn sb-btn-sm sb-btn-ghost"
-                    disabled={!choosing && items.length === 0}
-                    onClick={choosing ? endChoosing : startChoosing}
-                  >
-                    {choosing ? 'DONE' : 'SELECT'}
-                  </button>
+                  />
+                  <div class="sb-row">
+                    <button
+                      class="sb-btn sb-btn-sm sb-btn-primary"
+                      onClick={() => commitRename(openFolder)}
+                    >
+                      SAVE
+                    </button>
+                    <button class="sb-btn sb-btn-sm sb-btn-ghost" onClick={() => setRenaming(null)}>
+                      CANCEL
+                    </button>
+                  </div>
                 </>
               )}
             </div>
+          )}
 
-            {/* Select mode: how many files are chosen, and what can be done with them (L3) */}
-            {view === 'all' && choosing && (
-              <div class="sb-list-bar" role="toolbar" aria-label="Selected files">
-                <span class="sb-caption">
-                  {chosenShown.length === 1
-                    ? '1 file selected'
-                    : `${chosenShown.length} files selected`}
-                </span>
-                <div class="sb-row">
-                  <button
-                    class="sb-btn sb-btn-sm sb-btn-ghost"
-                    disabled={filtered.length === 0}
-                    onClick={() =>
-                      setChosen(allShownChosen ? new Set() : new Set(filtered.map((m) => m.id)))
-                    }
-                  >
-                    {allShownChosen ? 'SELECT NONE' : 'SELECT ALL'}
-                  </button>
-                  <button
-                    class="sb-btn sb-btn-sm sb-btn-ghost"
-                    disabled={chosenShown.length === 0}
-                    onClick={() => setMoving(true)}
-                  >
-                    MOVE
-                  </button>
-                  <button
-                    class="sb-btn sb-btn-sm sb-btn-danger"
-                    disabled={chosenShown.length === 0}
-                    onClick={() => {
-                      void handleDelete(chosenShown.map((m) => m.id));
-                      endChoosing();
-                    }}
-                  >
-                    DELETE
-                  </button>
-                </div>
-              </div>
-            )}
-
-            {/* An open folder: its name, RENAME (in place) and REMOVE FOLDER (its files stay) */}
-            {view === 'all' && openFolder !== null && !choosing && (
-              <div class="sb-list-bar" role="toolbar" aria-label="Folder">
-                {renaming === null ? (
-                  <>
-                    <span class="sb-caption">
-                      Folder '{openFolder}' ·{' '}
-                      {inScope.length === 1 ? '1 file' : `${inScope.length} files`}
-                    </span>
-                    <div class="sb-row">
-                      <button
-                        class="sb-btn sb-btn-sm sb-btn-ghost"
-                        onClick={() => setRenaming(openFolder)}
-                      >
-                        RENAME
-                      </button>
-                      <button
-                        class="sb-btn sb-btn-sm sb-btn-ghost"
-                        onClick={() => handleRemoveFolder(openFolder)}
-                      >
-                        REMOVE FOLDER
-                      </button>
-                    </div>
-                  </>
-                ) : (
-                  <>
-                    <input
-                      class="sb-text-input sb-flex-1"
-                      aria-label="Folder name"
-                      maxLength={FOLDER_NAME_MAX}
-                      value={renaming}
-                      ref={(el) => el?.focus()}
-                      onInput={(e) => setRenaming(e.currentTarget.value)}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter') commitRename(openFolder);
-                        if (e.key === 'Escape') setRenaming(null);
-                      }}
-                    />
-                    <div class="sb-row">
-                      <button
-                        class="sb-btn sb-btn-sm sb-btn-primary"
-                        onClick={() => commitRename(openFolder)}
-                      >
-                        SAVE
-                      </button>
-                      <button
-                        class="sb-btn sb-btn-sm sb-btn-ghost"
-                        onClick={() => setRenaming(null)}
-                      >
-                        CANCEL
-                      </button>
-                    </div>
-                  </>
-                )}
-              </div>
-            )}
-
-            {/* Recently deleted: how long files stay, and EMPTY (asked first, D7) */}
-            {view === 'trash' && (
-              <div class="sb-list-bar">
-                {/* sb-caption wraps — the note is read whole, never cut off */}
-                <span class="sb-caption">
-                  Deleted files stay here for {TRASH_DAYS} days. Pads that use them stay silent
-                  until they are restored.
-                </span>
-                {trash.length > 0 && (
-                  <button
-                    class="sb-btn sb-btn-sm sb-btn-danger"
-                    onClick={() => setForGood({ kind: 'all', count: trash.length })}
-                  >
-                    EMPTY
-                  </button>
-                )}
-              </div>
-            )}
-
-            {/* Audio list — or the trash */}
-            <div class="sb-item-list">
-              {view === 'trash' ? (
-                trashFiltered.length === 0 ? (
-                  <EmptyState
-                    label={
-                      trash.length === 0
-                        ? 'Nothing deleted recently.'
-                        : `No deleted files matching "${search}"`
-                    }
-                  />
-                ) : (
-                  trashFiltered.map((t) => (
-                    <AudioRow
-                      key={t.id}
-                      meta={t}
-                      selected={selectedId === t.id}
-                      onSelect={() => setSelectedId(t.id)}
-                      trash={{
-                        daysLeft: daysLeft(t, now),
-                        onRestore: () => void handleRestore(t.id),
-                        onDeleteForGood: () => setForGood({ kind: 'one', id: t.id, name: t.name }),
-                      }}
-                    />
-                  ))
-                )
-              ) : filtered.length === 0 ? (
-                items.length === 0 ? (
-                  <EmptyState
-                    label={
-                      isDragOver
-                        ? 'Drop files to import'
-                        : 'No audio files yet.\nDrop files anywhere or click IMPORT.'
-                    }
-                  />
-                ) : (
-                  <EmptyState label={`No files matching "${search}"`} />
-                )
-              ) : (
-                filtered.map((meta) => (
-                  <AudioRow
-                    key={meta.id}
-                    meta={meta}
-                    selected={selectedId === meta.id}
-                    onSelect={() => setSelectedId(meta.id)}
-                    uses={uses.get(meta.id)?.length ?? 0}
-                    {...(openFolder === null && folders[meta.id] !== undefined
-                      ? { folder: folders[meta.id] }
-                      : {})}
-                    {...(choosing
-                      ? {
-                          choose: {
-                            chosen: chosen.has(meta.id),
-                            onToggle: () => toggleChosen(meta.id),
-                          },
-                        }
-                      : {
-                          preview: {
-                            playing: playingId === meta.id,
-                            onToggle: () => togglePreview(meta),
-                          },
-                        })}
-                    onDelete={() => handleDelete([meta.id])}
-                    onRename={(newName) => handleRename(meta.id, newName)}
-                  />
-                ))
+          {/* Recently deleted: how long files stay, and EMPTY (asked first, D7) */}
+          {view === 'trash' && (
+            <div class="sb-list-bar">
+              {/* sb-caption wraps — the note is read whole, never cut off */}
+              <span class="sb-caption">
+                Deleted files stay here for {TRASH_DAYS} days. Pads that use them stay silent until
+                they are restored.
+              </span>
+              {trash.length > 0 && (
+                <button
+                  class="sb-btn sb-btn-sm sb-btn-danger"
+                  onClick={() => setForGood({ kind: 'all', count: trash.length })}
+                >
+                  EMPTY
+                </button>
               )}
             </div>
+          )}
 
-            {/* Upload status bar */}
-            <UploadStatusBar />
-          </main>
-        </div>
-      )}
+          {/* Audio list — or the trash */}
+          <div class="sb-item-list">
+            {view === 'trash' ? (
+              trashFiltered.length === 0 ? (
+                <EmptyState
+                  label={
+                    trash.length === 0
+                      ? 'Nothing deleted recently.'
+                      : `No deleted files matching "${search}"`
+                  }
+                />
+              ) : (
+                trashFiltered.map((t) => (
+                  <AudioRow
+                    key={t.id}
+                    meta={t}
+                    selected={selectedId === t.id}
+                    onSelect={() => setSelectedId(t.id)}
+                    trash={{
+                      daysLeft: daysLeft(t, now),
+                      onRestore: () => void handleRestore(t.id),
+                      onDeleteForGood: () => setForGood({ kind: 'one', id: t.id, name: t.name }),
+                    }}
+                  />
+                ))
+              )
+            ) : filtered.length === 0 ? (
+              items.length === 0 ? (
+                <EmptyState
+                  label={
+                    isDragOver
+                      ? 'Drop files to import'
+                      : 'No audio files yet.\nDrop files anywhere or click IMPORT.'
+                  }
+                />
+              ) : (
+                <EmptyState label={`No files matching "${search}"`} />
+              )
+            ) : (
+              filtered.map((meta) => (
+                <AudioRow
+                  key={meta.id}
+                  meta={meta}
+                  selected={selectedId === meta.id}
+                  onSelect={() => setSelectedId(meta.id)}
+                  uses={uses.get(meta.id)?.length ?? 0}
+                  {...(openFolder === null && folders[meta.id] !== undefined
+                    ? { folder: folders[meta.id] }
+                    : {})}
+                  {...(choosing
+                    ? {
+                        choose: {
+                          chosen: chosen.has(meta.id),
+                          onToggle: () => toggleChosen(meta.id),
+                        },
+                      }
+                    : {
+                        preview: {
+                          playing: playingId === meta.id,
+                          onToggle: () => togglePreview(meta),
+                        },
+                      })}
+                  onDelete={() => handleDelete([meta.id])}
+                  onRename={(newName) => handleRename(meta.id, newName)}
+                />
+              ))
+            )}
+          </div>
+
+          {/* Upload status bar */}
+          <UploadStatusBar />
+        </main>
+      </div>
 
       <UndoNoticeRegion scope="library" />
 

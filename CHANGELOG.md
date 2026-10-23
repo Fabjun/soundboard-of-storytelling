@@ -7,6 +7,23 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.283 — 2026-10-23
+
+### Added
+
+- feat(light): light per pad, step 2 (light.md G3, C1–C4) — a Single or Loop pad keeps a light (PadBase.light: a WLED preset 1–250 or off, for all lamps or one); the PAD editor has the tabs SOUND (default) and LIGHT, which holds the choice None / Preset / Off, the preset number, the lamp and TRY (sends it at once and says what happened); the audio bridge starts the light of every pad that starts, a pad a combo step plays included (src/light/padLight.ts, fire and forget — the audio engine is unchanged); a combo has no light of its own and says so; the board check refuses a light that is no light and any light on a combo
+- feat(a11y): one tab row for the app (src/components/Tabs.tsx, WAI-ARIA APG Tabs, automatic activation) — role tablist / tab / tabpanel, Arrow Left / Right, Home and End; the library's tabs use it too, every panel stays in the page and the others are hidden, so each tab's aria-controls names an element; a global [hidden] rule keeps a class's display from showing a hidden panel
+
+### Fixed
+
+- fix(pad-editor): the tab panels were sb-col (min-height 0) inside the scrolling column of the editor and got squeezed, so the settings below the cut could not be reached (found by mobile typing: the trim field) — the panels are plain blocks; the second case of the error class after the icon picker (2026-10-04)
+- fix(a11y): the radios of a segmented choice (SegmentedChoice: LIGHT's None / Preset / Off, and Settings, which uses the same component) had the browser's 13.3 px text; hidden, they still take the focus, and iOS zooms in on a focused form field under 16 px — they take 16 px (found by system-gestures in the pre-push gate; counter-checked: without the rule the test lists the three radios). The other 132 failures of that gate run were the machine (5-minute load 60, a Chromium launch crash); the 24 WebKit specs and both mobile projects ran green again on a calm machine
+
+### Internal
+
+- test: unit padLight (the command for a preset and for off, all lamps or one, a lamp no longer there, no light or no pad sends nothing, a lamp that fails marks lightTrouble and a round that reaches every lamp clears it, the call returns before a lamp answers), boardModel (a light kept, a light that is no light refused, a combo with light refused); E2E pad-light (Chromium; Playwright answers at the lamp address) — TRY sends the preset, SAVE keeps it, playing the pad in GAME sends it again, a combo says it has none; layout-reach — every control of both PAD editor tabs, the choices of a SegmentedChoice included, can be scrolled with the wheel wholly into view on a 390 × 500 phone, with nothing over its center (the systematic check for the error class). Counter-checked: the trigger removed from the audio bridge, the preset check and the combo rule removed, and the panels back to sb-col each turn their test red (the last one in Chromium and WebKit at phone size, at the covered type choice; at 1280 × 300 it stayed green, hence the phone size; a first version that measured only the clipping timed out at a click instead — hence the check of what lies over the center). Not proven: a real lamp — the bulb is on order
+- docs: light.md built line (step 2; not yet: the status bar's "LIGHT ✕", the iPhone path C5); iPhone checklist item "Light per pad" with its simulated parts
+
 ## 3.0.282 — 2026-10-23
 
 ### Added
