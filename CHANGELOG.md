@@ -17,6 +17,7 @@ release notes the app shows are written separately for its users (`v3/src/lib/wh
 ### Fixed
 
 - fix(pad-editor): the tab panels were sb-col (min-height 0) inside the scrolling column of the editor and got squeezed, so the settings below the cut could not be reached (found by mobile typing: the trim field) — the panels are plain blocks; the second case of the error class after the icon picker (2026-10-04)
+- fix(a11y): the radios of a segmented choice (SegmentedChoice: LIGHT's None / Preset / Off, and Settings, which uses the same component) had the browser's 13.3 px text; hidden, they still take the focus, and iOS zooms in on a focused form field under 16 px — they take 16 px (found by system-gestures in the pre-push gate; counter-checked: without the rule the test lists the three radios). The other 132 failures of that gate run were the machine (5-minute load 60, a Chromium launch crash); the 24 WebKit specs and both mobile projects ran green again on a calm machine
 
 ### Internal
 
