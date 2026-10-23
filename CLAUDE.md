@@ -799,6 +799,15 @@ boardPut(board: Board): Promise<void>
 boardDelete(id: string): Promise<void>
   // Deletes a board by id — with its decks and pads, which live inside the board document.
 
+templateGetAll(): Promise<PadTemplate[]>
+  // Every pad template — read at app start (src/state/boot.ts) and for the backup export.
+
+templatePut(template: PadTemplate): Promise<void>
+  // Adds or replaces a pad template (upsert).
+
+templateDelete(id: string): Promise<void>
+  // Deletes a pad template by id; a missing id is not an error.
+
 kvGetAll(): Promise<[string, unknown][]>
   // Every key-value entry — small, so read in one go at app start (src/state/prefs.ts).
 

@@ -31,6 +31,7 @@ import {
   trashDelete,
   trashGetAllMeta,
   trashRestore,
+  templateGetAll,
 } from '../../src/db/idb';
 import { newPad } from '../../src/lib/padUtils';
 
@@ -529,6 +530,30 @@ describe('DB upgrade to v11', () => {
     expect((await boardGetAll()).map((b) => b.id)).toEqual(['MINE']);
     expect(await kvGetAll()).toEqual([['last-backup', 7]]);
     expect(await trashGetAllMeta()).toEqual([]);
+  });
+});
+
+describe('DB upgrade to v12', () => {
+  test('from v11 the templates store is added; library, trash, boards and keyval are kept', async () => {
+    const old = await openDB('sos-v3', 11, {
+      upgrade(db) {
+        db.createObjectStore('library', { keyPath: 'id' });
+        db.createObjectStore('boards', { keyPath: 'id' });
+        db.createObjectStore('keyval');
+        db.createObjectStore('trash', { keyPath: 'id' });
+      },
+    });
+    await old.put('library', makeLibraryItem('h1', 'owl.mp3'));
+    await old.put('trash', { ...makeLibraryItem('h2', 'rain.mp3'), deletedAt: 5 });
+    await old.put('boards', makeBoard('MINE'));
+    await old.put('keyval', 7, 'last-backup');
+    old.close();
+
+    expect((await libGetAllMeta()).map((m) => m.name)).toEqual(['owl.mp3']);
+    expect((await trashGetAllMeta()).map((m) => m.name)).toEqual(['rain.mp3']);
+    expect((await boardGetAll()).map((b) => b.id)).toEqual(['MINE']);
+    expect(await kvGetAll()).toEqual([['last-backup', 7]]);
+    expect(await templateGetAll()).toEqual([]);
   });
 });
 

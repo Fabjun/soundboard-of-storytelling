@@ -67,6 +67,7 @@ import {
 } from '../lib/padUtils';
 import { libraryItems, previewPlaying } from '../state/store';
 import { updateBoard } from '../state/boardWrites';
+import { saveTemplate } from '../state/padTemplates';
 import {
   QUICK_ACCESS_MAX,
   addToQuickAccess,
@@ -173,6 +174,8 @@ export function PadEditorPanel({
   const unsaved = !samePadContent(history.present, saved);
   /** Closing with unsaved changes asks first: discard them, or keep editing. */
   const [confirmDiscard, setConfirmDiscard] = useState(false);
+  /** What SAVE AS TEMPLATE did, said once below its button. */
+  const [templateNote, setTemplateNote] = useState<string | null>(null);
   /** The pad's key in this deck — keys belong to the placement (ADR-0048). */
   const hotkey = deck?.placements.find((p) => p.padId === pad.id)?.hotkey;
   /** The pad's board-wide key in the quick-access bar (K13). */
@@ -324,6 +327,21 @@ export function PadEditorPanel({
     historyRef.current = seal(historyRef.current);
     setHistory(historyRef.current);
     dropDraft();
+  }
+
+  /** SAVE AS TEMPLATE — keeps a copy of the pad as shown (library.md L6). */
+  async function handleSaveTemplate() {
+    const shown = historyRef.current.present;
+    if (shown.type === 'combo') return;
+    try {
+      await saveTemplate(shown);
+      setTemplateNote(
+        `Saved as a template: '${shown.name || 'without a name'}' — it is in the library's PADS tab.`,
+      );
+    } catch (e) {
+      console.error('Saving a template failed:', e);
+      setTemplateNote('The template could not be saved — free up storage space, then try again.');
+    }
   }
 
   /** Close or Escape: closes — after asking, when there are unsaved changes. */
@@ -1158,6 +1176,24 @@ export function PadEditorPanel({
             );
           })}
         </div>
+
+        {/* Save as template (Slice 16d, library.md L6) — what the editor shows, settings and file
+            references; a combo is none, its steps name pads of this board */}
+        {type !== 'combo' && (
+          <div class="sb-inspector-section">
+            <button
+              class="sb-btn sb-btn-ghost sb-btn-block"
+              onClick={() => void handleSaveTemplate()}
+            >
+              SAVE AS TEMPLATE
+            </button>
+            {templateNote && (
+              <div class="sb-caption" role="status">
+                {templateNote}
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Spacer */}
         <div class="sb-flex-1" />

@@ -4,7 +4,7 @@
 **Date:** 2026-10-02
 **Slice:** cross-cutting
 **Refines:** —
-**Refined by:** ADR-0061 (backup format), ADR-0087 (library trash), ADR-0088 (library folders)
+**Refined by:** ADR-0061 (backup), ADR-0087 (trash), ADR-0088 (folders), ADR-0090 (templates)
 **Category:** Persistence
 
 ## Context

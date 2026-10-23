@@ -279,6 +279,15 @@ checked to exist (docsGuards).
   - Why manual: the phone's keyboard and native folder choice, the file picker, and the restart.
   - Simulated: `v3/tests/e2e/library-folders.spec.ts`, `v3/tests/e2e/mobile/library-touch.spec.ts` (MOVE by touch, the folder choice, kept over a reload).
 
+- [ ] **Pad templates** _(Slice 16d, library.md L6, ADR-0090)_
+  - Action: In SETUP open a Loop pad with two files → SAVE AS TEMPLATE; Library → PADS → rename the
+    template with the phone's keyboard → ADD → pick another board and a deck → ADD; open that board
+    in GAME and play the new pad. Delete the template, then UNDO.
+  - Expected: the PADS tab lists the template with "LOOP · 2 files"; the new pad sits on the next
+    free cell of the chosen deck and sounds like the original; after UNDO the template is back.
+  - Why manual: the phone's keyboard, and hearing that the copy plays like the original.
+  - Simulated: `v3/tests/e2e/library-templates.spec.ts` (save, ADD to a deck, kept over a reload, rename, delete with UNDO, no template from a combo).
+
 ---
 
 ## Section 3 — Layout and Platform

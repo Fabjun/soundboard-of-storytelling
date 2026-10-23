@@ -25,6 +25,8 @@ import { AudioRow } from '../components/AudioRow';
 import { ConfirmDialog } from '../components/ConfirmDialog';
 import { FolderMoveDialog } from '../components/FolderMoveDialog';
 import { UndoNoticeRegion } from '../components/UndoNoticeRegion';
+import { PadTemplatesTab } from '../components/PadTemplatesTab';
+import { padTemplates } from '../state/padTemplates';
 import {
   boards,
   currentScreen,
@@ -390,14 +392,18 @@ export function LibraryScreen(): JSX.Element {
               onClick={() => setActiveTab(tab)}
             >
               {tab}
-              <span class="sb-tab-badge">{tab === 'AUDIO' ? items.length : 0}</span>
+              <span class="sb-tab-badge">
+                {tab === 'AUDIO' ? items.length : tab === 'PADS' ? padTemplates.value.length : 0}
+              </span>
             </button>
           ))}
         </div>
       </div>
 
       {/* Main content */}
-      {activeTab !== 'AUDIO' ? (
+      {activeTab === 'PADS' ? (
+        <PadTemplatesTab />
+      ) : activeTab !== 'AUDIO' ? (
         <div class="sb-row-fill">
           <EmptyState label="No items yet" />
         </div>
