@@ -103,6 +103,12 @@ export function withEarlyVersions(
 /** The release notes the main menu shows, newest first (checked by whatsNew.test.ts). */
 export const WHATS_NEW: WhatsNewNotes[] = [
   {
+    version: '3.0.284',
+    new: [
+      'On the iPhone, renaming a file or a template and the choices in Settings no longer zoom the page in — every field has text large enough.',
+    ],
+  },
+  {
     version: '3.0.283',
     new: [
       'A pad can start light: the PAD editor has a LIGHT tab that names a preset of a WLED lamp, or switches it off, and TRY shows it at once. Each time the pad plays — also inside a combo — the lamp shows that light.',

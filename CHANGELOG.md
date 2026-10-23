@@ -7,6 +7,16 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.284 — 2026-10-23
+
+### Fixed
+
+- fix(a11y): no form field of the app falls under 16 px text, where iOS zooms in on focus — the browser gives a field without its own size 13.3 px, so a base rule in global.css gives every input, select and textarea 16 px (owner decision 2026-10-23, option C: the cause at its source plus a check); this replaces the rule for the radios of a segmented choice from 3.0.283 and also covers the radios of the MOVE dialog; the rename field of a file and of a template (sb-audio-row-rename) had 14 px by its class and takes 16 px
+
+### Internal
+
+- test: system-gestures scans every place with a form field — three walks instead of one: start, main menu and Settings; the library with a file and a folder renamed and the MOVE dialog; the board list with a board renamed, a deck renamed, the pad creation popover, the PAD editor with its library picker, icon picker and combo steps, a template renamed and ADD (the old walk visited five places, so the radios in Settings and the 14 px rename field were never seen). Counter-checked: without the base rule it lists the radios of Settings, the MOVE dialog and the LIGHT tab; before the fix it listed the rename field in both walks that open it
+
 ## 3.0.283 — 2026-10-23
 
 ### Added

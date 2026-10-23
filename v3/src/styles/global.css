@@ -76,6 +76,16 @@ body.sb {
   overscroll-behavior: contain;
 }
 
+/* ─── Form fields ────────────────────────────────────────────── */
+/* Browsers give form fields their own 13.3 px text instead of the page's, and iOS zooms in on a
+   focused field under 16 px — a hidden radio of a segmented choice included (found 2026-10-23).
+   A class may set a larger size; tests/e2e/system-gestures.spec.ts finds one set smaller. */
+input,
+select,
+textarea {
+  font-size: var(--fs-md);
+}
+
 /* ─── Touch targets ──────────────────────────────────────────── */
 /* Only applied to actual interactive elements */
 button,
