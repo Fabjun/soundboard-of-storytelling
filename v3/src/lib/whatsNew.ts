@@ -103,6 +103,12 @@ export function withEarlyVersions(
 /** The release notes the main menu shows, newest first (checked by whatsNew.test.ts). */
 export const WHATS_NEW: WhatsNewNotes[] = [
   {
+    version: '3.0.280',
+    new: [
+      "A pad can be saved as a template in the PAD editor; the library's PADS tab lists the templates and adds a copy to any board and deck.",
+    ],
+  },
+  {
     version: '3.0.279',
     behindTheScenes: [
       'The automated checks on the server prepare their browsers in a way that no longer stalls, so updates reach the app without needless delays.',

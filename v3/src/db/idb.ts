@@ -7,6 +7,7 @@
  *   'boards'   (keyPath: 'id')  — Board documents (JSON, no blobs)    [since v2]
  *   'keyval'   (out-of-line keys) — small preferences and stats       [since v6]
  *   'trash'    (keyPath: 'id')  — deleted library entries (with blob) [since v11, ADR-0087]
+ *   'templates' (keyPath: 'id') — pad templates (JSON, no blobs)      [since v12, ADR-0090]
  *
  * MEMORY SAFETY RULES (carried over from V1 — see CLAUDE.md#iphone--ios-safari--memory--stability-rules-critical):
  *   - libGetAllMeta() uses a cursor and NEVER references cursor.value.blob.
@@ -30,13 +31,20 @@
  */
 
 import { openDB, type IDBPDatabase, type IDBPObjectStore } from 'idb';
-import type { Board, LibraryItem, LibraryItemMeta, TrashItem, TrashItemMeta } from '../types';
+import type {
+  Board,
+  LibraryItem,
+  LibraryItemMeta,
+  PadTemplate,
+  TrashItem,
+  TrashItemMeta,
+} from '../types';
 import { migrateBoard } from '../lib/padFiles';
 
 // ── DB singleton ─────────────────────────────────────────────────────────────
 
 const DB_NAME = 'sos-v3';
-const DB_VERSION = 11;
+const DB_VERSION = 12;
 
 let _db: IDBPDatabase | null = null;
 
@@ -92,6 +100,11 @@ async function getDB(): Promise<IDBPDatabase> {
       // store: library, boards and keyval stay as they are.
       if (oldVersion < 11) {
         db.createObjectStore('trash', { keyPath: 'id' });
+      }
+      // v12: pad templates (Slice 16d, ADR-0090) — JSON copies of pads, no audio. Only ADDS a
+      // store: every other store stays as it is.
+      if (oldVersion < 12) {
+        db.createObjectStore('templates', { keyPath: 'id' });
       }
     },
   });
@@ -291,6 +304,26 @@ export async function boardPut(board: Board): Promise<void> {
 export async function boardDelete(id: string): Promise<void> {
   const db = await getDB();
   await db.delete('boards', id);
+}
+
+// ── Template API (Slice 16d, ADR-0090) — pad templates are small JSON documents, no audio ──────
+
+/** Every pad template — read at app start (src/state/boot.ts) and for the backup export. */
+export async function templateGetAll(): Promise<PadTemplate[]> {
+  const db = await getDB();
+  return (await db.getAll('templates')) as PadTemplate[];
+}
+
+/** Adds or replaces a pad template (upsert). */
+export async function templatePut(template: PadTemplate): Promise<void> {
+  const db = await getDB();
+  await db.put('templates', template);
+}
+
+/** Deletes a pad template by id; a missing id is not an error. */
+export async function templateDelete(id: string): Promise<void> {
+  const db = await getDB();
+  await db.delete('templates', id);
 }
 
 // ── Key-value store (preferences, per-pad stats) — small values only, never audio or boards ───

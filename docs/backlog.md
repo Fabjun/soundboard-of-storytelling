@@ -899,6 +899,20 @@ Adds CSS animation complexity and is a polish concern, not functional.
 
 ### Library (Deferred from Slice 2/3)
 
+### Pad templates in backups
+
+Slice 16d (ADR-0090) stores pad templates in their own store; the backup export does not write
+them yet, and the import does not read them — neither V3 templates nor V1's (`type: 'pad'`
+library entries with `padData`, counted as "not imported" today). **Next step of 16d:** an
+optional `templates` list in the manifest (formatVersion stays 2), the V1 `padData` mapped through
+the V1 pad mapping of `v3/src/lib/v1Import.ts`.
+
+### File details list the pads
+
+library.md L5 decided that a file's details list the pads that play it, with their board — "with
+the details view of 16b"; 16b built no details view, so only the count ("in 2 pads") exists.
+**Trigger:** with the library's inspector or a row that opens (a design to make first).
+
 ### Multi-file playlist UX
 
 FileRow supports multiple files for playlist pads: drag to reorder, click to select primary,

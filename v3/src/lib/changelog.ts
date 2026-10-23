@@ -17,10 +17,20 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.279';
+export const APP_VERSION = '3.0.280';
 
 /** The developer log, newest first; CHANGELOG.md is generated from it (sync-changelog). */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.280',
+    date: '2026-10-23',
+    items: [
+      "feat(library): Slice 16d — pad templates (library.md L6, ADR-0090): SAVE AS TEMPLATE in the PAD editor keeps a copy of a Single or Loop pad's settings and file references (V1 savePadTemplate), what the editor shows; the library's PADS tab lists them by name with type, number of files and how many are no longer in the library; ADD asks for a board and a deck (or none — All pads only, TemplateAddDialog on ConfirmDialog) and puts a new pad there (new id, next free cell, the board's undo takes it back); a tap on the name renames; delete is one tap with UNDO; a combo is no template, its steps name pads of its own board",
+      'feat(db): DB version 12 adds the store templates (JSON, no audio) — the upgrade only adds a store; templates load with the stored state before the first render',
+      'test: unit padTemplates (save without the dates, a copy, listed by name over a reload, rename, delete and UNDO, missing files, ADD to a deck or the pool with a new id, undoable, unknown template or board, saves counted), idb (upgrade from v11 keeps library, trash, boards and keyval); E2E library-templates (Chromium, WebKit) — save, ADD to a deck kept over a reload, rename, delete with UNDO, no template from a combo; counter-checked: dates kept, the old id reused, ADD ignoring the deck, a combo offered, a delete without UNDO, templates not loaded at start and no v12 step each turn their test red',
+      'docs: ADR-0090; ADR-0062 refined by it; library.md 16d progress; iPhone checklist "Pad templates"; BACKLOG "Pad templates in backups" (the next step) and "File details list the pads" (L5 asked for a details view 16b did not build)',
+    ],
+  },
   {
     version: '3.0.279',
     date: '2026-10-23',

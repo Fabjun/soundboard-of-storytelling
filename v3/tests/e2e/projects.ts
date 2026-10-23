@@ -59,6 +59,7 @@ export const FULL_TESTS = [
   'library-preview',
   'library-select',
   'library-folders',
+  'library-templates',
 ];
 
 /**
@@ -95,6 +96,7 @@ export const FULL_WEBKIT_TESTS = [
   'library-list',
   'library-select',
   'library-folders',
+  'library-templates',
 ];
 
 /** tests/e2e/mobile/<name>.spec.ts — audio-free, WebKit / iPhone 13 Pro (real Safari engine path). */

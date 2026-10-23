@@ -46,8 +46,12 @@ newest first by default, as V1's library (`date-desc`) — and the list on a pho
 (BACKLOG "AudioRow grid overflow on iPhone 13 Pro (390px viewport)"), the preview (L8) in 3.0.273
 — 16b is complete. 16c: the select mode with bulk delete (L3) in 3.0.276, folders (L2) with bulk
 move in 3.0.277 ([ADR-0088](../../architecture/0088-library-folders.md): one map from file to
-folder; the folders a V1 import kept as tags are folders at once) — 16c is complete. The BOARDS tab
-is Rejected (L4).
+folder; the folders a V1 import kept as tags are folders at once) — 16c is complete. 16d: pad
+templates (L6) in 3.0.280 ([ADR-0090](../../architecture/0090-pad-templates.md): an own store;
+SAVE AS TEMPLATE in the PAD editor, ADD asks for board and deck; a combo is no template); templates
+in backups and the V1 import are left (BACKLOG "Pad templates in backups"). Also left: the file
+details of L5 that list a file's pads with their boards (BACKLOG "File details list the pads").
+The BOARDS tab is Rejected (L4).
 
 ## Decisions L1–L9 (Decided — for review)
 

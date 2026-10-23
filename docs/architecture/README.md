@@ -62,6 +62,7 @@ file. Format: `docs/architecture/_template.md`.
 | [ADR-0062](0062-indexeddb-for-all-persistence.md)           | IndexedDB for all persistence, UI preferences included               | Accepted               | cross-cutting                               | 2026-10-02 |
 | [ADR-0087](0087-library-trash.md)                           | Library trash — a deleted file waits 30 days in its own store        | Accepted               | Slice 16                                    | 2026-10-20 |
 | [ADR-0088](0088-library-folders.md)                         | Library folders — one map from file to folder in the key-value store | Accepted               | Slice 16                                    | 2026-10-22 |
+| [ADR-0090](0090-pad-templates.md)                           | Pad templates in their own IndexedDB store                           | Accepted               | Slice 16                                    | 2026-10-23 |
 
 ### Audio engine & iOS memory
 

@@ -187,6 +187,19 @@ export type TrashItemMeta = LibraryItemMeta & {
 export type TrashItem = LibraryItem & { deletedAt: number };
 
 /**
+ * A pad saved as a template (Slice 16d, library.md L6, ADR-0090): a copy of a Single or Loop pad's
+ * settings and file references, no audio. Its `pad.id` is the saved pad's — a pad added from the
+ * template gets a new one.
+ */
+export type PadTemplate = {
+  id: string;
+  name: string;
+  /** When it was saved (ms since epoch). */
+  savedAt: number;
+  pad: SinglePad | LoopPad;
+};
+
+/**
  * Result of a batch upload operation.
  */
 export type UploadResult = {
