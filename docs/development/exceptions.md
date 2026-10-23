@@ -98,7 +98,7 @@ Paths, dependencies and issues excluded from formatting, linting, knip or doc gu
 | knip ignoreBinaries     | `vale`                                      | Installed by scripts/vale-install.ts (a Go binary, not an npm package)                                                                                                                                                                                                                                                |
 | knip ignoreIssues       | `playwright.config.ts`                      | Production mode falsely reports vite unlisted (BACKLOG "knip: vite unlisted in production mode")                                                                                                                                                                                                                      |
 
-## Reserved code (3)
+## Reserved code (5)
 
 Unused today, kept for a later slice or a parked feature (`@reserved`, ADR-0064); the slice is the review trigger — `codeGuards` reports a reservation whose slice is complete.
 
@@ -106,6 +106,8 @@ Unused today, kept for a later slice or a parked feature (`@reserved`, ADR-0064)
 | --------------------------- | -------------- | ---------------------------------------------------------------------------------------------- |
 | `v3/src/audio/index.ts:183` | `fadeOutAll`   | Parked — one fade for everything at once; STOP ALL fades pad by pad (src/state/stopControl.ts) |
 | `v3/src/audio/index.ts:237` | `crossfade`    | Parked — crossfade between pads (docs/product/README.md#pad-options)                           |
+| `v3/src/light/wled.ts:55`   | `isPreset`     | Parked — a pad's light, step 2 of docs/product/features/light.md (Building blocks 1, 4)        |
+| `v3/src/light/wled.ts:95`   | `sendLight`    | Parked — a pad's light, step 2 of docs/product/features/light.md (Building blocks 2)           |
 | `v3/src/state/store.ts:118` | `masterVolume` | Parked — master volume (docs/product/README.md#pad-options)                                    |
 
 ## Prose lint exceptions (Vale) (14)
@@ -125,9 +127,9 @@ Historical docs excluded in `.vale.ini`, and passages marked `<!-- vale … = NO
 | `CLAUDE.md:977`                                        | `SoS.SupersededTerms` off         | historical slice records keep the names valid at the time (Scene before Slice 9b) |
 | `docs/architecture/0056-documentation-freshness.md:33` | `SoS.SupersededTerms` off         | …                                                                                 |
 | `docs/architecture/concept-brief.md:75`                | `SoS.SupersededTerms` off         | explains the rename                                                               |
-| `docs/product/README.md:115`                           | `SoS.SupersededTerms` off         | records the rename decision                                                       |
-| `docs/product/README.md:289`                           | `SoS.SupersededTerms` off         | records the rename                                                                |
-| `docs/product/README.md:308`                           | `SoS.SupersededTerms` off         | records the rename decision (Q1)                                                  |
+| `docs/product/README.md:116`                           | `SoS.SupersededTerms` off         | records the rename decision                                                       |
+| `docs/product/README.md:290`                           | `SoS.SupersededTerms` off         | records the rename                                                                |
+| `docs/product/README.md:309`                           | `SoS.SupersededTerms` off         | records the rename decision (Q1)                                                  |
 
 ## To-do markers (0)
 

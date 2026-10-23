@@ -17,10 +17,20 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.281';
+export const APP_VERSION = '3.0.282';
 
 /** The developer log, newest first; CHANGELOG.md is generated from it (sync-changelog). */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.282',
+    date: '2026-10-23',
+    items: [
+      "feat(light): light per pad, step 1 (docs/product/features/light.md, ADR-0091) — Settings → LIGHT keeps the WLED lamps (name, address as typed; one address once) with TEST, which asks the lamp who it is (/json/info) and says in plain words what happened: connected with its name, no answer at the address, or that this browser does not let the app reach it (Chrome and Brave on a computer need the local-network permission; no iPhone or iPad browser allows it); REMOVE asks first, as pads that name the lamp would lose their light without a word; the WLED client (src/light/wled.ts) sends a preset {ps: n} or off {on: false} with a 1 s limit and the targetAddressSpace: 'local' hint, and never throws",
+      "docs: light.md — the concept, written on the owner's instruction of 2026-10-22: decided G1–G4 from the owner's agreements, C1–C6 decided by Claude for review (a pad names a WLED preset or off; the light stays when the pad stops; a combo starts light through the pads of its steps; failures never wait); researched: WLED answers web pages from any origin (Access-Control-Allow-Origin: * in its source), Chrome reaches a private address with the Local Network Access permission, WebKit blocks it — the iPhone / iPad path is an open owner decision; ADR-0091 (lamps the user adds are the only runtime origins besides the app's own; ADR-0057 refined by it); BACKLOG \"Smart light per pad\" points to the concept; CLAUDE.md Slice 16 status (16d was on main)",
+      'test: unit wled (the address forms, the bodies, preset ids, a refused call, a call past the limit, an error status, a bad address sends nothing, /json/info names the lamp, an answer that is no JSON), lights (added and kept, no name, bad or known address, a long name, removed, a damaged stored list); E2E light-settings (Chromium, WebKit; Playwright answers at the lamp address as WLED does, or refuses) — added and kept over a reload, TEST names the lamp, a refused call says what to do, a wrong and a known address are refused, REMOVE asks first; counter-checked: a timeout taken for a refusal, an address with a path accepted, a known address accepted, a remove without the question and lamps not stored each turn their test red. Not proven: the E2E server is http://localhost, so the mixed-content block of the HTTPS app is simulated by a refused call, not met',
+      'test: testGuards "every logic module has a unit test" covers the new folder src/light; codeGuards lists light/wled.ts among the files with a timer (the call limit)',
+    ],
+  },
   {
     version: '3.0.281',
     date: '2026-10-23',

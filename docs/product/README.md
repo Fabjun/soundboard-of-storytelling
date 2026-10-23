@@ -13,7 +13,8 @@
 > narrow and wide frames, the deck switcher on a phone (Slice 13). ·
 > [features/settings.md](features/settings.md) — the Settings screen, the start screen and the
 > main menu (Slice 14). · [features/library.md](features/library.md) — the library at V1's scope
-> (Slice 16; draft, open questions L1–L9).
+> (Slice 16; L1–L9 decided for review). · [features/light.md](features/light.md) — light per pad
+> on WLED lamps (draft for review; the iPhone path is an open owner decision).
 
 ## Status legend
 

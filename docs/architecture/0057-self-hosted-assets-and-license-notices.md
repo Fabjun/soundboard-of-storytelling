@@ -4,7 +4,7 @@
 **Date:** 2026-09-30
 **Slice:** infrastructure
 **Refines:** ADR-0005
-**Refined by:** ADR-0070 (the pad icon sets add a section "Icons" to the license notices)
+**Refined by:** ADR-0070 (icon licenses), ADR-0091 (lamps the user adds as runtime origins)
 **Category:** Platform constraints
 
 ## Context

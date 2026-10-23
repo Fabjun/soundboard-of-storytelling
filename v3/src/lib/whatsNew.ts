@@ -103,6 +103,12 @@ export function withEarlyVersions(
 /** The release notes the main menu shows, newest first (checked by whatsNew.test.ts). */
 export const WHATS_NEW: WhatsNewNotes[] = [
   {
+    version: '3.0.282',
+    new: [
+      'Settings has a LIGHT group: WLED lamps in the home network can be added and tested — the first step towards pads that start light.',
+    ],
+  },
+  {
     version: '3.0.281',
     new: [
       'Backups keep the pad templates, and importing a backup of the old app brings its templates into the PADS tab.',

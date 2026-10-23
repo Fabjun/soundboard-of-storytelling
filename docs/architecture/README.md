@@ -34,6 +34,7 @@ file. Format: `docs/architecture/_template.md`.
 | [ADR-0007](0007-pointer-events-dnd.md)                     | Pointer events for DnD — HTML5 drag and drop forbidden                   | Accepted | Slice 3        | 2026-05-27 |
 | [ADR-0057](0057-self-hosted-assets-and-license-notices.md) | Self-hosted assets and shipped license notices                           | Accepted | infrastructure | 2026-09-30 |
 | [ADR-0066](0066-service-worker-updates-prompt.md)          | Service worker updates — a prompt with RELOAD, never an automatic reload | Accepted | cross-cutting  | 2026-10-03 |
+| [ADR-0091](0091-light-lamps-as-runtime-origins.md)         | Lamps the user adds are the only runtime origins besides the app's own   | Accepted | cross-cutting  | 2026-10-22 |
 
 ### Data model
 
