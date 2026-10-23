@@ -14,6 +14,7 @@ import { templateDelete, templateGetAll, templatePut } from '../db/idb';
 import type { LoopPad, PadTemplate, SinglePad } from '../types';
 import { addPadToFreeCell, addPadToPool } from '../lib/boardModel';
 import { nanoid } from '../lib/nanoid';
+import { samePadContent } from '../lib/padUtils';
 import { updateBoard } from './boardWrites';
 import { libraryItems, pendingSaves } from './store';
 
@@ -59,6 +60,34 @@ export async function saveTemplate(
   await counted(() => templatePut(template));
   show([...padTemplates.value, template]);
   return template;
+}
+
+/** A template as a backup brings it: a name, when it was saved, and its pad (files already mapped). */
+export type IncomingTemplate = { name: string; savedAt: number; pad: SinglePad | LoopPad };
+
+/** Tells whether two templates are the same: the same name and the same pad, whatever its id. */
+function sameTemplate(a: IncomingTemplate, b: IncomingTemplate): boolean {
+  return a.name === b.name && samePadContent({ ...a.pad, id: '' }, { ...b.pad, id: '' });
+}
+
+/**
+ * Adds templates a backup brings, each under a new id; one that is already there — or twice in the
+ * backup — is skipped, so importing a backup again adds nothing twice. Resolves with the counts.
+ */
+export async function importTemplates(
+  incoming: readonly IncomingTemplate[],
+): Promise<{ added: number; skipped: number }> {
+  const known: IncomingTemplate[] = [...padTemplates.value];
+  const fresh: PadTemplate[] = [];
+  for (const t of incoming) {
+    if (known.some((k) => sameTemplate(k, t))) continue;
+    const template: PadTemplate = { id: nanoid(), name: t.name, savedAt: t.savedAt, pad: t.pad };
+    known.push(template);
+    fresh.push(template);
+  }
+  for (const t of fresh) await counted(() => templatePut(t));
+  if (fresh.length) show([...padTemplates.value, ...fresh]);
+  return { added: fresh.length, skipped: incoming.length - fresh.length };
 }
 
 /** Renames a template; an empty name keeps the old one. */

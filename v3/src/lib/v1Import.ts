@@ -7,7 +7,17 @@
  * Every field is checked — a malformed pad is mapped with defaults, never crashes the import.
  */
 
-import type { Board, ComboStep, FileOrder, Pad, PadBase, PadFile, Placement } from '../types';
+import type {
+  Board,
+  ComboStep,
+  FileOrder,
+  LoopPad,
+  Pad,
+  PadBase,
+  PadFile,
+  Placement,
+  SinglePad,
+} from '../types';
 import { REPEAT_MAX } from '../types';
 import { DEFAULT_GRID } from './boardModel';
 import { DEFAULT_PAD_VOLUME, indexToPos } from './padUtils';
@@ -173,6 +183,19 @@ function mapPad(
       ctx.notes.unknownModes++;
       return { ...base, type: 'single', files: trimmed, order: 'sequential' };
   }
+}
+
+/**
+ * A V1 pad template (`padData` of a library entry with `type: 'pad'`, V1 `savePadTemplate`) as a
+ * V3 Single or Loop pad with a new id (Slice 16d, ADR-0090) — null for a combo, whose steps name pads
+ * of a board the template does not have, and for what is no object.
+ */
+export function mapV1Template(padData: unknown, ctx: V1MapContext): SinglePad | LoopPad | null {
+  if (typeof padData !== 'object' || padData === null || Array.isArray(padData)) return null;
+  const p = padData as Json;
+  if (p.mode === 'combo') return null;
+  const pad = mapPad(p, 0, ctx.newId(), new Map(), ctx);
+  return pad.type === 'combo' ? null : pad;
 }
 
 /** A V1 board as a new V3 board with one deck holding all its pads (D5), or null if it is none. */

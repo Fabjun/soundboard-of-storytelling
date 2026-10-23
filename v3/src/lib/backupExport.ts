@@ -7,7 +7,7 @@
  * file is read from IndexedDB at a time and copied into the archive's Blob parts before the next.
  */
 
-import { boardGetAll, libGet, libGetAllMeta } from '../db/idb';
+import { boardGetAll, libGet, libGetAllMeta, templateGetAll } from '../db/idb';
 import { APP_VERSION } from './changelog';
 import { BACKUP_MANIFEST, V3_BACKUP_FORMAT } from './backupReader';
 import { createZipWriter } from './zipArchive';
@@ -77,6 +77,7 @@ export async function buildBackup(
     appVersion: APP_VERSION,
     exported: new Date().toISOString(),
     boards: await boardGetAll(),
+    templates: await templateGetAll(), // ADR-0090; an optional field — formatVersion stays 2
     library,
   };
   zip.add(BACKUP_MANIFEST, new TextEncoder().encode(JSON.stringify(manifest)));

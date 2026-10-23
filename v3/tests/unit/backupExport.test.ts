@@ -24,6 +24,7 @@ import { readZipDirectory, zipEntryBlob } from '../../src/lib/zipArchive';
 import { newPad } from '../../src/lib/padUtils';
 import type { Board } from '../../src/types';
 import { getLibraryFolderMap, loadPrefs } from '../../src/state/prefs';
+import { padTemplates, saveTemplate } from '../../src/state/padTemplates';
 
 class FakeOfflineAudioContext {
   decodeAudioData(): Promise<AudioBuffer> {
@@ -184,6 +185,26 @@ describe('buildBackup', () => {
     await loadPrefs();
     await runImport(blob, await planImport(blob));
     expect(getLibraryFolderMap()).toEqual({ [hash(A)]: 'Forest' });
+  });
+
+  it('pad templates go into the backup and come back in a fresh app (ADR-0090)', async () => {
+    const original = await seed();
+    const owl = original.pads.find((p) => p.name === 'Owl');
+    if (!owl || owl.type === 'combo') throw new Error('the seed has a Single Owl');
+    await saveTemplate({ ...owl, volume: 33 }, 1_234);
+    const blob = await buildBackup({});
+
+    freshApp();
+    padTemplates.value = [];
+    await runImport(blob, await planImport(blob));
+    expect(padTemplates.value).toEqual([
+      expect.objectContaining({
+        name: 'Owl',
+        savedAt: 1_234,
+        pad: expect.objectContaining({ type: 'single', volume: 33 }),
+      }),
+    ]);
+    expect(padTemplates.value[0].pad.files.map((f) => f.hash)).toEqual([hash(A)]);
   });
 
   it('an empty app exports a valid backup with no boards and no audio', async () => {

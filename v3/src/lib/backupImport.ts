@@ -9,15 +9,29 @@
  * boards are always added as new boards (new ids, a name suffix when the name is taken).
  */
 
-import type { Board } from '../types';
+import type { Board, LoopPad, SinglePad } from '../types';
 import { boards as boardsSignal, libraryItems } from '../state/store';
 import { createBoard } from '../state/boardWrites';
 import { assignFolders } from '../state/libraryFolders';
+import { importTemplates, type IncomingTemplate } from '../state/padTemplates';
 import { readBackup } from './backupReader';
-import { parseBoard, withNewIds } from './boardModel';
+import { parseBoard, parsePad, withNewIds } from './boardModel';
 import { nanoid } from './nanoid';
 import { addAudioFile } from './upload';
-import { emptyNotes, mapV1Board, uniqueBoardName, type V1ImportNotes } from './v1Import';
+import {
+  emptyNotes,
+  mapV1Board,
+  mapV1Template,
+  uniqueBoardName,
+  type V1ImportNotes,
+} from './v1Import';
+
+/**
+ * A pad template as the backup holds it (ADR-0090): from a V3 manifest's `templates`, or a V1
+ * library entry with `type: 'pad'` and its `padData`. Mapped to a template once the audio is in.
+ */
+export type PlannedTemplate =
+  { kind: 'v3'; value: unknown } | { kind: 'v1'; name: string; savedAt: number; padData: unknown };
 
 /** What a backup file holds, measured against the current library. */
 export type ImportPlan = {
@@ -28,11 +42,13 @@ export type ImportPlan = {
   audio: number;
   /** Audio entries already in the library — skipped. */
   audioPresent: number;
-  /** V1 pad templates and other non-audio entries — not imported. */
+  /** The pad templates the file holds (ADR-0090); a combo template of V1 is not among them. */
+  templates: PlannedTemplate[];
+  /** Images and other non-audio entries that are no template — not imported. */
   otherEntries: number;
 };
 
-/** What an import did: audio added, skipped or failed, boards added or skipped, and notes. */
+/** What an import did: audio added, skipped or failed, boards and templates added, and notes. */
 export type ImportResult = {
   audioAdded: number;
   audioSkipped: number;
@@ -41,8 +57,51 @@ export type ImportResult = {
   boardsAdded: number;
   /** Boards in the file that are not valid boards — skipped. */
   boardsSkipped: number;
+  templatesAdded: number;
+  /** Templates already there (the same name and pad), or not readable — skipped. */
+  templatesSkipped: number;
   notes: V1ImportNotes;
 };
+
+/** A V1 pad template entry: `type: 'pad'` with `padData` that is no combo (V1 `savePadTemplate`). */
+const v1Template = (e: Entry): PlannedTemplate | null => {
+  if (e.type !== 'pad' || !isRecord(e.padData) || e.padData.mode === 'combo') return null;
+  const name = typeof e.name === 'string' && e.name !== '' ? e.name : 'Template';
+  const added = typeof e.added === 'number' && e.added > 0 ? e.added : Date.now();
+  return { kind: 'v1', name, savedAt: added, padData: e.padData };
+};
+
+/**
+ * The template a planned one becomes: its pad with a new id and its files mapped to the library
+ * ids the import stored (missing ones left out and counted) — null when it is none.
+ */
+function toTemplate(
+  planned: PlannedTemplate,
+  fileId: (h: string) => string | undefined,
+  notes: V1ImportNotes,
+): IncomingTemplate | null {
+  if (planned.kind === 'v1') {
+    const pad = mapV1Template(planned.padData, {
+      newId: nanoid,
+      fileId,
+      takenNames: new Set(),
+      notes,
+    });
+    return pad ? { name: planned.name, savedAt: planned.savedAt, pad } : null;
+  }
+  const v = planned.value;
+  if (!isRecord(v) || typeof v.name !== 'string' || v.name === '') return null;
+  const parsed = parsePad(v.pad);
+  if (!parsed || parsed.type === 'combo') return null;
+  const files = parsed.files.flatMap((f) => {
+    const id = fileId(f.hash);
+    if (!id) notes.missingFiles++;
+    return id ? [{ ...f, hash: id }] : [];
+  });
+  const pad: SinglePad | LoopPad = { ...parsed, id: nanoid(), files };
+  const savedAt = typeof v.savedAt === 'number' && v.savedAt > 0 ? v.savedAt : Date.now();
+  return { name: v.name, savedAt, pad };
+}
 
 type Entry = Record<string, unknown>;
 
@@ -107,13 +166,19 @@ export async function planImport(file: Blob): Promise<ImportPlan> {
   let audio = 0;
   let audioPresent = 0;
   let otherEntries = 0;
+  const templates: PlannedTemplate[] = [];
   const header = await readBackup(file, {
     onBoards: (b) => {
       fileBoards = b;
     },
+    onTemplates: (list) => {
+      for (const value of list) templates.push({ kind: 'v3', value });
+    },
     onLibraryEntry: ({ fields: e }) => {
       if (!isAudioEntry(e)) {
-        otherEntries++;
+        const template = v1Template(e);
+        if (template) templates.push(template);
+        else otherEntries++;
         return;
       }
       audio++;
@@ -127,6 +192,7 @@ export async function planImport(file: Blob): Promise<ImportPlan> {
     pads: fileBoards.reduce<number>((n, b) => n + countPads(b), 0),
     audio,
     audioPresent,
+    templates,
     otherEntries,
   };
 }
@@ -206,6 +272,8 @@ export async function runImport(
     audioFailed: [],
     boardsAdded: 0,
     boardsSkipped: 0,
+    templatesAdded: 0,
+    templatesSkipped: 0,
     notes: emptyNotes(),
   };
   /** File hash in the backup → library id the bytes were stored under. */
@@ -260,5 +328,11 @@ export async function runImport(
       result.boardsSkipped++;
     }
   }
+
+  // Templates after the audio, like boards: their files point at what the import stored
+  const incoming = plan.templates.flatMap((t) => toTemplate(t, fileId, result.notes) ?? []);
+  const { added, skipped } = await importTemplates(incoming);
+  result.templatesAdded = added;
+  result.templatesSkipped = skipped + (plan.templates.length - incoming.length);
   return result;
 }

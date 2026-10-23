@@ -54,7 +54,14 @@ function v1Backup(): Buffer {
         size: wav.length,
         data: wav.toString('base64'),
       },
-      { hash: 'template-1', type: 'pad', name: 'Template' },
+      { hash: 'template-1', type: 'pad', name: 'Template' }, // no padData: no template
+      {
+        hash: 'pad_1700000000001',
+        type: 'pad',
+        name: 'Owl call',
+        added: 1700000000001,
+        padData: { name: 'Owl', mode: 'once', files: [wavHash], volume: 70 },
+      },
     ],
   };
   return gzipSync(Buffer.from(JSON.stringify(doc)));
@@ -79,11 +86,12 @@ test('a V1 backup imports its audio and its board; the pad plays', async ({ page
   const summary = page.getByTestId('backup-import-panel-summary-text');
   await expect(summary).toContainText('Backup from the old app (V1)');
   await expect(summary).toContainText('1 board, 2 pads, 1 audio file — 0 already in the library');
+  await expect(summary).toContainText('1 pad template');
   await expect(summary).toContainText('1 other entry');
 
   await page.getByTestId('backup-import-panel-confirm-button').click();
   await expect(page.getByTestId('backup-import-panel-result-text')).toContainText(
-    'Done: 1 audio file added, 0 already there, 1 board added.',
+    'Done: 1 audio file added, 0 already there, 1 board added, 1 pad template added.',
   );
   await page.getByTestId('backup-import-panel-close-button').click();
   await expect(page.getByTestId('backup-import-panel')).toHaveCount(0);
@@ -117,7 +125,10 @@ test('importing the same backup twice adds the board again but not the audio', a
   for (let i = 0; i < 2; i++) {
     await chooseImportFile(page, 'backup.json.gz', v1Backup());
     await page.getByTestId('backup-import-panel-confirm-button').click();
-    await expect(page.getByTestId('backup-import-panel-result-text')).toContainText('Done');
+    // The template comes once: the second import finds it there (ADR-0090)
+    await expect(page.getByTestId('backup-import-panel-result-text')).toContainText(
+      i === 0 ? '1 pad template added' : '0 pad templates added',
+    );
     await page.getByTestId('backup-import-panel-close-button').click();
   }
   await expect(page.locator('[data-testid^="board-list-screen-name-text-"]')).toHaveText([

@@ -899,13 +899,11 @@ Adds CSS animation complexity and is a polish concern, not functional.
 
 ### Library (Deferred from Slice 2/3)
 
-### Pad templates in backups
+### Pad templates in backups ✅ Done (3.0.281)
 
-Slice 16d (ADR-0090) stores pad templates in their own store; the backup export does not write
-them yet, and the import does not read them — neither V3 templates nor V1's (`type: 'pad'`
-library entries with `padData`, counted as "not imported" today). **Next step of 16d:** an
-optional `templates` list in the manifest (formatVersion stays 2), the V1 `padData` mapped through
-the V1 pad mapping of `v3/src/lib/v1Import.ts`.
+**Done in 3.0.281:** the manifest carries an optional `templates` list (formatVersion stays 2); the
+import adds V3 templates and V1 `padData` templates (through `mapV1Template`) under new ids and
+skips one already there; a V1 combo template stays "not imported" (ADR-0061 amendment 2026-10-23).
 
 ### File details list the pads
 
