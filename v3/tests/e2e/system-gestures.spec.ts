@@ -1,8 +1,9 @@
 /**
  * @fileoverview Full E2E — the browser's own touch gestures are off on every screen (ADR-0067)
  *
- * Reads the computed style of every element on the start screen, the library, the board list,
- * a board in SETUP with the pad creation popover, and the PAD editor with its library picker:
+ * Reads the computed style of every element in each place with a form field — the start screen,
+ * the main menu, Settings, the library with its rename fields and dialogs, the board list, a board
+ * in SETUP, the pad creation popover, and the PAD editor with its pickers and combo steps:
  * only scrolling is left to the browser (`touch-action: pan-x pan-y`, or `none` where the app
  * takes the touch itself), nothing can be selected, and every text field has at least 16 px text —
  * iOS zooms into a field with smaller text. Runs in Chromium and WebKit; the iOS long-press menu
@@ -19,6 +20,7 @@ import {
   goToLibrary,
   openMainMenu,
   padCells,
+  TEST_AUDIO_NAME,
 } from './helpers';
 
 /** What the browser may still do with a touch: scroll, or nothing where the app takes it. */
@@ -48,21 +50,74 @@ function offenders(page: Page): Promise<string[]> {
   }, ALLOWED_TOUCH);
 }
 
-test('no browser gestures and no small text fields on any screen', async ({ page }) => {
-  await ensureTestAudio(page);
+// Each place with a form field is opened (2026-10-23: the scan visited five places, and the radios
+// in Settings and the LIGHT tab slipped through). A new screen or dialog with a field joins one of
+// these walks.
+test('no browser gestures and no small text fields: start, main menu, Settings', async ({
+  page,
+}) => {
   await page.goto('/soundboard-of-storytelling/');
   expect(await offenders(page), 'start screen').toEqual([]);
+  await openMainMenu(page);
+  expect(await offenders(page), 'main menu').toEqual([]);
+  await page.getByRole('button', { name: 'SETTINGS', exact: true }).click();
+  await expect(page.getByRole('textbox', { name: 'Lamp address', exact: true })).toBeVisible();
+  expect(await offenders(page), 'Settings with the lamps').toEqual([]);
+});
 
+test('no browser gestures and no small text fields: the library and its dialogs', async ({
+  page,
+}) => {
+  await ensureTestAudio(page);
+  await page.goto('/soundboard-of-storytelling/');
   await goToLibrary(page);
   expect(await offenders(page), 'library').toEqual([]);
 
+  const file = `${TEST_AUDIO_NAME}.wav`;
+  await page.getByRole('button', { name: `Rename ${file}`, exact: true }).click();
+  await expect(page.getByRole('textbox', { name: 'File name', exact: true })).toBeVisible();
+  expect(await offenders(page), 'library, a file renamed').toEqual([]);
+  await page.keyboard.press('Enter');
+
+  await page.getByRole('button', { name: 'SELECT', exact: true }).click();
+  await page.getByRole('checkbox', { name: new RegExp(`^${file.replace('.', '\\.')}`) }).check();
+  await page
+    .getByRole('toolbar', { name: 'Selected files', exact: true })
+    .getByRole('button', { name: 'MOVE', exact: true })
+    .click();
+  const dialog = page.getByRole('alertdialog');
+  await dialog.getByRole('radio', { name: 'New folder', exact: true }).check();
+  expect(await offenders(page), 'library, MOVE dialog').toEqual([]);
+  await dialog.getByRole('textbox', { name: 'Name of the new folder', exact: true }).fill('Night');
+  await dialog.getByRole('button', { name: 'MOVE', exact: true }).click();
+
+  await page.getByRole('button', { name: /^Night \d+$/ }).click();
+  const bar = page.getByRole('toolbar', { name: 'Folder', exact: true });
+  await bar.getByRole('button', { name: 'RENAME', exact: true }).click();
+  await expect(bar.getByRole('textbox', { name: 'Folder name', exact: true })).toBeVisible();
+  expect(await offenders(page), 'library, a folder renamed').toEqual([]);
+});
+
+test('no browser gestures and no small text fields: boards, the PAD editor, templates', async ({
+  page,
+}) => {
+  await ensureTestAudio(page);
   await page.goto('/soundboard-of-storytelling/');
   await goToBoardList(page);
   expect(await offenders(page), 'board list').toEqual([]);
+  await page.getByTestId('board-list-screen-new-button').click();
+  await page.locator('[data-testid^="board-list-screen-edit-button-"]').first().click();
+  expect(await offenders(page), 'board list, a board renamed').toEqual([]);
+  await page.keyboard.press('Enter');
 
   await createBoardAndNavigate(page);
   await createDeck(page);
   await enterSetupMode(page);
+  await page.locator('[data-testid^="deck-rail-deck-tab-"]').first().dblclick();
+  await page.getByTestId('deck-rail-name-input').waitFor();
+  expect(await offenders(page), 'board, a deck renamed').toEqual([]);
+  await page.keyboard.press('Enter');
+
   await page.getByTestId('pad-grid-cell-empty-slot-0-0').click();
   await page.getByTestId('pad-creation-popover').waitFor();
   expect(await offenders(page), 'pad creation popover').toEqual([]);
@@ -72,7 +127,27 @@ test('no browser gestures and no small text fields on any screen', async ({ page
   await page.getByTestId('pad-creation-popover-add-button').click();
   await padCells(page).first().click();
   await page.getByRole('button', { name: 'BROWSE', exact: true }).click();
+  // The fields of the LIGHT tab are in the page too, in its hidden panel
   expect(await offenders(page), 'PAD editor with library picker').toEqual([]);
+  await page.getByTestId('pad-editor-panel-add-icon-button').click();
+  expect(await offenders(page), 'PAD editor, icon picker').toEqual([]);
+  await page.keyboard.press('Escape'); // the picker on top closes first
+
+  await page.getByRole('button', { name: 'SAVE AS TEMPLATE', exact: true }).click();
+  await page.getByTestId('pad-editor-panel-type-button-combo').click();
+  await page.getByRole('alertdialog').getByRole('button', { name: 'SWITCH', exact: true }).click();
+  await page.getByTestId('combo-steps-editor-add-button').click();
+  expect(await offenders(page), 'PAD editor, combo steps').toEqual([]);
+
+  await page.goto('/soundboard-of-storytelling/');
+  await goToLibrary(page);
+  await page.getByRole('tab', { name: /^PADS\s*\d+$/ }).click();
+  await page.getByRole('button', { name: /^Rename template / }).click();
+  expect(await offenders(page), 'library, a template renamed').toEqual([]);
+  await page.keyboard.press('Enter');
+  await page.getByRole('button', { name: /^Add .+ to a board$/ }).click();
+  await expect(page.getByRole('alertdialog')).toBeVisible();
+  expect(await offenders(page), 'library, ADD a template').toEqual([]);
 });
 
 // Owner report 2026-10-14: tapping the menu flame quickly zoomed the page in and out on the iPhone.

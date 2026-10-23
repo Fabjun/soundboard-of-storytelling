@@ -1048,11 +1048,6 @@
   outline: 2px solid var(--gold-bright);
   outline-offset: 2px;
 }
-.sb-segmented-option input {
-  /* The radio is not drawn, but it takes the focus, and iOS zooms in on a focused form field
-     whose text is under 16px (checked by tests/e2e/system-gestures.spec.ts). */
-  font-size: var(--fs-md);
-}
 .sb-switch {
   /* @inventory: An on / off setting (settings.md S13, WAI-ARIA APG Switch) — a full-width 44px row button: its label, then the track; aria-checked="true" lights the track and moves the thumb. */
   display: flex;
@@ -2789,12 +2784,12 @@
   gap: var(--space-2);
 }
 .sb-audio-row-rename {
-  /* @inventory: Editing-state input in RenameField within AudioRow — font-ui fs-sm (14px), sunk background, strong border. Distinct from sb-row-rename-input (fs-lg/18px, uppercase for board names). */
+  /* @inventory: Editing-state input in RenameField within AudioRow — font-ui fs-md (16px, the iOS focus-zoom floor), sunk background, strong border. Distinct from sb-row-rename-input (fs-lg/18px, uppercase for board names). */
   background: var(--sunk);
   border: 1px solid var(--border-strong);
   color: var(--text);
   font-family: var(--font-ui);
-  font-size: var(--fs-sm);
+  font-size: var(--fs-md);
   padding: 0.125rem 0.375rem;
   width: 100%;
   outline: none;
