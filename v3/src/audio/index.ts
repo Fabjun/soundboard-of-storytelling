@@ -7,6 +7,7 @@
 
 import type { LoopPad, Pad, PadFile, SinglePad } from '../types';
 import type { EnginePad } from './types';
+import { startPadLight } from '../light/padLight';
 import {
   playOnce,
   playLoop,
@@ -49,9 +50,13 @@ export function initAudioBridge(): void {
         return;
       }
       addPlayingPad(id);
+      const pad = findPad(id);
       // A Loop with several files plays as the engine's playlist, which reports isLoop = false:
       // the glow follows the pad type (owner decision 2026-10-02, PR #36).
-      if (isLoop || findPad(id)?.type === 'loop') addLoopingPad(id);
+      if (isLoop || pad?.type === 'loop') addLoopingPad(id);
+      // Its light, next to the sound — also for a pad a combo step plays (light.md C4); fire and
+      // forget, the sound never waits for a lamp (G2)
+      void startPadLight(pad);
     },
     onPadStopped: (id) => {
       if (id === PREVIEW_ID) {

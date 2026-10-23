@@ -20,7 +20,7 @@ import {
   reopenFirstBoard,
 } from './helpers';
 
-const padsTab = (page: Page) => page.getByRole('button', { name: /^PADS\s*\d+$/ });
+const padsTab = (page: Page) => page.getByRole('tab', { name: /^PADS\s*\d+$/ });
 const templateRow = (page: Page, name: string) =>
   page.getByRole('button', { name: `Rename template ${name}`, exact: true });
 

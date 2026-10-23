@@ -9,6 +9,11 @@
   margin: 0;
   padding: 0;
 }
+/* The hidden attribute hides, also where a class sets display (the browser's own rule loses to
+   any author rule — e.g. a tab panel that is .sb-col, light.md G3) */
+[hidden] {
+  display: none !important;
+}
 
 /* ─── Root ───────────────────────────────────────────────────── */
 html,

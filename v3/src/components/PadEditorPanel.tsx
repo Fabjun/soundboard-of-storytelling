@@ -43,7 +43,19 @@
 
 import { useState, useEffect, useLayoutEffect, useRef } from 'preact/hooks';
 import type { JSX } from 'preact';
-import type { Board, ComboStep, Deck, FileOrder, Pad, PadBase, PadFile, PadType } from '../types';
+import type {
+  Board,
+  ComboStep,
+  Deck,
+  FileOrder,
+  Pad,
+  PadBase,
+  PadFile,
+  PadLight,
+  PadType,
+} from '../types';
+import { Tabs, tabPanelProps, type TabItem } from './Tabs';
+import { PadLightPanel } from './PadLightPanel';
 import { isComboPad, REPEAT_MAX } from '../types';
 import { UiIcon } from './UiIcon';
 import { Waveform } from './Waveform';
@@ -107,6 +119,13 @@ interface PadEditorPanelProps {
 }
 
 const PAD_TYPES: PadType[] = ['single', 'loop', 'combo'];
+
+/** The editor's two tabs (light.md G3). */
+type EditorTab = 'sound' | 'light';
+const EDITOR_TABS: readonly TabItem<EditorTab>[] = [
+  { id: 'sound', label: 'SOUND' },
+  { id: 'light', label: 'LIGHT' },
+];
 
 /**
  * Edits one pad in SETUP mode as a draft that SAVE writes, with undo and redo; closing with
@@ -176,6 +195,10 @@ export function PadEditorPanel({
   const [confirmDiscard, setConfirmDiscard] = useState(false);
   /** What SAVE AS TEMPLATE did, said once below its button. */
   const [templateNote, setTemplateNote] = useState<string | null>(null);
+  /** The tab shown: SOUND (the default) or LIGHT (light.md G3). */
+  const [tab, setTab] = useState<EditorTab>('sound');
+  /** The pad's light (light.md C1) — none on a combo. */
+  const [light, setLight] = useState<PadLight | undefined>(pad.light);
   /** The pad's key in this deck — keys belong to the placement (ADR-0048). */
   const hotkey = deck?.placements.find((p) => p.padId === pad.id)?.hotkey;
   /** The pad's board-wide key in the quick-access bar (K13). */
@@ -296,6 +319,7 @@ export function PadEditorPanel({
     setFadeIn(p.fadeIn);
     setFadeOut(p.fadeOut);
     setIcons(p.icons ?? []);
+    setLight(p.light);
   }
 
   function handleUndo() {
@@ -375,7 +399,7 @@ export function PadEditorPanel({
     stepsOverride?: ComboStep[],
     orderOverride?: FileOrder,
   ): Pad {
-    const { icons: _stored, ...shared } = padBaseOf(pad);
+    const { icons: _stored, light: _light, ...shared } = padBaseOf(pad);
     const base: PadBase = {
       ...shared,
       name,
@@ -386,12 +410,20 @@ export function PadEditorPanel({
       ...(icons.length ? { icons } : {}),
     };
     if (type === 'combo') return { ...base, type, steps: stepsOverride ?? steps };
+    if (light) base.light = light; // a combo has none (light.md C4)
     const fileFields = {
       files: (filesOverride ?? files).map(fitFile),
       order: orderOverride ?? order,
     };
     if (type === 'single') return { ...base, type, ...fileFields };
     return { ...base, type, ...fileFields, ...(repeat === undefined ? {} : { repeat }) };
+  }
+
+  /** LIGHT — the pad's light, or none (light.md C1). */
+  function handleLightChange(next: PadLight | undefined) {
+    setLight(next);
+    const { light: _old, ...rest } = buildCurrentPad();
+    edit(next && rest.type !== 'combo' ? { ...rest, light: next } : rest, 'light');
   }
 
   /** ICONS — the new list, saved at once like every field (each icon once, at most 4). */
@@ -875,248 +907,269 @@ export function PadEditorPanel({
           <IconPicker chosen={icons} onPick={handleIconPick} onClose={() => setPickerSlot(null)} />
         )}
 
-        {/* Type selector */}
+        {/* SOUND and LIGHT (light.md G3): what the pad plays and what it does to the light; name and
+            icons above, keys, decks and delete below — they belong to the pad. Both panels stay in
+            the page, the other one hidden, so each tab's aria-controls names an element. A panel is
+            a plain block: as an sb-col (min-height 0) the scrolling column squeezed it and the
+            settings below the cut could not be reached (found by mobile/typing, 2026-10-23) */}
         <div class="sb-inspector-section">
-          <label class="sb-field-label">TYPE</label>
-          <div class="sb-row-sm">
-            {PAD_TYPES.map((t) => (
-              <button
-                key={t}
-                class={`sb-btn sb-type-btn ${type === t ? 'sb-btn-primary' : 'sb-btn-ghost'}`}
-                data-testid={`pad-editor-panel-type-button-${t}`}
-                aria-pressed={type === t}
-                style={{
-                  color: type === t ? padTypeColor(t) : 'var(--text-mute)',
-                  borderColor: type === t ? padTypeColor(t) : undefined,
-                }}
-                onClick={() => requestTypeChange(t)}
-              >
-                {padTypeLabel(t)}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Combo: its steps (Slice 11) */}
-        {type === 'combo' && (
-          <ComboStepsEditor
-            comboId={pad.id}
-            steps={steps}
-            board={board}
-            onChange={(next) => {
-              setSteps(next);
-              edit(buildCurrentPad(undefined, next));
-            }}
+          <Tabs
+            label="Pad settings"
+            prefix="pad-editor"
+            tabs={EDITOR_TABS}
+            selected={tab}
+            onSelect={setTab}
           />
-        )}
-
-        {/* Audio source — Single and Loop only; a Combo plays other pads */}
-        {type !== 'combo' && (
+        </div>
+        <div {...tabPanelProps('pad-editor', 'light')} hidden={tab !== 'light'}>
+          <PadLightPanel pad={history.present} light={light} onChange={handleLightChange} />
+        </div>
+        <div {...tabPanelProps('pad-editor', 'sound')} hidden={tab !== 'sound'}>
+          {/* Type selector */}
           <div class="sb-inspector-section">
-            <div class="sb-section-header-row">
-              <label class="sb-field-label">AUDIO FILES</label>
-              <button
-                class="sb-btn sb-btn-xs sb-btn-ghost"
-                data-testid="pad-editor-panel-browse-button"
-                onClick={() => {
-                  setPicked([]);
-                  setLibPickerOpen((o) => !o);
-                }}
-              >
-                {libPickerOpen ? 'CLOSE' : 'BROWSE'}
-              </button>
-            </div>
-
-            {/* The pad's files: select, reorder, remove; how several of them play */}
-            <PadFileList
-              files={files}
-              names={(hash) => allAudio.find((m) => m.id === hash)?.name}
-              selected={selected}
-              order={order}
-              onSelect={handleSelectFile}
-              onMove={handleMoveFile}
-              onRemove={handleRemoveFile}
-              onOrderChange={handleOrderChange}
-            />
-            {selectedItem && !trim && selectedItem.peaks.length > 0 && (
-              <Waveform peaks={selectedItem.peaks} height={24} />
-            )}
-
-            {/* Waveform editor, preview and trim fields — a file of known length is needed */}
-            {selectedItem && trim && (
-              <div class="sb-col">
-                <WaveformEditor
-                  peaks={selectedItem.peaks}
-                  duration={trim.duration}
-                  values={trim.values}
-                  onMove={handleTrimMove}
-                  playhead={playhead}
-                  cursor={cursor ?? trim.values.trimStart}
-                  onSeek={handleSeek}
-                />
-                <div class="sb-row-sm">
-                  <button
-                    class="sb-btn sb-btn-ghost"
-                    data-testid={`pad-editor-panel-preview-${previewOn ? 'pause' : 'play'}-button`}
-                    aria-label={previewOn ? 'Pause the preview' : 'Play a preview'}
-                    onClick={previewOn ? handlePreviewPause : handlePreviewPlay}
-                  >
-                    <UiIcon name={previewOn ? 'pause' : 'play'} />
-                  </button>
-                  <button
-                    class="sb-btn sb-btn-ghost"
-                    data-testid="pad-editor-panel-preview-stop-button"
-                    aria-label="Stop the preview"
-                    onClick={() => endPreview(null)}
-                  >
-                    <UiIcon name="stop" />
-                  </button>
-                  <span class="sb-value-text" data-testid="pad-editor-panel-preview-text">
-                    {previewAt.toFixed(1)}s / {trim.duration.toFixed(1)}s
-                  </span>
-                </div>
-                <div class="sb-row-sm">
-                  <TrimField
-                    label="Start (s)"
-                    value={trim.values.trimStart}
-                    testid="pad-editor-panel-trim-start-input"
-                    onCommit={(v) => handleTrimMove('trimStart', v)?.trimStart}
-                  />
-                  <TrimField
-                    label="End (s)"
-                    value={trim.values.trimEnd}
-                    testid="pad-editor-panel-trim-end-input"
-                    onCommit={(v) => handleTrimMove('trimEnd', v)?.trimEnd}
-                  />
-                </div>
-              </div>
-            )}
-
-            {/* Library picker — tick several files, add them together (V1 v120 multi-select) */}
-            {libPickerOpen && (
-              <div class="sb-lib-browser-list">
-                <div class="sb-lib-browser-search">
-                  <input
-                    class="sb-search-input"
-                    type="text"
-                    placeholder="Search…"
-                    value={libSearch}
-                    onInput={(e) => setLibSearch((e.target as HTMLInputElement).value)}
-                    autoFocus
-                  />
-                </div>
-                {filteredAudio.slice(0, 50).map((item) => {
-                  const inPad = files.some((f) => f.hash === item.id);
-                  return (
-                    <label key={item.id} class="sb-check-row sb-lib-browser-item">
-                      <input
-                        type="checkbox"
-                        data-testid={`pad-editor-panel-pick-input-${item.id}`}
-                        checked={inPad || picked.includes(item.id)}
-                        disabled={inPad}
-                        onChange={(e) => {
-                          const on = (e.target as HTMLInputElement).checked;
-                          setPicked((p) => (on ? [...p, item.id] : p.filter((h) => h !== item.id)));
-                        }}
-                      />
-                      <span class="sb-flex-trunc">{item.name}</span>
-                      {inPad && <span class="sb-hint-text">(in this pad)</span>}
-                    </label>
-                  );
-                })}
-                {filteredAudio.length === 0 && (
-                  <div class="sb-lib-browser-no-results">No files found</div>
-                )}
+            <label class="sb-field-label">TYPE</label>
+            <div class="sb-row-sm">
+              {PAD_TYPES.map((t) => (
                 <button
-                  class="sb-btn sb-btn-primary sb-btn-block"
-                  data-testid="pad-editor-panel-add-files-button"
-                  disabled={picked.length === 0}
-                  onClick={handleAddPicked}
+                  key={t}
+                  class={`sb-btn sb-type-btn ${type === t ? 'sb-btn-primary' : 'sb-btn-ghost'}`}
+                  data-testid={`pad-editor-panel-type-button-${t}`}
+                  aria-pressed={type === t}
+                  style={{
+                    color: type === t ? padTypeColor(t) : 'var(--text-mute)',
+                    borderColor: type === t ? padTypeColor(t) : undefined,
+                  }}
+                  onClick={() => requestTypeChange(t)}
                 >
-                  {picked.length === 1 ? 'ADD 1 FILE' : `ADD ${picked.length} FILES`}
+                  {padTypeLabel(t)}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Combo: its steps (Slice 11) */}
+          {type === 'combo' && (
+            <ComboStepsEditor
+              comboId={pad.id}
+              steps={steps}
+              board={board}
+              onChange={(next) => {
+                setSteps(next);
+                edit(buildCurrentPad(undefined, next));
+              }}
+            />
+          )}
+
+          {/* Audio source — Single and Loop only; a Combo plays other pads */}
+          {type !== 'combo' && (
+            <div class="sb-inspector-section">
+              <div class="sb-section-header-row">
+                <label class="sb-field-label">AUDIO FILES</label>
+                <button
+                  class="sb-btn sb-btn-xs sb-btn-ghost"
+                  data-testid="pad-editor-panel-browse-button"
+                  onClick={() => {
+                    setPicked([]);
+                    setLibPickerOpen((o) => !o);
+                  }}
+                >
+                  {libPickerOpen ? 'CLOSE' : 'BROWSE'}
                 </button>
               </div>
-            )}
-          </div>
-        )}
 
-        {/* REPEAT — a Loop plays until stopped (∞) or a number of times, then stops (ADR-0069) */}
-        {type === 'loop' && (
-          <div class="sb-inspector-section">
-            <label class="sb-field-label">REPEAT</label>
-            <div class="sb-row-sm">
-              <button
-                class={`sb-btn sb-btn-xs ${repeat === undefined ? 'sb-btn-primary' : 'sb-btn-ghost'}`}
-                aria-pressed={repeat === undefined}
-                aria-label="Repeat until stopped"
-                data-testid="pad-editor-panel-repeat-forever-button"
-                onClick={() => handleRepeatChange(undefined)}
-              >
-                ∞
-              </button>
-              <input
-                class="sb-text-input"
-                type="number"
-                min="1"
-                max={REPEAT_MAX}
-                step="1"
-                placeholder="Count…"
-                aria-label="Repeat count"
-                data-testid="pad-editor-panel-repeat-input"
-                value={repeat ?? ''}
-                onChange={(e) => {
-                  const typed = Math.floor(parseFloat(e.currentTarget.value));
-                  const next = Number.isFinite(typed)
-                    ? Math.min(Math.max(typed, 1), REPEAT_MAX)
-                    : undefined;
-                  handleRepeatChange(next);
-                  e.currentTarget.value = next === undefined ? '' : String(next);
-                }}
+              {/* The pad's files: select, reorder, remove; how several of them play */}
+              <PadFileList
+                files={files}
+                names={(hash) => allAudio.find((m) => m.id === hash)?.name}
+                selected={selected}
+                order={order}
+                onSelect={handleSelectFile}
+                onMove={handleMoveFile}
+                onRemove={handleRemoveFile}
+                onOrderChange={handleOrderChange}
               />
+              {selectedItem && !trim && selectedItem.peaks.length > 0 && (
+                <Waveform peaks={selectedItem.peaks} height={24} />
+              )}
+
+              {/* Waveform editor, preview and trim fields — a file of known length is needed */}
+              {selectedItem && trim && (
+                <div class="sb-col">
+                  <WaveformEditor
+                    peaks={selectedItem.peaks}
+                    duration={trim.duration}
+                    values={trim.values}
+                    onMove={handleTrimMove}
+                    playhead={playhead}
+                    cursor={cursor ?? trim.values.trimStart}
+                    onSeek={handleSeek}
+                  />
+                  <div class="sb-row-sm">
+                    <button
+                      class="sb-btn sb-btn-ghost"
+                      data-testid={`pad-editor-panel-preview-${previewOn ? 'pause' : 'play'}-button`}
+                      aria-label={previewOn ? 'Pause the preview' : 'Play a preview'}
+                      onClick={previewOn ? handlePreviewPause : handlePreviewPlay}
+                    >
+                      <UiIcon name={previewOn ? 'pause' : 'play'} />
+                    </button>
+                    <button
+                      class="sb-btn sb-btn-ghost"
+                      data-testid="pad-editor-panel-preview-stop-button"
+                      aria-label="Stop the preview"
+                      onClick={() => endPreview(null)}
+                    >
+                      <UiIcon name="stop" />
+                    </button>
+                    <span class="sb-value-text" data-testid="pad-editor-panel-preview-text">
+                      {previewAt.toFixed(1)}s / {trim.duration.toFixed(1)}s
+                    </span>
+                  </div>
+                  <div class="sb-row-sm">
+                    <TrimField
+                      label="Start (s)"
+                      value={trim.values.trimStart}
+                      testid="pad-editor-panel-trim-start-input"
+                      onCommit={(v) => handleTrimMove('trimStart', v)?.trimStart}
+                    />
+                    <TrimField
+                      label="End (s)"
+                      value={trim.values.trimEnd}
+                      testid="pad-editor-panel-trim-end-input"
+                      onCommit={(v) => handleTrimMove('trimEnd', v)?.trimEnd}
+                    />
+                  </div>
+                </div>
+              )}
+
+              {/* Library picker — tick several files, add them together (V1 v120 multi-select) */}
+              {libPickerOpen && (
+                <div class="sb-lib-browser-list">
+                  <div class="sb-lib-browser-search">
+                    <input
+                      class="sb-search-input"
+                      type="text"
+                      placeholder="Search…"
+                      value={libSearch}
+                      onInput={(e) => setLibSearch((e.target as HTMLInputElement).value)}
+                      autoFocus
+                    />
+                  </div>
+                  {filteredAudio.slice(0, 50).map((item) => {
+                    const inPad = files.some((f) => f.hash === item.id);
+                    return (
+                      <label key={item.id} class="sb-check-row sb-lib-browser-item">
+                        <input
+                          type="checkbox"
+                          data-testid={`pad-editor-panel-pick-input-${item.id}`}
+                          checked={inPad || picked.includes(item.id)}
+                          disabled={inPad}
+                          onChange={(e) => {
+                            const on = (e.target as HTMLInputElement).checked;
+                            setPicked((p) =>
+                              on ? [...p, item.id] : p.filter((h) => h !== item.id),
+                            );
+                          }}
+                        />
+                        <span class="sb-flex-trunc">{item.name}</span>
+                        {inPad && <span class="sb-hint-text">(in this pad)</span>}
+                      </label>
+                    );
+                  })}
+                  {filteredAudio.length === 0 && (
+                    <div class="sb-lib-browser-no-results">No files found</div>
+                  )}
+                  <button
+                    class="sb-btn sb-btn-primary sb-btn-block"
+                    data-testid="pad-editor-panel-add-files-button"
+                    disabled={picked.length === 0}
+                    onClick={handleAddPicked}
+                  >
+                    {picked.length === 1 ? 'ADD 1 FILE' : `ADD ${picked.length} FILES`}
+                  </button>
+                </div>
+              )}
             </div>
+          )}
+
+          {/* REPEAT — a Loop plays until stopped (∞) or a number of times, then stops (ADR-0069) */}
+          {type === 'loop' && (
+            <div class="sb-inspector-section">
+              <label class="sb-field-label">REPEAT</label>
+              <div class="sb-row-sm">
+                <button
+                  class={`sb-btn sb-btn-xs ${repeat === undefined ? 'sb-btn-primary' : 'sb-btn-ghost'}`}
+                  aria-pressed={repeat === undefined}
+                  aria-label="Repeat until stopped"
+                  data-testid="pad-editor-panel-repeat-forever-button"
+                  onClick={() => handleRepeatChange(undefined)}
+                >
+                  ∞
+                </button>
+                <input
+                  class="sb-text-input"
+                  type="number"
+                  min="1"
+                  max={REPEAT_MAX}
+                  step="1"
+                  placeholder="Count…"
+                  aria-label="Repeat count"
+                  data-testid="pad-editor-panel-repeat-input"
+                  value={repeat ?? ''}
+                  onChange={(e) => {
+                    const typed = Math.floor(parseFloat(e.currentTarget.value));
+                    const next = Number.isFinite(typed)
+                      ? Math.min(Math.max(typed, 1), REPEAT_MAX)
+                      : undefined;
+                    handleRepeatChange(next);
+                    e.currentTarget.value = next === undefined ? '' : String(next);
+                  }}
+                />
+              </div>
+            </div>
+          )}
+
+          {/* Volume */}
+          <div class="sb-inspector-section">
+            <SliderRow
+              label="VOLUME"
+              value={volume}
+              min={0}
+              max={100}
+              step={1}
+              format={(v) => `${v}%`}
+              onChange={handleVolumeChange}
+              testid="pad-editor-panel-volume-slider"
+            />
           </div>
-        )}
 
-        {/* Volume */}
-        <div class="sb-inspector-section">
-          <SliderRow
-            label="VOLUME"
-            value={volume}
-            min={0}
-            max={100}
-            step={1}
-            format={(v) => `${v}%`}
-            onChange={handleVolumeChange}
-            testid="pad-editor-panel-volume-slider"
-          />
-        </div>
+          {/* Fade In */}
+          <div class="sb-inspector-section">
+            <SliderRow
+              label="FADE IN"
+              value={fadeIn}
+              min={0}
+              max={10}
+              step={0.1}
+              format={(v) => `${v.toFixed(1)}s`}
+              onChange={handleFadeInChange}
+              testid="pad-editor-panel-fade-in-slider"
+            />
+          </div>
 
-        {/* Fade In */}
-        <div class="sb-inspector-section">
-          <SliderRow
-            label="FADE IN"
-            value={fadeIn}
-            min={0}
-            max={10}
-            step={0.1}
-            format={(v) => `${v.toFixed(1)}s`}
-            onChange={handleFadeInChange}
-            testid="pad-editor-panel-fade-in-slider"
-          />
-        </div>
-
-        {/* Fade Out */}
-        <div class="sb-inspector-section">
-          <SliderRow
-            label="FADE OUT"
-            value={fadeOut}
-            min={0}
-            max={10}
-            step={0.1}
-            format={(v) => `${v.toFixed(1)}s`}
-            onChange={handleFadeOutChange}
-            testid="pad-editor-panel-fade-out-slider"
-          />
+          {/* Fade Out */}
+          <div class="sb-inspector-section">
+            <SliderRow
+              label="FADE OUT"
+              value={fadeOut}
+              min={0}
+              max={10}
+              step={0.1}
+              format={(v) => `${v.toFixed(1)}s`}
+              onChange={handleFadeOutChange}
+              testid="pad-editor-panel-fade-out-slider"
+            />
+          </div>
         </div>
 
         {/* Hotkey: tap, then press a key (K1) — keys belong to a deck's placement */}

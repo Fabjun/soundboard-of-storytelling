@@ -49,11 +49,7 @@ export function stateBody(command: LightCommand): { ps: number } | { on: false }
   return 'off' in command ? { on: false } : { ps: command.preset };
 }
 
-/**
- * Tells whether `n` is a preset id a pad may name.
- *
- * @reserved Parked — a pad's light, step 2 of docs/product/features/light.md (Building blocks 1, 4)
- */
+/** Tells whether `n` is a preset id a pad may name. */
 export function isPreset(n: unknown): n is number {
   return typeof n === 'number' && Number.isInteger(n) && n >= 1 && n <= PRESET_MAX;
 }
@@ -89,11 +85,7 @@ async function call(
   }
 }
 
-/**
- * Sends a command to the lamp at `typed` (the address as entered); never throws.
- *
- * @reserved Parked — a pad's light, step 2 of docs/product/features/light.md (Building blocks 2)
- */
+/** Sends a command to the lamp at `typed` (the address as entered); never throws. */
 export async function sendLight(
   typed: string,
   command: LightCommand,
