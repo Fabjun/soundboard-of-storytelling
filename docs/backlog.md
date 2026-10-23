@@ -277,6 +277,10 @@ bright enough: the bulb's 1400 lm are for white light, its colors are likely far
 glass passes roughly 30–40 % in lab values. Plan B: a WLED LED ring or strip inside the shade
 (every LED in color, effects that move across the globe).
 **When:** after the test, decided with the owner (no slice yet; V3 serves private use).
+**Update 2026-10-22/23:** on the owner's instruction to design and build the building blocks now,
+the concept is [light.md](product/features/light.md) (C1–C6 decided by Claude for review; the
+iPhone / iPad path is an open owner decision, C5); step 1 — the lamps in Settings, the WLED client
+— is built in 3.0.282 (ADR-0091).
 Sources: kno.wled.ge/features/effects · developer.chrome.com/blog/local-network-access ·
 developer.apple.com/support/alternative-browser-engines · developers.home-assistant.io/docs/api/websocket ·
 developers.meethue.com (FAQ, command rate) · tindie.com/products/athom/pre-flashed-wled-wifi-smart-bulb-15w

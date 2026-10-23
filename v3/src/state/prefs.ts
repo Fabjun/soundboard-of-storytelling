@@ -151,6 +151,39 @@ export function setLibraryFolderMap(map: Readonly<Record<string, string>>): void
   write(LIBRARY_FOLDERS_KEY, { ...map });
 }
 
+// ── Lamps for light per pad (docs/product/features/light.md C2, ADR-0091) ────
+
+/** A lamp the app can start light on: its name and the address the user typed. */
+export interface Lamp {
+  id: string;
+  name: string;
+  address: string;
+}
+
+const LAMPS_KEY = 'light-lamps';
+
+/** The lamps of Settings → LIGHT, in the order added; entries that are no lamp are left out. */
+export function getLamps(): Lamp[] {
+  const v = cache.get(LAMPS_KEY);
+  if (!Array.isArray(v)) return [];
+  return v.filter(
+    (l): l is Lamp =>
+      typeof l === 'object' &&
+      l !== null &&
+      typeof (l as Lamp).id === 'string' &&
+      typeof (l as Lamp).name === 'string' &&
+      typeof (l as Lamp).address === 'string',
+  );
+}
+
+/** Stores the lamps — through src/state/lights.ts only. */
+export function setLamps(lamps: readonly Lamp[]): void {
+  write(
+    LAMPS_KEY,
+    lamps.map(({ id, name, address }) => ({ id, name, address })),
+  );
+}
+
 // ── Last played, per pad (owner decision 2026-10-02, E1 "Last played") ──────
 
 const lastPlayedKey = (padId: string) => `last-played:${padId}`;

@@ -8,6 +8,7 @@
  *   - CONTROLS — what Enter stops, the keys of STOP ALL and PAUSE (S2, Slice 14d);
  *   - APPEARANCE — theme (S5), content width (S3), pad size per board or for every board (S4);
  *   - VISUALS — the Animations switch (S6, Slice 14c);
+ *   - LIGHT — the WLED lamps pads can start light on, with a connection test (light.md C2);
  *   - DATA — the backup reminder (S7);
  *   - DEVELOPER — the debug log and the developer view: stats, cache, log (S8, Slice 14e);
  *   - ABOUT — the version and the license notices (S9).
@@ -20,6 +21,7 @@ import { UiIcon } from '../components/UiIcon';
 import { SegmentedChoice } from '../components/SegmentedChoice';
 import { Switch } from '../components/Switch';
 import { DeveloperDialog } from '../components/DeveloperDialog';
+import { LightSettings } from '../components/LightSettings';
 import { KeyField, type KeyCheck } from '../components/KeyField';
 import { boards, currentScreen, settingsReturn } from '../state/store';
 import {
@@ -244,6 +246,13 @@ export function SettingsScreen(): JSX.Element {
             onChange={setAnimationsSwitch}
             testid="settings-screen-animations-switch"
           />
+        </section>
+
+        <section class="sb-settings-group" aria-labelledby="settings-screen-light-title">
+          <h2 class="sb-settings-group-title" id="settings-screen-light-title">
+            LIGHT
+          </h2>
+          <LightSettings />
         </section>
 
         <section class="sb-settings-group" aria-labelledby="settings-screen-data-title">

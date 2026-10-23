@@ -1,7 +1,7 @@
 /**
  * @fileoverview testGuards — structural guards that keep the test suite honest (T7)
  *
- * 1. Every logic module (src/lib, src/state, src/db, src/audio) has a unit test
+ * 1. Every logic module (src/lib, src/state, src/db, src/audio, src/light) has a unit test
  *    file <name>.test.ts anywhere under tests/unit/ — or an EXEMPT entry with a reason.
  *    (CLAUDE.md required this only as text; upload.ts, libDnd.ts and nanoid.ts had
  *    no tests until 2026-09-29 and nobody noticed.)
@@ -56,7 +56,7 @@ import { findQuarantineMarkers } from '../../scripts/lib/test-markers';
 
 const V3 = join(__dirname, '..', '..');
 const BACKLOG = join(V3, '..', 'docs/backlog.md');
-const LOGIC_DIRS = ['src/lib', 'src/state', 'src/db', 'src/audio'];
+const LOGIC_DIRS = ['src/lib', 'src/state', 'src/db', 'src/audio', 'src/light'];
 
 /** Modules that intentionally have no unit test file of their own — reason required. */
 const EXEMPT: Record<string, string> = {
