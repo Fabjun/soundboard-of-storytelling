@@ -170,6 +170,15 @@ in the folder its V3 or V1 entry names (`entryFolder`); a file already in the li
 own. V1's `folder` still becomes the entry's one tag as well (B9), so nothing an older reader
 expects goes missing.
 
+**2026-10-23 (3.0.281, Slice 16d, ADR-0090):** the manifest carries the pad templates as an
+optional top-level list `templates` (`{id, name, savedAt, pad}`, the store's records);
+`formatVersion` stays 2. An import adds them under new ids, their files mapped to the library like
+a board's, and skips one that is already there (the same name and pad) — so a backup imported
+twice adds no template twice. A V1 library entry with `type: 'pad'` and `padData` (V1
+`savePadTemplate`) becomes a template through the V1 pad mapping (`mapV1Template` in
+`v3/src/lib/v1Import.ts`); a V1 combo template stays "not imported", as its steps name pads of a
+board it does not have.
+
 ## Related
 
 - **Files:** v3/src/lib/backupReader.ts, v3/src/lib/zipArchive.ts, v3/src/lib/backupExport.ts,

@@ -17,10 +17,19 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.280';
+export const APP_VERSION = '3.0.281';
 
 /** The developer log, newest first; CHANGELOG.md is generated from it (sync-changelog). */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.281',
+    date: '2026-10-23',
+    items: [
+      "feat(backup): pad templates in backups (Slice 16d, ADR-0061 amendment) — the export writes the templates as an optional manifest list (formatVersion stays 2); the import adds V3 templates and V1 templates (a library entry with type 'pad' and padData, V1 savePadTemplate, through the new mapV1Template) under new ids, their files mapped to what the import stored, and skips one that is already there (the same name and pad), so a backup imported twice adds none twice; a V1 combo template stays not imported; the summary and the result name the templates — Slice 16d is complete",
+      'test: unit backupImport (a V1 template with a file left out and counted, a combo template not imported, a V3 template read, a missing file left out, the second import skips it, a new id), backupExport (a template round trip into a fresh app); E2E backup — the V1 import names and adds its template, the second import adds none; counter-checked: no templates in the export, no skip of a known one, a combo counted, files kept that are not there (the first V3 test had no file and stayed green — a file added) and the result text without templates each turn their test red',
+      'docs: ADR-0061 amendment 2026-10-23; ADR-0090; library.md 16d complete; BACKLOG "Pad templates in backups" done',
+    ],
+  },
   {
     version: '3.0.280',
     date: '2026-10-23',

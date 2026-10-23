@@ -19,6 +19,7 @@ import {
   runImport,
 } from '../../src/lib/backupImport';
 import { getLibraryFolderMap, loadPrefs } from '../../src/state/prefs';
+import { padTemplates } from '../../src/state/padTemplates';
 import { V3_BACKUP_FORMAT } from '../../src/lib/backupReader';
 import { computeHash } from '../../src/lib/upload';
 import { boardProblems } from '../../src/lib/boardModel';
@@ -39,6 +40,7 @@ beforeEach(() => {
   _resetDB();
   libraryItems.value = [];
   boards.value = [];
+  padTemplates.value = [];
   vi.stubGlobal('OfflineAudioContext', FakeOfflineAudioContext);
 });
 afterEach(() => vi.unstubAllGlobals());
@@ -301,6 +303,75 @@ describe('library tags (owner decision B9)', () => {
     expect(entryTags({ folder: '' })).toEqual([]);
     expect(entryTags({ folder: 7, tags: 'x' })).toEqual([]);
     expect(entryTags({})).toEqual([]);
+  });
+});
+
+describe('pad templates (ADR-0090, Slice 16d)', () => {
+  const v1Template = (name: string, padData: Record<string, unknown>) => ({
+    hash: `pad_${name}`,
+    type: 'pad',
+    name,
+    added: 4_000,
+    padData,
+  });
+
+  it('a V1 template becomes a template with its files mapped; a combo template is none', async () => {
+    const doc = {
+      version: 1,
+      boards: [],
+      library: [
+        v1Entry(A, 'owl.wav'),
+        v1Template('Owl call', { name: 'Owl', mode: 'loop', files: [hash(A), 'gone'], volume: 60 }),
+        v1Template('Storm', { name: 'Storm', mode: 'combo', steps: [] }),
+      ],
+    };
+    const plan = await planImport(file(doc));
+    expect(plan.templates).toHaveLength(1);
+    expect(plan.otherEntries).toBe(1); // the combo template
+    const result = await runImport(file(doc), plan);
+    expect(result).toMatchObject({ templatesAdded: 1, templatesSkipped: 0 });
+    expect(padTemplates.value).toHaveLength(1);
+    const t = padTemplates.value[0];
+    expect(t).toMatchObject({ name: 'Owl call', savedAt: 4_000 });
+    expect(t.pad).toMatchObject({ type: 'loop', volume: 60 });
+    expect(t.pad.files.map((f) => f.hash)).toEqual([hash(A)]); // 'gone' left out
+    expect(result.notes.missingFiles).toBe(1);
+  });
+
+  it('a V3 template is read; importing the same backup again adds no second one', async () => {
+    const doc = {
+      format: V3_BACKUP_FORMAT,
+      formatVersion: 2,
+      boards: [],
+      templates: [
+        {
+          id: 't1',
+          name: 'Rain',
+          savedAt: 9_000,
+          pad: {
+            id: 'p1',
+            name: 'Rain',
+            type: 'single',
+            files: [{ hash: 'gone', trimStart: 0.2 }],
+            order: 'sequential',
+            volume: 80,
+            fadeIn: 0,
+            fadeOut: 0,
+          },
+        },
+        { id: 't2', name: '', pad: {} }, // no template
+      ],
+      library: [],
+    };
+    const first = await runImport(file(doc), await planImport(file(doc)));
+    expect(first).toMatchObject({ templatesAdded: 1, templatesSkipped: 1 });
+    // A file neither in the backup nor in the library is left out of the template, and counted
+    expect(padTemplates.value[0].pad.files).toEqual([]);
+    expect(first.notes.missingFiles).toBe(1);
+    const again = await runImport(file(doc), await planImport(file(doc)));
+    expect(again).toMatchObject({ templatesAdded: 0, templatesSkipped: 2 });
+    expect(padTemplates.value.map((t) => [t.name, t.savedAt])).toEqual([['Rain', 9_000]]);
+    expect(padTemplates.value[0].id).not.toBe('t1'); // a new id
   });
 });
 

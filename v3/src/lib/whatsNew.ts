@@ -103,6 +103,12 @@ export function withEarlyVersions(
 /** The release notes the main menu shows, newest first (checked by whatsNew.test.ts). */
 export const WHATS_NEW: WhatsNewNotes[] = [
   {
+    version: '3.0.281',
+    new: [
+      'Backups keep the pad templates, and importing a backup of the old app brings its templates into the PADS tab.',
+    ],
+  },
+  {
     version: '3.0.280',
     new: [
       "A pad can be saved as a template in the PAD editor; the library's PADS tab lists the templates and adds a copy to any board and deck.",

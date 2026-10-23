@@ -107,8 +107,10 @@ export function BackupImportPanel({
             {plural(step.plan.boards.length, 'board')}, {plural(step.plan.pads, 'pad')},{' '}
             {plural(step.plan.audio, 'audio file')} — {step.plan.audioPresent} already in the
             library. Nothing you have is changed; boards are added as new boards.
+            {step.plan.templates.length > 0 &&
+              ` ${plural(step.plan.templates.length, 'pad template')} — one already there is skipped.`}
             {step.plan.otherEntries > 0 &&
-              ` ${plural(step.plan.otherEntries, 'other entry')} (pad templates, images) not imported.`}
+              ` ${plural(step.plan.otherEntries, 'other entry')} (images, combo templates) not imported.`}
             {step.plan.kind === 'v1' && ' Settings of the old app are not imported.'}
           </div>
           <div class="sb-row">
@@ -140,7 +142,10 @@ export function BackupImportPanel({
         <>
           <div class="sb-caption" data-testid="backup-import-panel-result-text">
             Done: {plural(step.result.audioAdded, 'audio file')} added, {step.result.audioSkipped}{' '}
-            already there, {plural(step.result.boardsAdded, 'board')} added.
+            already there, {plural(step.result.boardsAdded, 'board')} added
+            {step.result.templatesAdded + step.result.templatesSkipped > 0 &&
+              `, ${plural(step.result.templatesAdded, 'pad template')} added`}
+            .
           </div>
           {noteLines(step.result).map((line) => (
             <div key={line} class="sb-caption">

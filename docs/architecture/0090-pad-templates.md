@@ -41,8 +41,8 @@ list, the trash and the backup read the store as audio.
 
 **Negative / Trade-offs:**
 
-- Backups do not carry templates yet, and the V1 import still skips V1 templates — the next step
-  of Slice 16d (BACKLOG "Pad templates in backups").
+- A template's files can leave the library; a pad from it then stays silent for them (the PADS tab
+  says how many). Backups carry templates since 3.0.281 (ADR-0061 amendment 2026-10-23).
 
 ## Alternatives considered
 

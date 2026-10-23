@@ -7,6 +7,17 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.281 — 2026-10-23
+
+### Added
+
+- feat(backup): pad templates in backups (Slice 16d, ADR-0061 amendment) — the export writes the templates as an optional manifest list (formatVersion stays 2); the import adds V3 templates and V1 templates (a library entry with type 'pad' and padData, V1 savePadTemplate, through the new mapV1Template) under new ids, their files mapped to what the import stored, and skips one that is already there (the same name and pad), so a backup imported twice adds none twice; a V1 combo template stays not imported; the summary and the result name the templates — Slice 16d is complete
+
+### Internal
+
+- test: unit backupImport (a V1 template with a file left out and counted, a combo template not imported, a V3 template read, a missing file left out, the second import skips it, a new id), backupExport (a template round trip into a fresh app); E2E backup — the V1 import names and adds its template, the second import adds none; counter-checked: no templates in the export, no skip of a known one, a combo counted, files kept that are not there (the first V3 test had no file and stayed green — a file added) and the result text without templates each turn their test red
+- docs: ADR-0061 amendment 2026-10-23; ADR-0090; library.md 16d complete; BACKLOG "Pad templates in backups" done
+
 ## 3.0.280 — 2026-10-23
 
 ### Added
