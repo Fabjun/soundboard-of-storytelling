@@ -103,6 +103,10 @@ export function withEarlyVersions(
 /** The release notes the main menu shows, newest first (checked by whatsNew.test.ts). */
 export const WHATS_NEW: WhatsNewNotes[] = [
   {
+    version: '3.0.290',
+    behindTheScenes: ['Three more development tools got their latest fixes.'],
+  },
+  {
     version: '3.0.289',
     new: [
       'The status bar shows LIGHT ✕ when a lamp did not answer; it goes away once the next pad reaches the lamp. The sound plays either way.',

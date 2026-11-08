@@ -17,10 +17,17 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.289';
+export const APP_VERSION = '3.0.290';
 
 /** The developer log, newest first; CHANGELOG.md is generated from it (sync-changelog). */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.290',
+    date: '2026-11-08',
+    items: [
+      'build(deps-dev): the development updates of Dependabot #180, #181 and #184 — serialize-javascript 7.1.4 (methods with nested functions serialized correctly), qs 6.17.1 (parse fixes, a guard for bracket-wrapped prototype keys), eslint-plugin-playwright 2.12.2 (expect.soft.poll counts as an assertion). Release notes read; lint, unit, knip and npm audit checked. The override typed-rest-client > qs stays: Stryker 10.1.1 still brings typed-rest-client 2.3.1 (BACKLOG "T11c" trigger: >= 3.1.2)',
+    ],
+  },
   {
     version: '3.0.289',
     date: '2026-11-08',
