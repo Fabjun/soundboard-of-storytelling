@@ -36,6 +36,12 @@ uses Chrome for timing measurements via `estimo` and crashes on ARM Macs (M chip
 Chromium binary incompatibility. `@size-limit/file` measures gzip size without a Chrome
 dependency — sufficient.
 
+## Exceptions
+
+| Exception                                                        | Reason                                                                                                                                                                                                                                                                                                                                                                                                                        | Reference                   | Review       |
+| ---------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------- | ------------ |
+| JS bundle limit 250 KB instead of 200 KB (`v3/.size-limit.json`) | The app reached the 200 KB set on 2026-05-27 as a growth tripwire (200,199 bytes in 3.0.290). Splitting would not lower the measured sum of `dist/assets/*.js`, and the PWA precaches every chunk. Budget: about 0.62 MiB of critical-path JS for a JS-heavy app on a P75 device in 3 s (Alex Russell, "The Performance Inequality Gap, 2026"). Provisional, under the owner's authorization of 2026-11-08 for the time away. | BACKLOG "Bundle size limit" | owner review |
+
 ## Consequences
 
 **Positive:**
