@@ -12,6 +12,7 @@ release notes the app shows are written separately for its users (`v3/src/lib/wh
 ### Internal
 
 - build(deps-dev): the development updates of Dependabot #180, #181 and #184 — serialize-javascript 7.1.4 (methods with nested functions serialized correctly), qs 6.17.1 (parse fixes, a guard for bracket-wrapped prototype keys), eslint-plugin-playwright 2.12.2 (expect.soft.poll counts as an assertion). Release notes read; lint, unit, knip and npm audit checked. The override typed-rest-client > qs stays: Stryker 10.1.1 still brings typed-rest-client 2.3.1 (BACKLOG "T11c" trigger: >= 3.1.2)
+- build(size): the JS bundle limit is 250 KB instead of 200 KB, a temporary exception (ADR-0033 Exceptions, BACKLOG "Bundle size limit") under the owner's provisional authorization of 2026-11-08 — the bundle reached 200,199 bytes with this version's release notes; the 200 KB of 2026-05-27 were a growth tripwire, and a JS-heavy app on a P75 device loads in 3 s with about 0.62 MiB of critical-path JS (Alex Russell, "The Performance Inequality Gap, 2026"); splitting would not lower the measured sum, and the PWA precaches every chunk. testing.md points to the configuration instead of repeating its numbers
 
 ## 3.0.289 — 2026-11-08
 

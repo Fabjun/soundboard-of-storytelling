@@ -25,7 +25,7 @@ Four layers, introduced in phases 1 and 2 (phase 2 — testing infrastructure):
 - **Prettier** — code formatting. Configuration for the whole repository:
   [.prettierrc.json](../../.prettierrc.json); Markdown is formatted by `npm run format:md`, which
   refuses any change to content or structure (audit A3)
-- **size-limit** — bundle size monitoring. Limits: JS 200 KB, CSS 50 KB (gzip). Configuration: [v3/.size-limit.json](../../v3/.size-limit.json)
+- **size-limit** — bundle size monitoring (gzip). Limits: [v3/.size-limit.json](../../v3/.size-limit.json); the JS limit is a temporary exception, see the exceptions of [ADR-0033](../architecture/0033-three-layer-testing.md#exceptions)
 
 ---
 

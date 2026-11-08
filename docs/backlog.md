@@ -1844,6 +1844,20 @@ movement) would need a clear coexistence contract. First-pass recommendation: GA
 
 ## 4. Deferred Infrastructure
 
+### Bundle size limit
+
+Found 2026-11-08: the JS bundle reached the 200 KB limit of `v3/.size-limit.json`, set on
+2026-05-27 (9b059670) as a growth tripwire, not from a budget — 199,997 bytes in 3.0.289, 200,199
+bytes in 3.0.290 (the release notes of each version are part of the bundle). Raised to 250 KB as a
+temporary exception (ADR-0033 `## Exceptions`), under the owner's provisional authorization of
+2026-11-08. Splitting the code would not help as the limit is measured: it sums every
+`dist/assets/*.js`, and the PWA precaches every chunk, so lazy loading saves only start-up
+parsing, not bytes. Budget source: Alex Russell, "The Performance Inequality Gap, 2026"
+(infrequently.org, 2025-11-24) — a JS-heavy app on a P75 device (Galaxy A24 4G, 9 Mbps, 100 ms
+RTT) loads in 3 s with about 0.62 MiB of critical-path JS. Open for the owner: keep 250 KB, set
+the limit from a budget, or measure the start chunk on its own (a new scheme).
+**When:** owner review.
+
 ### Relative units for sizes (structure step before Slice 13) ✅ Done (3.0.188)
 
 Done 2026-10-09 (ADR-0081, accepted): the `--space-*` and `--fs-*` tokens and every font size,
