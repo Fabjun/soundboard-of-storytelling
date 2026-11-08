@@ -3,7 +3,8 @@
  * Real IndexedDB semantics via fake-indexeddb. Cases: nothing stored, round trip incl. a reload
  * (loadPrefs), per-board keys, unknown values, clear, writes counted in pendingSaves, a failing
  * database never breaks the app, the backup reminder days, the theme, the live-control keys (K12:
- * moved, kept, reset; a damaged entry — not text, a fixed key, both on one key — falls back).
+ * moved, kept, reset; a damaged entry — not text, a fixed key, both on one key — falls back), the
+ * stored key names (a renamed key would lose the users' settings), damaged lamps and folders.
  */
 
 import { IDBFactory } from 'fake-indexeddb';
@@ -50,6 +51,10 @@ import {
   setEnterStop,
   getDebugLogSwitch,
   setDebugLogSwitch,
+  getLamps,
+  getLibraryFolderMap,
+  setLamps,
+  setLibraryFolderMap,
 } from '../../src/state/prefs';
 import { BACKUP_REMINDER_DAYS } from '../../src/lib/backupExport';
 
@@ -435,5 +440,92 @@ describe('prefsVersion', () => {
     await settled();
     await loadPrefs();
     expect(prefsVersion.value).toBe(v + 2);
+  });
+});
+
+describe('the stored keys', () => {
+  // A renamed key would lose every user's setting with the next update: the names are what
+  // earlier versions wrote.
+  it('every preference is stored under the key earlier versions wrote', async () => {
+    setLastView('b1', { kind: 'all-pads' });
+    setLastBackup(5);
+    setPadSort('b1', { key: 'played', reversed: true });
+    setLibrarySort({ key: 'duration', reversed: true });
+    setLibraryFolderMap({ f1: 'Storm' });
+    setLamps([{ id: 'l1', name: 'Floor lamp', address: '192.168.1.50' }]);
+    setLastPlayed('p1', 7);
+    setBarOpen('search', false);
+    setPadDraft({
+      id: 'p1',
+      type: 'single',
+      name: 'Rain',
+      files: [{ hash: 'a' }],
+      order: 'sequential',
+      volume: 80,
+      fadeIn: 0,
+      fadeOut: 0,
+    });
+    setBackupReminderDays(14);
+    setTheme('neon');
+    setContentWidth('compact');
+    setPadSizeScope('app');
+    setAppPadSize(60);
+    setAnimationsSwitch(false);
+    setEnterStop('all');
+    setDebugLogSwitch(true);
+    setControlKey('pause', 'KeyP');
+    await settled();
+    expect((await kvGetAll()).map(([k]) => k).sort()).toEqual(
+      [
+        'last-view:b1',
+        'last-backup',
+        'pad-sort:b1',
+        'library-sort',
+        'library-folders',
+        'light-lamps',
+        'last-played:p1',
+        'bar-open:search',
+        'pad-draft:p1',
+        'backup-reminder-days',
+        'theme',
+        'content-width',
+        'pad-size-scope',
+        'pad-size',
+        'animations',
+        'enter-stop',
+        'debug-log',
+        'control-keys',
+      ].sort(),
+    );
+  });
+});
+
+describe('damaged stored lamps and folders', () => {
+  it('a lamp entry that is no lamp is left out; a list that is no list gives no lamps', async () => {
+    const lamp = { id: 'l1', name: 'Floor lamp', address: '192.168.1.50' };
+    await kvPut('light-lamps', [
+      lamp,
+      null,
+      'lamp',
+      { ...lamp, id: 1 },
+      { ...lamp, name: 2 },
+      { id: 'l2', name: 'No address' },
+    ]);
+    await loadPrefs();
+    expect(getLamps()).toEqual([lamp]);
+    await kvPut('light-lamps', { l1: lamp });
+    await loadPrefs();
+    expect(getLamps()).toEqual([]);
+  });
+
+  it('a folder entry that is no name is left out; a map that is no map counts as never written', async () => {
+    await kvPut('library-folders', { a: 'Storm', b: '', c: 3, d: null });
+    await loadPrefs();
+    expect(getLibraryFolderMap()).toEqual({ a: 'Storm' });
+    for (const damaged of [['Storm'], 'Storm', null]) {
+      await kvPut('library-folders', damaged);
+      await loadPrefs();
+      expect(getLibraryFolderMap()).toBeNull();
+    }
   });
 });

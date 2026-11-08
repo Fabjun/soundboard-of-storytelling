@@ -103,6 +103,12 @@ export function withEarlyVersions(
 /** The release notes the main menu shows, newest first (checked by whatsNew.test.ts). */
 export const WHATS_NEW: WhatsNewNotes[] = [
   {
+    version: '3.0.287',
+    behindTheScenes: [
+      'Templates, library folders and the stored settings are tested more closely — among other things, that an update keeps every setting.',
+    ],
+  },
+  {
     version: '3.0.286',
     behindTheScenes: ['The development tools are up to date.'],
   },

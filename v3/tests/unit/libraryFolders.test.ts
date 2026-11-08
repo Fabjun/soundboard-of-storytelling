@@ -3,8 +3,9 @@
  *
  * The map lives in the preferences (fake-indexeddb, fresh per test). Cases: derived from single
  * tags while never written, the first change stores it, move / UNDO, rename (also onto an existing
- * folder), remove / UNDO, names cleaned and matched without case, files that are gone dropped,
- * a folder kept while its file is in the trash.
+ * folder; other folders stay), remove / UNDO, names cleaned (also at the length limit) and matched
+ * without case, a backup's or upload's assignment in one write (an empty name keeps the folder),
+ * files that are gone dropped, a folder kept while its file is in the trash.
  */
 
 import { IDBFactory } from 'fake-indexeddb';
@@ -14,6 +15,7 @@ import { getLibraryFolderMap, loadPrefs } from '../../src/state/prefs';
 import { libraryItems, pendingSaves } from '../../src/state/store';
 import { trashItems } from '../../src/state/libraryTrash';
 import {
+  assignFolders,
   cleanFolderName,
   FOLDER_NAME_MAX,
   folderList,
@@ -113,6 +115,14 @@ describe('renameFolder / removeFolder', () => {
     expect(folderMap()).toEqual({ a: 'Storm', b: 'Storm', c: 'Storm' });
   });
 
+  test('a rename leaves the files of other folders where they are', () => {
+    libraryItems.value = [meta('a'), meta('b')];
+    moveToFolder(['a'], 'Rain');
+    moveToFolder(['b'], 'Storm');
+    renameFolder('Rain', 'Drizzle');
+    expect(folderMap()).toEqual({ a: 'Drizzle', b: 'Storm' });
+  });
+
   test('a remove leaves its files in no folder and returns them for an UNDO', () => {
     libraryItems.value = [meta('a'), meta('b'), meta('c')];
     moveToFolder(['a', 'b'], 'Storm');
@@ -140,5 +150,34 @@ describe('folderList / cleanFolderName', () => {
     expect(cleanFolderName('x'.repeat(FOLDER_NAME_MAX + 5), [])).toHaveLength(FOLDER_NAME_MAX);
     expect(cleanFolderName('STORM', ['Rain', 'Storm'])).toBe('Storm');
     expect(cleanFolderName('   ', ['Storm'])).toBe('');
+  });
+
+  test('a long name keeps the full limit after leading spaces, and loses a space at the cut', () => {
+    const max = FOLDER_NAME_MAX;
+    expect(cleanFolderName(`   ${'x'.repeat(max + 5)}`, [])).toBe('x'.repeat(max));
+    expect(cleanFolderName(`${'x'.repeat(max - 1)} y`, [])).toBe('x'.repeat(max - 1));
+  });
+});
+
+describe('assignFolders', () => {
+  test('puts files in the named folders in one write; a name differing only in case joins it', () => {
+    libraryItems.value = [meta('a', ['Storm']), meta('b'), meta('c'), meta('d')];
+    assignFolders({ b: 'STORM', c: '  Night  Sky ', d: 'night sky' });
+    expect(pendingSaves.value).toBe(1);
+    expect(getLibraryFolderMap()).toEqual({
+      a: 'Storm',
+      b: 'Storm',
+      c: 'Night Sky',
+      d: 'Night Sky',
+    });
+  });
+
+  test('an empty name leaves the file in its folder; no assignment writes nothing', () => {
+    libraryItems.value = [meta('a', ['Storm'])];
+    assignFolders({});
+    expect(pendingSaves.value).toBe(0);
+    expect(getLibraryFolderMap()).toBeNull();
+    assignFolders({ a: '   ' });
+    expect(getLibraryFolderMap()).toEqual({ a: 'Storm' });
   });
 });
