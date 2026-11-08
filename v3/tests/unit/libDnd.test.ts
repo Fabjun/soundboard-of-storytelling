@@ -5,9 +5,11 @@
  * Was exempt ("covered by E2E pad-creation test 14") until 2026-10-11, when the finger drag after a
  * short press (src/lib/touchDrag.ts) was added and the module's untested functions pulled the
  * coverage below its floor. jsdom has no layout: `document.elementFromPoint` is stubbed with the
- * cell under the pointer. Edge-case checklist: below and exactly at the threshold, a drop on a
- * cell, on no cell, on a cell with a broken position; the activation callback once; the target
- * marked and unmarked; a second drag while one runs; a mouse at once, a finger after the press.
+ * cell under the pointer. Edge-case checklist: below and exactly at the threshold, on both axes; a
+ * drop on a cell, on no cell, on a cell with a broken position (both or one number); the
+ * activation callback once; the ghost fixed, transparent to the pointer, centered under it; the
+ * target marked and unmarked; a second drag while one runs, also two fingers before either drags;
+ * a mouse at once (no text selection), a finger after the press (its scroll kept).
  */
 
 import { afterEach, beforeEach, vi } from 'vitest';
@@ -45,6 +47,9 @@ beforeEach(() => {
 });
 
 afterEach(() => {
+  // The module keeps one drag for the page: end whatever a test left open, so the next starts clean
+  up();
+  document.dispatchEvent(new Event('touchend'));
   document.body.innerHTML = '';
   vi.useRealTimers();
 });
@@ -122,6 +127,81 @@ describe('startLibDrag', () => {
     up();
     expect(second).not.toHaveBeenCalled();
     expect(onDrop).toHaveBeenCalledOnce();
+  });
+
+  it('the threshold counts on the vertical axis too: 7 px down stay a press, 8 px drag', () => {
+    press();
+    move(10, 17);
+    expect(ghost()).toBeNull();
+    move(10, 18);
+    expect(ghost()).not.toBeNull();
+    up();
+  });
+
+  it('the ghost is the row, fixed, lets the pointer through, and follows it centered', () => {
+    row.getBoundingClientRect = () => ({ top: 5, left: 5, width: 100, height: 40 }) as DOMRect;
+    press();
+    move(200, 100);
+    const g = ghost() as HTMLElement;
+    expect(g.style.position).toBe('fixed');
+    // elementFromPoint must see the cell under the ghost, not the ghost
+    expect(g.style.pointerEvents).toBe('none');
+    expect([g.style.left, g.style.top, g.style.width]).toEqual(['150px', '80px', '100px']);
+    move(260, 140);
+    expect([g.style.left, g.style.top]).toEqual(['210px', '120px']);
+    up();
+  });
+
+  it('a cell whose position has one broken number cancels', () => {
+    cell.dataset.pos = '2,y';
+    press();
+    under = cell;
+    move(30, 30);
+    up();
+    expect(onDrop).toHaveBeenCalledWith({ kind: 'cancel' });
+  });
+
+  it('a mouse press keeps the browser from selecting text; a finger keeps its scroll', () => {
+    const mouse = vi.fn();
+    const finger = vi.fn();
+    const start = (pointerType: string, preventDefault: () => void) =>
+      startLibDrag(
+        { pointerType, pointerId: 1, clientX: 0, clientY: 0, preventDefault } as PointerEvent,
+        'item-1',
+        row,
+        onDrop,
+      );
+    start('touch', finger);
+    expect(finger).not.toHaveBeenCalled();
+    document.dispatchEvent(new Event('touchend')); // the finger lifts before the press is one
+    start('mouse', mouse);
+    expect(mouse).toHaveBeenCalledOnce();
+    up();
+  });
+
+  it('two fingers pressed before either drags: only the first becomes a drag', () => {
+    vi.useFakeTimers();
+    const second = vi.fn();
+    press('touch');
+    startLibDrag(
+      {
+        pointerType: 'touch',
+        pointerId: 2,
+        clientX: 0,
+        clientY: 0,
+        preventDefault: () => {},
+      } as PointerEvent,
+      'item-2',
+      row,
+      second,
+    );
+    vi.advanceTimersByTime(LONG_PRESS_MS);
+    expect(row.setPointerCapture).toHaveBeenCalledOnce();
+    expect(row.setPointerCapture).toHaveBeenCalledWith(1);
+    up();
+    expect(second).not.toHaveBeenCalled();
+    expect(onDrop).toHaveBeenCalledOnce();
+    document.dispatchEvent(new Event('touchend'));
   });
 
   it('a mouse captures the pointer at once; a finger only after the short press', () => {

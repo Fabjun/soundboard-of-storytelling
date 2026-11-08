@@ -1,8 +1,9 @@
 /**
  * @fileoverview boot — unit tests: the stored state is in the store before the first render
  *
- * IDB is fake-indexeddb (fresh per test). The library load can be made to fail, to show that
- * one failing load does not stop the other.
+ * IDB is fake-indexeddb (fresh per test). Each of the four loads (library, boards, trash,
+ * templates) can be made to fail, to show that one failing load is logged by name, keeps what the
+ * store holds, and does not stop the others; loads that succeed log nothing.
  */
 
 import { IDBFactory } from 'fake-indexeddb';
@@ -13,15 +14,21 @@ import { boards, libraryItems } from '../../src/state/store';
 import { trashItems } from '../../src/state/libraryTrash';
 import { loadStoredState } from '../../src/state/boot';
 
-const failing = vi.hoisted(() => ({ library: false }));
+const failing = vi.hoisted(() => ({
+  library: false,
+  boards: false,
+  trash: false,
+  templates: false,
+}));
 vi.mock('../../src/db/idb', async (importOriginal) => {
   const real = await importOriginal<typeof IdbModule>();
+  const unreadable = (what: string) => Promise.reject(new Error(`${what} store unreadable`));
   return {
     ...real,
-    libGetAllMeta: () =>
-      failing.library
-        ? Promise.reject(new Error('library store unreadable'))
-        : real.libGetAllMeta(),
+    libGetAllMeta: () => (failing.library ? unreadable('library') : real.libGetAllMeta()),
+    boardGetAll: () => (failing.boards ? unreadable('boards') : real.boardGetAll()),
+    trashGetAllMeta: () => (failing.trash ? unreadable('trash') : real.trashGetAllMeta()),
+    templateGetAll: () => (failing.templates ? unreadable('templates') : real.templateGetAll()),
   };
 });
 
@@ -52,7 +59,7 @@ beforeEach(() => {
   _resetDB();
   boards.value = [];
   libraryItems.value = [];
-  failing.library = false;
+  Object.assign(failing, { library: false, boards: false, trash: false, templates: false });
 });
 
 describe('loadStoredState', () => {
@@ -89,6 +96,35 @@ describe('loadStoredState', () => {
     expect(boards.value).toEqual([board]);
     expect(libraryItems.value).toEqual([]);
     expect(log).toHaveBeenCalledWith('Library bootstrap failed:', expect.any(Error));
+    log.mockRestore();
+  });
+
+  test('a failing board, trash or template load is logged by name; the others still load', async () => {
+    await boardPut(board);
+    await libPut(item);
+    const log = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+    failing.boards = true;
+    await loadStoredState();
+    expect(boards.value).toEqual([]); // kept as it was, not replaced by nothing
+    expect(libraryItems.value.map((m) => m.id)).toEqual(['h1']);
+    expect(log.mock.calls).toEqual([['Board bootstrap failed:', expect.any(Error)]]);
+
+    log.mockClear();
+    Object.assign(failing, { boards: false, trash: true, templates: true });
+    await loadStoredState();
+    expect(boards.value).toEqual([board]);
+    expect(log.mock.calls).toEqual([
+      ['Trash bootstrap failed:', expect.any(Error)],
+      ['Template bootstrap failed:', expect.any(Error)],
+    ]);
+    log.mockRestore();
+  });
+
+  test('loads that succeed log nothing', async () => {
+    const log = vi.spyOn(console, 'error').mockImplementation(() => {});
+    await loadStoredState();
+    expect(log).not.toHaveBeenCalled();
     log.mockRestore();
   });
 });

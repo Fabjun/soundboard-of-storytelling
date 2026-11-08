@@ -7,6 +7,12 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.291 — 2026-11-08
+
+### Internal
+
+- test: library drag and start-up loading tested where mutants survived — libDnd 69.3 → 89.1 % (+20: the threshold on the vertical axis, the ghost fixed, transparent to the pointer and centered under it, a position with one broken number, preventDefault for a mouse but not for a finger, two fingers pressed before either drags; afterEach now ends any drag a test left open, as the module keeps one drag for the page — three new tests that forgot their pointerup had turned the following tests red); boot 43.5 → 100 % (+13, all 23 detected: a failing board, trash or template load is logged by name and keeps what the store holds — the boards would otherwise be replaced by nothing —, loads that succeed log nothing). The remaining libDnd survivors are equivalent (the initial state, a guard the second check repeats, an unchanged target)
+
 ## 3.0.290 — 2026-11-08
 
 ### Internal
