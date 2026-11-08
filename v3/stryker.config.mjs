@@ -10,7 +10,11 @@
  * padUtils 0 % vs 72 %). Review trigger: BACKLOG "T11c".
  */
 
-const VITEST = '--maxWorkers=1 --testTimeout=5000';
+// --bail=1: a mutant is detected once one test fails, so the rest need not run — Stryker's own
+// runners bail by default ("Bailing brings better performance", option disableBail), the command
+// runner cannot. Measured 2026-11-08 on a boardModel mutant: 0.83 s instead of 5.51 s; the weekly
+// boardModel job had reached 47 of its 60 minutes (run of 2026-11-02).
+const VITEST = '--maxWorkers=1 --testTimeout=5000 --bail=1';
 // Heap cap per test process: a mutant that loops and allocates (engine.ts: +2 GB in seconds) dies
 // at its own limit — counted as detected — instead of filling the machine; four of them
 // exhausted the 16 GB CI runner (weekly run 36825054856, memory logged). Unmutated tests need

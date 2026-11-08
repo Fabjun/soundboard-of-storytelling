@@ -189,7 +189,7 @@ let audio: Facade;
 let ctx: FakeAudioContext;
 let started: [string, boolean][];
 let stopped: string[];
-const pads = new Map<string, Pad>();
+let pads = new Map<string, Pad>();
 
 /** Which file each started source played, in start order. */
 function tags(): (string | undefined)[] {
@@ -199,9 +199,15 @@ function tags(): (string | undefined)[] {
 beforeEach(async () => {
   vi.resetModules();
   missing.clear();
-  pads.clear();
-  started = [];
-  stopped = [];
+  // Each test's engine reports into its own lists and reads its own pads: the engine of an
+  // earlier test can still run a real timer (a combo step) and report then — through the
+  // variables it reported into the next test's lists ('c' stopped, unit runs of 2026-11-08).
+  const ownPads = new Map<string, Pad>();
+  const ownStarted: [string, boolean][] = [];
+  const ownStopped: string[] = [];
+  pads = ownPads;
+  started = ownStarted;
+  stopped = ownStopped;
   FakeAudioContext.last = null;
   vi.stubGlobal('AudioContext', FakeAudioContext);
   Object.defineProperty(window.HTMLMediaElement.prototype, 'play', {
@@ -211,11 +217,11 @@ beforeEach(async () => {
   engine = await import('../../../src/audio/engine');
   audio = await import('../../../src/audio/index');
   engine.configureCallbacks({
-    onPadStarted: (id, isLoop) => started.push([id, isLoop]),
-    onPadStopped: (id) => stopped.push(id),
+    onPadStarted: (id, isLoop) => ownStarted.push([id, isLoop]),
+    onPadStopped: (id) => ownStopped.push(id),
     // Same mapping as the facade's bridge (index.ts): app pads → engine shapes
     getPad: (id) => {
-      const pad = pads.get(id);
+      const pad = ownPads.get(id);
       return pad ? audio.toEnginePad(pad) : null;
     },
   });

@@ -7,6 +7,14 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.285 — 2026-11-08
+
+### Internal
+
+- build(deps): zod 4.6.5 → 4.6.7 in the lockfile (GHSA-mrhx-c7xc-m3w5, high: memory exhaustion when validating oversized constrained collections) — a dev-only dependency of Stryker, eslint-plugin-react-hooks and knip; npm audit --audit-level=high had failed since 2026-10-26 and turned the weekly run and every Dependabot pull request red
+- test(mutation): vitest bails at the first failing test (--bail=1 in stryker.config.mjs) — a mutant counts as detected once one test fails, and Stryker's own runners bail by default (option disableBail); the boardModel job of the weekly run of 2026-11-02 had reached 47 of its 60 minutes and failed the 70 % runtime check. Measured: a boardModel mutant 0.83 s instead of 5.51 s; padSize in 60 s instead of 187 s with the same result (82 detected, 7 survived, 92.13 %)
+- test(audio): engine.test.ts gives each test's engine its own lists and pads — the callbacks reported into the test file's variables, so an earlier test's engine that still ran a real timer (a combo step) reported into the next test's list; 'fade out all … on the audio clock' failed 2 of about 14 full unit runs on 2026-11-08 (an extra 'c' in stopped), never in 30 runs of the file alone. Proven: a real 300 ms pause after the reset turned two other tests red the same way, and with the fix the file stays green with that pause; the full suite then passed 10 of 10 runs. Impact analysis: no other unit test reports through such callbacks (modeControl's are synchronous)
+
 ## 3.0.284 — 2026-10-23
 
 ### Fixed
