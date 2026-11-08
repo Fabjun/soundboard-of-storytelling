@@ -17,10 +17,17 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.292';
+export const APP_VERSION = '3.0.293';
 
 /** The developer log, newest first; CHANGELOG.md is generated from it (sync-changelog). */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.293',
+    date: '2026-11-08',
+    items: [
+      'test: V1 template import tested where mutants survived — v1Import 92.8 → 96.0 % (+8): padData that is no object (text, a number, null, a list) is no template — without the check it became a default Single; a combo template is none and its steps are not read, so they count no missing step pads in the import summary; a Loop template gets a new id and its files mapped. The 10 survivors left are equivalent: JSON holds no NaN or Infinity, V1 step references are number keys, a duration of 0 is falsy already, and the combo check after mapPad narrows the type for TypeScript only (no other V1 mode maps to a combo)',
+    ],
+  },
   {
     version: '3.0.292',
     date: '2026-11-08',

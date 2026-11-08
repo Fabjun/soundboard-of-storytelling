@@ -7,6 +7,12 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.293 — 2026-11-08
+
+### Internal
+
+- test: V1 template import tested where mutants survived — v1Import 92.8 → 96.0 % (+8): padData that is no object (text, a number, null, a list) is no template — without the check it became a default Single; a combo template is none and its steps are not read, so they count no missing step pads in the import summary; a Loop template gets a new id and its files mapped. The 10 survivors left are equivalent: JSON holds no NaN or Infinity, V1 step references are number keys, a duration of 0 is falsy already, and the combo check after mapPad narrows the type for TypeScript only (no other V1 mode maps to a combo)
+
 ## 3.0.292 — 2026-11-08
 
 ### Internal
