@@ -12,8 +12,9 @@ REMOVE, and the WLED client (`v3/src/light/wled.ts`) sends a preset or "off" wit
 pad's light (`PadBase.light`: a preset or off, for all lamps or one), the PAD editor's SOUND /
 LIGHT tabs (G3) with TRY, and the trigger in the audio bridge (`v3/src/light/padLight.ts`): every
 pad that starts sends its light, also a pad a combo step plays (C4), with no change to the audio
-engine; a lamp that does not answer leaves the sound alone (C6). Not built yet: the status bar's
-"LIGHT ✕" of C6 (`lightTrouble` holds it), and the iPhone / iPad path (C5, owner decision).
+engine; a lamp that does not answer leaves the sound alone (C6). In 3.0.289 the status bar shows
+"LIGHT ✕" while a lamp did not answer, read out as what happened and where to look, until a pad
+reaches every lamp again (C6). Not built yet: the iPhone / iPad path (C5, owner decision).
 
 ## Why
 

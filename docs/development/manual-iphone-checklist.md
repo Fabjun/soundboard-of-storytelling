@@ -292,13 +292,17 @@ checked to exist (docsGuards).
       the same network)_
   - Action: Settings → LIGHT: add the lamp by its IP address → TEST; allow "local network" when the
     browser asks. In the lamp's own app make preset 1 (e.g. Lightning). In SETUP open a pad → LIGHT
-    → Preset 1 → TRY → SAVE; in GAME play the pad, then a combo whose step plays it. Once more on the
-    iPhone.
+    → Preset 1 → TRY → SAVE; in GAME play the pad, then a combo whose step plays it. Unplug the
+    lamp, play the pad; plug it in again, wait until it is back in the network, play the pad again.
+    Once more on the iPhone.
   - Expected: TEST says "Connected to …"; TRY and each start of the pad (also from the combo) show
     the preset on the lamp at once, and the sound starts as before; the light stays when the pad
-    stops. On the iPhone TEST says that this browser does not let the app reach the lamp (C5).
+    stops. With the lamp unplugged the sound plays at once and the status bar shows LIGHT ✕ within
+    about a second (the call's 1 s limit, `v3/src/light/wled.ts`); once the lamp
+    answers again, the next start of the pad clears it. On the iPhone TEST says that this browser
+    does not let the app reach the lamp (C5).
   - Why manual: a real lamp, the browser's permission prompt, and the iPhone's block of the call.
-  - Simulated: `v3/tests/e2e/light-settings.spec.ts` (lamps, TEST, a refused call), `v3/tests/e2e/pad-light.spec.ts` (TRY and the start in GAME send the preset; a combo has no light).
+  - Simulated: `v3/tests/e2e/light-settings.spec.ts` (lamps, TEST, a refused call), `v3/tests/e2e/pad-light.spec.ts` (TRY and the start in GAME send the preset; LIGHT ✕ while the lamp refuses, gone once it answers; a combo has no light).
 
 ---
 
