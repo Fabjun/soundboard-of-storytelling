@@ -17,10 +17,17 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.291';
+export const APP_VERSION = '3.0.292';
 
 /** The developer log, newest first; CHANGELOG.md is generated from it (sync-changelog). */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.292',
+    date: '2026-11-08',
+    items: [
+      "test: backup import tested where mutants survived — backupImport 88.1 → 97.3 % (+30): bytes already in the library under another hash keep their folder (the import rule 'nothing existing changes'; without the check that only a newly added file takes the backup's folder, an older backup would move existing files); V1 templates without a usable name or date become 'Template', saved now, and padData on an entry that is no pad is none; V3 templates whose name is no text or empty, or whose pad is a combo, are skipped, a date that is text is now, and a file the backup holds is kept, not counted as missing. afterEach resets a fake clock, so a failing test cannot leave it fake. The 9 survivors left are equivalent (a hash that is no text goes nowhere either way, a kind only compared against 'v1')",
+    ],
+  },
   {
     version: '3.0.291',
     date: '2026-11-08',

@@ -103,6 +103,12 @@ export function withEarlyVersions(
 /** The release notes the main menu shows, newest first (checked by whatsNew.test.ts). */
 export const WHATS_NEW: WhatsNewNotes[] = [
   {
+    version: '3.0.292',
+    behindTheScenes: [
+      'Importing a backup is tested more closely — among other things, that it leaves files already in the library in their folders.',
+    ],
+  },
+  {
     version: '3.0.291',
     behindTheScenes: [
       'Dragging a file from the library and loading the stored data at start are tested more closely.',

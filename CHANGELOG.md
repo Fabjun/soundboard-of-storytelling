@@ -7,6 +7,12 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.292 — 2026-11-08
+
+### Internal
+
+- test: backup import tested where mutants survived — backupImport 88.1 → 97.3 % (+30): bytes already in the library under another hash keep their folder (the import rule 'nothing existing changes'; without the check that only a newly added file takes the backup's folder, an older backup would move existing files); V1 templates without a usable name or date become 'Template', saved now, and padData on an entry that is no pad is none; V3 templates whose name is no text or empty, or whose pad is a combo, are skipped, a date that is text is now, and a file the backup holds is kept, not counted as missing. afterEach resets a fake clock, so a failing test cannot leave it fake. The 9 survivors left are equivalent (a hash that is no text goes nowhere either way, a kind only compared against 'v1')
+
 ## 3.0.291 — 2026-11-08
 
 ### Internal
