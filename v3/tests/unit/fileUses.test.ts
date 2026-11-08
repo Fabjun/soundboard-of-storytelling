@@ -1,10 +1,11 @@
 /**
- * @fileoverview fileUses — which pads play a library file (Slice 16a)
+ * @fileoverview fileUses — which pads play a library file (Slice 16a), and how a file's details
+ * name them (library.md L5)
  */
 
 import { describe, expect, it } from 'vitest';
 import type { Board, Pad } from '../../src/types';
-import { fileUses, padsUsing, soundLossText } from '../../src/lib/fileUses';
+import { fileUses, padsUsing, soundLossText, usesText } from '../../src/lib/fileUses';
 import { newPad } from '../../src/lib/padUtils';
 
 const board = (id: string, name: string, pads: Pad[]): Board => ({
@@ -73,5 +74,22 @@ describe('soundLossText', () => {
     expect(soundLossText(0)).toBe('');
     expect(soundLossText(1)).toBe('1 pad loses its sound');
     expect(soundLossText(3)).toBe('3 pads lose their sound');
+  });
+});
+
+describe('usesText', () => {
+  it('groups the pads by board in the order given, a board once with all its pads', () => {
+    expect(
+      usesText([
+        { board: 'Night', pad: 'Owl' },
+        { board: 'Day', pad: 'Thunder' },
+        { board: 'Night', pad: 'Rain' },
+      ]),
+    ).toBe('Night: Owl, Rain · Day: Thunder');
+  });
+
+  it('one pad is the board and its name; no pad is nothing', () => {
+    expect(usesText([{ board: 'Night', pad: 'Owl' }])).toBe('Night: Owl');
+    expect(usesText([])).toBe('');
   });
 });

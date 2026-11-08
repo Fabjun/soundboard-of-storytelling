@@ -739,7 +739,7 @@ export function LibraryScreen(): JSX.Element {
                   meta={meta}
                   selected={selectedId === meta.id}
                   onSelect={() => setSelectedId(meta.id)}
-                  uses={uses.get(meta.id)?.length ?? 0}
+                  uses={uses.get(meta.id) ?? []}
                   {...(openFolder === null && folders[meta.id] !== undefined
                     ? { folder: folders[meta.id] }
                     : {})}

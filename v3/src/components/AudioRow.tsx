@@ -3,7 +3,7 @@
  *
  * Shows: type icon | name (renameable) + "in N pads" and the original name of a renamed file (else
  * the hash start) | waveform | duration | size | delete; on a phone (narrow frame) name, duration
- * and delete. In the trash ("Recently deleted", ADR-0087) the same row shows the days left,
+ * and delete. A selected file that pads play shows them with their boards under the row (L5). In the trash ("Recently deleted", ADR-0087) the same row shows the days left,
  * RESTORE instead of the size, and a delete that asks before it removes the file for good. In select
  * mode (L3) name and hint are the label of a checkbox, and the row has no delete of its own.
  */
@@ -12,6 +12,7 @@ import { useRef, useState, useEffect } from 'preact/hooks';
 import { UiIcon } from './UiIcon';
 import { Waveform } from './Waveform';
 import { formatBytes, formatDuration } from '../lib/upload';
+import { usesText, type FileUse } from '../lib/fileUses';
 import { narrowWindow } from '../state/windowClass';
 import type { LibraryItemMeta } from '../types';
 
@@ -27,8 +28,8 @@ interface AudioRowProps {
   meta: LibraryItemMeta;
   selected: boolean;
   onSelect: () => void;
-  /** How many pads play the file (src/lib/fileUses.ts). */
-  uses?: number;
+  /** The pads that play the file, with their board (src/lib/fileUses.ts). */
+  uses?: readonly FileUse[];
   onDelete?: () => void;
   onRename?: (newName: string) => void;
   /** Shows the row of a file in the trash. */
@@ -139,7 +140,7 @@ export function AudioRow({
   meta,
   selected,
   onSelect,
-  uses = 0,
+  uses = [],
   onDelete,
   onRename,
   trash,
@@ -147,7 +148,11 @@ export function AudioRow({
   choose,
   folder,
 }: AudioRowProps) {
-  const usedIn = uses === 0 ? '' : uses === 1 ? 'in 1 pad · ' : `in ${uses} pads · `;
+  const count = uses.length;
+  const usedIn = count === 0 ? '' : count === 1 ? 'in 1 pad · ' : `in ${count} pads · `;
+  // The selected file's details name its pads with their boards (library.md L5) — under the row,
+  // across its columns; not in select mode or the trash, where the row has other work
+  const details = selected && !choose && !trash && count > 0 ? usesText(uses) : '';
   // A renamed file shows the name it came with (V1: "← original.mp3"); otherwise the hash start
   const renamed = meta.originalName !== undefined && meta.originalName !== meta.name;
   const origin = renamed ? `← ${meta.originalName}` : `${meta.id.slice(0, 8)}…`;
@@ -247,6 +252,8 @@ export function AudioRow({
           <UiIcon name="delete" size={12} />
         </button>
       )}
+
+      {details && <p class="sb-audio-row-uses">Played by {details}</p>}
     </div>
   );
 }

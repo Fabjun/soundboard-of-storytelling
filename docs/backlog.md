@@ -909,11 +909,13 @@ Adds CSS animation complexity and is a polish concern, not functional.
 import adds V3 templates and V1 `padData` templates (through `mapV1Template`) under new ids and
 skips one already there; a V1 combo template stays "not imported" (ADR-0061 amendment 2026-10-23).
 
-### File details list the pads
+### File details list the pads ✅ Done (3.0.295)
 
 library.md L5 decided that a file's details list the pads that play it, with their board — "with
-the details view of 16b"; 16b built no details view, so only the count ("in 2 pads") exists.
-**Trigger:** with the library's inspector or a row that opens (a design to make first).
+the details view of 16b"; 16b built no details view, so only the count ("in 2 pads") existed.
+Built in 3.0.295 as a row that opens: the selected file shows "Played by Board: Pad, Pad · Board:
+Pad" in a line under its row (Claude's design, for review — no control of its own, so no row grows
+for a 44 px button; it follows the selection, as progressive disclosure).
 
 ### Multi-file playlist UX
 
