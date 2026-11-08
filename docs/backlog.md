@@ -1844,6 +1844,17 @@ movement) would need a clear coexistence contract. First-pass recommendation: GA
 
 ## 4. Deferred Infrastructure
 
+### Library drag test failed once under load
+
+`v3/tests/e2e/pad-creation.spec.ts` test 14 (Path B, a library row dragged onto cell 2,1) failed
+once in the pre-push gate of 2026-11-08 (no pad at 2,1) while another program loaded the machine
+(load averages 20–48); it passed 10 of 10 right after, also 6 of 6 with the browser's CPU throttled
+20×. The trace was lost: the rerun cleared `v3/test-results/` before it was copied (testing.md,
+flaky tests, step 1). Suspected, not proven: `pointerDrag` read the target cell's box before the
+grid had fitted its pads to the panel just opened. Since then `pointerDrag` reads both boxes once
+they are stable (Playwright's own "stable" rule: the same box twice). **When:** it fails again —
+then it is a pattern: copy the trace first, find the cause, and quarantine only if that fails.
+
 ### Bundle size limit
 
 Found 2026-11-08: the JS bundle reached the 200 KB limit of `v3/.size-limit.json`, set on
