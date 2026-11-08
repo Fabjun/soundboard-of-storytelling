@@ -17,10 +17,19 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.288';
+export const APP_VERSION = '3.0.289';
 
 /** The developer log, newest first; CHANGELOG.md is generated from it (sync-changelog). */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.289',
+    date: '2026-11-08',
+    items: [
+      "feat(light): the status bar shows LIGHT ✕ while a lamp did not answer (light.md C6), until a pad reaches every lamp again — the sound never waits for it; a screen reader hears what happened and where to look ('A lamp did not answer. Settings → LIGHT → TEST says why.', Nielsen 9), the same words as the tooltip; the live region (role status) stays in the page, empty and not drawn while every lamp answers, as a live region is read out only when it was there before its text changed (WAI-ARIA)",
+      "test: E2E pad-light — a lamp that refuses shows LIGHT ✕ with its words, gone once the lamp answers and the pad starts again; counter-checked: the status bar never showing it, and a trouble that is never cleared, each turn the test red. Not proven: a real unplugged lamp (iPhone checklist 'Light per pad' now asks for it)",
+      'docs: light.md built line; iPhone checklist "Light per pad" unplugs the lamp once',
+    ],
+  },
   {
     version: '3.0.288',
     date: '2026-11-08',

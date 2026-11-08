@@ -3,7 +3,8 @@
  *
  * The PAD editor has two tabs, SOUND and LIGHT (WAI-ARIA tabs: arrow keys choose). In LIGHT a pad
  * names a preset of the lamps; TRY sends it at once, and the pad sends it whenever it starts in
- * GAME. A combo has no light of its own. Playwright stands in for the lamp at its address and
+ * GAME. A lamp that does not answer shows LIGHT ✕ in the status bar until a pad reaches it again
+ * (C6). A combo has no light of its own. Playwright stands in for the lamp at its address and
  * records what it receives. Playback starts the pad — Chromium only (headless WebKit cannot decode
  * audio).
  */
@@ -95,6 +96,54 @@ test('LIGHT names a preset; TRY sends it, and the pad sends it when it plays', a
   await enterGameMode(page);
   await padCells(page).first().getByRole('button').click();
   await expect.poll(() => bodies).toEqual(['{"ps":5}', '{"ps":5}']);
+});
+
+/** A lamp that refuses every call until `answer()` — then it answers as WLED does. */
+async function lampThatStartsOff(page: Page): Promise<{ answer: () => void }> {
+  let answering = false;
+  await page.route(`${LAMP}/json/state`, (route) => {
+    if (!answering) return route.abort('connectionrefused');
+    return route.fulfill({
+      status: 200,
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Headers': '*',
+        'Access-Control-Allow-Methods': '*',
+        'Content-Type': 'application/json',
+      },
+      body: '{"success":true}',
+    });
+  });
+  return { answer: () => (answering = true) };
+}
+
+test('a lamp that does not answer shows LIGHT ✕ until a pad reaches it again (C6)', async ({
+  page,
+}) => {
+  const lamp = await lampThatStartsOff(page);
+  await page.getByRole('tab', { name: 'LIGHT', exact: true }).click();
+  await page
+    .getByRole('tabpanel', { name: 'LIGHT', exact: true })
+    .getByText('Preset', { exact: true })
+    .click();
+  await page.getByRole('spinbutton', { name: 'Preset number', exact: true }).fill('5');
+  await page.getByTestId('pad-editor-panel-save-button').click();
+  await page.getByTestId('pad-editor-panel-close-button').click();
+  await enterGameMode(page);
+
+  const light = page.getByTestId('status-bar-light-text');
+  await expect(light).toHaveText('');
+  const pad = padCells(page).first().getByRole('button');
+  await pad.click();
+  await expect(light.getByText('LIGHT', { exact: true })).toBeVisible();
+  // Read out in plain words: what happened and where to look
+  await expect(light).toContainText('A lamp did not answer. Settings → LIGHT → TEST says why.');
+
+  lamp.answer();
+  // The one-second sound has ended
+  await expect(padCells(page).first().getByRole('button', { pressed: true })).toHaveCount(0);
+  await pad.click();
+  await expect(light).toHaveText('');
 });
 
 test('a combo has no light of its own', async ({ page }) => {

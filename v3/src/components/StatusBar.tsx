@@ -7,9 +7,14 @@
 import type { ComponentChildren, JSX } from 'preact';
 import type { AppMode } from '../types';
 import { saveState, screenKeptOn } from '../state/store';
+import { lightTrouble } from '../light/padLight';
+import { UiIcon } from './UiIcon';
 
 /** The words for each save state (Slice 12e). */
 const SAVE_LABELS = { saving: 'SAVING…', failed: 'NOT SAVED', saved: 'SAVED' } as const;
+
+/** What a lamp that did not answer means, and what to do (light.md C6, Nielsen 9). */
+const LIGHT_TROUBLE = 'A lamp did not answer. Settings → LIGHT → TEST says why.';
 
 interface StatusBarProps {
   mode: AppMode;
@@ -27,7 +32,8 @@ interface StatusBarProps {
 
 /**
  * Shows the mode (LIVE in GAME, EDIT in SETUP), whether changes are saved (SAVING… / SAVED /
- * NOT SAVED, Slice 12e), SCREEN ON while the screen is kept on, the board name, an info text,
+ * NOT SAVED, Slice 12e), LIGHT ✕ while a lamp did not answer (light.md C6), SCREEN ON while the
+ * screen is kept on, the board name, an info text,
  * which sounds play now (`playing`) and a right slot; as the dock (`dock`) it is taller.
  */
 export function StatusBar({
@@ -63,6 +69,23 @@ export function StatusBar({
         }
       >
         {SAVE_LABELS[save]}
+      </span>
+      {/* A live region is read out only when it was in the page before its text changed (WAI-ARIA
+          live regions): it stays, empty and not drawn while every lamp answers; the next pad
+          that reaches every lamp clears it (light.md C6) */}
+      <span
+        class={lightTrouble.value ? 'sb-status-section sb-error-label' : 'sb-visually-hidden'}
+        data-testid="status-bar-light-text"
+        role="status"
+        title={lightTrouble.value ? LIGHT_TROUBLE : undefined}
+      >
+        {lightTrouble.value && (
+          <>
+            <span aria-hidden="true">LIGHT</span>
+            <UiIcon name="close" size={12} />
+            <span class="sb-visually-hidden">{LIGHT_TROUBLE}</span>
+          </>
+        )}
       </span>
       {screenKeptOn.value && (
         <span class="sb-status-section" data-testid="status-bar-screen-on-text">
