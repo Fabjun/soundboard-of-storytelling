@@ -2,8 +2,10 @@
  * @fileoverview backupImport — the two passes over a V1 / V3 backup (D2, D5, import rules; ADR-0061)
  * Real IndexedDB semantics (fake-indexeddb) and a fake AudioContext (decode fails for files whose
  * first byte is 0xff). Synthetic files only — the owner's real backup is never committed.
- * Import rules checked: nothing existing changes, audio already present is skipped, boards are
- * always new (new ids, name suffix), audio first and boards last (an abort adds no board).
+ * Import rules checked: nothing existing changes (also bytes found under another hash keep their
+ * folder), audio already present is skipped, boards are always new (new ids, name suffix), audio
+ * first and boards last (an abort adds no board); templates with damaged fields are named, dated or
+ * skipped as the file allows.
  */
 
 import { IDBFactory } from 'fake-indexeddb';
@@ -43,7 +45,10 @@ beforeEach(() => {
   padTemplates.value = [];
   vi.stubGlobal('OfflineAudioContext', FakeOfflineAudioContext);
 });
-afterEach(() => vi.unstubAllGlobals());
+afterEach(() => {
+  vi.unstubAllGlobals();
+  vi.useRealTimers(); // a test that fails while Date is fake does not leave it fake
+});
 
 const A = new Uint8Array([1, 2, 3]);
 const B = new Uint8Array([4, 5, 6, 7]);
@@ -373,6 +378,66 @@ describe('pad templates (ADR-0090, Slice 16d)', () => {
     expect(padTemplates.value.map((t) => [t.name, t.savedAt])).toEqual([['Rain', 9_000]]);
     expect(padTemplates.value[0].id).not.toBe('t1'); // a new id
   });
+
+  it('a V1 template without a usable name or date is "Template", saved now; padData alone is none', async () => {
+    vi.useFakeTimers({ toFake: ['Date'] });
+    vi.setSystemTime(123_000);
+    const loop = (name: string) => ({ name, mode: 'loop', files: [] });
+    const doc = {
+      version: 1,
+      boards: [],
+      library: [
+        { ...v1Template('ignored', loop('A')), name: undefined, added: 0 },
+        { ...v1Template('ignored', loop('B')), name: '', added: -5 },
+        { ...v1Template('ignored', loop('C')), name: 7, added: '9000' },
+        { hash: 'x', type: 'preset', name: 'Not a pad', padData: loop('D') },
+      ],
+    };
+    const plan = await planImport(file(doc));
+    expect(plan.templates).toHaveLength(3);
+    await runImport(file(doc), plan);
+    expect(padTemplates.value.map((t) => [t.name, t.savedAt])).toEqual([
+      ['Template', 123_000],
+      ['Template', 123_000],
+      ['Template', 123_000],
+    ]);
+  });
+
+  it('a V3 template whose name is no text or whose pad is a combo is skipped; a file the backup holds is kept', async () => {
+    vi.useFakeTimers({ toFake: ['Date'] });
+    vi.setSystemTime(123_000);
+    const single = {
+      id: 'p1',
+      name: 'Owl',
+      type: 'single',
+      files: [{ hash: hash(A) }],
+      order: 'sequential',
+      volume: 80,
+      fadeIn: 0,
+      fadeOut: 0,
+    };
+    const doc = {
+      format: V3_BACKUP_FORMAT,
+      formatVersion: 2,
+      boards: [],
+      templates: [
+        { id: 't1', name: 'Owl', savedAt: 0, pad: single },
+        { id: 't2', name: 7, savedAt: 1, pad: single },
+        { id: 't3', name: 'Day', savedAt: 1, pad: { ...single, type: 'combo', steps: [] } },
+        { id: 't4', name: '', savedAt: 1, pad: single }, // a valid pad, but no name
+        { id: 't5', name: 'Wolf', savedAt: '9000', pad: single }, // a date that is text
+      ],
+      library: [{ id: hash(A), name: 'owl.wav', data: b64(A) }],
+    };
+    const result = await runImport(file(doc), await planImport(file(doc)));
+    expect(result).toMatchObject({ templatesAdded: 2, templatesSkipped: 3 });
+    expect(result.notes.missingFiles).toBe(0);
+    expect(padTemplates.value.map((t) => [t.name, t.savedAt])).toEqual([
+      ['Owl', 123_000],
+      ['Wolf', 123_000],
+    ]);
+    expect(padTemplates.value[0].pad.files.map((f) => f.hash)).toEqual([hash(A)]);
+  });
 });
 
 describe('folders (ADR-0088, Slice 16c)', () => {
@@ -406,6 +471,19 @@ describe('folders (ADR-0088, Slice 16c)', () => {
     };
     await runImport(file(again), await planImport(file(again)));
     expect(getLibraryFolderMap()).toEqual({ [hash(A)]: 'Forest', [hash(B)]: 'Forest' });
+  });
+
+  it('bytes already in the library under another hash keep their folder (nothing existing changes)', async () => {
+    const first = { version: 1, library: [{ ...v1Entry(A, 'owl.wav'), folder: 'Forest' }] };
+    await runImport(file(first), await planImport(file(first)));
+    // An older backup names the same bytes by another hash: the import finds them by content
+    const again = {
+      version: 1,
+      library: [{ ...v1Entry(A, 'owl.wav'), hash: 'old-hash', folder: 'Elsewhere' }],
+    };
+    const result = await runImport(file(again), await planImport(file(again)));
+    expect(result).toMatchObject({ audioAdded: 0, audioSkipped: 1 });
+    expect(getLibraryFolderMap()).toEqual({ [hash(A)]: 'Forest' });
   });
 
   it('entryFolder: a non-empty string, else none', () => {
