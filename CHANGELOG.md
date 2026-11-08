@@ -7,6 +7,12 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.294 — 2026-11-08
+
+### Internal
+
+- test: live keys tested where mutants survived — keyControl 90.3 → 100 % (+13): the app's own wiring had no test, as every test passed its own fakes — now Enter stops the last sound, or all of them when Settings says so, the STOP ALL and PAUSE keys come from Settings (also a moved one), and a pad key plays its pad once (stop, pause and audio modules mocked, the preferences real); a key on the board screen with no board chosen plays nothing; takesText(null) is false instead of throwing
+
 ## 3.0.293 — 2026-11-08
 
 ### Internal

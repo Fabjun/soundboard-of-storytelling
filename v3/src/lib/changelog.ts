@@ -17,10 +17,17 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.293';
+export const APP_VERSION = '3.0.294';
 
 /** The developer log, newest first; CHANGELOG.md is generated from it (sync-changelog). */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.294',
+    date: '2026-11-08',
+    items: [
+      "test: live keys tested where mutants survived — keyControl 90.3 → 100 % (+13): the app's own wiring had no test, as every test passed its own fakes — now Enter stops the last sound, or all of them when Settings says so, the STOP ALL and PAUSE keys come from Settings (also a moved one), and a pad key plays its pad once (stop, pause and audio modules mocked, the preferences real); a key on the board screen with no board chosen plays nothing; takesText(null) is false instead of throwing",
+    ],
+  },
   {
     version: '3.0.293',
     date: '2026-11-08',

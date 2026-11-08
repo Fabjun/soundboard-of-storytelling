@@ -103,6 +103,12 @@ export function withEarlyVersions(
 /** The release notes the main menu shows, newest first (checked by whatsNew.test.ts). */
 export const WHATS_NEW: WhatsNewNotes[] = [
   {
+    version: '3.0.294',
+    behindTheScenes: [
+      'The keys for live play are tested as the app wires them, with the choices from Settings.',
+    ],
+  },
+  {
     version: '3.0.293',
     behindTheScenes: [
       'Importing pad templates from a backup of the old app is tested more closely.',

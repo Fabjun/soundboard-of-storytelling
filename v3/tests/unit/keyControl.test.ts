@@ -6,7 +6,9 @@
  * selected (K14); unknown, reserved, held-down and modified keys; a focused text field keeps its
  * keys, a focused button or slider does not; nothing after it is stopped. Live-control keys moved
  * in Settings (K12): the new keys act, the old ones are free for pads; Enter stays fixed; a moved
- * key other than Enter and Space wins before a focused control.
+ * key other than Enter and Space wins before a focused control. No board chosen, and an event
+ * target that is no element. The app's own wiring (no fakes): Enter by the Settings choice, the
+ * STOP ALL and PAUSE keys from Settings, a pad key plays once.
  */
 
 import type { Board, Pad, SinglePad } from '../../src/types';
@@ -18,8 +20,19 @@ import {
   currentMode,
   currentScreen,
 } from '../../src/state/store';
-import { startKeyControl } from '../../src/state/keyControl';
+import { startKeyControl, takesText } from '../../src/state/keyControl';
 import { DEFAULT_CONTROL_KEYS, type ControlKeys } from '../../src/lib/padKeys';
+import { IDBFactory } from 'fake-indexeddb';
+import { _resetDB } from '../../src/db/idb';
+import { loadPrefs, setControlKey, setEnterStop } from '../../src/state/prefs';
+import { pressStopAll, stopLast } from '../../src/state/stopControl';
+import { togglePause } from '../../src/state/pauseControl';
+import { isPlaying as padIsPlaying, play as playPad } from '../../src/audio/index';
+
+// The app's own wiring (the last describe) calls these; every other test passes its own fakes
+vi.mock('../../src/state/stopControl', () => ({ pressStopAll: vi.fn(), stopLast: vi.fn() }));
+vi.mock('../../src/state/pauseControl', () => ({ togglePause: vi.fn() }));
+vi.mock('../../src/audio/index', () => ({ play: vi.fn(), isPlaying: vi.fn(() => false) }));
 
 const grid = { cols: 4, rows: 4, gap: 4 };
 const single = (id: string): SinglePad => ({
@@ -367,5 +380,54 @@ describe('live-control keys moved in Settings (K12)', () => {
     press('Space', {}, button);
     expect(seen).toEqual(['Space']);
     expect(played).toEqual(['STOP ALL']);
+  });
+});
+
+describe('edges', () => {
+  it('a key on a board screen with no board chosen plays nothing', () => {
+    currentBoardId.value = 'gone';
+    expect(() => press('Numpad1')).not.toThrow();
+    expect(played).toEqual([]);
+  });
+
+  it('takesText: no element, or one that is no HTML element, takes no text', () => {
+    expect(takesText(null)).toBe(false);
+    expect(takesText(document)).toBe(false);
+  });
+});
+
+describe("the app's own wiring (no fakes passed)", () => {
+  beforeEach(async () => {
+    stop(); // the listener with the fakes
+    (globalThis as Record<string, unknown>).indexedDB = new IDBFactory();
+    _resetDB();
+    await loadPrefs();
+    vi.clearAllMocks();
+    stop = startKeyControl();
+  });
+
+  it('Enter stops the last sound — all of them when Settings says so', () => {
+    press('NumpadEnter');
+    expect(stopLast).toHaveBeenCalledOnce();
+    expect(pressStopAll).not.toHaveBeenCalled();
+    setEnterStop('all');
+    press('Enter');
+    expect(pressStopAll).toHaveBeenCalledOnce();
+    expect(stopLast).toHaveBeenCalledOnce();
+  });
+
+  it('the STOP ALL and PAUSE keys come from Settings; a pad key plays its pad once', () => {
+    press('NumpadDecimal');
+    expect(pressStopAll).toHaveBeenCalledOnce();
+    press('Space');
+    expect(togglePause).toHaveBeenCalledOnce();
+    setControlKey('pause', 'KeyP');
+    press('KeyP');
+    expect(togglePause).toHaveBeenCalledTimes(2);
+    press('Numpad1');
+    expect(playPad).toHaveBeenCalledWith('a', expect.objectContaining({ id: 'a' }));
+    vi.mocked(padIsPlaying).mockReturnValueOnce(true); // it plays now: the second press does nothing
+    press('Numpad1');
+    expect(playPad).toHaveBeenCalledOnce();
   });
 });
