@@ -7,6 +7,12 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.288 — 2026-11-08
+
+### Internal
+
+- build(deps): the production updates of Dependabot #177 — preact 11.0.1 → 11.2.0, @preact/signals 2.11.3 → 2.11.4, @tanstack/virtual-core 3.19.5 → 3.19.11 (npm took the newest in each range, past the pull request's 11.1.0 and 3.19.9). Release notes read: Preact 11.1 marks VNodes with a shared symbol and needs @preact/signals 2.11.4 (both here; preact-render-to-string is not used), 11.2 keeps the event handlers of a removed node until an event already bubbling ends and ignores on* props that are no function; virtual-core fixes scroll commands during a touch fling (Android too), scrollToIndex from the current measurements, and the range past the end of a list that shrank. Checked: build, lint, unit, knip, E2E pad-icons, library-trash and board-undo in Chromium and WebKit (40 passed); the main bundle grows by 1.1 kB to 199.27 of 200 kB
+
 ## 3.0.287 — 2026-11-08
 
 ### Internal
