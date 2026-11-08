@@ -103,6 +103,12 @@ export function withEarlyVersions(
 /** The release notes the main menu shows, newest first (checked by whatsNew.test.ts). */
 export const WHATS_NEW: WhatsNewNotes[] = [
   {
+    version: '3.0.293',
+    behindTheScenes: [
+      'Importing pad templates from a backup of the old app is tested more closely.',
+    ],
+  },
+  {
     version: '3.0.292',
     behindTheScenes: [
       'Importing a backup is tested more closely — among other things, that it leaves files already in the library in their folders.',

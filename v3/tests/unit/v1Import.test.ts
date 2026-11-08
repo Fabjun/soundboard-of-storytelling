@@ -3,13 +3,15 @@
  * never committed (public repo).
  * Edge-case checklist: every V1 mode incl. the legacy ones, missing / malformed fields, gaps in
  * V1's pad array, combo references (valid, missing), files not available, name collisions,
- * more pads than a 4×4 deck.
+ * more pads than a 4×4 deck; a template whose padData is no object, or a combo (its steps are not
+ * read, so they count nothing).
  */
 
 import type { ComboPad, LoopPad, SinglePad } from '../../src/types';
 import {
   emptyNotes,
   mapV1Board,
+  mapV1Template,
   uniqueBoardName,
   V1_FADE_OUT_ALL_DEFAULT,
   type V1MapContext,
@@ -411,5 +413,24 @@ describe('mapV1Board — malformed and boundary values', () => {
     });
     expect(b.themeId).toBe('hearth');
     expect(b.quickAccess).toEqual([]);
+  });
+});
+
+describe('mapV1Template', () => {
+  it('padData that is no object is no template', () => {
+    for (const padData of ['Owl', 5, null, undefined, [{ mode: 'loop' }]])
+      expect(mapV1Template(padData, context())).toBeNull();
+  });
+
+  it('a combo is no template, and its steps are not read: they count nothing in the notes', () => {
+    const ctx = context();
+    const combo = { name: 'Storm', mode: 'combo', steps: [{ pads: [3, 4] }] };
+    expect(mapV1Template(combo, ctx)).toBeNull();
+    expect(ctx.notes).toEqual(emptyNotes());
+  });
+
+  it('a Loop template becomes a Loop pad with a new id and its files mapped', () => {
+    const pad = mapV1Template({ name: 'Rain', mode: 'loop', files: ['a', 'missing'] }, context());
+    expect(pad).toMatchObject({ id: 'n0', type: 'loop', name: 'Rain', files: [{ hash: 'id-a' }] });
   });
 });
