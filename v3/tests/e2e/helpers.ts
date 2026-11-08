@@ -315,7 +315,10 @@ export type DropPoint = 'center' | 'left-edge' | 'right-edge';
  * drag threshold) to `target`, release. The app uses Pointer Events with
  * setPointerCapture — Playwright's dragTo() (HTML5 DnD) would not trigger it.
  * Edge points are 4px inside the target's left/right border (INSERT zones are
- * min(25% width, 22px)).
+ * min(25% width, 22px)). Both boxes are read once they are stable — the mouse API skips
+ * Playwright's own "stable" check (the same box twice), and a grid that still fits its pads to a
+ * panel just opened would take the drop on another cell (pad-creation test 14 failed once under
+ * heavy load, 2026-11-08, cause not proven — BACKLOG "Library drag test failed once under load").
  */
 export async function pointerDrag(
   page: Page,
@@ -323,9 +326,8 @@ export async function pointerDrag(
   target: Locator,
   drop: DropPoint = 'center',
 ): Promise<void> {
-  const from = await source.boundingBox();
-  const to = await target.boundingBox();
-  if (!from || !to) throw new Error('pointerDrag: source or target not visible');
+  const from = await stableBox(source);
+  const to = await stableBox(target);
   const sx = from.x + from.width / 2;
   const sy = from.y + from.height / 2;
   const tx =
@@ -340,6 +342,31 @@ export async function pointerDrag(
   await page.mouse.move(sx + 12, sy + 12, { steps: 4 }); // cross the drag threshold
   await page.mouse.move(tx, ty, { steps: 15 });
   await page.mouse.up();
+}
+
+type Box = NonNullable<Awaited<ReturnType<Locator['boundingBox']>>>;
+
+/** The element's box once two reads in a row agree — fails when it is not visible or keeps moving. */
+async function stableBox(element: Locator): Promise<Box> {
+  let last: Box | null = null;
+  await expect
+    .poll(
+      async () => {
+        const box = await element.boundingBox();
+        const same =
+          box !== null &&
+          last !== null &&
+          box.x === last.x &&
+          box.y === last.y &&
+          box.width === last.width &&
+          box.height === last.height;
+        last = box;
+        return same;
+      },
+      { message: 'pointerDrag: the element is visible and stays where it is', intervals: [50] },
+    )
+    .toBe(true);
+  return last!;
 }
 
 /** Grid position ("col,row") of a pad, read from its cell's data-pos attribute. */

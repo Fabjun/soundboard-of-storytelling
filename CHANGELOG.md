@@ -7,6 +7,13 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.294 — 2026-11-08
+
+### Internal
+
+- test: live keys tested where mutants survived — keyControl 90.3 → 100 % (+13): the app's own wiring had no test, as every test passed its own fakes — now Enter stops the last sound, or all of them when Settings says so, the STOP ALL and PAUSE keys come from Settings (also a moved one), and a pad key plays its pad once (stop, pause and audio modules mocked, the preferences real); a key on the board screen with no board chosen plays nothing; takesText(null) is false instead of throwing
+- test(e2e): pointerDrag reads the boxes of source and target once they are stable (the same box twice, Playwright's own "stable" rule, which the mouse API skips) — pad-creation test 14 failed once in the gate under heavy load (no pad at the drop cell) and passed 10 of 10 after; the cause is suspected (the grid still fitting its pads to the panel just opened), not proven, as the rerun cleared the trace before it was copied (BACKLOG "Library drag test failed once under load"). Counter-checked: a comparison that never agrees fails the drag with the helper's message
+
 ## 3.0.293 — 2026-11-08
 
 ### Internal
