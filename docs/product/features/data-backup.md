@@ -1,7 +1,10 @@
 # Data & backup
 
 > **Leaf of [docs/product/README.md](../README.md).** Filled 2026-09-28 in dialogue with the product
-> owner. Nothing in this document is built yet; implementation is planned for Slice 10.
+> owner. Built in Slice 10 ([ADR-0061](../../architecture/0061-backup-file-format-and-streaming-import.md)):
+> single-file export and import (ZIP), the V1 import with all library audio, piecewise reading,
+> persistent storage, the last-backup indicator; the owner's test on a MacBook (Brave) passed, the
+> iPhone checklist is open. Later steps carry their own version in the ADR's amendments.
 > Inventory of the prototype features: [v1-v2-inventory.md §5](../v1-v2-inventory.md#5-data--backup).
 
 ## Why
@@ -10,7 +13,7 @@ V3 keeps all boards and all audio only in the browser's storage (IndexedDB) on t
 iOS can evict that storage, and there is no copy anywhere else. A backup the user can take
 and restore is the only safety net.
 
-## Decided — not yet built
+## Decided
 
 | #   | Statement                                                                                                                                                                                      | Status      |
 | --- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------- |

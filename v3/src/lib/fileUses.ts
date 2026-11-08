@@ -46,6 +46,16 @@ export function padsUsing(boards: readonly Board[], hashes: readonly string[]): 
   return count;
 }
 
+/**
+ * Names the pads that play a file, grouped by board in the order given — "Night: Owl, Rain · Day:
+ * Thunder" — for a library file's details (library.md L5).
+ */
+export function usesText(uses: readonly FileUse[]): string {
+  const byBoard = new Map<string, string[]>();
+  for (const { board, pad } of uses) byBoard.set(board, [...(byBoard.get(board) ?? []), pad]);
+  return [...byBoard].map(([board, pads]) => `${board}: ${pads.join(', ')}`).join(' · ');
+}
+
 /** Says how many pads lose their sound, e.g. "1 pad loses its sound"; empty when none does. */
 export function soundLossText(count: number): string {
   if (count === 0) return '';

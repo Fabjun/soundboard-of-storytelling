@@ -103,6 +103,12 @@ export function withEarlyVersions(
 /** The release notes the main menu shows, newest first (checked by whatsNew.test.ts). */
 export const WHATS_NEW: WhatsNewNotes[] = [
   {
+    version: '3.0.295',
+    new: [
+      'A file chosen in the library shows which pads play it and on which board, in a line under its name.',
+    ],
+  },
+  {
     version: '3.0.294',
     behindTheScenes: [
       'The keys for live play are tested as the app wires them, with the choices from Settings.',

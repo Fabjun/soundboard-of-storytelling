@@ -2783,6 +2783,15 @@
   grid-template-columns: minmax(0, 1fr) auto 44px;
   gap: var(--space-2);
 }
+.sb-audio-row-uses {
+  /* @inventory: The details of a selected AudioRow (library.md L5) — which pads play the file, with their boards; a line across all columns that wraps instead of cutting off (WCAG 1.4.10 Reflow). */
+  grid-column: 1 / -1;
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  color: var(--text-dim);
+  overflow-wrap: anywhere;
+}
 .sb-audio-row-rename {
   /* @inventory: Editing-state input in RenameField within AudioRow — font-ui fs-md (16px, the iOS focus-zoom floor), sunk background, strong border. Distinct from sb-row-rename-input (fs-lg/18px, uppercase for board names). */
   background: var(--sunk);

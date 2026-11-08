@@ -112,3 +112,18 @@ test('a file says in how many pads it plays; deleting it says they lose their so
   await deleteFile(page);
   await expect(toast(page)).toContainText(`Deleted '${name}' · 1 pad loses its sound`);
 });
+
+test('a selected file names the pads that play it, with their board (L5)', async ({ page }) => {
+  await page.goto('/soundboard-of-storytelling/');
+  await goToBoardList(page);
+  await createBoardAndNavigate(page);
+  await createDeck(page);
+  await enterSetupMode(page);
+  await createPadAtCell00(page);
+  await reloadApp(page);
+  await goToLibrary(page);
+  const details = page.getByText(/^Played by /);
+  await expect(details).toHaveCount(0); // not while no file is selected
+  await fileRow(page).focus(); // Tab to the row selects it
+  await expect(details).toHaveText(`Played by Board 1: ${name}`); // the pad has the file's name
+});

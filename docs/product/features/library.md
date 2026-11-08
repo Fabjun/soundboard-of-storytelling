@@ -49,9 +49,9 @@ move in 3.0.277 ([ADR-0088](../../architecture/0088-library-folders.md): one map
 folder; the folders a V1 import kept as tags are folders at once) — 16c is complete. 16d: pad
 templates (L6) in 3.0.280 ([ADR-0090](../../architecture/0090-pad-templates.md): an own store;
 SAVE AS TEMPLATE in the PAD editor, ADD asks for board and deck; a combo is no template), and in
-backups and the V1 import in 3.0.281 — 16d is complete. Left of 16a–16d: the file details of L5
-that list a file's pads with their boards (BACKLOG "File details list the pads"). The BOARDS tab
-is Rejected (L4).
+backups and the V1 import in 3.0.281 — 16d is complete. The file details of L5 in 3.0.295: a
+selected file names the pads that play it, grouped by board, in a line under its row — 16a is
+complete. Left: 16e, own icons (L7). The BOARDS tab is Rejected (L4).
 
 ## Decisions L1–L9 (Decided — for review)
 

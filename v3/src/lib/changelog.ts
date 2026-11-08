@@ -17,10 +17,19 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.294';
+export const APP_VERSION = '3.0.295';
 
 /** The developer log, newest first; CHANGELOG.md is generated from it (sync-changelog). */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.295',
+    date: '2026-11-08',
+    items: [
+      'feat(library): file details (library.md L5) — a selected file that pads play names them, grouped by board, in a line under its row: "Played by Night: Owl, Rain · Day: Thunder" (usesText in src/lib/fileUses.ts; AudioRow takes the pads instead of their count, the count derived from them — one source); not in select mode or in the trash; the line wraps instead of cutting off (sb-audio-row-uses, WCAG 1.4.10). Design by Claude for review: no control of its own — a 44 px button would make every row taller —, the details follow the selection (progressive disclosure). Slice 16a is complete; left of Slice 16: 16e, own icons (L7)',
+      'test: unit usesText (grouped by board in order, one pad, none); E2E library-trash — no details while no file is selected, the selected file names its pad and board (Chromium, WebKit); counter-checked: no details at all, and details without a selection, each turn the test red',
+      "docs: data-backup.md said nothing was built — it names what Slice 10 built; CLAUDE.md Slice 17 records the plan the owner released on 2026-11-08 (17a help texts, screen and guard → 17b ? in every header → 17c empty states → 17d welcome); library.md and BACKLOG 'File details list the pads' done",
+    ],
+  },
   {
     version: '3.0.294',
     date: '2026-11-08',
