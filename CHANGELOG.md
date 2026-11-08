@@ -7,6 +7,12 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.286 — 2026-11-08
+
+### Internal
+
+- build(deps-dev): the development updates of Dependabot #171, #172, #175, #176 and #178 together — typescript-eslint 8.72.1, size-limit 14.3.0, @vitest/eslint-plugin 1.6.28, fast-uri 3.1.9 (four moderate advisories), commitlint 21.2.4, Stryker 10.1.1, ESLint 10.14.0, eslint-plugin-jsdoc 65.4.5, fake-indexeddb 6.2.7, knip 6.44.2, Vite 8.3.6 (npm took the newest version in each range, a few patches past the pull requests). Release notes read: fixes and stricter lint rules, no API change; Stryker 10.1 supports Vitest 5 in its own runner (BACKLOG "T11c" names the trigger). Checked: build, lint, unit, knip, size (the main bundle stays at 198.2 of 200 kB), Stryker on padSize with the same result (82 detected, 7 survived)
+
 ## 3.0.285 — 2026-11-08
 
 ### Internal
