@@ -7,6 +7,21 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.296 — 2026-11-09
+
+### Added
+
+- feat(library): own pad icons, step 1 of Slice 16e (library.md L7, ADR-0092) — ADD ICONS in the library's ICONS tab takes SVG files after four checks (the extension .svg or the type image/svg+xml, at most 100 KB, text that parses as SVG, an svg root; src/lib/svgCheck.ts, after the OWASP File Upload Cheat Sheet) and says in plain words why a file was refused; an icon is stored as the file's text in the new IndexedDB store icons (database version 13), named by the SHA-256 of its bytes, so the same file twice is one icon; a pad names it by the key own:<id> in the scheme of ADR-0070; the PAD editor's picker offers the own icons first as OWN and finds them by name; a pad draws them only as an <img> of an object URL, so a script in the file never runs; delete in one tap with UNDO in the toast, and a pad whose icon is gone shows the placeholder of its type. Decisions by Claude for review (ADR-0092)
+
+### Fixed
+
+- fix(state): adding and deleting own icons count as a running save from the call — the first version read the icon before it counted, so a reload in that moment lost the delete (found by the E2E test, which navigated away too early)
+
+### Internal
+
+- test: unit svgCheck (the extension or the type alone allows a file, the size limit at and above, text that is no SVG, an svg root outside its namespace, a script is no reason to refuse; names), ownIcons (added and kept over a reload, the same file once, refusals with their reason, the list without the SVG, one URL per icon revoked on delete, UNDO once, counting from the call), boot (the icon load fails alone); E2E library-own-icons (Chromium, WebKit) — the four checks' messages, kept over a reload, OWN first in the picker, drawn as an image whose script never runs, the placeholder after a delete, UNDO. Counter-checked: an embedding that runs scripts sets the test's mark and turns it red; a pad that keeps a deleted icon shows no placeholder and turns it red; counting after the read turns the unit test red
+- docs: ADR-0092; ADR-0070 refined by it; library.md built line; iPhone checklist 'Own icons'. The SVG is text, not a Blob: Playwright's WebKit, like Safari's private sessions, cannot store a Blob in IndexedDB (UnknownError, 2026-11-09)
+
 ## 3.0.295 — 2026-11-08
 
 ### Added

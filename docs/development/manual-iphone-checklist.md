@@ -288,6 +288,17 @@ checked to exist (docsGuards).
   - Why manual: the phone's keyboard, and hearing that the copy plays like the original.
   - Simulated: `v3/tests/e2e/library-templates.spec.ts` (save, ADD to a deck, kept over a reload, rename, delete with UNDO, no template from a combo).
 
+- [ ] **Own icons** _(Slice 16e, library.md L7, ADR-0092)_
+  - Action: Save a small SVG icon in the Files app. Library → ICONS → ADD ICONS → choose it, and
+    once a photo (PNG or JPEG). In SETUP open a pad → add an icon → open OWN → tap the icon → SAVE.
+    Then Library → ICONS → delete the icon, look at the pad, and UNDO.
+  - Expected: the file picker offers the SVG; the tab lists the icon with its name and size and
+    says why the photo was refused ("only SVG files can be icons"); the picker shows OWN first; the
+    pad shows the icon sharp at every pad size; after the delete the pad shows its type's
+    placeholder, after UNDO the icon again.
+  - Why manual: the iPhone's file picker and how Safari draws an SVG image on the device.
+  - Simulated: `v3/tests/e2e/library-own-icons.spec.ts` (four checks with their messages, kept over a reload, OWN in the picker, drawn as an image whose script never runs, the placeholder after a delete, UNDO).
+
 - [ ] **Light per pad** _(light.md, ADR-0091 — on a computer with Chrome or Brave, the WLED lamp in
       the same network)_
   - Action: Settings → LIGHT: add the lamp by its IP address → TEST; allow "local network" when the

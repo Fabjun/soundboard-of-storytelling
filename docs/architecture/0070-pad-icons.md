@@ -4,7 +4,7 @@
 **Date:** 2026-10-04
 **Slice:** Slice 15
 **Refines:** ADR-0057
-**Refined by:** ADR-0071 (virtualized picker grids), ADR-0072 (UI icons as own set `sos-ui`, superseded), ADR-0085 (every UI icon from the collection)
+**Refined by:** ADR-0071 (virtualized picker grids), ADR-0072 (UI icons as own set `sos-ui`, superseded), ADR-0085 (every UI icon from the collection), ADR-0092 (own SVG icons as `own:<id>`, drawn only as an image)
 **Category:** Data model
 
 ## Context

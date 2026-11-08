@@ -51,7 +51,10 @@ templates (L6) in 3.0.280 ([ADR-0090](../../architecture/0090-pad-templates.md):
 SAVE AS TEMPLATE in the PAD editor, ADD asks for board and deck; a combo is no template), and in
 backups and the V1 import in 3.0.281 — 16d is complete. The file details of L5 in 3.0.295: a
 selected file names the pads that play it, grouped by board, in a line under its row — 16a is
-complete. Left: 16e, own icons (L7). The BOARDS tab is Rejected (L4).
+complete. 16e, own icons (L7, [ADR-0092](../../architecture/0092-own-pad-icons.md)), step 1 in
+3.0.296: ADD ICONS in the ICONS tab takes SVG files after four checks, the picker offers them
+first as OWN, a pad draws them as images only, delete in one tap with UNDO. Left of 16e: step 2,
+own icons in backups and the V1 import. The BOARDS tab is Rejected (L4).
 
 ## Decisions L1–L9 (Decided — for review)
 

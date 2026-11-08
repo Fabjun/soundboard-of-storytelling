@@ -103,6 +103,12 @@ export function withEarlyVersions(
 /** The release notes the main menu shows, newest first (checked by whatsNew.test.ts). */
 export const WHATS_NEW: WhatsNewNotes[] = [
   {
+    version: '3.0.296',
+    new: [
+      'Own icons: the library’s ICONS tab takes SVG files, and the PAD editor offers them first when choosing an icon for a pad.',
+    ],
+  },
+  {
     version: '3.0.295',
     new: [
       'A file chosen in the library shows which pads play it and on which board, in a line under its name.',

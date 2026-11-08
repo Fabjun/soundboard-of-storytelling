@@ -4,13 +4,15 @@
  * One to four icons in V1's arrangement: one alone, two side by side, three as two plus one wide
  * below, four as two by two. A pad without icons shows the placeholder of its type (owner decision
  * 2026-10-04), so all pads look alike and the type stays visible. The icon packs load on demand;
- * until a pack is there, the icon's place stays empty instead of flashing the placeholder.
+ * until a pack is there, the icon's place stays empty instead of flashing the placeholder. An own
+ * icon (`own:<id>`, ADR-0092) is drawn only as an `<img>`; one that was deleted is left out.
  */
 
 import { useEffect, useRef, useState } from 'preact/hooks';
 import type { JSX } from 'preact';
 import type { PadType } from '../types';
 import { getIconDrawing, loadIconSetsFor, type IconDrawing } from '../lib/iconSet';
+import { ownIconId, ownIcons, ownIconUrl } from '../state/ownIcons';
 import placeholders from '../icons/placeholders.json';
 
 /**
@@ -68,11 +70,39 @@ interface PadIconsProps {
   type: PadType;
 }
 
+/**
+ * Draws an own icon (ADR-0092) as an image of its SVG — never inline, so a script in the file
+ * never runs; empty until its file is read, and when it is gone.
+ */
+export function OwnIconImage({ id }: { id: string }): JSX.Element {
+  const [url, setUrl] = useState<string | null>(null);
+  useEffect(() => {
+    let live = true;
+    void ownIconUrl(id).then((u) => live && setUrl(u));
+    return () => {
+      live = false;
+    };
+  }, [id]);
+  return url ? <img class="sb-icon-glyph" src={url} alt="" /> : <span class="sb-icon-glyph" />;
+}
+
+/** One icon a pad shows: a drawing of the collection, or the id of an own icon. */
+type Shown = { drawing: IconDrawing } | { own: string };
+
 /** The picture area of a pad: its icons in V1's arrangement, or its type's placeholder. */
 export function PadIcons({ icons = [], type }: PadIconsProps): JSX.Element {
-  const drawings = useIconDrawings(icons);
-  const shown = (drawings ?? []).filter((d): d is IconDrawing => !!d);
-  if (icons.length > 0 && drawings === null) {
+  // Own keys are not in any pack: they would count as still loading
+  const collection = icons.filter((k) => ownIconId(k) === null);
+  const drawings = useIconDrawings(collection);
+  const drawingOf = new Map(collection.map((k, i) => [k, drawings?.[i]]));
+  const ownIds = new Set(ownIcons.value.map((i) => i.id));
+  const shown = icons.flatMap((key): Shown[] => {
+    const own = ownIconId(key);
+    if (own !== null) return ownIds.has(own) ? [{ own }] : [];
+    const drawing = drawingOf.get(key);
+    return drawing ? [{ drawing }] : [];
+  });
+  if (collection.length > 0 && drawings === null) {
     return <div class="sb-pad-icons" aria-hidden="true" data-testid="pad-icons" />;
   }
   if (shown.length === 0) {
@@ -84,9 +114,13 @@ export function PadIcons({ icons = [], type }: PadIconsProps): JSX.Element {
   }
   return (
     <div class={`sb-pad-icons is-count-${shown.length}`} aria-hidden="true" data-testid="pad-icons">
-      {shown.map((d, i) => (
-        <IconGlyph key={i} drawing={d} />
-      ))}
+      {shown.map((s, i) =>
+        'own' in s ? (
+          <OwnIconImage key={i} id={s.own} />
+        ) : (
+          <IconGlyph key={i} drawing={s.drawing} />
+        ),
+      )}
     </div>
   );
 }

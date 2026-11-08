@@ -209,6 +209,26 @@ export type PadTemplate = {
 };
 
 /**
+ * An own pad icon's list entry (ADR-0092): no bytes. `id` is the SHA-256 of the SVG file; a pad
+ * names the icon by the key `own:<id>`.
+ */
+export type OwnIconMeta = {
+  id: string;
+  /** The file name without `.svg`. */
+  name: string;
+  /** Bytes of the SVG file. */
+  size: number;
+  /** When it was added (ms since epoch). */
+  addedAt: number;
+};
+
+/**
+ * An own pad icon as stored (ADR-0092): its list entry and the SVG file's text — text, not a Blob,
+ * which Safari's private and ephemeral sessions cannot store in IndexedDB.
+ */
+export type OwnIcon = OwnIconMeta & { svg: string };
+
+/**
  * Result of a batch upload operation.
  */
 export type UploadResult = {
