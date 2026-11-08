@@ -17,10 +17,17 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.286';
+export const APP_VERSION = '3.0.287';
 
 /** The developer log, newest first; CHANGELOG.md is generated from it (sync-changelog). */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.287',
+    date: '2026-11-08',
+    items: [
+      "test: templates, folders and preferences tested where mutants survived — the weekly run of 2026-11-08 (the first with every module job green) scored 89.76 % (6591 of 7343) against the break threshold of 90 %; the run of 2026-11-02, before the bail of 3.0.285, had 89.78 % already, hidden by its missing boardModel report, so the drop came with the code since the measurement of 2026-10-19 (90.32 %). padTemplates 78.4 → 97.3 % (+21: the list after a delete and its UNDO, rename of an unknown id or to the same name writes nothing, sorting regardless of case and by id, importTemplates had no unit test: new ids, skipped duplicates, counts); libraryFolders 85.9 → 94.6 % (+8: assignFolders had no unit test, a rename leaves other folders, names at the length limit); prefs 87.1 → 96.3 % (+27: the stored key names — a renamed key would lose every user's setting with the update —, damaged lamps and folder maps). Over all modules, 6647 of 7343 = 90.52 % expected; the weekly run on main confirms it. The surviving rest of these three modules are equivalent mutants (null and undefined are dropped on storing either way)",
+    ],
+  },
   {
     version: '3.0.286',
     date: '2026-11-08',

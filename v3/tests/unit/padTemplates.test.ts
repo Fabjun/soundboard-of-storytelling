@@ -2,7 +2,9 @@
  * @fileoverview padTemplates — pads saved as templates (Slice 16d, library.md L6, ADR-0090)
  *
  * IDB is fake-indexeddb (fresh per test). Cases: save keeps settings and files, not the dates;
- * the list by name over a reload; rename (empty keeps the name); delete and its UNDO; files gone
+ * the list by name over a reload, regardless of case, the same name by id; rename (empty or the
+ * same name, or an unknown id, writes nothing); delete and its UNDO in the store and the list; a
+ * backup's templates added under new ids, one already there or twice in it skipped; files gone
  * from the library counted; ADD TO BOARD into a deck's next free cell or the pool only, with a new
  * id, undoable through the board; an unknown template or board adds nothing; saves counted.
  */
@@ -15,6 +17,7 @@ import { stepBoard } from '../../src/state/boardWrites';
 import {
   addTemplateToBoard,
   deleteTemplate,
+  importTemplates,
   loadTemplates,
   missingFiles,
   padTemplates,
@@ -109,6 +112,65 @@ describe('renameTemplate / deleteTemplate / restoreTemplate', () => {
     await restoreTemplate(deleted!);
     expect((await templateGetAll()).map((x) => x.id)).toEqual([t.id]);
     expect(await deleteTemplate('nope')).toBeNull();
+  });
+
+  test('the list shows a delete and its UNDO: the others stay, the template comes back once', async () => {
+    const t = await saveTemplate(owl());
+    await saveTemplate(rain());
+    const deleted = await deleteTemplate(t.id);
+    expect(padTemplates.value.map((x) => x.name)).toEqual(['Rain']);
+    await restoreTemplate(deleted!);
+    await restoreTemplate(deleted!); // a second UNDO does not list it twice
+    expect(padTemplates.value.map((x) => x.name)).toEqual(['Owl', 'Rain']);
+  });
+
+  test('an unknown id or the same name writes nothing', async () => {
+    const t = await saveTemplate(owl());
+    await saveTemplate(rain());
+    const before = padTemplates.value;
+    const sameName = renameTemplate(t.id, ' Owl ');
+    const unknown = renameTemplate('nope', 'Wolf');
+    expect(pendingSaves.value).toBe(0);
+    await Promise.all([sameName, unknown]);
+    expect(padTemplates.value).toBe(before);
+    expect((await templateGetAll()).map((x) => x.name).sort()).toEqual(['Owl', 'Rain']);
+  });
+
+  test('sorted by name regardless of case; the same name is ordered by id', async () => {
+    const make = (id: string, name: string) => ({ id, name, savedAt: 1, pad: owl() });
+    await restoreTemplate(make('b', 'owl'));
+    await restoreTemplate(make('c', 'bat'));
+    await restoreTemplate(make('a', 'Owl'));
+    expect(padTemplates.value.map((x) => x.id)).toEqual(['c', 'a', 'b']);
+  });
+});
+
+describe('importTemplates', () => {
+  const incoming = (name: string, pad: SinglePad | LoopPad) => ({ name, savedAt: 50, pad });
+
+  test('adds new templates under new ids, stored; skips one already there or twice in the backup', async () => {
+    const known = await saveTemplate(owl());
+    const result = await importTemplates([
+      incoming('Owl', { ...known.pad, id: 'other-id' }), // the same template, whatever the pad's id
+      incoming('Owl', { ...known.pad, volume: 90 }), // the same name, another pad
+      incoming('Owl at night', known.pad), // the same pad, another name
+      incoming('Rain', rain()),
+      incoming('Rain', rain()), // twice in the backup
+    ]);
+    expect(result).toEqual({ added: 3, skipped: 2 });
+    const stored = await templateGetAll();
+    expect(stored).toHaveLength(4);
+    expect(new Set(stored.map((x) => x.id)).size).toBe(4);
+    expect(stored.map((x) => x.id)).toContain(known.id);
+    expect(padTemplates.value.map((x) => x.name)).toEqual(['Owl', 'Owl', 'Owl at night', 'Rain']);
+    expect(padTemplates.value.find((x) => x.name === 'Rain')?.savedAt).toBe(50);
+  });
+
+  test('a backup that brings nothing new leaves the list as it is', async () => {
+    const known = await saveTemplate(owl());
+    const before = padTemplates.value;
+    expect(await importTemplates([incoming('Owl', known.pad)])).toEqual({ added: 0, skipped: 1 });
+    expect(padTemplates.value).toBe(before);
   });
 });
 
