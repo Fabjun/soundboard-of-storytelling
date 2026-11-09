@@ -7,10 +7,14 @@
  *
  * In the narrow frame PAUSED and STOP ALL move to the dock at the bottom (LiveControls,
  * docs/product/features/adaptive-layout.md L2); the top bar keeps back, the mode toggle and the Lock.
+ * In the wide frame the right side ends in the ? that opens the help at the topic of the mode (Slice
+ * 17b) — in the header, away from the pads (P4, P6); in the narrow frame the header has no room
+ * left beside the mode toggle, and the ? sits at the end of the deck tab row, as the bar toggles do.
  */
 
 import type { ComponentChildren, JSX } from 'preact';
 import { UiIcon } from './UiIcon';
+import { HelpButton } from './HelpButton';
 import { ModeToggle } from './ModeToggle';
 import { LiveControls } from './LiveControls';
 import { toggleModeLock } from '../state/modeControl';
@@ -145,6 +149,7 @@ export function BoardTopBar({
           <UiIcon name="library" size={12} />
           {!compact && 'LIB'}
         </button>
+        {!compact && <HelpButton />}
       </div>
     </div>
   );

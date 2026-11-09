@@ -106,6 +106,8 @@ import { previewPosition, startPreview, stopPreview } from '../lib/preview';
 import { ensureFinePeaks } from '../lib/upload';
 import { useModalDialog } from '../lib/modalDialog';
 import { useEscapeKey, useKeydown } from '../lib/escapeKey';
+import { HelpButton } from './HelpButton';
+import { HelpDialog } from './HelpDialog';
 
 interface PadEditorPanelProps {
   pad: Pad;
@@ -179,6 +181,8 @@ export function PadEditorPanel({
   const [icons, setIcons] = useState<string[]>(start.icons ?? []);
   /** The icon slot the picker fills (an index into `icons`, or its length to add); null = closed. */
   const [pickerSlot, setPickerSlot] = useState<number | null>(null);
+  /** The help is open on top of the editor (Slice 17b) — the editor and its draft stay below. */
+  const [helpOpen, setHelpOpen] = useState(false);
   /** The icon whose remove button was tapped once and now asks to confirm. */
   const [iconConfirm, setIconConfirm] = useState<number | null>(null);
   const iconDrawings = useIconDrawings(icons);
@@ -723,9 +727,12 @@ export function PadEditorPanel({
   const inQuickAccess = board.quickAccess.some((q) => q.padId === pad.id);
   const quickAccessFull = !inQuickAccess && board.quickAccess.length >= QUICK_ACCESS_MAX;
 
-  // Escape closes the editor — not while the icon list or the type confirmation is open on top:
-  // those close first (src/lib/escapeKey.ts decides at the moment the key is pressed)
-  useEscapeKey(requestClose, pickerSlot === null && pendingType === null && !confirmDiscard);
+  // Escape closes the editor — not while the icon list, the type confirmation or the help is open on
+  // top: those close first (src/lib/escapeKey.ts decides at the moment the key is pressed)
+  useEscapeKey(
+    requestClose,
+    pickerSlot === null && pendingType === null && !confirmDiscard && !helpOpen,
+  );
 
   // The discard question (ConfirmDialog): the editor behind is inert, the focus starts on the safe
   // answer — KEEP EDITING — and goes back to ✕ when the question closes; Escape keeps editing
@@ -802,6 +809,7 @@ export function PadEditorPanel({
         >
           <UiIcon name="quickAccess" />
         </button>
+        <HelpButton onOpen={() => setHelpOpen(true)} />
         <button
           ref={closeRef}
           class="sb-btn sb-btn-icon sb-btn-ghost"
@@ -812,6 +820,12 @@ export function PadEditorPanel({
           <UiIcon name="close" />
         </button>
       </div>
+      {helpOpen && (
+        <HelpDialog
+          topic={type === 'combo' ? 'combo' : 'pad-editor'}
+          onClose={() => setHelpOpen(false)}
+        />
+      )}
 
       {/* A draft the editor left behind came back: said once, politely (role status) */}
       {restored && unsaved && (
