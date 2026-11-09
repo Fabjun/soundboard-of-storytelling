@@ -6,7 +6,7 @@
  */
 
 import { IDBFactory } from 'fake-indexeddb';
-import { _resetDB, boardGetAll, libGet, libGetAllMeta } from '../../src/db/idb';
+import { _resetDB, boardGetAll, iconPut, libGet, libGetAllMeta } from '../../src/db/idb';
 import { boards, libraryItems } from '../../src/state/store';
 import { createBoard } from '../../src/state/boardWrites';
 import { addAudioFile, computeHash } from '../../src/lib/upload';
@@ -205,6 +205,17 @@ describe('buildBackup', () => {
       }),
     ]);
     expect(padTemplates.value[0].pad.files.map((f) => f.hash)).toEqual([hash(A)]);
+  });
+
+  it('own icons go into the manifest with their SVG text (ADR-0092; the import: backupImportIcons.test.ts)', async () => {
+    const svg = '<svg xmlns="http://www.w3.org/2000/svg"/>';
+    await iconPut({ id: 'i1', name: 'Owl', size: svg.length, addedAt: 9, svg });
+    const blob = await buildBackup({});
+    const entries = await readZipDirectory(blob);
+    const manifest = JSON.parse(
+      await (await zipEntryBlob(blob, entries.get(BACKUP_MANIFEST)!)).text(),
+    ) as { icons: unknown[] };
+    expect(manifest.icons).toEqual([{ id: 'i1', name: 'Owl', addedAt: 9, svg }]);
   });
 
   it('an empty app exports a valid backup with no boards and no audio', async () => {

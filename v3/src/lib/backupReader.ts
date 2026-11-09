@@ -50,6 +50,8 @@ export interface BackupHandlers {
   onBoards?: (boards: unknown[]) => void;
   /** The pad templates of a V3 backup (ADR-0090) — called once when the file has them. */
   onTemplates?: (templates: unknown[]) => void;
+  /** The own icons of a V3 backup (ADR-0092) — called once when the file has them. */
+  onIcons?: (icons: unknown[]) => void;
   /** One library entry; awaited before the next one is handed over. */
   onLibraryEntry?: (entry: BackupLibraryEntry, index: number) => void | Promise<void>;
 }
@@ -162,7 +164,15 @@ async function readJson(
   // Loaded only when a backup is read — keeps the parser out of the start-up bundle.
   const { JSONParser } = await import('@streamparser/json');
   const parser = new JSONParser({
-    paths: ['$.format', '$.formatVersion', '$.version', '$.boards', '$.templates', '$.library.*'],
+    paths: [
+      '$.format',
+      '$.formatVersion',
+      '$.version',
+      '$.boards',
+      '$.templates',
+      '$.icons',
+      '$.library.*',
+    ],
     keepStack: false,
   });
 
@@ -184,6 +194,8 @@ async function readJson(
         handlers.onBoards?.(Array.isArray(value) ? value : []);
       } else if (key === 'templates') {
         handlers.onTemplates?.(Array.isArray(value) ? value : []);
+      } else if (key === 'icons') {
+        handlers.onIcons?.(Array.isArray(value) ? value : []);
       } else if (typeof key === 'string') {
         top[key] = value;
       }

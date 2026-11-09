@@ -5,12 +5,32 @@
  * A ZIP archive (owner decision B1): every audio file as it is, under audio/, and the manifest
  * backup.json — boards and the library list — as the last entry. iPhone memory rule 4: one audio
  * file is read from IndexedDB at a time and copied into the archive's Blob parts before the next.
+ * The own icons (ADR-0092) go into the manifest with their SVG text, at most 100 KB each.
  */
 
-import { boardGetAll, libGet, libGetAllMeta, templateGetAll } from '../db/idb';
+import {
+  boardGetAll,
+  iconGet,
+  iconGetAllMeta,
+  libGet,
+  libGetAllMeta,
+  templateGetAll,
+} from '../db/idb';
 import { APP_VERSION } from './changelog';
 import { BACKUP_MANIFEST, V3_BACKUP_FORMAT } from './backupReader';
 import { createZipWriter } from './zipArchive';
+
+/** The own icons as the manifest holds them: id, name, date added and the SVG's text, one read at a time. */
+async function ownIconsForBackup(): Promise<
+  { id: string; name: string; addedAt: number; svg: string }[]
+> {
+  const icons = [];
+  for (const { id } of await iconGetAllMeta()) {
+    const icon = await iconGet(id);
+    if (icon) icons.push({ id, name: icon.name, addedAt: icon.addedAt, svg: icon.svg });
+  }
+  return icons;
+}
 
 /** The backup's file name: soundboard-backup-YYYY-MM-DD.zip (local date). */
 export function backupFileName(now: Date): string {
@@ -78,6 +98,7 @@ export async function buildBackup(
     exported: new Date().toISOString(),
     boards: await boardGetAll(),
     templates: await templateGetAll(), // ADR-0090; an optional field — formatVersion stays 2
+    icons: await ownIconsForBackup(), // ADR-0092; an optional field too
     library,
   };
   zip.add(BACKUP_MANIFEST, new TextEncoder().encode(JSON.stringify(manifest)));

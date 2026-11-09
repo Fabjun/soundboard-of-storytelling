@@ -47,11 +47,12 @@ function noteLines(r: ImportResult): string[] {
     n.cycleRefs &&
       `${plural(n.cycleRefs, 'combo step reference')} removed — the combo would have started itself.`,
     n.customIcons &&
-      `${plural(n.customIcons, 'uploaded pad icon')} not imported — the app has no own icons yet.`,
+      `${plural(n.customIcons, 'uploaded pad icon')} not in the backup — left out of their pads.`,
     n.unknownIcons &&
       `${plural(n.unknownIcons, 'pad icon')} not in the icon collection — left out; choose another in the pad editor.`,
     r.boardsSkipped && `${plural(r.boardsSkipped, 'board')} could not be read.`,
     ...r.audioFailed,
+    ...r.iconsRefused,
   ].filter((l): l is string => typeof l === 'string');
 }
 
@@ -109,6 +110,8 @@ export function BackupImportPanel({
             library. Nothing you have is changed; boards are added as new boards.
             {step.plan.templates.length > 0 &&
               ` ${plural(step.plan.templates.length, 'pad template')} — one already there is skipped.`}
+            {step.plan.icons.length + step.plan.v1Icons > 0 &&
+              ` ${plural(step.plan.icons.length + step.plan.v1Icons, 'own icon')} — one already there is skipped.`}
             {step.plan.otherEntries > 0 &&
               ` ${plural(step.plan.otherEntries, 'other entry')} (images, combo templates) not imported.`}
             {step.plan.kind === 'v1' && ' Settings of the old app are not imported.'}
@@ -145,6 +148,8 @@ export function BackupImportPanel({
             already there, {plural(step.result.boardsAdded, 'board')} added
             {step.result.templatesAdded + step.result.templatesSkipped > 0 &&
               `, ${plural(step.result.templatesAdded, 'pad template')} added`}
+            {step.result.iconsAdded + step.result.iconsPresent > 0 &&
+              `, ${plural(step.result.iconsAdded, 'own icon')} added`}
             .
           </div>
           {noteLines(step.result).map((line) => (

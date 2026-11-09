@@ -291,13 +291,16 @@ checked to exist (docsGuards).
 - [ ] **Own icons** _(Slice 16e, library.md L7, ADR-0092)_
   - Action: Save a small SVG icon in the Files app. Library → ICONS → ADD ICONS → choose it, and
     once a photo (PNG or JPEG). In SETUP open a pad → add an icon → open OWN → tap the icon → SAVE.
-    Then Library → ICONS → delete the icon, look at the pad, and UNDO.
+    Then Library → ICONS → delete the icon, look at the pad, and UNDO. EXPORT a backup, and import
+    it on a second device (or after deleting the icon for good); import a V1 backup that has
+    uploaded icons.
   - Expected: the file picker offers the SVG; the tab lists the icon with its name and size and
     says why the photo was refused ("only SVG files can be icons"); the picker shows OWN first; the
     pad shows the icon sharp at every pad size; after the delete the pad shows its type's
-    placeholder, after UNDO the icon again.
+    placeholder, after UNDO the icon again. The import's summary names "1 own icon", and the pad
+    shows it again; the V1 import brings V1's icons onto their pads.
   - Why manual: the iPhone's file picker and how Safari draws an SVG image on the device.
-  - Simulated: `v3/tests/e2e/library-own-icons.spec.ts` (four checks with their messages, kept over a reload, OWN in the picker, drawn as an image whose script never runs, the placeholder after a delete, UNDO).
+  - Simulated: `v3/tests/e2e/library-own-icons.spec.ts` (four checks with their messages, kept over a reload, OWN in the picker, drawn as an image whose script never runs, the placeholder after a delete, UNDO), `v3/tests/e2e/backup.spec.ts` (the round trip into a fresh browser), `v3/tests/unit/backupImportIcons.test.ts` (V3 and V1 backups with icons).
 
 - [ ] **Light per pad** _(light.md, ADR-0091 — on a computer with Chrome or Brave, the WLED lamp in
       the same network)_

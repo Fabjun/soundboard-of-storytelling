@@ -51,8 +51,11 @@ application name the file, and keep the files apart from anything that runs.
 6. **Delete in one tap with UNDO**, as for library files. A pad that names a deleted icon draws its
    other icons, or its placeholder when it has none left (V1: "Pads using it will revert to the
    default icon"). The key stays on the pad, so UNDO brings the icon back.
-7. **Later step (16e-2):** backups carry the own icons, and the V1 import takes V1's `type: 'icon'`
-   entries and maps a pad's `{h: hash}` to `own:<id>`. Until then they are counted as now.
+7. **Backups (16e step 2, 3.0.297):** the manifest carries the own icons with their text, and an
+   import passes them through the same checks, storing each under the id of its text — never the
+   id the file names; the keys of pads and templates follow. The V1 import takes V1's
+   `type: 'icon'` entries the same way and maps a pad's `{h: hash}` to `own:<id>` (ADR-0061
+   amendment 2026-11-09).
 
 ## Consequences
 
@@ -66,7 +69,8 @@ application name the file, and keep the files apart from anything that runs.
 
 - An SVG that relies on external files, fonts or scripts is drawn without them (MDN: an image
   loads nothing). That is accepted: pad icons are small drawings.
-- A backup made before 16e-2 does not carry own icons.
+- A backup made before 3.0.297 does not carry own icons; its pads keep their keys and draw their
+  other icons until such an icon is added again.
 
 ## Alternatives considered
 

@@ -16,6 +16,7 @@ import {
   addIconsText,
   addOwnIconFiles,
   deleteOwnIcon,
+  importOwnIcons,
   loadOwnIcons,
   ownIconId,
   ownIconKey,
@@ -125,6 +126,29 @@ describe('ownIconUrl / deleteOwnIcon / restoreOwnIcon', () => {
     expect(ownIcons.value.map((i) => i.name)).toEqual(['owl', 'wolf']);
     expect(await ownIconUrl(owl.id)).toMatch(/^blob:/); // drawn again, not the null of the gap
     expect(await deleteOwnIcon('nope')).toBeNull();
+  });
+});
+
+describe('importOwnIcons', () => {
+  it("checks a backup's icons as uploads, ids from their text; one outcome per icon, in order", async () => {
+    await addOwnIconFiles([svgFile('owl.svg')]);
+    const [owl] = ownIcons.value;
+    const outcomes = await importOwnIcons([
+      { fileName: 'Owl again.svg', svg: svg('red'), addedAt: 7 }, // the same text as owl.svg
+      { fileName: 'Wolf.svg', svg: svg('gray'), addedAt: 7 },
+      { fileName: 'notes.svg', svg: 'not a drawing', addedAt: 7 },
+      { fileName: 'big.svg', svg: `<!--${'x'.repeat(100 * 1024)}-->${svg('red')}`, addedAt: 7 },
+    ]);
+    expect(outcomes.map((o) => o.kind)).toEqual(['present', 'added', 'refused', 'refused']);
+    expect(outcomes[0]).toEqual({ kind: 'present', id: owl.id });
+    expect(outcomes[2]).toEqual({
+      kind: 'refused',
+      reason: 'notes.svg: this file is no SVG drawing the app can read.',
+    });
+    expect(ownIcons.value.map((i) => [i.name, i.addedAt])).toEqual([
+      ['owl', expect.any(Number)],
+      ['Wolf', 7],
+    ]);
   });
 });
 

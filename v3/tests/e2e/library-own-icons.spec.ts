@@ -5,7 +5,8 @@
  * ADD ICONS takes SVG files and says in plain words what it refused; an icon is kept over a reload;
  * the PAD editor's picker offers it first, as OWN, and the pad draws it as an image; a script in the
  * file never runs (the security decision of L7); delete in one tap with UNDO, and a pad whose icon
- * is gone shows its placeholder.
+ * is gone shows its placeholder. The backup round trip of own icons is in backup.spec.ts (Chromium:
+ * WebKit hands the export to the share sheet).
  */
 
 import { test, expect, type Page } from '@playwright/test';

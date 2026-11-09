@@ -6,7 +6,9 @@
  *   2. runImport  — audio first (one file at a time through the upload pipeline), boards last;
  *      an abort leaves no board pointing at missing audio.
  * An import never changes or deletes existing data: audio already in the library is skipped,
- * boards are always added as new boards (new ids, a name suffix when the name is taken).
+ * boards are always added as new boards (new ids, a name suffix when the name is taken). Own icons
+ * (ADR-0092) — a V3 manifest's `icons`, V1's `type: 'icon'` entries — come in after the audio,
+ * through the upload's checks, before the boards that name them.
  */
 
 import type { Board, LoopPad, SinglePad } from '../types';
@@ -14,6 +16,7 @@ import { boards as boardsSignal, libraryItems } from '../state/store';
 import { createBoard } from '../state/boardWrites';
 import { assignFolders } from '../state/libraryFolders';
 import { importTemplates, type IncomingTemplate } from '../state/padTemplates';
+import { importOwnIcons, ownIconId, ownIconKey, type IncomingIcon } from '../state/ownIcons';
 import { readBackup } from './backupReader';
 import { parseBoard, parsePad, withNewIds } from './boardModel';
 import { nanoid } from './nanoid';
@@ -44,7 +47,11 @@ export type ImportPlan = {
   audioPresent: number;
   /** The pad templates the file holds (ADR-0090); a combo template of V1 is not among them. */
   templates: PlannedTemplate[];
-  /** Images and other non-audio entries that are no template — not imported. */
+  /** The own icons of a V3 manifest (ADR-0092), as the file holds them. */
+  icons: unknown[];
+  /** V1 library entries that are uploaded icons (`type: 'icon'`); their SVG is read in pass 2. */
+  v1Icons: number;
+  /** Images and other non-audio entries that are no template or icon — not imported. */
   otherEntries: number;
 };
 
@@ -60,6 +67,11 @@ export type ImportResult = {
   templatesAdded: number;
   /** Templates already there (the same name and pad), or not readable — skipped. */
   templatesSkipped: number;
+  iconsAdded: number;
+  /** Own icons already in the library — skipped. */
+  iconsPresent: number;
+  /** One message per own icon that failed a check (src/lib/svgCheck.ts) or could not be read. */
+  iconsRefused: string[];
   notes: V1ImportNotes;
 };
 
@@ -73,17 +85,20 @@ const v1Template = (e: Entry): PlannedTemplate | null => {
 
 /**
  * The template a planned one becomes: its pad with a new id and its files mapped to the library
- * ids the import stored (missing ones left out and counted) — null when it is none.
+ * ids the import stored (missing ones left out and counted), its own icons to the ids they were
+ * stored under — null when it is none. `icons` maps a V1 icon hash and a V3 icon key.
  */
 function toTemplate(
   planned: PlannedTemplate,
   fileId: (h: string) => string | undefined,
+  icons: { v1: (h: string) => string | undefined; v3: (key: string) => string },
   notes: V1ImportNotes,
 ): IncomingTemplate | null {
   if (planned.kind === 'v1') {
     const pad = mapV1Template(planned.padData, {
       newId: nanoid,
       fileId,
+      iconKey: icons.v1,
       takenNames: new Set(),
       notes,
     });
@@ -98,7 +113,12 @@ function toTemplate(
     if (!id) notes.missingFiles++;
     return id ? [{ ...f, hash: id }] : [];
   });
-  const pad: SinglePad | LoopPad = { ...parsed, id: nanoid(), files };
+  const pad: SinglePad | LoopPad = {
+    ...parsed,
+    id: nanoid(),
+    files,
+    ...(parsed.icons ? { icons: parsed.icons.map(icons.v3) } : {}),
+  };
   const savedAt = typeof v.savedAt === 'number' && v.savedAt > 0 ? v.savedAt : Date.now();
   return { name: v.name, savedAt, pad };
 }
@@ -166,6 +186,8 @@ export async function planImport(file: Blob): Promise<ImportPlan> {
   let audio = 0;
   let audioPresent = 0;
   let otherEntries = 0;
+  let v1Icons = 0;
+  let icons: unknown[] = [];
   const templates: PlannedTemplate[] = [];
   const header = await readBackup(file, {
     onBoards: (b) => {
@@ -174,10 +196,14 @@ export async function planImport(file: Blob): Promise<ImportPlan> {
     onTemplates: (list) => {
       for (const value of list) templates.push({ kind: 'v3', value });
     },
+    onIcons: (list) => {
+      icons = list;
+    },
     onLibraryEntry: ({ fields: e }) => {
       if (!isAudioEntry(e)) {
         const template = v1Template(e);
         if (template) templates.push(template);
+        else if (e.type === 'icon') v1Icons++;
         else otherEntries++;
         return;
       }
@@ -193,6 +219,8 @@ export async function planImport(file: Blob): Promise<ImportPlan> {
     audio,
     audioPresent,
     templates,
+    icons,
+    v1Icons,
     otherEntries,
   };
 }
@@ -236,16 +264,18 @@ async function importAudio(
 
 /**
  * A V3 pad's files mapped to the ids the import stored (missing ones counted, left out); each file
- * keeps its trim.
+ * keeps its trim. Its own icon keys are mapped to the ids the import stored them under.
  */
 function remapFiles(
   board: Board,
   fileId: (h: string) => string | undefined,
+  iconKey: (key: string) => string,
   notes: V1ImportNotes,
 ): Board {
   return {
     ...board,
-    pads: board.pads.map((p) => {
+    pads: board.pads.map((pad) => {
+      const p = pad.icons ? { ...pad, icons: pad.icons.map(iconKey) } : pad;
       if (p.type === 'combo') return p;
       const files = p.files.flatMap((f) => {
         const id = fileId(f.hash);
@@ -255,6 +285,35 @@ function remapFiles(
       return { ...p, files };
     }),
   };
+}
+
+/** An own icon the backup brings, with the id the file names it by. */
+type FileIcon = IncomingIcon & { fileId: string };
+
+/** A V3 manifest's own icon (ADR-0092), or null when the entry is not one. */
+function v3Icon(v: unknown): FileIcon | null {
+  if (!isRecord(v) || typeof v.id !== 'string' || typeof v.svg !== 'string') return null;
+  const name = typeof v.name === 'string' && v.name !== '' ? v.name : 'Icon';
+  const addedAt = typeof v.addedAt === 'number' && v.addedAt > 0 ? v.addedAt : Date.now();
+  return { fileId: v.id, fileName: `${name}.svg`, svg: v.svg, addedAt };
+}
+
+/**
+ * Adds the backup's own icons (ADR-0092) and returns the key each id of the file now maps to —
+ * the id is computed from the text again, so a file's id is never trusted.
+ */
+async function addFileIcons(icons: readonly FileIcon[], result: ImportResult) {
+  const outcomes = await importOwnIcons(icons);
+  const keys = new Map<string, string>();
+  outcomes.forEach((o, i) => {
+    if (o.kind === 'refused') result.iconsRefused.push(o.reason);
+    else {
+      keys.set(icons[i].fileId, ownIconKey(o.id));
+      if (o.kind === 'added') result.iconsAdded++;
+      else result.iconsPresent++;
+    }
+  });
+  return keys;
 }
 
 /**
@@ -274,16 +333,44 @@ export async function runImport(
     boardsSkipped: 0,
     templatesAdded: 0,
     templatesSkipped: 0,
+    iconsAdded: 0,
+    iconsPresent: 0,
+    iconsRefused: [],
     notes: emptyNotes(),
   };
   /** File hash in the backup → library id the bytes were stored under. */
   const stored = new Map<string, string>();
   /** Library id of a newly added file → the folder the backup names for it. */
   const folders: Record<string, string> = {};
+  /** The own icons the file holds: a V3 manifest's, then V1's `type: 'icon'` entries. */
+  const icons: FileIcon[] = [];
+  for (const v of plan.icons) {
+    const icon = v3Icon(v);
+    if (icon) icons.push(icon);
+    else result.iconsRefused.push('An icon in the backup could not be read.');
+  }
   let done = 0;
 
   await readBackup(file, {
     onLibraryEntry: async ({ fields: e, audio }) => {
+      if (e.type === 'icon') {
+        const name = typeof e.name === 'string' && e.name !== '' ? e.name : 'Icon.svg';
+        const h = entryHash(e);
+        try {
+          const data = await audio();
+          if (data && h) {
+            icons.push({
+              fileId: h,
+              fileName: name,
+              svg: await data.text(),
+              addedAt: entryAddedAt(e) ?? Date.now(),
+            });
+          } else result.iconsRefused.push(`${name}: the backup holds no data for this icon.`);
+        } catch {
+          result.iconsRefused.push(`${name}: the icon's data in the backup is damaged.`);
+        }
+        return;
+      }
       if (!isAudioEntry(e)) return;
       const h = entryHash(e);
       const name = typeof e.name === 'string' && e.name !== '' ? e.name : 'imported audio';
@@ -298,6 +385,12 @@ export async function runImport(
     },
   });
   assignFolders(folders); // one write for all files (ADR-0088)
+  // The own icons before the boards and templates that name them
+  const iconKeys = await addFileIcons(icons, result);
+  const iconKey = (key: string) => {
+    const id = ownIconId(key);
+    return id === null ? key : (iconKeys.get(id) ?? key);
+  };
 
   // Boards last — every file they can point at is in the library by now
   const inLibrary = new Set(libraryItems.value.map((m) => m.id));
@@ -306,13 +399,20 @@ export async function runImport(
   for (const raw of plan.boards) {
     let board: Board | null;
     if (plan.kind === 'v1') {
-      board = mapV1Board(raw, { newId: nanoid, fileId, takenNames: taken, notes: result.notes });
+      board = mapV1Board(raw, {
+        newId: nanoid,
+        fileId,
+        iconKey: (h) => iconKeys.get(h),
+        takenNames: taken,
+        notes: result.notes,
+      });
     } else {
       const parsed = parseBoard(raw);
       board = parsed
         ? remapFiles(
             { ...withNewIds(parsed, nanoid), name: uniqueBoardName(parsed.name, taken) },
             fileId,
+            iconKey,
             result.notes,
           )
         : null;
@@ -330,7 +430,10 @@ export async function runImport(
   }
 
   // Templates after the audio, like boards: their files point at what the import stored
-  const incoming = plan.templates.flatMap((t) => toTemplate(t, fileId, result.notes) ?? []);
+  const templateIcons = { v1: (h: string) => iconKeys.get(h), v3: iconKey };
+  const incoming = plan.templates.flatMap(
+    (t) => toTemplate(t, fileId, templateIcons, result.notes) ?? [],
+  );
   const { added, skipped } = await importTemplates(incoming);
   result.templatesAdded = added;
   result.templatesSkipped = skipped + (plan.templates.length - incoming.length);

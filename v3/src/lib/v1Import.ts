@@ -41,7 +41,7 @@ export type V1ImportNotes = {
   missingFiles: number;
   /** Combo step references removed because they would make a combo start itself. */
   cycleRefs: number;
-  /** Pad icons the user had uploaded as SVG (`{h: hash}`) — V3 has no own icons yet. */
+  /** Pad icons the user had uploaded as SVG (`{h: hash}`) whose file the backup does not hold. */
   customIcons: number;
   /** Pad icons that are not in V3's icon collection. */
   unknownIcons: number;
@@ -79,6 +79,11 @@ export interface V1MapContext {
   newId: () => string;
   /** The V3 library id for a V1 file hash, or undefined when that audio is not available. */
   fileId: (v1Hash: string) => string | undefined;
+  /**
+   * The key of the own icon (ADR-0092) the import stored for a V1 icon hash, or undefined when the
+   * backup did not hold that SVG. Without it, every uploaded V1 icon is counted, not imported.
+   */
+  iconKey?: (v1Hash: string) => string | undefined;
   /** Board names already used — the new board gets a suffix if its name is taken. */
   takenNames: ReadonlySet<string>;
   /** Counts what was dropped; updated in place. */
@@ -98,14 +103,18 @@ function mapFiles(v: unknown, ctx: V1MapContext): string[] {
 /**
  * A V1 pad's icons as icon keys, up to `PAD_ICONS_MAX` in V1's order. V1 stored `icons: [{b: id}]`
  * (built-in) or `{h: hash}` (an uploaded SVG); older pads one `icon` in the same shape. A plain
- * string id is read too. Uploaded and unknown icons are counted, not imported.
+ * string id is read too. An uploaded icon becomes the own icon the import stored for it; one the
+ * backup did not hold, and unknown icons, are counted, not imported.
  */
 function mapIcons(p: Json, ctx: V1MapContext): string[] {
   const refs: unknown[] = Array.isArray(p.icons) ? p.icons : p.icon === undefined ? [] : [p.icon];
   const keys: string[] = [];
   for (const ref of refs) {
-    if (isRecord(ref) && str(ref.h)) {
-      ctx.notes.customIcons++;
+    const uploaded = isRecord(ref) ? str(ref.h) : undefined;
+    if (uploaded) {
+      const own = ctx.iconKey?.(uploaded);
+      if (!own) ctx.notes.customIcons++;
+      else if (!keys.includes(own)) keys.push(own);
       continue;
     }
     const id = isRecord(ref) ? str(ref.b) : str(ref);
