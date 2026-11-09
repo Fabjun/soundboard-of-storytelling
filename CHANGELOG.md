@@ -7,6 +7,21 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.298 — 2026-11-09
+
+### Added
+
+- feat(help): Slice 17a — the help (plan released by the owner 2026-11-08, option A; BACKLOG "Help screen and context help"): HELP in the main menu opens a help screen with one topic for every place — start, main menu, boards, a board in SETUP and in GAME, the PAD editor, combos, keys and numpad, the library, light, backup and import, settings; it opens at the topic of the place it came from, each topic opens and closes (WAI-ARIA APG Disclosure, the button inside the topic's heading), a search lists the topics holding every word typed, opened, and says how many (NN/g heuristic 10). The texts are data (src/lib/helpTopics.ts), written from the app's accessibility tree, screen by screen; plain words, concrete steps, for the owner to correct by hand. The guard: the map from screen to topic is a Record over the screen type, so a new screen without a topic does not compile. The help icon is nikoichu:help-circle (ADR-0085: UI icons from the collection, Nikoichu first)
+
+### Changed
+
+- refactor(styles): one class per kind instead of a second next to it — the IconPicker's category header becomes sb-disclosure, the header of every section that opens and closes (also the help's topics); the Settings body sb-settings becomes sb-page, a screen's scrolling body of sections (also the Help); the help's sections are plain blocks, as a flex child with min-height 0 in a scrolling column gets squeezed (the error class of layout-reach)
+
+### Internal
+
+- test: unit helpTopics (every topic with text, unique ids, every screen opens a topic that exists, the board by its mode; the search: empty, one word, several, case, a search word, none), help (opens at the place's topic and returns there, a named topic, nothing from the help itself); E2E help (Chromium, WebKit) — the menu's topic open, a topic opens and closes, BACK, the search and its count; a11y scans the help; system-gestures walks the help's search field. Counter-checked: a screen without a topic fails to compile ("Property 'probe' is missing"); a search that finds everything turns the E2E test red
+- docs: CLAUDE.md Slice 17 at 17a; BACKLOG "Help screen and context help" with what 17a built
+
 ## 3.0.297 — 2026-11-09
 
 ### Added

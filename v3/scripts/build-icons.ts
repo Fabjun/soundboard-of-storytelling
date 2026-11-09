@@ -134,6 +134,7 @@ const UI_ICONS = {
   decks: 'nikoichu:card-hand',
   undo: 'nikoichu:rotate-counterclockwise',
   redo: 'nikoichu:rotate-clockwise',
+  help: 'nikoichu:help-circle',
 };
 
 type Mask = { id: string; n: number; m: string };

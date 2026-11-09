@@ -53,7 +53,7 @@ function offenders(page: Page): Promise<string[]> {
 // Each place with a form field is opened (2026-10-23: the scan visited five places, and the radios
 // in Settings and the LIGHT tab slipped through). A new screen or dialog with a field joins one of
 // these walks.
-test('no browser gestures and no small text fields: start, main menu, Settings', async ({
+test('no browser gestures and no small text fields: start, main menu, Settings, Help', async ({
   page,
 }) => {
   await page.goto('/soundboard-of-storytelling/');
@@ -63,6 +63,11 @@ test('no browser gestures and no small text fields: start, main menu, Settings',
   await page.getByRole('button', { name: 'SETTINGS', exact: true }).click();
   await expect(page.getByRole('textbox', { name: 'Lamp address', exact: true })).toBeVisible();
   expect(await offenders(page), 'Settings with the lamps').toEqual([]);
+  await page.goto('/soundboard-of-storytelling/');
+  await openMainMenu(page);
+  await page.getByRole('button', { name: 'HELP', exact: true }).click();
+  await expect(page.getByRole('searchbox', { name: 'Search the help', exact: true })).toBeVisible();
+  expect(await offenders(page), 'Help with its search').toEqual([]);
 });
 
 test('no browser gestures and no small text fields: the library and its dialogs', async ({

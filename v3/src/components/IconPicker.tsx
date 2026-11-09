@@ -208,7 +208,7 @@ export function IconPicker({ chosen, onPick, onClose }: IconPickerProps): JSX.El
             return (
               <section key={cat} class="sb-col">
                 <button
-                  class="sb-icon-picker-category"
+                  class="sb-disclosure"
                   aria-expanded={isOpen}
                   onClick={() => toggle(cat)}
                   data-testid={`icon-picker-category-button-${cat}`}

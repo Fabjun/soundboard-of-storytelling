@@ -211,7 +211,12 @@ first launch — "Welcome / How it works / Get started" — and a ? per screen):
   screen has a topic, so a new screen without help fails; precached for offline use.
 - **Order:** after Slice 16 — the help describes the screens, and Slice 16 changes the library.
 
-**When:** Slice 17.
+**When:** Slice 17 — plan released by the owner on 2026-11-08 (option A). **17a built in 3.0.298:**
+the texts as data (`v3/src/lib/helpTopics.ts`, twelve topics), the help screen with its search
+(HELP in the main menu), and the guard: the map from screen to topic is a `Record` over the screen
+type, so a new screen without a topic does not compile. The texts were written from the app's
+accessibility tree, screen by screen; the owner corrects them by hand. Next: 17b ? in every header,
+17c empty states, 17d the welcome.
 
 ### Built-in sample sounds — idea (Open)
 

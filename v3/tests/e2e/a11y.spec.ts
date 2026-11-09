@@ -73,6 +73,15 @@ test('start screen', async ({ page }) => {
   expect(await violations(page)).toEqual([]);
 });
 
+test('help, with a search', async ({ page }) => {
+  await page.goto('/soundboard-of-storytelling/');
+  await openMainMenu(page);
+  await page.getByRole('button', { name: 'HELP', exact: true }).click();
+  await page.getByRole('searchbox', { name: 'Search the help', exact: true }).fill('deck');
+  await expect(page.getByRole('status').filter({ hasText: 'topic' })).toBeVisible();
+  expect(await violations(page)).toEqual([]);
+});
+
 test('main menu and Settings', async ({ page }) => {
   await page.goto('/soundboard-of-storytelling/');
   await openMainMenu(page);

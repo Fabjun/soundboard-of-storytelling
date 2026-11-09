@@ -143,7 +143,7 @@ export function SettingsScreen(): JSX.Element {
         }
       />
 
-      <div class="sb-settings">
+      <div class="sb-page">
         {/* The groups in V1's order (settings.md S1) */}
         <section class="sb-settings-group" aria-labelledby="settings-screen-controls-title">
           <h2 class="sb-settings-group-title" id="settings-screen-controls-title">
