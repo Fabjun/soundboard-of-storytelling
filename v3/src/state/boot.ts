@@ -11,19 +11,22 @@
 import { boardGetAll, libGetAllMeta } from '../db/idb';
 import { loadTrash } from './libraryTrash';
 import { loadTemplates } from './padTemplates';
+import { loadOwnIcons } from './ownIcons';
 import { boards, libraryItems } from './store';
 
 /**
  * Library list (metadata only — a cursor, no audio in RAM), the library's trash (metadata; what
  * waited 30 days goes for good, ADR-0087), boards and pad templates (JSON documents, ADR-0090)
- * into the store. One failing load does not stop the others; the app still starts.
+ * and the own icons' list (no SVG, ADR-0092) into the store. One failing load does not stop the
+ * others; the app still starts.
  */
 export async function loadStoredState(): Promise<void> {
-  const [items, all, trash, templates] = await Promise.allSettled([
+  const [items, all, trash, templates, icons] = await Promise.allSettled([
     libGetAllMeta(),
     boardGetAll(),
     loadTrash(),
     loadTemplates(),
+    loadOwnIcons(),
   ]);
   if (items.status === 'fulfilled') libraryItems.value = items.value;
   else console.error('Library bootstrap failed:', items.reason);
@@ -33,4 +36,5 @@ export async function loadStoredState(): Promise<void> {
   if (templates.status === 'rejected') {
     console.error('Template bootstrap failed:', templates.reason);
   }
+  if (icons.status === 'rejected') console.error('Icon bootstrap failed:', icons.reason);
 }

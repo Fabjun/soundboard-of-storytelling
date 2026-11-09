@@ -60,6 +60,7 @@ export const FULL_TESTS = [
   'library-select',
   'library-folders',
   'library-templates',
+  'library-own-icons',
   'light-settings',
   'pad-light',
 ];
@@ -99,6 +100,7 @@ export const FULL_WEBKIT_TESTS = [
   'library-select',
   'library-folders',
   'library-templates',
+  'library-own-icons',
   'light-settings',
 ];
 

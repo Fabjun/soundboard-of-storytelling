@@ -64,6 +64,7 @@ file. Format: `docs/architecture/_template.md`.
 | [ADR-0087](0087-library-trash.md)                           | Library trash — a deleted file waits 30 days in its own store        | Accepted               | Slice 16                                    | 2026-10-20 |
 | [ADR-0088](0088-library-folders.md)                         | Library folders — one map from file to folder in the key-value store | Accepted               | Slice 16                                    | 2026-10-22 |
 | [ADR-0090](0090-pad-templates.md)                           | Pad templates in their own IndexedDB store                           | Accepted               | Slice 16                                    | 2026-10-23 |
+| [ADR-0092](0092-own-pad-icons.md)                           | Own pad icons — SVG files the user adds, shown only as an image      | Accepted               | Slice 16                                    | 2026-11-08 |
 
 ### Audio engine & iOS memory
 

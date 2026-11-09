@@ -2970,10 +2970,17 @@
   opacity: 0.5;
 }
 .sb-icon-glyph {
-  /* @inventory: SVG of one collection icon — fills its box, crisp pixels, drawn in currentColor. */
+  /* @inventory: One pad icon — the SVG of a collection icon (crisp pixels, drawn in currentColor) or the <img> of an own icon (ADR-0092, its own colors); fills its box, an own icon kept in its proportions. */
   display: block;
   width: 100%;
   height: 100%;
+  object-fit: contain;
+}
+.sb-own-icon-thumb {
+  /* @inventory: The picture of an own icon in a row of the library's ICONS tab (ADR-0092) — a 28px box its sb-icon-glyph fills. */
+  flex: none;
+  width: 28px; /* sub-token: icon glyph, as in a 44px icon cell */
+  height: 28px; /* sub-token: icon glyph, as in a 44px icon cell */
 }
 .sb-icon-picker-category {
   /* @inventory: Category header in the IconPicker — full-width disclosure button (▶/▼, name, count) with a 44px touch target. */

@@ -1,8 +1,8 @@
 /**
  * @fileoverview boot — unit tests: the stored state is in the store before the first render
  *
- * IDB is fake-indexeddb (fresh per test). Each of the four loads (library, boards, trash,
- * templates) can be made to fail, to show that one failing load is logged by name, keeps what the
+ * IDB is fake-indexeddb (fresh per test). Each of the five loads (library, boards, trash,
+ * templates, own icons) can be made to fail, to show that one failing load is logged by name, keeps what the
  * store holds, and does not stop the others; loads that succeed log nothing.
  */
 
@@ -19,6 +19,7 @@ const failing = vi.hoisted(() => ({
   boards: false,
   trash: false,
   templates: false,
+  icons: false,
 }));
 vi.mock('../../src/db/idb', async (importOriginal) => {
   const real = await importOriginal<typeof IdbModule>();
@@ -29,6 +30,7 @@ vi.mock('../../src/db/idb', async (importOriginal) => {
     boardGetAll: () => (failing.boards ? unreadable('boards') : real.boardGetAll()),
     trashGetAllMeta: () => (failing.trash ? unreadable('trash') : real.trashGetAllMeta()),
     templateGetAll: () => (failing.templates ? unreadable('templates') : real.templateGetAll()),
+    iconGetAllMeta: () => (failing.icons ? unreadable('icons') : real.iconGetAllMeta()),
   };
 });
 
@@ -59,7 +61,13 @@ beforeEach(() => {
   _resetDB();
   boards.value = [];
   libraryItems.value = [];
-  Object.assign(failing, { library: false, boards: false, trash: false, templates: false });
+  Object.assign(failing, {
+    library: false,
+    boards: false,
+    trash: false,
+    templates: false,
+    icons: false,
+  });
 });
 
 describe('loadStoredState', () => {
@@ -111,12 +119,13 @@ describe('loadStoredState', () => {
     expect(log.mock.calls).toEqual([['Board bootstrap failed:', expect.any(Error)]]);
 
     log.mockClear();
-    Object.assign(failing, { boards: false, trash: true, templates: true });
+    Object.assign(failing, { boards: false, trash: true, templates: true, icons: true });
     await loadStoredState();
     expect(boards.value).toEqual([board]);
     expect(log.mock.calls).toEqual([
       ['Trash bootstrap failed:', expect.any(Error)],
       ['Template bootstrap failed:', expect.any(Error)],
+      ['Icon bootstrap failed:', expect.any(Error)],
     ]);
     log.mockRestore();
   });

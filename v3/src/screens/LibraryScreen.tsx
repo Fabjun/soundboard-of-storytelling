@@ -12,7 +12,8 @@
  *   - Select mode (Slice 16c, L3): SELECT, a checkbox per row, SELECT ALL, MOVE and DELETE in a bar
  *   - Folders (Slice 16c, L2, ADR-0088): listed in the filter rail (on a phone a choice above the
  *     list); an open folder can be renamed or removed, and files uploaded meanwhile land in it
- *   - ICONS / PADS tabs: placeholder (empty state); the BOARDS tab is Rejected (library.md L4)
+ *   - ICONS tab: the own SVG icons (OwnIconsTab, L7); PADS tab: the pad templates (L6); the
+ *     BOARDS tab is Rejected (library.md L4)
  *   - Tags: search words, not edited (L2) — the search finds a file by its name or a tag
  */
 
@@ -26,8 +27,10 @@ import { ConfirmDialog } from '../components/ConfirmDialog';
 import { FolderMoveDialog } from '../components/FolderMoveDialog';
 import { UndoNoticeRegion } from '../components/UndoNoticeRegion';
 import { PadTemplatesTab } from '../components/PadTemplatesTab';
+import { OwnIconsTab } from '../components/OwnIconsTab';
 import { Tabs, tabPanelProps } from '../components/Tabs';
 import { padTemplates } from '../state/padTemplates';
+import { ownIcons } from '../state/ownIcons';
 import {
   boards,
   currentScreen,
@@ -395,7 +398,11 @@ export function LibraryScreen(): JSX.Element {
               <>
                 {tab}
                 <span class="sb-tab-badge">
-                  {tab === 'AUDIO' ? items.length : tab === 'PADS' ? padTemplates.value.length : 0}
+                  {tab === 'AUDIO'
+                    ? items.length
+                    : tab === 'PADS'
+                      ? padTemplates.value.length
+                      : ownIcons.value.length}
                 </span>
               </>
             ),
@@ -414,11 +421,11 @@ export function LibraryScreen(): JSX.Element {
         <PadTemplatesTab />
       </div>
       <div
-        class="sb-row-fill"
+        class="sb-col sb-flex-1"
         {...tabPanelProps('library', 'ICONS')}
         hidden={activeTab !== 'ICONS'}
       >
-        <EmptyState label="No items yet" />
+        <OwnIconsTab />
       </div>
       <div
         class={'sb-screen-layout' + (narrow ? ' is-narrow' : '')}

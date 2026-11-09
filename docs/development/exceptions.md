@@ -32,7 +32,7 @@ Inline: `// eslint-disable-next-line <rule> -- <reason>` (enforced by `require-d
 
 | Location                               | Rule                                      | Reason                                                                                                               |
 | -------------------------------------- | ----------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
-| `v3/src/components/IconPicker.tsx:280` | `react-hooks/exhaustive-deps`             | measured after every layout (as TanStack's adapter updates the virtualizer); setShape runs only when a value changed |
+| `v3/src/components/IconPicker.tsx:296` | `react-hooks/exhaustive-deps`             | measured after every layout (as TanStack's adapter updates the virtualizer); setShape runs only when a value changed |
 | `v3/src/screens/BoardScreen.tsx:139`   | `react-hooks/exhaustive-deps`             | auto-select only on board identity change, never override the user's deck choice                                     |
 | `v3/eslint.config.js:21`               | `@typescript-eslint/no-unused-vars` (off) | tsc noUnusedLocals/noUnusedParameters report it                                                                      |
 
@@ -123,7 +123,7 @@ Historical docs excluded in `.vale.ini`, and passages marked `<!-- vale … = NO
 | `.vale.ini`                                            | `docs/product/v1-v2-inventory.md` | historical record — keeps the names valid at its time                             |
 | `.vale.ini`                                            | `CHANGELOG.md`                    | historical record — keeps the names valid at its time                             |
 | `.vale.ini`                                            | `docs/development/exceptions.md`  | historical record — keeps the names valid at its time                             |
-| `CLAUDE.md:977`                                        | `SoS.SupersededTerms` off         | historical slice records keep the names valid at the time (Scene before Slice 9b) |
+| `CLAUDE.md:990`                                        | `SoS.SupersededTerms` off         | historical slice records keep the names valid at the time (Scene before Slice 9b) |
 | `docs/architecture/0056-documentation-freshness.md:33` | `SoS.SupersededTerms` off         | …                                                                                 |
 | `docs/architecture/concept-brief.md:75`                | `SoS.SupersededTerms` off         | explains the rename                                                               |
 | `docs/product/README.md:116`                           | `SoS.SupersededTerms` off         | records the rename decision                                                       |

@@ -4,7 +4,9 @@
  * Built on V1's picker: a search field (focused on open, except on a touch screen), the categories
  * as sections that open and close (their icons are drawn only while open — iPhone memory, as V1),
  * a switch for the names under the icons, a tap picks and closes. Beyond V1: the search reads names AND search words
- * (src/lib/iconSet.ts). The packs and the catalog load when the picker opens.
+ * (src/lib/iconSet.ts). The packs and the catalog load when the picker opens. The user's own icons
+ * (ADR-0092) come first, as the group OWN, and the search finds them by name; they are drawn as
+ * images only.
  *
  * Keyboard (W3C APG grid pattern, https://www.w3.org/WAI/ARIA/apg/patterns/grid/): each icon grid
  * is one Tab stop; the arrow keys move between its icons, Home and End to the ends of a row, Enter
@@ -39,8 +41,12 @@ import {
   type IconCategory,
 } from '../lib/iconSet';
 import { moveIndex, rowCount, rowKeys, trackCount } from '../lib/iconGrid';
-import { IconGlyph } from './PadIcons';
+import { IconGlyph, OwnIconImage } from './PadIcons';
 import { UiIcon } from './UiIcon';
+import { ownIconId, ownIconKey, ownIcons } from '../state/ownIcons';
+
+/** A group of the picker: a category of the collection, or the user's own icons. */
+type Group = IconCategory | 'own';
 
 /** Rows drawn beyond the visible ones on each side, so a quick scroll shows no gap. */
 const OVERSCAN = 4;
@@ -54,7 +60,7 @@ function touchFirst(): boolean {
 }
 
 // Kept between openings (UI rule: an overlay reopens where it was left)
-const memory = { open: new Set<IconCategory>(), scroll: 0, names: false };
+const memory = { open: new Set<Group>(), scroll: 0, names: false };
 
 interface IconPickerProps {
   /** Keys the pad has already — marked in the grid. */
@@ -95,10 +101,20 @@ export function IconPicker({ chosen, onPick, onClose }: IconPickerProps): JSX.El
   useEscapeKey(onClose);
 
   const groups = catalog ? iconsByCategory() : null;
-  const total = groups ? [...groups.values()].reduce((n, keys) => n + keys.length, 0) : 0;
-  const results = catalog && query.trim() ? searchIcons(query, catalog) : null;
+  const own = ownIcons.value;
+  const ownKeys = own.map((i) => ownIconKey(i.id));
+  const total =
+    own.length + (groups ? [...groups.values()].reduce((n, keys) => n + keys.length, 0) : 0);
+  const word = query.trim().toLowerCase();
+  const results =
+    catalog && word
+      ? [
+          ...own.filter((i) => i.name.toLowerCase().includes(word)).map((i) => ownIconKey(i.id)),
+          ...searchIcons(query, catalog),
+        ]
+      : null;
 
-  function toggle(cat: IconCategory): void {
+  function toggle(cat: Group): void {
     const next = new Set(open);
     if (next.has(cat)) next.delete(cat);
     else next.add(cat);
@@ -185,8 +201,8 @@ export function IconPicker({ chosen, onPick, onClose }: IconPickerProps): JSX.El
         )}
         {groups &&
           !results &&
-          ICON_CATEGORIES.map((cat) => {
-            const keys = groups.get(cat) ?? [];
+          (['own', ...ICON_CATEGORIES] as const).map((cat) => {
+            const keys = cat === 'own' ? ownKeys : (groups.get(cat) ?? []);
             if (keys.length === 0) return null;
             const isOpen = open.has(cat);
             return (
@@ -347,12 +363,14 @@ function IconGrid({ keys, chosen, names, onPick, label, scroller }: IconGridProp
         >
           {rowKeys(keys, row.index, shape.cols).map((key, col) => {
             const i = row.index * shape.cols + col;
-            const drawing = getIconDrawing(key);
-            const name = key.slice(key.indexOf(':') + 1);
+            const ownId = ownIconId(key);
+            const own = ownId === null ? undefined : ownIcons.value.find((o) => o.id === ownId);
+            const drawing = ownId === null ? getIconDrawing(key) : undefined;
+            const name = own ? own.name : key.slice(key.indexOf(':') + 1);
             const isChosen = chosen.includes(key);
             return (
               <div key={key} class="sb-icon-grid-cell" role="gridcell">
-                {drawing && (
+                {(drawing || own) && (
                   <button
                     class={isChosen ? 'sb-icon-cell is-chosen' : 'sb-icon-cell'}
                     tabIndex={i === tabStop ? 0 : -1}
@@ -363,7 +381,11 @@ function IconGrid({ keys, chosen, names, onPick, label, scroller }: IconGridProp
                     onFocus={() => setFocus(i)}
                     data-testid={`icon-picker-icon-button-${key}`}
                   >
-                    <IconGlyph drawing={drawing} />
+                    {own ? (
+                      <OwnIconImage id={own.id} />
+                    ) : (
+                      drawing && <IconGlyph drawing={drawing} />
+                    )}
                     {names && <span class="sb-icon-cell-name">{name}</span>}
                   </button>
                 )}

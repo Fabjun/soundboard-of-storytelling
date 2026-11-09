@@ -808,6 +808,19 @@ templatePut(template: PadTemplate): Promise<void>
 templateDelete(id: string): Promise<void>
   // Deletes a pad template by id; a missing id is not an error.
 
+iconGetAllMeta(): Promise<OwnIconMeta[]>
+  // Lists the own icons without their SVG — read at app start (src/state/boot.ts). A cursor that
+  // never references `svg`, as libGetAllMeta never references the audio blob.
+
+iconGet(id: string): Promise<OwnIcon | null>
+  // Loads one own icon with its SVG — when it is drawn; null when there is none.
+
+iconPut(icon: OwnIcon): Promise<void>
+  // Adds or replaces an own icon (upsert).
+
+iconDelete(id: string): Promise<void>
+  // Deletes an own icon by id; a missing id is not an error.
+
 kvGetAll(): Promise<[string, unknown][]>
   // Every key-value entry — small, so read in one go at app start (src/state/prefs.ts).
 

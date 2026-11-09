@@ -8,6 +8,7 @@
  *   'keyval'   (out-of-line keys) — small preferences and stats       [since v6]
  *   'trash'    (keyPath: 'id')  — deleted library entries (with blob) [since v11, ADR-0087]
  *   'templates' (keyPath: 'id') — pad templates (JSON, no blobs)      [since v12, ADR-0090]
+ *   'icons'    (keyPath: 'id')  — own pad icons (SVG text)            [since v13, ADR-0092]
  *
  * MEMORY SAFETY RULES (carried over from V1 — see CLAUDE.md#iphone--ios-safari--memory--stability-rules-critical):
  *   - libGetAllMeta() uses a cursor and NEVER references cursor.value.blob.
@@ -20,6 +21,7 @@
  *   - libMoveToTrash() / trashRestore() move ONE entry between 'library' and 'trash' in one
  *     transaction — one Blob in RAM for that call, as libRename(); trashGetAllMeta() is a
  *     metadata cursor like libGetAllMeta().
+ *   - iconGetAllMeta() is a metadata cursor too; iconGet() reads one icon's SVG when it is drawn.
  *
  * BOARD PERSISTENCE TRADE-OFF (conscious decision):
  *   Boards are stored as complete JSON documents containing embedded Decks and
@@ -35,6 +37,8 @@ import type {
   Board,
   LibraryItem,
   LibraryItemMeta,
+  OwnIcon,
+  OwnIconMeta,
   PadTemplate,
   TrashItem,
   TrashItemMeta,
@@ -44,7 +48,7 @@ import { migrateBoard } from '../lib/padFiles';
 // ── DB singleton ─────────────────────────────────────────────────────────────
 
 const DB_NAME = 'sos-v3';
-const DB_VERSION = 12;
+const DB_VERSION = 13;
 
 let _db: IDBPDatabase | null = null;
 
@@ -105,6 +109,10 @@ async function getDB(): Promise<IDBPDatabase> {
       // store: every other store stays as it is.
       if (oldVersion < 12) {
         db.createObjectStore('templates', { keyPath: 'id' });
+      }
+      // v13: own pad icons (Slice 16e, ADR-0092) — the text of one SVG each. Only ADDS a store.
+      if (oldVersion < 13) {
+        db.createObjectStore('icons', { keyPath: 'id' });
       }
     },
   });
@@ -324,6 +332,42 @@ export async function templatePut(template: PadTemplate): Promise<void> {
 export async function templateDelete(id: string): Promise<void> {
   const db = await getDB();
   await db.delete('templates', id);
+}
+
+// ── Own icon API (Slice 16e, ADR-0092) — the text of one small SVG per icon ──────────────────
+
+/**
+ * Lists the own icons without their SVG — read at app start (src/state/boot.ts). A cursor that
+ * never references `svg`, as libGetAllMeta never references the audio blob.
+ */
+export async function iconGetAllMeta(): Promise<OwnIconMeta[]> {
+  const db = await getDB();
+  const results: OwnIconMeta[] = [];
+  let cursor = await db.transaction('icons', 'readonly').store.openCursor();
+  while (cursor) {
+    const { id, name, size, addedAt } = cursor.value as OwnIcon;
+    results.push({ id, name, size, addedAt });
+    cursor = await cursor.continue();
+  }
+  return results;
+}
+
+/** Loads one own icon with its SVG — when it is drawn; null when there is none. */
+export async function iconGet(id: string): Promise<OwnIcon | null> {
+  const db = await getDB();
+  return ((await db.get('icons', id)) as OwnIcon | undefined) ?? null;
+}
+
+/** Adds or replaces an own icon (upsert). */
+export async function iconPut(icon: OwnIcon): Promise<void> {
+  const db = await getDB();
+  await db.put('icons', icon);
+}
+
+/** Deletes an own icon by id; a missing id is not an error. */
+export async function iconDelete(id: string): Promise<void> {
+  const db = await getDB();
+  await db.delete('icons', id);
 }
 
 // ── Key-value store (preferences, per-pad stats) — small values only, never audio or boards ───
