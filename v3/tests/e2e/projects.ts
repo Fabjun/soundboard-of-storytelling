@@ -63,6 +63,7 @@ export const FULL_TESTS = [
   'library-own-icons',
   'light-settings',
   'pad-light',
+  'help',
 ];
 
 /**
@@ -102,6 +103,7 @@ export const FULL_WEBKIT_TESTS = [
   'library-templates',
   'library-own-icons',
   'light-settings',
+  'help',
 ];
 
 /** tests/e2e/mobile/<name>.spec.ts — audio-free, WebKit / iPhone 13 Pro (real Safari engine path). */

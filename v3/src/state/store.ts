@@ -15,6 +15,7 @@ import type {
   Deck,
   UploadResult,
 } from '../types';
+import type { HelpTopicId } from '../lib/helpTopics';
 
 // ── Audio context ────────────────────────────────────────────────────────────
 
@@ -27,13 +28,19 @@ export const audioContextState = signal<AudioContextState>('locked');
  * The app's top-level screens: the start screen with its one action, the main menu behind it
  * (owner decision 2026-10-11), and the screens it leads to.
  */
-export type AppScreen = 'start' | 'menu' | 'settings' | 'library' | 'board-list' | 'board';
+export type AppScreen = 'start' | 'menu' | 'settings' | 'library' | 'board-list' | 'board' | 'help';
 
 /** Top-level screen routing. */
 export const currentScreen = signal<AppScreen>('start');
 
 /** The screen Settings goes back to — the main menu or the board list it was opened from. */
 export const settingsReturn = signal<AppScreen>('menu');
+
+/** The screen the help goes back to, and the topic it opens at (Slice 17a). */
+export const helpReturn = signal<AppScreen>('menu');
+
+/** The help topic the help screen opens at — the place it was opened from (src/lib/helpTopics.ts). */
+export const helpTopic = signal<HelpTopicId>('menu');
 
 /** The board the board screen shows; null outside a board. */
 export const currentBoardId = signal<string | null>(null);

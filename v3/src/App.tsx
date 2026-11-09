@@ -24,6 +24,7 @@ import { SettingsScreen } from './screens/SettingsScreen';
 import { LibraryScreen } from './screens/LibraryScreen';
 import { BoardListScreen } from './screens/BoardListScreen';
 import { BoardScreen } from './screens/BoardScreen';
+import { HelpScreen } from './screens/HelpScreen';
 import { UpdatePrompt } from './components/UpdatePrompt';
 
 /**
@@ -92,5 +93,6 @@ function Screen(): JSX.Element {
   if (screen === 'library') return <LibraryScreen />;
   if (screen === 'board-list') return <BoardListScreen />;
   if (screen === 'board') return <BoardScreen />;
+  if (screen === 'help') return <HelpScreen />;
   return <StartScreen />;
 }

@@ -938,8 +938,8 @@
   /* @inventory: TAP TO START on the start screen — the one action; its auto bottom margin pairs with the flame well's top margin, so the content stays centered. 1-use. */
   margin-bottom: auto;
 }
-.sb-settings {
-  /* @inventory: The Settings screen's scrolling body — groups one under the other, centered and limited in width on a wide window. 1-use. */
+.sb-page {
+  /* @inventory: A screen's scrolling body of sections — one under the other, centered and limited in width on a wide window: Settings, Help. */
   flex: 1;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
@@ -950,6 +950,13 @@
   width: 100%;
   max-width: 40rem;
   margin: 0 auto;
+}
+.sb-help-text {
+  /* @inventory: The paragraphs of an open help topic (Slice 17a) — under its sb-disclosure heading, indented, a space between paragraphs. */
+  padding: var(--space-2) var(--space-2) var(--space-4);
+}
+.sb-help-text > p + p {
+  margin-top: var(--space-2);
 }
 .sb-settings-group {
   /* @inventory: One group of settings under its heading (settings.md S11). */
@@ -2982,8 +2989,8 @@
   width: 28px; /* sub-token: icon glyph, as in a 44px icon cell */
   height: 28px; /* sub-token: icon glyph, as in a 44px icon cell */
 }
-.sb-icon-picker-category {
-  /* @inventory: Category header in the IconPicker — full-width disclosure button (▶/▼, name, count) with a 44px touch target. */
+.sb-disclosure {
+  /* @inventory: The header of a section that opens and closes (WAI-ARIA APG Disclosure) — a full-width button (▶/▼, name, an optional count) with a 44px touch target: the IconPicker's categories, the help's topics. */
   display: flex;
   align-items: center;
   gap: var(--space-2);
@@ -2999,7 +3006,7 @@
   text-align: left;
   cursor: pointer;
 }
-.sb-icon-picker-category:focus-visible {
+.sb-disclosure:focus-visible {
   outline: 2px solid var(--gold);
 }
 .sb-icon-grid {

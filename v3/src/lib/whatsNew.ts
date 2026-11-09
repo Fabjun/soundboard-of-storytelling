@@ -103,6 +103,12 @@ export function withEarlyVersions(
 /** The release notes the main menu shows, newest first (checked by whatsNew.test.ts). */
 export const WHATS_NEW: WhatsNewNotes[] = [
   {
+    version: '3.0.298',
+    new: [
+      'Help: HELP in the main menu explains every place of the app, step by step, and can be searched.',
+    ],
+  },
+  {
     version: '3.0.297',
     new: [
       'Backups keep the own icons, and importing a backup of the old app brings its uploaded icons back onto their pads.',

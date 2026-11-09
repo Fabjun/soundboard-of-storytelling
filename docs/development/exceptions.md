@@ -107,7 +107,7 @@ Unused today, kept for a later slice or a parked feature (`@reserved`, ADR-0064)
 | --------------------------- | -------------- | ---------------------------------------------------------------------------------------------- |
 | `v3/src/audio/index.ts:188` | `fadeOutAll`   | Parked — one fade for everything at once; STOP ALL fades pad by pad (src/state/stopControl.ts) |
 | `v3/src/audio/index.ts:242` | `crossfade`    | Parked — crossfade between pads (docs/product/README.md#pad-options)                           |
-| `v3/src/state/store.ts:118` | `masterVolume` | Parked — master volume (docs/product/README.md#pad-options)                                    |
+| `v3/src/state/store.ts:125` | `masterVolume` | Parked — master volume (docs/product/README.md#pad-options)                                    |
 
 ## Prose lint exceptions (Vale) (14)
 

@@ -2,7 +2,7 @@
  * @fileoverview MainMenuScreen — the main menu behind TAP TO START (owner decision 2026-10-11)
  *
  * docs/product/features/settings.md S15: the start screen has one action; its tap unlocks the
- * audio and opens this menu — BOARD, LIBRARY, SETTINGS, UPDATE — with the flame still burning, and
+ * audio and opens this menu — BOARD, LIBRARY, SETTINGS, HELP (Slice 17a), UPDATE — with the flame still burning, and
  * the version that opens What's new (ADR-0063). UPDATE checks for a new version at once and says
  * how it went (owner decision 2026-10-05).
  */
@@ -17,6 +17,7 @@ import { audioContextState, currentScreen, settingsReturn } from '../state/store
 import { APP_VERSION, CHANGELOG } from '../lib/changelog';
 import { versionLine, WHATS_NEW, WHATS_NEW_GROUPS, withEarlyVersions } from '../lib/whatsNew';
 import { checkForUpdateNow, updateCheckMessage } from '../lib/updateCheck';
+import { openHelp } from '../state/help';
 
 declare const __BUILD_DATE__: string;
 
@@ -131,7 +132,7 @@ function describeAudioState(): string {
 // ── Screen ────────────────────────────────────────────────────────────────────
 
 /**
- * Shows the main menu: the flame, BOARD, LIBRARY, SETTINGS and UPDATE, and the version in the
+ * Shows the main menu: the flame, BOARD, LIBRARY, SETTINGS, HELP and UPDATE, and the version in the
  * footer, which opens What's new.
  */
 export function MainMenuScreen(): JSX.Element {
@@ -191,6 +192,10 @@ export function MainMenuScreen(): JSX.Element {
         >
           <UiIcon name="settings" size={14} />
           SETTINGS
+        </button>
+        <button class="sb-btn sb-btn-ghost" onClick={() => openHelp()}>
+          <UiIcon name="help" size={14} />
+          HELP
         </button>
         <button
           class="sb-btn sb-btn-ghost"
