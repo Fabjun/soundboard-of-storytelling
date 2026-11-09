@@ -19,7 +19,7 @@ release notes the app shows are written separately for its users (`v3/src/lib/wh
 
 ### Internal
 
-- test: E2E help — the ? of the library and of a board in GAME and in SETUP opens their topic, BACK returns; the PAD editor's help opens on top, Escape closes only the help and the name typed is still there; on a phone the board's ? is in the tab row, once, and the mode toggle takes a tap. Counter-checked: without the editor's Escape condition the editor takes the press and the help stays (red); a ? in the phone's top bar is red. Visual baselines of the board list, the library and the board in GAME and SETUP updated: the ? at the right end of the top bar, STOP ALL and LIB one place to the left (the diff images checked)
+- test: E2E help — the ? of the library and of a board in GAME and in SETUP opens their topic, BACK returns; the PAD editor's help opens on top, Escape closes only the help and the name typed is still there; on a phone the board's ? is in the tab row, once, and the mode toggle takes a tap. Counter-checked: without the editor's Escape condition the editor takes the press and the help stays (red); a ? in the phone's top bar is red. Visual baselines of the board list, the library and the board in GAME and SETUP updated: the ? at the right end of the top bar, STOP ALL and LIB one place to the left (the diff images checked). The settings test of the content width measured the right edge of BACK as the screen's edge; the ? now ends the top bar, so it measures the ? (found by the pre-push gate)
 - docs: CLAUDE.md Slice 17 at 17a–17b; BACKLOG "Help screen and context help" with what 17b built
 
 ## 3.0.298 — 2026-11-09
