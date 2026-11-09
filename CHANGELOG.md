@@ -7,6 +7,21 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.297 — 2026-11-09
+
+### Added
+
+- feat(backup): own icons in backups and the V1 import, step 2 of Slice 16e (ADR-0092, ADR-0061 amendment 2026-11-09) — the manifest carries the icons as an optional list icons ({id, name, addedAt, svg}; formatVersion stays 2); an import passes each through the upload's checks (a backup is not trusted) and stores it under the SHA-256 of its text, never the id the file names, so the own:<id> keys of the boards' pads and of templates follow to the stored id; an icon already there is skipped; V1's uploaded icons (library entries with type 'icon') become own icons the same way and a V1 pad's {h: hash} their key; one the backup does not hold is counted, an entry without data or that fails a check says why. The import's summary and result name the own icons. Slice 16 is complete (16a–16e)
+
+### Changed
+
+- refactor(state): one path for adding an SVG — the upload and the import share the checks and the store step (addOne), and the import resolves with one outcome per icon, in order, to map the file's ids
+
+### Internal
+
+- test: unit ownIcons (importOwnIcons: present, added, refused for no drawing and for size, in order), v1Import (an uploaded icon becomes the stored key, twice is once, one the backup lacks is counted), backupExport (the manifest holds the icons with their text), backupImportIcons — new, in jsdom for the SVG check (V3: checked, stored under the id of its text, pad and template keys follow, a broken entry and a refused SVG say why, a key without its icon stays, a second import adds none; V1: uploaded icons and their keys, an entry without data, a pad icon the backup lacks); E2E backup — the round trip carries an own icon into a fresh browser. Counter-checked: keys not followed, V1 keys not resolved, and an export without icons each turn their test red
+- docs: ADR-0092 point 7 built; ADR-0061 amendment; library.md 16e complete; CLAUDE.md Slice 16 at 16a–16e; iPhone checklist 'Own icons' with the backup and the V1 import
+
 ## 3.0.296 — 2026-11-09
 
 ### Added

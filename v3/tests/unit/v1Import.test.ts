@@ -389,6 +389,18 @@ describe('mapV1Board — malformed and boundary values', () => {
     expect(ctx.notes).toMatchObject({ customIcons: 1, unknownIcons: 1 });
   });
 
+  it('an uploaded icon becomes the own icon the import stored for it; one the backup lacks is counted', () => {
+    const ctx = context({ iconKey: (h) => (h === 'have' ? 'own:abc' : undefined) });
+    const b = mapV1Board(
+      v1Board([
+        { mode: 'once', icons: [{ h: 'have' }, { h: 'have' }, { h: 'lost' }, { b: 'sword' }] },
+      ]),
+      ctx,
+    )!;
+    expect(b.pads[0].icons).toEqual(['own:abc', 'pixelarticons:sword']); // twice is once
+    expect(ctx.notes.customIcons).toBe(1);
+  });
+
   it('an icon reference without an id is skipped, not counted as an unknown icon', () => {
     const ctx = context();
     const b = mapV1Board(v1Board([{ mode: 'once', icons: [{ b: 5 }, {}, { b: 'clock' }] }]), ctx)!;

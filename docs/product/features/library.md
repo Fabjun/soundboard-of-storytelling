@@ -53,8 +53,9 @@ backups and the V1 import in 3.0.281 — 16d is complete. The file details of L5
 selected file names the pads that play it, grouped by board, in a line under its row — 16a is
 complete. 16e, own icons (L7, [ADR-0092](../../architecture/0092-own-pad-icons.md)), step 1 in
 3.0.296: ADD ICONS in the ICONS tab takes SVG files after four checks, the picker offers them
-first as OWN, a pad draws them as images only, delete in one tap with UNDO. Left of 16e: step 2,
-own icons in backups and the V1 import. The BOARDS tab is Rejected (L4).
+first as OWN, a pad draws them as images only, delete in one tap with UNDO; step 2 in 3.0.297:
+backups carry them, and the V1 import takes V1's uploaded icons — 16e is complete, and with it
+16a–16e. The BOARDS tab is Rejected (L4).
 
 ## Decisions L1–L9 (Decided — for review)
 

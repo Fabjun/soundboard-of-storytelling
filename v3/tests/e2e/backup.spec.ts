@@ -6,6 +6,7 @@
  * - A file that is not a backup → a clear message, nothing imported
  * - EXPORT → SAVE downloads one ZIP file; "last backup" shows today; that file restores the board
  *   and its audio in a fresh browser (round trip)
+ * - The own icons (ADR-0092) go along: the fresh browser lists them in the library's ICONS tab
  *
  * Chromium only: headless WebKit cannot decode audio, and the import decodes every file.
  * Synthetic backups built from the test WAV — the owner's real backup is never committed.
@@ -198,5 +199,49 @@ test('EXPORT saves one file that restores the board and its audio in a fresh bro
   const pads = other.locator(PAD_CELL);
   await expect(pads).toHaveCount(1);
   await expect(pads.first()).toContainText(TEST_AUDIO_NAME);
+  await fresh.close();
+});
+
+test('a backup carries the own icons into a fresh browser (ADR-0092)', async ({
+  page,
+  browser,
+}) => {
+  const iconsTab = (p: Page) => p.getByRole('tab', { name: /^ICONS\s*\d+$/ });
+  await page.goto('/soundboard-of-storytelling/');
+  await goToLibrary(page);
+  await iconsTab(page).click();
+  await page.getByTestId('own-icons-tab-file-input').setInputFiles({
+    name: 'Owl.svg',
+    mimeType: 'image/svg+xml',
+    buffer: Buffer.from(
+      '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 8 8"><rect width="8" height="8"/></svg>',
+    ),
+  });
+  await expect(page.getByText('Owl', { exact: true })).toBeVisible();
+  await waitForSaves(page);
+  await page.goto('/soundboard-of-storytelling/');
+  await goToBoardList(page);
+  await page.getByTestId('board-list-screen-export-button').click();
+  const downloading = page.waitForEvent('download');
+  await page.getByTestId('backup-export-panel-save-button').click();
+  const path = await (await downloading).path();
+
+  const fresh = await browser.newContext();
+  const other = await fresh.newPage();
+  await other.goto('/soundboard-of-storytelling/');
+  await goToBoardList(other);
+  await other.getByTestId('board-list-screen-import-input').setInputFiles(path);
+  await expect(other.getByTestId('backup-import-panel-summary-text')).toContainText(
+    '1 own icon — one already there is skipped.',
+  );
+  await other.getByTestId('backup-import-panel-confirm-button').click();
+  await expect(other.getByTestId('backup-import-panel-result-text')).toContainText(
+    '1 own icon added',
+  );
+  await other.getByTestId('backup-import-panel-close-button').click();
+  await other.goto('/soundboard-of-storytelling/');
+  await goToLibrary(other);
+  await iconsTab(other).click();
+  await expect(other.getByText('Owl', { exact: true })).toBeVisible();
   await fresh.close();
 });

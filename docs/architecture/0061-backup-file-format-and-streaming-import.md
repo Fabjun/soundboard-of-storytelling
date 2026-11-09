@@ -179,6 +179,15 @@ twice adds no template twice. A V1 library entry with `type: 'pad'` and `padData
 `v3/src/lib/v1Import.ts`); a V1 combo template stays "not imported", as its steps name pads of a
 board it does not have.
 
+**2026-11-09 (3.0.297, Slice 16e step 2, ADR-0092):** the manifest carries the own icons as an
+optional top-level list `icons` (`{id, name, addedAt, svg}`, the SVG as text); `formatVersion`
+stays 2. An import passes each icon through the upload's checks (`v3/src/lib/svgCheck.ts`) — a
+backup is not trusted — and stores it under the SHA-256 of its text, not under the id the file
+names; a pad's or a template's key `own:<id>` follows to the stored id, and an icon already there
+is skipped. A V1 library entry with `type: 'icon'` (V1 `onLibIconUpload`) becomes an own icon the
+same way, and a V1 pad's `{h: hash}` becomes its key; an uploaded icon the backup does not hold is
+counted, as before. The icons come in after the audio and before the boards and templates.
+
 ## Related
 
 - **Files:** v3/src/lib/backupReader.ts, v3/src/lib/zipArchive.ts, v3/src/lib/backupExport.ts,

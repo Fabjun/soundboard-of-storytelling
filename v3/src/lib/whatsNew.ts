@@ -103,6 +103,12 @@ export function withEarlyVersions(
 /** The release notes the main menu shows, newest first (checked by whatsNew.test.ts). */
 export const WHATS_NEW: WhatsNewNotes[] = [
   {
+    version: '3.0.297',
+    new: [
+      'Backups keep the own icons, and importing a backup of the old app brings its uploaded icons back onto their pads.',
+    ],
+  },
+  {
     version: '3.0.296',
     new: [
       'Own icons: the library’s ICONS tab takes SVG files, and the PAD editor offers them first when choosing an icon for a pad.',

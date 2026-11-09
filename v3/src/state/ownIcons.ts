@@ -65,6 +65,39 @@ export function addIconsText({ added, present, refused }: AddIconsResult): strin
   return [`${parts.join(' · ')}.`, ...refused].join(' ');
 }
 
+/** How one SVG went: added or already there under its id, or refused with the reason. */
+export type IconOutcome =
+  { kind: 'added' | 'present'; id: string } | { kind: 'refused'; reason: string };
+
+/**
+ * Checks one SVG (src/lib/svgCheck.ts) and stores it under the SHA-256 of its bytes; the caller
+ * counts the save. `file` is what the bytes came as: its name, type and size.
+ */
+async function addOne(
+  bytes: ArrayBuffer,
+  file: { name: string; type: string; size: number },
+  addedAt: number,
+): Promise<IconOutcome> {
+  const svg = new TextDecoder().decode(bytes);
+  const reason = svgProblem(file, svg);
+  if (reason) return { kind: 'refused', reason };
+  const id = computeHash(bytes);
+  if (ownIcons.value.some((i) => i.id === id)) return { kind: 'present', id };
+  const meta: OwnIconMeta = { id, name: svgIconName(file.name), size: file.size, addedAt };
+  await iconPut({ ...meta, svg });
+  show([...ownIcons.value, meta]);
+  return { kind: 'added', id };
+}
+
+/** Sums outcomes for the tab's message. */
+function tally(outcomes: readonly IconOutcome[]): AddIconsResult {
+  return {
+    added: outcomes.filter((o) => o.kind === 'added').length,
+    present: outcomes.filter((o) => o.kind === 'present').length,
+    refused: outcomes.flatMap((o) => (o.kind === 'refused' ? [o.reason] : [])),
+  };
+}
+
 /**
  * Adds SVG files as own icons, one at a time; `now` is the date added. A file that fails a check
  * (src/lib/svgCheck.ts) is refused with its reason; the same file again is counted as present.
@@ -72,26 +105,29 @@ export function addIconsText({ added, present, refused }: AddIconsResult): strin
  */
 export function addOwnIconFiles(files: readonly File[], now = Date.now()): Promise<AddIconsResult> {
   return counted(async () => {
-    const result: AddIconsResult = { added: 0, present: 0, refused: [] };
-    for (const file of files) {
-      const bytes = await file.arrayBuffer();
-      const svg = new TextDecoder().decode(bytes);
-      const problem = svgProblem(file, svg);
-      if (problem) {
-        result.refused.push(problem);
-        continue;
-      }
-      const id = computeHash(bytes);
-      if (ownIcons.value.some((i) => i.id === id)) {
-        result.present++;
-        continue;
-      }
-      const meta: OwnIconMeta = { id, name: svgIconName(file.name), size: file.size, addedAt: now };
-      await iconPut({ ...meta, svg });
-      show([...ownIcons.value, meta]);
-      result.added++;
+    const outcomes: IconOutcome[] = [];
+    for (const file of files) outcomes.push(await addOne(await file.arrayBuffer(), file, now));
+    return tally(outcomes);
+  });
+}
+
+/** An own icon a backup brings: the file name it came with, the SVG's text and when it was added. */
+export type IncomingIcon = { fileName: string; svg: string; addedAt: number };
+
+/**
+ * Adds the own icons of a backup, one at a time, through the same checks as an upload — a backup
+ * file is not trusted; the id is computed from the text, never taken from the file. Resolves with
+ * one outcome per icon, in order, so the caller can map the file's ids to the stored ones.
+ */
+export function importOwnIcons(icons: readonly IncomingIcon[]): Promise<IconOutcome[]> {
+  return counted(async () => {
+    const outcomes: IconOutcome[] = [];
+    for (const { fileName, svg, addedAt } of icons) {
+      const bytes = new TextEncoder().encode(svg);
+      const file = { name: fileName, type: 'image/svg+xml', size: bytes.byteLength };
+      outcomes.push(await addOne(bytes.slice().buffer, file, addedAt));
     }
-    return result;
+    return outcomes;
   });
 }
 
