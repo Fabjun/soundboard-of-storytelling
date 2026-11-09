@@ -103,6 +103,12 @@ export function withEarlyVersions(
 /** The release notes the main menu shows, newest first (checked by whatsNew.test.ts). */
 export const WHATS_NEW: WhatsNewNotes[] = [
   {
+    version: '3.0.299',
+    new: [
+      'Every screen has a ? that opens the help about that screen; in the PAD editor the help opens on top, and the editor stays as it was.',
+    ],
+  },
+  {
     version: '3.0.298',
     new: [
       'Help: HELP in the main menu explains every place of the app, step by step, and can be searched.',

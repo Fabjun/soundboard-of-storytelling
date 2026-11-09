@@ -65,6 +65,7 @@ import { LibraryPanel } from '../components/LibraryPanel';
 import { StatusBar } from '../components/StatusBar';
 import { LiveControls } from '../components/LiveControls';
 import { BarToggle } from '../components/BarToggle';
+import { HelpButton } from '../components/HelpButton';
 import { UiIcon } from '../components/UiIcon';
 import { narrowWindow } from '../state/windowClass';
 import type { AppMode, Pad, PadPosition } from '../types';
@@ -468,7 +469,16 @@ export function BoardScreen(): JSX.Element {
       variant={variant}
       manage={mode === 'edit'}
       tabsShown={decksOpen}
-      tail={variant === 'tabs' ? barToggles(true) : undefined}
+      // In the narrow frame the bar toggles and the ? (Slice 17b) sit at the end of the tab row:
+      // the top bar has no room left beside the mode toggle
+      tail={
+        variant === 'tabs' ? (
+          <>
+            {barToggles(true)}
+            <HelpButton />
+          </>
+        ) : undefined
+      }
       board={board}
       activeDeckId={poolView ? null : currentDeckId.value}
       onDeckSelect={(id) => {

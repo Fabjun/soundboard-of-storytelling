@@ -1,12 +1,15 @@
 /**
- * @fileoverview TopBar — the 48px header of the library and the board list (the board screen
- * has its own, BoardTopBar)
+ * @fileoverview TopBar — the 48px header of the library, the board list, Settings and the help
+ * (the board screen has its own, BoardTopBar); every one but the help's ends in the ? that opens
+ * the help at the screen's topic (Slice 17b)
  *
  * Source: design-sources/2026-05-25/v2-screens.jsx TopBarV2
  */
 
 import type { ComponentChildren, JSX } from 'preact';
 import { UiIcon } from './UiIcon';
+import { HelpButton } from './HelpButton';
+import { currentScreen } from '../state/store';
 import type { AppMode } from '../types';
 
 interface TopBarProps {
@@ -46,8 +49,9 @@ export function TopBar({ title, breadcrumb, mode, onModeSwap, right }: TopBarPro
         </span>
       )}
 
-      {/* Right slot */}
+      {/* Right slot, then the ? of the screen (Slice 17b) — not on the help itself */}
       {right}
+      {currentScreen.value !== 'help' && <HelpButton />}
     </div>
   );
 }

@@ -215,8 +215,11 @@ first launch — "Welcome / How it works / Get started" — and a ? per screen):
 the texts as data (`v3/src/lib/helpTopics.ts`, twelve topics), the help screen with its search
 (HELP in the main menu), and the guard: the map from screen to topic is a `Record` over the screen
 type, so a new screen without a topic does not compile. The texts were written from the app's
-accessibility tree, screen by screen; the owner corrects them by hand. Next: 17b ? in every header,
-17c empty states, 17d the welcome.
+accessibility tree, screen by screen; the owner corrects them by hand. **17b built in 3.0.299:** a ?
+in every header opens the help at the topic of its place — on a board the topic of its mode; on a
+phone the board's ? sits at the end of the deck tab row, as the bar toggles do, because the top bar
+has no room beside the mode toggle; in the PAD editor the help opens as a dialog on top (ADR-0074),
+at the topic of the pad's type. Next: 17c empty states, 17d the welcome.
 
 ### Built-in sample sounds — idea (Open)
 

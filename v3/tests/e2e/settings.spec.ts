@@ -169,17 +169,18 @@ test('the content width limits the screens on a large window, centered, also aft
   page,
 }) => {
   await page.setViewportSize({ width: 1600, height: 900 });
-  // The right edge of the top bar's BACK button marks the screen's right edge
-  const right = (name: string) => rightEdge(page.getByRole('button', { name }));
+  // The right edge of the top bar's last button — the ? since Slice 17b — marks the screen's right
+  // edge
+  const right = (name: string) => rightEdge(page.getByRole('button', { name, exact: true }));
   await page.goto(APP);
   await openMainMenu(page);
   await page.getByRole('button', { name: 'SETTINGS', exact: true }).click();
   await expect(page.getByRole('radio', { name: 'AUTO', exact: true })).toBeChecked();
-  expect(await right('BACK')).toBeGreaterThan(1550); // the whole window
+  expect(await right('Help')).toBeGreaterThan(1550); // the whole window
 
   await page.getByText('COMPACT', { exact: true }).click();
-  await expect.poll(() => right('BACK')).toBeLessThanOrEqual((1600 + 900) / 2); // 900 px, centered
-  expect(await right('BACK')).toBeGreaterThan((1600 + 900) / 2 - 30);
+  await expect.poll(() => right('Help')).toBeLessThanOrEqual((1600 + 900) / 2); // 900 px, centered
+  expect(await right('Help')).toBeGreaterThan((1600 + 900) / 2 - 30);
 
   // Kept, and on every screen: the board list after a reload
   await waitForSaves(page);

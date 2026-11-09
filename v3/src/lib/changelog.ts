@@ -17,10 +17,20 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.298';
+export const APP_VERSION = '3.0.299';
 
 /** The developer log, newest first; CHANGELOG.md is generated from it (sync-changelog). */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.299',
+    date: '2026-11-09',
+    items: [
+      'feat(help): Slice 17b — a ? in every header opens the help at the topic of its place (HelpButton, named "Help"): the library, the board list and Settings through TopBar, a board through its top bar at the topic of its mode; in the PAD editor the help opens as a dialog on top (HelpDialog, ADR-0074: the page behind inert, the focus in and back, Escape closes the help first — the editor\'s Escape waits while it is open), at the topic of the pad\'s type, and the editor keeps what was typed. The search and the topics are one component (HelpContent) for the screen and the dialog',
+      'fix(board): on a phone the ? sits at the end of the deck tab row, as the bar toggles do — in the top bar it pushed the right side over the mode toggle, which no longer took a tap (found by the mobile and phone-width E2E tests before the push)',
+      "test: E2E help — the ? of the library and of a board in GAME and in SETUP opens their topic, BACK returns; the PAD editor's help opens on top, Escape closes only the help and the name typed is still there; on a phone the board's ? is in the tab row, once, and the mode toggle takes a tap. Counter-checked: without the editor's Escape condition the editor takes the press and the help stays (red); a ? in the phone's top bar is red. Visual baselines of the board list, the library and the board in GAME and SETUP updated: the ? at the right end of the top bar, STOP ALL and LIB one place to the left (the diff images checked). The settings test of the content width measured the right edge of BACK as the screen's edge; the ? now ends the top bar, so it measures the ? (found by the pre-push gate)",
+      'docs: CLAUDE.md Slice 17 at 17a–17b; BACKLOG "Help screen and context help" with what 17b built',
+    ],
+  },
   {
     version: '3.0.298',
     date: '2026-11-09',
