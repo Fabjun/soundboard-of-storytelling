@@ -17,10 +17,17 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.303';
+export const APP_VERSION = '3.0.304';
 
 /** The developer log, newest first; CHANGELOG.md is generated from it (sync-changelog). */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.304',
+    date: '2026-11-17',
+    items: [
+      'build(deps-dev): the open Dependabot updates in one change (supersedes #195, #197, #201, #202) — @playwright/test 1.64.1 → 1.65.1 with the CI container image mcr.microsoft.com/playwright:v1.65.1-noble (ADR-0089; the tag checked in the registry), vite 8.3.6 → 8.3.8, vitest / @vitest/coverage-v8 / @vitest/ui 5.0.5 → 5.1.0, jsdom 30.1.3 → 31.0.1 (the canvas backend change does not touch the unit tests: none draws on a canvas), typescript-eslint 8.72.1 → 8.73.0, prettier 3.9.10 → 3.10.1, knip 6.44.2 → 6.45.1, fake-indexeddb 6.2.7 → 6.2.8. npm audit: production 0; the 20 moderate findings are in development tools (glob through remark-validate-links, minimatch through the Stryker and ESLint chains), and npm offers only a major jump or a downgrade as their fix',
+    ],
+  },
   {
     version: '3.0.303',
     date: '2026-11-17',
