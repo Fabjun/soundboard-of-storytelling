@@ -93,11 +93,27 @@ function padFadeOut(id: string): number {
 export function stopLast(audio: StopControlAudio = engine): void {
   const last = [...playingPads.value].at(-1);
   if (last === undefined) return;
+  stopOne(last, padFadeOut(last), audio);
+}
+
+/**
+ * Stops a playing pad that was tapped — in the grid or the quick-access bar — with its own
+ * fade-out, as Enter does (K5); it cut the sound off before (owner's note in the iPhone checklist,
+ * 2026-10-19: "Der Ton endet eher abrupt").
+ */
+export function stopTapped(padId: string, fadeOut: number, audio: StopControlAudio = engine): void {
+  stopOne(padId, fadeOut, audio);
+}
+
+/**
+ * Stops one pad with `fadeOut`; during a pause at once, as the audio clock stands still and a fade
+ * would never run (K8) — and when that was the last paused sound, nothing is paused any more.
+ */
+function stopOne(padId: string, fadeOut: number, audio: StopControlAudio): void {
   if (!audioPaused.value) {
-    audio.stop(last, false, padFadeOut(last));
+    audio.stop(padId, false, fadeOut);
     return;
   }
-  audio.stop(last, true);
-  // The last paused sound is gone — nothing is paused any more
+  audio.stop(padId, true);
   if (playingPads.value.size === 0) audio.resume();
 }

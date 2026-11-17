@@ -14,8 +14,9 @@ import type { JSX } from 'preact';
 import type { AppMode, Board, Pad } from '../types';
 import { padTypeColor } from '../lib/padUtils';
 import { keyLabel } from '../lib/padKeys';
-import { play, stop, isPlaying } from '../audio/index';
+import { play, isPlaying } from '../audio/index';
 import { playingPads } from '../state/store';
+import { stopTapped } from '../state/stopControl';
 import { UiIcon } from './UiIcon';
 
 interface QuickAccessBarProps {
@@ -62,7 +63,7 @@ export function QuickAccessBar({
             data-testid={`quick-access-bar-pad-button-${pad.id}`}
             onClick={() => {
               if (isSetup) onPadSelect(pad);
-              else if (isPlaying(pad.id)) stop(pad.id);
+              else if (isPlaying(pad.id)) stopTapped(pad.id, pad.fadeOut);
               else void play(pad.id, pad);
             }}
           >

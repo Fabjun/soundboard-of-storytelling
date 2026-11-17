@@ -103,6 +103,12 @@ export function withEarlyVersions(
 /** The release notes the main menu shows, newest first (checked by whatsNew.test.ts). */
 export const WHATS_NEW: WhatsNewNotes[] = [
   {
+    version: '3.0.311',
+    improved: [
+      'A pad tapped to stop fades out over its own FADE OUT, as Enter already did, instead of stopping at once.',
+    ],
+  },
+  {
     version: '3.0.310',
     behindTheScenes: [
       'A sound started again while it fades out can always be stopped — a rare case the app did not handle before.',

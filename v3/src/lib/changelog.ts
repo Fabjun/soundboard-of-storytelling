@@ -17,10 +17,18 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.310';
+export const APP_VERSION = '3.0.311';
 
 /** The developer log, newest first; CHANGELOG.md is generated from it (sync-changelog). */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.311',
+    date: '2026-11-17',
+    items: [
+      'fix(board): a tapped pad stops with its own fade-out — the grid and the quick-access bar cut it off (stop without a fade) while Enter (K5) already used the pad\'s FADE OUT; both now call stopTapped (state/stopControl.ts), which during a pause stops at once, as the audio clock stands still (K8). Owner\'s note in the iPhone checklist 2026-10-19: "Der Ton endet eher abrupt". Provisional under Workflow rule 7b, for review; the short fade for pads without a fade-out follows as its own engine change',
+      'test: unit stopControl — a tapped pad stops with its fade-out or cuts without one; during a pause at once, the last one ends the pause. Counter-checked: with 0 instead of the fade-out, this and the Enter test are red. docs: manual-iphone-checklist.md "A tapped pad stops softly"',
+    ],
+  },
   {
     version: '3.0.310',
     date: '2026-11-17',

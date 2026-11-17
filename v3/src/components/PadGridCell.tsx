@@ -14,7 +14,8 @@ import type { AppMode, Pad } from '../types';
 import { padTypeColor, padTypeGlow, padTypeLabel, padTypeName } from '../lib/padUtils';
 import { padDurationText } from '../lib/padDuration';
 import { keyLabel } from '../lib/padKeys';
-import { play, stop, isPlaying } from '../audio/index';
+import { play, isPlaying } from '../audio/index';
+import { stopTapped } from '../state/stopControl';
 import { libraryItems, playingPads, loopingPads } from '../state/store';
 import { PadIcons } from './PadIcons';
 import { UiIcon } from './UiIcon';
@@ -103,9 +104,9 @@ export function PadGridCell({
       onPadSelect(p);
       return;
     }
-    // GAME mode: play/stop toggle
+    // GAME mode: play/stop toggle — a stop fades out over the pad's own fade-out (stopTapped)
     if (isPlaying(p.id)) {
-      stop(p.id);
+      stopTapped(p.id, p.fadeOut);
     } else {
       play(p.id, p);
     }
