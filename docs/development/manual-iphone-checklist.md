@@ -479,6 +479,18 @@ checked to exist (docsGuards).
   - Why manual: A real deploy, the installed app and the iOS service worker.
   - Simulated: `v3/tests/e2e/pwa.spec.ts`, `v3/tests/e2e/update-check.spec.ts` (newest, found, offline).
 
+- [ ] **The atmosphere runs smoothly** _(Slice 14c, settings.md S6)_
+  - Action: A deck with a dozen Loops in GAME; play three of them at once, scroll the grid, tap
+    pads quickly for a minute. Then Settings → VISUALS → Animations off, and back on.
+  - Expected: The idle Loops' spines breathe and a playing pad has a glow behind it in its type's
+    color; scrolling and taps do not stutter, the phone does not get warm, playback has no gaps.
+    With Animations off nothing breathes, the glow stays still.
+  - Why manual: The pads carry a drop-shadow filter, so a breathing spine is drawn again each
+    frame on the GPU; headless Chromium measured only the main thread (about 13 ms in 5 s with
+    three breathing Loops, 2026-11-17) — the cost on an iPhone's GPU needs the device.
+  - Simulated: `v3/tests/e2e/atmosphere.spec.ts` (what breathes, the aura, Animations off,
+    reduced motion).
+
 ---
 
 ## Section 4 — Undo

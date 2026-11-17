@@ -359,7 +359,7 @@
    a thin left-edge bar, "hot" (playing) states bring the full border
    + a filter drop-shadow glow.                                       */
 .sb-pad {
-  /* @inventory: Base pad shell — pixel-frame, type-color left spine, is-hot glow, is-setup dashed border. */
+  /* @inventory: Base pad shell — pixel-frame, type-color left spine, is-hot glow, is-setup dashed border; is-loop marks the Loop type, whose idle spine breathes in GAME (Slice 14c). */
   --pix-step: 5px;
   --pad-color: var(--gold);
   --pad-glow: var(--pad-single-glow);
@@ -425,6 +425,25 @@
   background:
     linear-gradient(var(--pix-bg), var(--pix-bg)) padding-box,
     repeating-linear-gradient(45deg, var(--border-strong) 0 6px, transparent 6px 12px) border-box;
+}
+/* Breathing loops (Slice 14c, settings.md S6): in GAME the spine of a Loop that does not play
+   brightens and dims like a calm breath — the Loops of a deck are told at a glance. Only the
+   opacity moves (web.dev, "How to create high-performance CSS animations"). It moves only while
+   the app may animate — Settings → VISUALS → Animations on (no sb-motion-off on the root,
+   src/lib/motion.ts) and the system not asking for reduced motion (WCAG 2.2.2, settings.md S12). */
+@media (prefers-reduced-motion: no-preference) {
+  :root:not(.sb-motion-off) .sb-pad.is-loop:not(.is-hot):not(.is-setup)::before {
+    animation: sb-pad-breath 5.2s ease-in-out infinite;
+  }
+}
+@keyframes sb-pad-breath {
+  0%,
+  100% {
+    opacity: 0.55;
+  }
+  50% {
+    opacity: 0.95;
+  }
 }
 .sb-pad.is-setup::before {
   opacity: 0.5;
@@ -1638,11 +1657,48 @@
 
 /* ── Pad Grid Cell ── Sub-element of .sb-pad-grid ─────────────────── */
 .sb-pad-grid-cell {
-  /* @inventory: Single cell wrapper in the pad grid; carries position, DnD states, and touch targets. */
+  /* @inventory: Single cell wrapper in the pad grid; carries position, DnD states, and touch targets; its ::before is the now-playing aura behind a playing pad (Slice 14c). */
   position: relative;
   aspect-ratio: 1;
   min-width: 0; /* a cell shrinks with its column, so no pad pokes out of the grid */
   min-height: 0; /* the square decides the height, not the content of the pad */
+}
+/* Now-playing aura (Slice 14c, settings.md S6): a warm glow in the pad type's color behind a
+   playing pad, reaching past its edges like firelight. Behind the pad, never over its face, so the
+   name keeps its contrast; the pads sit above every aura (z-index), and the grid keeps that order
+   inside itself (isolation), under the bars around it. :has() needs iOS 15.4 / Chrome 105 — older
+   browsers show the playing pad's own glow (.sb-pad.is-hot) without the aura. */
+.sb-pad-grid {
+  isolation: isolate;
+}
+.sb-pad-grid-cell > .sb-pad {
+  z-index: 1;
+}
+.sb-pad-grid-cell:has(> .sb-pad.is-hot)::before {
+  content: '';
+  position: absolute;
+  inset: calc(-1 * var(--space-4));
+  z-index: 0;
+  background: radial-gradient(closest-side, var(--pad-glow), transparent);
+  pointer-events: none;
+  opacity: 0.9;
+}
+/* It breathes only while the app may animate (as the breathing loops); otherwise it stands still */
+@media (prefers-reduced-motion: no-preference) {
+  :root:not(.sb-motion-off) .sb-pad-grid-cell:has(> .sb-pad.is-hot)::before {
+    animation: sb-aura-breath 3.4s ease-in-out infinite;
+  }
+}
+@keyframes sb-aura-breath {
+  0%,
+  100% {
+    opacity: 0.8;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.04);
+  }
 }
 /* The global 44px touch minimum (global.css, [role='button']) would keep a pad or empty slot wider
    than its column on a narrow screen — the square shrinks with the column instead. */

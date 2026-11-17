@@ -117,6 +117,8 @@ export function PadGridCell({
       class="sb-pad-grid-cell"
       data-pos={`${col},${row}`}
       data-testid={`pad-grid-cell-${p.id}`}
+      // The now-playing aura behind the pad (::before of the cell) glows in the type's color
+      style={{ '--pad-glow': padTypeGlow(p.type) } as Record<string, string>}
     >
       <div
         class={
@@ -125,6 +127,8 @@ export function PadGridCell({
           (selected ? ' is-active' : '') +
           (isHot ? ' is-hot' : '') +
           (isLooping ? ' is-looping' : '') +
+          // The Loop type: an idle Loop breathes in GAME (Slice 14c, settings.md S6)
+          (p.type === 'loop' ? ' is-loop' : '') +
           (compact ? ' is-compact' : '')
         }
         style={

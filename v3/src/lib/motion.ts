@@ -21,3 +21,12 @@ export function systemPrefersReducedMotion(): boolean {
 export function motionAllowed(switchedOn: boolean, systemReduce: boolean): boolean {
   return switchedOn && !systemReduce;
 }
+
+/**
+ * Puts the motion state on the root element: `sb-motion-off` while the app must not animate, so
+ * the CSS animations of the atmosphere (the aura, the breathing loops) stand still — as the theme
+ * and the content width are classes there (src/lib/theme.ts, src/lib/contentWidth.ts).
+ */
+export function applyMotion(root: Element, on: boolean): void {
+  root.classList.toggle('sb-motion-off', !on);
+}

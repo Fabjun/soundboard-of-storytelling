@@ -1,10 +1,23 @@
+// @vitest-environment jsdom
 /**
  * @fileoverview motion — whether the app animates (docs/product/features/settings.md S6, S12)
  * Cases: every combination of the switch and the system's "reduce motion"; the system preference
- * read from matchMedia, and false where there is none.
+ * read from matchMedia, and false where there is none; the root class that stops CSS animations.
  */
 
-import { motionAllowed, systemPrefersReducedMotion } from '../../src/lib/motion';
+import { applyMotion, motionAllowed, systemPrefersReducedMotion } from '../../src/lib/motion';
+
+describe('applyMotion', () => {
+  it('marks the root sb-motion-off while the app must not animate, and takes it off again', () => {
+    const root = document.createElement('html');
+    root.classList.add('sb-theme-neon');
+    applyMotion(root, false);
+    expect(root.classList.contains('sb-motion-off')).toBe(true);
+    applyMotion(root, true);
+    expect(root.classList.contains('sb-motion-off')).toBe(false);
+    expect(root.classList.contains('sb-theme-neon')).toBe(true); // other classes stay
+  });
+});
 
 describe('motionAllowed', () => {
   it('animates only with the switch on and no reduced motion asked by the system', () => {

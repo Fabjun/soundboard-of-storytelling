@@ -612,9 +612,11 @@ bold full-fill mode badge in status-bar left slot. (3) Edge tint — 2 px inset 
 active mode color. (4) Spine saturation — pad type-spines dim to 45% opacity in SETUP
 (lowest priority; risks conflating mode and type semantics).
 Ship one, optionally two if they hit different screen regions and don't compete.
-**When:** Slice 14c — option (1) is the atmosphere of
-[settings.md](product/features/settings.md) S6, decided and not yet built. Options (2)–(4) are
-Rejected (owner decision 2026-10-19): the settled mode cues carry the mode without them
+**When:** Parked (owner decision 2026-11-17, option B of 14c) — option (1), the hearth glow and
+the embers of [settings.md](product/features/settings.md) S6, are mood only and cost the iPhone
+rendering time all the time; their worth shows only at a real game night. Trigger: the owner asks
+for them after playing with the aura and the breathing loops (built in 3.0.303). Options (2)–(4)
+are Rejected (owner decision 2026-10-19): the settled mode cues carry the mode without them
 (BACKLOG "Atmosphere stays provisional").
 **Source:** docs/design/design-notes.md §Slice 8 — Mode-awareness cues.
 
@@ -665,14 +667,19 @@ out (K16). It fades pad by pad, not with `fadeOutAll`, so a tap on a fading pad 
 `fadeOutAll` (fixed in 3.0.194, "Engine: fade out all stops pads started during the fade") lets
 the pads go at once.
 
-### Glanceable loop state
+### Glanceable loop state ✅ Done (3.0.303)
 
-Breathing aura (v8 §5) + loop-spine animation (v8 §6) — designed in `design-sources/2026-05-25/`,
-not yet implemented. CSS animation + new `is-*` classes. On top of this design: One-Shot-Spark
+Breathing aura (v8 §5) + loop-spine animation (v8 §6) — designed in `design-sources/2026-05-25/`.
+On top of this design: One-Shot-Spark
 (see [Design Session 2026-06-04](#design--feature-clarification-session--2026-06-04) → Parked Candidates; not yet designed).
 **When:** Slice 14c — the breathing loops of the atmosphere
-([settings.md](product/features/settings.md) S6), decided and not yet built: 3.0.237 brought only
-the animations switch of 14c.
+([settings.md](product/features/settings.md) S6).
+✅ **Done (3.0.303, Slice 14c, owner decision 2026-11-17, option B):** a playing pad has an aura
+behind it in its type's color (`.sb-pad-grid-cell::before`, reached with `:has()`), and in GAME
+the spine of an idle Loop breathes (`.sb-pad.is-loop`); both move only while the app may animate
+(`sb-motion-off` on the root, `v3/src/lib/motion.ts`; `prefers-reduced-motion`). The aura stays,
+still, when nothing may move. Main-thread cost measured in Chromium: about 13 ms in 5 s with three
+breathing Loops; the GPU cost on an iPhone is an item of the manual checklist.
 
 #### Grid / Layout
 
@@ -1457,7 +1464,7 @@ intuition directly.
 ### One-Shot-Spark
 
 A brief visual spark animation when a one-shot fires, distinguishing it from a running loop.
-(Loops get the breathing aura — see [Glanceable loop state (Slice 8)](#glanceable-loop-state).)
+(Loops get the breathing aura — see [Glanceable loop state (Slice 8)](#glanceable-loop-state--done-30303).)
 **Problem:** One-shots and loops currently produce identical visual feedback (none vs.
 `is-hot`). Spark = flash animation on trigger / `onended`.
 **Status:** Parked; no design or implementation started. Truly new — nothing analogous exists.
@@ -1483,16 +1490,17 @@ Only missing: a UI button alongside the hard STOP. Pure UI work; no audio change
 **→ Slice 8:** [PANIC / fade-all (Slice 8)](#panic--fade-all-button--done-30183) — built in 3.0.183 as the
 first stage of STOP ALL (Slice 12b).
 
-### Glanceable loop state _(see also Slice 8)_
+### Glanceable loop state _(see also Slice 8)_ ✅ Done (3.0.303)
 
-Designed in `design-sources/2026-05-25/` (v8 §5–§6), not yet implemented:
+Designed in `design-sources/2026-05-25/` (v8 §5–§6); built in 3.0.303 (Slice 14c) — the aura
+while any pad plays, the breathing spine on idle Loops:
 
 - **Now-Playing breathing aura** — pad glows and breathes while looping (distinct from
   static `is-hot`).
 - **Idle-Loop Breathing Spine** — type-color spine breathes continuously in loop state.
   Implementation: CSS animation + one new `is-*` class per state.
   New on top of this design: [One-Shot-Spark](#one-shot-spark) (not yet designed; truly new).
-  **→ Slice 8:** [Glanceable loop state (Slice 8)](#glanceable-loop-state) — now with Slice 14c.
+  **→ Slice 8:** [Glanceable loop state (Slice 8)](#glanceable-loop-state--done-30303) — now with Slice 14c.
 
 ---
 
@@ -1534,7 +1542,7 @@ Continuous column-change with ~64 pads must not be visually violent. Dragging th
 ### STOP ALL: dedicated, oversized, high-contrast real estate _(settled refinement)_
 
 STOP ALL gets dedicated, oversized, high-contrast real estate (likely a fixed corner). It is the one control that must never be mis-hit or hard to find, in the dark, mid-performance. This constrains the whole bottom-band layout, so STOP's priority is explicit. Related: the expanded now-playing overlay (when 6–8 loops run) is a scrollable overlay, but STOP ALL stays reachable from the thumb zone regardless of that overlay's state — the user is never trapped scrolling a mixer to kill sound.
-**→ Cross-reference:** [PANIC / fade-all button](#panic--fade-all-button--done-30183) (engine already done; this refinement constrains its placement in the layout) · [Glanceable loop state](#glanceable-loop-state) (the now-playing overlay context where the scroll-vs-STOP conflict arises).
+**→ Cross-reference:** [PANIC / fade-all button](#panic--fade-all-button--done-30183) (engine already done; this refinement constrains its placement in the layout) · [Glanceable loop state](#glanceable-loop-state--done-30303) (the now-playing overlay context where the scroll-vs-STOP conflict arises).
 
 ### Color-independent mode legibility _(settled refinement)_
 
