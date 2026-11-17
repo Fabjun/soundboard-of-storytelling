@@ -3,7 +3,8 @@
  * Slice 12b. Cases: nothing plays → nothing happens; the first press fades every playing pad
  * pad by pad over 2.5 s; a second press while it fades stops everything at once; after the fade
  * a press starts a new first stage; Enter stops the last started pad with its own fade-out, then
- * the one before; a pad not in any pool stops without a fade.
+ * the one before; a pad not in any pool stops without a fade; a tapped pad stops with its own
+ * fade-out, during a pause at once.
  */
 
 import type { Board, SinglePad } from '../../src/types';
@@ -14,6 +15,7 @@ import {
   stopAllFading,
   stopAllNow,
   stopLast,
+  stopTapped,
   type StopControlAudio,
 } from '../../src/state/stopControl';
 
@@ -157,5 +159,24 @@ describe('stop actions during a pause (Slice 12d, K8)', () => {
     stopLast(audio);
     expect(calls).toEqual(['stop a true 0', 'resume']);
     expect(audioPaused.value).toBe(false);
+  });
+
+  it('a tapped pad stops at once; the last one ends the pause', () => {
+    playingPads.value = new Set(['a', 'b']);
+    audioPaused.value = true;
+    stopTapped('a', 1, audio);
+    expect(calls).toEqual(['stop a true 0']);
+    stopTapped('b', 0, audio);
+    expect(calls).toEqual(['stop a true 0', 'stop b true 0', 'resume']);
+    expect(audioPaused.value).toBe(false);
+  });
+});
+
+describe('stop a tapped pad (grid, quick-access bar)', () => {
+  it('stops it with its own fade-out, as Enter does — or cuts when it has none', () => {
+    playingPads.value = new Set(['a', 'b']);
+    stopTapped('a', 1, audio);
+    stopTapped('b', 0, audio);
+    expect(calls).toEqual(['stop a false 1', 'stop b false 0']);
   });
 });
