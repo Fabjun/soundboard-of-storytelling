@@ -890,7 +890,14 @@ dialogs create nothing until SAVE. Two fixes: create the pad on the first SAVE, 
 its first draft is discarded.
 **When:** the owner decides which (it changes how ADD PAD feels).
 
-### Remaining time on a playing pad
+### Remaining time on a playing pad ✅ Done (3.0.313)
+
+✅ **Done (3.0.313, standing approval ADR-0048 Amendments 2026-11-17):** the engine reports, at
+each start, when the sound ends on the audio clock (`onPadEnds`, `audioClock` in
+`v3/src/audio/engine.ts`) — a Single the file it picked, a Loop with a repeat count every pass, a
+Loop with several files each file; a Loop until stopped has no end. One timer
+(`v3/src/state/remainingTime.ts`) reads the clock while a pad has an end; the pad shows `−m:ss`
+instead of its running time. The clock stands still in a pause, so the time left does too.
 
 Owner decision 2026-10-11: a pad shows its running time from the medium size on (built in
 3.0.223), and while it plays the time left (as Farrago does). The app cannot compute it alone: a

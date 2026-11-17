@@ -189,6 +189,8 @@ let audio: Facade;
 let ctx: FakeAudioContext;
 let started: [string, boolean][];
 let stopped: string[];
+/** When each start said its sound ends, on the audio clock (onPadEnds). */
+let ends: [string, number | null][];
 let pads = new Map<string, Pad>();
 
 /** Which file each started source played, in start order. */
@@ -205,9 +207,11 @@ beforeEach(async () => {
   const ownPads = new Map<string, Pad>();
   const ownStarted: [string, boolean][] = [];
   const ownStopped: string[] = [];
+  const ownEnds: [string, number | null][] = [];
   pads = ownPads;
   started = ownStarted;
   stopped = ownStopped;
+  ends = ownEnds;
   FakeAudioContext.last = null;
   vi.stubGlobal('AudioContext', FakeAudioContext);
   Object.defineProperty(window.HTMLMediaElement.prototype, 'play', {
@@ -219,6 +223,7 @@ beforeEach(async () => {
   engine.configureCallbacks({
     onPadStarted: (id, isLoop) => ownStarted.push([id, isLoop]),
     onPadStopped: (id) => ownStopped.push(id),
+    onPadEnds: (id, endsAt) => ownEnds.push([id, endsAt]),
     // Same mapping as the facade's bridge (index.ts): app pads → engine shapes
     getPad: (id) => {
       const pad = ownPads.get(id);
@@ -736,6 +741,37 @@ describe('stopping', () => {
     expect(audio.isPlaying('s')).toBe(true);
     audio.stop('s');
     expect(ctx.sources.at(-1)!.stopped).toEqual({ when: 0.02 }); // over the short stop fade
+  });
+});
+
+// ── Remaining time (ADR-0048 Amendments 2026-11-17) ───────────────────────────
+// Each fake file is 1 s long and the audio clock stands at 0, so the end is the length played.
+
+describe('remaining time: when a started sound ends', () => {
+  test('a Single: the end of its file, or of its trimmed region', async () => {
+    await audio.play('s', single('s', 'h1'));
+    await audio.play('t', single('t', 'h2', { trimStart: 0.2, trimEnd: 0.7 }));
+    await flush();
+    expect(ends.map(([id]) => id)).toEqual(['s', 't']);
+    expect(ends[0][1]).toBe(1);
+    expect(ends[1][1]).toBeCloseTo(0.5); // 0.7 − 0.2 in floating point
+  });
+
+  test('a Loop until stopped has no end; with a repeat count, the end of every pass', async () => {
+    await audio.play('l', loop('l', 'h1'));
+    await audio.play('r', loop('r', 'h2', { repeat: 3 }));
+    await flush();
+    expect(ends).toEqual([
+      ['l', null],
+      ['r', 3],
+    ]);
+  });
+
+  test('a Loop with several files: the end of the file playing now', async () => {
+    void audio.play('p', playlist('p', ['h1', 'h2']));
+    await flush();
+    expect(ends).toEqual([['p', 1]]);
+    expect(engine.audioClock()).toBe(0);
   });
 });
 

@@ -93,11 +93,27 @@ export function addPlayingPad(id: string): void {
   playingPads.value = next;
 }
 
-/** Removes a pad from the playing set (playback ended). */
+/** Removes a pad from the playing set (playback ended) — and its end, which no longer counts. */
 export function removePlayingPad(id: string): void {
   const next = new globalThis.Set(playingPads.value);
   next.delete(id);
   playingPads.value = next;
+  setPadEnd(id, null);
+}
+
+/**
+ * When the sound of each playing pad ends, on the audio clock (src/state/remainingTime.ts shows
+ * the time left); a pad that loops until stopped has none. Fed by the audio bridge.
+ */
+export const padEndsAt = signal<ReadonlyMap<string, number>>(new globalThis.Map<string, number>());
+
+/** Sets when a pad's sound ends on the audio clock, or forgets it (null). */
+export function setPadEnd(id: string, endsAt: number | null): void {
+  if (endsAt === null && !padEndsAt.value.has(id)) return;
+  const next = new globalThis.Map(padEndsAt.value);
+  if (endsAt === null) next.delete(id);
+  else next.set(id, endsAt);
+  padEndsAt.value = next;
 }
 
 /** Marks a pad as looping. */

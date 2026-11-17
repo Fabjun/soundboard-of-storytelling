@@ -103,6 +103,12 @@ export function withEarlyVersions(
 /** The release notes the main menu shows, newest first (checked by whatsNew.test.ts). */
 export const WHATS_NEW: WhatsNewNotes[] = [
   {
+    version: '3.0.313',
+    new: [
+      'A playing pad counts down the time left of its sound; during a pause the count stands still.',
+    ],
+  },
+  {
     version: '3.0.312',
     improved: [
       'A pad without a fade-out ends softly instead of with a click, and can still be started again right away.',

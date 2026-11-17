@@ -27,6 +27,7 @@ import {
   boards,
   addPlayingPad,
   removePlayingPad,
+  setPadEnd,
   addLoopingPad,
   removeLoopingPad,
   previewPlaying,
@@ -66,6 +67,10 @@ export function initAudioBridge(): void {
       removePlayingPad(id);
       removeLoopingPad(id);
     },
+    // When a pad's sound ends, for the remaining time it shows (src/state/remainingTime.ts)
+    onPadEnds: (id, endsAt) => {
+      if (id !== PREVIEW_ID) setPadEnd(id, endsAt);
+    },
     // Combo steps reference pads of the board's pool (ADR-0048) — looked up and mapped to the
     // engine's shapes; the engine itself is unchanged.
     getPad: (id) => {
@@ -86,7 +91,7 @@ function findPad(id: string): Pad | null {
 
 // ── Public API ────────────────────────────────────────────────────────────────
 
-export { initAudio } from './engine';
+export { initAudio, audioClock } from './engine';
 
 // ── App pads → engine shapes (ADR-0048) ─────────────────────────────────────
 

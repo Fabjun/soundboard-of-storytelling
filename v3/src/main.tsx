@@ -1,8 +1,8 @@
 /**
  * @fileoverview App entry point — wires the global services, then renders the app
  *
- * Fonts, global styles, the audio bridge, the saving marker and the play history are set up at
- * module load; the first render waits until the stored state and the preferences are loaded
+ * Fonts, global styles, the audio bridge, the saving marker, the play history and the clock of the
+ * time left are set up at module load; the first render waits until the stored state and the preferences are loaded
  * (CLAUDE.md, "Stored state loads before the first render").
  */
 
@@ -18,6 +18,7 @@ import { initAudioBridge } from './audio/index';
 import { pendingSaves } from './state/store';
 import { loadPrefs } from './state/prefs';
 import { startPlayHistory } from './state/playHistory';
+import { startRemainingClock } from './state/remainingTime';
 import { startKeyControl } from './state/keyControl';
 import { blockPinchZoom } from './lib/pinchGuard';
 import { startWindowClass } from './state/windowClass';
@@ -39,6 +40,9 @@ effect(() => {
 
 // Remember when each pad was last played ("Last played" sort in All pads).
 startPlayHistory();
+
+// The time left a playing pad shows — one timer, only while a pad has an end.
+startRemainingClock();
 
 // The brief pressed look of a control (:active, owner decision 2026-10-14: no hover effects) shows
 // on iOS only when the page listens for touches (WebKit bug 138816; Apple, Safari Web Content
