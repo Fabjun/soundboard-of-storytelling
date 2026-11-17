@@ -148,6 +148,16 @@ for (const [file, label] of [
   }
 }
 
+// ── npm audit allow list (reason in the "//audit-allow" key of package.json, scripts/audit-check.ts) ──
+{
+  const pkg = JSON.parse(readFileSync(join(V3, 'package.json'), 'utf8')) as {
+    '//audit-allow'?: Record<string, string>;
+  };
+  for (const [id, reason] of Object.entries(pkg['//audit-allow'] ?? {})) {
+    toolRows.push(`| npm audit allow | \`${esc(id)}\` | ${esc(reason)} |`);
+  }
+}
+
 // ── Dependabot: deliberately ignored updates (reason = comment line directly above) ──
 {
   const lines = readFileSync(join(ROOT, '.github', 'dependabot.yml'), 'utf8').split('\n');

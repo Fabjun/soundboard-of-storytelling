@@ -7,6 +7,13 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.306 — 2026-11-17
+
+### Internal
+
+- ci: the security audit allows a listed advisory with its reason (owner decision 2026-11-17, option A) — GHSA-fc5q-39xc-vjpf (picomatch <= 4.0.7, ReDoS, high) was widened on 2026-11-17 to the newest picomatch, has no fixed version, and blocked every pull request; picomatch sits only in development tools (vite, vitest, knip, lint-staged) and `npm audit --omit=dev` finds nothing. `npm run audit:check` (scripts/audit-check.ts, scripts/lib/audit-allow.ts) replaces `npm audit --audit-level=high` in the pre-push hook and in CI: high and critical still block, except advisories in the `"//audit-allow"` key of v3/package.json; an allowed advisory npm no longer reports fails the check, so the exception goes once picomatch ships a fix. The register docs/development/exceptions.md lists it (OWASP, "Vulnerable and Outdated Components"; ADR-0053)
+- test: unit auditAllow — high and critical block, moderate does not, each advisory once, an allowed one passes, a stale one is named. Counter-checked on the real report: with an unknown id in place of the picomatch one, the check blocks picomatch and names the unknown id stale (exit 1); restored, exit 0
+
 ## 3.0.305 — 2026-11-17
 
 ### Internal
