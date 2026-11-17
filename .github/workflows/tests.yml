@@ -36,7 +36,9 @@ jobs:
 
       - name: Security audit (blocking at high/critical)
         working-directory: v3
-        run: npm audit --audit-level=high
+        # High and critical block, except advisories allowed with a reason in package.json
+        # "//audit-allow" (scripts/audit-check.ts, ADR-0053 exceptions)
+        run: npm run audit:check
 
       - name: Build (tsc -b type-checks app, tests, configs, scripts — ADR-0055)
         working-directory: v3

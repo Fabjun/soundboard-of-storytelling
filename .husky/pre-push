@@ -35,7 +35,7 @@ if git diff --name-only origin/main...HEAD 2>/dev/null | grep -qE '^(v3/package(
 fi
 
 printf '🛡  Pre-push: security audit (high/critical blocks)...\n'
-npm audit --audit-level=high || {
+npm run --silent audit:check || {
   printf '\n❌ npm audit: high/critical vulnerability — push aborted.\n'
   printf '   Details above. Try `npm audit fix` (without --force) first;\n'
   printf '   review major upgrades one at a time (BACKLOG "Major dependency updates").\n'

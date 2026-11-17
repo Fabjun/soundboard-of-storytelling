@@ -103,6 +103,12 @@ export function withEarlyVersions(
 /** The release notes the main menu shows, newest first (checked by whatsNew.test.ts). */
 export const WHATS_NEW: WhatsNewNotes[] = [
   {
+    version: '3.0.306',
+    behindTheScenes: [
+      'The security check of the development tools can let one known, harmless finding pass until its fix is released.',
+    ],
+  },
+  {
     version: '3.0.305',
     behindTheScenes: ['The size limit for the app’s code is settled for good.'],
   },
