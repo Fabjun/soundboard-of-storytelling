@@ -24,6 +24,7 @@ import { libraryItems } from '../state/store';
 import { narrowWindow } from '../state/windowClass';
 import { DEFAULT_PAD_TYPE, newPad, padTypeColor, padTypeLabel } from '../lib/padUtils';
 import { nanoid } from '../lib/nanoid';
+import { NO_AUDIO_YET } from '../lib/helpTopics';
 
 /** What the popover ends with: a finished pad, a pad to finish in the PAD editor, or nothing. */
 export type CreationResult =
@@ -110,7 +111,7 @@ export function PadCreationPopover({ cellRect, onResult }: PadCreationPopoverPro
         {sourceTab === 'RECENT' && (
           <>
             {recentAudio.length === 0 ? (
-              <EmptyHint text="No audio in library yet." />
+              <EmptyHint text={NO_AUDIO_YET} />
             ) : (
               recentAudio.map((item) => (
                 <SourceItem
@@ -137,7 +138,7 @@ export function PadCreationPopover({ cellRect, onResult }: PadCreationPopoverPro
               />
             </div>
             {filteredBrowse.length === 0 ? (
-              <EmptyHint text="No matches." />
+              <EmptyHint text={allAudio.length === 0 ? NO_AUDIO_YET : 'No matches.'} />
             ) : (
               filteredBrowse
                 .slice(0, 30)

@@ -96,7 +96,7 @@ export function OwnIconsTab(): JSX.Element {
         {icons.length === 0 ? (
           <div class="sb-screen-empty">
             <UiIcon name="library" size={32} color="var(--border)" />
-            No own icons yet.
+            No own icons yet — ADD ICONS adds SVG files.
           </div>
         ) : (
           icons.map((i) => <IconRow key={i.id} icon={i} />)

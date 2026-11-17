@@ -89,7 +89,11 @@ test('a template is renamed in place, and deleted in one tap with UNDO', async (
 
   await page.getByRole('button', { name: 'Delete template Night owl', exact: true }).click();
   await expect(templateRow(page, 'Night owl')).toHaveCount(0);
-  await expect(page.getByText(/No templates yet\./)).toBeVisible();
+  await expect(
+    page.getByText('No templates yet — SAVE AS TEMPLATE in the PAD editor makes one.', {
+      exact: true,
+    }),
+  ).toBeVisible();
   await page.getByTestId('undo-toast').getByRole('button', { name: 'UNDO', exact: true }).click();
   await expect(templateRow(page, 'Night owl')).toBeVisible();
 });

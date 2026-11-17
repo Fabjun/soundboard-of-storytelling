@@ -733,7 +733,7 @@ export function LibraryScreen(): JSX.Element {
                   label={
                     isDragOver
                       ? 'Drop files to import'
-                      : 'No audio files yet.\nDrop files anywhere or click IMPORT.'
+                      : 'No audio files yet — IMPORT adds them, or drop files here.'
                   }
                 />
               ) : (

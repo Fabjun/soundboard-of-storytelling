@@ -17,10 +17,20 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.299';
+export const APP_VERSION = '3.0.300';
 
 /** The developer log, newest first; CHANGELOG.md is generated from it (sync-changelog). */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.300',
+    date: '2026-11-17',
+    items: [
+      'feat(help): Slice 17c — every empty state names the control that fills it, as "No decks yet — NEW DECK below adds one." (NN/g "Designing Empty States in Complex Applications": a direct pathway to the first step): the board list (CREATE FIRST BOARD, IMPORT restores a backup), the deck list, the library (IMPORT, or a drop), templates (SAVE AS TEMPLATE in the PAD editor — the list caption no longer repeats it), own icons (ADD ICONS), combo steps (+ STEP), the PAD editor\'s decks (NEW DECK on the board). Every list of library audio — the creation popover\'s RECENT and BROWSE, the board\'s library panel, the PAD editor\'s file picker — shares one text, NO_AUDIO_YET in helpTopics.ts, naming IMPORT under LIBRARY, the only place that imports; BROWSE said "No matches." with nothing searched (BACKLOG "UI text inconsistency: EmptyHint in BROWSE tab vs RECENT tab")',
+      'fix(board): an empty All pads in GAME named ADD PAD, which only SETUP shows — it now names SETUP',
+      'test: codeGuards "an empty state names the next step" — every "No … yet" in a component, a screen or helpTopics.ts goes on with " — " and the step (counter-checked: "No steps yet." is red); E2E pad-pool — an empty All pads names ADD PAD in SETUP and SETUP in GAME (counter-checked: the old GAME text is red); the templates and library-drop specs follow the new texts; visual baselines of the empty board list and the empty library updated (the diff images checked: only the text lines differ)',
+      'docs: CLAUDE.md Slice 17 at 17a–17c; BACKLOG "Help screen and context help" with what 17c built',
+    ],
+  },
   {
     version: '3.0.299',
     date: '2026-11-09',

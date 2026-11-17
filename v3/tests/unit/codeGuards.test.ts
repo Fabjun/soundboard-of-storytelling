@@ -70,6 +70,9 @@
  *    WebKit only), and main.tsx starts `blockPinchZoom`. No test browser is iOS — Playwright's
  *    WebKit does not match the block — so only this guard keeps the two in place; the pan-x
  *    pan-y of the flame-only fix (2026-10-14) let the double tap zoom everywhere else.
+ * 24. An empty state names the next step (Slice 17c; NN/g "Designing Empty States in Complex
+ *    Applications"): every "No … yet" text in src goes on with " — " and what fills it — "No
+ *    decks yet — NEW DECK below adds one." Five empty states said only "No … yet." (2026-11-17).
  */
 
 import { readdirSync, readFileSync } from 'node:fs';
@@ -1121,5 +1124,34 @@ describe('guard: no double-tap or pinch zoom on iOS (ADR-0067 amendment 2026-10-
 
   it('main.tsx starts the pinch guard', () => {
     expect(main).toMatch(/^blockPinchZoom\(\);$/m);
+  });
+});
+
+describe('guard: an empty state names the next step (Slice 17c)', () => {
+  // What the app shows: components, screens and the shared empty text. A lib function's phrase is
+  // finished where a screen shows it ("No backup yet" + the board list's EXPORT reminder), and the
+  // What's new history keeps its old wording. Comment lines and line-end comments are left out; a
+  // text may wrap after "yet" (Prettier).
+  const texts = [...componentFiles, join('lib', 'helpTopics.ts')].map((f) => ({
+    at: f,
+    code: readFileSync(join(SRC, f), 'utf8')
+      .split('\n')
+      .filter((line) => !/^\s*(\/\/|\/\*|\*|\{\/\*)/.test(line))
+      .map((line) => line.replace(/\s\/\/.*$/, ''))
+      .join('\n'),
+  }));
+  const EMPTY = /\bNo [a-z][a-z ]*? yet\b/g;
+
+  it('finds empty states (sanity)', () => {
+    expect(texts.flatMap((t) => t.code.match(EMPTY) ?? []).length).toBeGreaterThan(8);
+  });
+
+  it('every "No … yet" goes on with " — " and the step that fills it', () => {
+    const bad = texts.flatMap(({ at, code }) =>
+      [...code.matchAll(EMPTY)]
+        .filter((m) => !/^\s+— \S/.test(code.slice((m.index ?? 0) + m[0].length)))
+        .map((m) => `${at}: ${m[0]}`),
+    );
+    expect(bad, 'say what fills it: "No decks yet — NEW DECK adds one." (NN/g)').toEqual([]);
   });
 });

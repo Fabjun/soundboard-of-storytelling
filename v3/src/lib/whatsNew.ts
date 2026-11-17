@@ -103,6 +103,12 @@ export function withEarlyVersions(
 /** The release notes the main menu shows, newest first (checked by whatsNew.test.ts). */
 export const WHATS_NEW: WhatsNewNotes[] = [
   {
+    version: '3.0.300',
+    improved: [
+      'An empty list says which button fills it — the board list, the decks, the library, templates, own icons and combo steps.',
+    ],
+  },
+  {
     version: '3.0.299',
     new: [
       'Every screen has a ? that opens the help about that screen; in the PAD editor the help opens on top, and the editor stays as it was.',

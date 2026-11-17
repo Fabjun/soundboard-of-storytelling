@@ -9,6 +9,7 @@
  * - All pads creates pads that sit in no deck: ADD PAD and a library drop (owner decision
  *   2026-10-02)
  * - A board opens in the view it showed last (owner decision 2026-10-02)
+ * - An empty All pads names the next step of its mode: ADD PAD in SETUP, SETUP in GAME (17c)
  *
  * No audio needed: pads come from ADD PAD (runs in Chromium and WebKit).
  */
@@ -17,6 +18,7 @@ import { test, expect, type Page } from '@playwright/test';
 import {
   TEST_AUDIO_NAME,
   createBoardAndNavigate,
+  enterGameMode,
   enterSetupMode,
   ensureTestAudio,
   goToBoardList,
@@ -171,10 +173,21 @@ test('a library file dropped on All pads becomes a pad in no deck', async ({ pag
     .filter({ hasText: TEST_AUDIO_NAME })
     .first();
   await row.waitFor();
-  await pointerDrag(page, row, page.getByText(/^No pads yet\./));
+  await pointerDrag(page, row, page.getByText(/^No pads yet — /));
   await expect(padCells(page)).toHaveCount(1);
   await expect(padCells(page).first()).toContainText(TEST_AUDIO_NAME);
   await expect(page.getByTestId('deck-rail-all-pads-tab')).toContainText('1');
+});
+
+test('an empty All pads names the next step of its mode', async ({ page }) => {
+  await page.getByTestId('deck-rail-all-pads-tab').click();
+  await expect(
+    page.getByText('No pads yet — ADD PAD adds one, or drop a file from the library.', {
+      exact: true,
+    }),
+  ).toBeVisible();
+  await enterGameMode(page);
+  await expect(page.getByText('No pads yet — SETUP adds them.', { exact: true })).toBeVisible();
 });
 
 test('a board opens in the view it showed last', async ({ page }) => {

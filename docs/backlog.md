@@ -219,7 +219,13 @@ accessibility tree, screen by screen; the owner corrects them by hand. **17b bui
 in every header opens the help at the topic of its place — on a board the topic of its mode; on a
 phone the board's ? sits at the end of the deck tab row, as the bar toggles do, because the top bar
 has no room beside the mode toggle; in the PAD editor the help opens as a dialog on top (ADR-0074),
-at the topic of the pad's type. Next: 17c empty states, 17d the welcome.
+at the topic of the pad's type. **17c built in 3.0.300:** every empty state names the control that
+fills it, after the scheme "No decks yet — NEW DECK below adds one." (NN/g "Designing Empty States
+in Complex Applications": an empty state gives a direct pathway to the first step) — the board
+list, All pads by mode (in GAME: SETUP), the deck list, the library, templates, own icons, combo
+steps, the PAD editor's decks; every list of library audio shares one text, as only the LIBRARY
+screen imports (`NO_AUDIO_YET` in `v3/src/lib/helpTopics.ts`). Guarded by `codeGuards` ("an empty
+state names the next step"). Next: 17d the welcome.
 
 ### Built-in sample sounds — idea (Open)
 
@@ -743,8 +749,8 @@ Decide after real-use data is available, likely with Claude Design.
 **When:** Slice 8, after real sessions.
 **Source:** docs/design/design-notes.md §Known limitation: SETUP layout.
 ✅ **Done (settled by ADR-0074, owner decision 2026-10-19):** the inspector beside the grid is gone
-— the PAD editor is a full-screen dialog — and an empty deck says "No pads yet. Add one with ADD
-PAD or drop a file from the library." (`v3/src/screens/BoardScreen.tsx`).
+— the PAD editor is a full-screen dialog — and an empty All pads names ADD PAD and the library
+drop (`v3/src/screens/BoardScreen.tsx`; in GAME it names SETUP since 3.0.300).
 
 ---
 
@@ -3171,7 +3177,11 @@ field keeps at least 120 px beside the sort.
 
 ---
 
-### UI text inconsistency: `EmptyHint` in BROWSE tab vs RECENT tab
+### ✅ UI text inconsistency: `EmptyHint` in BROWSE tab vs RECENT tab
+
+✅ **Done (3.0.300, Slice 17c):** unified — with the library empty, both tabs show the shared
+`NO_AUDIO_YET` text, which names IMPORT under LIBRARY; "No matches." is left for a search that
+finds nothing.
 
 When the audio library is empty, the BROWSE tab shows "No matches." while the RECENT tab
 shows "No audio in library yet." — both correct by code logic, but inconsistent in tone.
