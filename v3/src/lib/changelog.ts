@@ -17,10 +17,17 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.306';
+export const APP_VERSION = '3.0.307';
 
 /** The developer log, newest first; CHANGELOG.md is generated from it (sync-changelog). */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.307',
+    date: '2026-11-17',
+    items: [
+      'docs: CLAUDE.md Workflow rule 7b (owner decision 2026-11-17, option A) — a reversible product or detail decision is taken provisionally: the researched recommendation is built, logged in the pull request for review and merged once every check is green; irreversible steps, the audio engine, new rules or schemes, widening a fix, conflicts and steps outside the repository are still put to the owner first (Jeff Bezos, letter to shareholders 2015, two-way doors; Jurgen Appelo, Management 3.0, delegation level 6 "inquire")',
+    ],
+  },
   {
     version: '3.0.306',
     date: '2026-11-17',

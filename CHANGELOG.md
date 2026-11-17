@@ -7,6 +7,12 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.307 — 2026-11-17
+
+### Internal
+
+- docs: CLAUDE.md Workflow rule 7b (owner decision 2026-11-17, option A) — a reversible product or detail decision is taken provisionally: the researched recommendation is built, logged in the pull request for review and merged once every check is green; irreversible steps, the audio engine, new rules or schemes, widening a fix, conflicts and steps outside the repository are still put to the owner first (Jeff Bezos, letter to shareholders 2015, two-way doors; Jurgen Appelo, Management 3.0, delegation level 6 "inquire")
+
 ## 3.0.306 — 2026-11-17
 
 ### Internal

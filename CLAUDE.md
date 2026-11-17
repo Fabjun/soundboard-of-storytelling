@@ -700,8 +700,17 @@ Before committing a slice, also:
    plan, or work that follows directly from agreed rules — are committed **and pushed**
    autonomously once all gates are green; report the result with `git show --stat` and name
    any file outside the plan's file list. Stop and ask when a genuine decision is open
-   (product behavior, a new scheme or convention, trade-offs, anything irreversible or
-   outward-facing beyond a normal push).
+   (a new scheme or convention, anything irreversible or outward-facing beyond a normal push).
+   7b. **Reversible decisions are taken provisionally (owner decision 2026-11-17):** a product or
+   detail decision that can be taken back — a "two-way door" (Jeff Bezos, letter to shareholders
+   2015), delegation level 6 "inquire" (Jurgen Appelo, Management 3.0, Delegation Poker) — is not
+   put to the owner first: Claude builds the researched recommended option, as small as does the
+   job, logs it in the pull request as "provisional, for review" (question, options, choice,
+   reason, source) and merges once the pre-push gate and every required check are green; a
+   different choice at review comes as a small follow-up pull request. Still put to the owner
+   first: anything irreversible or endangering user data, a change to the audio engine, a new
+   rule or scheme, widening a fix beyond the single case, a conflict between rules, and steps
+   outside the repository.
    7a. **Main only through pull requests (ADR-0076, owner decision 2026-10-08):** the ruleset
    `protect-main` rejects direct pushes; work goes to a branch and a pull request, and is
    squash-merged once the pre-push gate ran green and every required check passes
