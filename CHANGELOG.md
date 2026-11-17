@@ -7,6 +7,12 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.305 — 2026-11-17
+
+### Internal
+
+- docs: the JS bundle limit of 250 KB is the rule, no longer a provisional exception (owner decision 2026-11-17, option A) — a growth tripwire about 18 % above the 212 KB measured, under the budget of about 0.62 MiB of critical-path JS (Alex Russell, "The Performance Inequality Gap, 2026"; web.dev, "Performance budgets 101"); the next raise needs a start-up measurement on the target device. ADR-0033 §Decision, its `## Exceptions` row removed; BACKLOG "Bundle size limit" done
+
 ## 3.0.304 — 2026-11-17
 
 ### Internal
