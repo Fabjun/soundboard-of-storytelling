@@ -89,7 +89,7 @@ jobs:
     # Playwright's own image: browsers and their system packages preinstalled — no apt step,
     # which hung on the Ubuntu mirror twice on 2026-10-22 (ADR-0089; playwright.dev/docs/ci)
     container:
-      image: mcr.microsoft.com/playwright:v1.64.1-noble
+      image: mcr.microsoft.com/playwright:v1.65.1-noble
       options: --user 1001
     steps:
       - uses: actions/checkout@v7
@@ -122,7 +122,7 @@ jobs:
     # Playwright's own image: browsers and their system packages preinstalled — no apt step,
     # which hung on the Ubuntu mirror twice on 2026-10-22 (ADR-0089; playwright.dev/docs/ci)
     container:
-      image: mcr.microsoft.com/playwright:v1.64.1-noble
+      image: mcr.microsoft.com/playwright:v1.65.1-noble
       options: --user 1001
     steps:
       - uses: actions/checkout@v7
@@ -155,7 +155,7 @@ jobs:
     # Playwright's own image: browsers and their system packages preinstalled — no apt step,
     # which hung on the Ubuntu mirror twice on 2026-10-22 (ADR-0089; playwright.dev/docs/ci)
     container:
-      image: mcr.microsoft.com/playwright:v1.64.1-noble
+      image: mcr.microsoft.com/playwright:v1.65.1-noble
       options: --user 1001
     steps:
       - uses: actions/checkout@v7
@@ -188,7 +188,7 @@ jobs:
     # Playwright's own image: browsers and their system packages preinstalled — no apt step,
     # which hung on the Ubuntu mirror twice on 2026-10-22 (ADR-0089; playwright.dev/docs/ci)
     container:
-      image: mcr.microsoft.com/playwright:v1.64.1-noble
+      image: mcr.microsoft.com/playwright:v1.65.1-noble
       options: --user 1001
     steps:
       - uses: actions/checkout@v7
