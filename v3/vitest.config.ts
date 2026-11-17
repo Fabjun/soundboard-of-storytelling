@@ -31,13 +31,13 @@ export default defineConfig({
       // (lines 69.45 · statements 67.8 · functions 71.75 · branches 61.61).
       // Enforced in CI via `npm run test:coverage`. Only ever RAISE these —
       // at slice completion, to the new measured values rounded down.
-      // Last raise 2026-10-19 (Slice 18 close-out, structure review):
-      // lines 98.76 · statements 97.91 · functions 97.24 · branches 95.73.
+      // Last raise 2026-11-17 (Slice 17 close-out, pre-push gate of #204):
+      // lines 99.13 · statements 98.43 · functions 98.21 · branches 95.89.
       thresholds: {
-        lines: 98,
-        functions: 97,
+        lines: 99,
+        functions: 98,
         branches: 95,
-        statements: 97,
+        statements: 98,
       },
     },
   },
