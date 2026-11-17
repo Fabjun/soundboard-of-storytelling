@@ -14,6 +14,8 @@
 
 import { test, expect } from '@playwright/test';
 import {
+  addNamedPad,
+  closePadEditor,
   goToBoardList,
   createBoardAndNavigate,
   createDeck,
@@ -37,11 +39,9 @@ test.beforeEach(async ({ page }) => {
 
 test('the last grid cell can be reached and tapped on a short window', async ({ page }) => {
   // 13 pads: rows 1–3 full, one pad in row 4 — the last pad and the last empty cell sit in row 4
-  for (let i = 0; i < 13; i++) {
-    // Located by text: the button has no accessible name in Chromium yet (BACKLOG "Role-based E2E locators").
-    await page.getByText('ADD PAD', { exact: true }).click();
-    await page.getByTestId('pad-editor-panel-close-button').click();
-  }
+  // Named and saved: a new pad closed before its first SAVE goes again
+  for (let i = 0; i < 13; i++) await addNamedPad(page, `Pad ${i + 1}`);
+  await closePadEditor(page);
   const pads = page.locator(PAD_CELL);
   await expect(pads).toHaveCount(13);
   const grid = page.getByTestId('pad-grid');

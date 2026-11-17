@@ -17,10 +17,18 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.308';
+export const APP_VERSION = '3.0.309';
 
 /** The developer log, newest first; CHANGELOG.md is generated from it (sync-changelog). */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.309',
+    date: '2026-11-17',
+    items: [
+      'fix(board): a pad ADD PAD made goes again when its editor closes before the first SAVE — discarded or left unchanged — instead of staying as an empty "—" pad; after SAVE it stays (BACKLOG "A new pad discarded in its first edit stays, empty"; Material Design: a creation dialog creates nothing until SAVE). BoardScreen keeps the new pad\'s id until the editor reports SAVE (new prop onSave) and takes the pad off the board on close, without an undo message. Provisional under Workflow rule 7b, for the owner\'s review',
+      'test: E2E pad-editor-save — ✕ without a change and DISCARD CHANGES take the new pad away, no undo message; SAVE keeps it (Chromium and WebKit; counter-checked: without the removal two pads stay — red). layout-reach names and saves its 13 pads (addNamedPad), as an unsaved new pad now goes',
+    ],
+  },
   {
     version: '3.0.308',
     date: '2026-11-17',

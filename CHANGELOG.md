@@ -7,6 +7,16 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.309 — 2026-11-17
+
+### Fixed
+
+- fix(board): a pad ADD PAD made goes again when its editor closes before the first SAVE — discarded or left unchanged — instead of staying as an empty "—" pad; after SAVE it stays (BACKLOG "A new pad discarded in its first edit stays, empty"; Material Design: a creation dialog creates nothing until SAVE). BoardScreen keeps the new pad's id until the editor reports SAVE (new prop onSave) and takes the pad off the board on close, without an undo message. Provisional under Workflow rule 7b, for the owner's review
+
+### Internal
+
+- test: E2E pad-editor-save — ✕ without a change and DISCARD CHANGES take the new pad away, no undo message; SAVE keeps it (Chromium and WebKit; counter-checked: without the removal two pads stay — red). layout-reach names and saves its 13 pads (addNamedPad), as an unsaved new pad now goes
+
 ## 3.0.308 — 2026-11-17
 
 ### Internal

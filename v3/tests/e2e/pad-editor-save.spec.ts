@@ -4,7 +4,8 @@
  * Owner decision 2026-10-11 (ADR-0084): changes in the PAD editor are a draft until SAVE; closing
  * with unsaved changes asks — KEEP EDITING or DISCARD CHANGES (the Material full-screen dialog
  * pattern); ↶ / ↷ and Cmd / Ctrl + Z undo and redo every step, the letters of a typed name as one.
- * Needs no playback — runs in WebKit too.
+ * A pad ADD PAD made goes again when its editor closes before the first SAVE (BACKLOG "A new pad
+ * discarded in its first edit stays, empty", 2026-11-17). Needs no playback — runs in WebKit too.
  */
 
 import { test, expect, type Page } from '@playwright/test';
@@ -57,6 +58,37 @@ test('SAVE is off without a change; a change shows on the pad only after SAVE', 
 test('✕ without changes closes at once', async ({ page }) => {
   await close(page).click();
   await expect(editor(page)).toBeHidden();
+});
+
+test('a new pad goes again when its editor closes before the first SAVE; after SAVE it stays', async ({
+  page,
+}) => {
+  // Located by text: the button has no accessible name in Chromium yet (BACKLOG "Role-based E2E locators").
+  const addPad = () => page.getByText('ADD PAD', { exact: true }).click();
+  await close(page).click(); // the editor of Rain, opened by beforeEach
+  await expect(padCells(page)).toHaveCount(1); // Rain
+
+  // ✕ without a change
+  await addPad();
+  await expect(padCells(page)).toHaveCount(2);
+  await close(page).click();
+  await expect(padCells(page)).toHaveCount(1);
+
+  // A change, then DISCARD CHANGES — no undo message for a pad that never was
+  await addPad();
+  await nameInput(page).fill('Owl');
+  await close(page).click();
+  await question(page).getByRole('button', { name: 'DISCARD CHANGES', exact: true }).click();
+  await expect(padCells(page)).toHaveCount(1);
+  await expect(page.getByTestId('undo-toast')).toHaveCount(0);
+
+  // SAVE first: the pad stays when the editor closes
+  await addPad();
+  await nameInput(page).fill('Owl');
+  await save(page).click();
+  await close(page).click();
+  await expect(padCells(page)).toHaveCount(2);
+  await expect(padCells(page).nth(1)).toContainText('Owl');
 });
 
 test('✕ with changes asks; KEEP EDITING and Escape stay, DISCARD CHANGES drops the change', async ({
