@@ -1887,7 +1887,11 @@ grid had fitted its pads to the panel just opened. Since then `pointerDrag` read
 they are stable (Playwright's own "stable" rule: the same box twice). **When:** it fails again —
 then it is a pattern: copy the trace first, find the cause, and quarantine only if that fails.
 
-### Bundle size limit
+### Bundle size limit ✅ Done (3.0.305)
+
+✅ **Done (3.0.305, owner decision 2026-11-17, option A):** 250 KB is the JS limit — a growth
+tripwire under the budget below; the next raise needs a start-up measurement on the target device
+(ADR-0033 §Decision, no longer an exception).
 
 Found 2026-11-08: the JS bundle reached the 200 KB limit of `v3/.size-limit.json`, set on
 2026-05-27 (9b059670) as a growth tripwire, not from a budget — 199,997 bytes in 3.0.289, 200,199
@@ -1897,9 +1901,9 @@ temporary exception (ADR-0033 `## Exceptions`), under the owner's provisional au
 `dist/assets/*.js`, and the PWA precaches every chunk, so lazy loading saves only start-up
 parsing, not bytes. Budget source: Alex Russell, "The Performance Inequality Gap, 2026"
 (infrequently.org, 2025-11-24) — a JS-heavy app on a P75 device (Galaxy A24 4G, 9 Mbps, 100 ms
-RTT) loads in 3 s with about 0.62 MiB of critical-path JS. Open for the owner: keep 250 KB, set
-the limit from a budget, or measure the start chunk on its own (a new scheme).
-**When:** owner review.
+RTT) loads in 3 s with about 0.62 MiB of critical-path JS. The owner chose between keeping 250 KB,
+going back to 200 KB, and setting the limit from the budget.
+**When:** decided 2026-11-17.
 
 ### Relative units for sizes (structure step before Slice 13) ✅ Done (3.0.188)
 

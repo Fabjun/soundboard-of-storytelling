@@ -31,16 +31,19 @@ it became clear that further slice development without automated tests would be 
 **Gate order:** unit → E2E smoke → E2E full (CI); pre-commit: sync:docs → build → lint-staged → unit → E2E smoke → link:check (ADR-0037); pre-push: version bump + size → E2E all (ADR-0037).
 
 **Bundle size monitoring:** `@size-limit/file` measures gzip sizes after the build. Limits: JS
-200 KB, CSS 50 KB. Integrated in CI. Note: `@size-limit/preset-app` was rejected because it
+250 KB, CSS 50 KB. Integrated in CI. Note: `@size-limit/preset-app` was rejected because it
 uses Chrome for timing measurements via `estimo` and crashes on ARM Macs (M chip) due to a
 Chromium binary incompatibility. `@size-limit/file` measures gzip size without a Chrome
 dependency — sufficient.
 
-## Exceptions
-
-| Exception                                                        | Reason                                                                                                                                                                                                                                                                                                                                                                                                                        | Reference                   | Review       |
-| ---------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------- | ------------ |
-| JS bundle limit 250 KB instead of 200 KB (`v3/.size-limit.json`) | The app reached the 200 KB set on 2026-05-27 as a growth tripwire (200,199 bytes in 3.0.290). Splitting would not lower the measured sum of `dist/assets/*.js`, and the PWA precaches every chunk. Budget: about 0.62 MiB of critical-path JS for a JS-heavy app on a P75 device in 3 s (Alex Russell, "The Performance Inequality Gap, 2026"). Provisional, under the owner's authorization of 2026-11-08 for the time away. | BACKLOG "Bundle size limit" | owner review |
+**The JS limit is a growth tripwire under a budget** (owner decision 2026-11-17, option A; was
+200 KB from 2026-05-27, which the app reached in 3.0.290): 250 KB, about 18 % above the 212 KB
+measured in 3.0.301, so growth still stops a push and asks for a decision. The budget it stays
+under: about 0.62 MiB of critical-path JS for a JS-heavy app on a P75 device in 3 s (Alex Russell,
+"The Performance Inequality Gap, 2026", infrequently.org, 2025-11-24); performance budgets are
+derived from a target and enforced automatically (web.dev, "Performance budgets 101"). Splitting
+the code would not lower the measured sum of `dist/assets/*.js` — the PWA precaches every chunk.
+The next raise needs a start-up measurement on the target device (iPhone 13 Pro, Brave).
 
 ## Consequences
 

@@ -17,10 +17,17 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.304';
+export const APP_VERSION = '3.0.305';
 
 /** The developer log, newest first; CHANGELOG.md is generated from it (sync-changelog). */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.305',
+    date: '2026-11-17',
+    items: [
+      'docs: the JS bundle limit of 250 KB is the rule, no longer a provisional exception (owner decision 2026-11-17, option A) — a growth tripwire about 18 % above the 212 KB measured, under the budget of about 0.62 MiB of critical-path JS (Alex Russell, "The Performance Inequality Gap, 2026"; web.dev, "Performance budgets 101"); the next raise needs a start-up measurement on the target device. ADR-0033 §Decision, its `## Exceptions` row removed; BACKLOG "Bundle size limit" done',
+    ],
+  },
   {
     version: '3.0.304',
     date: '2026-11-17',
