@@ -7,6 +7,16 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.312 — 2026-11-17
+
+### Fixed
+
+- fix(audio): a pad stopped without a fade-out no longer clicks off — its sound runs out over STOP_FADE (20 ms) on its own gain instead of stopping at once, while the pad itself is stopped at once as before, so a tap right after starts it again (stopPad in engine.ts; Ableton "Create Fades on Clip Edges": up to 4 ms against clicks — a little more for the soft end the owner asked for, 2026-10-19). An immediate stop (STOP NOW, a mode switch, a restart) still cuts. Engine change under the standing approval of ADR-0048 Amendments 2026-11-17; the length is provisional, for the owner's listening check
+
+### Internal
+
+- test: engine — the sound runs out over 20 ms and the pad is free at once; a pad stopped without a fade-out starts again at once with a new sound; "stop immediately" now asks for the immediate stop it is named after; the two tests that stop a restarted pad expect the 20 ms end. Counter-checked: without the ramp the new test and both of those are red. A first version faded through the fade branch and held the pad for 120 ms — the E2E stop-all test (Enter, then a tap on the same pad) caught that a tap then stopped instead of starting it; this version keeps the pad free. docs: manual-iphone-checklist.md "A tapped pad stops softly" with the pad without a fade-out
+
 ## 3.0.311 — 2026-11-17
 
 ### Fixed
