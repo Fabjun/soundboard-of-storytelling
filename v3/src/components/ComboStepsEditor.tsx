@@ -65,7 +65,7 @@ export function ComboStepsEditor({
           + STEP
         </button>
       </div>
-      {steps.length === 0 && <div class="sb-hint-text">No steps yet</div>}
+      {steps.length === 0 && <div class="sb-hint-text">No steps yet — + STEP adds one.</div>}
 
       {steps.map((step, i) => {
         const offered = pool.filter(

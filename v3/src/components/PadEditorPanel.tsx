@@ -69,6 +69,7 @@ import { ComboStepsEditor } from './ComboStepsEditor';
 import { IconGlyph, useIconDrawings } from './PadIcons';
 import { IconPicker } from './IconPicker';
 import { PAD_ICONS_MAX } from '../lib/iconSet';
+import { NO_AUDIO_YET } from '../lib/helpTopics';
 import {
   padBaseOf,
   padTypeColor,
@@ -1091,7 +1092,9 @@ export function PadEditorPanel({
                     );
                   })}
                   {filteredAudio.length === 0 && (
-                    <div class="sb-lib-browser-no-results">No files found</div>
+                    <div class="sb-lib-browser-no-results">
+                      {allAudio.length === 0 ? NO_AUDIO_YET : 'No files found'}
+                    </div>
                   )}
                   <button
                     class="sb-btn sb-btn-primary sb-btn-block"
@@ -1226,7 +1229,9 @@ export function PadEditorPanel({
         {/* Decks — place the pad in other decks or take it out (ADR-0048) */}
         <div class="sb-inspector-section">
           <label class="sb-field-label">DECKS</label>
-          {decksByOrder.length === 0 && <div class="sb-hint-text">No decks yet</div>}
+          {decksByOrder.length === 0 && (
+            <div class="sb-hint-text">No decks yet — NEW DECK on the board adds one.</div>
+          )}
           {decksByOrder.map((d) => {
             // A full deck grows a row (ADR-0075), so every deck can take the pad
             const placed = d.placements.some((p) => p.padId === pad.id);

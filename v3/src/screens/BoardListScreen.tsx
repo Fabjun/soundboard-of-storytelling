@@ -315,7 +315,8 @@ function EmptyBoardsState({ onCreate }: { onCreate: () => void }): JSX.Element {
       <UiIcon name="board" size={48} color="var(--border)" />
       <div class="sb-display-vt is-heading">No Boards Yet</div>
       <div class="sb-empty-body">
-        A Board holds your pads and decks for one game session or campaign.
+        A board holds your pads and decks for one game session or campaign. CREATE FIRST BOARD
+        starts one; IMPORT restores a backup.
       </div>
       <button
         class="sb-btn sb-btn-primary sb-btn-cta"

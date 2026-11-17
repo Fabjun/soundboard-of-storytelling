@@ -193,6 +193,13 @@ const TOPIC_OF_SCREEN: Record<AppScreen, HelpTopicId | { play: HelpTopicId; edit
   board: { play: 'board-game', edit: 'board-setup' },
 };
 
+/**
+ * What a list of library audio says while the library is empty — the popover, the board's library
+ * panel and the PAD editor's file picker show it, and only the LIBRARY screen can import (17c).
+ */
+export const NO_AUDIO_YET =
+  'No audio in the library yet — IMPORT under LIBRARY in the main menu adds files.';
+
 /** Returns the topic of a place: the screen, and on a board its mode. */
 export function topicForPlace(screen: AppScreen, mode: AppMode): HelpTopicId {
   const topic = TOPIC_OF_SCREEN[screen];

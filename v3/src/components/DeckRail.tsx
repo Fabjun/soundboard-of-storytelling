@@ -306,11 +306,7 @@ export function DeckRail({
         </button>
       </div>
       {decks.length === 0 ? (
-        <div class="sb-panel-empty">
-          No decks yet.
-          <br />
-          Add one below.
-        </div>
+        <div class="sb-panel-empty">No decks yet — NEW DECK below adds one.</div>
       ) : (
         decks.map((deck, position) => {
           const isConflict =

@@ -22,6 +22,7 @@ import { UiIcon } from './UiIcon';
 import { Waveform } from './Waveform';
 import { libraryItems } from '../state/store';
 import { startLibDrag, type LibDndDropResult } from '../lib/libDnd';
+import { NO_AUDIO_YET } from '../lib/helpTopics';
 import { useState } from 'preact/hooks';
 
 interface LibraryPanelProps {
@@ -98,7 +99,7 @@ export function LibraryPanel({
       <div class="sb-scroll-fill">
         {sorted.length === 0 ? (
           <div class="sb-panel-empty">
-            {items.length === 0 ? 'No audio files in library.' : `No files matching "${search}"`}
+            {items.length === 0 ? NO_AUDIO_YET : `No files matching "${search}"`}
           </div>
         ) : (
           sorted.map((item) => (

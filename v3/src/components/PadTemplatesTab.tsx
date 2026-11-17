@@ -122,8 +122,7 @@ export function PadTemplatesTab(): JSX.Element {
     <div class="sb-col sb-flex-1">
       <div class="sb-list-bar">
         <span class="sb-caption">
-          A template keeps a pad's settings and which files it plays; make one with SAVE AS TEMPLATE
-          in the PAD editor. The files stay in the library.
+          A template keeps a pad's settings and which files it plays; the files stay in the library.
         </span>
       </div>
       {note && (
@@ -135,7 +134,7 @@ export function PadTemplatesTab(): JSX.Element {
         {templates.length === 0 ? (
           <div class="sb-screen-empty">
             <UiIcon name="board" size={32} color="var(--border)" />
-            No templates yet.
+            No templates yet — SAVE AS TEMPLATE in the PAD editor makes one.
           </div>
         ) : (
           templates.map((t) => <TemplateRow key={t.id} template={t} onAdd={() => setAdding(t)} />)

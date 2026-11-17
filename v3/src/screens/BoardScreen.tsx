@@ -552,7 +552,9 @@ export function BoardScreen(): JSX.Element {
             board.pads.length === 0 ? (
               // data-pos: a library drop lands here too (libDnd targets the closest [data-pos])
               <div class="sb-center-placeholder" data-pos="0,0">
-                No pads yet. Add one with ADD PAD or drop a file from the library.
+                {mode === 'edit'
+                  ? 'No pads yet — ADD PAD adds one, or drop a file from the library.'
+                  : 'No pads yet — SETUP adds them.'}
               </div>
             ) : (
               <>
