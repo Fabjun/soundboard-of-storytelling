@@ -3,8 +3,9 @@
  *
  * docs/product/features/adaptive-layout.md#decided L9 (owner decision 2026-10-11): one line says
  * which sounds play now — "N playing: a · b · c…" or "No sound" —, in the status bar on a wide
- * window and in the dock on a phone; a pad in another deck counts too. Needs playback, so Chromium
- * only (like audio).
+ * window and in the dock on a phone; a pad in another deck counts too. A playing Single shows its
+ * time left instead of its running time, a Loop until stopped keeps its running time (owner
+ * decision 2026-10-11). Needs playback, so Chromium only (like audio).
  */
 
 import { test, expect, type Page } from '@playwright/test';
@@ -58,6 +59,26 @@ test('the status bar says No sound, then which pads play, and No sound again aft
   await tap(page, 0);
   await tap(page, 1);
   await expect(line(page)).toHaveText('No sound');
+});
+
+test('a playing Single shows its time left; a Loop until stopped keeps its running time', async ({
+  page,
+}) => {
+  // A Single from the first library file (the popover's default type) next to the two Loops
+  await page.getByTestId('pad-grid-cell-empty-slot-2-0').click();
+  await page.locator('[data-testid^="pad-creation-popover-source-item-"]').first().click();
+  await page.getByTestId('pad-creation-popover-add-button').click();
+  await expect(pads(page)).toHaveCount(3);
+  await expect(pads(page).nth(2)).toContainText('0:01');
+
+  await enterGameMode(page);
+  await tap(page, 2);
+  await tap(page, 0);
+  await expect(pads(page).nth(2)).toContainText('−0:01'); // the 1 s test file, time left
+  await expect(pads(page).nth(0)).toContainText('0:01 ∞'); // a Loop has no end
+  // The Single ends by itself: its running time again
+  await expect(pads(page).nth(2)).not.toContainText('−');
+  await expect(pads(page).nth(2)).toContainText('0:01');
 });
 
 test('a pad in another deck still counts', async ({ page }) => {

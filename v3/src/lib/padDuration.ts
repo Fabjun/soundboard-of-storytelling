@@ -25,6 +25,14 @@ export function fileSeconds(file: PadFile, duration: number | undefined): number
 const show = (s: number): string => formatDuration(Math.ceil(s));
 
 /**
+ * Returns the time left of a playing pad as it shows it: a minus and m:ss, rounded up like the
+ * running time — while any time is left it never reads −0:00.
+ */
+export function remainingText(seconds: number): string {
+  return `−${show(Math.max(0, seconds))}`;
+}
+
+/**
  * Returns the running time the pad shows, or null (a Combo, or no file with a known length).
  * `durationOf` gives a library file's length in seconds by its hash.
  */

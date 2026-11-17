@@ -534,6 +534,7 @@ describe('guard: timers are listed with their reason (delayed writes use debounc
     'lib/touchDrag.ts': 'a finger drags only after a short press, so a swipe scrolls',
     'light/wled.ts': 'gives up a lamp call after its time limit — light never waits (light.md C6)',
     'state/stopControl.ts': 'ends the first STOP ALL stage when its fade is over (K16)',
+    'state/remainingTime.ts': 'reads the audio clock for the time left while a pad has an end',
   };
   const walkSrc = (dir: string): string[] =>
     readdirSync(dir, { withFileTypes: true }).flatMap((e) =>

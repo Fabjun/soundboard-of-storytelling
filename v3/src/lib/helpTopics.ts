@@ -81,6 +81,7 @@ export const HELP_TOPICS: readonly HelpTopic[] = [
     title: 'A board in GAME',
     text: [
       'Tap a pad to play it. A Single plays once — tap it again to stop it. A Loop plays until you tap it again. A Combo plays its steps.',
+      'A playing pad counts down the time left of its sound (−0:12); a tap to stop fades it out over its FADE OUT.',
       'STOP ALL fades every sound out; a second press stops everything at once. The padlock keeps the app in GAME, so a stray tap cannot switch to SETUP.',
       'The star bar (quick access) holds pads you need in every deck. The line at the bottom says what plays now.',
       'The keyboard and a numpad play and stop pads too — see Keys and numpad.',

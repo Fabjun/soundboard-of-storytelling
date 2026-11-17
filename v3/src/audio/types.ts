@@ -53,6 +53,12 @@ export type EnginePad = EngineSinglePad | EngineLoopPad | EnginePlaylistPad | Co
 export type AudioCallbacks = {
   onPadStarted: (id: string, isLoop: boolean) => void;
   onPadStopped: (id: string) => void;
+  /**
+   * When the sound a pad just started ends, on the audio clock (`audioClock`, which stands still
+   * during a pause); null for a loop that runs until it is stopped. Reported at each start — a Loop
+   * with several files reports each file (ADR-0048 Amendments 2026-11-17, remaining time).
+   */
+  onPadEnds?: (id: string, endsAt: number | null) => void;
   /** Resolves a pad by ID — required for combo step execution. */
   getPad: (id: string) => EnginePad | null;
 };

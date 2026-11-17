@@ -7,6 +7,16 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.313 — 2026-11-18
+
+### Added
+
+- feat(board): a playing pad shows its time left (−m:ss) instead of its running time, as Farrago does (owner decision 2026-10-11; BACKLOG "Remaining time on a playing pad"). The engine reports at each start when the sound ends on the audio clock (onPadEnds, audioClock — engine change under the standing approval of ADR-0048 Amendments 2026-11-17): a Single the file it picked, a Loop with a repeat count all its passes, a Loop with several files each file; a Loop until stopped has none and keeps its running time. The bridge keeps the ends in the store (padEndsAt); src/state/remainingTime.ts reads the clock with one timer, only while a pad has an end — the audio clock stands still in a pause, so the time left does too. The screen reader keeps the running time: a count each second would be noise
+
+### Internal
+
+- test: engine — the end of a Single (and of its trimmed region), none for a Loop until stopped, all passes of a repeat count, the current file of a list; unit remainingTime (no timer without an end, read at once and each tick, never below 0, a stopped pad drops its end, the timer stops with the last one) and padDuration remainingText; E2E now-playing — a playing Single shows −0:01 and its running time again once it ended, a Loop keeps 0:01 ∞. Counter-checked: without the report in playOnce, without stopping the timer, and with the running time always shown — each red
+
 ## 3.0.312 — 2026-11-17
 
 ### Fixed

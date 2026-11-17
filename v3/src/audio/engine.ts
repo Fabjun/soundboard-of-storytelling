@@ -158,17 +158,19 @@ function startLoopSource(
   hasDur: boolean,
   startAt?: number,
   repeat?: number,
-): void {
+): number | null {
   s.loop = true;
   s.loopStart = tStart;
   s.loopEnd = hasDur ? tEnd : (s.buffer?.duration ?? 0);
   const offset = startAt === undefined ? tStart : Math.min(Math.max(startAt, tStart), s.loopEnd);
   if (repeat === undefined) {
     s.start(0, offset);
-    return;
+    return null; // runs until stopped
   }
   const region = s.loopEnd - tStart;
-  s.start(0, offset, Math.max(0, repeat * region - (offset - tStart)));
+  const seconds = Math.max(0, repeat * region - (offset - tStart));
+  s.start(0, offset, seconds);
+  return seconds;
 }
 
 /**
@@ -176,17 +178,29 @@ function startLoopSource(
  * change 2026-10-03 — V1 played every playlist file whole). Without a trim end it plays to the
  * end of the file; a trim end not after the start counts as none, as for single files.
  */
-function startFileSource(s: AudioBufferSourceNode, file: PadFile): void {
+function startFileSource(s: AudioBufferSourceNode, file: PadFile): number {
   const tStart = file.trimStart ?? 0;
   const tEnd = file.trimEnd ?? 0;
   if (tEnd > tStart) s.start(0, tStart, tEnd - tStart);
   else s.start(0, tStart);
+  // How long it plays — for the remaining time the pad shows
+  return tEnd > tStart ? tEnd - tStart : Math.max(0, (s.buffer?.duration ?? 0) - tStart);
 }
 
 // ── Callback bridge ───────────────────────────────────────────────────────────
 
 function onPadStarted(id: string, isLoop: boolean): void {
   callbacks?.onPadStarted(id, isLoop);
+}
+
+/** Reports when the sound a pad just started ends: `seconds` from now, or null (until stopped). */
+function onPadEnds(id: string, seconds: number | null): void {
+  callbacks?.onPadEnds?.(id, seconds === null ? null : ctx!.currentTime + seconds);
+}
+
+/** Returns the audio clock in seconds — it stands still during a pause; 0 before `initAudio`. */
+export function audioClock(): number {
+  return ctx?.currentTime ?? 0;
 }
 
 function onPadStopped(id: string): void {
@@ -326,6 +340,7 @@ export async function playOnce(padId: string, pad: SinglePad): Promise<void> {
   };
 
   onPadStarted(padId, false);
+  onPadEnds(padId, hasDur ? dur! : Math.max(0, buf.duration - tStart));
 }
 
 // ── LOOP playback (V1 play() 'loop' path, ~line 3879) ────────────────────────
@@ -366,7 +381,7 @@ export async function playLoop(padId: string, pad: LoopPad): Promise<void> {
   const s = ctx.createBufferSource();
   s.buffer = buf;
   s.connect(g);
-  startLoopSource(s, tStart, tEnd, hasDur, pad.startAt, pad.repeat);
+  const seconds = startLoopSource(s, tStart, tEnd, hasDur, pad.startAt, pad.repeat);
   srcs[padId] = [s];
   // With a repeat count the source ends by itself after its passes (stopPad clears this first)
   if (pad.repeat !== undefined) {
@@ -378,6 +393,7 @@ export async function playLoop(padId: string, pad: LoopPad): Promise<void> {
   }
 
   onPadStarted(padId, true);
+  onPadEnds(padId, seconds);
 }
 
 // ── PLAYLIST playback (V1 play() playlist path + playNext, ~lines 3809–3944) ──
@@ -439,9 +455,10 @@ async function playNextTrack(padId: string, pad: PlaylistPad): Promise<void> {
   s.buffer = buf;
   s.connect(g);
   g.connect(masterGain!);
-  startFileSource(s, file);
+  const seconds = startFileSource(s, file);
   srcs[padId] = [s];
   gains[padId] = g;
+  onPadEnds(padId, seconds); // each file of the list counts down on its own
 
   // Release PCM before next decode to keep RAM flat (V1 pattern, line 3944)
   s.onended = () => {

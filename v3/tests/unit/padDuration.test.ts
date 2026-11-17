@@ -6,7 +6,7 @@
  */
 
 import type { ComboPad, LoopPad, SinglePad } from '../../src/types';
-import { fileSeconds, padDurationText } from '../../src/lib/padDuration';
+import { fileSeconds, padDurationText, remainingText } from '../../src/lib/padDuration';
 
 const base = { name: 'P', volume: 80, fadeIn: 0, fadeOut: 0, order: 'sequential' as const };
 const single = (files: SinglePad['files']): SinglePad => ({
@@ -34,6 +34,15 @@ describe('fileSeconds', () => {
   it('is null for an unknown or zero length', () => {
     expect(fileSeconds({ hash: 'x' }, undefined)).toBeNull();
     expect(fileSeconds({ hash: 'z' }, 0)).toBeNull();
+  });
+});
+
+describe('remainingText', () => {
+  it('a minus and m:ss, rounded up — the last second reads −0:01; never negative', () => {
+    expect(remainingText(12.2)).toBe('−0:13');
+    expect(remainingText(61)).toBe('−1:01');
+    expect(remainingText(0.3)).toBe('−0:01');
+    expect(remainingText(-2)).toBe('−0:00');
   });
 });
 

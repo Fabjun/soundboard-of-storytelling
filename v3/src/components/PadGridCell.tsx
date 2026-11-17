@@ -12,7 +12,8 @@
 import type { JSX } from 'preact';
 import type { AppMode, Pad } from '../types';
 import { padTypeColor, padTypeGlow, padTypeLabel, padTypeName } from '../lib/padUtils';
-import { padDurationText } from '../lib/padDuration';
+import { padDurationText, remainingText } from '../lib/padDuration';
+import { remainingSeconds } from '../state/remainingTime';
 import { keyLabel } from '../lib/padKeys';
 import { play, isPlaying } from '../audio/index';
 import { stopTapped } from '../state/stopControl';
@@ -97,6 +98,10 @@ export function PadGridCell({
   const descriptionId = `pad-grid-cell-description-${p.id}`;
   const isSetup = mode === 'edit';
   const isHot = playingPads.value.has(p.id);
+  // While it plays, the time left instead of the running time (Farrago; owner decision
+  // 2026-10-11) — the screen reader keeps the running time, as a count each second would be noise
+  const left = isHot ? remainingSeconds(p.id) : null;
+  const shownTime = left === null ? duration : remainingText(left);
   const isLooping = loopingPads.value.has(p.id);
 
   function handleTap(): void {
@@ -158,7 +163,7 @@ export function PadGridCell({
             shape and the description below) */}
         <div class="sb-pad-type-label" style={{ color }}>
           {typeLabel}
-          {duration && <span class="sb-pad-duration"> · {duration}</span>}
+          {shownTime && <span class="sb-pad-duration"> · {shownTime}</span>}
         </div>
         {/* What a screen reader says after the name: the type in plain words, the running time
             and the key (the badges show them; the name is the pad's name alone, WCAG 2.5.3) */}
