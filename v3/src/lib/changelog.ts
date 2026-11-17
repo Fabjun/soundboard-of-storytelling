@@ -17,10 +17,19 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.300';
+export const APP_VERSION = '3.0.301';
 
 /** The developer log, newest first; CHANGELOG.md is generated from it (sync-changelog). */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.301',
+    date: '2026-11-17',
+    items: [
+      'feat(help): Slice 17d — a welcome of three cards (Welcome, How it works, Get started; WELCOME_CARDS in helpTopics.ts) over the main menu on the first start: SKIP on every card but the last, BACK from the second on, NEXT and DONE; Escape skips. A modal dialog (WelcomeDialog, ADR-0074); BACK moves the focus to NEXT, as BACK goes away on the first card. Shown only to a fresh installation — never closed (prefs welcome-seen), no board, no audio — so an installation in use does not get it after the update; WELCOME in the help shows it again at any time. NN/g "Mobile Tutorials" / "Mobile-App Onboarding": card tutorials hardly make users faster — three cards, one subject each, always skippable. Slice 17 complete',
+      'test: unit — help.test.ts (fresh start shows it, closed it stays away, a board or one audio file is enough to skip it, the help opens it at any time; counter-checked: without the audio condition red), prefs.test.ts (welcome-seen kept after a reload, a damaged entry counts as not seen, the stored key); E2E welcome.spec.ts (Chromium and WebKit: card by card, focus on NEXT after BACK, DONE for good after a reload, Escape and SKIP close it, the help shows it again and the focus returns to WELCOME; counter-checked: without the focus move and without the first-start call red); a11y scans the first and the last card; mobile overflow — the welcome actions and the help header at 390 px (counter-checked with a forced width: red). The E2E helper openMainMenu skips the welcome, so every other spec starts as before',
+      'docs: CLAUDE.md Slice 17 complete; BACKLOG "Help screen and context help" done with what 17d built; README — the library at full scope and the help under "Available now" (Slice 16 was still under "Planned next")',
+    ],
+  },
   {
     version: '3.0.300',
     date: '2026-11-17',

@@ -21,7 +21,8 @@ export const TEST_AUDIO_NAME = 'test-audio-1s';
 
 /**
  * Opens the main menu: from the start screen through TAP TO START — which also unlocks the audio
- * (settings.md S15) — or stays when the menu is shown already.
+ * (settings.md S15) — or stays when the menu is shown already. The welcome of a fresh browser
+ * (Slice 17d) is skipped; tests/e2e/welcome.spec.ts tests it.
  */
 export async function openMainMenu(page: Page): Promise<void> {
   const start = page.getByRole('button', { name: 'TAP TO START', exact: true });
@@ -29,6 +30,12 @@ export async function openMainMenu(page: Page): Promise<void> {
   await start.or(menu).first().waitFor();
   if (await start.isVisible()) await start.click();
   await menu.waitFor();
+  // The tap opens the menu and the welcome in one render, so the welcome is there already
+  const welcome = page.getByTestId('welcome-dialog');
+  if (await welcome.isVisible()) {
+    await welcome.getByRole('button', { name: 'SKIP', exact: true }).click();
+    await welcome.waitFor({ state: 'detached' });
+  }
 }
 
 /** Navigate to the LibraryScreen from the start screen or the main menu. */

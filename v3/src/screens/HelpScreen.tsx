@@ -4,14 +4,15 @@
  *
  * Opened from the main menu and from the ? of a screen's header (src/state/help.ts), at the topic
  * of the place it came from; BACK returns there. The search and the topics are HelpContent, which
- * the help dialog over the PAD editor shows too.
+ * the help dialog over the PAD editor shows too. WELCOME shows the first start's cards again
+ * (Slice 17d).
  */
 
 import type { JSX } from 'preact';
 import { TopBar } from '../components/TopBar';
 import { UiIcon } from '../components/UiIcon';
 import { HelpContent } from '../components/HelpContent';
-import { closeHelp } from '../state/help';
+import { closeHelp, openWelcome } from '../state/help';
 import { helpTopic } from '../state/store';
 
 /** Shows the help topics, the one of the place it came from open. */
@@ -21,10 +22,15 @@ export function HelpScreen(): JSX.Element {
       <TopBar
         title="Help"
         right={
-          <button class="sb-btn sb-btn-sm sb-btn-ghost" onClick={closeHelp}>
-            <UiIcon name="back" size={11} />
-            BACK
-          </button>
+          <div class="sb-row">
+            <button class="sb-btn sb-btn-sm sb-btn-ghost" onClick={openWelcome}>
+              WELCOME
+            </button>
+            <button class="sb-btn sb-btn-sm sb-btn-ghost" onClick={closeHelp}>
+              <UiIcon name="back" size={11} />
+              BACK
+            </button>
+          </div>
         }
       />
       <div class="sb-page">

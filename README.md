@@ -17,7 +17,8 @@ an earlier prototype.
 
 Available now:
 
-- Audio library with import, renaming, deletion and waveform preview
+- Audio library with import, renaming, deletion, waveform preview, sorting, folders,
+  multi-select, a recycle bin, pad templates and own SVG icons; each file shows where it is used
 - Boards with a shared pad pool; decks are hand-picked views of it, and an overview lists every
   pad of a board, sortable
 - Three pad types: one-shot sounds and loops, each with one or several files, and combos that
@@ -37,14 +38,14 @@ Available now:
   from the message that follows
 - Settings: color themes, content width, keys for stop all and pause, what the Enter key stops,
   an animations switch, the backup reminder interval, license notices and a developer view
+- Help: a searchable help with a topic for every screen, a ? in every header that opens it there,
+  empty lists that name their next step, and a short welcome on first launch
 - Works with the keyboard alone and with screen readers; text follows the system text size
 - Installable, offline-capable web app
 
 Planned next:
 
 - A card format for larger pads
-- Library at the prototype's full scope with pad templates
-- Help on first launch
 
 ## Technology
 

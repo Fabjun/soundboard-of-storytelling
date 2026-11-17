@@ -200,6 +200,39 @@ const TOPIC_OF_SCREEN: Record<AppScreen, HelpTopicId | { play: HelpTopicId; edit
 export const NO_AUDIO_YET =
   'No audio in the library yet — IMPORT under LIBRARY in the main menu adds files.';
 
+/** One card of the welcome: its title and its paragraphs. */
+interface WelcomeCard {
+  title: string;
+  text: readonly string[];
+}
+
+/** The welcome's cards, in order: what the app is, how it works, the first steps (17d). */
+export const WELCOME_CARDS: readonly WelcomeCard[] = [
+  {
+    title: 'Welcome',
+    text: [
+      'Soundboard of Storytelling plays the sounds and music of a story told at the table — rain, a bell, the theme of the night — each on a pad, started with one tap or one key.',
+      'Everything stays on this device, and the app works without a connection once it is open. EXPORT saves it all in one file.',
+    ],
+  },
+  {
+    title: 'How it works',
+    text: [
+      'The LIBRARY holds your audio files. A pad plays them: a Single once, a Loop until it is stopped, a Combo step by step.',
+      'A board holds the pads of one game; its decks pick the pads for one part of it. In SETUP you build a board, in GAME you play it.',
+    ],
+  },
+  {
+    title: 'Get started',
+    text: [
+      '1. LIBRARY → IMPORT adds audio files.',
+      '2. BOARD → NEW BOARD makes a board. Open it: NEW DECK makes a deck, ADD PAD a pad that plays a file.',
+      '3. Switch to GAME and tap a pad. STOP ALL ends every sound.',
+      'The ? in every header explains the screen it is on. HELP in the main menu shows this welcome again.',
+    ],
+  },
+];
+
 /** Returns the topic of a place: the screen, and on a board its mode. */
 export function topicForPlace(screen: AppScreen, mode: AppMode): HelpTopicId {
   const topic = TOPIC_OF_SCREEN[screen];

@@ -42,6 +42,9 @@ export const helpReturn = signal<AppScreen>('menu');
 /** The help topic the help screen opens at — the place it was opened from (src/lib/helpTopics.ts). */
 export const helpTopic = signal<HelpTopicId>('menu');
 
+/** Whether the welcome shows over the screen (Slice 17d, src/state/help.ts). */
+export const welcomeOpen = signal(false);
+
 /** The board the board screen shows; null outside a board. */
 export const currentBoardId = signal<string | null>(null);
 /** The deck the board screen shows; ignored while the All pads view is open. */

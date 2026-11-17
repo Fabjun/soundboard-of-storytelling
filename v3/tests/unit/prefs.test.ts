@@ -55,6 +55,8 @@ import {
   getLibraryFolderMap,
   setLamps,
   setLibraryFolderMap,
+  getWelcomeSeen,
+  setWelcomeSeen,
 } from '../../src/state/prefs';
 import { BACKUP_REMINDER_DAYS } from '../../src/lib/backupExport';
 
@@ -443,6 +445,23 @@ describe('prefsVersion', () => {
   });
 });
 
+describe('welcome seen (Slice 17d)', () => {
+  it('not seen until noted; kept after a reload', async () => {
+    expect(getWelcomeSeen()).toBe(false);
+    setWelcomeSeen();
+    expect(getWelcomeSeen()).toBe(true);
+    await settled();
+    await loadPrefs();
+    expect(getWelcomeSeen()).toBe(true);
+  });
+
+  it('a damaged entry (not true) counts as not seen', async () => {
+    await kvPut('welcome-seen', 'yes');
+    await loadPrefs();
+    expect(getWelcomeSeen()).toBe(false);
+  });
+});
+
 describe('the stored keys', () => {
   // A renamed key would lose every user's setting with the next update: the names are what
   // earlier versions wrote.
@@ -474,6 +493,7 @@ describe('the stored keys', () => {
     setEnterStop('all');
     setDebugLogSwitch(true);
     setControlKey('pause', 'KeyP');
+    setWelcomeSeen();
     await settled();
     expect((await kvGetAll()).map(([k]) => k).sort()).toEqual(
       [
@@ -492,6 +512,7 @@ describe('the stored keys', () => {
         'pad-size-scope',
         'pad-size',
         'animations',
+        'welcome-seen',
         'enter-stop',
         'debug-log',
         'control-keys',

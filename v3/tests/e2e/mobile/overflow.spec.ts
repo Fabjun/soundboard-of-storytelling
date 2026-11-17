@@ -6,7 +6,8 @@
  * toBeVisible() — an element can be "visible" while its actual content clips
  * past the viewport edge if overflow is hidden on an ancestor.
  *
- *   Checks: pad-grid container, deck-rail, topbar, individual pad cells
+ *   Checks: pad-grid container, deck-rail, topbar, individual pad cells, the welcome's actions
+ *   and the help's header buttons
  *
  * Quarantined until 2026-10-09 as "the desktop layout fails at 390px"; the PAD editor became a
  * full-screen dialog (ADR-0074) and the deck list starts folded, and all tests passed when
@@ -137,5 +138,21 @@ test.describe('no horizontal overflow on a 390px phone', () => {
       scrollWidth,
       `StartScreen body.scrollWidth ${scrollWidth}px > viewport ${vp.width}px`,
     ).toBeLessThanOrEqual(vp.width);
+  });
+
+  test('the welcome and the help header do not overflow 390px viewport', async ({ page }) => {
+    const button = (name: string) => page.getByRole('button', { name, exact: true });
+    await page.goto('/soundboard-of-storytelling/');
+    await button('TAP TO START').click();
+    // The second card has all three actions: SKIP, BACK and NEXT
+    await button('NEXT').click();
+    for (const name of ['SKIP', 'BACK', 'NEXT']) {
+      await assertNoOverflow(page, button(name), `welcome ${name}`);
+    }
+    await button('SKIP').click();
+    await button('HELP').click();
+    for (const name of ['WELCOME', 'BACK']) {
+      await assertNoOverflow(page, button(name), `help ${name}`);
+    }
   });
 });

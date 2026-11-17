@@ -103,6 +103,12 @@ export function withEarlyVersions(
 /** The release notes the main menu shows, newest first (checked by whatsNew.test.ts). */
 export const WHATS_NEW: WhatsNewNotes[] = [
   {
+    version: '3.0.301',
+    new: [
+      'A short welcome of three cards on the first start explains the app and the first steps; WELCOME in the help shows it again.',
+    ],
+  },
+  {
     version: '3.0.300',
     improved: [
       'An empty list says which button fills it — the board list, the decks, the library, templates, own icons and combo steps.',

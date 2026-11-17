@@ -14,6 +14,7 @@ import { UiIcon } from '../components/UiIcon';
 import { AnimatedFlame } from '../components/AnimatedFlame';
 import { audioContextState, currentScreen } from '../state/store';
 import { initAudio } from '../audio/index';
+import { welcomeOnFirstStart } from '../state/help';
 
 /**
  * initAudio() MUST be the first statement — no await before it.
@@ -29,6 +30,7 @@ function handleStart(): void {
   }
   audioContextState.value = 'running';
   currentScreen.value = 'menu';
+  welcomeOnFirstStart();
 }
 
 /** Shows the start screen: the flame, the title and TAP TO START, which unlocks audio and opens the main menu. */
