@@ -4,9 +4,11 @@
  * SCOPE: Verifies that the primary navigation gestures work with real touch
  * events (tap()) on a 390×844 viewport with hasTouch: true.
  *
- *   A. TAP TO START button tap → the main menu (settings.md S15)
+ *   A. TAP TO START button tap → the main menu (settings.md S15) and, in a fresh browser, the
+ *      welcome over it (Slice 17d)
  *   B. LIBRARY button tap in the menu → LibraryScreen
  *   C. BOARD button tap in the menu → BoardListScreen; new-board-button visible
+ *   B and C tap the welcome's SKIP first, as a phone user would.
  *
  * OUT OF SCOPE (see docs/development/manual-iphone-checklist.md):
  *   File upload via iOS native picker, audio output, Ringer Switch, backgrounding.
@@ -14,7 +16,15 @@
  *   test would be green while the real device could fail.
  */
 
-import { test, expect } from '@playwright/test';
+import { test, expect, type Page } from '@playwright/test';
+
+/** TAP TO START, then SKIP on the welcome of the fresh browser — both with touch. */
+async function startAndSkipWelcome(page: Page): Promise<void> {
+  await page.getByRole('button', { name: 'TAP TO START', exact: true }).tap();
+  const welcome = page.getByRole('dialog', { name: 'Welcome', exact: true });
+  await welcome.getByRole('button', { name: 'SKIP', exact: true }).tap();
+  await expect(welcome).toBeHidden();
+}
 
 test('A — TAP TO START button tap opens the main menu', async ({ page }) => {
   await page.goto('/soundboard-of-storytelling/');
@@ -23,11 +33,12 @@ test('A — TAP TO START button tap opens the main menu', async ({ page }) => {
   await page.getByRole('button', { name: 'TAP TO START', exact: true }).tap();
 
   await expect(page.getByTestId('main-menu-screen')).toBeVisible();
+  await expect(page.getByRole('dialog', { name: 'Welcome', exact: true })).toBeVisible();
 });
 
 test('B — LIBRARY button tap opens LibraryScreen', async ({ page }) => {
   await page.goto('/soundboard-of-storytelling/');
-  await page.getByRole('button', { name: 'TAP TO START', exact: true }).tap();
+  await startAndSkipWelcome(page);
 
   await page.getByRole('button', { name: 'LIBRARY', exact: true }).tap();
 
@@ -37,7 +48,7 @@ test('B — LIBRARY button tap opens LibraryScreen', async ({ page }) => {
 
 test('C — BOARD button tap opens BoardListScreen', async ({ page }) => {
   await page.goto('/soundboard-of-storytelling/');
-  await page.getByRole('button', { name: 'TAP TO START', exact: true }).tap();
+  await startAndSkipWelcome(page);
 
   await page.getByRole('button', { name: 'BOARD', exact: true }).tap();
 

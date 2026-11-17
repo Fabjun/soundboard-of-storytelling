@@ -189,7 +189,7 @@ merged icons need an icon concept first. Minimal-first: the Combo editor (Slice 
 first, gestures later.
 **When:** after Slice 11, discussed with the owner before any plan.
 
-### Help screen and context help — Slice 17 (owner decision 2026-10-19)
+### ✅ Help screen and context help — Slice 17 (owner decision 2026-10-19)
 
 Owner idea, agreed on Claude's proposal (chat 2026-10-19), building on V1 (a three-card welcome on
 first launch — "Welcome / How it works / Get started" — and a ? per screen):
@@ -225,7 +225,15 @@ in Complex Applications": an empty state gives a direct pathway to the first ste
 list, All pads by mode (in GAME: SETUP), the deck list, the library, templates, own icons, combo
 steps, the PAD editor's decks; every list of library audio shares one text, as only the LIBRARY
 screen imports (`NO_AUDIO_YET` in `v3/src/lib/helpTopics.ts`). Guarded by `codeGuards` ("an empty
-state names the next step"). Next: 17d the welcome.
+state names the next step"). **17d built in 3.0.301 — Slice 17 complete:** three cards — Welcome,
+How it works, Get started (`WELCOME_CARDS` in `v3/src/lib/helpTopics.ts`) — over the main menu on
+the first start, skippable on every card, Escape skips; WELCOME in the help shows them again. NN/g
+"Mobile Tutorials" measured only minor differences between users who read card tutorials and users
+who skip them, and "Mobile-App Onboarding" advises against onboarding where the interface can
+explain itself — so three cards, one subject each. Shown only to a fresh installation (never
+closed, no board, no audio; provisional, for the owner's review): an installation in use does not
+get it after the update. The E2E helper `openMainMenu` skips it, so the other specs start as
+before.
 
 ### Built-in sample sounds — idea (Open)
 

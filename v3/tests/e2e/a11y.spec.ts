@@ -82,6 +82,18 @@ test('help, with a search', async ({ page }) => {
   expect(await violations(page)).toEqual([]);
 });
 
+test('the welcome, its first and its last card', async ({ page }) => {
+  await page.goto('/soundboard-of-storytelling/');
+  await page.getByRole('button', { name: 'TAP TO START', exact: true }).click();
+  await expect(page.getByRole('dialog', { name: 'Welcome', exact: true })).toBeVisible();
+  const found = (await violations(page)).map((v) => `first card — ${v}`);
+  await page.getByRole('button', { name: 'NEXT', exact: true }).click();
+  await page.getByRole('button', { name: 'NEXT', exact: true }).click();
+  await expect(page.getByRole('dialog', { name: 'Get started', exact: true })).toBeVisible();
+  found.push(...(await violations(page)).map((v) => `last card — ${v}`));
+  expect(found).toEqual([]);
+});
+
 test('main menu and Settings', async ({ page }) => {
   await page.goto('/soundboard-of-storytelling/');
   await openMainMenu(page);

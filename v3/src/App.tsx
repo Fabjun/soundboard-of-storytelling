@@ -5,13 +5,14 @@
  * boards) is already loaded when App first renders — see src/state/boot.ts and main.tsx.
  * On mount it asks once for persistent storage (ADR-0061) and puts the chosen theme and content
  * width on the root element (docs/product/features/settings.md S5, S3). The update prompt shows on every screen
- * (ADR-0066). In GAME on a board the screen stays on (docs/product/README.md K11).
+ * (ADR-0066). In GAME on a board the screen stays on (docs/product/README.md K11). The welcome
+ * (Slice 17d) shows over any screen while it is open — the first start's main menu or the help.
  */
 
 import { useEffect, useLayoutEffect } from 'preact/hooks';
 import { effect } from '@preact/signals';
 import type { JSX } from 'preact';
-import { currentMode, currentScreen, screenKeptOn } from './state/store';
+import { currentMode, currentScreen, screenKeptOn, welcomeOpen } from './state/store';
 import { getContentWidth, getDebugLogSwitch, getTheme, prefsVersion } from './state/prefs';
 import { applyTheme } from './lib/theme';
 import { startDebugLog, stopDebugLog } from './lib/debugLog';
@@ -26,6 +27,7 @@ import { BoardListScreen } from './screens/BoardListScreen';
 import { BoardScreen } from './screens/BoardScreen';
 import { HelpScreen } from './screens/HelpScreen';
 import { UpdatePrompt } from './components/UpdatePrompt';
+import { WelcomeDialog } from './components/WelcomeDialog';
 
 /**
  * Renders the screen `currentScreen` names and, on every screen, the update prompt; asks once for
@@ -79,6 +81,7 @@ export function App(): JSX.Element {
   return (
     <>
       <Screen />
+      {welcomeOpen.value && <WelcomeDialog />}
       <UpdatePrompt />
     </>
   );

@@ -401,3 +401,17 @@ export function setControlKey(action: ControlAction, code: string): void {
 export function resetControlKeys(): void {
   write(CONTROL_KEYS_KEY, undefined);
 }
+
+// ── Welcome (Slice 17d) ───────────────────────────────────────────────────────
+
+const WELCOME_KEY = 'welcome-seen';
+
+/** Whether the welcome was closed once — then the first start no longer shows it. */
+export function getWelcomeSeen(): boolean {
+  return cache.get(WELCOME_KEY) === true;
+}
+
+/** Notes that the welcome was closed, so the next start does not show it again. */
+export function setWelcomeSeen(): void {
+  write(WELCOME_KEY, true);
+}
