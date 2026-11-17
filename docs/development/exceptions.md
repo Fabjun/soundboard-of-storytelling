@@ -47,13 +47,11 @@ The reason is the comment line directly above — enforced by `testGuards.test.t
 | `v3/src/lib/flameMath.ts:68` | Formatting: keep the pixel table aligned row by row (Prettier would reflow it). |
 | `v3/src/lib/flameMath.ts:75` | Formatting: keep the pixel table aligned row by row (Prettier would reflow it). |
 
-## Quarantined tests (1)
+## Quarantined tests (0)
 
 Procedure: `docs/development/testing.md`; reference enforced by `testGuards.test.ts`.
 
-| Location                                 | Marker  | Reference                                                                      |
-| ---------------------------------------- | ------- | ------------------------------------------------------------------------------ |
-| `v3/tests/unit/audio/engine.test.ts:705` | `fails` | BACKLOG "Engine: a Single started again during its fade-out cannot be stopped" |
+_None._
 
 ## Modules without their own unit test (3)
 

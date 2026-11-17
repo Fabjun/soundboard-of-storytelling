@@ -17,10 +17,18 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.309';
+export const APP_VERSION = '3.0.310';
 
 /** The developer log, newest first; CHANGELOG.md is generated from it (sync-changelog). */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.310',
+    date: '2026-11-17',
+    items: [
+      "fix(audio): a Single started again during its fade-out can be stopped — the timer at the end of the fade deleted the pad's entry even when the pad had started again under the same id, so the new sound played on unstoppable; it now deletes only the entry it faded (stopPad in engine.ts, identity check of srcs). Not reachable from the UI: a fading pad counts as playing, so a tap or key stops it. First engine change under the standing approval of ADR-0048 Amendments 2026-11-17",
+      'test: engine — the test.fails pinning the bug is a test now (BACKLOG "Engine: a Single started again during its fade-out cannot be stopped"); counter-checked: without the identity check exactly this test is red, the 87 others stay green, among them the cleanup after an ordinary fade',
+    ],
+  },
   {
     version: '3.0.309',
     date: '2026-11-17',
