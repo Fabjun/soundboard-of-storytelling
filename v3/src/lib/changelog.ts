@@ -17,10 +17,18 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.307';
+export const APP_VERSION = '3.0.308';
 
 /** The developer log, newest first; CHANGELOG.md is generated from it (sync-changelog). */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.308',
+    date: '2026-11-17',
+    items: [
+      'docs: ADR-0048 Amendments 2026-11-17 (owner decision, option B) — a standing approval for three named engine changes: the remaining time on a playing pad, a short fade when a pad without fade-out stops, the fix for a Single started again during its fade-out. Each is its own pull request with the code before / after and tests on the simulated audio clock, merged when green; the owner listens on the device afterwards. Every other engine change keeps §4 (Michael Feathers, Working Effectively with Legacy Code)',
+      'docs: CLAUDE.md Workflow rule 7b names both standing approvals of 2026-11-17 — the three engine changes above, and changes to the landing scripts outside the repository when an error class asks for them (owner decision, option A; each reported in chat)',
+    ],
+  },
   {
     version: '3.0.307',
     date: '2026-11-17',

@@ -7,6 +7,13 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.308 — 2026-11-17
+
+### Internal
+
+- docs: ADR-0048 Amendments 2026-11-17 (owner decision, option B) — a standing approval for three named engine changes: the remaining time on a playing pad, a short fade when a pad without fade-out stops, the fix for a Single started again during its fade-out. Each is its own pull request with the code before / after and tests on the simulated audio clock, merged when green; the owner listens on the device afterwards. Every other engine change keeps §4 (Michael Feathers, Working Effectively with Legacy Code)
+- docs: CLAUDE.md Workflow rule 7b names both standing approvals of 2026-11-17 — the three engine changes above, and changes to the landing scripts outside the repository when an error class asks for them (owner decision, option A; each reported in chat)
+
 ## 3.0.307 — 2026-11-17
 
 ### Internal
