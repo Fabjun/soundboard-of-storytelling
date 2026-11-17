@@ -103,6 +103,12 @@ export function withEarlyVersions(
 /** The release notes the main menu shows, newest first (checked by whatsNew.test.ts). */
 export const WHATS_NEW: WhatsNewNotes[] = [
   {
+    version: '3.0.303',
+    new: [
+      'A playing pad glows softly behind it in its type’s color, and in GAME the Loops that do not play breathe gently — both stand still with Animations off in Settings.',
+    ],
+  },
+  {
     version: '3.0.302',
     behindTheScenes: [
       'The automatic tests now have to cover more of the app before a change is accepted.',

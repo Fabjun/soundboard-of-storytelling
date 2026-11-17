@@ -17,10 +17,19 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.302';
+export const APP_VERSION = '3.0.303';
 
 /** The developer log, newest first; CHANGELOG.md is generated from it (sync-changelog). */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.303',
+    date: '2026-11-17',
+    items: [
+      'feat(board): Slice 14c, the atmosphere (settings.md S6, owner decision 2026-11-17, option B) — a playing pad has an aura behind it in its type\'s color that breathes (the cell\'s ::before, reached with :has(), so padDnd\'s classes on the cell stay untouched; the pads sit above every aura, the grid isolates that order), and in GAME the spine of an idle Loop breathes (the pad\'s new is-loop class). Only opacity and transform move (web.dev, "How to create high-performance CSS animations"). Both move only while the app may animate: applyMotion (lib/motion.ts) puts sb-motion-off on the root when Settings → VISUALS → Animations is off or the system asks for reduced motion, and the animations are given only under prefers-reduced-motion: no-preference and without that class; the aura stays, still. Hearth glow and embers Parked (BACKLOG "Mode-awareness cues")',
+      'test: E2E atmosphere.spec.ts (Chromium, needs playback) — idle Loops breathe in GAME only, a Single does not; a playing Loop has an aura in the Loop glow color that breathes, and its spine stops; reduced motion and Animations off in Settings still them, the aura stays (counter-checked: without the motion gate of the aura, and with breathing in SETUP — red); unit applyMotion. Measured with a temporary CDP test, not kept: three breathing Loops cost the main thread about 13 ms in 5 s in headless Chromium; the GPU cost on an iPhone is a new item of the manual iPhone checklist',
+      'docs: settings.md S6, CLAUDE.md Slice 14, BACKLOG "Glanceable loop state" done and "Mode-awareness cues" parked; manual-iphone-checklist.md "The atmosphere runs smoothly"',
+    ],
+  },
   {
     version: '3.0.302',
     date: '2026-11-17',

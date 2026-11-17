@@ -13,8 +13,15 @@ import { useEffect, useLayoutEffect } from 'preact/hooks';
 import { effect } from '@preact/signals';
 import type { JSX } from 'preact';
 import { currentMode, currentScreen, screenKeptOn, welcomeOpen } from './state/store';
-import { getContentWidth, getDebugLogSwitch, getTheme, prefsVersion } from './state/prefs';
+import {
+  animationsOn,
+  getContentWidth,
+  getDebugLogSwitch,
+  getTheme,
+  prefsVersion,
+} from './state/prefs';
 import { applyTheme } from './lib/theme';
+import { applyMotion } from './lib/motion';
 import { startDebugLog, stopDebugLog } from './lib/debugLog';
 import { applyContentWidth } from './lib/contentWidth';
 import { requestPersistentStorage } from './db/persistentStorage';
@@ -39,14 +46,15 @@ export function App(): JSX.Element {
     void requestPersistentStorage();
   }, []);
 
-  // S5 / S3: the theme and the content width chosen in Settings, on the root element — a layout
-  // effect, so the first frame already shows them; re-applied whenever a preference changes
+  // S5 / S3 / S6: the theme, the content width and whether the app animates, on the root element —
+  // a layout effect, so the first frame already shows them; re-applied whenever a preference changes
   useLayoutEffect(
     () =>
       effect(() => {
         void prefsVersion.value;
         applyTheme(document.documentElement, getTheme());
         applyContentWidth(document.documentElement, getContentWidth());
+        applyMotion(document.documentElement, animationsOn());
       }),
     [],
   );
