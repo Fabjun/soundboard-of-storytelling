@@ -196,13 +196,15 @@ checked to exist (docsGuards).
   - Why manual: Suspend and resume of the iOS audio session can only be heard on the device.
   - Simulated: `v3/tests/e2e/pause.spec.ts` (Space, PAUSED, a new sound, STOP ALL during a pause).
 
-- [ ] **A tapped pad stops softly** _(3.0.311, owner's note 2026-10-19: "Der Ton endet eher abrupt")_
+- [ ] **A tapped pad stops softly** _(3.0.311 and 3.0.312, owner's note 2026-10-19: "Der Ton endet eher abrupt")_
   - Action: In GAME play a pad with FADE OUT set (e.g. 2 s) and tap it again; do the same in the
-    quick-access bar.
-  - Expected: The sound fades out over the pad's FADE OUT instead of stopping at once; the pad
-    shows as stopped right away.
-  - Why manual: Only the ear tells a fade from a cut.
-  - Simulated: `v3/tests/unit/stopControl.test.ts` (the stop is asked with the pad's fade-out).
+    quick-access bar. Then a loud pad with FADE OUT 0: tap it to stop, and tap it again at once.
+  - Expected: The first fades out over the pad's FADE OUT instead of stopping at once. The one
+    without a fade-out ends softly, without a click, but still at once (20 ms), and the second tap
+    starts it again. Every pad shows as stopped right away.
+  - Why manual: Only the ear tells a fade from a cut, and a click from a soft end.
+  - Simulated: `v3/tests/unit/stopControl.test.ts` (the stop is asked with the pad's fade-out),
+    `v3/tests/unit/audio/engine.test.ts` (the 20 ms ramp, the pad free at once).
 
 ---
 

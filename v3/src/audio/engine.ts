@@ -456,8 +456,17 @@ async function playNextTrack(padId: string, pad: PlaylistPad): Promise<void> {
 // ── STOP ──────────────────────────────────────────────────────────────────────
 
 /**
- * Stops a pad. fadeOut is the per-pad fadeOut setting in seconds (0 = immediate
- * cut). immediate=true always overrides to instant stop regardless of fadeOut.
+ * How long the sound of a pad stopped without a fade-out still runs out, in seconds: 20 ms instead
+ * of a cut — a cut sound clicks and ends abruptly (owner's note 2026-10-19). Ableton fades clip
+ * edges by up to 4 ms against clicks ("Create Fades on Clip Edges"); a little more makes the end
+ * soft without being heard as a fade. The pad itself is stopped at once, as before — it can be
+ * started again right away. ADR-0048 Amendments 2026-11-17.
+ */
+export const STOP_FADE = 0.02;
+
+/**
+ * Stops a pad. fadeOut is the per-pad fadeOut setting in seconds; without one the pad stops at
+ * once and its sound runs out over STOP_FADE. immediate=true always cuts at once.
  */
 export function stopPad(padId: string, immediate = false, fadeOut = 0): void {
   if (comboState[padId]) {
@@ -496,10 +505,20 @@ export function stopPad(padId: string, immediate = false, fadeOut = 0): void {
       fo * 1000 + 100,
     );
   } else {
+    // Not immediate: the sound runs out over STOP_FADE on its own gain, which no later start of
+    // this pad uses (a new start makes a new one)
+    const g = immediate ? undefined : gains[padId];
+    const end = g ? ctx!.currentTime + STOP_FADE : undefined;
+    if (g && end !== undefined) {
+      g.gain.cancelScheduledValues(ctx!.currentTime);
+      g.gain.setValueAtTime(g.gain.value, ctx!.currentTime);
+      g.gain.linearRampToValueAtTime(0, end);
+    }
     srcs[padId].forEach((s) => {
       try {
         s.onended = null;
-        s.stop();
+        if (end === undefined) s.stop();
+        else s.stop(end);
       } catch (_) {}
     });
     delete srcs[padId];

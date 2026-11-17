@@ -586,10 +586,34 @@ describe('stopping', () => {
   test('stop immediately: sources stopped now, reported stopped', async () => {
     await audio.play('l', loop('l', 'h1'));
     await flush();
-    audio.stop('l');
+    audio.stop('l', true);
     expect(ctx.sources[0].stopped).toEqual({ when: 'now' });
     expect(stopped).toEqual(['l']);
     expect(audio.isPlaying('l')).toBe(false);
+  });
+
+  // A pad without a fade-out ends over STOP_FADE instead of a cut, which clicks (owner's note
+  // 2026-10-19, ADR-0048 Amendments 2026-11-17); it counts as stopped at once
+  test('stop without a fade-out: the sound runs out over STOP_FADE, the pad stops at once', async () => {
+    await audio.play('l', loop('l', 'h1'));
+    await flush();
+    audio.stop('l');
+    expect(ctx.gains.at(-1)!.gain.events.slice(-1)).toEqual([['ramp', 0, 0.02]]);
+    expect(ctx.sources[0].stopped).toEqual({ when: 0.02 });
+    expect(stopped).toEqual(['l']);
+    // Stopped at once, as before the short fade: a tap right after starts it again
+    expect(audio.isPlaying('l')).toBe(false);
+  });
+
+  test('a pad stopped without a fade-out starts again at once, with a new sound', async () => {
+    await audio.play('s', single('s', 'h1'));
+    await flush();
+    audio.stop('s');
+    await audio.play('s', single('s', 'h1'));
+    await flush();
+    expect(ctx.sources).toHaveLength(2);
+    expect(ctx.sources[1].stopped).toBeNull();
+    expect(audio.isPlaying('s')).toBe(true);
   });
 
   test('stop with fade-out: ramps to 0, stops at the end, cleans up after the fade', async () => {
@@ -657,7 +681,8 @@ describe('stopping', () => {
     expect(ctx.sources[1].stopped).toBeNull();
     expect(audio.isPlaying('a')).toBe(true);
     audio.stop('a');
-    expect(ctx.sources[1].stopped).toEqual({ when: 'now' }); // and the new one can be stopped
+    // and the new one can be stopped (over the short stop fade — the clock still says 0)
+    expect(ctx.sources[1].stopped).toEqual({ when: 0.02 });
   });
 
   test('stopAll during fadeOutAll cuts the fading sounds at once (the second STOP ALL press)', async () => {
@@ -710,7 +735,7 @@ describe('stopping', () => {
     vi.advanceTimersByTime(1100);
     expect(audio.isPlaying('s')).toBe(true);
     audio.stop('s');
-    expect(ctx.sources.at(-1)!.stopped).toEqual({ when: 'now' });
+    expect(ctx.sources.at(-1)!.stopped).toEqual({ when: 0.02 }); // over the short stop fade
   });
 });
 
