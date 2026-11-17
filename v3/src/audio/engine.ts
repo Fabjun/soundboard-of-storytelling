@@ -482,8 +482,13 @@ export function stopPad(padId: string, immediate = false, fadeOut = 0): void {
       } catch (_) {}
     });
     const pid = padId;
+    const fading = srcs[pid];
     setTimeout(
       () => {
+        // A pad started again during the fade has new entries under the same id — they are not
+        // this fade's to delete (BACKLOG "Engine: a Single started again during its fade-out
+        // cannot be stopped"; ADR-0048 Amendments 2026-11-17)
+        if (srcs[pid] !== fading) return;
         delete srcs[pid];
         delete gains[pid];
         delete playPos[pid];

@@ -696,13 +696,11 @@ describe('stopping', () => {
     expect(stopped).toEqual(['p']);
   });
 
-  // KNOWN ENGINE BUG (found 2026-10-08, Slice 12b): stopPad with a fade-out deletes the pad's
-  // entry when the fade ends (engine.ts, stopPad: setTimeout → delete srcs[pid]). A Single started
-  // again within the fade gets a new entry under the same id, which that timer deletes: the new
-  // sound plays on but cannot be stopped. Not reachable from the UI (a fading pad still counts as
-  // playing, so a tap or key stops it); only a direct play() hits it. Engine change → owner.
-  // BACKLOG "Engine: a Single started again during its fade-out cannot be stopped".
-  test.fails('a Single started again during its fade-out can still be stopped', async () => {
+  // Found 2026-10-08 (Slice 12b), fixed 2026-11-17 (ADR-0048 Amendments): the timer at the end of a
+  // fade deleted the pad's entry even when a Single had started again under the same id within the
+  // fade — the new sound played on and could not be stopped. The timer now deletes only the entry
+  // it faded. Not reachable from the UI (a fading pad counts as playing, so a tap stops it).
+  test('a Single started again during its fade-out can still be stopped', async () => {
     vi.useFakeTimers();
     await audio.play('s', single('s', 'h1'));
     await flush();

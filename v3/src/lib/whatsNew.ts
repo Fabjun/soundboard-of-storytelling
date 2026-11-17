@@ -103,6 +103,12 @@ export function withEarlyVersions(
 /** The release notes the main menu shows, newest first (checked by whatsNew.test.ts). */
 export const WHATS_NEW: WhatsNewNotes[] = [
   {
+    version: '3.0.310',
+    behindTheScenes: [
+      'A sound started again while it fades out can always be stopped — a rare case the app did not handle before.',
+    ],
+  },
+  {
     version: '3.0.309',
     fixed: ['A new pad closed in the editor without SAVE no longer stays behind as an empty pad.'],
   },

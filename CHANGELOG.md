@@ -7,6 +7,16 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.310 — 2026-11-17
+
+### Fixed
+
+- fix(audio): a Single started again during its fade-out can be stopped — the timer at the end of the fade deleted the pad's entry even when the pad had started again under the same id, so the new sound played on unstoppable; it now deletes only the entry it faded (stopPad in engine.ts, identity check of srcs). Not reachable from the UI: a fading pad counts as playing, so a tap or key stops it. First engine change under the standing approval of ADR-0048 Amendments 2026-11-17
+
+### Internal
+
+- test: engine — the test.fails pinning the bug is a test now (BACKLOG "Engine: a Single started again during its fade-out cannot be stopped"); counter-checked: without the identity check exactly this test is red, the 87 others stay green, among them the cleanup after an ordinary fade
+
 ## 3.0.309 — 2026-11-17
 
 ### Fixed

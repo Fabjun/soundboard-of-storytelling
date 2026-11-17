@@ -860,7 +860,11 @@ fade (the old combo step let that through at full volume); STOP NOW still cuts t
 (`fadingSources`). The second engine bug ("a Single started again during its fade-out") stays as
 decided.
 
-### Engine: a Single started again during its fade-out cannot be stopped
+### Engine: a Single started again during its fade-out cannot be stopped ✅ Done (3.0.310)
+
+✅ **Done (3.0.310, standing approval ADR-0048 Amendments 2026-11-17):** the timer at the end of a
+fade deletes the pad's entry only while it is still the one it faded (`stopPad` in
+`v3/src/audio/engine.ts`); the `test.fails` became a test. No change a user can hear from the UI.
 
 Found 2026-10-08 (Slice 12b): `stopPad` with a fade-out deletes the pad's entry when the fade
 ends; a Single started again within the fade gets a new entry under the same id, which that timer
