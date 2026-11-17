@@ -17,10 +17,17 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.301';
+export const APP_VERSION = '3.0.302';
 
 /** The developer log, newest first; CHANGELOG.md is generated from it (sync-changelog). */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.302',
+    date: '2026-11-17',
+    items: [
+      'test: coverage floor raised at the close of Slice 17 to the values the pre-push gate of #204 measured, rounded down — lines 98 → 99, statements 97 → 98, functions 97 → 98 (measured 99.13 / 98.43 / 98.21); branches stay at 95 (measured 95.89)',
+    ],
+  },
   {
     version: '3.0.301',
     date: '2026-11-17',

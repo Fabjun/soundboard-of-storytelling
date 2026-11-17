@@ -7,6 +7,12 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.302 — 2026-11-17
+
+### Internal
+
+- test: coverage floor raised at the close of Slice 17 to the values the pre-push gate of #204 measured, rounded down — lines 98 → 99, statements 97 → 98, functions 97 → 98 (measured 99.13 / 98.43 / 98.21); branches stay at 95 (measured 95.89)
+
 ## 3.0.301 — 2026-11-17
 
 ### Added
