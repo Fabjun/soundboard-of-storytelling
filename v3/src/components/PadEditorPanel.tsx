@@ -116,6 +116,8 @@ interface PadEditorPanelProps {
   deck: Deck | null;
   board: Board;
   onClose: () => void;
+  /** Called after SAVE wrote the pad — a new pad then stays when the editor closes. */
+  onSave?: () => void;
   onDelete: (padId: string) => void;
   /** Removes the pad from `deck` only (deck view). */
   onRemoveFromDeck: (padId: string) => void;
@@ -140,6 +142,7 @@ export function PadEditorPanel({
   deck,
   board,
   onClose,
+  onSave,
   onDelete,
   onRemoveFromDeck,
 }: PadEditorPanelProps): JSX.Element {
@@ -356,6 +359,7 @@ export function PadEditorPanel({
     historyRef.current = seal(historyRef.current);
     setHistory(historyRef.current);
     dropDraft();
+    onSave?.();
   }
 
   /** SAVE AS TEMPLATE — keeps a copy of the pad as shown (library.md L6). */

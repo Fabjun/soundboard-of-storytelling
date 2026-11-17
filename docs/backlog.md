@@ -870,7 +870,15 @@ pad still counts as playing (`isPlaying`), so a tap or its key stops it instead 
 again; only code that calls `play()` during the fade hits it. Kept known for later engine work.
 **When:** an engine change — the owner decides (ADR-0048 §4), with a playback check.
 
-### A new pad discarded in its first edit stays, empty
+### A new pad discarded in its first edit stays, empty ✅ Done (3.0.309)
+
+✅ **Done (3.0.309, provisional under CLAUDE.md Workflow rule 7b, for the owner's review):** the
+second fix, in the form both share for the user — a pad ADD PAD made goes again when its editor
+closes before the first SAVE, discarded or left unchanged (`v3/src/screens/BoardScreen.tsx`,
+`unsavedNewPadId`); after SAVE it stays. Creating it only on the first SAVE would have the editor
+work on a pad not on the board, which the draft, the undo history and the deck checkboxes do not
+expect today. A draft left by a page closed mid-edit (ADR-0084) keeps its pad, as the board does
+not know after a reload that it was new.
 
 Found 2026-10-12 while building ADR-0084: ADD PAD puts the pad on the board at once and opens the
 editor; DISCARD CHANGES in that first edit keeps the pad, unnamed ("—"). Material's creation

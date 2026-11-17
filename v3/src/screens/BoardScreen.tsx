@@ -103,6 +103,12 @@ export function BoardScreen(): JSX.Element {
 
   const [rightPanel, setRightPanel] = useState<RightPanelMode>('empty');
   const [selectedPadId, setSelectedPadId] = useState<string | null>(null);
+  /**
+   * The pad ADD PAD just made, until its first SAVE: closing the editor before that takes it off
+   * the board again — as a creation dialog creates nothing until SAVE (Material Design,
+   * full-screen dialogs; BACKLOG "A new pad discarded in its first edit stays, empty").
+   */
+  const [unsavedNewPadId, setUnsavedNewPadId] = useState<string | null>(null);
   /** The PAD SIZE slider's value while it is dragged — the grid shows it live, nothing is saved yet. */
   const [padSizePreview, setPadSizePreview] = useState<number | null>(null);
   /** Mobile Place-Mode: non-null while user is tapping a slot to place a library item. */
@@ -193,6 +199,7 @@ export function BoardScreen(): JSX.Element {
     if (added) {
       setSelectedPadId(pad.id);
       setRightPanel('editor');
+      setUnsavedNewPadId(pad.id);
     }
   }
 
@@ -231,6 +238,12 @@ export function BoardScreen(): JSX.Element {
   }
 
   function handleEditorClose() {
+    // A new pad closed before its first SAVE — discarded or left unchanged — goes again
+    if (board && selectedPadId !== null && selectedPadId === unsavedNewPadId) {
+      const padId = selectedPadId;
+      applyBoardChange(board.id, 'discard new pad', (b) => deletePad(b, padId));
+    }
+    setUnsavedNewPadId(null);
     setSelectedPadId(null);
     setRightPanel('empty');
   }
@@ -651,6 +664,7 @@ export function BoardScreen(): JSX.Element {
                 deck={deck?.placements.some((p) => p.padId === selectedPad.id) ? deck : null}
                 board={board}
                 onClose={handleEditorClose}
+                onSave={() => setUnsavedNewPadId(null)}
                 onDelete={handlePadDelete}
                 onRemoveFromDeck={handleRemoveFromDeck}
               />
