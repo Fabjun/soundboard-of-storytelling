@@ -701,6 +701,10 @@ Before committing a slice, also:
    autonomously once all gates are green; report the result with `git show --stat` and name
    any file outside the plan's file list. Stop and ask when a genuine decision is open
    (a new scheme or convention, anything irreversible or outward-facing beyond a normal push).
+   7a. **Main only through pull requests (ADR-0076, owner decision 2026-10-08):** the ruleset
+   `protect-main` rejects direct pushes; work goes to a branch and a pull request, and is
+   squash-merged once the pre-push gate ran green and every required check passes
+   (`gh pr checks`). Renaming a `tests.yml` job means updating the ruleset in the same change.
    7b. **Reversible decisions are taken provisionally (owner decision 2026-11-17):** a product or
    detail decision that can be taken back — a "two-way door" (Jeff Bezos, letter to shareholders
    2015), delegation level 6 "inquire" (Jurgen Appelo, Management 3.0, Delegation Poker) — is not
@@ -710,11 +714,9 @@ Before committing a slice, also:
    different choice at review comes as a small follow-up pull request. Still put to the owner
    first: anything irreversible or endangering user data, a change to the audio engine, a new
    rule or scheme, widening a fix beyond the single case, a conflict between rules, and steps
-   outside the repository.
-   7a. **Main only through pull requests (ADR-0076, owner decision 2026-10-08):** the ruleset
-   `protect-main` rejects direct pushes; work goes to a branch and a pull request, and is
-   squash-merged once the pre-push gate ran green and every required check passes
-   (`gh pr checks`). Renaming a `tests.yml` job means updating the ruleset in the same change.
+   outside the repository. Two standing approvals of the same day narrow the last list: the three
+   engine changes named in ADR-0048 Amendments 2026-11-17, and changes to the landing scripts
+   outside the repository when an error class asks for them (each reported in chat).
 
 ---
 

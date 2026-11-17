@@ -147,6 +147,19 @@ reading order in as many columns as the window allows — refined by
 board (`Board.padSize`, one size for all decks — ADR-0075 Amendments); `gridConfig` is `cols`,
 `rows`, `gap`. The type above shows the shape of 2026-09-28.
 
+**2026-11-17 (owner decision, option B) — §4 standing approval for three named engine changes:**
+the remaining time on a playing pad (the engine reports which file starts and when), a short fade
+when a pad without fade-out stops, and the fix for a Single started again during its fade-out
+(BACKLOG "Engine: a Single started again during its fade-out cannot be stopped"). For these three,
+steps 2 and 3 of §4 change: the pull request shows the affected functions, the reason and the code
+before / after; unit tests on the simulated audio clock (`v3/tests/unit/audio/engine.test.ts`)
+pin the old behavior that stays and the new one; it is merged once every check is green, and the
+owner listens on the device afterwards (an item of `docs/development/manual-iphone-checklist.md`);
+a wrong sound brings a follow-up pull request. Step 1 stays — each is its own pull request. Any
+other engine change keeps §4 as written; "do not redesign" (CLAUDE.md) stands. Standard: Michael
+Feathers, _Working Effectively with Legacy Code_ — change inherited code in small steps under
+tests that pin its behavior; what only the ear can check stays with the owner.
+
 ## Related
 
 - **Files:** `v3/src/types.ts`, `v3/src/db/idb.ts`, `v3/src/state/store.ts`, `v3/src/audio/`
