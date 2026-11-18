@@ -17,10 +17,18 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.314';
+export const APP_VERSION = '3.0.315';
 
 /** The developer log, newest first; CHANGELOG.md is generated from it (sync-changelog). */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.315',
+    date: '2026-11-18',
+    items: [
+      'test: E2E pad-light — a pad played from the quick-access bar sends its light (the audio bridge starts the light of every pad that starts; light.md listed it as not yet built). Counter-checked: with the bar not playing the pad, nothing reaches the lamp — red',
+      'docs: light.md "Not yet" no longer lists the quick-access light; BACKLOG "e2e-full runtime near its 25-min limit" — 12–17 min of 25 in the green runs of 2026-11-17, one run canceled at the limit on a slow runner; plan: Playwright shards, or a higher limit; trigger: a green run over 20 min or a second cancel',
+    ],
+  },
   {
     version: '3.0.314',
     date: '2026-11-18',
