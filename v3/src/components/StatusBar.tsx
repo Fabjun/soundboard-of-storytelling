@@ -8,6 +8,7 @@ import type { ComponentChildren, JSX } from 'preact';
 import type { AppMode } from '../types';
 import { saveState, screenKeptOn } from '../state/store';
 import { lightTrouble } from '../light/padLight';
+import { courseMinutesLeft } from '../light/course';
 import { UiIcon } from './UiIcon';
 
 /** The words for each save state (Slice 12e). */
@@ -32,8 +33,8 @@ interface StatusBarProps {
 
 /**
  * Shows the mode (LIVE in GAME, EDIT in SETUP), whether changes are saved (SAVING… / SAVED /
- * NOT SAVED, Slice 12e), LIGHT ✕ while a lamp did not answer (light.md C6), SCREEN ON while the
- * screen is kept on, the board name, an info text,
+ * NOT SAVED, Slice 12e), LIGHT ✕ while a lamp did not answer (light.md C6), the minutes left of
+ * a running light course (K2), SCREEN ON while the screen is kept on, the board name, an info text,
  * which sounds play now (`playing`) and a right slot; as the dock (`dock`) it is taller.
  */
 export function StatusBar({
@@ -87,6 +88,11 @@ export function StatusBar({
           </>
         )}
       </span>
+      {courseMinutesLeft.value !== null && (
+        <span class="sb-status-section" data-testid="status-bar-course-text">
+          LIGHT {courseMinutesLeft.value} min left
+        </span>
+      )}
       {screenKeptOn.value && (
         <span class="sb-status-section" data-testid="status-bar-screen-on-text">
           SCREEN ON

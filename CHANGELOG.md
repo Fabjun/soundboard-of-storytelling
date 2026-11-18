@@ -7,6 +7,17 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.321 — 2026-11-18
+
+### Added
+
+- feat(light): a light course, step 1 of light.md "Light course and short lights" (plan approved by the owner 2026-11-18, K1–K6) — a pad's light can go from one color and brightness to another over 1–255 minutes and keep the end light (PadLight {lamp, course}, types.ts LightCourse / LightPoint). WLED fades at most 65 s ("tt", JSON API), so the app runs it (src/light/course.ts): the start at once, then every 10 s (a tenth of a shorter course) the point one step ahead with that step as the transition; a timer the browser runs late makes the next transition as long as the gap it measured, up to 60 s (Chrome wakes a hidden, silent page once a minute). wled.ts sends {"on":true,"bri","tt","seg":{"fx":0,"col"}} and checks a course (isLightCourse); any other light a pad starts ends the course, a pad without light leaves it (K3); TRY plays the whole way in 10 s (tryLight); the status bar shows "LIGHT 12 min left"; parseBoard checks it, so the backup carries it
+
+### Internal
+
+- docs: light.md — the plan with K1–K6 and its sources (WLED JSON API, the WLED nightlight, ETC Eos submaster restore, Chrome timer throttling), step 1 built; the help topic Light names the course; the iPhone checklist "A light course on the real lamp"
+- test: unit course (the colors at 0, half and the end; the start at once; the steps one ahead; the end reached and stopped; the minutes left; a late timer up to 60 s; a short course; a new course and stopCourse), wled (a point's body with tt in tenths, a course's ranges), padLight (a course to every lamp, ended by another light, left by a pad without light; none without a lamp; TRY in 10 s), boardModel (a course kept, a bad one refused); E2E pad-light — TRY in 10 s, the pad over two minutes in steps of 10 s, the status bar counting (the clock moves a step at a time: one jump also runs out each call's 1 s limit); layout-reach and a11y also walk the Course choice. Counter-checked: a late timer without the measured gap, a light that does not end the course, tt in seconds, the status bar without the course — each red at its test
+
 ## 3.0.320 — 2026-11-18
 
 ### Fixed

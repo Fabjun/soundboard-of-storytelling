@@ -117,6 +117,15 @@ test('every control of both PAD editor tabs can be reached on a short window', a
           .getByText('Effect', { exact: true })
           .click(),
     },
+    // "Course" shows two colors with their brightness and the minutes (light.md K2)
+    {
+      tab: 'LIGHT',
+      prepare: () =>
+        page
+          .getByRole('tabpanel', { name: 'LIGHT', exact: true })
+          .getByText('Course', { exact: true })
+          .click(),
+    },
   ];
   for (const { tab, prepare } of tabs) {
     await page.getByRole('tab', { name: tab, exact: true }).click();

@@ -12,10 +12,17 @@
  * words why it failed.
  */
 
-import type { LightEffect } from '../types';
+import type { LightCourse, LightEffect, LightPoint } from '../types';
 
-/** What a pad asks the lamp for: one of its presets (1–250), an effect, or off. */
-export type LightCommand = { preset: number } | { effect: LightEffect } | { off: true };
+/**
+ * What a pad asks the lamp for: one of its presets (1–250), an effect, one point of a course with
+ * the transition to it in ms (light.md K1), or off.
+ */
+export type LightCommand =
+  | { preset: number }
+  | { effect: LightEffect }
+  | { point: LightPoint; transitionMs: number }
+  | { off: true };
 
 /** Highest preset id WLED keeps (JSON API: "ps", −1 to 250). */
 export const PRESET_MAX = 250;
@@ -35,6 +42,17 @@ type EffectBody = {
   on: true;
   bri: number;
   seg: { fx: number; sx: number; ix: number; col: [[number, number, number]] };
+};
+
+/**
+ * The JSON body WLED takes for a point of a course: on, its brightness, the transition in tenths of
+ * a second (`tt`, for this call only), and the main segment in Solid (effect 0) with its color.
+ */
+type PointBody = {
+  on: true;
+  bri: number;
+  tt: number;
+  seg: { fx: 0; col: [[number, number, number]] };
 };
 
 /** Turns `#rrggbb` into WLED's color array `[r, g, b]`. */
@@ -59,6 +77,30 @@ export function isLightEffect(v: unknown): v is LightEffect {
     byte(e.speed, 0) &&
     byte(e.intensity, 0) &&
     byte(e.brightness, 1)
+  );
+}
+
+/** Tells whether `v` is a light of a course: a color `#rrggbb` and a brightness of 1–255. */
+function isLightPoint(v: unknown): v is LightPoint {
+  if (typeof v !== 'object' || v === null) return false;
+  const p = v as Record<string, unknown>;
+  return typeof p.color === 'string' && /^#[0-9a-f]{6}$/i.test(p.color) && byte(p.brightness, 1);
+}
+
+/** The longest course, in minutes — as long as WLED's own nightlight (JSON API `nl.dur`). */
+export const COURSE_MINUTES_MAX = 255;
+
+/** Tells whether `v` is a course a pad may keep: two lights and whole minutes, 1–255. */
+export function isLightCourse(v: unknown): v is LightCourse {
+  if (typeof v !== 'object' || v === null) return false;
+  const c = v as Record<string, unknown>;
+  return (
+    isLightPoint(c.from) &&
+    isLightPoint(c.to) &&
+    typeof c.minutes === 'number' &&
+    Number.isInteger(c.minutes) &&
+    c.minutes >= 1 &&
+    c.minutes <= COURSE_MINUTES_MAX
   );
 }
 
@@ -93,11 +135,22 @@ export function lampUrl(typed: string): string | null {
 /**
  * The JSON body WLED takes for a command: `{"ps": n}` for a preset, `{"on": false}` for off, and
  * for an effect `on`, `bri` and the main segment's `fx`, `sx`, `ix` and color — a `seg` without an
- * id goes to the main segment (WLED JSON API).
+ * id goes to the main segment (WLED JSON API). A point of a course sets Solid and its color, with
+ * `tt` in tenths of a second.
  */
-export function stateBody(command: LightCommand): { ps: number } | { on: false } | EffectBody {
+export function stateBody(
+  command: LightCommand,
+): { ps: number } | { on: false } | EffectBody | PointBody {
   if ('off' in command) return { on: false };
   if ('preset' in command) return { ps: command.preset };
+  if ('point' in command) {
+    return {
+      on: true,
+      bri: command.point.brightness,
+      tt: Math.round(command.transitionMs / 100),
+      seg: { fx: 0, col: [rgb(command.point.color)] },
+    };
+  }
   const e = command.effect;
   return {
     on: true,

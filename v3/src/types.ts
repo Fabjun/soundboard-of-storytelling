@@ -85,13 +85,30 @@ export type PadBase = {
 
 /**
  * A pad's light (docs/product/features/light.md C1, C2): a preset of the lamp (1–250, made in the
- * lamp's own app), an effect set in the app (C1 B), or off — sent to every lamp of Settings → LIGHT
- * or to the one named by its id.
+ * lamp's own app), an effect set in the app (C1 B), a course from one light to another (K2), or
+ * off — sent to every lamp of Settings → LIGHT or to the one named by its id.
  */
 export type PadLight =
   | { lamp: 'all' | string; preset: number }
   | { lamp: 'all' | string; effect: LightEffect }
+  | { lamp: 'all' | string; course: LightCourse }
   | { lamp: 'all' | string; off: true };
+
+/** One light of a course: a color `#rrggbb` and a brightness (1–255). */
+export interface LightPoint {
+  color: string;
+  brightness: number;
+}
+
+/**
+ * A light course (light.md K2): from one light to another over `minutes` (1–255), the color
+ * blended linearly; at its end the lamp keeps the end light. The app runs it (K1).
+ */
+export interface LightCourse {
+  from: LightPoint;
+  to: LightPoint;
+  minutes: number;
+}
 
 /**
  * An effect of the lamp set from the app (light.md C1 B, WLED JSON API): the effect's id as the

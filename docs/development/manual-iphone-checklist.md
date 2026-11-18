@@ -328,6 +328,20 @@ checked to exist (docsGuards).
   - Why manual: a real lamp, the browser's permission prompt, and the iPhone's block of the call.
   - Simulated: `v3/tests/e2e/light-settings.spec.ts` (lamps, TEST, a refused call), `v3/tests/e2e/pad-light.spec.ts` (TRY and the start in GAME send the preset; LIGHT ✕ while the lamp refuses, gone once it answers; a combo has no light).
 
+- [ ] **A light course on the real lamp** _(light.md K1, K2 — on a computer with Chrome or Brave,
+      the WLED lamp in the same network)_
+  - Action: in SETUP open a pad → LIGHT → Course: FROM a bright white, TO a deep red, MINUTES 2 →
+    TRY; then SAVE, in GAME play the pad and watch the lamp for two minutes; once more with the
+    browser window minimized.
+  - Expected: TRY goes from white to red in about 10 s without visible steps; the pad starts with
+    the white at once and turns red over two minutes, smoothly, and the lamp stays red at the end;
+    the status bar counts "LIGHT 2 min left", "LIGHT 1 min left", then shows nothing. Minimized,
+    the color still moves (a page that plays no sound is woken once a minute — the steps may then
+    be one minute apart, each faded over that minute).
+  - Why manual: only a real lamp shows whether 10 s transitions look smooth and whether the colors
+    match.
+  - Simulated: `v3/tests/unit/course.test.ts` (the points, the steps, a late timer), `v3/tests/e2e/pad-light.spec.ts` (TRY in 10 s, the pad over its minutes, the status bar).
+
 ---
 
 ## Section 3 — Layout and Platform

@@ -3,11 +3,12 @@
  * base light in the deck list (docs/product/features/light.md G3, C1, C2)
  *
  * A light is nothing, a preset of the lamp (1–250, made in the lamp's own app), an effect set here
- * (C1 B: the effect, one color, speed, intensity and brightness), or off — sent to all lamps or one
- * (Settings → LIGHT). The effects are read from the lamp, as their ids differ between WLED
- * versions; without a lamp in reach the effect's number can be typed. TRY sends the light at once
- * and says what happened. One component for both places (CLAUDE.md, one function per UI element);
- * `name` keeps their radio groups apart when both are on the page.
+ * (C1 B: the effect, one color, speed, intensity and brightness), a course from one light to another
+ * over minutes (K2), or off — sent to all lamps or one (Settings → LIGHT). The effects are read
+ * from the lamp, as their ids differ between WLED versions; without a lamp in reach the effect's
+ * number can be typed. TRY sends the light at once — a course over 10 s — and says what happened.
+ * One component for both places (CLAUDE.md, one function per UI element); `name` keeps their radio
+ * groups apart when both are on the page.
  */
 
 import { useEffect, useState } from 'preact/hooks';
@@ -16,26 +17,43 @@ import { SegmentedChoice } from './SegmentedChoice';
 import { SliderRow } from './SliderRow';
 import { getLamps, prefsVersion } from '../state/prefs';
 import {
+  COURSE_MINUTES_MAX,
   EFFECT_DEFAULT,
   PRESET_MAX,
   describeResult,
   listEffects,
   type LampEffect,
 } from '../light/wled';
-import { startLight } from '../light/padLight';
-import type { LightEffect, PadLight } from '../types';
+import { tryLight } from '../light/padLight';
+import type { LightCourse, LightEffect, LightPoint, PadLight } from '../types';
 
-type Kind = 'none' | 'preset' | 'effect' | 'off';
+type Kind = 'none' | 'preset' | 'effect' | 'course' | 'off';
 
 const KINDS: readonly { value: Kind; label: string }[] = [
   { value: 'none', label: 'None' },
   { value: 'preset', label: 'Preset' },
   { value: 'effect', label: 'Effect' },
+  { value: 'course', label: 'Course' },
   { value: 'off', label: 'Off' },
 ];
 
+/** The course a pad starts with when Course is chosen: a bright day to a sunset red, 20 minutes. */
+const COURSE_DEFAULT: LightCourse = {
+  from: { color: '#fff4e0', brightness: 255 },
+  to: { color: '#c2401a', brightness: 90 },
+  minutes: 20,
+};
+
 const kindOf = (light: PadLight | undefined): Kind =>
-  !light ? 'none' : 'off' in light ? 'off' : 'effect' in light ? 'effect' : 'preset';
+  !light
+    ? 'none'
+    : 'off' in light
+      ? 'off'
+      : 'effect' in light
+        ? 'effect'
+        : 'course' in light
+          ? 'course'
+          : 'preset';
 
 /** The effects of the lamp as last read: not yet, being read, read, or why not. */
 type EffectList = null | 'reading' | LampEffect[] | string;
@@ -66,6 +84,7 @@ export function LightPanel({
   const lamp = light?.lamp ?? 'all';
   const preset = light && 'preset' in light ? light.preset : 1;
   const effect = light && 'effect' in light ? light.effect : EFFECT_DEFAULT;
+  const course = light && 'course' in light ? light.course : COURSE_DEFAULT;
   // The lamp the effects are read from: the chosen one, or the first for "All lamps"
   const source = lamps.find((l) => l.id === lamp) ?? lamps[0];
   const sourceAddress = source?.address;
@@ -82,7 +101,12 @@ export function LightPanel({
   function lightOf(k: Exclude<Kind, 'none'>, to: string): PadLight {
     if (k === 'off') return { lamp: to, off: true };
     if (k === 'effect') return { lamp: to, effect };
+    if (k === 'course') return { lamp: to, course };
     return { lamp: to, preset };
+  }
+
+  function setPoint(end: 'from' | 'to', change: Partial<LightPoint>) {
+    onChange({ lamp, course: { ...course, [end]: { ...course[end], ...change } } });
   }
 
   function setKind(k: Kind) {
@@ -97,7 +121,7 @@ export function LightPanel({
   async function tryIt() {
     if (!light) return;
     setTried('Sending…');
-    const results = await startLight(light);
+    const results = await tryLight(light);
     setTried(
       results.length === 0
         ? 'No lamp to send to — add one in Settings → LIGHT.'
@@ -238,6 +262,58 @@ export function LightPanel({
               format={(v) => String(v)}
               onChange={(v) => setEffect({ brightness: v })}
             />
+          </div>
+        </>
+      )}
+      {kind === 'course' && (
+        <>
+          {(['from', 'to'] as const).map((end) => (
+            <div key={end} class="sb-inspector-section sb-col">
+              <label class="sb-row">
+                <span class="sb-field-label sb-flex-1">{end === 'from' ? 'FROM' : 'TO'}</span>
+                <input
+                  class="sb-color-input"
+                  type="color"
+                  aria-label={end === 'from' ? 'Color at the start' : 'Color at the end'}
+                  value={course[end].color}
+                  onChange={(e) => setPoint(end, { color: e.currentTarget.value })}
+                />
+              </label>
+              <SliderRow
+                label={end === 'from' ? 'BRIGHTNESS AT THE START' : 'BRIGHTNESS AT THE END'}
+                value={course[end].brightness}
+                min={1}
+                max={255}
+                step={1}
+                format={(v) => String(v)}
+                onChange={(v) => setPoint(end, { brightness: v })}
+              />
+            </div>
+          ))}
+          <div class="sb-inspector-section sb-col">
+            <label class="sb-col">
+              <span class="sb-caption">
+                MINUTES from the start to the end — the end light then stays. A combo step's wait of
+                the same length lets a sound follow at the end.
+              </span>
+              <input
+                class="sb-text-input"
+                type="number"
+                inputMode="numeric"
+                min={1}
+                max={COURSE_MINUTES_MAX}
+                aria-label="Minutes"
+                value={course.minutes}
+                onChange={(e) => {
+                  const n = Math.round(Number(e.currentTarget.value));
+                  const minutes = Math.min(
+                    COURSE_MINUTES_MAX,
+                    Math.max(1, Number.isFinite(n) ? n : 1),
+                  );
+                  onChange({ lamp, course: { ...course, minutes } });
+                }}
+              />
+            </label>
           </div>
         </>
       )}

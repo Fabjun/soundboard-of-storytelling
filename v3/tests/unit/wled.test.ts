@@ -3,12 +3,15 @@
  *
  * fetch is a stand-in: what the client sends (URL, method, body, the local-network hint), and each
  * way a call ends — answered, refused by the browser, timed out, a bad address, not a WLED lamp.
- * An effect's body and ranges; the effect list read from the lamp.
+ * An effect's body and ranges; a course point's body and a course's ranges; the effect list read
+ * from the lamp.
  */
 
 import {
+  COURSE_MINUTES_MAX,
   describeResult,
   EFFECT_DEFAULT,
+  isLightCourse,
   isLightEffect,
   isPreset,
   lampUrl,
@@ -100,6 +103,39 @@ describe('stateBody / isPreset', () => {
       'Solid',
     ])
       expect(isLightEffect(bad)).toBe(false);
+  });
+
+  it('a course point is on, its brightness, tt in tenths of a second, and Solid in its color', () => {
+    expect(
+      stateBody({ point: { color: '#ff8a1f', brightness: 90 }, transitionMs: 10_000 }),
+    ).toEqual({ on: true, bri: 90, tt: 100, seg: { fx: 0, col: [[255, 138, 31]] } });
+    expect(stateBody({ point: { color: '#000000', brightness: 1 }, transitionMs: 0 })).toEqual({
+      on: true,
+      bri: 1,
+      tt: 0,
+      seg: { fx: 0, col: [[0, 0, 0]] },
+    });
+  });
+
+  it('a course has two lights (#rrggbb, brightness 1–255) and whole minutes from 1 to 255', () => {
+    const point = { color: '#fff4e0', brightness: 255 };
+    const ok = { from: point, to: { color: '#c2401a', brightness: 1 }, minutes: 20 };
+    expect(isLightCourse(ok)).toBe(true);
+    expect(isLightCourse({ ...ok, minutes: 1 })).toBe(true);
+    expect(isLightCourse({ ...ok, minutes: COURSE_MINUTES_MAX })).toBe(true);
+    for (const bad of [
+      { ...ok, minutes: 0 },
+      { ...ok, minutes: COURSE_MINUTES_MAX + 1 },
+      { ...ok, minutes: 2.5 },
+      { ...ok, minutes: '20' },
+      { ...ok, from: { ...point, brightness: 0 } },
+      { ...ok, to: { ...point, color: 'red' } },
+      { ...ok, to: undefined },
+      { from: point, to: point },
+      null,
+      'day',
+    ])
+      expect(isLightCourse(bad)).toBe(false);
   });
 });
 

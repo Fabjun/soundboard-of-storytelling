@@ -537,6 +537,7 @@ describe('guard: timers are listed with their reason (delayed writes use debounc
     'lib/backupExport.ts': 'revokes the download URL once the browser has taken the file',
     'lib/debouncedSave.ts': 'the delayed write itself — flushed, never dropped',
     'lib/touchDrag.ts': 'a finger drags only after a short press, so a swipe scrolls',
+    'light/course.ts': 'sends the next point of a light course — WLED fades at most 65 s (K1)',
     'light/wled.ts': 'gives up a lamp call after its time limit — light never waits (light.md C6)',
     'state/stopControl.ts': 'ends the first STOP ALL stage when its fade is over (K16)',
     'state/remainingTime.ts': 'reads the audio clock for the time left while a pad has an end',
