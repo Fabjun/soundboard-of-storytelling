@@ -59,7 +59,7 @@ export const HELP_TOPICS: readonly HelpTopic[] = [
     title: 'Boards',
     text: [
       'A board holds the pads and decks for one game session or campaign.',
-      'NEW BOARD makes a board; tap a board’s name to open it. The pencil renames it. The bin deletes it: tap it, then CONFIRM.',
+      'NEW BOARD makes a board; tap a board’s name to open it. The pencil renames it. The bin deletes it; UNDO in the message that follows brings it back.',
       'EXPORT and IMPORT save and restore everything in one file — see Backup and import.',
     ],
     words: ['board', 'new', 'rename', 'delete', 'campaign', 'session'],

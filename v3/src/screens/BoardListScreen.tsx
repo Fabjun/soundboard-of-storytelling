@@ -2,7 +2,8 @@
  * @fileoverview BoardListScreen — list all boards, create / rename / delete
  *
  * Pattern mirrors LibraryScreen: TopBar + list rows + StatusBar.
- * Each board row follows the AudioRow pattern (inline rename, 2-tap delete).
+ * Each board row follows the AudioRow pattern: inline rename, and a one-tap delete that the undo
+ * toast takes back (ADR-0086).
  */
 
 import { useRef, useState } from 'preact/hooks';
@@ -178,7 +179,6 @@ export function BoardListScreen(): JSX.Element {
 function BoardRow({ board, onOpen }: { board: Board; onOpen: () => void }): JSX.Element {
   const [editing, setEditing] = useState(false);
   const [editValue, setEditValue] = useState(board.name);
-  const [deleteConfirm, setDeleteConfirm] = useState(false);
 
   const totalPads = board.pads.length; // the pool: each pad counts once, however many decks show it
   const decksCount = board.decks.length;
@@ -194,10 +194,6 @@ function BoardRow({ board, onOpen }: { board: Board; onOpen: () => void }): JSX.
   }
 
   async function handleDelete() {
-    if (!deleteConfirm) {
-      setDeleteConfirm(true);
-      return;
-    }
     // A board document holds no audio (ADR-0010), so the deleted one stays in memory while the
     // toast offers UNDO, which creates it again — with the view it was left in (ADR-0086)
     const view = getLastView(board.id);
@@ -288,18 +284,13 @@ function BoardRow({ board, onOpen }: { board: Board; onOpen: () => void }): JSX.
             <UiIcon name="edit" size={11} />
           </button>
           <button
-            class={`sb-btn sb-btn-sm sb-btn-icon-sm ${deleteConfirm ? 'sb-btn-danger' : 'sb-btn-ghost'}`}
+            class="sb-btn sb-btn-sm sb-btn-icon-sm sb-btn-ghost"
             data-testid={`board-list-screen-delete-button-${board.id}`}
-            title={deleteConfirm ? 'Click again to confirm' : 'Delete board'}
-            aria-label={
-              deleteConfirm
-                ? `Delete board ${board.name} — press again to confirm`
-                : `Delete board ${board.name}`
-            }
+            title="Delete board"
+            aria-label={`Delete board ${board.name}`}
             onClick={handleDelete}
-            onBlur={() => setDeleteConfirm(false)}
           >
-            {deleteConfirm ? 'CONFIRM' : <UiIcon name="delete" />}
+            <UiIcon name="delete" />
           </button>
         </div>
       )}

@@ -170,7 +170,6 @@ test("a deleted board comes back with the toast's UNDO, with its decks and pads,
   await expect(rows).toHaveCount(1);
   const del = rows.first().locator('[data-testid^="board-list-screen-delete-button-"]');
   await del.click();
-  await del.click();
   await expect(rows).toHaveCount(0);
   await expect(toast(page)).toContainText("Deleted board '");
 

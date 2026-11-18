@@ -2,8 +2,8 @@
  * @fileoverview Full E2E — pad icons: up to 4 per pad from the icon picker (Slice 15d, ADR-0070)
  *
  * The PAD editor's four icon slots (V1's scope): + opens the picker, a search word finds icons by
- * name or search word, a tap picks; a filled slot changes on a tap and is removed on a second tap
- * of its ✕. The pad shows its icons, or its type's placeholder. Everything is checked again after
+ * name or search word, a tap picks; a filled slot changes on a tap and is removed on a tap of its ✕,
+ * which the editor's undo takes back. The pad shows its icons, or its type's placeholder. Everything is checked again after
  * the board is reopened (stored, not only shown). No playback — runs in Chromium and WebKit.
  */
 
@@ -87,7 +87,7 @@ test('a pad takes up to 4 icons in the order picked; they show on the pad and ar
   ]);
 });
 
-test('an icon is removed on the second tap of its ✕; without icons the pad shows its placeholder', async ({
+test('a tap on ✕ removes an icon, undo brings it back; without icons the pad shows its placeholder', async ({
   page,
 }) => {
   await addIcon(page, 'dragon', 'nikoichu:dragon');
@@ -95,8 +95,9 @@ test('an icon is removed on the second tap of its ✕; without icons the pad sho
   await expect.poll(() => padIconCount(page)).toBe(1);
   const remove = page.getByTestId('pad-editor-panel-icon-remove-button-0');
   await remove.click();
-  await expect(remove).toHaveText('CONFIRM'); // the first tap only asks
-  expect(await slotKeys(page)).toHaveLength(1);
+  expect(await slotKeys(page)).toEqual([]);
+  await page.getByTestId('pad-editor-panel-undo-button').click();
+  expect(await slotKeys(page)).toEqual(['nikoichu:dragon']);
   await remove.click();
   expect(await slotKeys(page)).toEqual([]);
   await page.getByTestId('pad-editor-panel-save-button').click();

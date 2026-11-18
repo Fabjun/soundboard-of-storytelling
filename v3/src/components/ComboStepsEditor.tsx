@@ -4,10 +4,10 @@
  *
  * Per step: the pads that start together, the wait until the next step, "stop everything first".
  * Controlled: the PAD editor owns the steps and saves them with the rest of the pad (one writer).
- * Only pads that do not lead back to this combo are offered (no cycles, comboModel).
+ * Only pads that do not lead back to this combo are offered (no cycles, comboModel). A step or a
+ * pad of a step is removed with one tap — the editor's undo takes it back (CLAUDE.md UI rules).
  */
 
-import { useState } from 'preact/hooks';
 import type { JSX } from 'preact';
 import type { Board, ComboStep } from '../types';
 import {
@@ -39,19 +39,8 @@ export function ComboStepsEditor({
   board: Board;
   onChange: (steps: ComboStep[]) => void;
 }): JSX.Element {
-  /** Two-tap removal (UI rule): the first tap arms "step:i" or "pad:i:id", the second removes. */
-  const [armed, setArmed] = useState<string | null>(null);
   const names = new Map(board.pads.map((p) => [p.id, p.name || '—']));
   const pool = poolByName(board);
-
-  function confirmTwice(key: string, remove: () => void) {
-    if (armed === key) {
-      setArmed(null);
-      remove();
-    } else {
-      setArmed(key);
-    }
-  }
 
   return (
     <div class="sb-inspector-section" data-testid="combo-steps-editor">
@@ -78,14 +67,13 @@ export function ComboStepsEditor({
               <button
                 class="sb-btn sb-btn-xs sb-btn-ghost"
                 data-testid={`combo-steps-editor-remove-button-${i}`}
-                onClick={() => confirmTwice(`step:${i}`, () => onChange(removeStep(steps, i)))}
-                onBlur={() => setArmed(null)}
+                onClick={() => onChange(removeStep(steps, i))}
               >
-                {armed === `step:${i}` ? 'CONFIRM REMOVE' : 'REMOVE STEP'}
+                REMOVE STEP
               </button>
             </div>
 
-            {/* The pads this step starts together — tap twice to take one out */}
+            {/* The pads this step starts together — a tap takes one out */}
             <div class="sb-tag-list">
               {step.padIds.map((id) => (
                 <button
@@ -93,13 +81,10 @@ export function ComboStepsEditor({
                   class="sb-btn sb-btn-sm sb-btn-ghost"
                   data-testid={`combo-steps-editor-pad-button-${i}-${id}`}
                   aria-label={`Remove ${names.get(id) ?? id} from step ${i + 1}`}
-                  onClick={() =>
-                    confirmTwice(`pad:${i}:${id}`, () => onChange(removePadFromStep(steps, i, id)))
-                  }
-                  onBlur={() => setArmed(null)}
+                  onClick={() => onChange(removePadFromStep(steps, i, id))}
                 >
                   {names.get(id) ?? '(missing pad)'}
-                  {armed === `pad:${i}:${id}` ? ' — tap again to remove' : <UiIcon name="delete" />}
+                  <UiIcon name="delete" />
                 </button>
               ))}
             </div>

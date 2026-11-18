@@ -110,7 +110,7 @@ file. Format: `docs/architecture/_template.md`.
 | ---------------------------------------- | ------------------------------------------------------------- | ---------------------- | ------------- | ---------- |
 | [ADR-0029](0029-dnd-swap-insert.md)      | SWAP + INSERT as dual DnD semantics                           | Accepted               | Slice 3       | 2026-05-27 |
 | [ADR-0030](0030-auto-save-debounce.md)   | Auto-save with 500 ms debounce — no explicit save button      | Superseded by ADR-0084 | Slice 3       | 2026-05-27 |
-| [ADR-0031](0031-two-tap-delete.md)       | 2-tap delete as the standard confirm pattern                  | Accepted               | cross-cutting | 2026-05-27 |
+| [ADR-0031](0031-two-tap-delete.md)       | 2-tap delete as the standard confirm pattern                  | Superseded by ADR-0086 | cross-cutting | 2026-05-27 |
 | [ADR-0032](0032-grid-4col-constant.md)   | 4-column grid constant across all viewports                   | Accepted               | Slice 3       | 2026-05-27 |
 | [ADR-0067](0067-browser-gestures-off.md) | The browser's own touch gestures are off — the app owns touch | Accepted               | cross-cutting | 2026-10-03 |
 | [ADR-0077](0077-keys-play-pads.md)       | Keys play pads                                                | Accepted               | Slice 12      | 2026-10-08 |

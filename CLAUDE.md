@@ -304,13 +304,14 @@ pixel-art details and touch minimums — ADR-0081, guarded by `codeGuards` ("typ
 ### UI rules
 
 - No emojis. Use Unicode/ASCII glyphs from the design's icon system.
-- A delete that can be undone is one tap and shows the undo toast (pads, decks; library files from
-  Slice 16a, through the trash). Owner decision 2026-10-19; NN/g: confirm only what has serious
-  consequences and cannot be undone (ADR-0086 amendment). A delete that cannot be undone (a file
-  deleted for good from the trash, EMPTY) is confirmed in a dialog that names it — CANCEL and
-  DELETE, the focus on CANCEL (`ConfirmDialog`) — never by a second tap on the same spot: a
-  button in a fixed place takes an accidental double tap (owner decision 2026-10-20). The board
-  delete still asks with a second tap next to its UNDO — BACKLOG "Two-tap confirmations".
+- A delete or removal that can be undone is one tap: a board, a deck, a pad and a library file
+  show the undo toast; removing a pad from a deck is taken back with ↶; removing a file, an icon,
+  a combo step or a pad of a step with the PAD editor's undo. Owner decisions 2026-10-19 and
+  2026-11-18; NN/g: confirm only what has serious consequences and cannot be undone (ADR-0086
+  amendments). A delete that cannot be undone (a file deleted for good from the trash, EMPTY) is
+  confirmed in a dialog that names it — CANCEL and DELETE, the focus on CANCEL (`ConfirmDialog`) —
+  never by a second tap on the same spot: a button in a fixed place takes an accidental double tap
+  (owner decision 2026-10-20).
 - All counts/labels: dynamic from data, never hardcoded
 - Scroll position of overlays/list views: save and restore on re-open
 - Every area whose content can be larger than the window scrolls — nothing is cut off or hidden

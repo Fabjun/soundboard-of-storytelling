@@ -57,3 +57,10 @@ navigation lists better, but the APG names the menu button for a list of actions
 - **Files:** `v3/src/components/MenuButton.tsx`, `v3/src/components/DeckRail.tsx`,
   `v3/tests/e2e/deck-crud.spec.ts`, `v3/tests/e2e/mobile/touch-targets.spec.ts`
 - **ADRs:** ADR-0074 (dialogs and Escape)
+
+## Amendments
+
+**2026-11-18 (3.0.317) — every entry closes the menu.** Decision 3 no longer holds: the deck's
+Delete takes one tap since 3.0.258 and the undo toast takes it back (ADR-0086 amendments), so no
+entry waited for a second tap any more; `onSelect` returns nothing and the menu closes after every
+entry.

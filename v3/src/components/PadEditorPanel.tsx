@@ -37,8 +37,9 @@
  *   - Hotkey: tap the field, press a key (K1, Slice 12a, ADR-0077); a key another pad of the deck
  *     holds moves here on MOVE KEY HERE — deck view only, keys belong to a placement
  *   - Decks checklist: place the pad in other decks or remove it (Slice 9e, ADR-0048)
- *   - Remove from deck (2-tap confirm, deck view only) — the pad stays in the pool
- *   - Delete button (2-tap confirm) — shows in how many decks the pad is used
+ *   - Remove from deck (deck view only) — the pad stays in the pool; ↶ takes it back
+ *   - Delete button — the undo toast takes it back
+ *   Removals take one tap: each can be undone, so none asks first (ADR-0086).
  */
 
 import { useState, useEffect, useLayoutEffect, useRef } from 'preact/hooks';
@@ -178,7 +179,6 @@ export function PadEditorPanel({
   const [previewOn, setPreviewOn] = useState(false);
   const [playhead, setPlayhead] = useState<number | null>(null);
   const [pendingType, setPendingType] = useState<PadType | null>(null);
-  const [removeConfirm, setRemoveConfirm] = useState(false);
   const [libSearch, setLibSearch] = useState('');
   const [libPickerOpen, setLibPickerOpen] = useState(false);
   /** The pad's icons, up to 4 keys in the order the pad shows them (ADR-0070). */
@@ -187,8 +187,6 @@ export function PadEditorPanel({
   const [pickerSlot, setPickerSlot] = useState<number | null>(null);
   /** The help is open on top of the editor (Slice 17b) — the editor and its draft stay below. */
   const [helpOpen, setHelpOpen] = useState(false);
-  /** The icon whose remove button was tapped once and now asks to confirm. */
-  const [iconConfirm, setIconConfirm] = useState<number | null>(null);
   const iconDrawings = useIconDrawings(icons);
 
   // A draft until SAVE, with undo and redo (owner decision 2026-10-11, ADR-0084): every change
@@ -704,11 +702,7 @@ export function PadEditorPanel({
   }
 
   function handleRemove() {
-    if (removeConfirm) {
-      onRemoveFromDeck(pad.id);
-    } else {
-      setRemoveConfirm(true);
-    }
+    onRemoveFromDeck(pad.id);
   }
 
   const decksByOrder = [...board.decks].sort((a, b) => a.order - b.order);
@@ -893,19 +887,11 @@ export function PadEditorPanel({
                   </button>
                   <button
                     class="sb-btn sb-btn-xs sb-btn-danger"
-                    aria-label={
-                      iconConfirm === i ? `Confirm: remove ${iconName}` : `Remove ${iconName}`
-                    }
+                    aria-label={`Remove ${iconName}`}
                     data-testid={`pad-editor-panel-icon-remove-button-${i}`}
-                    onClick={() => {
-                      if (iconConfirm === i) {
-                        setIconConfirm(null);
-                        handleIconsChange(icons.filter((_, k) => k !== i));
-                      } else setIconConfirm(i);
-                    }}
-                    onBlur={() => setIconConfirm(null)}
+                    onClick={() => handleIconsChange(icons.filter((_, k) => k !== i))}
                   >
-                    {iconConfirm === i ? 'CONFIRM' : <UiIcon name="delete" />}
+                    <UiIcon name="delete" />
                   </button>
                 </div>
               );
@@ -1296,9 +1282,8 @@ export function PadEditorPanel({
               class="sb-btn sb-btn-ghost sb-btn-block"
               data-testid="pad-editor-panel-remove-button"
               onClick={handleRemove}
-              onBlur={() => setRemoveConfirm(false)}
             >
-              {removeConfirm ? 'CONFIRM REMOVE' : 'REMOVE FROM DECK'}
+              REMOVE FROM DECK
             </button>
           </div>
         )}

@@ -103,6 +103,12 @@ export function withEarlyVersions(
 /** The release notes the main menu shows, newest first (checked by whatsNew.test.ts). */
 export const WHATS_NEW: WhatsNewNotes[] = [
   {
+    version: '3.0.317',
+    improved: [
+      'Deleting a board, taking a pad out of a deck and removing a file, an icon or a combo step take one tap instead of two; UNDO, ↶ or the PAD editor’s undo brings each back.',
+    ],
+  },
+  {
     version: '3.0.316',
     new: [
       'A board can have a base light — a preset, an effect or off — that the lamp shows when the board switches to GAME; it is set at the end of the deck list, under BOARD LIGHT.',

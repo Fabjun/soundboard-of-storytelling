@@ -1,6 +1,6 @@
 # ADR-0031: 2-tap delete as the standard confirm pattern
 
-**Status:** Accepted
+**Status:** Superseded by ADR-0086
 **Date:** 2026-05-27
 **Slice:** cross-cutting
 **Refines:** —
