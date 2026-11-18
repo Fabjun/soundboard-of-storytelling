@@ -73,6 +73,11 @@
  * 24. An empty state names the next step (Slice 17c; NN/g "Designing Empty States in Complex
  *    Applications"): every "No … yet" text in src goes on with " — " and what fills it — "No
  *    decks yet — NEW DECK below adds one." Five empty states said only "No … yet." (2026-11-17).
+ * 25. No second tap to confirm (owner decision 2026-11-18, ADR-0086 amendment): what the app
+ *    shows says neither CONFIRM nor "tap again" / "again to remove" — a removal that can be undone
+ *    takes one tap, one that cannot is asked in ConfirmDialog. Six removals had grown the second
+ *    tap over months, and the help still told users to tap CONFIRM after they were gone. The
+ *    version history keeps its old wording.
  */
 
 import { readdirSync, readFileSync } from 'node:fs';
@@ -1154,5 +1159,52 @@ describe('guard: an empty state names the next step (Slice 17c)', () => {
         .map((m) => `${at}: ${m[0]}`),
     );
     expect(bad, 'say what fills it: "No decks yet — NEW DECK adds one." (NN/g)').toEqual([]);
+  });
+});
+
+describe('guard: no second tap to confirm (owner decision 2026-11-18)', () => {
+  const walkSrc = (dir: string): string[] =>
+    readdirSync(dir, { withFileTypes: true }).flatMap((e) =>
+      e.isDirectory() ? walkSrc(join(dir, e.name)) : [join(dir, e.name)],
+    );
+  // Everything in src but the version history; comment lines and line-end comments are left out
+  const files = walkSrc(SRC)
+    .filter((f) => /\.tsx?$/.test(f))
+    .filter((f) => !/[/\\]lib[/\\](changelog|whatsNew)\.ts$/.test(f));
+  const shownLines = files.flatMap((f) =>
+    readFileSync(f, 'utf8')
+      .split('\n')
+      .map((line, i) => ({
+        line: line.replace(/\s\/\/.*$/, ''),
+        at: `${relative(SRC, f)}:${i + 1}`,
+      }))
+      .filter(({ line }) => !/^\s*(\/\/|\/\*|\*|\{\/\*)/.test(line)),
+  );
+  const asksTwice = (text: string) =>
+    /\bCONFIRM\b/.test(text) ||
+    /\b(tap|press|click) again\b|\bagain to (confirm|remove|delete)\b/i.test(text);
+
+  it('finds source lines (sanity), and the six former labels are caught', () => {
+    expect(shownLines.length).toBeGreaterThan(5000);
+    const former = [
+      '{deleteConfirm ? \'CONFIRM\' : <UiIcon name="delete" />}',
+      "{removeConfirm ? 'CONFIRM REMOVE' : 'REMOVE FROM DECK'}",
+      "title={deleteConfirm ? 'Click again to confirm' : 'Delete board'}",
+      '? `Delete board ${board.name} — press again to confirm`',
+      '{armed === key ? \' — tap again to remove\' : <UiIcon name="delete" />}',
+      "'The bin deletes it: tap it, then CONFIRM.'",
+    ];
+    expect(former.filter((t) => !asksTwice(t))).toEqual([]);
+    // A second press that is no confirmation stays allowed
+    expect(asksTwice("'Tap a pad to play it — tap it again to stop it.'")).toBe(false);
+    expect(asksTwice("'Fade every sound out; again to stop now'")).toBe(false);
+  });
+
+  it('no text asks for a second tap — one tap and undo, or ConfirmDialog', () => {
+    const bad = shownLines.filter(({ line }) => asksTwice(line)).map(({ at }) => at);
+    expect(
+      bad,
+      'a removal that can be undone takes one tap (undo toast, ↶, the editor undo); one that cannot is asked in ConfirmDialog (CLAUDE.md UI rules)',
+    ).toEqual([]);
   });
 });

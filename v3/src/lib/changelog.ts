@@ -17,10 +17,17 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.317';
+export const APP_VERSION = '3.0.318';
 
 /** The developer log, newest first; CHANGELOG.md is generated from it (sync-changelog). */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.318',
+    date: '2026-11-18',
+    items: [
+      'test: codeGuards ("no second tap to confirm") (owner decision 2026-11-18, option A) — no line of src but the version history and comments says CONFIRM, "tap / press / click again" or "again to confirm / remove / delete"; a probe shows it catches the six former labels and leaves a second press that is no confirmation alone ("tap it again to stop it", STOP ALL\'s "again to stop now"). Counter-checked: the help text "tap it, then CONFIRM" put back — red at lib/helpTopics.ts:62; restored — green. CLAUDE.md UI rules name the guard',
+    ],
+  },
   {
     version: '3.0.317',
     date: '2026-11-18',
