@@ -221,7 +221,11 @@ test('on a phone every pad size shows the name and the icon; the type row and th
           const name = await boxOf(pad.getByText('A1', { exact: true }));
           const icon = await boxOf(pad.getByTestId('pad-icons'));
           const typeRow = pad.getByText('SGL', { exact: true });
-          const typeShown = await typeRow.isVisible();
+          // Shown means whole: the row clips its text (overflow hidden), and a squeezed row of 4 px
+          // still counted as visible (found by the visual baseline with pads, 2026-11-18)
+          const typeShown =
+            (await typeRow.isVisible()) &&
+            (await typeRow.evaluate((el) => el.scrollHeight <= el.clientHeight + 0.5));
           // SETUP's drag handle (an icon, ADR-0085) only from 80 px, and never over the name
           const handle = pad.getByTestId('pad-grid-cell-drag-region');
           const handleShown = await handle.isVisible();

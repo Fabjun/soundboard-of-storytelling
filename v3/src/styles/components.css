@@ -493,6 +493,9 @@
   opacity: 0.8;
   white-space: nowrap;
   overflow: hidden;
+  /* Its whole line from 80 px (pad.md PQ2): the picture gives way instead — the clipped row was 4 px
+     tall at 88 px (measured 2026-11-18) */
+  flex-shrink: 0;
 }
 .sb-pad .sb-pad-duration {
   /* @inventory: A pad's running time next to its type label (2026-10-11) — the label's tiny mono type, in the dim text color instead of the type color. */
@@ -3027,6 +3030,7 @@
   place-items: center;
   gap: var(--space-1);
   height: 2.5rem;
+  min-height: 0; /* in a pad it shrinks first, so the type row and the name keep their lines */
   color: var(--text);
 }
 .sb-pad-icons.is-count-2,
