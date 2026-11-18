@@ -7,6 +7,12 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.318 — 2026-11-18
+
+### Internal
+
+- test: codeGuards ("no second tap to confirm") (owner decision 2026-11-18, option A) — no line of src but the version history and comments says CONFIRM, "tap / press / click again" or "again to confirm / remove / delete"; a probe shows it catches the six former labels and leaves a second press that is no confirmation alone ("tap it again to stop it", STOP ALL's "again to stop now"). Counter-checked: the help text "tap it, then CONFIRM" put back — red at lib/helpTopics.ts:62; restored — green. CLAUDE.md UI rules name the guard
+
 ## 3.0.317 — 2026-11-18
 
 ### Added

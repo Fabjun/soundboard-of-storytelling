@@ -311,7 +311,7 @@ pixel-art details and touch minimums — ADR-0081, guarded by `codeGuards` ("typ
   amendments). A delete that cannot be undone (a file deleted for good from the trash, EMPTY) is
   confirmed in a dialog that names it — CANCEL and DELETE, the focus on CANCEL (`ConfirmDialog`) —
   never by a second tap on the same spot: a button in a fixed place takes an accidental double tap
-  (owner decision 2026-10-20).
+  (owner decision 2026-10-20). Guarded by `codeGuards` ("no second tap to confirm").
 - All counts/labels: dynamic from data, never hardcoded
 - Scroll position of overlays/list views: save and restore on re-open
 - Every area whose content can be larger than the window scrolls — nothing is cut off or hidden
