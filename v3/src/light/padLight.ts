@@ -7,14 +7,17 @@
  * through `startLight` when the board switches to GAME. Fire and forget: nothing awaits the lamp
  * (G2), a lamp that does not answer marks `lightTrouble`, and the next light tries again (C6).
  * A course runs on in `v3/src/light/course.ts` (light.md K1); any other light a pad starts ends it,
- * as the light that follows replaces it (K3).
+ * as the light that follows replaces it (K3). Every light is the base, unless it is short: a short
+ * light (a flash with the thunder) lasts while its pad's sound plays — the bridge calls
+ * `endPadLight` when the pad stops — and then the base comes back, a course at the point it has
+ * reached meanwhile (light.md K3, as a console's submaster restores the background state).
  */
 
 import { signal } from '@preact/signals';
 import type { Pad, PadLight } from '../types';
 import { getLamps, type Lamp } from '../state/prefs';
 import { sendLight, type LightCommand, type LightResult } from './wled';
-import { startCourse, stopCourse } from './course';
+import { holdCourse, releaseCourse, startCourse, stopCourse } from './course';
 
 /** True while the last light command reached no lamp — the status bar shows it (C6). */
 export const lightTrouble = signal(false);
@@ -38,16 +41,44 @@ export function lampsFor(light: PadLight, lamps: readonly Lamp[]): Lamp[] {
 /** Sends one command to one lamp — the WLED client, or a stand-in in tests. */
 type Send = (address: string, command: LightCommand) => Promise<LightResult>;
 
+/** The base light: the last light sent that is not short, with the lamps and the sender it used. */
+let base: { light: PadLight; lamps: readonly Lamp[]; send: Send } | null = null;
+
+/** The pad whose short light is on, or null. */
+let shortOf: string | null = null;
+
+/** Tells whether a light is short (K3) — a course never is: it is the base it replaces. */
+const isShort = (light: PadLight): boolean => light.short === true && !('course' in light);
+
 /**
  * Sends the pad's light to its lamps, if it has one, and returns at once; resolves the results for
- * tests. Never throws, never waits on the sound path.
+ * tests. Never throws, never waits on the sound path. A short light holds a running course.
  */
 export function startPadLight(
   pad: Pad | null,
   lamps: readonly Lamp[] = getLamps(),
   send: Send = sendLight,
 ): Promise<LightResult[]> {
-  return startLight(pad?.light, lamps, send);
+  const light = pad?.light;
+  if (!pad || !light || !isShort(light)) return startLight(light, lamps, send);
+  shortOf = pad.id;
+  holdCourse();
+  return sendAll(lampsFor(light, lamps), lightCommand(light), send);
+}
+
+/**
+ * Ends the short light of the pad `padId` when its sound stops: the base comes back — a running
+ * course at the point it has reached, one that ended at its end light, any other light as it was.
+ * Nothing when another light came since, or none was short. Resolves the results for tests.
+ */
+export function endPadLight(padId: string): Promise<LightResult[]> {
+  if (shortOf !== padId) return Promise.resolve([]);
+  shortOf = null;
+  if (releaseCourse() || !base) return Promise.resolve([]);
+  const { light, lamps, send } = base;
+  const command: LightCommand =
+    'course' in light ? { point: light.course.to, transitionMs: 0 } : lightCommand(light);
+  return sendAll(lampsFor(light, lamps), command, send);
 }
 
 /** Sends `command` to every lamp of `targets` and marks or clears `lightTrouble` (C6). */
@@ -65,7 +96,8 @@ function sendAll(
 /**
  * Sends a light — a pad's, or a board's base light — to its lamps and returns at once; nothing for
  * no light. A course starts there and runs on (`courseMs` shortens it, for TRY); any other light
- * ends a running course. Resolves the results of the first call, for TRY and tests.
+ * ends a running course. The light becomes the base, and a short light that is on is over.
+ * Resolves the results of the first call, for TRY and tests.
  */
 export function startLight(
   light: PadLight | undefined,
@@ -74,6 +106,8 @@ export function startLight(
   courseMs?: number,
 ): Promise<LightResult[]> {
   if (!light) return Promise.resolve([]);
+  base = { light, lamps, send };
+  shortOf = null;
   const targets = lampsFor(light, lamps);
   if (!('course' in light)) {
     stopCourse();

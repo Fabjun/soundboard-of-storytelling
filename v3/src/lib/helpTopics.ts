@@ -158,7 +158,7 @@ export const HELP_TOPICS: readonly HelpTopic[] = [
     title: 'Light',
     text: [
       'A pad can start a light on a WLED lamp in your home network. In Settings → LIGHT add the lamp with its address (shown in the lamp’s own app) and TEST it; the browser may ask to reach the local network — allow it.',
-      'In the PAD editor, LIGHT chooses what the pad does to the lamp: a preset number (made in the lamp’s own app), an Effect with its color, speed, intensity and brightness (the effects are read from the lamp), a Course from one color and brightness to another over minutes — a day that turns to sunset — or Off; TRY shows it at once, a course in 10 seconds. Another pad’s light ends a course; the status bar counts its minutes. When a lamp does not answer, the status bar shows LIGHT ✕; the sound plays anyway.',
+      'In the PAD editor, LIGHT chooses what the pad does to the lamp: a preset number (made in the lamp’s own app), an Effect with its color, speed, intensity and brightness (the effects are read from the lamp), a Course from one color and brightness to another over minutes — a day that turns to sunset — or Off; TRY shows it at once, a course in 10 seconds. Another pad’s light ends a course; the status bar counts its minutes. SHORT makes a light last only while its pad plays — a flash with the thunder — and then the light before comes back, a running course where it has got to. When a lamp does not answer, the status bar shows LIGHT ✕; the sound plays anyway.',
       'A board can have a base light too: in SETUP, BOARD LIGHT at the end of the deck list. It goes out when the board switches to GAME.',
       'Browsers on an iPhone or iPad cannot reach a lamp; use a computer with Chrome or Brave.',
     ],

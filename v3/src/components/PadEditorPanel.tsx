@@ -939,8 +939,9 @@ export function PadEditorPanel({
               light={light}
               onChange={handleLightChange}
               legend="Light"
-              caption="What the pad does to the light when it starts. The light stays when the pad stops."
+              caption="What the pad does to the light when it starts. The light stays when the pad stops, unless it is short."
               name="pad"
+              canBeShort
             />
           )}
         </div>

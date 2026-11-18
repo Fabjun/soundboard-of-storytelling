@@ -603,12 +603,14 @@ function isStoredPad(v: unknown): v is StoredPad {
 /**
  * A pad's light (light.md C1, C2): `{lamp, preset}` with a preset of 1–250, `{lamp, effect}` with
  * an effect in the ranges of the WLED JSON API, `{lamp, course}` with two lights and 1–255
- * minutes (light.md K2), or `{lamp, off: true}` — exactly one of them.
+ * minutes (light.md K2), or `{lamp, off: true}` — exactly one of them; any but a course may be
+ * `short: true` (K3).
  */
 function isPadLight(v: unknown): v is PadLight {
   if (!isRec(v) || !isStr(v.lamp) || v.lamp === '') return false;
   const kinds = ['off', 'preset', 'effect', 'course'].filter((k) => k in v);
   if (kinds.length !== 1) return false;
+  if ('short' in v && (v.short !== true || kinds[0] === 'course')) return false;
   if (kinds[0] === 'off') return v.off === true;
   if (kinds[0] === 'effect') return isLightEffect(v.effect);
   if (kinds[0] === 'course') return isLightCourse(v.course);

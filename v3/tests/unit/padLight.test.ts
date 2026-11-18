@@ -6,13 +6,18 @@
  * good round clears it; the call returns before any lamp answers (fire and forget). A light on its
  * own — the board's base light — goes out the same way, and none sends nothing. A course (K1, K3)
  * sends its start at once and runs on; another light ends it, a pad without light does not; with
- * no lamp to reach none starts; TRY's shortened course reaches its end in 10 s.
+ * no lamp to reach none starts; TRY's shortened course reaches its end in 10 s. A short light (K3)
+ * holds a running course, and when its pad stops the course goes on from where it got to; after a
+ * preset base the preset comes back; a course that ended meanwhile comes back as its end light;
+ * the stop of another pad, or of a short light another light followed, changes nothing; a course
+ * is never short.
  */
 
 import type { Lamp } from '../../src/state/prefs';
 import type { LightCourse, Pad, PadLight } from '../../src/types';
 import {
   COURSE_TRY_MS,
+  endPadLight,
   lampsFor,
   lightCommand,
   lightTrouble,
@@ -163,5 +168,77 @@ describe('startLight with a course (light.md K1, K3)', () => {
     vi.advanceTimersByTime(COURSE_TRY_MS);
     expect(s.calls.at(-1)).toEqual(['192.168.1.50', expect.objectContaining({ point: course.to })]);
     expect(courseMinutesLeft.value).toBeNull();
+  });
+});
+
+describe('a short light and the base it returns to (light.md K3)', () => {
+  const course: LightCourse = {
+    from: { color: '#ffffff', brightness: 255 },
+    to: { color: '#ff0000', brightness: 55 },
+    minutes: 20,
+  };
+  const flash: PadLight = { lamp: 'a', effect: { ...EFFECT_DEFAULT, fx: 57 }, short: true };
+  const thunder = { ...withLight(flash), id: 'thunder' };
+  const MIN = 60_000;
+
+  beforeEach(() => vi.useFakeTimers());
+  afterEach(() => {
+    stopCourse();
+    vi.useRealTimers();
+  });
+
+  it('holds a running course; when its pad stops, the course goes on from where it got to', async () => {
+    const s = sender();
+    await startLight({ lamp: 'a', course }, lamps, s.send);
+    vi.advanceTimersByTime(5 * MIN);
+    await startPadLight(thunder, lamps, s.send);
+    expect(s.calls.at(-1)).toEqual(['192.168.1.50', lightCommand(flash)]);
+    const during = s.calls.length;
+    vi.advanceTimersByTime(MIN);
+    expect(s.calls).toHaveLength(during); // the course sends nothing over the flash
+    await endPadLight('thunder');
+    expect(s.calls.at(-1)).toEqual([
+      '192.168.1.50',
+      // 6 of 20 minutes, t = 0.3: brightness 255 − 200 × 0.3, green and blue 255 × 0.7 ≈ 179
+      { point: { color: '#ffb3b3', brightness: 195 }, transitionMs: 0 },
+    ]);
+    expect(courseMinutesLeft.value).toBe(14);
+  });
+
+  it('after a preset base the preset comes back; a course that ended meanwhile, its end light', async () => {
+    const s = sender();
+    await startLight({ lamp: 'a', preset: 4 }, lamps, s.send);
+    await startPadLight(thunder, lamps, s.send);
+    await endPadLight('thunder');
+    expect(s.calls.at(-1)).toEqual(['192.168.1.50', { preset: 4 }]);
+
+    await startLight({ lamp: 'a', course: { ...course, minutes: 1 } }, lamps, s.send);
+    await startPadLight(thunder, lamps, s.send);
+    vi.advanceTimersByTime(2 * MIN);
+    await endPadLight('thunder');
+    expect(s.calls.at(-1)).toEqual(['192.168.1.50', { point: course.to, transitionMs: 0 }]);
+  });
+
+  it("another pad's stop, or a short light another light followed, changes nothing", async () => {
+    const s = sender();
+    await startLight({ lamp: 'a', preset: 4 }, lamps, s.send);
+    await startPadLight(thunder, lamps, s.send);
+    const count = s.calls.length;
+    expect(await endPadLight('rain')).toEqual([]);
+    await startLight({ lamp: 'a', preset: 9 }, lamps, s.send);
+    expect(await endPadLight('thunder')).toEqual([]);
+    expect(s.calls).toHaveLength(count + 1); // only the preset 9
+  });
+
+  it('a course marked short is still a course: it becomes the base', async () => {
+    const s = sender();
+    await startPadLight(
+      { ...withLight({ lamp: 'a', course, short: true }), id: 'day' },
+      lamps,
+      s.send,
+    );
+    expect(courseMinutesLeft.value).toBe(20);
+    expect(await endPadLight('day')).toEqual([]);
+    expect(courseMinutesLeft.value).toBe(20);
   });
 });

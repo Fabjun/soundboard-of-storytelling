@@ -7,7 +7,7 @@
 
 import type { LoopPad, Pad, PadFile, SinglePad } from '../types';
 import type { EnginePad } from './types';
-import { startPadLight } from '../light/padLight';
+import { endPadLight, startPadLight } from '../light/padLight';
 import {
   playOnce,
   playLoop,
@@ -66,6 +66,8 @@ export function initAudioBridge(): void {
       }
       removePlayingPad(id);
       removeLoopingPad(id);
+      // A short light lasts while its sound plays; then the base light comes back (light.md K3)
+      void endPadLight(id);
     },
     // When a pad's sound ends, for the remaining time it shows (src/state/remainingTime.ts)
     onPadEnds: (id, endsAt) => {

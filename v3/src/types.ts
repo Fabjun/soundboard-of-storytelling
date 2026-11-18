@@ -86,13 +86,15 @@ export type PadBase = {
 /**
  * A pad's light (docs/product/features/light.md C1, C2): a preset of the lamp (1–250, made in the
  * lamp's own app), an effect set in the app (C1 B), a course from one light to another (K2), or
- * off — sent to every lamp of Settings → LIGHT or to the one named by its id.
+ * off — sent to every lamp of Settings → LIGHT or to the one named by its id. A `short` light (K3)
+ * lasts while the pad's sound plays; then the base light comes back — a course where it has got to.
  */
-export type PadLight =
+export type PadLight = (
   | { lamp: 'all' | string; preset: number }
   | { lamp: 'all' | string; effect: LightEffect }
   | { lamp: 'all' | string; course: LightCourse }
-  | { lamp: 'all' | string; off: true };
+  | { lamp: 'all' | string; off: true }
+) & { short?: true };
 
 /** One light of a course: a color `#rrggbb` and a brightness (1–255). */
 export interface LightPoint {

@@ -291,6 +291,39 @@ test("the board's base light, set in the deck list, goes out when the board swit
   await expect.poll(() => bodies).toEqual(['{"ps":9}']);
 });
 
+test("a short light lasts while its pad plays; then the board's base light comes back", async ({
+  page,
+}) => {
+  const bodies = await standInLamp(page);
+  await lampEffects(page, null);
+  // The pad: an effect, short
+  await page.getByRole('tab', { name: 'LIGHT', exact: true }).click();
+  await page.getByText('Effect', { exact: true }).click();
+  // Typed only once the lamp's answer is in: a number typed before it is lost when the panel draws
+  // again (BACKLOG "Number fields drop typed text on a redraw")
+  await expect(page.getByText(/This browser does not let the app reach the lamp/)).toBeVisible();
+  const number = page.getByRole('spinbutton', { name: 'Effect number', exact: true });
+  await number.fill('57');
+  await number.press('Enter');
+  await page.getByRole('checkbox', { name: /^Short/ }).check();
+  await page.getByTestId('pad-editor-panel-save-button').click();
+  await page.getByTestId('pad-editor-panel-close-button').click();
+  // The board: preset 9 as its base light
+  await openDeckRail(page);
+  await page.getByRole('button', { name: /^BOARD LIGHT/ }).click();
+  await page.getByText('Preset', { exact: true }).click();
+  const preset = page.getByRole('spinbutton', { name: 'Preset number', exact: true });
+  await preset.fill('9');
+  await preset.press('Enter');
+  await expect(page.getByRole('checkbox', { name: /^Short/ })).toHaveCount(0); // a pad's only
+  await enterGameMode(page);
+  await expect.poll(() => bodies).toEqual(['{"ps":9}']);
+  // The flash while the sound plays; the test sound is short, and when it ends the base comes back
+  await padCells(page).first().getByRole('button').click();
+  const flash = '{"on":true,"bri":128,"seg":{"fx":57,"sx":128,"ix":128,"col":[[255,138,31]]}}';
+  await expect.poll(() => bodies).toEqual(['{"ps":9}', flash, '{"ps":9}']);
+});
+
 test('a combo has no light of its own', async ({ page }) => {
   await page.getByTestId('pad-editor-panel-type-button-combo').click();
   await page.getByRole('alertdialog').getByRole('button', { name: 'SWITCH', exact: true }).click();

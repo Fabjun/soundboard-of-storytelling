@@ -44,6 +44,18 @@ const COURSE_DEFAULT: LightCourse = {
   minutes: 20,
 };
 
+/** The parts a light is edited by: its kind, lamp, the values of each kind, and SHORT. */
+function partsOf(light: PadLight | undefined, canBeShort: boolean) {
+  return {
+    kind: kindOf(light),
+    lamp: light?.lamp ?? 'all',
+    preset: light && 'preset' in light ? light.preset : 1,
+    effect: light && 'effect' in light ? light.effect : EFFECT_DEFAULT,
+    course: light && 'course' in light ? light.course : COURSE_DEFAULT,
+    short: canBeShort && light?.short === true,
+  };
+}
+
 const kindOf = (light: PadLight | undefined): Kind =>
   !light
     ? 'none'
@@ -61,7 +73,8 @@ type EffectList = null | 'reading' | LampEffect[] | string;
 /**
  * Edits a light — a pad's or the board's; `onChange` gets the new light, or undefined for none.
  * `legend` and `caption` say whose light it is and when it is sent; `name` is the radio group's
- * name and the end of its test id ("pad" / "board").
+ * name and the end of its test id ("pad" / "board"). `canBeShort` offers SHORT (a pad's light,
+ * light.md K3) for every kind but a course.
  */
 export function LightPanel({
   light,
@@ -69,22 +82,20 @@ export function LightPanel({
   legend,
   caption,
   name,
+  canBeShort = false,
 }: {
   light: PadLight | undefined;
   onChange: (light: PadLight | undefined) => void;
   legend: string;
   caption: string;
   name: string;
+  canBeShort?: boolean;
 }): JSX.Element {
   void prefsVersion.value; // the lamps may change in Settings
   const lamps = getLamps();
   const [tried, setTried] = useState<string | null>(null);
   const [effects, setEffects] = useState<EffectList>(null);
-  const kind = kindOf(light);
-  const lamp = light?.lamp ?? 'all';
-  const preset = light && 'preset' in light ? light.preset : 1;
-  const effect = light && 'effect' in light ? light.effect : EFFECT_DEFAULT;
-  const course = light && 'course' in light ? light.course : COURSE_DEFAULT;
+  const { kind, lamp, preset, effect, course, short } = partsOf(light, canBeShort);
   // The lamp the effects are read from: the chosen one, or the first for "All lamps"
   const source = lamps.find((l) => l.id === lamp) ?? lamps[0];
   const sourceAddress = source?.address;
@@ -97,6 +108,11 @@ export function LightPanel({
     );
   }, [kind, effects, sourceAddress]);
 
+  /** Hands on a changed light, keeping SHORT — a course is never short (K3). */
+  function emit(next: PadLight, keepShort = short) {
+    onChange(keepShort && !('course' in next) ? { ...next, short: true } : next);
+  }
+
   /** The light of `k` for `to`, keeping what was set for that kind. */
   function lightOf(k: Exclude<Kind, 'none'>, to: string): PadLight {
     if (k === 'off') return { lamp: to, off: true };
@@ -106,16 +122,17 @@ export function LightPanel({
   }
 
   function setPoint(end: 'from' | 'to', change: Partial<LightPoint>) {
-    onChange({ lamp, course: { ...course, [end]: { ...course[end], ...change } } });
+    emit({ lamp, course: { ...course, [end]: { ...course[end], ...change } } });
   }
 
   function setKind(k: Kind) {
     setTried(null);
-    onChange(k === 'none' ? undefined : lightOf(k, lamp));
+    if (k === 'none') onChange(undefined);
+    else emit(lightOf(k, lamp));
   }
 
   function setEffect(change: Partial<LightEffect>) {
-    onChange({ lamp, effect: { ...effect, ...change } });
+    emit({ lamp, effect: { ...effect, ...change } });
   }
 
   async function tryIt() {
@@ -165,7 +182,7 @@ export function LightPanel({
               onChange={(e) => {
                 const n = Math.round(Number(e.currentTarget.value));
                 const clamped = Math.min(PRESET_MAX, Math.max(1, Number.isFinite(n) ? n : 1));
-                onChange({ lamp, preset: clamped });
+                emit({ lamp, preset: clamped });
               }}
             />
           </label>
@@ -310,7 +327,7 @@ export function LightPanel({
                     COURSE_MINUTES_MAX,
                     Math.max(1, Number.isFinite(n) ? n : 1),
                   );
-                  onChange({ lamp, course: { ...course, minutes } });
+                  emit({ lamp, course: { ...course, minutes } });
                 }}
               />
             </label>
@@ -319,13 +336,27 @@ export function LightPanel({
       )}
       {kind !== 'none' && (
         <div class="sb-inspector-section sb-col">
+          {canBeShort && kind !== 'course' && light && (
+            <label class="sb-check-row">
+              <input
+                type="checkbox"
+                checked={short}
+                onChange={(e) => {
+                  const { short: _old, ...rest } = light;
+                  emit(rest, e.currentTarget.checked);
+                }}
+              />
+              Short — while the sound plays, then the light before comes back (a running course
+              where it has got to)
+            </label>
+          )}
           <select
             class="sb-text-input"
             aria-label="Lamp"
             value={lamp}
             onChange={(e) => {
               setEffects(null); // another lamp may have other effects
-              onChange(lightOf(kind, e.currentTarget.value));
+              emit(lightOf(kind, e.currentTarget.value));
             }}
           >
             <option value="all">All lamps</option>

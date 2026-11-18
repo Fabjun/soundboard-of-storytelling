@@ -167,6 +167,22 @@ smaller than 44 px (the smallest PAD SIZE gave 42 px, on a phone 38.75 px). The 
 … stays (PQ1). Guarded by `v3/tests/e2e/pad-size.spec.ts` ("every pad size keeps the name inside
 the pad").
 
+### Number fields drop typed text on a redraw
+
+Found 2026-11-18 by `v3/tests/e2e/pad-light.spec.ts`: a number typed into the LIGHT tab's effect
+number while "Reading the effects from the lamp…" shows is lost — the lamp's answer draws the
+panel again, and the field, which shows the stored value and takes the typed one only on Enter or
+when it is left (`onChange`), gets the stored value back (Preact sets `value` on every render).
+The same pattern is in every number field (read in the code 2026-11-18, tried only for the effect
+number): the preset number, the effect number and the course's minutes
+(`v3/src/components/LightPanel.tsx`), a combo step's wait (`v3/src/components/ComboStepsEditor.tsx`),
+REPEAT and the trim start / end (`v3/src/components/PadEditorPanel.tsx`) — the trim fields would
+lose a typed value while the preview's playhead draws the editor. The test types after the lamp's
+answer for now. **Open:** fix only
+the effect number, every number field through one component that keeps the typed text until it
+is taken (one function per UI element, CLAUDE.md), or that plus a check. **When:** the owner's
+decision, put on its own.
+
 ### Top bar under the iPhone status bar
 
 Found 2026-10-10 while building the dock (Slice 13a): `v3/index.html` sets `viewport-fit=cover`

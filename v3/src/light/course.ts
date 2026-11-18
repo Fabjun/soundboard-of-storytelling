@@ -51,13 +51,37 @@ export function coursePoint(
   };
 }
 
-let running: { timer: ReturnType<typeof setInterval> } | null = null;
+/** The running course: its timer, whether a short light holds its sending, and its point now. */
+let running: {
+  timer: ReturnType<typeof setInterval>;
+  held: boolean;
+  resume: () => void;
+} | null = null;
 
 /** Ends the running course; the lamp keeps the point it last reached. Nothing when none runs. */
 export function stopCourse(): void {
   if (running) clearInterval(running.timer);
   running = null;
   courseMinutesLeft.value = null;
+}
+
+/**
+ * Holds the running course while a short light is on (light.md K3): it goes on — the minutes count
+ * and its end comes when it is due — but sends nothing. Nothing when none runs.
+ */
+export function holdCourse(): void {
+  if (running) running.held = true;
+}
+
+/**
+ * Ends the hold: sends the point the course has reached by now, at once, and goes on from there.
+ * Returns false when no course runs any more — it ended meanwhile, or none was running.
+ */
+export function releaseCourse(): boolean {
+  if (!running) return false;
+  running.held = false;
+  running.resume();
+  return true;
 }
 
 /**
@@ -83,12 +107,18 @@ export function startCourse(
     const gap = Math.min(TRANSITION_MAX_MS, Math.max(step, t - last));
     last = t;
     const target = Math.min(durationMs, elapsed + gap);
-    send(coursePoint(course, durationMs, target), Math.max(0, target - elapsed));
+    if (!running?.held) {
+      send(coursePoint(course, durationMs, target), Math.max(0, target - elapsed));
+    }
     if (target >= durationMs) {
       stopCourse();
       return;
     }
     courseMinutesLeft.value = Math.ceil((durationMs - elapsed) / 60_000);
   }, step);
-  running = { timer };
+  running = {
+    timer,
+    held: false,
+    resume: () => send(coursePoint(course, durationMs, now() - start), 0),
+  };
 }
