@@ -125,8 +125,8 @@ sent on STOP ALL — C3: stopping sound and changing light are two things. The b
 
 ## Light course and short lights
 
-**Status:** Decided — plan approved by the owner on 2026-11-18 (K1–K6 as below). **Step 1, the
-course, built in 3.0.321.** Written on the owner's request of 2026-11-18: a pad starts the day — a
+**Status:** Decided — plan approved by the owner on 2026-11-18 (K1–K6 as below). **Built: the
+course in 3.0.321, the short light in 3.0.322, the pause in 3.0.323.** Written on the owner's request of 2026-11-18: a pad starts the day — a
 rooster crows and the light is very bright; the day runs 20 minutes or longer (adjustable) while
 the light turns from bright to sunset red; at the end the light stays so and a bell strikes. A
 thunder pad played meanwhile flashes the lamp, and afterwards the day goes on in the state and
@@ -191,7 +191,11 @@ moment and sends it to the lamp.
    SECONDS for a pad without sound — a pad sends its light only when its sound starts (the bridge's
    `onPadStarted` in `v3/src/audio/index.ts`), so a pad without sound sends none; TRY sends a
    short light without the return.
-3. **Pause holds the course** — next.
+3. **Pause holds the course** — built in 3.0.323: `pause` and `resume` of the audio facade
+   (`v3/src/audio/index.ts`, every way into and out of a pause) stop and start the course's time
+   (`pauseCourse`, `resumeCourse`): at the pause the lamp gets the point reached, at once, so it
+   stands still too (not while a short light is on); the minutes stand; after it the course goes
+   on from that point and ends as much later as it stood.
 
 Each step is tested on a simulated clock (unit) and with Playwright standing in for the lamp
 (E2E); the real lamp is an item on the iPhone checklist. An iPhone or iPad reaches no lamp without

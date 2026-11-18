@@ -103,8 +103,8 @@ Unused today, kept for a later slice or a parked feature (`@reserved`, ADR-0064)
 
 | Location                    | Symbol         | Waits for                                                                                      |
 | --------------------------- | -------------- | ---------------------------------------------------------------------------------------------- |
-| `v3/src/audio/index.ts:195` | `fadeOutAll`   | Parked — one fade for everything at once; STOP ALL fades pad by pad (src/state/stopControl.ts) |
-| `v3/src/audio/index.ts:249` | `crossfade`    | Parked — crossfade between pads (docs/product/README.md#pad-options)                           |
+| `v3/src/audio/index.ts:201` | `fadeOutAll`   | Parked — one fade for everything at once; STOP ALL fades pad by pad (src/state/stopControl.ts) |
+| `v3/src/audio/index.ts:255` | `crossfade`    | Parked — crossfade between pads (docs/product/README.md#pad-options)                           |
 | `v3/src/state/store.ts:144` | `masterVolume` | Parked — master volume (docs/product/README.md#pad-options)                                    |
 
 ## Prose lint exceptions (Vale) (14)
@@ -121,7 +121,7 @@ Historical docs excluded in `.vale.ini`, and passages marked `<!-- vale … = NO
 | `.vale.ini`                                            | `docs/product/v1-v2-inventory.md` | historical record — keeps the names valid at its time                             |
 | `.vale.ini`                                            | `CHANGELOG.md`                    | historical record — keeps the names valid at its time                             |
 | `.vale.ini`                                            | `docs/development/exceptions.md`  | historical record — keeps the names valid at its time                             |
-| `CLAUDE.md:1002`                                       | `SoS.SupersededTerms` off         | historical slice records keep the names valid at the time (Scene before Slice 9b) |
+| `CLAUDE.md:1003`                                       | `SoS.SupersededTerms` off         | historical slice records keep the names valid at the time (Scene before Slice 9b) |
 | `docs/architecture/0056-documentation-freshness.md:33` | `SoS.SupersededTerms` off         | …                                                                                 |
 | `docs/architecture/concept-brief.md:75`                | `SoS.SupersededTerms` off         | explains the rename                                                               |
 | `docs/product/README.md:116`                           | `SoS.SupersededTerms` off         | records the rename decision                                                       |

@@ -17,10 +17,19 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.322';
+export const APP_VERSION = '3.0.323';
 
 /** The developer log, newest first; CHANGELOG.md is generated from it (sync-changelog). */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.323',
+    date: '2026-11-18',
+    items: [
+      'feat(light): a pause holds the light course, step 3 of light.md "Light course and short lights" (K4) — pause and resume of the audio facade, every way into and out of a pause, stop and start the course\'s time (pauseCourse, resumeCourse in src/light/course.ts): at the pause the lamp gets the point reached, at once, so it stands still too (not while a short light is on); the minutes stand; after it the course goes on from that point and ends as much later as it stood; a short light that ends in a pause sends the point the course stands at',
+      'docs: light.md step 3 built — the plan is done; the help topic Light says a pause holds a course',
+      'test: unit course (the point at the pause, nothing while paused, the minutes standing, the course going on after it and ending later; a pause while held sends nothing, a release in a pause sends the point it stands at; pause and resume without a course or twice do nothing); E2E pad-light — Space pauses a Loop with a course: the lamp gets the point at 30 s, nothing while paused, the minutes stand, and it goes on after Space; the clock steps of the course test are one helper (clockSteps). Counter-checked: a pause that does not hold the course, a resume that does not move its start — each red',
+    ],
+  },
   {
     version: '3.0.322',
     date: '2026-11-18',

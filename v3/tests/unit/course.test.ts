@@ -8,7 +8,10 @@
  * tenth of its length as its step; a new course and stopCourse end the running one. A hold (a
  * short light, K3) sends nothing while the course goes on; the release sends the point reached by
  * then, at once; a course that ended while held releases nothing; hold and release without a course
- * do nothing.
+ * do nothing. A pause (K4) sends the point reached at once and stops the course's time — nothing
+ * is sent and the minutes stand; after it the course goes on from that point and ends as much
+ * later as it stood; a pause while held sends nothing, and a release in a pause sends the point it
+ * stands at; pause and resume twice, or without a course, do nothing more.
  */
 
 import type { LightCourse, LightPoint } from '../../src/types';
@@ -19,7 +22,9 @@ import {
   coursePoint,
   holdCourse,
   mixColor,
+  pauseCourse,
   releaseCourse,
+  resumeCourse,
   startCourse,
   stopCourse,
 } from '../../src/light/course';
@@ -150,5 +155,51 @@ describe('holdCourse / releaseCourse (a short light, K3)', () => {
     expect(r.sent).toEqual([[day.from, 0]]);
     holdCourse();
     expect(releaseCourse()).toBe(false);
+  });
+});
+
+describe('pauseCourse / resumeCourse (a pause of the sound, K4)', () => {
+  it('a pause sends the point reached, at once, and stops the time; after it the course goes on', () => {
+    const r = recorder();
+    startCourse(day, r.send, undefined, Date.now);
+    vi.advanceTimersByTime(4 * MIN);
+    pauseCourse();
+    const at = coursePoint(day, 20 * MIN, 4 * MIN);
+    expect(r.sent.at(-1)).toEqual([at, 0]);
+    const count = r.sent.length;
+    vi.advanceTimersByTime(30 * MIN); // longer than the whole course
+    expect(r.sent).toHaveLength(count);
+    expect(courseMinutesLeft.value).toBe(16);
+    pauseCourse(); // a second pause changes nothing
+    expect(r.sent).toHaveLength(count);
+    resumeCourse();
+    vi.advanceTimersByTime(STEP_MS);
+    expect(r.sent.at(-1)).toEqual([coursePoint(day, 20 * MIN, 4 * MIN + 2 * STEP_MS), STEP_MS]);
+    vi.advanceTimersByTime(16 * MIN); // the end comes 30 minutes later than without the pause
+    expect(r.sent.at(-1)![0]).toEqual(day.to);
+    expect(courseMinutesLeft.value).toBeNull();
+  });
+
+  it('a pause while held sends nothing; a release in a pause sends the point it stands at', () => {
+    const r = recorder();
+    startCourse(day, r.send, undefined, Date.now);
+    vi.advanceTimersByTime(2 * MIN);
+    holdCourse();
+    const count = r.sent.length;
+    pauseCourse();
+    expect(r.sent).toHaveLength(count);
+    vi.advanceTimersByTime(10 * MIN);
+    expect(releaseCourse()).toBe(true);
+    expect(r.sent.at(-1)).toEqual([coursePoint(day, 20 * MIN, 2 * MIN), 0]);
+  });
+
+  it('pause and resume without a course, or resume without a pause, do nothing', () => {
+    const r = recorder();
+    pauseCourse();
+    resumeCourse();
+    startCourse(day, r.send, undefined, Date.now);
+    resumeCourse();
+    vi.advanceTimersByTime(STEP_MS);
+    expect(r.sent[1]).toEqual([coursePoint(day, 20 * MIN, 2 * STEP_MS), STEP_MS]);
   });
 });

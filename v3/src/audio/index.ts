@@ -8,6 +8,7 @@
 import type { LoopPad, Pad, PadFile, SinglePad } from '../types';
 import type { EnginePad } from './types';
 import { endPadLight, startPadLight } from '../light/padLight';
+import { pauseCourse, resumeCourse } from '../light/course';
 import {
   playOnce,
   playLoop,
@@ -175,15 +176,20 @@ export function stopAll(): void {
   stopAllInternal();
 }
 
-/** Pauses every sound where it is (Slice 12d, K7); the top bar shows PAUSED. */
+/**
+ * Pauses every sound where it is (Slice 12d, K7); the top bar shows PAUSED. A light course stands
+ * still with it (light.md K4).
+ */
 export function pause(): void {
   pauseAll();
+  pauseCourse();
   audioPaused.value = true;
 }
 
-/** Ends a pause: every paused sound goes on (K7 second press, K8). */
+/** Ends a pause: every paused sound goes on (K7 second press, K8), and a light course with them. */
 export function resume(): void {
   resumeAll();
+  resumeCourse();
   audioPaused.value = false;
 }
 

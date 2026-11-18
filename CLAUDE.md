@@ -936,10 +936,11 @@ stopAll(): void
   // Stops everything that plays, at once — the second stage of STOP ALL (src/state/stopControl.ts).
 
 pause(): void
-  // Pauses every sound where it is (Slice 12d, K7); the top bar shows PAUSED.
+  // Pauses every sound where it is (Slice 12d, K7); the top bar shows PAUSED. A light course stands
+  // still with it (light.md K4).
 
 resume(): void
-  // Ends a pause: every paused sound goes on (K7 second press, K8).
+  // Ends a pause: every paused sound goes on (K7 second press, K8), and a light course with them.
 
 fadeOutAll(duration: number): void
   // Fades everything that plays out over `duration` seconds; running combos stop at once. The pads

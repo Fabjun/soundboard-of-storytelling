@@ -202,6 +202,18 @@ test('a lamp that lists no effects leaves the effect number to type', async ({ p
     .toEqual(['{"on":true,"bri":128,"seg":{"fx":66,"sx":128,"ix":128,"col":[[255,138,31]]}}']);
 });
 
+/**
+ * Moves the simulated clock `count` steps of `ms`, waiting for each step's call to reach the lamp —
+ * one long jump would also run out each call's 1 s time limit before the stand-in lamp takes it.
+ */
+async function clockSteps(page: Page, bodies: string[], count: number, ms: number) {
+  for (let i = 0; i < count; i++) {
+    const before = bodies.length;
+    await page.clock.runFor(ms);
+    await expect.poll(() => bodies.length).toBeGreaterThan(before);
+  }
+}
+
 test('a course goes from its start to its end light: TRY in 10 s, the pad over its minutes, the status bar counts them', async ({
   page,
 }) => {
@@ -217,17 +229,7 @@ test('a course goes from its start to its end light: TRY in 10 s, the pad over i
   const minutes = page.getByRole('spinbutton', { name: 'Minutes', exact: true });
   await minutes.fill('2');
   await minutes.press('Enter');
-  /**
-   * Moves the clock one step of `ms` at a time and waits for each step's call — one long jump would
-   * also run out each call's 1 s time limit before the stand-in lamp takes it.
-   */
-  async function steps(count: number, ms: number) {
-    for (let i = 0; i < count; i++) {
-      const before = bodies.length;
-      await page.clock.runFor(ms);
-      await expect.poll(() => bodies.length).toBeGreaterThan(before);
-    }
-  }
+  const steps = (count: number, ms: number) => clockSteps(page, bodies, count, ms);
   await page.getByRole('button', { name: 'TRY', exact: true }).click();
   // The start at once, without a transition (WLED tt in tenths of a second)
   const start = '{"on":true,"bri":255,"tt":0,"seg":{"fx":0,"col":[[255,255,255]]}}';
@@ -255,6 +257,42 @@ test('a course goes from its start to its end light: TRY in 10 s, the pad over i
   await expect(left).toHaveCount(0);
   expect(bodies).toHaveLength(12);
   expect(bodies.at(-1)).toBe('{"on":true,"bri":90,"tt":100,"seg":{"fx":0,"col":[[255,0,0]]}}');
+});
+
+test('a pause holds the course: the lamp stands where it got to, the minutes stand, and it goes on after', async ({
+  page,
+}) => {
+  await page.clock.install(); // paused below, as in the course test above
+  await page.clock.pauseAt(Date.now() + 60_000);
+  const bodies = await standInLamp(page);
+  // A Loop, so a sound plays to pause (with nothing playing, Space does nothing)
+  await page.getByTestId('pad-editor-panel-type-button-loop').click();
+  await page.getByRole('tab', { name: 'LIGHT', exact: true }).click();
+  await page.getByText('Course', { exact: true }).click();
+  const minutes = page.getByRole('spinbutton', { name: 'Minutes', exact: true });
+  await minutes.fill('2');
+  await minutes.press('Enter');
+  await page.getByTestId('pad-editor-panel-save-button').click();
+  await page.getByTestId('pad-editor-panel-close-button').click();
+  await enterGameMode(page);
+  await padCells(page).first().getByRole('button').click();
+  await expect.poll(() => bodies.length).toBe(1);
+  await clockSteps(page, bodies, 3, 10_000);
+  // Space with no control focused — a tapped pad would take Space itself
+  await page.evaluate(() => (document.activeElement as HTMLElement | null)?.blur());
+  await page.keyboard.press('Space');
+  await expect(page.getByRole('button', { name: 'PAUSED', exact: true })).toBeVisible();
+  // The point at 30 s, at once: a quarter of the way from #fff4e0, 255 to #c2401a, 90 (the default)
+  await expect.poll(() => bodies.length).toBe(5);
+  expect(bodies[4]).toBe('{"on":true,"bri":214,"tt":0,"seg":{"fx":0,"col":[[240,199,175]]}}');
+  await page.clock.runFor(60_000);
+  expect(bodies).toHaveLength(5); // nothing while paused
+  const left = page.getByTestId('status-bar-course-text');
+  await expect(left).toHaveText('LIGHT 2 min left');
+  await page.keyboard.press('Space');
+  await expect(page.getByRole('button', { name: 'PAUSED', exact: true })).toHaveCount(0);
+  await clockSteps(page, bodies, 1, 10_000);
+  expect(bodies[5]).toContain('"tt":100,'); // and on it goes
 });
 
 test('a pad played from the quick-access bar sends its light too', async ({ page }) => {

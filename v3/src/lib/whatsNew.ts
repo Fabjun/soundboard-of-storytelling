@@ -103,6 +103,12 @@ export function withEarlyVersions(
 /** The release notes the main menu shows, newest first (checked by whatsNew.test.ts). */
 export const WHATS_NEW: WhatsNewNotes[] = [
   {
+    version: '3.0.323',
+    improved: [
+      'A pause holds a light course too: the lamp stands where it got to and goes on with the sound.',
+    ],
+  },
+  {
     version: '3.0.322',
     new: [
       'A pad’s light can be short: it lasts only while the pad plays — a flash with the thunder — and then the light before comes back; a running course goes on from where it has got to.',
