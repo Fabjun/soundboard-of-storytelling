@@ -108,6 +108,15 @@ test('every control of both PAD editor tabs can be reached on a short window', a
           .getByText('Off', { exact: true })
           .click(),
     },
+    // "Effect" shows the effect number (no lamp here to list effects), the color and three sliders
+    {
+      tab: 'LIGHT',
+      prepare: () =>
+        page
+          .getByRole('tabpanel', { name: 'LIGHT', exact: true })
+          .getByText('Effect', { exact: true })
+          .click(),
+    },
   ];
   for (const { tab, prepare } of tabs) {
     await page.getByRole('tab', { name: tab, exact: true }).click();

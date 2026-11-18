@@ -3,12 +3,16 @@
  *
  * fetch is a stand-in: what the client sends (URL, method, body, the local-network hint), and each
  * way a call ends — answered, refused by the browser, timed out, a bad address, not a WLED lamp.
+ * An effect's body and ranges; the effect list read from the lamp.
  */
 
 import {
   describeResult,
+  EFFECT_DEFAULT,
+  isLightEffect,
   isPreset,
   lampUrl,
+  listEffects,
   PRESET_MAX,
   sendLight,
   stateBody,
@@ -60,6 +64,74 @@ describe('stateBody / isPreset', () => {
     for (const ok of [1, 42, PRESET_MAX]) expect(isPreset(ok)).toBe(true);
     for (const bad of [0, -1, PRESET_MAX + 1, 2.5, Number.NaN, '3', null, undefined])
       expect(isPreset(bad)).toBe(false);
+  });
+
+  it('an effect is on, its brightness, and the main segment with fx, sx, ix and its color', () => {
+    const effect = {
+      fx: 66,
+      name: 'Fire 2012',
+      color: '#ff8a1f',
+      speed: 10,
+      intensity: 200,
+      brightness: 90,
+    };
+    expect(stateBody({ effect })).toEqual({
+      on: true,
+      bri: 90,
+      seg: { fx: 66, sx: 10, ix: 200, col: [[255, 138, 31]] },
+    });
+  });
+
+  it('an effect keeps the ranges of the WLED JSON API', () => {
+    const ok = { ...EFFECT_DEFAULT };
+    expect(isLightEffect(ok)).toBe(true);
+    expect(isLightEffect({ ...ok, fx: 255, speed: 0, intensity: 255, brightness: 1 })).toBe(true);
+    for (const bad of [
+      { ...ok, fx: 256 },
+      { ...ok, fx: -1 },
+      { ...ok, speed: 1.5 },
+      { ...ok, intensity: 300 },
+      { ...ok, brightness: 0 },
+      { ...ok, color: 'red' },
+      { ...ok, color: '#12345' },
+      { ...ok, name: 7 },
+      { ...ok, name: 'x'.repeat(65) },
+      null,
+      'Solid',
+    ])
+      expect(isLightEffect(bad)).toBe(false);
+  });
+});
+
+describe('listEffects', () => {
+  it("GETs /json/eff; each name's index is its id; RSVD and - are left out", async () => {
+    const { fetch, calls } = fakeFetch(() =>
+      Promise.resolve(new Response(JSON.stringify(['Solid', 'Blink', 'RSVD', '-', 'Fire 2012']))),
+    );
+    expect(await listEffects('192.168.1.50', fetch)).toEqual({
+      kind: 'effects',
+      effects: [
+        { id: 0, name: 'Solid' },
+        { id: 1, name: 'Blink' },
+        { id: 4, name: 'Fire 2012' },
+      ],
+    });
+    expect(calls[0]).toMatchObject({
+      url: 'http://192.168.1.50/json/eff',
+      init: { method: 'GET' },
+    });
+  });
+
+  it('no list, no WLED lamp, an error status, a refused call or a bad address says why', async () => {
+    const notList = fakeFetch(() => Promise.resolve(new Response('{"a":1}')));
+    expect(await listEffects('192.168.1.50', notList.fetch)).toEqual({ kind: 'no-answer' });
+    const html = fakeFetch(() => Promise.resolve(new Response('<html>router</html>')));
+    expect(await listEffects('192.168.1.1', html.fetch)).toEqual({ kind: 'no-answer' });
+    const error = fakeFetch(() => Promise.resolve(new Response('', { status: 500 })));
+    expect(await listEffects('192.168.1.1', error.fetch)).toEqual({ kind: 'no-answer' });
+    const refused = fakeFetch(() => Promise.reject(new TypeError('Failed to fetch')));
+    expect(await listEffects('192.168.1.1', refused.fetch)).toEqual({ kind: 'blocked' });
+    expect(await listEffects('not a host/x', notList.fetch)).toEqual({ kind: 'bad-address' });
   });
 });
 

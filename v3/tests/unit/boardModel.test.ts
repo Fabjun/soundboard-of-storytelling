@@ -6,6 +6,7 @@
 
 import { describe, expect, it } from 'vitest';
 import type { Board, ComboPad, Pad, SinglePad } from '../../src/types';
+import { EFFECT_DEFAULT } from '../../src/light/wled';
 import {
   DEFAULT_GRID,
   QUICK_ACCESS_MAX,
@@ -897,11 +898,12 @@ describe('parseBoard (untrusted boards from a backup file)', () => {
     }
   });
 
-  it("keeps a pad's light (light.md C1): a preset 1–250 or off, for all lamps or one", () => {
+  it("keeps a pad's light (light.md C1): a preset 1–250, an effect or off, for all lamps or one", () => {
     for (const light of [
       { lamp: 'all', preset: 1 },
       { lamp: 'lamp-1', preset: 250 },
       { lamp: 'all', off: true },
+      { lamp: 'lamp-1', effect: EFFECT_DEFAULT },
     ]) {
       expect(parseBoard(withPad(valid(), 0, { light }))?.pads[0]).toEqual({
         ...valid().pads[0],
@@ -920,6 +922,10 @@ describe('parseBoard (untrusted boards from a backup file)', () => {
       { lamp: 'all', off: true, preset: 3 },
       { preset: 3 },
       'red',
+      { lamp: 'all', effect: { ...EFFECT_DEFAULT, brightness: 0 } },
+      { lamp: 'all', effect: 'Solid' },
+      { lamp: 'all', effect: EFFECT_DEFAULT, preset: 3 },
+      { lamp: 'all' },
     ];
     // The list names each light that got through
     expect(lights.filter((light) => parseBoard(withPad(valid(), 0, { light })) !== null)).toEqual(

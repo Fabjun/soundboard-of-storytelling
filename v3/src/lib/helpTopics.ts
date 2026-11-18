@@ -158,7 +158,7 @@ export const HELP_TOPICS: readonly HelpTopic[] = [
     title: 'Light',
     text: [
       'A pad can start a light on a WLED lamp in your home network. In Settings → LIGHT add the lamp with its address (shown in the lamp’s own app) and TEST it; the browser may ask to reach the local network — allow it.',
-      'Make presets in the lamp’s own app. In the PAD editor, LIGHT chooses a preset number or Off; TRY shows it at once. When a lamp does not answer, the status bar shows LIGHT ✕; the sound plays anyway.',
+      'In the PAD editor, LIGHT chooses what the pad does to the lamp: a preset number (made in the lamp’s own app), an Effect with its color, speed, intensity and brightness (the effects are read from the lamp), or Off; TRY shows it at once. When a lamp does not answer, the status bar shows LIGHT ✕; the sound plays anyway.',
       'Browsers on an iPhone or iPad cannot reach a lamp; use a computer with Chrome or Brave.',
     ],
     words: ['lamp', 'wled', 'preset', 'light', 'color'],

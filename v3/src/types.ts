@@ -80,10 +80,28 @@ export type PadBase = {
 
 /**
  * A pad's light (docs/product/features/light.md C1, C2): a preset of the lamp (1–250, made in the
- * lamp's own app) or off, sent to every lamp of Settings → LIGHT or to the one named by its id.
+ * lamp's own app), an effect set in the app (C1 B), or off — sent to every lamp of Settings → LIGHT
+ * or to the one named by its id.
  */
 export type PadLight =
-  { lamp: 'all' | string; preset: number } | { lamp: 'all' | string; off: true };
+  | { lamp: 'all' | string; preset: number }
+  | { lamp: 'all' | string; effect: LightEffect }
+  | { lamp: 'all' | string; off: true };
+
+/**
+ * An effect of the lamp set from the app (light.md C1 B, WLED JSON API): the effect's id as the
+ * lamp numbers it, and its name as the lamp called it (ids differ between WLED versions — the
+ * name shows what was chosen when the lamp is not in reach); one color; speed and intensity of the
+ * effect (0–255) and brightness (1–255).
+ */
+export interface LightEffect {
+  fx: number;
+  name: string;
+  color: string;
+  speed: number;
+  intensity: number;
+  brightness: number;
+}
 
 /** One step in a combo sequence. */
 export type ComboStep = {

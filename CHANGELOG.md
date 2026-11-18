@@ -7,6 +7,17 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.314 — 2026-11-18
+
+### Added
+
+- feat(light): a pad can set a lamp effect itself — light.md C1 extended to C (provisional under Workflow rule 7b): PadLight {lamp, effect} with the effect's id and name, one color, speed, intensity and brightness (types.ts LightEffect); wled.ts sends {"on":true,"bri","seg":{"fx","sx","ix","col"}} (a seg without id → the main segment, WLED JSON API), reads the effect names from the lamp (listEffects, GET /json/eff, RSVD and - left out — ids differ between WLED versions), checks the ranges (isLightEffect: fx 0–255, speed / intensity 0–255, brightness 1–255, #rrggbb); the board check takes exactly one of preset, effect and off. The LIGHT tab has a fourth choice, Effect: the list of the lamp (the chosen one, or the first for All lamps), the effect number to type when no list comes, COLOR (sb-color-input, new), SPEED, INTENSITY and BRIGHTNESS — each group in its own section, as the SOUND tab
+
+### Internal
+
+- docs: light.md C1 extended, "Not yet" names palettes and says that an HTTPS reverse proxy already works as the iPhone / iPad bridge (an address typed with https:// is used as it is); help topic Light names Effect
+- test: unit wled (the effect body, the ranges, listEffects: the list, RSVD and - dropped, no list / not WLED / an error / refused / a bad address), padLight (the effect command), boardModel (an effect light kept; a bad effect, a light with two kinds, a light with none refused); E2E pad-light — an effect chosen from the lamp's list with speed and color, TRY sends it, the pad sends it when it plays; a lamp that lists none leaves the number to type; layout-reach walks the LIGHT tab with Effect, the a11y scan covers it (it found the sliders stacked without space — target size, WCAG 2.5.8 — now each in its section). Counter-checked: speed and intensity swapped in the body → red
+
 ## 3.0.313 — 2026-11-18
 
 ### Added
