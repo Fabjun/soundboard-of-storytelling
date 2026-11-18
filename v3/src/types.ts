@@ -21,6 +21,11 @@ export type Board = {
   padSize: number;
   /** Board-wide quick-access bar (model since Slice 9c, UI in Slice 13). */
   quickAccess: QuickAccessEntry[];
+  /**
+   * The board's base light (light.md, base light per board): sent when the board switches to GAME,
+   * before any pad changes it — a preset, an effect or off, as a pad's light. None by default.
+   */
+  light?: PadLight;
 };
 
 /** A deck: one grid of a board that places some of the board's pads (ADR-0048). */

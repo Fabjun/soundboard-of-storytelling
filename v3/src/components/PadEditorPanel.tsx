@@ -55,7 +55,7 @@ import type {
   PadType,
 } from '../types';
 import { Tabs, tabPanelProps, type TabItem } from './Tabs';
-import { PadLightPanel } from './PadLightPanel';
+import { LightPanel } from './LightPanel';
 import { isComboPad, REPEAT_MAX } from '../types';
 import { UiIcon } from './UiIcon';
 import { Waveform } from './Waveform';
@@ -941,7 +941,22 @@ export function PadEditorPanel({
           />
         </div>
         <div {...tabPanelProps('pad-editor', 'light')} hidden={tab !== 'light'}>
-          <PadLightPanel pad={history.present} light={light} onChange={handleLightChange} />
+          {history.present.type === 'combo' ? (
+            // A combo has no light of its own: its steps start the light of the pads they play (C4)
+            <div class="sb-inspector-section">
+              <p class="sb-caption">
+                A combo has no light of its own — each step starts the light of the pads it plays.
+              </p>
+            </div>
+          ) : (
+            <LightPanel
+              light={light}
+              onChange={handleLightChange}
+              legend="Light"
+              caption="What the pad does to the light when it starts. The light stays when the pad stops."
+              name="pad"
+            />
+          )}
         </div>
         <div {...tabPanelProps('pad-editor', 'sound')} hidden={tab !== 'sound'}>
           {/* Type selector */}

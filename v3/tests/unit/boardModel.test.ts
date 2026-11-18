@@ -35,6 +35,7 @@ import {
   removeFromQuickAccess,
   renameDeck,
   setBoardPadSize,
+  setBoardLight,
   restoreDeck,
   restorePad,
   setPlacementHotkey,
@@ -619,6 +620,16 @@ describe('changes applied to the latest board (board writes)', () => {
     expect(setBoardPadSize(b, 120)).toBe(b);
   });
 
+  it("sets and takes away the board's base light; none to take away → the same board", () => {
+    const before = emptyBoard();
+    expect(setBoardLight(before, undefined)).toBe(before);
+    const lit = setBoardLight(before, { lamp: 'all', preset: 9 });
+    expect(lit.light).toEqual({ lamp: 'all', preset: 9 });
+    const dark = setBoardLight(lit, undefined);
+    expect('light' in dark).toBe(false);
+    expect(dark.decks).toBe(before.decks);
+  });
+
   it('renames one deck only', () => {
     const b = renameDeck(emptyBoard(), 'd2', 'Night');
     expect(b.decks.map((d) => d.name)).toEqual(['Deck 1', 'Night']);
@@ -910,6 +921,13 @@ describe('parseBoard (untrusted boards from a backup file)', () => {
         light,
       });
     }
+  });
+
+  it('a stored board keeps its base light; a bad one refuses the board; none stays none', () => {
+    const light = { lamp: 'all', effect: EFFECT_DEFAULT };
+    expect(parseBoard({ ...valid(), light })?.light).toEqual(light);
+    expect(parseBoard({ ...valid(), light: { lamp: 'all', preset: 0 } })).toBeNull();
+    expect('light' in parseBoard(valid())!).toBe(false);
   });
 
   it('refuses a light that is no light, and any light on a combo (C4)', () => {

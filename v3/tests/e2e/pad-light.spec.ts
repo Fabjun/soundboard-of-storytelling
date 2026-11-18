@@ -21,6 +21,7 @@ import {
   enterSetupMode,
   goToBoardList,
   goToLibrary,
+  openDeckRail,
   openMainMenu,
   padCells,
   uploadTestAudio,
@@ -215,6 +216,24 @@ test('a pad played from the quick-access bar sends its light too', async ({ page
   // Only the bar's button — not the pad in the grid
   await page.getByRole('group', { name: 'Quick access', exact: true }).getByRole('button').click();
   await expect.poll(() => bodies).toEqual(['{"ps":7}']);
+});
+
+test("the board's base light, set in the deck list, goes out when the board switches to GAME", async ({
+  page,
+}) => {
+  const bodies = await standInLamp(page);
+  await page.getByTestId('pad-editor-panel-close-button').click();
+  await openDeckRail(page);
+  const disclosure = page.getByRole('button', { name: /^BOARD LIGHT/ });
+  await disclosure.click();
+  await expect(disclosure).toHaveAttribute('aria-expanded', 'true');
+  await page.getByText('Preset', { exact: true }).click();
+  const preset = page.getByRole('spinbutton', { name: 'Preset number', exact: true });
+  await preset.fill('9');
+  await preset.press('Enter');
+  expect(bodies).toEqual([]); // nothing is sent while setting it up
+  await enterGameMode(page);
+  await expect.poll(() => bodies).toEqual(['{"ps":9}']);
 });
 
 test('a combo has no light of its own', async ({ page }) => {

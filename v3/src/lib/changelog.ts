@@ -17,10 +17,19 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.315';
+export const APP_VERSION = '3.0.316';
 
 /** The developer log, newest first; CHANGELOG.md is generated from it (sync-changelog). */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.316',
+    date: '2026-11-18',
+    items: [
+      "feat(light): a board base light (light.md, provisional under Workflow rule 7b) — Board.light, a preset, an effect or off as a pad's light, goes out when the board switches to GAME (BoardScreen handleModeSwitch → startLight, fire and forget); set in SETUP at the end of the deck list, folded under BOARD LIGHT (DeckRail boardLight); not sent on STOP ALL (C3). setBoardLight in boardModel; parseBoard keeps it, so the backup carries it, and refuses a bad one; older boards stay without",
+      "refactor(light): PadLightPanel becomes LightPanel, one component for the PAD editor's LIGHT tab and the board light (legend, caption and the radio group's name as props); the editor shows the combo note itself; padLight.startLight sends any light, startPadLight uses it",
+      'test: unit boardModel (setBoardLight sets, takes away, the same board when none; parseBoard keeps a base light, refuses a bad one, none stays none) and padLight (startLight); E2E pad-light — the base light set in the deck list goes out on the switch to GAME, nothing while setting it up; the a11y scan covers BOARD LIGHT open with an effect. Counter-checked: without the send on the switch, and without keeping it in parseBoard — each red. Visual baselines of the board in SETUP and the deck rail updated: the BOARD LIGHT row below NEW DECK (the diff images checked — only that row differs)',
+    ],
+  },
   {
     version: '3.0.315',
     date: '2026-11-18',

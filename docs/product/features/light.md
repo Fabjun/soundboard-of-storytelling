@@ -114,10 +114,18 @@ http://<address>/json/state` with `targetAddressSpace: 'local'` where supported,
    Playwright intercepting the lamp's address (no lamp needed); a real-lamp check in the iPhone
    checklist once the bulb is there.
 
+## Base light per board
+
+**Built in 3.0.316 (provisional under CLAUDE.md Workflow rule 7b, for the owner's review):** a
+board may have a base light — a preset, an effect or off, as a pad's light (`Board.light`) — that
+goes out when the board switches to GAME, before any pad changes it. It is set in SETUP at the end
+of the deck list, folded under BOARD LIGHT (set once per board, as PAD SIZE is a board setting
+there); the same panel as the PAD editor's LIGHT tab (`v3/src/components/LightPanel.tsx`). Not
+sent on STOP ALL — C3: stopping sound and changing light are two things. The backup carries it.
+
 ## Not yet
 
-Palettes and further colors of an effect, a base light per board, the iPhone / iPad bridge itself
-(C5, owner decision). A pad played from the quick-access bar already sends its light, as from the
+Palettes and further colors of an effect, the iPhone / iPad bridge itself (C5, owner decision). A pad played from the quick-access bar already sends its light, as from the
 grid — the audio bridge starts the light of every pad that starts (tested in
 `v3/tests/e2e/pad-light.spec.ts`, 2026-11-18). The app already takes a bridge's address:
 an address typed with `https://` is used as it is, so an HTTPS reverse proxy in the home network

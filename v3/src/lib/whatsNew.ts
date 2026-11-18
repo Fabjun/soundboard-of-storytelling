@@ -103,6 +103,12 @@ export function withEarlyVersions(
 /** The release notes the main menu shows, newest first (checked by whatsNew.test.ts). */
 export const WHATS_NEW: WhatsNewNotes[] = [
   {
+    version: '3.0.316',
+    new: [
+      'A board can have a base light — a preset, an effect or off — that the lamp shows when the board switches to GAME; it is set at the end of the deck list, under BOARD LIGHT.',
+    ],
+  },
+  {
     version: '3.0.315',
     behindTheScenes: [
       'The automatic tests now also check that a pad in the quick-access bar starts its light.',

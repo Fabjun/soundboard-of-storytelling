@@ -1,13 +1,13 @@
 /**
- * @fileoverview PadLightPanel — the LIGHT tab of the PAD editor (docs/product/features/light.md
- * G3, C1, C2, C4)
+ * @fileoverview LightPanel — choosing a light: the LIGHT tab of the PAD editor and the board's
+ * base light in the deck list (docs/product/features/light.md G3, C1, C2)
  *
- * A pad's light is nothing, a preset of the lamp (1–250, made in the lamp's own app), an effect set
- * here (C1 B: the effect, one color, speed, intensity and brightness), or off — sent to all lamps or
- * one (Settings → LIGHT). The effects are read from the lamp, as their ids differ between WLED
+ * A light is nothing, a preset of the lamp (1–250, made in the lamp's own app), an effect set here
+ * (C1 B: the effect, one color, speed, intensity and brightness), or off — sent to all lamps or one
+ * (Settings → LIGHT). The effects are read from the lamp, as their ids differ between WLED
  * versions; without a lamp in reach the effect's number can be typed. TRY sends the light at once
- * and says what happened. A combo has no light of its own: its steps start the light of the pads
- * they play (C4).
+ * and says what happened. One component for both places (CLAUDE.md, one function per UI element);
+ * `name` keeps their radio groups apart when both are on the page.
  */
 
 import { useEffect, useState } from 'preact/hooks';
@@ -22,8 +22,8 @@ import {
   listEffects,
   type LampEffect,
 } from '../light/wled';
-import { startPadLight } from '../light/padLight';
-import type { LightEffect, Pad, PadLight } from '../types';
+import { startLight } from '../light/padLight';
+import type { LightEffect, PadLight } from '../types';
 
 type Kind = 'none' | 'preset' | 'effect' | 'off';
 
@@ -40,15 +40,23 @@ const kindOf = (light: PadLight | undefined): Kind =>
 /** The effects of the lamp as last read: not yet, being read, read, or why not. */
 type EffectList = null | 'reading' | LampEffect[] | string;
 
-/** Edits a pad's light; `onChange` gets the new light, or undefined for none. */
-export function PadLightPanel({
-  pad,
+/**
+ * Edits a light — a pad's or the board's; `onChange` gets the new light, or undefined for none.
+ * `legend` and `caption` say whose light it is and when it is sent; `name` is the radio group's
+ * name and the end of its test id ("pad" / "board").
+ */
+export function LightPanel({
   light,
   onChange,
+  legend,
+  caption,
+  name,
 }: {
-  pad: Pad;
   light: PadLight | undefined;
   onChange: (light: PadLight | undefined) => void;
+  legend: string;
+  caption: string;
+  name: string;
 }): JSX.Element {
   void prefsVersion.value; // the lamps may change in Settings
   const lamps = getLamps();
@@ -70,16 +78,6 @@ export function PadLightPanel({
     );
   }, [kind, effects, sourceAddress]);
 
-  if (pad.type === 'combo') {
-    return (
-      <div class="sb-inspector-section">
-        <p class="sb-caption">
-          A combo has no light of its own — each step starts the light of the pads it plays.
-        </p>
-      </div>
-    );
-  }
-
   /** The light of `k` for `to`, keeping what was set for that kind. */
   function lightOf(k: Exclude<Kind, 'none'>, to: string): PadLight {
     if (k === 'off') return { lamp: to, off: true };
@@ -99,7 +97,7 @@ export function PadLightPanel({
   async function tryIt() {
     if (!light) return;
     setTried('Sending…');
-    const results = await startPadLight({ ...pad, light });
+    const results = await startLight(light);
     setTried(
       results.length === 0
         ? 'No lamp to send to — add one in Settings → LIGHT.'
@@ -116,18 +114,18 @@ export function PadLightPanel({
       <div class="sb-inspector-section sb-col">
         {lamps.length === 0 && (
           <p class="sb-caption">
-            No lamp is set up yet — add a WLED lamp in Settings → LIGHT; the pad keeps its light
-            until then.
+            No lamp is set up yet — add a WLED lamp in Settings → LIGHT; the light is kept until
+            then.
           </p>
         )}
         <SegmentedChoice
-          legend="Light"
-          caption="What the pad does to the light when it starts. The light stays when the pad stops."
-          name="pad-light"
+          legend={legend}
+          caption={caption}
+          name={`${name}-light`}
           options={KINDS}
           value={kind}
           onChange={setKind}
-          testid="pad-light-kind-region"
+          testid={`light-panel-kind-region-${name}`}
         />
         {kind === 'preset' && (
           <label class="sb-col">
