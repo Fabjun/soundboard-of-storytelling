@@ -5,7 +5,10 @@
  * is sent at once with no transition; each step sends the point one step ahead with that step as
  * its transition; the last step lands on the end and stops; the minutes left count down and clear;
  * a late timer lengthens the transition to the gap it measured, up to 60 s; a short course takes a
- * tenth of its length as its step; a new course and stopCourse end the running one.
+ * tenth of its length as its step; a new course and stopCourse end the running one. A hold (a
+ * short light, K3) sends nothing while the course goes on; the release sends the point reached by
+ * then, at once; a course that ended while held releases nothing; hold and release without a course
+ * do nothing.
  */
 
 import type { LightCourse, LightPoint } from '../../src/types';
@@ -14,7 +17,9 @@ import {
   TRANSITION_MAX_MS,
   courseMinutesLeft,
   coursePoint,
+  holdCourse,
   mixColor,
+  releaseCourse,
   startCourse,
   stopCourse,
 } from '../../src/light/course';
@@ -117,5 +122,33 @@ describe('startCourse', () => {
     vi.advanceTimersByTime(STEP_MS);
     expect(b.sent).toHaveLength(2);
     expect(courseMinutesLeft.value).toBeNull();
+  });
+});
+
+describe('holdCourse / releaseCourse (a short light, K3)', () => {
+  it('a hold sends nothing while the course goes on; the release sends where it got to, at once', () => {
+    const r = recorder();
+    startCourse(day, r.send, undefined, Date.now);
+    vi.advanceTimersByTime(STEP_MS);
+    holdCourse();
+    vi.advanceTimersByTime(5 * MIN);
+    expect(r.sent).toHaveLength(2); // the start and the first step only
+    expect(courseMinutesLeft.value).toBe(15); // the minutes go on counting
+    expect(releaseCourse()).toBe(true);
+    expect(r.sent[2]).toEqual([coursePoint(day, 20 * MIN, 5 * MIN + STEP_MS), 0]);
+    vi.advanceTimersByTime(STEP_MS);
+    expect(r.sent).toHaveLength(4); // and it sends again
+  });
+
+  it('a course that ended while held releases nothing; without a course both do nothing', () => {
+    const r = recorder();
+    startCourse(day, r.send, undefined, Date.now);
+    holdCourse();
+    vi.advanceTimersByTime(25 * MIN);
+    expect(courseMinutesLeft.value).toBeNull();
+    expect(releaseCourse()).toBe(false);
+    expect(r.sent).toEqual([[day.from, 0]]);
+    holdCourse();
+    expect(releaseCourse()).toBe(false);
   });
 });

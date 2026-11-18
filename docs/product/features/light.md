@@ -180,8 +180,18 @@ moment and sends it to the lamp.
    `v3/src/light/wled.ts`); any other light a pad starts ends the course, a pad without light
    leaves it; the status bar shows "LIGHT 12 min left". The backup carries it; `parseBoard`
    checks it.
-2. **Short light and the return to the base** — next.
-3. **Pause holds the course.**
+2. **Short light and the return to the base** — built in 3.0.322: SHORT in the LIGHT tab of a pad
+   (`PadLight.short`), for a preset, an effect or off — not for a course, which is a base itself,
+   and not for the board's base light. A short light holds a running course (it goes on but sends
+   nothing, `holdCourse`); when the pad stops — its sound ends, a tap or STOP ALL stops it — the
+   audio bridge calls `endPadLight`, and the base comes back (`v3/src/light/padLight.ts`): a
+   running course at the point it has reached, at once; a course that ended meanwhile, its end
+   light; a preset, an effect or off as it was. Another light that starts meanwhile is the new
+   base, and the stop of the short pad then changes nothing. **Deviation from K3, for review:** no
+   SECONDS for a pad without sound — a pad sends its light only when its sound starts (the bridge's
+   `onPadStarted` in `v3/src/audio/index.ts`), so a pad without sound sends none; TRY sends a
+   short light without the return.
+3. **Pause holds the course** — next.
 
 Each step is tested on a simulated clock (unit) and with Playwright standing in for the lamp
 (E2E); the real lamp is an item on the iPhone checklist. An iPhone or iPad reaches no lamp without

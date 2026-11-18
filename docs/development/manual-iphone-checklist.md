@@ -342,6 +342,17 @@ checked to exist (docsGuards).
     match.
   - Simulated: `v3/tests/unit/course.test.ts` (the points, the steps, a late timer), `v3/tests/e2e/pad-light.spec.ts` (TRY in 10 s, the pad over its minutes, the status bar).
 
+- [ ] **The day with a thunder in it** _(light.md K3 — the owner's example; a computer with Chrome
+      or Brave, the WLED lamp in the same network)_
+  - Action: a pad "Day" with LIGHT → Course (bright white to sunset red, MINUTES 5); a pad
+    "Thunder" (a thunder sound of a few seconds) with LIGHT → Effect Lightning and SHORT. In GAME
+    play "Day"; after two minutes play "Thunder"; let it end.
+  - Expected: the lamp flashes while the thunder sounds; when it ends the lamp shows the day at
+    about two fifths of the way to red — not the color it had when the thunder started — and goes
+    on turning red until the five minutes are over; the status bar keeps counting through the flash.
+  - Why manual: only a real lamp shows the flash and the return.
+  - Simulated: `v3/tests/unit/padLight.test.ts` (the hold and the return), `v3/tests/e2e/pad-light.spec.ts` (a short light and the base after it).
+
 ---
 
 ## Section 3 — Layout and Platform

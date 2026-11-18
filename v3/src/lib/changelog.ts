@@ -17,10 +17,19 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.321';
+export const APP_VERSION = '3.0.322';
 
 /** The developer log, newest first; CHANGELOG.md is generated from it (sync-changelog). */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.322',
+    date: '2026-11-18',
+    items: [
+      "feat(light): a short light, step 2 of light.md \"Light course and short lights\" (K3) — SHORT in a pad's LIGHT tab (PadLight.short; a preset, an effect or off; not a course, not the board's base light) lasts while the pad's sound plays: it holds a running course, which goes on but sends nothing (holdCourse), and when the pad stops — its sound ends, a tap or STOP ALL — the audio bridge calls endPadLight and the base comes back: a running course at the point it has reached, at once (releaseCourse); a course that ended meanwhile, its end light; any other light as it was. A light that starts meanwhile is the new base. Deviation from K3, for review: no SECONDS for a pad without sound — a pad sends its light only when its sound starts (onPadStarted), so such a pad sends none",
+      'docs: light.md step 2 built with the deviation; the help topic Light names SHORT; the iPhone checklist "The day with a thunder in it"; BACKLOG "Number fields drop typed text on a redraw" — found by the new E2E test: a number typed while the LIGHT tab reads the effects is lost when the lamp\'s answer draws the panel again; every number field has the pattern (read in the code), the scope is the owner\'s decision',
+      "test: unit course (a hold sends nothing while the minutes go on, the release sends the point reached at once; a course that ended while held releases nothing), padLight (the course goes on from where it got to after a short light; a preset base comes back; a course that ended, its end light; another pad's stop or a short light another light followed change nothing; a course marked short stays the base), boardModel (short kept on an effect and off, refused on a course and when not true); E2E pad-light — a short effect flashes while the pad plays and the board's preset base comes back when its sound ends; SHORT is not offered for the board's base light. Counter-checked: a hold that does not hold, and a bridge that does not end the short light — each red",
+    ],
+  },
   {
     version: '3.0.321',
     date: '2026-11-18',

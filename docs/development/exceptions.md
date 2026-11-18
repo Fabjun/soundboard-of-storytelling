@@ -103,8 +103,8 @@ Unused today, kept for a later slice or a parked feature (`@reserved`, ADR-0064)
 
 | Location                    | Symbol         | Waits for                                                                                      |
 | --------------------------- | -------------- | ---------------------------------------------------------------------------------------------- |
-| `v3/src/audio/index.ts:193` | `fadeOutAll`   | Parked — one fade for everything at once; STOP ALL fades pad by pad (src/state/stopControl.ts) |
-| `v3/src/audio/index.ts:247` | `crossfade`    | Parked — crossfade between pads (docs/product/README.md#pad-options)                           |
+| `v3/src/audio/index.ts:195` | `fadeOutAll`   | Parked — one fade for everything at once; STOP ALL fades pad by pad (src/state/stopControl.ts) |
+| `v3/src/audio/index.ts:249` | `crossfade`    | Parked — crossfade between pads (docs/product/README.md#pad-options)                           |
 | `v3/src/state/store.ts:144` | `masterVolume` | Parked — master volume (docs/product/README.md#pad-options)                                    |
 
 ## Prose lint exceptions (Vale) (14)
