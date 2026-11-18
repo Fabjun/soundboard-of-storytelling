@@ -16,6 +16,7 @@ release notes the app shows are written separately for its users (`v3/src/lib/wh
 ### Internal
 
 - docs: light.md step 3 built — the plan is done; the help topic Light says a pause holds a course
+- build: the audit allowlist is empty again — GitHub withdrew GHSA-fc5q-39xc-vjpf (picomatch) on 2026-11-18 ("Withdrawn Advisory", withdrawn_at 15:38 UTC), npm audit no longer reports it, and audit:check failed the pre-push gate on the stale entry, as built; the exception register drops it (owner decision 2026-11-17: remove once npm no longer reports it)
 - test: unit course (the point at the pause, nothing while paused, the minutes standing, the course going on after it and ending later; a pause while held sends nothing, a release in a pause sends the point it stands at; pause and resume without a course or twice do nothing); E2E pad-light — Space pauses a Loop with a course: the lamp gets the point at 30 s, nothing while paused, the minutes stand, and it goes on after Space; the clock steps of the course test are one helper (clockSteps). Counter-checked: a pause that does not hold the course, a resume that does not move its start — each red
 
 ## 3.0.322 — 2026-11-18
