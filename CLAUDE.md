@@ -316,7 +316,10 @@ pixel-art details and touch minimums — ADR-0081, guarded by `codeGuards` ("typ
 - Scroll position of overlays/list views: save and restore on re-open
 - Every area whose content can be larger than the window scrolls — nothing is cut off or hidden
   under another bar (WCAG 2.2 SC 1.4.10 Reflow; `v3/tests/e2e/layout-reach.spec.ts` scrolls with
-  the mouse wheel and requires each control to be wholly visible)
+  the mouse wheel and requires each control to be wholly visible); no box that does not scroll is
+  shorter than what flows in it, and no visually hidden element leaves its parent — every screen
+  and dialog at three window sizes, the boxes larger on purpose named with their reason
+  (`v3/tests/e2e/clipped-content.spec.ts`, owner decision 2026-11-18)
 - The app shows no internal plan names (slice numbers, backlog) — guarded by `codeGuards` ("the app shows no internal plan names")
 - Every control works with the Tab key and has an accessible name (icon buttons: `aria-label`);
   error messages say in plain words what happened and what to do (Nielsen heuristic 9) — owner
