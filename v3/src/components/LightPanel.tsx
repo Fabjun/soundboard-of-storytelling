@@ -15,6 +15,7 @@ import { useEffect, useState } from 'preact/hooks';
 import type { JSX } from 'preact';
 import { SegmentedChoice } from './SegmentedChoice';
 import { SliderRow } from './SliderRow';
+import { NumberField } from './NumberField';
 import { getLamps, prefsVersion } from '../state/prefs';
 import {
   COURSE_MINUTES_MAX,
@@ -171,16 +172,14 @@ export function LightPanel({
         {kind === 'preset' && (
           <label class="sb-col">
             <span class="sb-caption">Preset number, as the lamp's own app shows it</span>
-            <input
-              class="sb-text-input"
-              type="number"
-              inputMode="numeric"
+            <NumberField
               min={1}
               max={PRESET_MAX}
-              aria-label="Preset number"
+              step={1}
+              label="Preset number"
               value={preset}
-              onChange={(e) => {
-                const n = Math.round(Number(e.currentTarget.value));
+              onCommit={(typed) => {
+                const n = Math.round(Number(typed));
                 const clamped = Math.min(PRESET_MAX, Math.max(1, Number.isFinite(n) ? n : 1));
                 emit({ lamp, preset: clamped });
               }}
@@ -218,16 +217,14 @@ export function LightPanel({
                     ? 'Reading the effects from the lamp…'
                     : `${byNumber}The effect's number, as the lamp's own app lists it — Solid is 0.`}
                 </span>
-                <input
-                  class="sb-text-input"
-                  type="number"
-                  inputMode="numeric"
+                <NumberField
                   min={0}
                   max={255}
-                  aria-label="Effect number"
+                  step={1}
+                  label="Effect number"
                   value={effect.fx}
-                  onChange={(e) => {
-                    const n = Math.round(Number(e.currentTarget.value));
+                  onCommit={(typed) => {
+                    const n = Math.round(Number(typed));
                     setEffect({
                       fx: Math.min(255, Math.max(0, Number.isFinite(n) ? n : 0)),
                       name: '',
@@ -313,16 +310,14 @@ export function LightPanel({
                 MINUTES from the start to the end — the end light then stays. A combo step's wait of
                 the same length lets a sound follow at the end.
               </span>
-              <input
-                class="sb-text-input"
-                type="number"
-                inputMode="numeric"
+              <NumberField
                 min={1}
                 max={COURSE_MINUTES_MAX}
-                aria-label="Minutes"
+                step={1}
+                label="Minutes"
                 value={course.minutes}
-                onChange={(e) => {
-                  const n = Math.round(Number(e.currentTarget.value));
+                onCommit={(typed) => {
+                  const n = Math.round(Number(typed));
                   const minutes = Math.min(
                     COURSE_MINUTES_MAX,
                     Math.max(1, Number.isFinite(n) ? n : 1),

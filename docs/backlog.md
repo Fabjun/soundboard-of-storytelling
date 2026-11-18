@@ -167,7 +167,13 @@ smaller than 44 px (the smallest PAD SIZE gave 42 px, on a phone 38.75 px). The 
 … stays (PQ1). Guarded by `v3/tests/e2e/pad-size.spec.ts` ("every pad size keeps the name inside
 the pad").
 
-### Number fields drop typed text on a redraw
+### Number fields drop typed text on a redraw ✅ Done (3.0.324)
+
+**Decided by the owner 2026-11-18 (option A), built in 3.0.324:** every number field is
+`v3/src/components/NumberField.tsx`, which keeps what is typed as its own state until Enter or
+leaving the field takes it; `codeGuards` ("one number field") refuses any other
+`type="number"`. Test: `v3/tests/e2e/pad-light.spec.ts` (a number typed while the lamp's effects
+are read is kept when the answer comes — red before, green after).
 
 Found 2026-11-18 by `v3/tests/e2e/pad-light.spec.ts`: a number typed into the LIGHT tab's effect
 number while "Reading the effects from the lamp…" shows is lost — the lamp's answer draws the

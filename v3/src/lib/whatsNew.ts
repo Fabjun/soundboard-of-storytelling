@@ -103,6 +103,12 @@ export function withEarlyVersions(
 /** The release notes the main menu shows, newest first (checked by whatsNew.test.ts). */
 export const WHATS_NEW: WhatsNewNotes[] = [
   {
+    version: '3.0.324',
+    fixed: [
+      'A number typed into a field — a preset, an effect, minutes, a wait, a repeat count, a trim — is kept until Enter or leaving the field; it could reset while the screen changed, for example while a preview played.',
+    ],
+  },
+  {
     version: '3.0.323',
     improved: [
       'A pause holds a light course too: the lamp stands where it got to and goes on with the sound.',

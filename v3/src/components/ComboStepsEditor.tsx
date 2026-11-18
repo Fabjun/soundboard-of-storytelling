@@ -21,6 +21,7 @@ import {
 } from '../lib/comboModel';
 import { poolByName } from '../lib/boardModel';
 import { UiIcon } from './UiIcon';
+import { NumberField } from './NumberField';
 
 /**
  * Edits the steps of the combo `comboId`: each step's pads, wait and "stop everything first".
@@ -109,17 +110,13 @@ export function ComboStepsEditor({
             {/* Wait until the next step */}
             <label class="sb-check-row">
               Wait (s)
-              <input
-                class="sb-text-input"
-                type="number"
-                min="0"
-                step="0.5"
-                data-testid={`combo-steps-editor-wait-input-${i}`}
-                value={step.duration ?? ''}
+              <NumberField
+                min={0}
+                step={0.5}
+                testid={`combo-steps-editor-wait-input-${i}`}
+                value={step.duration}
                 placeholder="0"
-                onChange={(e) =>
-                  onChange(setStepDuration(steps, i, parseFloat(e.currentTarget.value)))
-                }
+                onCommit={(typed) => onChange(setStepDuration(steps, i, parseFloat(typed)))}
               />
             </label>
 

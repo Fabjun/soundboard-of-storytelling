@@ -375,6 +375,10 @@ pixel-art details and touch minimums — ADR-0081, guarded by `codeGuards` ("typ
   pad name from the chosen file) is computed on render — never written into the same state as a
   value the user typed or picked, so it can neither overwrite a choice nor pass for one
   ([docs/design/design-notes.md](docs/design/design-notes.md), A2 Suggestion vs. pick).
+- **One number field** (owner decision 2026-11-18): every number input is `NumberField`
+  (`v3/src/components/NumberField.tsx`), which keeps the typed text until Enter or leaving the
+  field takes it — a field that showed only the stored value lost typed text on every redraw
+  before that (guarded by `codeGuards`: "one number field").
 - **Delayed writes are flushed, never dropped** (2026-10-02): a write that waits (the PAD editor's
   draft kept on the device, ADR-0084) goes through `v3/src/lib/debouncedSave.ts` and is written at
   once when its context ends — the editor closes, the page is hidden (Chrome Page Lifecycle:
