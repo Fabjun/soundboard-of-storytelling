@@ -17,10 +17,19 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.316';
+export const APP_VERSION = '3.0.317';
 
 /** The developer log, newest first; CHANGELOG.md is generated from it (sync-changelog). */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.317',
+    date: '2026-11-18',
+    items: [
+      "feat(ui): no second tap left — owner decision 2026-11-18 (BACKLOG \"Two-tap confirmations\", option A): the board delete (BoardListScreen, the toast's UNDO), REMOVE FROM DECK (↶), and in the PAD editor removing a file (PadFileList), an icon or a combo step or a pad of a step (ComboStepsEditor) take one tap; the editor's undo takes the last four back. NN/g: confirm only what cannot be undone. MenuButton's onSelect returns nothing — no entry kept the menu open for a second tap any more",
+      'docs: CLAUDE.md UI rules name every one-tap removal and how it is undone; ADR-0031 superseded by ADR-0086 (amendment 2026-11-18); ADR-0083 amendment (every entry closes the menu); product principle P6, the is-danger rows and the sb-icon-slot inventory no longer say two-tap; the PadEditorPanel file overview no longer calls DELETE PAD two taps; the help topic Boards says UNDO brings a deleted board back (it said "tap it, then CONFIRM")',
+      'test: E2E board-crud (one tap deletes a board, the toast offers UNDO — tests 4 and 5 become one), pad-pool (REMOVE FROM DECK, ↶ and ↷), pad-files, pad-icons and combo-editor (a tap removes, the editor undo brings it back); board-undo deletes with one tap. Counter-checked: a remove button that does nothing (file, combo step, from deck, board) and an icon removal outside the editor history — each red at its own line',
+    ],
+  },
   {
     version: '3.0.316',
     date: '2026-11-18',

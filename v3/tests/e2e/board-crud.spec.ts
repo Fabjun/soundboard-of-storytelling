@@ -1,11 +1,11 @@
 /**
- * @fileoverview Full E2E — Board CRUD (Slice-3 verification points 1–5)
+ * @fileoverview Full E2E — Board CRUD (Slice-3 verification points 1–4)
  *
  * 1. Create board → appears in list
  * 2. Rename board → title updates
  * 3. Rename persists after page reload
- * 4. Delete board → 2-tap confirmation (first tap: confirm state visible)
- * 5. Delete board → 2nd tap removes it from list
+ * 4. Delete board → one tap removes it from the list; the toast offers UNDO (its UNDO:
+ *    board-undo.spec.ts)
  */
 
 import { test, expect } from '@playwright/test';
@@ -81,38 +81,20 @@ test('3 — renamed board persists after page reload', async ({ page }) => {
 
 // ── Test 4: Delete — first tap shows confirm state ────────────────────────────
 
-test('4 — delete board: first tap shows confirm state (CONFIRM label)', async ({ page }) => {
+test('4 — delete board: one tap removes it from the list and the toast offers UNDO', async ({
+  page,
+}) => {
   await goToBoardList(page);
   await page.getByTestId('board-list-screen-new-button').click();
-  const boardRow = page.locator('[data-testid^="board-list-screen-row-"]').first();
-  await boardRow.waitFor();
+  const rows = page.locator('[data-testid^="board-list-screen-row-"]');
+  await expect(rows).toHaveCount(1);
 
-  const deleteBtn = boardRow.locator('[data-testid^="board-list-screen-delete-button-"]');
-  // Initial state: the delete icon (decorative), named by its label (ADR-0085)
+  const deleteBtn = rows.first().locator('[data-testid^="board-list-screen-delete-button-"]');
+  // The delete icon is decorative; the button is named by its label (ADR-0085)
   await expect(deleteBtn).toHaveText('');
   await expect(deleteBtn).toHaveAccessibleName('Delete board Board 1');
 
-  // First tap: should enter confirm state — CONFIRM, as every two-tap delete
   await deleteBtn.click();
-  await expect(deleteBtn).toHaveText('CONFIRM');
-  // Board is still in the list
-  await expect(boardRow).toBeVisible();
-});
-
-// ── Test 5: Delete — second tap removes board ─────────────────────────────────
-
-test('5 — delete board: second tap removes it from list', async ({ page }) => {
-  await goToBoardList(page);
-  await page.getByTestId('board-list-screen-new-button').click();
-  const boardRow = page.locator('[data-testid^="board-list-screen-row-"]').first();
-  await boardRow.waitFor();
-
-  const deleteBtn = boardRow.locator('[data-testid^="board-list-screen-delete-button-"]');
-  // Two taps
-  await deleteBtn.click();
-  await expect(deleteBtn).toHaveText('CONFIRM');
-  await deleteBtn.click();
-
-  // Board row should be gone; empty state visible
-  await expect(boardRow).not.toBeVisible({ timeout: 3000 });
+  await expect(rows).toHaveCount(0);
+  await expect(page.getByTestId('undo-toast-undo-button')).toBeVisible();
 });

@@ -3,13 +3,12 @@
  *
  * One row per file: its name (tap = select it for the waveform editor and the preview), ▲ / ▼ to
  * move it one place (WCAG 2.2 SC 2.5.7: "adjacent controls for moving the element up or down"
- * instead of dragging) and ✕ to remove it with a second tap to confirm (CLAUDE.md: every delete
- * is two taps). With several files, "in order" / "shuffled" says how they play. The list logic
+ * instead of dragging) and ✕ to remove it with one tap — the editor's undo takes it back
+ * (CLAUDE.md UI rules). With several files, "in order" / "shuffled" says how they play. The list logic
  * lives in src/lib/padFiles.ts; this component only reports what was tapped.
  */
 
 import type { JSX } from 'preact';
-import { useState } from 'preact/hooks';
 import type { FileOrder, PadFile } from '../types';
 import { UiIcon } from './UiIcon';
 
@@ -42,9 +41,6 @@ export function PadFileList({
   onRemove,
   onOrderChange,
 }: PadFileListProps): JSX.Element {
-  /** The file whose remove button was tapped once and waits for the confirming second tap. */
-  const [confirming, setConfirming] = useState<number | null>(null);
-
   if (files.length === 0) {
     return (
       <div class="sb-lib-browser-empty" data-testid="pad-file-list">
@@ -87,17 +83,11 @@ export function PadFileList({
             </button>
             <button
               class="sb-btn sb-btn-danger"
-              aria-label={confirming === i ? `Confirm: remove ${name}` : `Remove ${name}`}
+              aria-label={`Remove ${name}`}
               data-testid={`pad-file-list-remove-button-${i}`}
-              onClick={() => {
-                if (confirming === i) {
-                  setConfirming(null);
-                  onRemove(i);
-                } else setConfirming(i);
-              }}
-              onBlur={() => setConfirming(null)}
+              onClick={() => onRemove(i)}
             >
-              {confirming === i ? 'CONFIRM' : <UiIcon name="delete" />}
+              <UiIcon name="delete" />
             </button>
           </div>
         );

@@ -18,8 +18,8 @@ import { useEscapeKey } from '../lib/escapeKey';
 export interface MenuAction {
   /** What the entry says — also its accessible name. */
   label: string;
-  /** Runs the action. Returns true to keep the menu open (a delete waiting for its second tap). */
-  onSelect: () => boolean | void;
+  /** Runs the action; the menu closes after it. */
+  onSelect: () => void;
   /** Its test ID (`<component>-<element>-button`). */
   testid: string;
   /** Shown in the danger color (a delete). */
@@ -119,7 +119,8 @@ export function MenuButton({ label, testid, actions }: MenuButtonProps): JSX.Ele
               data-testid={a.testid}
               onClick={(e) => {
                 e.stopPropagation();
-                if (a.onSelect() !== true) close(true);
+                a.onSelect();
+                close(true);
               }}
             >
               {a.label}

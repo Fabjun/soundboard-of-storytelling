@@ -59,12 +59,12 @@ test('remove from deck keeps the pad in All pads', async ({ page }) => {
   await tabs(page).first().click();
   const cell = await addPadCell(page, 'Thunder');
 
-  // Two taps: the first only arms the button
-  const remove = page.getByTestId('pad-editor-panel-remove-button');
-  await remove.click();
-  await expect(remove).toHaveText('CONFIRM REMOVE');
+  // One tap removes it; ↶ puts it back, ↷ takes it out again (ADR-0086)
+  await page.getByTestId('pad-editor-panel-remove-button').click();
+  await expect(page.getByTestId(cell)).toHaveCount(0);
+  await page.getByTestId('board-top-bar-undo-button').click();
   await expect(page.getByTestId(cell)).toBeVisible();
-  await remove.click();
+  await page.getByTestId('board-top-bar-redo-button').click();
   await expect(page.getByTestId(cell)).toHaveCount(0);
 
   // All pads: the whole pool, including pads in no deck

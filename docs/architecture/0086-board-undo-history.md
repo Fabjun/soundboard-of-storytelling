@@ -150,3 +150,13 @@ delete pad 'Rain'"); their name stays "Undo" / "Redo" — a name that held the p
 voice control and role locators two targets (the pad "Rain" and "Undo: … 'Rain'"). With nothing to
 take back they say so and are dimmed. Closes the trade-off "the undo
 buttons do not say what they will undo".
+
+**2026-11-18 (3.0.317) — no second tap left.** Owner decision 2026-11-18 (option A): the last six
+removals that asked with a second tap on the same button take one tap — the board delete (the
+toast's UNDO), REMOVE FROM DECK (↶) and, in the PAD editor, removing a file, an icon, a combo step
+or a pad of a step (the editor's undo, ADR-0084). The board's toast lasting only 6 s no longer
+keeps the second tap: a second tap on a button in a fixed place does not stop an accidental double
+tap (owner decision 2026-10-20), and NN/g, "Confirmation Dialogs Can Prevent User Errors — If Not
+Overused": "An even better design would provide the user with the opportunity to undo". A removal
+that cannot be undone is asked in `ConfirmDialog`. ADR-0031 (two-tap delete as the standard) is
+superseded; ADR-0083 Amendments 2026-11-18.

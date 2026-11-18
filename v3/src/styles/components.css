@@ -3137,7 +3137,7 @@
   overflow-wrap: anywhere;
 }
 .sb-icon-slot {
-  /* @inventory: One filled icon slot of the PAD editor — the icon button above its two-tap remove button. */
+  /* @inventory: One filled icon slot of the PAD editor — the icon button above its remove button. */
   display: flex;
   flex-direction: column;
   align-items: center;

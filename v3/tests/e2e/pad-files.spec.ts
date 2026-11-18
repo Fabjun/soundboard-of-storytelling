@@ -2,7 +2,7 @@
  * @fileoverview Full E2E — several files per pad, each with its own trim (Slice 15b, ADR-0068)
  *
  * The PAD editor's file list: the library picker adds several ticked files at once, ▲ / ▼ move a
- * file, ✕ removes it on a second tap, "in order" / "shuffled" set how several files play, and
+ * file, ✕ removes it on a tap (the editor's undo takes it back), "in order" / "shuffled" set how several files play, and
  * each file keeps its own trim. Everything is checked again after the board is reopened (stored,
  * not only shown). Library entries are seeded (metadata only) — no playback needed, so it runs in
  * Chromium and WebKit.
@@ -75,7 +75,7 @@ test('the picker adds several ticked files at once; files already in the pad are
   await expect(alpha).toBeDisabled();
 });
 
-test('files move with ▲ / ▼, are removed on a second tap, and the order mode is kept', async ({
+test('files move with ▲ / ▼, are removed on a tap that undo takes back, and the order mode is kept', async ({
   page,
 }) => {
   await addFiles(page, FILES);
@@ -87,8 +87,9 @@ test('files move with ▲ / ▼, are removed on a second tap, and the order mode
 
   const remove = page.getByTestId('pad-file-list-remove-button-1');
   await remove.click();
-  await expect(remove).toHaveText('CONFIRM'); // the first tap only asks
-  expect(await listed(page)).toHaveLength(3);
+  expect(await listed(page)).toEqual(['bravo.wav', 'alpha.wav']);
+  await page.getByTestId('pad-editor-panel-undo-button').click();
+  expect(await listed(page)).toEqual(['bravo.wav', 'charlie.wav', 'alpha.wav']);
   await remove.click();
   expect(await listed(page)).toEqual(['bravo.wav', 'alpha.wav']);
 

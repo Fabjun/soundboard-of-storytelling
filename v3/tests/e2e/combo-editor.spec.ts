@@ -77,22 +77,25 @@ test('a combo is never offered itself or a combo that starts it', async ({ page 
   expect(options).toEqual(['+ pad…', 'Owl']);
 });
 
-test('taking a pad out of a step and removing a step need two taps', async ({ page }) => {
+test('a tap takes a pad out of a step or removes a step; the editor undo brings each back', async ({
+  page,
+}) => {
   const owl = await addNamedPad(page, 'Owl');
   await addNamedPad(page, 'Day', { combo: true });
   await page.getByTestId('combo-steps-editor-add-button').click();
   await choose(page, 0, 'Owl');
+  const undo = page.getByTestId('pad-editor-panel-undo-button');
 
   const chip = page.getByTestId(`combo-steps-editor-pad-button-0-${owl}`);
   await chip.click();
-  await expect(chip).toContainText('tap again to remove');
-  await chip.click();
   await expect(chip).toHaveCount(0);
+  await undo.click();
+  await expect(chip).toBeVisible();
 
-  const remove = page.getByTestId('combo-steps-editor-remove-button-0');
-  await remove.click();
-  await expect(remove).toHaveText('CONFIRM REMOVE');
-  await expect(page.getByTestId('combo-steps-editor-step-item-0')).toBeVisible();
-  await remove.click();
-  await expect(page.getByTestId('combo-steps-editor-step-item-0')).toHaveCount(0);
+  const step = page.getByTestId('combo-steps-editor-step-item-0');
+  await page.getByTestId('combo-steps-editor-remove-button-0').click();
+  await expect(step).toHaveCount(0);
+  await undo.click();
+  await expect(step).toBeVisible();
+  await expect(chip).toBeVisible(); // with its pad
 });

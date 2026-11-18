@@ -67,7 +67,15 @@ delete for good and EMPTY ask in the confirmation dialog. Tests: `v3/tests/unit/
 `v3/tests/unit/idb.test.ts` (trash, upgrade to v11), `v3/tests/e2e/library-trash.spec.ts` (Chromium,
 WebKit); the iPhone checklist has two new items.
 
-### Two-tap confirmations
+### Two-tap confirmations ✅ Done (3.0.317)
+
+**Decided by the owner 2026-11-18 (option A), built in 3.0.317:** all six take one tap; the board
+delete is taken back with the toast's UNDO, removing the pad from the deck with ↶, the four in the
+PAD editor with the editor's undo. `MenuButton` lost the way to stay open for a second tap, which
+no entry used any more. ADR-0031 is superseded (ADR-0086 amendment 2026-11-18). Tests:
+`v3/tests/e2e/board-crud.spec.ts`, `v3/tests/e2e/pad-pool.spec.ts`,
+`v3/tests/e2e/pad-files.spec.ts`, `v3/tests/e2e/pad-icons.spec.ts`,
+`v3/tests/e2e/combo-editor.spec.ts`.
 
 Found 2026-10-20, when the owner chose a confirmation dialog over a second tap for deletes that
 cannot be undone (an accidental double tap on a button in a fixed place confirms at once): six

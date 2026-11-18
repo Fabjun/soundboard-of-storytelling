@@ -30,25 +30,25 @@ Source: [design-system.md §5a](design-system.md#5a-layout-primitives).
 
 Source: [design-system.md §3](design-system.md#3-state-vocabulary-closed-set).
 
-| Class              | Meaning                            |
-| ------------------ | ---------------------------------- |
-| `is-active`        | active element in a group          |
-| `is-on`            | binary on-state (toggle)           |
-| `is-hot`           | audio currently playing            |
-| `is-setup`         | SETUP mode active                  |
-| `is-game`          | GAME mode active                   |
-| `is-danger`        | destructive action (2-tap confirm) |
-| `is-raised`        | elevated surface                   |
-| `is-italic`        | italic rendering                   |
-| `is-loop`          | loop context                       |
-| `is-combo`         | combo context                      |
-| `is-deep`          | pad depth-stack opt-in             |
-| `is-compact`       | compact rendering                  |
-| `is-looping`       | pad currently looping              |
-| `is-drag-source`   | DnD: pad being dragged             |
-| `is-drag-swap`     | DnD target: swap                   |
-| `is-insert-before` | DnD target: insert before          |
-| `is-insert-after`  | DnD target: insert after           |
+| Class              | Meaning                     |
+| ------------------ | --------------------------- |
+| `is-active`        | active element in a group   |
+| `is-on`            | binary on-state (toggle)    |
+| `is-hot`           | audio currently playing     |
+| `is-setup`         | SETUP mode active           |
+| `is-game`          | GAME mode active            |
+| `is-danger`        | destructive action (delete) |
+| `is-raised`        | elevated surface            |
+| `is-italic`        | italic rendering            |
+| `is-loop`          | loop context                |
+| `is-combo`         | combo context               |
+| `is-deep`          | pad depth-stack opt-in      |
+| `is-compact`       | compact rendering           |
+| `is-looping`       | pad currently looping       |
+| `is-drag-source`   | DnD: pad being dragged      |
+| `is-drag-swap`     | DnD target: swap            |
+| `is-insert-before` | DnD target: insert before   |
+| `is-insert-after`  | DnD target: insert after    |
 
 ---
 
