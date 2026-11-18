@@ -202,6 +202,61 @@ test('a lamp that lists no effects leaves the effect number to type', async ({ p
     .toEqual(['{"on":true,"bri":128,"seg":{"fx":66,"sx":128,"ix":128,"col":[[255,138,31]]}}']);
 });
 
+test('a course goes from its start to its end light: TRY in 10 s, the pad over its minutes, the status bar counts them', async ({
+  page,
+}) => {
+  // The course's timer starts after this, on the simulated clock; paused, so only the steps below
+  // move it — real time between them would add steps
+  await page.clock.install();
+  await page.clock.pauseAt(Date.now() + 60_000);
+  const bodies = await standInLamp(page);
+  await page.getByRole('tab', { name: 'LIGHT', exact: true }).click();
+  await page.getByText('Course', { exact: true }).click();
+  await page.getByLabel('Color at the start', { exact: true }).fill('#ffffff');
+  await page.getByLabel('Color at the end', { exact: true }).fill('#ff0000');
+  const minutes = page.getByRole('spinbutton', { name: 'Minutes', exact: true });
+  await minutes.fill('2');
+  await minutes.press('Enter');
+  /**
+   * Moves the clock one step of `ms` at a time and waits for each step's call — one long jump would
+   * also run out each call's 1 s time limit before the stand-in lamp takes it.
+   */
+  async function steps(count: number, ms: number) {
+    for (let i = 0; i < count; i++) {
+      const before = bodies.length;
+      await page.clock.runFor(ms);
+      await expect.poll(() => bodies.length).toBeGreaterThan(before);
+    }
+  }
+  await page.getByRole('button', { name: 'TRY', exact: true }).click();
+  // The start at once, without a transition (WLED tt in tenths of a second)
+  const start = '{"on":true,"bri":255,"tt":0,"seg":{"fx":0,"col":[[255,255,255]]}}';
+  await expect.poll(() => bodies).toEqual([start]);
+  // Nine steps of 1 s, the last one the end light
+  await steps(9, 1_000);
+  expect(bodies).toHaveLength(10);
+  expect(bodies.slice(1).every((b) => b.includes('"tt":10,'))).toBe(true);
+  expect(bodies.at(-1)).toBe('{"on":true,"bri":90,"tt":10,"seg":{"fx":0,"col":[[255,0,0]]}}');
+
+  await page.getByTestId('pad-editor-panel-save-button').click();
+  await page.getByTestId('pad-editor-panel-close-button').click();
+  await enterGameMode(page);
+  bodies.length = 0;
+  await padCells(page).first().getByRole('button').click();
+  await expect.poll(() => bodies).toEqual([start]);
+  const left = page.getByTestId('status-bar-course-text');
+  await expect(left).toHaveText('LIGHT 2 min left');
+  // Steps of 10 s, each with a transition of 10 s
+  await steps(7, 10_000);
+  await expect(left).toHaveText('LIGHT 1 min left');
+  expect(bodies[1]).toContain('"tt":100,');
+  // The step at 110 s sends the end light, reached at 120 s
+  await steps(4, 10_000);
+  await expect(left).toHaveCount(0);
+  expect(bodies).toHaveLength(12);
+  expect(bodies.at(-1)).toBe('{"on":true,"bri":90,"tt":100,"seg":{"fx":0,"col":[[255,0,0]]}}');
+});
+
 test('a pad played from the quick-access bar sends its light too', async ({ page }) => {
   const bodies = await standInLamp(page);
   await page.getByRole('tab', { name: 'LIGHT', exact: true }).click();

@@ -909,12 +909,20 @@ describe('parseBoard (untrusted boards from a backup file)', () => {
     }
   });
 
-  it("keeps a pad's light (light.md C1): a preset 1–250, an effect or off, for all lamps or one", () => {
+  /** A light course (light.md K2): a bright day to a sunset red over 20 minutes. */
+  const COURSE = {
+    from: { color: '#fff4e0', brightness: 255 },
+    to: { color: '#c2401a', brightness: 90 },
+    minutes: 20,
+  };
+
+  it("keeps a pad's light (light.md C1, K2): a preset 1–250, an effect, a course or off, for all lamps or one", () => {
     for (const light of [
       { lamp: 'all', preset: 1 },
       { lamp: 'lamp-1', preset: 250 },
       { lamp: 'all', off: true },
       { lamp: 'lamp-1', effect: EFFECT_DEFAULT },
+      { lamp: 'all', course: COURSE },
     ]) {
       expect(parseBoard(withPad(valid(), 0, { light }))?.pads[0]).toEqual({
         ...valid().pads[0],
@@ -944,6 +952,8 @@ describe('parseBoard (untrusted boards from a backup file)', () => {
       { lamp: 'all', effect: 'Solid' },
       { lamp: 'all', effect: EFFECT_DEFAULT, preset: 3 },
       { lamp: 'all' },
+      { lamp: 'all', course: { ...COURSE, minutes: 0 } },
+      { lamp: 'all', course: COURSE, off: true },
     ];
     // The list names each light that got through
     expect(lights.filter((light) => parseBoard(withPad(valid(), 0, { light })) !== null)).toEqual(

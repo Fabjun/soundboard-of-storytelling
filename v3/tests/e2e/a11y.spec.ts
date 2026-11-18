@@ -135,6 +135,10 @@ test('board in SETUP and GAME, PAD editor', async ({ page }) => {
   await page.getByText('Effect', { exact: true }).click();
   await expect(page.getByRole('spinbutton', { name: 'Effect number', exact: true })).toBeVisible();
   found.push(...(await violations(page)).map((v) => `PAD editor, LIGHT — ${v}`));
+  // The LIGHT tab with a course: two colors with their brightness and the minutes (K2)
+  await page.getByText('Course', { exact: true }).click();
+  await expect(page.getByRole('spinbutton', { name: 'Minutes', exact: true })).toBeVisible();
+  found.push(...(await violations(page)).map((v) => `PAD editor, LIGHT course — ${v}`));
   await closePadEditor(page);
   found.push(...(await violations(page)).map((v) => `SETUP — ${v}`));
   // The board's base light in the deck list, open, with an effect

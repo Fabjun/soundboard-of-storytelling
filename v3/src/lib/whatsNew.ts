@@ -103,6 +103,12 @@ export function withEarlyVersions(
 /** The release notes the main menu shows, newest first (checked by whatsNew.test.ts). */
 export const WHATS_NEW: WhatsNewNotes[] = [
   {
+    version: '3.0.321',
+    new: [
+      'A pad’s light can be a course: from one color and brightness to another over minutes, like a day that turns to sunset, and the lamp keeps the end light. TRY shows the whole course in 10 seconds, and the status bar counts the minutes left.',
+    ],
+  },
+  {
     version: '3.0.320',
     fixed: [
       'A pad shows its type — SGL, LOOP or COMBO — whole again; at the usual size only the tops of its letters were left.',

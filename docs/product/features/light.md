@@ -123,6 +123,70 @@ of the deck list, folded under BOARD LIGHT (set once per board, as PAD SIZE is a
 there); the same panel as the PAD editor's LIGHT tab (`v3/src/components/LightPanel.tsx`). Not
 sent on STOP ALL — C3: stopping sound and changing light are two things. The backup carries it.
 
+## Light course and short lights
+
+**Status:** Decided — plan approved by the owner on 2026-11-18 (K1–K6 as below). **Step 1, the
+course, built in 3.0.321.** Written on the owner's request of 2026-11-18: a pad starts the day — a
+rooster crows and the light is very bright; the day runs 20 minutes or longer (adjustable) while
+the light turns from bright to sunset red; at the end the light stays so and a bell strikes. A
+thunder pad played meanwhile flashes the lamp, and afterwards the day goes on in the state and
+light it has reached by then.
+
+### What already works
+
+- **The sequence and the sound:** a combo "Day" — step 1 plays "Rooster" and waits 1,200 s, step 2
+  plays "Bell". A step's wait has no upper limit (`setStepDuration` in `v3/src/lib/comboModel.ts`).
+- **Thunder during the day:** another pad does not stop a running combo — only its own stop, STOP
+  ALL or a step with "Stop everything first" do (`stopPad` in `v3/src/audio/engine.ts`).
+- **Bright light at the start, the flash:** the rooster pad's light, the thunder pad's light (the
+  effect Lightning).
+
+### Why the lamp cannot do it alone
+
+1. **A change over 20 minutes.** A WLED crossfade is limited: the JSON API's `tt` — "Max
+   transition time is 65 seconds" (kno.wled.ge, JSON API). WLED's nightlight fades for 1 to 255
+   minutes, in mode 2 "color fade" from the color at its start to the secondary color (JSON API
+   `nl`; a WLED developer: "linear faded from the actual color … to the secondary color", WLED
+   forum) — but it fades from whatever the lamp shows when it starts, and whether a flash ends it
+   is not documented.
+2. **Going on after the flash.** The flash replaces the lamp's state; the lamp does not know where
+   the day was. Stage lighting solves exactly this: a console runs a cue with a long fade, a
+   submaster flashes on top, and on its release "control will be restored" to the previous state
+   (ETC Eos, Submaster Properties, restore mode "background", the default) — the cue's fade has
+   gone on meanwhile.
+
+So the app keeps the day, as a console keeps its cue: it knows where the course stands at every
+moment and sends it to the lamp.
+
+### Decisions K1–K6
+
+| #   | Question                     | Decided                                                                                                                                                                                                                                                                                              | Not chosen                                                                                                                              |
+| --- | ---------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| K1  | Where the course runs        | **In the app:** at each step of 10 s it sends the point the course reaches one step later, with that step as the transition — smooth in the lamp, below WLED's 65 s, the same for every lamp and for "All lamps".                                                                                    | The lamp's nightlight: one call, but a flash may end it (undocumented), the app cannot know where it stands, and only one target color. |
+| K2  | What a course is             | A kind of pad light next to preset and effect: **from** a color and brightness **to** a color and brightness **over** N minutes (1–255). The color is blended linearly, as WLED's own color fade does. At the end the lamp keeps the end light.                                                      | Several stops (morning, noon, evening): later, if one course proves too coarse (minimal first).                                         |
+| K3  | Base and short light         | Every light a pad starts is the **base** (it replaces a running course), unless the pad marks it **short**. A short light (e.g. Lightning) lasts as long as the pad's sound plays (a Loop: until it stops), or a fixed number of seconds for a pad without sound; then the app sends the base again. | Back to the base on every pad stop (C3 keeps sound and light apart; a pad that is not short leaves its light).                          |
+| K4  | Pause and STOP ALL           | **Pause** holds the course and goes on with it; **STOP ALL** leaves the light, as C3 says — the course runs on; another pad's light or the board's base light replaces it.                                                                                                                           | STOP ALL ends the course (stopping sound and changing light are two things, C3).                                                        |
+| K5  | The 20 minutes in two places | The combo's wait and the course's minutes are **two values**, set to the same number; the LIGHT tab says so.                                                                                                                                                                                         | One value that links both (a new dependency between combo and light for one use).                                                       |
+| K6  | When the app is closed       | The course is not stored: after a reload the lamp keeps the last point it was sent.                                                                                                                                                                                                                  | Resuming after a reload (a stored start time and a write each start — not worth it for one evening).                                    |
+
+### Steps
+
+1. **Course** — built in 3.0.321: `PadLight` `{lamp, course}` (`v3/src/types.ts`); the LIGHT
+   tab's Course with FROM and TO (a color and a brightness each) and MINUTES, TRY plays the whole
+   way in 10 s; `v3/src/light/course.ts` runs it — a step is 10 s, or a tenth of a shorter course;
+   a timer the browser runs late (a hidden page that "has been silent for at least 30 seconds" is
+   woken once a minute, Chrome) makes the next transition as long as the gap it measured, up to
+   60 s; WLED gets `{"on": true, "bri", "tt", "seg": {"fx": 0, "col"}}` (`stateBody` in
+   `v3/src/light/wled.ts`); any other light a pad starts ends the course, a pad without light
+   leaves it; the status bar shows "LIGHT 12 min left". The backup carries it; `parseBoard`
+   checks it.
+2. **Short light and the return to the base** — next.
+3. **Pause holds the course.**
+
+Each step is tested on a simulated clock (unit) and with Playwright standing in for the lamp
+(E2E); the real lamp is an item on the iPhone checklist. An iPhone or iPad reaches no lamp without
+the bridge (C5).
+
 ## Not yet
 
 Palettes and further colors of an effect, the iPhone / iPad bridge itself (C5, owner decision). A pad played from the quick-access bar already sends its light, as from the
@@ -142,3 +206,7 @@ trusts) works without a change in the app (`lampUrl` in `v3/src/light/wled.ts`).
 - WebKit and private network requests (secondary, older): https://developer.chrome.com/blog/private-network-access-update, https://bugs.webkit.org/show_bug.cgi?id=171934
 - WLED and HTTPS (community): https://wled.discourse.group/t/making-wled-addressable-via-https/5948
 - NN/g, Tabs, Used Right: https://www.nngroup.com/articles/tabs-used-right/
+- WLED JSON API (`tt`, `transition`, `nl`): https://kno.wled.ge/interfaces/json-api/
+- WLED nightlight color fade (forum, a developer's description; secondary): https://wled.discourse.group/t/sunrise-effect/47
+- ETC Eos, Submaster Properties (restore mode background): https://www.etcconnect.com/webdocs/Controls/IonOnlineHelp/en-us/Content/21_Submasters/Submaster_Properties.htm
+- Chrome, timer throttling in Chrome 88: https://developer.chrome.com/blog/timer-throttling-in-chrome-88

@@ -4,18 +4,22 @@
  * The lamps and the sender are stand-ins. Cases: no light sends nothing; a preset to all lamps or
  * to the one named; off; a lamp named but gone sends nothing; a failed lamp marks the trouble and a
  * good round clears it; the call returns before any lamp answers (fire and forget). A light on its
- * own — the board's base light — goes out the same way, and none sends nothing.
+ * own — the board's base light — goes out the same way, and none sends nothing. A course (K1, K3)
+ * sends its start at once and runs on; another light ends it, a pad without light does not; with
+ * no lamp to reach none starts; TRY's shortened course reaches its end in 10 s.
  */
 
 import type { Lamp } from '../../src/state/prefs';
-import type { Pad, PadLight } from '../../src/types';
+import type { LightCourse, Pad, PadLight } from '../../src/types';
 import {
+  COURSE_TRY_MS,
   lampsFor,
   lightCommand,
   lightTrouble,
   startLight,
   startPadLight,
 } from '../../src/light/padLight';
+import { courseMinutesLeft, stopCourse } from '../../src/light/course';
 import { EFFECT_DEFAULT, type LightCommand, type LightResult } from '../../src/light/wled';
 import { newPad } from '../../src/lib/padUtils';
 
@@ -109,5 +113,55 @@ describe('startPadLight', () => {
     answer({ kind: 'ok' });
     await done;
     expect(settled).toBe(true);
+  });
+});
+
+describe('startLight with a course (light.md K1, K3)', () => {
+  const course: LightCourse = {
+    from: { color: '#ffffff', brightness: 255 },
+    to: { color: '#ff0000', brightness: 55 },
+    minutes: 20,
+  };
+  const day: PadLight = { lamp: 'all', course };
+
+  beforeEach(() => vi.useFakeTimers());
+  afterEach(() => {
+    stopCourse();
+    vi.useRealTimers();
+  });
+
+  it('sends the start to every lamp at once and runs on; its first command is the start', async () => {
+    const s = sender();
+    await startLight(day, lamps, s.send);
+    expect(lightCommand(day)).toEqual({ point: course.from, transitionMs: 0 });
+    expect(s.calls).toEqual([
+      ['192.168.1.50', { point: course.from, transitionMs: 0 }],
+      ['192.168.1.51', { point: course.from, transitionMs: 0 }],
+    ]);
+    expect(courseMinutesLeft.value).toBe(20);
+    vi.advanceTimersByTime(10_000);
+    expect(s.calls).toHaveLength(4);
+  });
+
+  it('another light ends the course; a pad without light leaves it running', async () => {
+    const s = sender();
+    await startLight(day, lamps, s.send);
+    await startPadLight(withLight(), lamps, s.send);
+    expect(courseMinutesLeft.value).toBe(20);
+    await startLight({ lamp: 'all', preset: 3 }, lamps, s.send);
+    expect(courseMinutesLeft.value).toBeNull();
+    const count = s.calls.length;
+    vi.advanceTimersByTime(60_000);
+    expect(s.calls).toHaveLength(count);
+  });
+
+  it('no lamp to reach starts no course; TRY reaches the end light in 10 s', async () => {
+    const s = sender();
+    expect(await startLight({ lamp: 'gone', course }, lamps, s.send)).toEqual([]);
+    expect(courseMinutesLeft.value).toBeNull();
+    await startLight({ lamp: 'a', course }, lamps, s.send, COURSE_TRY_MS);
+    vi.advanceTimersByTime(COURSE_TRY_MS);
+    expect(s.calls.at(-1)).toEqual(['192.168.1.50', expect.objectContaining({ point: course.to })]);
+    expect(courseMinutesLeft.value).toBeNull();
   });
 });
