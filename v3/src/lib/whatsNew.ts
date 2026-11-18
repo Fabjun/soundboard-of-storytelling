@@ -103,6 +103,12 @@ export function withEarlyVersions(
 /** The release notes the main menu shows, newest first (checked by whatsNew.test.ts). */
 export const WHATS_NEW: WhatsNewNotes[] = [
   {
+    version: '3.0.315',
+    behindTheScenes: [
+      'The automatic tests now also check that a pad in the quick-access bar starts its light.',
+    ],
+  },
+  {
     version: '3.0.314',
     new: [
       'A pad can start a lamp effect of its own — chosen from the effects the lamp lists, with its color, speed, intensity and brightness — next to the presets made in the lamp’s app.',

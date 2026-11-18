@@ -2535,6 +2535,22 @@ runs it anyway; removing it from the pre-commit saves ~6 s locally with no CI co
 staged files. Below the trigger; nothing changes. Under system load the same hook took several
 minutes (2026-10-09) — the load, not the hook, is the thing to avoid before a commit.
 
+### e2e-full runtime near its 25-min limit
+
+The CI job `e2e-full` (`.github/workflows/tests.yml`, `timeout-minutes: 25`) ran 12–17 min in the
+eleven green runs of 2026-11-17 — up to 68 % of its limit. On 2026-11-17 one run of PR #214 was
+canceled at 25.1 min with no test failing: 369 tests had passed, each WebKit test taking about
+3 s on a slow runner (log of run 44185801260, job e2e-full); re-run, it passed. The suite grows with
+each feature, so the margin shrinks (CLAUDE.md slice checklist: a runtime near its limit gets a
+plan before it breaks).
+**Plan:** (1) split the job with Playwright's `--shard` into two parallel jobs — Chromium and the
+WebKit subset are about half each (playwright.dev/docs/test-sharding); (2) only if sharding is not
+wanted, raise the limit — the limit guards against a hang, which a 35-min limit still does.
+Renaming or adding a required job means updating the `protect-main` ruleset in the same change
+(Workflow rule 7a) — a repository setting, so it is put to the owner first (Workflow rule 7b).
+**When:** a green run takes over 20 min, or a second run is canceled at the limit.
+**Source:** `gh run list` / job timings of 2026-11-17; run 44185801260.
+
 ### Cheatsheet state-vocab quick-ref: consider generating from §3 (drift risk)
 
 `docs/design/design-system-cheatsheet.md` §state vocab is a hand-maintained 13-entry subset of the

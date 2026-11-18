@@ -6,7 +6,9 @@
  * GAME. A lamp that does not answer shows LIGHT ✕ in the status bar until a pad reaches it again
  * (C6). A combo has no light of its own. An effect (C1 B) is chosen from the effects the lamp
  * lists, with its color, speed, intensity and brightness; a lamp that lists none leaves the effect's
- * number to type. Playwright stands in for the lamp at its address and records what it receives.
+ * number to type. A pad played from the quick-access bar sends its light as from the grid (the
+ * audio bridge starts it for every pad). Playwright stands in for the lamp at its address and
+ * records what it receives.
  * Playback starts the pad — Chromium only (headless WebKit cannot decode audio).
  */
 
@@ -197,6 +199,22 @@ test('a lamp that lists no effects leaves the effect number to type', async ({ p
   await expect
     .poll(() => bodies)
     .toEqual(['{"on":true,"bri":128,"seg":{"fx":66,"sx":128,"ix":128,"col":[[255,138,31]]}}']);
+});
+
+test('a pad played from the quick-access bar sends its light too', async ({ page }) => {
+  const bodies = await standInLamp(page);
+  await page.getByRole('tab', { name: 'LIGHT', exact: true }).click();
+  await page.getByText('Preset', { exact: true }).click();
+  const preset = page.getByRole('spinbutton', { name: 'Preset number', exact: true });
+  await preset.fill('7');
+  await preset.press('Enter');
+  await page.getByTestId('pad-editor-panel-save-button').click();
+  await page.getByRole('button', { name: 'In quick access', exact: true }).click();
+  await page.getByTestId('pad-editor-panel-close-button').click();
+  await enterGameMode(page);
+  // Only the bar's button — not the pad in the grid
+  await page.getByRole('group', { name: 'Quick access', exact: true }).getByRole('button').click();
+  await expect.poll(() => bodies).toEqual(['{"ps":7}']);
 });
 
 test('a combo has no light of its own', async ({ page }) => {

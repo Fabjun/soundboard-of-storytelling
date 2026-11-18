@@ -116,8 +116,10 @@ http://<address>/json/state` with `targetAddressSpace: 'local'` where supported,
 
 ## Not yet
 
-Palettes and further colors of an effect, a base light per board, light for the quick-access bar,
-the iPhone / iPad bridge itself (C5, owner decision). The app already takes a bridge's address:
+Palettes and further colors of an effect, a base light per board, the iPhone / iPad bridge itself
+(C5, owner decision). A pad played from the quick-access bar already sends its light, as from the
+grid — the audio bridge starts the light of every pad that starts (tested in
+`v3/tests/e2e/pad-light.spec.ts`, 2026-11-18). The app already takes a bridge's address:
 an address typed with `https://` is used as it is, so an HTTPS reverse proxy in the home network
 that forwards `/json/*` to the lamp (for example Caddy or nginx with a certificate the iPhone
 trusts) works without a change in the app (`lampUrl` in `v3/src/light/wled.ts`).
