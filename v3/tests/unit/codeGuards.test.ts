@@ -78,6 +78,10 @@
  *    takes one tap, one that cannot is asked in ConfirmDialog. Six removals had grown the second
  *    tap over months, and the help still told users to tap CONFIRM after they were gone. The
  *    version history keeps its old wording.
+ * 26. One number field (owner decision 2026-11-18, BACKLOG "Number fields drop typed text on a
+ *    redraw"): `type="number"` only in src/components/NumberField.tsx, which keeps what is typed
+ *    until it is taken — six fields that showed only the stored value lost typed text whenever
+ *    their screen drew again before the Enter.
  */
 
 import { readdirSync, readFileSync } from 'node:fs';
@@ -1206,6 +1210,32 @@ describe('guard: no second tap to confirm (owner decision 2026-11-18)', () => {
     expect(
       bad,
       'a removal that can be undone takes one tap (undo toast, ↶, the editor undo); one that cannot is asked in ConfirmDialog (CLAUDE.md UI rules)',
+    ).toEqual([]);
+  });
+});
+
+describe('guard: one number field (owner decision 2026-11-18)', () => {
+  const walkSrc = (dir: string): string[] =>
+    readdirSync(dir, { withFileTypes: true }).flatMap((e) =>
+      e.isDirectory() ? walkSrc(join(dir, e.name)) : [join(dir, e.name)],
+    );
+  const HOME = join('components', 'NumberField.tsx');
+  const NUMBER_INPUT = /type=["'{`]+number["'}`]+/;
+  const files = walkSrc(SRC).filter((f) => f.endsWith('.tsx'));
+
+  it('finds the component and its input (sanity)', () => {
+    expect(NUMBER_INPUT.test(readFileSync(join(SRC, HOME), 'utf8'))).toBe(true);
+    expect(NUMBER_INPUT.test('<input type={"number"} />')).toBe(true);
+  });
+
+  it('no other file renders a number input — it uses NumberField', () => {
+    const bad = files
+      .filter((f) => relative(SRC, f) !== HOME)
+      .filter((f) => NUMBER_INPUT.test(readFileSync(f, 'utf8')))
+      .map((f) => relative(SRC, f));
+    expect(
+      bad,
+      'use NumberField (src/components/NumberField.tsx): it keeps typed text until Enter or leaving the field',
     ).toEqual([]);
   });
 });

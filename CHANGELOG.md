@@ -7,6 +7,16 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.324 — 2026-11-18
+
+### Fixed
+
+- fix(ui): a number field keeps what is typed until it is taken — owner decision 2026-11-18 (BACKLOG "Number fields drop typed text on a redraw", option A): one component, NumberField, keeps the typed text as its own state until Enter or leaving the field takes it; a field that showed only the stored value got it back on every redraw before (Preact sets value on each render) — a number typed while the LIGHT tab read the lamp's effects was lost. All six number fields use it: the preset number, the effect number and the course's minutes (LightPanel), a combo step's wait (ComboStepsEditor), REPEAT and the trim start / end (PadEditorPanel, TrimField)
+
+### Internal
+
+- test: codeGuards ("one number field") — type="number" only in NumberField.tsx; E2E pad-light — a number typed while the lamp's effects are read is kept when the answer comes (the lamp answers when the test says so) — red before the fix, green after; the short-light test no longer waits for the answer before typing. Counter-checked: a raw number input in ComboStepsEditor, and NumberField without its draft — each red. CLAUDE.md coding standards name the component
+
 ## 3.0.323 — 2026-11-18
 
 ### Added

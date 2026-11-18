@@ -187,6 +187,32 @@ test('LIGHT sets an effect from the list of the lamp, with its color and speed; 
   await expect.poll(() => bodies).toEqual([sent, sent]);
 });
 
+test("a number typed while the lamp's effects are read is kept when the answer comes", async ({
+  page,
+}) => {
+  const bodies = await standInLamp(page);
+  // The lamp answers only when told to, so the answer comes between the typing and the Enter
+  let answer: () => void = () => {};
+  const answered = new Promise<void>((resolve) => (answer = resolve));
+  await page.route(`${LAMP}/json/eff`, async (route) => {
+    await answered;
+    await route.abort('connectionrefused');
+  });
+  await page.getByRole('tab', { name: 'LIGHT', exact: true }).click();
+  await page.getByText('Effect', { exact: true }).click();
+  await expect(page.getByText('Reading the effects from the lamp…', { exact: true })).toBeVisible();
+  const number = page.getByRole('spinbutton', { name: 'Effect number', exact: true });
+  await number.fill('57');
+  answer(); // the panel draws again with the lamp's answer
+  await expect(page.getByText(/This browser does not let the app reach the lamp/)).toBeVisible();
+  await expect(number).toHaveValue('57');
+  await number.press('Enter');
+  await page.getByRole('button', { name: 'TRY', exact: true }).click();
+  await expect
+    .poll(() => bodies)
+    .toEqual(['{"on":true,"bri":128,"seg":{"fx":57,"sx":128,"ix":128,"col":[[255,138,31]]}}']);
+});
+
 test('a lamp that lists no effects leaves the effect number to type', async ({ page }) => {
   const bodies = await standInLamp(page);
   await lampEffects(page, null);
@@ -337,9 +363,6 @@ test("a short light lasts while its pad plays; then the board's base light comes
   // The pad: an effect, short
   await page.getByRole('tab', { name: 'LIGHT', exact: true }).click();
   await page.getByText('Effect', { exact: true }).click();
-  // Typed only once the lamp's answer is in: a number typed before it is lost when the panel draws
-  // again (BACKLOG "Number fields drop typed text on a redraw")
-  await expect(page.getByText(/This browser does not let the app reach the lamp/)).toBeVisible();
   const number = page.getByRole('spinbutton', { name: 'Effect number', exact: true });
   await number.fill('57');
   await number.press('Enter');

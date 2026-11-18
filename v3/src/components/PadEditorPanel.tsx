@@ -66,6 +66,7 @@ import { addFiles, moveFile, removeFile, setFileTrim } from '../lib/padFiles';
 import { PadTypeConfirmDialog } from './PadTypeConfirmDialog';
 import { ConfirmDialog } from './ConfirmDialog';
 import { SliderRow } from './SliderRow';
+import { NumberField } from './NumberField';
 import { ComboStepsEditor } from './ComboStepsEditor';
 import { IconGlyph, useIconDrawings } from './PadIcons';
 import { IconPicker } from './IconPicker';
@@ -1129,23 +1130,19 @@ export function PadEditorPanel({
                 >
                   ∞
                 </button>
-                <input
-                  class="sb-text-input"
-                  type="number"
-                  min="1"
+                <NumberField
+                  min={1}
                   max={REPEAT_MAX}
-                  step="1"
+                  step={1}
                   placeholder="Count…"
-                  aria-label="Repeat count"
-                  data-testid="pad-editor-panel-repeat-input"
-                  value={repeat ?? ''}
-                  onChange={(e) => {
-                    const typed = Math.floor(parseFloat(e.currentTarget.value));
-                    const next = Number.isFinite(typed)
-                      ? Math.min(Math.max(typed, 1), REPEAT_MAX)
-                      : undefined;
-                    handleRepeatChange(next);
-                    e.currentTarget.value = next === undefined ? '' : String(next);
+                  label="Repeat count"
+                  testid="pad-editor-panel-repeat-input"
+                  value={repeat}
+                  onCommit={(typed) => {
+                    const n = Math.floor(parseFloat(typed));
+                    handleRepeatChange(
+                      Number.isFinite(n) ? Math.min(Math.max(n, 1), REPEAT_MAX) : undefined,
+                    );
                   }}
                 />
               </div>
@@ -1319,8 +1316,9 @@ export function PadEditorPanel({
 
 /**
  * A number field for a trim handle — the way to set it without dragging (WCAG 2.2 SC 2.5.7).
- * The value is taken when the field is left or Enter is pressed; the field then shows where the
- * handle landed, also when the rules moved it.
+ * The value is taken when the field is left or Enter is pressed (`NumberField`, which keeps what is
+ * typed while the preview's playhead draws the editor); the field then shows where the handle
+ * landed, also when the rules moved it.
  */
 function TrimField({
   label,
@@ -1337,17 +1335,12 @@ function TrimField({
   return (
     <label class="sb-check-row">
       {label}
-      <input
-        class="sb-text-input"
-        type="number"
-        min="0"
-        step="0.01"
-        data-testid={testid}
+      <NumberField
+        min={0}
+        step={0.01}
+        testid={testid}
         value={value}
-        onChange={(e) => {
-          const landed = onCommit(parseFloat(e.currentTarget.value));
-          e.currentTarget.value = String(landed ?? value);
-        }}
+        onCommit={(typed) => void onCommit(parseFloat(typed))}
       />
     </label>
   );
