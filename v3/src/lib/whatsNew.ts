@@ -103,6 +103,12 @@ export function withEarlyVersions(
 /** The release notes the main menu shows, newest first (checked by whatsNew.test.ts). */
 export const WHATS_NEW: WhatsNewNotes[] = [
   {
+    version: '3.0.325',
+    behindTheScenes: [
+      'An automatic check walks every screen and dialog at three window sizes and finds anything cut off or squeezed; it found the hidden choice buttons placed outside their choices, which now sit inside them.',
+    ],
+  },
+  {
     version: '3.0.324',
     fixed: [
       'A number typed into a field — a preset, an effect, minutes, a wait, a repeat count, a trim — is kept until Enter or leaving the field; it could reset while the screen changed, for example while a preview played.',

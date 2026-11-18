@@ -7,6 +7,17 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.325 — 2026-11-18
+
+### Fixed
+
+- fix(ui): the hidden radio of a segmented choice sits in its label (sb-segmented-option position relative) — it took the screen or the dialog as its frame, stayed where the page first put it (in Settings 1,224 px down a screen of 800), did not scroll with the page, and its keyboard focus could move an overflow-hidden box that nobody can scroll back; found by the new check
+
+### Internal
+
+- test: E2E clipped-content — no box is shorter than its content (owner decision 2026-11-18, option B; the error class of the icon picker 2026-10-04, the PAD editor tab panels 2026-10-23 and the pad type row 2026-11-18): every screen and dialog — start, welcome, menu, settings, help, the library's three tabs, the board list, the PAD editor's SOUND tab, the icon picker, every LIGHT kind, a combo, the board in SETUP and GAME, the deck list with BOARD LIGHT — at a wide, a phone and a short window, in Chromium and WebKit; a box that does not scroll may not hold flowing content (text or in-flow children) lower than its bottom, without slack (the type row lost 1 px of 10 with the fallback font); and no visually hidden element may leave its parent. What is larger on purpose is named with its reason (MEANT): screen-reader text, the flame canvas, the 44 px halves of the SETUP / GAME pill, the tab underline on the bar's line. Counter-checked: the type row's flex-shrink taken back, the overlay body's flex-shrink taken back (the icon picker's categories), the radio fix below taken back — each red; restored — green
+- docs: CLAUDE.md UI rules name the check next to the scrolling rule
+
 ## 3.0.324 — 2026-11-18
 
 ### Fixed

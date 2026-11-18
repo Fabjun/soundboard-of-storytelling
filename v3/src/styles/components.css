@@ -1055,6 +1055,10 @@
 }
 .sb-segmented-option {
   /* @inventory: One value of a sb-segmented choice — a 44px label around its radio; is-active marks the chosen one, a visible ring the focused one. */
+  /* The hidden radio is placed in its label: without this it sat at the screen's or the dialog's
+     edge, did not scroll with the page, and its focus could move a box nobody can scroll back
+     (tests/e2e/clipped-content.spec.ts, 2026-11-18) */
+  position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
