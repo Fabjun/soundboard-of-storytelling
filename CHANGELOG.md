@@ -7,6 +7,16 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.320 — 2026-11-18
+
+### Fixed
+
+- fix(pad): the type row (SGL / LOOP / COMBO) shows its whole line from 80 px, as pad.md PQ2 says — in the pad's flex column it was the item that shrank (overflow hidden lets it go to 0) and measured 4 px at the default 88 px, so only the tops of its letters showed; it keeps its line (flex-shrink 0) and the picture area gives way (sb-pad-icons min-height 0)
+
+### Internal
+
+- test: visual board-pads (BACKLOG "Visual baselines without pads", a known test gap) — the board with a Single with two icons, a Loop and a Combo with their placeholders, and the PAD editor of the Single; its first picture showed the bug above. E2E pad-size required the type row only to be visible, which a squeezed row of 4 px is; it now requires its whole line (scrollHeight within clientHeight) — red at PAD SIZE 88 before the fix, green after in Chromium and WebKit. Counter-checked: the fix taken back — the visual test red (261 pixels); restored — green
+
 ## 3.0.319 — 2026-11-18
 
 ### Internal

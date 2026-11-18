@@ -487,7 +487,13 @@ plan the split (tokens apart from component styles) as a clean-up.
 **When:** with the structure step "Relative units for sizes" before Slice 13 — it touches the same
 files.
 
-### Visual baselines without pads
+### Visual baselines without pads ✅ Done (3.0.320)
+
+**Done in 3.0.320:** `v3/tests/e2e/visual/board-pads.spec.ts` compares the board with three pads
+(a Single with two icons, a Loop and a Combo with their placeholders) and the PAD editor of the
+Single. Its first picture showed a bug: from 80 px the type row (SGL / LOOP / COMBO) was squeezed
+to 4 px, so only the tops of its letters showed — the picture area now gives way instead.
+`v3/tests/e2e/pad-size.spec.ts` counted the squeezed row as shown; it now requires the whole line.
 
 The visual regression tests show no pad, so the pad's picture area (icons, placeholder) and the
 PAD editor are not covered visually (noticed in Slice 15d). Still true on 2026-11-18: none of the
