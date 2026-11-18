@@ -9,7 +9,7 @@
 import type { Lamp } from '../../src/state/prefs';
 import type { Pad, PadLight } from '../../src/types';
 import { lampsFor, lightCommand, lightTrouble, startPadLight } from '../../src/light/padLight';
-import type { LightCommand, LightResult } from '../../src/light/wled';
+import { EFFECT_DEFAULT, type LightCommand, type LightResult } from '../../src/light/wled';
 import { newPad } from '../../src/lib/padUtils';
 
 const lamps: Lamp[] = [
@@ -42,6 +42,9 @@ describe('lightCommand / lampsFor', () => {
   it('a preset is {preset}, off is {off}; all lamps or the one named, none when it is gone', () => {
     expect(lightCommand({ lamp: 'all', preset: 4 })).toEqual({ preset: 4 });
     expect(lightCommand({ lamp: 'a', off: true })).toEqual({ off: true });
+    expect(lightCommand({ lamp: 'all', effect: EFFECT_DEFAULT })).toEqual({
+      effect: EFFECT_DEFAULT,
+    });
     expect(lampsFor({ lamp: 'all', preset: 1 }, lamps).map((l) => l.id)).toEqual(['a', 'b']);
     expect(lampsFor({ lamp: 'b', preset: 1 }, lamps).map((l) => l.id)).toEqual(['b']);
     expect(lampsFor({ lamp: 'gone', preset: 1 }, lamps)).toEqual([]);

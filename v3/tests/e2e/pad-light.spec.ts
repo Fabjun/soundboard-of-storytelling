@@ -4,9 +4,10 @@
  * The PAD editor has two tabs, SOUND and LIGHT (WAI-ARIA tabs: arrow keys choose). In LIGHT a pad
  * names a preset of the lamps; TRY sends it at once, and the pad sends it whenever it starts in
  * GAME. A lamp that does not answer shows LIGHT ✕ in the status bar until a pad reaches it again
- * (C6). A combo has no light of its own. Playwright stands in for the lamp at its address and
- * records what it receives. Playback starts the pad — Chromium only (headless WebKit cannot decode
- * audio).
+ * (C6). A combo has no light of its own. An effect (C1 B) is chosen from the effects the lamp
+ * lists, with its color, speed, intensity and brightness; a lamp that lists none leaves the effect's
+ * number to type. Playwright stands in for the lamp at its address and records what it receives.
+ * Playback starts the pad — Chromium only (headless WebKit cannot decode audio).
  */
 
 import { test, expect, type Page } from '@playwright/test';
@@ -144,6 +145,58 @@ test('a lamp that does not answer shows LIGHT ✕ until a pad reaches it again (
   await expect(padCells(page).first().getByRole('button', { pressed: true })).toHaveCount(0);
   await pad.click();
   await expect(light).toHaveText('');
+});
+
+/** The lamp's effect list at /json/eff, as WLED answers it (an index is an id; RSVD is left out). */
+async function lampEffects(page: Page, names: string[] | null): Promise<void> {
+  await page.route(`${LAMP}/json/eff`, (route) =>
+    names === null
+      ? route.abort('connectionrefused')
+      : route.fulfill({
+          status: 200,
+          headers: { 'Access-Control-Allow-Origin': '*', 'Content-Type': 'application/json' },
+          body: JSON.stringify(names),
+        }),
+  );
+}
+
+test('LIGHT sets an effect from the list of the lamp, with its color and speed; the pad sends it when it plays', async ({
+  page,
+}) => {
+  const bodies = await standInLamp(page);
+  await lampEffects(page, ['Solid', 'Blink', 'RSVD', 'Fire 2012']);
+  await page.getByRole('tab', { name: 'LIGHT', exact: true }).click();
+  await page.getByText('Effect', { exact: true }).click();
+  const effect = page.getByRole('combobox', { name: 'Effect', exact: true });
+  await expect(effect.getByRole('option')).toHaveText(['Solid', 'Blink', 'Fire 2012']);
+  await effect.selectOption({ label: 'Fire 2012' });
+  await page.getByRole('slider', { name: 'SPEED', exact: true }).fill('40');
+  await page.getByLabel('Color', { exact: true }).fill('#00ff80');
+  await page.getByRole('button', { name: 'TRY', exact: true }).click();
+  await expect(page.getByText('Connected.', { exact: true })).toBeVisible();
+  const sent = '{"on":true,"bri":128,"seg":{"fx":3,"sx":40,"ix":128,"col":[[0,255,128]]}}';
+  expect(bodies).toEqual([sent]);
+
+  await page.getByTestId('pad-editor-panel-save-button').click();
+  await page.getByTestId('pad-editor-panel-close-button').click();
+  await enterGameMode(page);
+  await padCells(page).first().getByRole('button').click();
+  await expect.poll(() => bodies).toEqual([sent, sent]);
+});
+
+test('a lamp that lists no effects leaves the effect number to type', async ({ page }) => {
+  const bodies = await standInLamp(page);
+  await lampEffects(page, null);
+  await page.getByRole('tab', { name: 'LIGHT', exact: true }).click();
+  await page.getByText('Effect', { exact: true }).click();
+  await expect(page.getByText(/This browser does not let the app reach the lamp/)).toBeVisible();
+  const number = page.getByRole('spinbutton', { name: 'Effect number', exact: true });
+  await number.fill('66');
+  await number.press('Enter');
+  await page.getByRole('button', { name: 'TRY', exact: true }).click();
+  await expect
+    .poll(() => bodies)
+    .toEqual(['{"on":true,"bri":128,"seg":{"fx":66,"sx":128,"ix":128,"col":[[255,138,31]]}}']);
 });
 
 test('a combo has no light of its own', async ({ page }) => {

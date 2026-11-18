@@ -15,9 +15,11 @@ import { sendLight, type LightCommand, type LightResult } from './wled';
 /** True while the last light command reached no lamp — the status bar shows it (C6). */
 export const lightTrouble = signal(false);
 
-/** The command a pad's light sends: its preset, or off. */
+/** The command a pad's light sends: its preset, its effect, or off. */
 export function lightCommand(light: PadLight): LightCommand {
-  return 'off' in light ? { off: true } : { preset: light.preset };
+  if ('off' in light) return { off: true };
+  if ('effect' in light) return { effect: light.effect };
+  return { preset: light.preset };
 }
 
 /** The lamps a pad's light goes to: all of them, or the one it names (none when that is gone). */

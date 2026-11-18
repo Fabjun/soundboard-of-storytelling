@@ -2,19 +2,65 @@
  * @fileoverview wled — talks to a WLED lamp over its JSON API (docs/product/features/light.md C1,
  * C5, C6; ADR-0091)
  *
- * The effect runs in the lamp; the app only names a preset the lamp's own app made, or switches it
- * off (`POST /json/state`, WLED JSON API). WLED answers web pages from any origin (it sends
+ * The effect runs in the lamp; the app names a preset the lamp's own app made, sets an effect with
+ * its color, speed, intensity and brightness (C1 B), or switches it off (`POST /json/state`, WLED
+ * JSON API); the effect names come from the lamp (`GET /json/eff`), as their ids differ between
+ * WLED versions. WLED answers web pages from any origin (it sends
  * `Access-Control-Allow-Origin: *`), so the browser only has to allow the call: Chrome does for a
  * private address after the user allows "local network" (`targetAddressSpace: 'local'`), WebKit —
  * every iPhone and iPad browser — does not. Each call has a short time limit and says in plain
  * words why it failed.
  */
 
-/** What a pad asks the lamp for: one of its presets (1–250), or off. */
-export type LightCommand = { preset: number } | { off: true };
+import type { LightEffect } from '../types';
+
+/** What a pad asks the lamp for: one of its presets (1–250), an effect, or off. */
+export type LightCommand = { preset: number } | { effect: LightEffect } | { off: true };
 
 /** Highest preset id WLED keeps (JSON API: "ps", −1 to 250). */
 export const PRESET_MAX = 250;
+
+/** The effect a pad starts with when Effect is chosen: WLED's first effect, Solid, in a warm light. */
+export const EFFECT_DEFAULT: LightEffect = {
+  fx: 0,
+  name: 'Solid',
+  color: '#ff8a1f',
+  speed: 128,
+  intensity: 128,
+  brightness: 128,
+};
+
+/** The JSON body WLED takes for an effect: on, its brightness, and the main segment's effect. */
+type EffectBody = {
+  on: true;
+  bri: number;
+  seg: { fx: number; sx: number; ix: number; col: [[number, number, number]] };
+};
+
+/** Turns `#rrggbb` into WLED's color array `[r, g, b]`. */
+function rgb(color: string): [number, number, number] {
+  const n = parseInt(color.slice(1), 16);
+  return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+}
+
+const byte = (v: unknown, min: number): boolean =>
+  typeof v === 'number' && Number.isInteger(v) && v >= min && v <= 255;
+
+/** Tells whether `v` is an effect a pad may keep (the ranges of the WLED JSON API). */
+export function isLightEffect(v: unknown): v is LightEffect {
+  if (typeof v !== 'object' || v === null) return false;
+  const e = v as Record<string, unknown>;
+  return (
+    byte(e.fx, 0) &&
+    typeof e.name === 'string' &&
+    e.name.length <= 64 &&
+    typeof e.color === 'string' &&
+    /^#[0-9a-f]{6}$/i.test(e.color) &&
+    byte(e.speed, 0) &&
+    byte(e.intensity, 0) &&
+    byte(e.brightness, 1)
+  );
+}
 
 /** How long a call may take before the lamp counts as not answering, in ms. */
 export const LIGHT_TIMEOUT_MS = 1000;
@@ -44,9 +90,20 @@ export function lampUrl(typed: string): string | null {
   }
 }
 
-/** The JSON body WLED takes for a command: `{"ps": n}` for a preset, `{"on": false}` for off. */
-export function stateBody(command: LightCommand): { ps: number } | { on: false } {
-  return 'off' in command ? { on: false } : { ps: command.preset };
+/**
+ * The JSON body WLED takes for a command: `{"ps": n}` for a preset, `{"on": false}` for off, and
+ * for an effect `on`, `bri` and the main segment's `fx`, `sx`, `ix` and color — a `seg` without an
+ * id goes to the main segment (WLED JSON API).
+ */
+export function stateBody(command: LightCommand): { ps: number } | { on: false } | EffectBody {
+  if ('off' in command) return { on: false };
+  if ('preset' in command) return { ps: command.preset };
+  const e = command.effect;
+  return {
+    on: true,
+    bri: e.brightness,
+    seg: { fx: e.fx, sx: e.speed, ix: e.intensity, col: [rgb(e.color)] },
+  };
 }
 
 /** Tells whether `n` is a preset id a pad may name. */
@@ -122,6 +179,40 @@ export async function testLamp(
   try {
     const info = (await r.json()) as { name?: unknown };
     return { kind: 'ok', ...(typeof info.name === 'string' ? { name: info.name } : {}) };
+  } catch {
+    return { kind: 'no-answer' }; // something answered, but not a WLED lamp
+  }
+}
+
+/** One effect of a lamp: its id, which the JSON API takes, and its name. */
+export interface LampEffect {
+  id: number;
+  name: string;
+}
+
+/**
+ * Asks the lamp at `typed` for its effects (`GET /json/eff`, an array of names whose index is the
+ * id); effects a build leaves out — named "RSVD" or "-", WLED JSON API — are dropped. Never throws.
+ */
+export async function listEffects(
+  typed: string,
+  fetchImpl: Fetch = fetch,
+  timeoutMs = LIGHT_TIMEOUT_MS * 3,
+): Promise<{ kind: 'effects'; effects: LampEffect[] } | Exclude<LightResult, { kind: 'ok' }>> {
+  const base = lampUrl(typed);
+  if (!base) return { kind: 'bad-address' };
+  const r = await call(`${base}/json/eff`, { method: 'GET' }, fetchImpl, timeoutMs);
+  if (!(r instanceof Response)) {
+    return r.kind === 'ok' ? { kind: 'no-answer' } : r;
+  }
+  if (!r.ok) return { kind: 'no-answer' };
+  try {
+    const names = (await r.json()) as unknown;
+    if (!Array.isArray(names)) return { kind: 'no-answer' };
+    const effects = names.flatMap((name, id) =>
+      typeof name === 'string' && name !== 'RSVD' && name !== '-' ? [{ id, name }] : [],
+    );
+    return { kind: 'effects', effects };
   } catch {
     return { kind: 'no-answer' }; // something answered, but not a WLED lamp
   }

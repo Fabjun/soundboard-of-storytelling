@@ -130,6 +130,11 @@ test('board in SETUP and GAME, PAD editor', async ({ page }) => {
   await enterSetupMode(page);
   await addNamedPad(page, 'Thunder');
   const found = (await violations(page)).map((v) => `PAD editor — ${v}`);
+  // The LIGHT tab with an effect: its number, color and sliders
+  await page.getByRole('tab', { name: 'LIGHT', exact: true }).click();
+  await page.getByText('Effect', { exact: true }).click();
+  await expect(page.getByRole('spinbutton', { name: 'Effect number', exact: true })).toBeVisible();
+  found.push(...(await violations(page)).map((v) => `PAD editor, LIGHT — ${v}`));
   await closePadEditor(page);
   found.push(...(await violations(page)).map((v) => `SETUP — ${v}`));
   await enterGameMode(page);

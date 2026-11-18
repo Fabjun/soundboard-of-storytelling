@@ -43,6 +43,15 @@ listing them, and needs one short JSON call (`{"ps": n}`, WLED JSON API). Not ch
 app sets effect, colors and speed itself (a second editor for what WLED already edits, and the
 effect list differs between WLED versions); **C** both — B can follow if A proves too coarse.
 
+**Extended to C (3.0.314, provisional under CLAUDE.md Workflow rule 7b, for the owner's review;
+the owner asked on 2026-11-17 for as much of the light as can be built before the real-lamp
+test):** next to the preset, a pad can set an effect itself — the effect, one color, speed,
+intensity and brightness (`PadLight` `{lamp, effect}`; `{"on": true, "bri", "seg": {"fx", "sx",
+"ix", "col"}}`, a `seg` without an id goes to the main segment). The effect names are read from the
+lamp (`GET /json/eff`; "RSVD" and "-" left out), so the version difference does not matter; the
+pad keeps the name too, for when the lamp is not in reach, and the effect's number can be typed
+then. Palettes and second and third colors are left for later (minimal first).
+
 ### C2 Which lamp
 
 **A, one or more lamps set up in Settings; a pad names one or all.** Settings → LIGHT lists the
@@ -107,8 +116,11 @@ http://<address>/json/state` with `targetAddressSpace: 'local'` where supported,
 
 ## Not yet
 
-Effects set from the app (C1 B), a base light per board, light for the quick-access bar, the
-iPhone / iPad bridge (C5, owner decision).
+Palettes and further colors of an effect, a base light per board, light for the quick-access bar,
+the iPhone / iPad bridge itself (C5, owner decision). The app already takes a bridge's address:
+an address typed with `https://` is used as it is, so an HTTPS reverse proxy in the home network
+that forwards `/json/*` to the lamp (for example Caddy or nginx with a certificate the iPhone
+trusts) works without a change in the app (`lampUrl` in `v3/src/light/wled.ts`).
 
 ## Sources
 

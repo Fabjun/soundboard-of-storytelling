@@ -2317,6 +2317,15 @@
   accent-color: var(--gold);
   cursor: pointer;
 }
+.sb-color-input {
+  /* @inventory: Native <input type="color"> — the color of a pad's light effect (PAD editor, LIGHT); the 44px touch target, the field border; the browser's own picker opens on a tap. */
+  width: 44px;
+  height: 44px;
+  padding: 0.125rem;
+  border: 1px solid var(--border);
+  background: var(--deep);
+  cursor: pointer;
+}
 .sb-btn-icon {
   /* @inventory: Icon-sized button modifier for sb-btn — tight padding, the 44px touch target kept (was 28px until 2026-10-11, below the touch minimum). */
   min-width: 44px;
