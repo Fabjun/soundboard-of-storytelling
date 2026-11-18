@@ -85,7 +85,9 @@ import {
   restorePad,
   type DeletedPad,
   setBoardPadSize,
+  setBoardLight,
 } from '../lib/boardModel';
+import { startLight } from '../light/padLight';
 import { type LibDndDropResult } from '../lib/libDnd';
 
 type RightPanelMode = 'library' | 'editor' | 'empty';
@@ -227,8 +229,9 @@ export function BoardScreen(): JSX.Element {
   // ── Handlers ────────────────────────────────────────────────────────────────
 
   function handleModeSwitch(newMode: AppMode) {
-    // Stops every sound first; the Lock keeps GAME (Slice 12c)
-    switchMode(newMode);
+    // Stops every sound first; the Lock keeps GAME (Slice 12c). Into GAME, the board's base light
+    // goes out — fire and forget, as a pad's light (light.md G2)
+    if (switchMode(newMode) && newMode === 'play') void startLight(board?.light);
   }
 
   function handlePadSelect(pad: Pad) {
@@ -520,6 +523,15 @@ export function BoardScreen(): JSX.Element {
                 else applyBoardChange(board.id, 'change pad size', (b) => setBoardPadSize(b, px));
                 setPadSizePreview(null);
               },
+            }
+          : undefined
+      }
+      boardLight={
+        mode === 'edit'
+          ? {
+              value: board.light,
+              onChange: (light) =>
+                applyBoardChange(board.id, 'change board light', (b) => setBoardLight(b, light)),
             }
           : undefined
       }

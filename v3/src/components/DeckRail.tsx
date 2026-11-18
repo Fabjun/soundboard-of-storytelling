@@ -27,8 +27,9 @@
 
 import { useEffect, useState, useRef } from 'preact/hooks';
 import type { ComponentChildren, JSX } from 'preact';
-import type { Deck, Board } from '../types';
+import type { Deck, Board, PadLight } from '../types';
 import { UiIcon } from './UiIcon';
+import { LightPanel } from './LightPanel';
 import { applyBoardChange, updateBoard } from '../state/boardWrites';
 import { announceUndo } from '../state/undoNotice';
 import {
@@ -62,6 +63,11 @@ interface DeckRailProps {
    * `onChange` follows the slider live (preview), `onCommit` stores the size once the move ends.
    */
   padSize?: { value: number; onChange: (px: number) => void; onCommit: (px: number) => void };
+  /**
+   * The board's base light (light.md) — given in SETUP, absent in GAME: sent when the board
+   * switches to GAME. Folded under BOARD LIGHT at the end, as it is set once per board.
+   */
+  boardLight?: { value: PadLight | undefined; onChange: (light: PadLight | undefined) => void };
   /** `rail` (wide frame, the default) or `tabs` above the pad grid (narrow frame). */
   variant?: 'rail' | 'tabs';
   /** SETUP: the tabs show the DECKS button that opens the deck actions; the active deck can move. */
@@ -84,6 +90,7 @@ export function DeckRail({
   onAllPadsSelect,
   conflictIds,
   padSize,
+  boardLight,
   variant = 'rail',
   manage = false,
   tabsShown = true,
@@ -92,6 +99,7 @@ export function DeckRail({
   // Starts folded, so the pads get the width (owner decision 2026-10-05); for the tabs: the
   // DECKS panel starts closed
   const [open, setOpen] = useState(false);
+  const [lightOpen, setLightOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editValue, setEditValue] = useState('');
   const [conflictOwner, setConflictOwner] = useState<Deck | null>(null);
@@ -471,6 +479,33 @@ export function DeckRail({
         <UiIcon name="add" size={12} />
         NEW DECK
       </button>
+
+      {/* The board's base light, folded — set once per board, sent when it switches to GAME */}
+      {boardLight && (
+        <>
+          <button
+            class="sb-disclosure"
+            aria-expanded={lightOpen}
+            aria-controls="deck-rail-board-light"
+            onClick={() => setLightOpen((o) => !o)}
+          >
+            <UiIcon name={lightOpen ? 'down' : 'right'} />
+            <span class="sb-flex-1">BOARD LIGHT</span>
+            <span class="sb-caption">{boardLight.value ? 'set' : 'none'}</span>
+          </button>
+          <div id="deck-rail-board-light" hidden={!lightOpen}>
+            {lightOpen && (
+              <LightPanel
+                light={boardLight.value}
+                onChange={boardLight.onChange}
+                legend="Board light"
+                caption="The light the board starts with when it switches to GAME — before any pad changes it."
+                name="board"
+              />
+            )}
+          </div>
+        </>
+      )}
     </>
   );
 

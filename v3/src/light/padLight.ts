@@ -3,8 +3,9 @@
  * C1–C6, ADR-0091)
  *
  * The audio bridge calls `startPadLight` for every pad that starts — also each pad a combo step
- * plays (C4) — so the light needs no change in the audio engine. Fire and forget: nothing awaits
- * the lamp (G2), a lamp that does not answer marks `lightTrouble`, and the next pad tries again (C6).
+ * plays (C4) — so the light needs no change in the audio engine; a board's base light goes out
+ * through `startLight` when the board switches to GAME. Fire and forget: nothing awaits the lamp
+ * (G2), a lamp that does not answer marks `lightTrouble`, and the next light tries again (C6).
  */
 
 import { signal } from '@preact/signals';
@@ -27,6 +28,9 @@ export function lampsFor(light: PadLight, lamps: readonly Lamp[]): Lamp[] {
   return light.lamp === 'all' ? [...lamps] : lamps.filter((l) => l.id === light.lamp);
 }
 
+/** Sends one command to one lamp — the WLED client, or a stand-in in tests. */
+type Send = (address: string, command: LightCommand) => Promise<LightResult>;
+
 /**
  * Sends the pad's light to its lamps, if it has one, and returns at once; resolves the results for
  * tests. Never throws, never waits on the sound path.
@@ -34,14 +38,25 @@ export function lampsFor(light: PadLight, lamps: readonly Lamp[]): Lamp[] {
 export function startPadLight(
   pad: Pad | null,
   lamps: readonly Lamp[] = getLamps(),
-  send: (address: string, command: LightCommand) => Promise<LightResult> = sendLight,
+  send: Send = sendLight,
 ): Promise<LightResult[]> {
-  if (!pad?.light) return Promise.resolve([]);
-  const command = lightCommand(pad.light);
-  const calls = lampsFor(pad.light, lamps).map((l) => send(l.address, command));
-  const done = Promise.all(calls).then((results) => {
+  return startLight(pad?.light, lamps, send);
+}
+
+/**
+ * Sends a light — a pad's, or a board's base light — to its lamps and returns at once; nothing for
+ * no light. A lamp that does not answer marks `lightTrouble`, one that answers clears it (C6).
+ */
+export function startLight(
+  light: PadLight | undefined,
+  lamps: readonly Lamp[] = getLamps(),
+  send: Send = sendLight,
+): Promise<LightResult[]> {
+  if (!light) return Promise.resolve([]);
+  const command = lightCommand(light);
+  const calls = lampsFor(light, lamps).map((l) => send(l.address, command));
+  return Promise.all(calls).then((results) => {
     lightTrouble.value = results.some((r) => r.kind !== 'ok');
     return results;
   });
-  return done;
 }

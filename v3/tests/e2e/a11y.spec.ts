@@ -137,6 +137,12 @@ test('board in SETUP and GAME, PAD editor', async ({ page }) => {
   found.push(...(await violations(page)).map((v) => `PAD editor, LIGHT — ${v}`));
   await closePadEditor(page);
   found.push(...(await violations(page)).map((v) => `SETUP — ${v}`));
+  // The board's base light in the deck list, open, with an effect
+  await openDeckRail(page);
+  await page.getByRole('button', { name: /^BOARD LIGHT/ }).click();
+  await page.getByText('Effect', { exact: true }).click();
+  await expect(page.getByRole('spinbutton', { name: 'Effect number', exact: true })).toBeVisible();
+  found.push(...(await violations(page)).map((v) => `SETUP, BOARD LIGHT — ${v}`));
   await enterGameMode(page);
   found.push(...(await violations(page)).map((v) => `GAME — ${v}`));
   expect(found).toEqual([]);

@@ -482,6 +482,16 @@ export function setBoardPadSize(board: Board, px: number): Board {
   return board.padSize === padSize ? board : { ...board, padSize };
 }
 
+/** Sets the board's base light, or takes it away (undefined) — the BOARD LIGHT of the deck list. */
+export function setBoardLight(board: Board, light: PadLight | undefined): Board {
+  if (light === undefined) {
+    if (board.light === undefined) return board;
+    const { light: _gone, ...rest } = board;
+    return rest;
+  }
+  return { ...board, light };
+}
+
 /** Renames a deck. */
 export function renameDeck(board: Board, deckId: string, name: string): Board {
   return withDeck(board, deckId, (deck) => ({ ...deck, name }));
@@ -664,6 +674,12 @@ export function parseBoard(v: unknown): Board | null {
   if (!Array.isArray(decks) || !decks.every(isDeck)) return null;
   if (!Array.isArray(quickAccess) || !quickAccess.every(isQuickAccessEntry)) return null;
   if (!optional(v.padSize, isNum)) return null; // none before 3.0.178: migratePadSize sets it
+  // The base light, since 3.0.316 — none on older boards
+  let light: PadLight | undefined;
+  if (v.light !== undefined) {
+    if (!isPadLight(v.light)) return null;
+    light = v.light;
+  }
   const pads = v.pads.map(migratePad);
   const board: Board = migratePadSize({
     id: v.id,
@@ -673,6 +689,7 @@ export function parseBoard(v: unknown): Board | null {
     decks,
     padSize: v.padSize,
     quickAccess,
+    ...(light === undefined ? {} : { light }),
   });
   return boardProblems(board).length === 0 ? board : null;
 }

@@ -3,12 +3,19 @@
  *
  * The lamps and the sender are stand-ins. Cases: no light sends nothing; a preset to all lamps or
  * to the one named; off; a lamp named but gone sends nothing; a failed lamp marks the trouble and a
- * good round clears it; the call returns before any lamp answers (fire and forget).
+ * good round clears it; the call returns before any lamp answers (fire and forget). A light on its
+ * own — the board's base light — goes out the same way, and none sends nothing.
  */
 
 import type { Lamp } from '../../src/state/prefs';
 import type { Pad, PadLight } from '../../src/types';
-import { lampsFor, lightCommand, lightTrouble, startPadLight } from '../../src/light/padLight';
+import {
+  lampsFor,
+  lightCommand,
+  lightTrouble,
+  startLight,
+  startPadLight,
+} from '../../src/light/padLight';
 import { EFFECT_DEFAULT, type LightCommand, type LightResult } from '../../src/light/wled';
 import { newPad } from '../../src/lib/padUtils';
 
@@ -48,6 +55,15 @@ describe('lightCommand / lampsFor', () => {
     expect(lampsFor({ lamp: 'all', preset: 1 }, lamps).map((l) => l.id)).toEqual(['a', 'b']);
     expect(lampsFor({ lamp: 'b', preset: 1 }, lamps).map((l) => l.id)).toEqual(['b']);
     expect(lampsFor({ lamp: 'gone', preset: 1 }, lamps)).toEqual([]);
+  });
+});
+
+describe('startLight (a board base light)', () => {
+  it('sends a light on its own to its lamps; none sends nothing', async () => {
+    const s = sender();
+    expect(await startLight(undefined, lamps, s.send)).toEqual([]);
+    await startLight({ lamp: 'a', preset: 3 }, lamps, s.send);
+    expect(s.calls).toEqual([['192.168.1.50', { preset: 3 }]]);
   });
 });
 
