@@ -103,6 +103,12 @@ export function withEarlyVersions(
 /** The release notes the main menu shows, newest first (checked by whatsNew.test.ts). */
 export const WHATS_NEW: WhatsNewNotes[] = [
   {
+    version: '3.0.319',
+    behindTheScenes: [
+      'The list of open work is sorted out: finished items are marked done, and an automatic check keeps an item from waiting for a part of the plan that is already built.',
+    ],
+  },
+  {
     version: '3.0.318',
     behindTheScenes: [
       'An automatic check keeps the second tap to confirm a removal from coming back.',

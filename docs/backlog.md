@@ -195,7 +195,8 @@ which gesture or drop zone creates a Combo instead; do both pads stay in the dec
 Combo's steps are (both in one step, or one after the other); pads have no icons yet, so
 merged icons need an icon concept first. Minimal-first: the Combo editor (Slice 11) comes
 first, gestures later.
-**When:** after Slice 11, discussed with the owner before any plan.
+**When:** the owner's decision, put on its own — the combo editor it waited for is built (triage
+2026-11-18).
 
 ### ✅ Help screen and context help — Slice 17 (owner decision 2026-10-19)
 
@@ -257,7 +258,8 @@ A1, 2026-09-30). Size matters: sample sounds are precached for offline use (ADR-
 stays small (a few MB).
 **Open questions:** which sounds; loaded on first launch or offered as a button ("add sample
 sounds"); a license register (file, source, license) next to `third-party-licenses.txt`.
-**When:** with Slice 17 (help & onboarding), discussed with the owner before any plan.
+**When:** the owner's decision, put on its own — help and onboarding, which it was to come with,
+are built (triage 2026-11-18).
 
 ### Smart light per pad — idea (Open)
 
@@ -333,7 +335,8 @@ two fingers on the pad overview set the size of the pads (pad zoom, `docs/design
 further candidates: double tap or long press on a pad. Every gesture needs a non-gesture way too
 (WCAG 2.5.1 Pointer Gestures) and is built with Pointer Events. Pad zoom also gives back part of
 what the pinch-zoom exception of ADR-0067 takes.
-**When:** discussed with the owner with Slice 13 (owner decision 2026-10-03).
+**When:** the owner's decision, put on its own — the adaptive layout it was to be discussed with is
+built (owner decision 2026-10-03; triage 2026-11-18).
 
 ### Text fields with selection off
 
@@ -396,9 +399,15 @@ V1 chose an icon from the pad name when a pad had none (`_autoIconFromName`, wit
 German → English word list). Owner decision 2026-10-04: later, not in Slice 15d. The icon catalog
 now has search words per icon (ADR-0070), so a name like "Wolf at night" can find
 `nikoichu:wolf-howling` through its words.
-**When:** after Slice 15; decided with the owner (automatic or as a suggestion in the picker).
+**When:** the owner's decision, put on its own (automatic or as a suggestion in the picker) — the
+PAD editor it waited for is built (triage 2026-11-18).
 
-### Uploaded own pad icons
+### Uploaded own pad icons ✅ Done (3.0.297)
+
+**Done in 3.0.296 and 3.0.297 (Slice 16e, ADR-0092):** ADD ICONS in the library's ICONS tab takes
+SVG files (`v3/src/components/OwnIconsTab.tsx`, `v3/src/lib/svgCheck.ts`); backups and the V1
+import carry them, a V1 pad's `{h: hash}` becomes its `own:<id>` key. Marked done in the triage of
+2026-11-18.
 
 V1 could upload SVG files as pad icons (library tab ICONS, `{h: hash}` on the pad); the owner's
 V1 backup has none. Owner decision 2026-10-04: with Slice 16 (Library). The keys `set:name`
@@ -481,8 +490,10 @@ files.
 ### Visual baselines without pads
 
 The visual regression tests show no pad, so the pad's picture area (icons, placeholder) and the
-PAD editor are not covered visually (noticed in Slice 15d).
-**When:** with the pad design review (Slice 13 / the design pass).
+PAD editor are not covered visually (noticed in Slice 15d). Still true on 2026-11-18: none of the
+eight specs in `v3/tests/e2e/visual/` adds a pad.
+**When:** next — a known gap in the tests comes before further work on the part (CLAUDE.md
+Priorities; the pad design review it waited for never got a date; triage 2026-11-18).
 
 ### Visual tests miss low-contrast changes ✅ Done (3.0.196)
 
@@ -544,7 +555,11 @@ code change needed. → [Design Session 2026-06-04](#design--feature-clarificati
 
 ### Slice 7 — Template Export/Import
 
-### V1-compatible template export/import
+### V1-compatible template export/import ✅ Done (Slice 10)
+
+**Done with Slice 10:** the V1 import reads V1 backups (`v3/src/lib/v1Import.ts`, tested in
+`v3/tests/unit/v1Import.test.ts`); the V1-readable export was dropped in data-backup.md. Marked
+done in the triage of 2026-11-18.
 
 → moved to [docs/product/features/data-backup.md](product/features/data-backup.md) (2026-09-28), D5 + import rules. Revised there: the V1-readable export is **dropped**. **When:** Slice 10 (new plan).
 
@@ -973,14 +988,22 @@ Built in 3.0.295 as a row that opens: the selected file shows "Played by Board: 
 Pad" in a line under its row (Claude's design, for review — no control of its own, so no row grows
 for a 44 px button; it follows the selection, as progressive disclosure).
 
-### Multi-file playlist UX
+### Multi-file playlist UX ✅ Done (3.0.163)
+
+**Done in 3.0.163 (Slice 15b, ADR-0068), in another form:** the PAD editor's file list
+(`v3/src/components/PadFileList.tsx`) selects a file for the waveform, moves it with ▲ / ▼ instead
+of a drag (WCAG 2.2 SC 2.5.7) and removes it with ✕ instead of a ⌘-click. Marked done in the
+triage of 2026-11-18.
 
 FileRow supports multiple files for playlist pads: drag to reorder, click to select primary,
 ⌘-click for bulk remove. The currently-selected file's waveform shows in the big canvas.
 **When:** When playlist pads are in real use (Slice 4+).
 **Source:** docs/design/design-notes.md §Audio file management.
 
-### Per-file fade and trim for playlist pads
+### Per-file fade and trim for playlist pads ✅ Done (3.0.163)
+
+**Done in 3.0.163 (Slice 15b):** each file has its own trim; fades and volume stay per pad — the
+decision of ADR-0068. Marked done in the triage of 2026-11-18.
 
 Each playlist entry gets its own fade-in / trim. Either per-file state or per-file JSON in
 the project file. Decision deferred until playlist UX is built.
@@ -999,7 +1022,11 @@ whether tags stay search words.
 tags as search words that are not edited — there is no tag field to complete.
 **Source:** docs/design/design-notes.md §Tags & folders.
 
-### Folder picker as a tree
+### Folder picker as a tree ✅ Done (3.0.277)
+
+**Done in 3.0.277 (Slice 16c), in another form:** folders have no levels (ADR-0088), so MOVE opens
+a list instead of a tree — `v3/src/components/FolderMoveDialog.tsx`: the folders, a new folder
+with its name, or no folder, as a radio group. Marked done in the triage of 2026-11-18.
 
 The FOLDER field opens a narrow tree column inside the inspector, not a separate dialog. New
 folder via a `+ NEW` row at the bottom.
@@ -1769,7 +1796,8 @@ Parked 2026-09-29. `design-sources/2026-09-28/Design_Soundboard_of_Storytelling/
 `v3/tests/unit/theme.test.ts`. **Still parked:** the personalities beyond color — Verdant's spores,
 Neon's electricity, Crimson's blood (`flame-themes.jsx` draw / onTap per theme); they need the
 flame engine to take a per-theme behavior.
-**When:** Slice 14c (visuals), or on demand.
+**When:** on demand — the owner asks for a theme's flame personality; the visuals step built the
+atmosphere without it (owner decision 2026-11-17, option B; triage 2026-11-18).
 
 ### Settings: reduce motion (animated flame and other animations) ✅ Done (3.0.237)
 
@@ -1802,7 +1830,7 @@ The two-axis adaptive model (→ [Stable directions](#two-axis-adaptive-model)) 
 Exact breakpoint values at which the SceneRail dock moves from bottom-bar to side-rail are
 explicitly not yet defined — empirical calibration on real devices is required (ref ADR-0045
 §Consequences). Record here so this open decision is not lost.
-**When:** the calibration on the owner's phone and tablet (Slice 13, iPhone checklist session).
+**When:** the calibration on the owner's phone and tablet (the iPhone checklist session).
 **Source:** ADR-0045.
 **Owner decision 2026-10-10:** start value **600 px** (Material 3: compact below 600 dp, medium
 from 600 dp) — `docs/product/features/adaptive-layout.md` L1. **Open:** the calibration on the
@@ -2012,7 +2040,11 @@ rendering — threshold 0.2 and 0.1 caught nothing, 0.05 caught 7 of the 8 chang
 rendering changes after a browser update. The per-theme token test is not needed: the axe scan
 checks every theme's contrast since 3.0.193.
 
-### PAD editor: several files per pad cannot be edited yet
+### PAD editor: several files per pad cannot be edited yet ✅ Done (3.0.163)
+
+**Done in 3.0.163 (Slice 15b):** the PAD editor's file list (`v3/src/components/PadFileList.tsx`)
+adds, orders and removes the files of a Single or Loop; the library picker adds several at once.
+Marked done in the triage of 2026-11-18.
 
 Found 2026-10-02 while preparing the #36 playback check: since Slice 9d a Single or Loop holds
 several files, but the PAD editor's file choice replaces them with one (code comment pointed to
@@ -2381,7 +2413,8 @@ Fixed by agreed rules, open items await the owner's decision.
   2026-10-03) — runtime and `thresholds.break` to be read after the run. **When:** weekly run
   2026-10-05.
 - **A21 TypeScript 7 and @types/node 26 (Parked)** — new majors; TypeScript 7 is the native
-  compiler. **When:** an upgrade spike after Slice 12, not before the first game night.
+  compiler. **When:** an upgrade spike after the first game night with V3 (triage 2026-11-18:
+  the live-control slice it waited for is built).
 - ✅ **A22 `docs/analysis/foundation-analysis.md`** — marked "Living document", but its analysis is
   dated 2026-06-05. Owner decision 2026-10-03: a dated snapshot, not maintained; the docs index no
   longer calls it a source of truth.
@@ -2395,14 +2428,15 @@ Fixed by agreed rules, open items await the owner's decision.
   crash) and the share sheet / download on EXPORT; the WebKit E2E projects cannot cover the
   import (headless WebKit decodes no audio). Correction: an earlier version of this entry and of
   the 3.0.153 changelog said "iPhone" — an assumption, not what the owner reported.
-  **When:** before the first game night (Slice 12).
+  **When:** the iPhone checklist session, before the first game night (triage 2026-11-18).
 
 ### Role-based E2E locators
 
 Temporary exception from ADR-0054: many E2E tests still locate controls by test ID although a
 role + accessible name is the standard. Most icon-only controls have no accessible name yet.
-**When:** Slice 13 — give every control an accessible name while rebuilding the layout, then
-switch those locators to `getByRole` and drop the exception from ADR-0054.
+**When:** the owner's decision on a stepwise migration plan, put on its own — the layout rebuild
+it waited for is built (triage 2026-11-18). The plan gives every control an accessible name,
+switches those locators to `getByRole` and drops the exception from ADR-0054.
 
 Found 2026-10-01 (Slice 9c): the SETUP toolbar button **ADD PAD** has no accessible name in Chromium
 (the accessibility tree shows a nameless `button`), so `getByRole('button', { name: 'ADD PAD' })`
