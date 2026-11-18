@@ -8,7 +8,8 @@
  * lamp fades smoothly from point to point. A step is 10 s (a tenth of a short course). When the
  * browser runs the timer late — a hidden, silent page is woken once a minute (Chrome, timer
  * throttling) — the next transition takes the gap it measured, up to 60 s, so the fade stays
- * smooth. At the end the lamp keeps the end light. One course runs at a time.
+ * smooth. At the end the lamp keeps the end light. One course runs at a time. A short light holds
+ * its sending while its time goes on (K3); a pause of the sound stops its time too (K4).
  */
 
 import { signal } from '@preact/signals';
@@ -51,11 +52,17 @@ export function coursePoint(
   };
 }
 
-/** The running course: its timer, whether a short light holds its sending, and its point now. */
+/**
+ * The running course: its timer, whether a short light holds its sending, whether a pause stopped
+ * its clock, and the ways to send its point now, to stop its clock and to start it again.
+ */
 let running: {
   timer: ReturnType<typeof setInterval>;
   held: boolean;
+  paused: boolean;
   resume: () => void;
+  pause: () => void;
+  unpause: () => void;
 } | null = null;
 
 /** Ends the running course; the lamp keeps the point it last reached. Nothing when none runs. */
@@ -85,6 +92,20 @@ export function releaseCourse(): boolean {
 }
 
 /**
+ * Stops the course's clock while the sound is paused (light.md K4): the lamp gets the point reached
+ * now at once, so it stands still too (unless a short light is on), and the minutes stand. Nothing
+ * when none runs or it is paused already.
+ */
+export function pauseCourse(): void {
+  if (running && !running.paused) running.pause();
+}
+
+/** Starts the course's clock again after a pause; it goes on from the point it stood at. */
+export function resumeCourse(): void {
+  if (running?.paused) running.unpause();
+}
+
+/**
  * Starts `course` and ends one that runs: sends its start at once, then a point each step until its
  * end. `durationMs` shortens it (TRY); `now` is the clock (tests).
  */
@@ -95,12 +116,16 @@ export function startCourse(
   now: () => number = Date.now,
 ): void {
   stopCourse();
-  const start = now();
+  // The start moves later by every pause, so the course's time leaves the paused time out
+  let start = now();
+  let pausedAt = 0;
   const step = Math.min(STEP_MS, durationMs / 10);
   let last = start;
+  const elapsedNow = () => (running?.paused ? pausedAt : now()) - start;
   send(course.from, 0);
   courseMinutesLeft.value = Math.ceil(durationMs / 60_000);
   const timer = setInterval(() => {
+    if (running?.paused) return;
     const t = now();
     const elapsed = t - start;
     // A late timer measured a longer gap: the next transition takes it, up to the limit
@@ -119,6 +144,20 @@ export function startCourse(
   running = {
     timer,
     held: false,
-    resume: () => send(coursePoint(course, durationMs, now() - start), 0),
+    paused: false,
+    resume: () => send(coursePoint(course, durationMs, elapsedNow()), 0),
+    pause: () => {
+      if (!running) return;
+      pausedAt = now();
+      running.paused = true;
+      if (!running.held) send(coursePoint(course, durationMs, pausedAt - start), 0);
+    },
+    unpause: () => {
+      if (!running) return;
+      const t = now();
+      start += t - pausedAt;
+      last = t;
+      running.paused = false;
+    },
   };
 }
