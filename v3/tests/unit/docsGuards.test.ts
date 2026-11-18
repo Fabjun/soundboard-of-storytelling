@@ -35,8 +35,10 @@
  *    works exactly as before" stood in 30 entries before it was noticed.
  * 13. A done backlog item says so in its heading: an item whose text has a status line "✅ Done" or
  *    "✅ Fixed" carries ✅ in its heading — 7 items said so only in their text (2026-10-19).
- * 14. No open backlog item waits for a superseded slice: the triggers ("When:") of items that are
- *    neither done nor Rejected name none of the May plan's Slices 5–8 — 28 did (2026-10-19).
+ * 14. No open backlog item waits for a slice that is past: the triggers ("When:") of items that are
+ *    neither done nor Rejected name no slice or step that CLAUDE.md's slice table lists as
+ *    complete, superseded or on main — 28 named the May plan's Slices 5–8 (2026-10-19), 15 a
+ *    built slice (owner decision 2026-11-18, option C).
  */
 
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
@@ -634,28 +636,63 @@ describe('guard: a done backlog item says so in its heading (2026-10-19)', () =>
   });
 });
 
-describe('guard: no open backlog item waits for a superseded slice (2026-10-19)', () => {
+/**
+ * Reads CLAUDE.md's slice table: which slices are past as a whole (✅ Complete, ↷ Superseded, or on
+ * main without a step range) and which steps of a slice are on main ("🔶 13a–13g on main").
+ */
+function pastSlices(claudeMd: string): Map<number, { whole: boolean; steps: Set<string> }> {
+  const past = new Map<number, { whole: boolean; steps: Set<string> }>();
+  for (const m of claudeMd.matchAll(/^\| (\d+)\s+\|[^|]+\|([^|]+)\|/gm)) {
+    const status = m[2];
+    const range = /\d+([a-z])–\d+([a-z]) on main/.exec(status);
+    const steps = new Set<string>();
+    if (range) {
+      for (let c = range[1].charCodeAt(0); c <= range[2].charCodeAt(0); c++) {
+        steps.add(String.fromCharCode(c));
+      }
+    }
+    const whole = /✅|↷/.test(status) || (/on main/.test(status) && !range);
+    if (whole || range) past.set(Number(m[1]), { whole, steps });
+  }
+  return past;
+}
+
+describe('guard: no open backlog item waits for a slice that is past (2026-10-19, 2026-11-18)', () => {
   const items = backlogItems(readFileSync(join(ROOT, 'docs', 'backlog.md'), 'utf8'));
-  // Open: neither done (✅) nor Rejected. Slices 5–8 of the May plan were superseded on 2026-09-28
-  // and their numbers are never reused (CLAUDE.md#slice-progress) — such a trigger never comes.
+  // Open: neither done (✅) nor Rejected. A slice that is complete, superseded (its number is never
+  // reused, CLAUDE.md#slice-progress) or built never comes again; a bare "Slice 13" is past once
+  // any of its steps is on main — what is still to come is named as a step or an event.
   const open = items.filter((i) => !i.heading.includes('✅') && !i.heading.includes('Rejected'));
   const triggers = (body: string): string[] => body.match(/\*\*When:\*\*[^\n]*/g) ?? [];
-  const SUPERSEDED = /\bSlices? [5-8]\b/;
+  const past = pastSlices(readFileSync(join(ROOT, 'CLAUDE.md'), 'utf8'));
+  const namesPast = (trigger: string): boolean =>
+    [...trigger.matchAll(/\bSlices? (\d+)([a-z])?\b/g)].some(([, n, step]) => {
+      const p = past.get(Number(n));
+      return !!p && (p.whole || !step || p.steps.has(step));
+    });
 
-  it('reads the triggers of the open items (sanity)', () => {
-    expect(open.flatMap((i) => triggers(i.body)).length).toBeGreaterThan(50);
-    expect(SUPERSEDED.test('**When:** Slice 8 (after themes land).')).toBe(true);
-    expect(SUPERSEDED.test('**When:** Slice 14c — the atmosphere.')).toBe(false);
+  it('reads the slice table and the triggers of the open items (sanity)', () => {
+    // 50 after the triage of 2026-11-18, which marked six items done
+    expect(open.flatMap((i) => triggers(i.body)).length).toBeGreaterThan(40);
+    expect(past.get(8)?.whole).toBe(true); // ↷ Superseded
+    expect(past.get(17)?.whole).toBe(true); // ✅ Complete
+    expect(past.get(13)?.steps.has('g')).toBe(true); // 13a–13g on main
+    expect(namesPast('**When:** Slice 8 (after themes land).')).toBe(true);
+    expect(namesPast('**When:** Slice 13 — every control a name.')).toBe(true);
+    expect(namesPast('**When:** Slice 16c — L2.')).toBe(true);
+    expect(namesPast('**When:** Slice 14f — a step still to come.')).toBe(false);
+    expect(namesPast('**When:** the iPhone checklist session.')).toBe(false);
   });
 
   it('every open item names a trigger that can still come', () => {
     const bad = open.flatMap((i) =>
       triggers(i.body)
-        .filter((w) => SUPERSEDED.test(w))
+        .filter(namesPast)
         .map((w) => `${i.heading}: ${w}`),
     );
-    expect(bad, 'give a slice of the current plan, Parked with its trigger, or Rejected').toEqual(
-      [],
-    );
+    expect(
+      bad,
+      'mark it ✅ Done (with its version), give a step or an event still to come, Parked with its trigger, or Rejected',
+    ).toEqual([]);
   });
 });

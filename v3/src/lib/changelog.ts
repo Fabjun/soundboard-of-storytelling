@@ -17,10 +17,18 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.318';
+export const APP_VERSION = '3.0.319';
 
 /** The developer log, newest first; CHANGELOG.md is generated from it (sync-changelog). */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.319',
+    date: '2026-11-18',
+    items: [
+      'test: docsGuards ("no open backlog item waits for a slice that is past") reads CLAUDE.md\'s slice table — a trigger may name no slice that is complete, superseded or on main, nor a step of a range on main ("13a–13g on main"); a later step ("14f") stays allowed. It replaces the check for Slices 5–8 alone (owner decision 2026-11-18, option C). Its first run listed 15 open items. Counter-checked: the old trigger of "Uploaded own pad icons" put back — red; restored — green. Its sanity count of open triggers goes from more than 50 to more than 40: the triage leaves 50',
+      'docs: backlog triage of 2026-11-18 — done with their version and code evidence: Uploaded own pad icons (3.0.297), V1-compatible template export/import (Slice 10), Multi-file playlist UX and Per-file fade and trim (3.0.163, ADR-0068), Folder picker as a tree (3.0.277, a list: folders have no levels), PAD editor: several files per pad (3.0.163); new triggers that can still come: Theme flames (on demand), the breakpoint calibration and A23 (the iPhone checklist session), A21 TypeScript 7 (after the first game night), Visual baselines without pads (next, a known test gap); for the owner, each on its own: Combo by dropping one pad onto another, Built-in sample sounds, App gestures, Pad icon from the pad name, Role-based E2E locators',
+    ],
+  },
   {
     version: '3.0.318',
     date: '2026-11-18',
