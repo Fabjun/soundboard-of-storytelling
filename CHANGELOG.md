@@ -7,6 +7,16 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.330 — 2026-11-19
+
+### Changed
+
+- a11y(pad-editor): the deck checkboxes are a group named DECKS (role group, aria-labelledby — WCAG technique ARIA17); the caption was a label element that labeled no field, so a screen reader heard only a deck's name, not which list its box belongs to
+
+### Internal
+
+- test: pad-pool locates by role and name (ADR-0054 amendment 2026-11-19, batch 3) — the deck boxes by the DECKS group and the deck name, All pads, REMOVE FROM DECK, DELETE PAD, Undo / Redo, the sort box and Reverse the order; new helpers allPadsButton, deckBox. Test IDs stay for grid cells, empty slots, library rows and the top bar. TEST_ID_LOCATORS 696 → 659. Counter-checked: the deck section without its group role — the four deck-box tests red; restored — green
+
 ## 3.0.329 — 2026-11-19
 
 ### Changed
