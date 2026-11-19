@@ -94,15 +94,17 @@ export function BackupImportPanel({
   }
 
   return (
-    <div class="sb-card" data-testid="backup-import-panel">
-      {step.kind === 'reading' && (
-        <div class="sb-caption" data-testid="backup-import-panel-status-text">
-          Reading {file.name}…
-        </div>
-      )}
-
-      {step.kind === 'confirm' && (
-        <>
+    <div class="sb-card" role="region" aria-label="Backup import" data-testid="backup-import-panel">
+      {/* Every step's message in one status region that stays while the panel is open, so a
+          screen reader reads the progress, the result and an error (WCAG 4.1.3, ARIA22 — as
+          UndoNoticeRegion); the buttons follow outside it */}
+      <div role="status">
+        {step.kind === 'reading' && (
+          <div class="sb-caption" data-testid="backup-import-panel-status-text">
+            Reading {file.name}…
+          </div>
+        )}
+        {step.kind === 'confirm' && (
           <div class="sb-caption" data-testid="backup-import-panel-summary-text">
             {step.plan.kind === 'v1' ? 'Backup from the old app (V1). ' : ''}
             {plural(step.plan.boards.length, 'board')}, {plural(step.plan.pads, 'pad')},{' '}
@@ -116,6 +118,39 @@ export function BackupImportPanel({
               ` ${plural(step.plan.otherEntries, 'other entry')} (images, combo templates) not imported.`}
             {step.plan.kind === 'v1' && ' Settings of the old app are not imported.'}
           </div>
+        )}
+        {step.kind === 'importing' && (
+          <div class="sb-caption" data-testid="backup-import-panel-status-text">
+            Importing audio {step.done} of {step.plan.audio}… Keep the app open.
+          </div>
+        )}
+        {step.kind === 'done' && (
+          <>
+            <div class="sb-caption" data-testid="backup-import-panel-result-text">
+              Done: {plural(step.result.audioAdded, 'audio file')} added, {step.result.audioSkipped}{' '}
+              already there, {plural(step.result.boardsAdded, 'board')} added
+              {step.result.templatesAdded + step.result.templatesSkipped > 0 &&
+                `, ${plural(step.result.templatesAdded, 'pad template')} added`}
+              {step.result.iconsAdded + step.result.iconsPresent > 0 &&
+                `, ${plural(step.result.iconsAdded, 'own icon')} added`}
+              .
+            </div>
+            {noteLines(step.result).map((line) => (
+              <div key={line} class="sb-caption">
+                {line}
+              </div>
+            ))}
+          </>
+        )}
+        {step.kind === 'error' && (
+          <div class="sb-caption" data-testid="backup-import-panel-error-text">
+            {step.message}
+          </div>
+        )}
+      </div>
+
+      {step.kind === 'confirm' && (
+        <>
           <div class="sb-row">
             <button
               class="sb-btn sb-btn-sm sb-btn-primary"
@@ -135,51 +170,24 @@ export function BackupImportPanel({
         </>
       )}
 
-      {step.kind === 'importing' && (
-        <div class="sb-caption" data-testid="backup-import-panel-status-text">
-          Importing audio {step.done} of {step.plan.audio}… Keep the app open.
-        </div>
-      )}
-
       {step.kind === 'done' && (
-        <>
-          <div class="sb-caption" data-testid="backup-import-panel-result-text">
-            Done: {plural(step.result.audioAdded, 'audio file')} added, {step.result.audioSkipped}{' '}
-            already there, {plural(step.result.boardsAdded, 'board')} added
-            {step.result.templatesAdded + step.result.templatesSkipped > 0 &&
-              `, ${plural(step.result.templatesAdded, 'pad template')} added`}
-            {step.result.iconsAdded + step.result.iconsPresent > 0 &&
-              `, ${plural(step.result.iconsAdded, 'own icon')} added`}
-            .
-          </div>
-          {noteLines(step.result).map((line) => (
-            <div key={line} class="sb-caption">
-              {line}
-            </div>
-          ))}
-          <button
-            class="sb-btn sb-btn-sm sb-btn-primary"
-            data-testid="backup-import-panel-close-button"
-            onClick={onClose}
-          >
-            OK
-          </button>
-        </>
+        <button
+          class="sb-btn sb-btn-sm sb-btn-primary"
+          data-testid="backup-import-panel-close-button"
+          onClick={onClose}
+        >
+          OK
+        </button>
       )}
 
       {step.kind === 'error' && (
-        <>
-          <div class="sb-caption" data-testid="backup-import-panel-error-text">
-            {step.message}
-          </div>
-          <button
-            class="sb-btn sb-btn-sm sb-btn-ghost"
-            data-testid="backup-import-panel-close-button"
-            onClick={onClose}
-          >
-            CLOSE
-          </button>
-        </>
+        <button
+          class="sb-btn sb-btn-sm sb-btn-ghost"
+          data-testid="backup-import-panel-close-button"
+          onClick={onClose}
+        >
+          CLOSE
+        </button>
       )}
     </div>
   );

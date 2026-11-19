@@ -7,6 +7,16 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.332 — 2026-11-19
+
+### Changed
+
+- a11y(backup): the import and the export panel say their progress, result and error in a status region that stays while the panel is open (WCAG 2.2 SC 4.1.3, ARIA22 — as UndoNoticeRegion); each panel is a region named Backup import / Backup export. Before, a screen reader heard neither "Importing audio 3 of 10" nor "Done: …"
+
+### Internal
+
+- test: backup locates by role and name (ADR-0054 amendment 2026-11-19, batch 5) — the panels by their region, their message by its status, IMPORT / OK / CLOSE / SAVE inside the panel, EXPORT, the boards by their open buttons and the last-backup line by its text. Test IDs stay for the hidden file inputs. TEST_ID_LOCATORS 624 → 593. Counter-checked: the import panel without its status role — five of six backup tests red; restored — green
+
 ## 3.0.331 — 2026-11-19
 
 ### Changed

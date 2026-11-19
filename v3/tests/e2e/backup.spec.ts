@@ -15,8 +15,9 @@
 import { readFileSync } from 'node:fs';
 import { gzipSync } from 'node:zlib';
 import { createHash } from 'node:crypto';
-import { test, expect, type Page } from '@playwright/test';
+import { test, expect, type Locator, type Page } from '@playwright/test';
 import {
+  boardOpenButtons,
   goToBoardList,
   TEST_AUDIO_PATH,
   TEST_AUDIO_NAME,
@@ -68,6 +69,15 @@ function v1Backup(): Buffer {
   return gzipSync(Buffer.from(JSON.stringify(doc)));
 }
 
+/** The import and export panels of the board list, each a named region. */
+const importPanel = (p: Page) => p.getByRole('region', { name: 'Backup import', exact: true });
+const exportPanel = (p: Page) => p.getByRole('region', { name: 'Backup export', exact: true });
+/** What a panel says — its status region (progress, summary, result, error). */
+const message = (panel: Locator) => panel.getByRole('status');
+const button = (panel: Locator, name: string) => panel.getByRole('button', { name, exact: true });
+/** The board list's line about the last backup. */
+const backupLine = (p: Page) => p.getByText(/^(No backup yet|Last backup:)/);
+
 async function chooseImportFile(page: Page, name: string, buffer: Buffer) {
   await page.getByTestId('board-list-screen-import-input').setInputFiles({
     name,
@@ -84,28 +94,27 @@ test.beforeEach(async ({ page }) => {
 test('a V1 backup imports its audio and its board; the pad plays', async ({ page }) => {
   await chooseImportFile(page, 'botc-library-2026-09-28.json.gz', v1Backup());
 
-  const summary = page.getByTestId('backup-import-panel-summary-text');
+  const summary = message(importPanel(page));
   await expect(summary).toContainText('Backup from the old app (V1)');
   await expect(summary).toContainText('1 board, 2 pads, 1 audio file — 0 already in the library');
   await expect(summary).toContainText('1 pad template');
   await expect(summary).toContainText('1 other entry');
 
-  await page.getByTestId('backup-import-panel-confirm-button').click();
-  await expect(page.getByTestId('backup-import-panel-result-text')).toContainText(
+  await button(importPanel(page), 'IMPORT').click();
+  await expect(message(importPanel(page))).toContainText(
     'Done: 1 audio file added, 0 already there, 1 board added, 1 pad template added.',
   );
-  await page.getByTestId('backup-import-panel-close-button').click();
-  await expect(page.getByTestId('backup-import-panel')).toHaveCount(0);
+  await button(importPanel(page), 'OK').click();
+  await expect(importPanel(page)).toHaveCount(0);
 
   // The board is there, with one deck holding both pads
-  await expect(page.locator('[data-testid^="board-list-screen-name-text-"]')).toHaveText([
-    'Village Night',
-  ]);
+  await expect(boardOpenButtons(page)).toHaveCount(1);
+  await expect(boardOpenButtons(page)).toHaveAccessibleName(/^Village Night 1 deck · 2 pads$/);
   // Unlock audio on the start screen (user gesture), then open the board
   await waitForSaves(page);
   await page.goto('/soundboard-of-storytelling/');
   await goToBoardList(page); // through TAP TO START, which unlocks the audio
-  await page.locator('[data-testid^="board-list-screen-name-text-"]').first().click();
+  await boardOpenButtons(page).first().click();
   const pads = page.locator(PAD_CELL);
   await expect(pads).toHaveCount(2);
   await expect(pads.first()).toContainText('Owl');
@@ -125,17 +134,16 @@ test('a V1 backup imports its audio and its board; the pad plays', async ({ page
 test('importing the same backup twice adds the board again but not the audio', async ({ page }) => {
   for (let i = 0; i < 2; i++) {
     await chooseImportFile(page, 'backup.json.gz', v1Backup());
-    await page.getByTestId('backup-import-panel-confirm-button').click();
+    await button(importPanel(page), 'IMPORT').click();
     // The template comes once: the second import finds it there (ADR-0090)
-    await expect(page.getByTestId('backup-import-panel-result-text')).toContainText(
+    await expect(message(importPanel(page))).toContainText(
       i === 0 ? '1 pad template added' : '0 pad templates added',
     );
-    await page.getByTestId('backup-import-panel-close-button').click();
+    await button(importPanel(page), 'OK').click();
   }
-  await expect(page.locator('[data-testid^="board-list-screen-name-text-"]')).toHaveText([
-    'Village Night',
-    'Village Night (2)',
-  ]);
+  await expect(boardOpenButtons(page)).toHaveCount(2);
+  await expect(boardOpenButtons(page).nth(0)).toHaveAccessibleName(/^Village Night \d/);
+  await expect(boardOpenButtons(page).nth(1)).toHaveAccessibleName(/^Village Night \(2\) \d/);
 });
 
 test('a file that is not a backup is refused with a message', async ({ page }) => {
@@ -144,15 +152,15 @@ test('a file that is not a backup is refused with a message', async ({ page }) =
     mimeType: 'application/json',
     buffer: Buffer.from('{"shopping": ["milk"]}'),
   });
-  await expect(page.getByTestId('backup-import-panel-error-text')).toHaveText(
+  await expect(message(importPanel(page))).toHaveText(
     'This file is not a Soundboard backup. Choose a file saved by EXPORT or by the old app (V1).',
   );
-  await page.getByTestId('backup-import-panel-close-button').click();
-  await expect(page.locator('[data-testid^="board-list-screen-row-"]')).toHaveCount(0);
+  await button(importPanel(page), 'CLOSE').click();
+  await expect(boardOpenButtons(page)).toHaveCount(0);
 });
 
 test('no backup yet: the board list reminds to export', async ({ page }) => {
-  await expect(page.getByTestId('board-list-screen-backup-text')).toHaveText(
+  await expect(backupLine(page)).toHaveText(
     'No backup yet — EXPORT saves your boards and audio in one file.',
   );
 });
@@ -169,17 +177,17 @@ test('EXPORT saves one file that restores the board and its audio in a fresh bro
   await page.goto('/soundboard-of-storytelling/');
   await goToBoardList(page);
 
-  await page.getByTestId('board-list-screen-export-button').click();
-  await expect(page.getByTestId('backup-export-panel-ready-text')).toContainText(
+  await page.getByRole('button', { name: 'EXPORT', exact: true }).click();
+  await expect(message(exportPanel(page))).toContainText(
     /soundboard-backup-\d{4}-\d{2}-\d{2}\.zip/,
   );
   const downloading = page.waitForEvent('download');
-  await page.getByTestId('backup-export-panel-save-button').click();
+  await button(exportPanel(page), 'SAVE').click();
   const download = await downloading;
   expect(download.suggestedFilename()).toMatch(/^soundboard-backup-\d{4}-\d{2}-\d{2}\.zip$/);
   const path = await download.path();
-  await expect(page.getByTestId('backup-export-panel-saved-text')).toBeVisible();
-  await expect(page.getByTestId('board-list-screen-backup-text')).toHaveText('Last backup: today');
+  await expect(message(exportPanel(page))).toHaveText('Backup saved.');
+  await expect(backupLine(page)).toHaveText('Last backup: today');
 
   // A fresh browser (empty storage) imports the file
   const fresh = await browser.newContext();
@@ -187,15 +195,15 @@ test('EXPORT saves one file that restores the board and its audio in a fresh bro
   await other.goto('/soundboard-of-storytelling/');
   await goToBoardList(other);
   await other.getByTestId('board-list-screen-import-input').setInputFiles(path);
-  await expect(other.getByTestId('backup-import-panel-summary-text')).toContainText(
+  await expect(message(importPanel(other))).toContainText(
     '1 board, 1 pad, 1 audio file — 0 already in the library',
   );
-  await other.getByTestId('backup-import-panel-confirm-button').click();
-  await expect(other.getByTestId('backup-import-panel-result-text')).toContainText(
+  await button(importPanel(other), 'IMPORT').click();
+  await expect(message(importPanel(other))).toContainText(
     'Done: 1 audio file added, 0 already there, 1 board added.',
   );
-  await other.getByTestId('backup-import-panel-close-button').click();
-  await other.locator('[data-testid^="board-list-screen-name-text-"]').first().click();
+  await button(importPanel(other), 'OK').click();
+  await boardOpenButtons(other).first().click();
   const pads = other.locator(PAD_CELL);
   await expect(pads).toHaveCount(1);
   await expect(pads.first()).toContainText(TEST_AUDIO_NAME);
@@ -221,9 +229,9 @@ test('a backup carries the own icons into a fresh browser (ADR-0092)', async ({
   await waitForSaves(page);
   await page.goto('/soundboard-of-storytelling/');
   await goToBoardList(page);
-  await page.getByTestId('board-list-screen-export-button').click();
+  await page.getByRole('button', { name: 'EXPORT', exact: true }).click();
   const downloading = page.waitForEvent('download');
-  await page.getByTestId('backup-export-panel-save-button').click();
+  await button(exportPanel(page), 'SAVE').click();
   const path = await (await downloading).path();
 
   const fresh = await browser.newContext();
@@ -231,14 +239,12 @@ test('a backup carries the own icons into a fresh browser (ADR-0092)', async ({
   await other.goto('/soundboard-of-storytelling/');
   await goToBoardList(other);
   await other.getByTestId('board-list-screen-import-input').setInputFiles(path);
-  await expect(other.getByTestId('backup-import-panel-summary-text')).toContainText(
+  await expect(message(importPanel(other))).toContainText(
     '1 own icon — one already there is skipped.',
   );
-  await other.getByTestId('backup-import-panel-confirm-button').click();
-  await expect(other.getByTestId('backup-import-panel-result-text')).toContainText(
-    '1 own icon added',
-  );
-  await other.getByTestId('backup-import-panel-close-button').click();
+  await button(importPanel(other), 'IMPORT').click();
+  await expect(message(importPanel(other))).toContainText('1 own icon added');
+  await button(importPanel(other), 'OK').click();
   await other.goto('/soundboard-of-storytelling/');
   await goToLibrary(other);
   await iconsTab(other).click();
