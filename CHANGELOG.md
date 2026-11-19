@@ -7,6 +7,17 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.334 — 2026-11-19
+
+### Changed
+
+- a11y(pad-editor): the icon slots are a group named ICONS (role group, aria-labelledby — ARIA17, as DECKS); the caption was a label element that labeled no field
+- a11y(icons): the icon search says its number of matches as a status (WCAG 2.2 SC 4.1.3 — the search-results count is the first example of the Understanding document)
+
+### Internal
+
+- test: pad-icons locates by role and name (ADR-0054 amendment 2026-11-19, batch 6) — the editor and the icon list by their dialogs, + / the slots / Remove … inside the ICONS group, the search box, the categories by name and count, the match count by its status. Test IDs stay for the icons on the pad (aria-hidden decoration) and for an icon of the list picked by its key (shown only in the tooltip, which codeGuards keeps out of locators; a name like "dragon" occurs in more than one collection). TEST_ID_LOCATORS 593 → 563. Counter-checked: ICONS without its group role — all six tests red; the count without its status role — the search test red; restored — green
+
 ## 3.0.333 — 2026-11-19
 
 ### Internal

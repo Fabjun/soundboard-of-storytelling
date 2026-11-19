@@ -182,6 +182,7 @@ export function PadEditorPanel({
   const [pendingType, setPendingType] = useState<PadType | null>(null);
   const nameFieldId = useId();
   const decksLabelId = useId();
+  const iconsLabelId = useId();
   const [libSearch, setLibSearch] = useState('');
   const [libPickerOpen, setLibPickerOpen] = useState(false);
   /** The pad's icons, up to 4 keys in the order the pad shows them (ADR-0070). */
@@ -874,9 +875,12 @@ export function PadEditorPanel({
           />
         </div>
 
-        {/* Icons — up to 4, shown on the pad in this order (ADR-0070; V1's four slots) */}
-        <div class="sb-inspector-section">
-          <label class="sb-field-label">ICONS</label>
+        {/* Icons — up to 4, shown on the pad in this order (ADR-0070; V1's four slots). A group
+            named by its caption (ARIA17), as DECKS */}
+        <div class="sb-inspector-section" role="group" aria-labelledby={iconsLabelId}>
+          <span class="sb-field-label" id={iconsLabelId}>
+            ICONS
+          </span>
           <div class="sb-row-wrap">
             {icons.map((key, i) => {
               const drawing = iconDrawings?.[i];

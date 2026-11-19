@@ -20,21 +20,44 @@ import {
   reopenFirstBoard,
 } from './helpers';
 
+const editor = (page: Page) => page.getByRole('dialog', { name: 'Pad editor', exact: true });
+const picker = (page: Page) => page.getByRole('dialog', { name: 'Choose an icon', exact: true });
+/** The PAD editor's ICONS group: the slots, their ✕ and + */
+const iconsGroup = (page: Page) => editor(page).getByRole('group', { name: 'ICONS', exact: true });
+const addIconButton = (page: Page) =>
+  iconsGroup(page).getByRole('button', { name: 'Add an icon', exact: true });
+const searchBox = (page: Page) =>
+  picker(page).getByRole('searchbox', { name: 'Search icons by name or word', exact: true });
+/**
+ * An icon of the picker, by its key. A test ID: the key is shown nowhere (only in the tooltip, no
+ * locator — codeGuards), and an icon's name ("dragon") can occur in more than one collection.
+ */
+const pickerIcon = (page: Page, key: string) =>
+  picker(page).getByTestId(`icon-picker-icon-button-${key}`);
+/** The icon buttons of the picker's lists, in order. */
+const pickerIcons = (page: Page) => picker(page).getByRole('grid').getByRole('button');
+/** The filled slots of the editor ("Icon 1: dragon — change"), in order. */
+const slots = (page: Page) =>
+  iconsGroup(page).getByRole('button', { name: /^Icon \d+: .+ — change$/ });
+const save = (page: Page) => page.getByRole('button', { name: 'SAVE', exact: true });
+
 /** + → search `word` → tap the icon `key`. */
 async function addIcon(page: Page, word: string, key: string) {
-  await page.getByTestId('pad-editor-panel-add-icon-button').click();
-  await page.getByTestId('icon-picker-search-input').fill(word);
-  await page.getByTestId(`icon-picker-icon-button-${key}`).click();
-  await expect(page.getByTestId('icon-picker')).toBeHidden();
+  await addIconButton(page).click();
+  await searchBox(page).fill(word);
+  await pickerIcon(page, key).click();
+  await expect(picker(page)).toBeHidden();
 }
 
 /** The keys in the editor's slots, in order (each slot button carries its key as title). */
 const slotKeys = (page: Page) =>
-  page
-    .locator('[data-testid^="pad-editor-panel-icon-button-"]')
-    .evaluateAll((els) => els.map((e) => e.getAttribute('title')));
+  slots(page).evaluateAll((els) => els.map((e) => e.getAttribute('title')));
 
-/** How many of its own icons the first pad shows (each one an svg with a path), not counting a placeholder. */
+/**
+ * How many of its own icons the first pad shows (each one an svg with a path), not counting a
+ * placeholder. The icons on a pad are decoration, hidden from screen readers (aria-hidden), so a
+ * test ID finds them.
+ */
 const padIconCount = (page: Page) =>
   padCells(page).first().locator('[data-testid="pad-icons"]:not(.is-placeholder) svg path').count();
 
@@ -65,14 +88,14 @@ test('a pad takes up to 4 icons in the order picked; they show on the pad and ar
     'pixelarticons:fire',
     'pixelarticons:sword',
   ]);
-  await expect(page.getByTestId('pad-editor-panel-add-icon-button')).toBeHidden(); // 4 is the most
-  await page.getByTestId('pad-editor-panel-save-button').click(); // a draft until SAVE (ADR-0084)
+  await expect(addIconButton(page)).toBeHidden(); // 4 is the most
+  await save(page).click(); // a draft until SAVE (ADR-0084)
   await expect.poll(() => padIconCount(page)).toBe(4);
 
   // A tap on a filled slot changes that icon
-  await page.getByTestId('pad-editor-panel-icon-button-1').click();
-  await page.getByTestId('icon-picker-search-input').fill('rain');
-  await page.getByTestId('icon-picker-icon-button-nikoichu:rain').click();
+  await slots(page).nth(1).click();
+  await searchBox(page).fill('rain');
+  await pickerIcon(page, 'nikoichu:rain').click();
 
   await closePadEditor(page); // saves first
   await reopenFirstBoard(page);
@@ -91,16 +114,16 @@ test('a tap on ✕ removes an icon, undo brings it back; without icons the pad s
   page,
 }) => {
   await addIcon(page, 'dragon', 'nikoichu:dragon');
-  await page.getByTestId('pad-editor-panel-save-button').click();
+  await save(page).click();
   await expect.poll(() => padIconCount(page)).toBe(1);
-  const remove = page.getByTestId('pad-editor-panel-icon-remove-button-0');
+  const remove = iconsGroup(page).getByRole('button', { name: 'Remove dragon', exact: true });
   await remove.click();
   expect(await slotKeys(page)).toEqual([]);
-  await page.getByTestId('pad-editor-panel-undo-button').click();
+  await editor(page).getByRole('button', { name: 'Undo', exact: true }).click();
   expect(await slotKeys(page)).toEqual(['nikoichu:dragon']);
   await remove.click();
   expect(await slotKeys(page)).toEqual([]);
-  await page.getByTestId('pad-editor-panel-save-button').click();
+  await save(page).click();
   // No own icon left: the pad draws its type's placeholder (a Single: the circle)
   await expect.poll(() => padIconCount(page)).toBe(0);
   await expect(
@@ -114,9 +137,9 @@ test('a short search lists every match but draws only the visible rows; arrow ke
   // Phone width: few columns, so the arrow keys soon reach rows that are not drawn yet (on a wide
   // window the keys that came before a row was drawn got lost only here — WebKit, 2026-10-04)
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.getByTestId('pad-editor-panel-add-icon-button').click();
-  await page.getByTestId('icon-picker-search-input').fill('a');
-  const countText = await page.getByTestId('icon-picker-result-count-text').innerText();
+  await addIconButton(page).click();
+  await searchBox(page).fill('a');
+  const countText = await picker(page).getByRole('status').innerText();
   const count = Number(/^(\d+) icons match/.exec(countText)?.[1]);
   expect(count, countText).toBeGreaterThan(1000); // one letter matches most of the collection
 
@@ -128,7 +151,7 @@ test('a short search lists every match but draws only the visible rows; arrow ke
   expect(drawnRows * cols).toBeLessThan(count); // the rows below are not drawn
 
   // Down past the last drawn row: the focus arrives there, and that row is drawn now
-  await page.locator('[data-testid^="icon-picker-icon-button-"]').first().focus();
+  await pickerIcons(page).first().focus();
   for (let i = 0; i < drawnRows + 5; i++) await page.keyboard.press('ArrowDown');
   const focusedRow = page.locator(':focus').locator('xpath=ancestor::*[@role="row"]');
   await expect(focusedRow).toHaveAttribute('aria-rowindex', String(drawnRows + 6));
@@ -148,34 +171,34 @@ test('a short search lists every match but draws only the visible rows; arrow ke
 test('the picker lists categories that open and close, moves by arrow keys, and closes with Escape', async ({
   page,
 }) => {
-  await page.getByTestId('pad-editor-panel-add-icon-button').click();
-  await expect(page.getByTestId('icon-picker-search-input')).toBeFocused();
-  const creatures = page.getByTestId('icon-picker-category-button-creatures');
+  await addIconButton(page).click();
+  await expect(searchBox(page)).toBeFocused();
+  const creatures = picker(page).getByRole('button', { name: /^CREATURES \d+$/ });
   await expect(creatures).toHaveAttribute('aria-expanded', 'false');
   await creatures.click();
   await expect(creatures).toHaveAttribute('aria-expanded', 'true');
-  const first = page.locator('[data-testid^="icon-picker-icon-button-"]').first();
+  const first = pickerIcons(page).first();
   await first.focus();
   await page.keyboard.press('ArrowRight');
-  await expect(page.locator('[data-testid^="icon-picker-icon-button-"]').nth(1)).toBeFocused();
+  await expect(pickerIcons(page).nth(1)).toBeFocused();
   await page.keyboard.press('Escape');
-  await expect(page.getByTestId('icon-picker')).toBeHidden();
+  await expect(picker(page)).toBeHidden();
   expect(await slotKeys(page)).toEqual([]); // closing picks nothing
 });
 
 test('the icon list is a modal dialog: the editor behind is inert, the focus goes back on close', async ({
   page,
 }) => {
-  const add = page.getByTestId('pad-editor-panel-add-icon-button');
+  const add = addIconButton(page);
   await add.focus(); // the keyboard user the focus return is for
   await page.keyboard.press('Enter');
-  await expect(page.getByRole('dialog', { name: 'Choose an icon', exact: true })).toBeVisible();
+  await expect(picker(page)).toBeVisible();
   expect(await add.evaluate((el) => el.closest('[inert]') !== null)).toBe(true);
   await page.keyboard.press('Escape');
-  await expect(page.getByTestId('icon-picker')).toBeHidden();
+  await expect(picker(page)).toBeHidden();
   await expect(add).toBeFocused();
   expect(await add.evaluate((el) => el.closest('[inert]') !== null)).toBe(false);
-  await expect(page.getByTestId('pad-editor-panel')).toBeVisible(); // only the list closed
+  await expect(editor(page)).toBeVisible(); // only the list closed
 });
 
 test.describe('on a touch screen', () => {
@@ -186,10 +209,10 @@ test.describe('on a touch screen', () => {
   }) => {
     // The case the rule is for: a finger is the main pointer (else the test checks nothing)
     expect(await page.evaluate(() => matchMedia('(pointer: coarse)').matches)).toBe(true);
-    await page.getByTestId('pad-editor-panel-add-icon-button').click();
-    await expect(page.getByRole('dialog', { name: 'Choose an icon', exact: true })).toBeFocused();
-    await expect(page.getByTestId('icon-picker-search-input')).not.toBeFocused();
-    await page.getByTestId('icon-picker-search-input').tap();
-    await expect(page.getByTestId('icon-picker-search-input')).toBeFocused();
+    await addIconButton(page).click();
+    await expect(picker(page)).toBeFocused();
+    await expect(searchBox(page)).not.toBeFocused();
+    await searchBox(page).tap();
+    await expect(searchBox(page)).toBeFocused();
   });
 });

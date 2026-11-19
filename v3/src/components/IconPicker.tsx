@@ -184,7 +184,9 @@ export function IconPicker({ chosen, onPick, onClose }: IconPickerProps): JSX.El
         {!groups && <p class="sb-caption">Loading icons…</p>}
         {results && (
           <>
-            <p class="sb-caption" data-testid="icon-picker-result-count-text">
+            {/* A status (WCAG 4.1.3, its first example): a screen reader hears how many icons
+                match as the search changes */}
+            <p class="sb-caption" role="status" data-testid="icon-picker-result-count-text">
               {results.length === 0
                 ? 'No icon matches. Try another word, e.g. "sword", "night" or "rain".'
                 : `${results.length} ${results.length === 1 ? 'icon matches' : 'icons match'}.`}
