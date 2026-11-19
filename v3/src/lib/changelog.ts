@@ -17,10 +17,17 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.336';
+export const APP_VERSION = '3.0.337';
 
 /** The developer log, newest first; CHANGELOG.md is generated from it (sync-changelog). */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.337',
+    date: '2026-11-20',
+    items: [
+      'test: board-crud locates by role and name (ADR-0054 amendment 2026-11-19, batch 8) — a board row by its buttons: the one that opens it, named by the board and its counts, Rename board … and Delete board …, the name field by its label, UNDO by name; the rename steps in one helper. No test ID left in the spec. TEST_ID_LOCATORS 534 → 518. Counter-checked: a rename that keeps the old name — tests 2 and 3 red; a delete that leaves the board in the list — test 4 red; restored — green in full and full-webkit',
+    ],
+  },
   {
     version: '3.0.336',
     date: '2026-11-19',

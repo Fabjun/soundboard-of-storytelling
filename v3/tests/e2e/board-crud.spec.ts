@@ -6,10 +6,29 @@
  * 3. Rename persists after page reload
  * 4. Delete board → one tap removes it from the list; the toast offers UNDO (its UNDO:
  *    board-undo.spec.ts)
+ *
+ * A board row is found by its buttons: the one that opens it is named by the board's name and its
+ * counts ("Board 1 0 decks · 0 pads"), RENAME and DELETE by "… board <name>".
  */
 
-import { test, expect } from '@playwright/test';
+import { test, expect, type Page } from '@playwright/test';
 import { goToBoardList, reloadApp, openMainMenu } from './helpers';
+
+/** NEW BOARD on the board list. */
+const newBoard = (page: Page) => page.getByRole('button', { name: 'NEW BOARD', exact: true });
+/** The button that opens a board, by its name — a new board has no decks and no pads. */
+const openButton = (page: Page, name: string) =>
+  page.getByRole('button', { name: `${name} 0 decks · 0 pads`, exact: true });
+/** Every board's open button: one per row of the list. */
+const boardRows = (page: Page) => page.getByRole('button', { name: /\d+ decks? · \d+ pads?$/ });
+
+/** Renames the board `from` in place to `to` (the pencil, the name field, Enter). */
+async function rename(page: Page, from: string, to: string): Promise<void> {
+  await page.getByRole('button', { name: `Rename board ${from}`, exact: true }).click();
+  const input = page.getByRole('textbox', { name: 'Board name', exact: true });
+  await input.fill(to);
+  await input.press('Enter');
+}
 
 test.beforeEach(async ({ page }) => {
   await page.goto('/soundboard-of-storytelling/');
@@ -19,82 +38,57 @@ test.beforeEach(async ({ page }) => {
 
 test('1 — create board → appears in list', async ({ page }) => {
   await goToBoardList(page);
-  await page.getByTestId('board-list-screen-new-button').click();
-  await expect(page.locator('[data-testid^="board-list-screen-row-"]').first()).toBeVisible();
+  await newBoard(page).click();
+  await expect(openButton(page, 'Board 1')).toBeVisible();
+  await expect(boardRows(page)).toHaveCount(1);
 });
 
 // ── Test 2: Rename board ──────────────────────────────────────────────────────
 
 test('2 — rename board inline → title updates', async ({ page }) => {
   await goToBoardList(page);
-  await page.getByTestId('board-list-screen-new-button').click();
-  const boardRow = page.locator('[data-testid^="board-list-screen-row-"]').first();
-  await boardRow.waitFor();
+  await newBoard(page).click();
+  await rename(page, 'Board 1', 'My Renamed Board');
 
-  // Click the edit (pencil) button
-  const editBtn = boardRow.locator('[data-testid^="board-list-screen-edit-button-"]');
-  await editBtn.click();
-
-  // Find the inline input (rendered inside the row, replacing the title span)
-  const input = boardRow.getByRole('textbox');
-  await input.waitFor();
-  await input.fill('My Renamed Board');
-  await input.press('Enter');
-
-  // Title should update (DOM text is stored as-typed; CSS textTransform is visual-only)
-  await expect(boardRow.locator('[data-testid^="board-list-screen-name-text-"]')).toHaveText(
-    'My Renamed Board',
-  );
+  // The title as typed (CSS textTransform is visual only); the old name is gone
+  await expect(openButton(page, 'My Renamed Board')).toBeVisible();
+  await expect(openButton(page, 'Board 1')).toHaveCount(0);
 });
 
 // ── Test 3: Rename persists after reload ──────────────────────────────────────
 
 test('3 — renamed board persists after page reload', async ({ page }) => {
   await goToBoardList(page);
-  await page.getByTestId('board-list-screen-new-button').click();
-  const boardRow = page.locator('[data-testid^="board-list-screen-row-"]').first();
-  await boardRow.waitFor();
-
-  // Rename the board
-  const editBtn = boardRow.locator('[data-testid^="board-list-screen-edit-button-"]');
-  await editBtn.click();
-  const input = boardRow.getByRole('textbox');
-  await input.waitFor();
-  await input.fill('Persistent Board');
-  await input.press('Enter');
+  await newBoard(page).click();
+  await rename(page, 'Board 1', 'Persistent Board');
 
   // The new title shows at once; reloadApp waits until it is also saved
-  await expect(boardRow.locator('[data-testid^="board-list-screen-name-text-"]')).toHaveText(
-    'Persistent Board',
-  );
+  await expect(openButton(page, 'Persistent Board')).toBeVisible();
 
   await reloadApp(page);
   await openMainMenu(page);
   await page.getByRole('button', { name: 'BOARD', exact: true }).click();
-  await page.getByTestId('board-list-screen-new-button').waitFor();
+  await newBoard(page).waitFor();
 
   // Board should still exist with the renamed title
-  await expect(page.locator('[data-testid^="board-list-screen-name-text-"]').first()).toHaveText(
-    'Persistent Board',
-  );
+  await expect(openButton(page, 'Persistent Board')).toBeVisible();
+  await expect(boardRows(page)).toHaveCount(1);
 });
 
-// ── Test 4: Delete — first tap shows confirm state ────────────────────────────
+// ── Test 4: Delete — one tap, then the undo toast ─────────────────────────────
 
 test('4 — delete board: one tap removes it from the list and the toast offers UNDO', async ({
   page,
 }) => {
   await goToBoardList(page);
-  await page.getByTestId('board-list-screen-new-button').click();
-  const rows = page.locator('[data-testid^="board-list-screen-row-"]');
-  await expect(rows).toHaveCount(1);
+  await newBoard(page).click();
+  await expect(boardRows(page)).toHaveCount(1);
 
-  const deleteBtn = rows.first().locator('[data-testid^="board-list-screen-delete-button-"]');
   // The delete icon is decorative; the button is named by its label (ADR-0085)
+  const deleteBtn = page.getByRole('button', { name: 'Delete board Board 1', exact: true });
   await expect(deleteBtn).toHaveText('');
-  await expect(deleteBtn).toHaveAccessibleName('Delete board Board 1');
 
   await deleteBtn.click();
-  await expect(rows).toHaveCount(0);
-  await expect(page.getByTestId('undo-toast-undo-button')).toBeVisible();
+  await expect(boardRows(page)).toHaveCount(0);
+  await expect(page.getByRole('button', { name: 'UNDO', exact: true })).toBeVisible();
 });
