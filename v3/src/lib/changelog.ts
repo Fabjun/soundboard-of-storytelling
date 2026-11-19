@@ -17,10 +17,18 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.331';
+export const APP_VERSION = '3.0.332';
 
 /** The developer log, newest first; CHANGELOG.md is generated from it (sync-changelog). */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.332',
+    date: '2026-11-19',
+    items: [
+      'a11y(backup): the import and the export panel say their progress, result and error in a status region that stays while the panel is open (WCAG 2.2 SC 4.1.3, ARIA22 — as UndoNoticeRegion); each panel is a region named Backup import / Backup export. Before, a screen reader heard neither "Importing audio 3 of 10" nor "Done: …"',
+      'test: backup locates by role and name (ADR-0054 amendment 2026-11-19, batch 5) — the panels by their region, their message by its status, IMPORT / OK / CLOSE / SAVE inside the panel, EXPORT, the boards by their open buttons and the last-backup line by its text. Test IDs stay for the hidden file inputs. TEST_ID_LOCATORS 624 → 593. Counter-checked: the import panel without its status role — five of six backup tests red; restored — green',
+    ],
+  },
   {
     version: '3.0.331',
     date: '2026-11-19',

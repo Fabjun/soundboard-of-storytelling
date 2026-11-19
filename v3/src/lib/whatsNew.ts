@@ -103,6 +103,10 @@ export function withEarlyVersions(
 /** The release notes the main menu shows, newest first (checked by whatsNew.test.ts). */
 export const WHATS_NEW: WhatsNewNotes[] = [
   {
+    version: '3.0.332',
+    improved: ['A screen reader reads how far a backup import or export is and how it ended.'],
+  },
+  {
     version: '3.0.331',
     improved: [
       'A screen reader says which key a key field sets — HOTKEY, STOP ALL key and the others.',

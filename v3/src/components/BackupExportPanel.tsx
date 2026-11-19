@@ -66,19 +66,35 @@ export function BackupExportPanel({
   }
 
   return (
-    <div class="sb-card" data-testid="backup-export-panel">
-      {step.kind === 'building' && (
-        <div class="sb-caption" data-testid="backup-export-panel-status-text">
-          Preparing backup… {step.total > 0 && `${step.done} of ${step.total} audio files`}
-        </div>
-      )}
-
-      {step.kind === 'ready' && (
-        <>
+    <div class="sb-card" role="region" aria-label="Backup export" data-testid="backup-export-panel">
+      {/* Every step's message in one status region that stays while the panel is open (WCAG
+          4.1.3, ARIA22 — as BackupImportPanel); the buttons follow outside it */}
+      <div role="status">
+        {step.kind === 'building' && (
+          <div class="sb-caption" data-testid="backup-export-panel-status-text">
+            Preparing backup… {step.total > 0 && `${step.done} of ${step.total} audio files`}
+          </div>
+        )}
+        {step.kind === 'ready' && (
           <div class="sb-caption" data-testid="backup-export-panel-ready-text">
             Backup ready: {step.name} ({formatBytes(step.blob.size)}). Save it somewhere outside
             this browser — e.g. Files on the iPhone.
           </div>
+        )}
+        {step.kind === 'saved' && (
+          <div class="sb-caption" data-testid="backup-export-panel-saved-text">
+            Backup saved.
+          </div>
+        )}
+        {step.kind === 'error' && (
+          <div class="sb-caption" data-testid="backup-export-panel-error-text">
+            {step.message}
+          </div>
+        )}
+      </div>
+
+      {step.kind === 'ready' && (
+        <>
           <div class="sb-row">
             <button
               class="sb-btn sb-btn-sm sb-btn-primary"
@@ -99,33 +115,23 @@ export function BackupExportPanel({
       )}
 
       {step.kind === 'saved' && (
-        <>
-          <div class="sb-caption" data-testid="backup-export-panel-saved-text">
-            Backup saved.
-          </div>
-          <button
-            class="sb-btn sb-btn-sm sb-btn-primary"
-            data-testid="backup-export-panel-close-button"
-            onClick={onClose}
-          >
-            OK
-          </button>
-        </>
+        <button
+          class="sb-btn sb-btn-sm sb-btn-primary"
+          data-testid="backup-export-panel-close-button"
+          onClick={onClose}
+        >
+          OK
+        </button>
       )}
 
       {step.kind === 'error' && (
-        <>
-          <div class="sb-caption" data-testid="backup-export-panel-error-text">
-            {step.message}
-          </div>
-          <button
-            class="sb-btn sb-btn-sm sb-btn-ghost"
-            data-testid="backup-export-panel-close-button"
-            onClick={onClose}
-          >
-            CLOSE
-          </button>
-        </>
+        <button
+          class="sb-btn sb-btn-sm sb-btn-ghost"
+          data-testid="backup-export-panel-close-button"
+          onClick={onClose}
+        >
+          CLOSE
+        </button>
       )}
     </div>
   );
