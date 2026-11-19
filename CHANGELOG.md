@@ -7,6 +7,16 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.329 — 2026-11-19
+
+### Changed
+
+- a11y(deck-rail): the decks are a list named Decks, each row a list item (WAI-ARIA list / listitem) — a screen reader names the list and counts the decks; before, the rows were plain boxes
+
+### Internal
+
+- test: deck-crud locates by role and name (ADR-0054 amendment 2026-11-19, batch 2) — deck rows by the Decks list, the deck button by its badge, the menu items Duplicate / Delete, the Deck name field, NAME, SAVE and UNDO in the status region of the undo toast; new helpers deckRows, deckSelect, newDeckButton, undoToast. Test IDs stay for the drag handle (hidden from screen readers), grid cells and the top bar. TEST_ID_LOCATORS 749 → 696. Counter-checked: the list without its role — eleven deck tests red; restored — green
+
 ## 3.0.328 — 2026-11-19
 
 ### Changed

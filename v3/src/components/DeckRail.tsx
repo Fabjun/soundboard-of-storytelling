@@ -316,158 +316,161 @@ export function DeckRail({
       {decks.length === 0 ? (
         <div class="sb-panel-empty">No decks yet — NEW DECK below adds one.</div>
       ) : (
-        decks.map((deck, position) => {
-          const isConflict =
-            editingId === deck.id ? conflictOwner !== null : (conflictIds?.has(deck.id) ?? false);
-          return (
-            <div key={deck.id} class="sb-col" data-deck-row>
-              <div
-                class={
-                  'sb-deck-tab' +
-                  (activeDeckId === deck.id ? ' is-active' : '') +
-                  (editingId === deck.id ? ' is-editing' : '') +
-                  (isConflict ? ' is-conflict' : '') +
-                  (drag?.deckId === deck.id ? ' is-drag-source' : '') +
-                  (drag && drag.to !== drag.from && drag.to === position
-                    ? drag.to < drag.from
-                      ? ' is-insert-before'
-                      : ' is-insert-after'
-                    : '')
-                }
-                data-testid={`deck-rail-deck-tab-${deck.id}`}
-              >
-                {/* Name or inline edit input */}
-                {editingId === deck.id ? (
-                  <>
-                    {/* Deck number badge: its position in the rail, 1, 2, 3 … without gaps
+        /* A list (WAI-ARIA list / listitem): a screen reader names it and counts the decks */
+        <div class="sb-col" role="list" aria-label="Decks">
+          {decks.map((deck, position) => {
+            const isConflict =
+              editingId === deck.id ? conflictOwner !== null : (conflictIds?.has(deck.id) ?? false);
+            return (
+              <div key={deck.id} class="sb-col" role="listitem" data-deck-row>
+                <div
+                  class={
+                    'sb-deck-tab' +
+                    (activeDeckId === deck.id ? ' is-active' : '') +
+                    (editingId === deck.id ? ' is-editing' : '') +
+                    (isConflict ? ' is-conflict' : '') +
+                    (drag?.deckId === deck.id ? ' is-drag-source' : '') +
+                    (drag && drag.to !== drag.from && drag.to === position
+                      ? drag.to < drag.from
+                        ? ' is-insert-before'
+                        : ' is-insert-after'
+                      : '')
+                  }
+                  data-testid={`deck-rail-deck-tab-${deck.id}`}
+                >
+                  {/* Name or inline edit input */}
+                  {editingId === deck.id ? (
+                    <>
+                      {/* Deck number badge: its position in the rail, 1, 2, 3 … without gaps
                         (owner decision 2026-10-02), not the stored order number */}
-                    <span class="sb-deck-num-badge">{position + 1}</span>
-                    <input
-                      ref={inputRef}
-                      data-testid="deck-rail-name-input"
-                      value={editValue}
-                      onInput={(e) => {
-                        const v = (e.target as HTMLInputElement).value;
-                        setEditValue(v);
-                        setConflictOwner(findConflictingDeck(board.decks, v, deck.id));
-                      }}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter') {
-                          e.preventDefault();
-                          commitRename(deck.id);
-                        }
-                        if (e.key === 'Escape') {
-                          e.preventDefault();
-                          cancelRename();
-                        }
-                      }}
-                      onBlur={() => commitRename(deck.id, 'blur')}
-                      class="sb-deck-rename-input"
-                      aria-label="Deck name"
-                      autoFocus
-                    />
-                    {isConflict && <span class="sb-deck-tab-conflict-glyph">!</span>}
-                  </>
-                ) : (
-                  /* Choosing the deck is a real button — reached with Tab (owner rule
+                      <span class="sb-deck-num-badge">{position + 1}</span>
+                      <input
+                        ref={inputRef}
+                        data-testid="deck-rail-name-input"
+                        value={editValue}
+                        onInput={(e) => {
+                          const v = (e.target as HTMLInputElement).value;
+                          setEditValue(v);
+                          setConflictOwner(findConflictingDeck(board.decks, v, deck.id));
+                        }}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') {
+                            e.preventDefault();
+                            commitRename(deck.id);
+                          }
+                          if (e.key === 'Escape') {
+                            e.preventDefault();
+                            cancelRename();
+                          }
+                        }}
+                        onBlur={() => commitRename(deck.id, 'blur')}
+                        class="sb-deck-rename-input"
+                        aria-label="Deck name"
+                        autoFocus
+                      />
+                      {isConflict && <span class="sb-deck-tab-conflict-glyph">!</span>}
+                    </>
+                  ) : (
+                    /* Choosing the deck is a real button — reached with Tab (owner rule
                      2026-10-02); a double click renames, as before */
-                  <button
-                    type="button"
-                    class="sb-row-button"
-                    aria-current={activeDeckId === deck.id || undefined}
-                    data-testid={`deck-rail-select-button-${deck.id}`}
-                    onClick={() => {
-                      onDeckSelect(deck.id);
-                    }}
-                    onDblClick={() => startRename(deck)}
-                  >
-                    {/* Deck number badge: its position in the rail, 1, 2, 3 … without gaps
+                    <button
+                      type="button"
+                      class="sb-row-button"
+                      aria-current={activeDeckId === deck.id || undefined}
+                      data-testid={`deck-rail-select-button-${deck.id}`}
+                      onClick={() => {
+                        onDeckSelect(deck.id);
+                      }}
+                      onDblClick={() => startRename(deck)}
+                    >
+                      {/* Deck number badge: its position in the rail, 1, 2, 3 … without gaps
                         (owner decision 2026-10-02), not the stored order number */}
-                    <span class="sb-deck-num-badge">{position + 1}</span>
-                    <span class="sb-flex-trunc">{deck.name}</span>
-                    <span class="sb-count-text">{deck.placements.length}</span>
-                  </button>
-                )}
+                      <span class="sb-deck-num-badge">{position + 1}</span>
+                      <span class="sb-flex-trunc">{deck.name}</span>
+                      <span class="sb-count-text">{deck.placements.length}</span>
+                    </button>
+                  )}
 
-                {/* The deck's actions behind one 44 px "⋯" (visible on hover / active; owner
+                  {/* The deck's actions behind one 44 px "⋯" (visible on hover / active; owner
                     decision 2026-10-11 — three 28 px buttons were below the touch minimum) */}
-                {editingId !== deck.id && (
-                  <div class="sb-deck-tab-actions">
-                    <MenuButton
-                      label={`Actions for deck ${deck.name}`}
-                      testid={`deck-rail-actions-button-${deck.id}`}
-                      actions={[
-                        {
-                          label: 'Rename',
-                          testid: `deck-rail-rename-button-${deck.id}`,
-                          onSelect: () => startRename(deck),
-                        },
-                        {
-                          label: 'Duplicate',
-                          testid: `deck-rail-copy-button-${deck.id}`,
-                          onSelect: () => void duplicateDeck(deck),
-                        },
-                        {
-                          // One tap: the undo toast follows (owner decision 2026-10-19)
-                          label: 'Delete',
-                          testid: `deck-rail-delete-button-${deck.id}`,
-                          danger: true,
-                          onSelect: () => void deleteDeckNow(deck),
-                        },
-                      ]}
-                    />
-                  </div>
-                )}
-              </div>
+                  {editingId !== deck.id && (
+                    <div class="sb-deck-tab-actions">
+                      <MenuButton
+                        label={`Actions for deck ${deck.name}`}
+                        testid={`deck-rail-actions-button-${deck.id}`}
+                        actions={[
+                          {
+                            label: 'Rename',
+                            testid: `deck-rail-rename-button-${deck.id}`,
+                            onSelect: () => startRename(deck),
+                          },
+                          {
+                            label: 'Duplicate',
+                            testid: `deck-rail-copy-button-${deck.id}`,
+                            onSelect: () => void duplicateDeck(deck),
+                          },
+                          {
+                            // One tap: the undo toast follows (owner decision 2026-10-19)
+                            label: 'Delete',
+                            testid: `deck-rail-delete-button-${deck.id}`,
+                            danger: true,
+                            onSelect: () => void deleteDeckNow(deck),
+                          },
+                        ]}
+                      />
+                    </div>
+                  )}
+                </div>
 
-              {/* Reorder (Slice 13g): a line of its own under the active deck in SETUP, so the
+                {/* Reorder (Slice 13g): a line of its own under the active deck in SETUP, so the
                   name keeps its room — the row has only 58 px left next to its action buttons.
                   The handle is the pointer way; the up / down buttons are the way without dragging (WCAG 2.2
                   SC 2.5.7) and the keyboard's, as in the PAD editor's file list. */}
-              {manage && activeDeckId === deck.id && editingId !== deck.id && (
-                <div class="sb-deck-tab-move" role="group" aria-label={`Move deck ${deck.name}`}>
-                  <span
-                    class="sb-deck-drag-handle"
-                    aria-hidden="true"
-                    data-testid={`deck-rail-drag-region-${deck.id}`}
-                    onPointerDown={(e: PointerEvent) => onHandleDown(e, position)}
-                    onPointerMove={(e: PointerEvent) => onHandleMove(e, deck.id)}
-                    onPointerUp={() => onHandleUp(deck.id)}
-                    onPointerCancel={onHandleCancel}
-                  >
-                    <UiIcon name="drag" />
-                  </span>
-                  <button
-                    type="button"
-                    class="sb-btn sb-btn-sm sb-btn-ghost"
-                    data-testid={`deck-rail-move-up-button-${deck.id}`}
-                    aria-label={`Move deck ${deck.name} up`}
-                    disabled={position === 0}
-                    onClick={() => moveTo(deck.id, position - 1)}
-                  >
-                    <UiIcon name="up" />
-                  </button>
-                  <button
-                    type="button"
-                    class="sb-btn sb-btn-sm sb-btn-ghost"
-                    data-testid={`deck-rail-move-down-button-${deck.id}`}
-                    aria-label={`Move deck ${deck.name} down`}
-                    disabled={position === decks.length - 1}
-                    onClick={() => moveTo(deck.id, position + 1)}
-                  >
-                    <UiIcon name="down" />
-                  </button>
-                </div>
-              )}
+                {manage && activeDeckId === deck.id && editingId !== deck.id && (
+                  <div class="sb-deck-tab-move" role="group" aria-label={`Move deck ${deck.name}`}>
+                    <span
+                      class="sb-deck-drag-handle"
+                      aria-hidden="true"
+                      data-testid={`deck-rail-drag-region-${deck.id}`}
+                      onPointerDown={(e: PointerEvent) => onHandleDown(e, position)}
+                      onPointerMove={(e: PointerEvent) => onHandleMove(e, deck.id)}
+                      onPointerUp={() => onHandleUp(deck.id)}
+                      onPointerCancel={onHandleCancel}
+                    >
+                      <UiIcon name="drag" />
+                    </span>
+                    <button
+                      type="button"
+                      class="sb-btn sb-btn-sm sb-btn-ghost"
+                      data-testid={`deck-rail-move-up-button-${deck.id}`}
+                      aria-label={`Move deck ${deck.name} up`}
+                      disabled={position === 0}
+                      onClick={() => moveTo(deck.id, position - 1)}
+                    >
+                      <UiIcon name="up" />
+                    </button>
+                    <button
+                      type="button"
+                      class="sb-btn sb-btn-sm sb-btn-ghost"
+                      data-testid={`deck-rail-move-down-button-${deck.id}`}
+                      aria-label={`Move deck ${deck.name} down`}
+                      disabled={position === decks.length - 1}
+                      onClick={() => moveTo(deck.id, position + 1)}
+                    >
+                      <UiIcon name="down" />
+                    </button>
+                  </div>
+                )}
 
-              {isConflict && (
-                <div class="sb-deck-conflict-hint">
-                  Name already used by <em>{conflictOwner?.name ?? ''}</em>
-                </div>
-              )}
-            </div>
-          );
-        })
+                {isConflict && (
+                  <div class="sb-deck-conflict-hint">
+                    Name already used by <em>{conflictOwner?.name ?? ''}</em>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
       )}
 
       {/* Add deck button */}
