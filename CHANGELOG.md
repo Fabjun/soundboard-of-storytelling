@@ -7,6 +7,12 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.326 — 2026-11-19
+
+### Internal
+
+- docs: light.md K3 narrowed — the owner decided on 2026-11-19 (option A) to keep the short light without SECONDS for a pad without sound: a pad sends its light only when its sound starts, so such a pad sends none; a pad with light only is a new ability for its own plan, once it is missed (it was "for review" since 3.0.322)
+
 ## 3.0.325 — 2026-11-18
 
 ### Fixed

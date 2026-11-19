@@ -103,6 +103,12 @@ export function withEarlyVersions(
 /** The release notes the main menu shows, newest first (checked by whatsNew.test.ts). */
 export const WHATS_NEW: WhatsNewNotes[] = [
   {
+    version: '3.0.326',
+    behindTheScenes: [
+      'The light plan records a decision: a short light lasts as long as its pad’s sound; a pad without sound sends no light.',
+    ],
+  },
+  {
     version: '3.0.325',
     behindTheScenes: [
       'An automatic check walks every screen and dialog at three window sizes and finds anything cut off or squeezed; it found the hidden choice buttons placed outside their choices, which now sit inside them.',
