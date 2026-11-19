@@ -103,6 +103,12 @@ export function withEarlyVersions(
 /** The release notes the main menu shows, newest first (checked by whatsNew.test.ts). */
 export const WHATS_NEW: WhatsNewNotes[] = [
   {
+    version: '3.0.335',
+    improved: [
+      'A screen reader says that a pad type or a repeat choice in the PAD editor belongs to TYPE or REPEAT.',
+    ],
+  },
+  {
     version: '3.0.334',
     improved: [
       'A screen reader names the PAD editor’s ICONS and says how many icons a search finds.',

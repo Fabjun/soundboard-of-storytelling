@@ -127,9 +127,13 @@ test('each file keeps its own trim', async ({ page }) => {
 test('a Loop keeps its repeat count; ∞ sets it back to until stopped (ADR-0069)', async ({
   page,
 }) => {
-  await page.getByTestId('pad-editor-panel-type-button-loop').click();
-  const count = page.getByTestId('pad-editor-panel-repeat-input');
-  const forever = page.getByTestId('pad-editor-panel-repeat-forever-button');
+  await page
+    .getByRole('group', { name: 'TYPE', exact: true })
+    .getByRole('button', { name: 'LOOP', exact: true })
+    .click();
+  const repeat = page.getByRole('group', { name: 'REPEAT', exact: true });
+  const count = repeat.getByRole('spinbutton', { name: 'Repeat count', exact: true });
+  const forever = repeat.getByRole('button', { name: 'Repeat until stopped', exact: true });
   await expect(forever).toHaveAttribute('aria-pressed', 'true'); // a new Loop runs until stopped
 
   await count.fill('5000');

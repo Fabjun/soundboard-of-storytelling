@@ -183,6 +183,8 @@ export function PadEditorPanel({
   const nameFieldId = useId();
   const decksLabelId = useId();
   const iconsLabelId = useId();
+  const typeLabelId = useId();
+  const repeatLabelId = useId();
   const [libSearch, setLibSearch] = useState('');
   const [libPickerOpen, setLibPickerOpen] = useState(false);
   /** The pad's icons, up to 4 keys in the order the pad shows them (ADR-0070). */
@@ -958,8 +960,10 @@ export function PadEditorPanel({
         </div>
         <div {...tabPanelProps('pad-editor', 'sound')} hidden={tab !== 'sound'}>
           {/* Type selector */}
-          <div class="sb-inspector-section">
-            <label class="sb-field-label">TYPE</label>
+          <div class="sb-inspector-section" role="group" aria-labelledby={typeLabelId}>
+            <span class="sb-field-label" id={typeLabelId}>
+              TYPE
+            </span>
             <div class="sb-row-sm">
               {PAD_TYPES.map((t) => (
                 <button
@@ -996,7 +1000,7 @@ export function PadEditorPanel({
           {type !== 'combo' && (
             <div class="sb-inspector-section">
               <div class="sb-section-header-row">
-                <label class="sb-field-label">AUDIO FILES</label>
+                <span class="sb-field-label">AUDIO FILES</span>
                 <button
                   class="sb-btn sb-btn-xs sb-btn-ghost"
                   data-testid="pad-editor-panel-browse-button"
@@ -1128,8 +1132,10 @@ export function PadEditorPanel({
 
           {/* REPEAT — a Loop plays until stopped (∞) or a number of times, then stops (ADR-0069) */}
           {type === 'loop' && (
-            <div class="sb-inspector-section">
-              <label class="sb-field-label">REPEAT</label>
+            <div class="sb-inspector-section" role="group" aria-labelledby={repeatLabelId}>
+              <span class="sb-field-label" id={repeatLabelId}>
+                REPEAT
+              </span>
               <div class="sb-row-sm">
                 <button
                   class={`sb-btn sb-btn-xs ${repeat === undefined ? 'sb-btn-primary' : 'sb-btn-ghost'}`}
