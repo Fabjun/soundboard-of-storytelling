@@ -103,6 +103,12 @@ export function withEarlyVersions(
 /** The release notes the main menu shows, newest first (checked by whatsNew.test.ts). */
 export const WHATS_NEW: WhatsNewNotes[] = [
   {
+    version: '3.0.327',
+    behindTheScenes: [
+      'The automatic tests start finding buttons by their names, as a screen reader does; a check makes sure no new test goes back to the old way.',
+    ],
+  },
+  {
     version: '3.0.326',
     behindTheScenes: [
       'The light plan records a decision: a short light lasts as long as its pad’s sound; a pad without sound sends no light.',

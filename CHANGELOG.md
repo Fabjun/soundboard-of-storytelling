@@ -7,6 +7,13 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.327 — 2026-11-19
+
+### Internal
+
+- test: testGuards ("test-ID locators only go down") — owner decision 2026-11-19 (option A, decision 5): the E2E files hold exactly TEST_ID_LOCATORS uses of getByTestId( and [data-testid, 767 today (644 and 123, next to 520 getByRole); a new one fails, and each spec moved to roles lowers the number in the same change. Counter-checked: one more — red ("expected 768 to be less than or equal to 767"), one fewer — red ("set TEST_ID_LOCATORS to 766"); restored — green
+- docs: ADR-0054 amendment 2026-11-19 — the exception "existing tests locate by test ID" is being closed spec by spec in batches of about ten; its reason (icon buttons without names) is gone since ADR-0080; BACKLOG "Role-based E2E locators" decided
+
 ## 3.0.326 — 2026-11-19
 
 ### Internal

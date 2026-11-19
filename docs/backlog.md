@@ -2461,10 +2461,11 @@ Fixed by agreed rules, open items await the owner's decision.
 ### Role-based E2E locators
 
 Temporary exception from ADR-0054: many E2E tests still locate controls by test ID although a
-role + accessible name is the standard. Most icon-only controls have no accessible name yet.
-**When:** the owner's decision on a stepwise migration plan, put on its own — the layout rebuild
-it waited for is built (triage 2026-11-18). The plan gives every control an accessible name,
-switches those locators to `getByRole` and drops the exception from ADR-0054.
+role + accessible name is the standard. **Decided by the owner 2026-11-19 (option A, ADR-0054
+amendment):** step by step — new and changed tests use roles, the existing specs move in batches
+of about ten, and `testGuards` ("test-ID locators only go down") lets the count of test-ID
+locators only fall (767 on 2026-11-19). **When:** batch by batch, the next one at a quiet time of
+the machine; done when the count is down to the test IDs that stay (cells, regions, status lines).
 
 Found 2026-10-01 (Slice 9c): the SETUP toolbar button **ADD PAD** has no accessible name in Chromium
 (the accessibility tree shows a nameless `button`), so `getByRole('button', { name: 'ADD PAD' })`

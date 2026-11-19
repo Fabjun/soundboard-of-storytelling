@@ -44,10 +44,10 @@ spelling (`boardlist`, `modetoggle`, `startscreen`). The app had 40 buttons but 
 
 ## Exceptions
 
-| Exception                                                                                       | Reason                                                                                                                                                                               | Reference                         | Review    |
-| ----------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | --------------------------------- | --------- |
-| Existing E2E tests locate many controls by test ID although a role + accessible name would work | Most icon-only controls have no accessible name yet; the UI is rebuilt for the mobile layout in Slice 13, where accessible names are designed in — migrating now would be done twice | BACKLOG "Role-based E2E locators" | Slice 13  |
-| `pwa.spec.ts` reads `link[rel="manifest"]` with an attribute selector                           | Document metadata in `<head>`, no user-facing element exists                                                                                                                         | —                                 | permanent |
+| Exception                                                                                       | Reason                                                                                                                            | Reference                         | Review                                                    |
+| ----------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- | --------------------------------- | --------------------------------------------------------- |
+| Existing E2E tests locate many controls by test ID although a role + accessible name would work | Being moved to roles spec by spec (amendment 2026-11-19); `testGuards` ("test-ID locators only go down") lets the count only fall | BACKLOG "Role-based E2E locators" | the count reaches the test IDs that stay (cells, regions) |
+| `pwa.spec.ts` reads `link[rel="manifest"]` with an attribute selector                           | Document metadata in `<head>`, no user-facing element exists                                                                      | —                                 | permanent                                                 |
 
 ## Consequences
 
@@ -93,6 +93,19 @@ also finds a later control named "Undo: edit pad 'Rain'" — two gates failed on
 a part of a name, or a changing one, is an explicit regular expression. Five locators had relied
 on a part of a name and now use the whole one ("LIB, open the library", the title heading) or a
 pattern (the version link). `testGuards` ("a locator compares a text exactly") keeps it so.
+
+**2026-11-19 (3.0.327) — the test IDs go, step by step.** Owner decision 2026-11-19 (option A):
+the exception's reason is gone — Slice 13 is built and `codeGuards` ("controls work with Tab and
+have a name", ADR-0080) gives every icon button a name. New and changed tests locate by role and
+name; the existing specs move in batches of about ten, each its own pull request with a green
+gate. A ratchet keeps the direction: `testGuards` ("test-ID locators only go down") requires
+exactly `TEST_ID_LOCATORS` uses of `getByTestId(` and `[data-testid` in the E2E files — 767 on
+2026-11-19 (644 and 123, next to 520 `getByRole`) — so a new one fails and each batch lowers the
+number (the ratchet of Betterer; a fitness function, Ford, Parsons, Kua 2023). A test ID stays
+where a control has no role or name: a grid cell with its position, a region, a status line.
+Not chosen: one change for all ~770 (hard to review, its mistakes found late), or test IDs as the
+rule (contrary to Playwright's "prefer user-facing attributes" and Testing Library's query
+priority).
 
 ## Related
 
