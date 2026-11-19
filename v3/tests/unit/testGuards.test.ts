@@ -46,6 +46,11 @@
  *    its system packages from the Ubuntu mirror, which hung three times (2026-10-09; 25 and 13
  *    minutes on 2026-10-22). Dependabot raises the npm version but not the image tag — the
  *    mismatch fails here instead of in a job.
+ * 16. Test-ID locators only go down (owner decision 2026-11-19, ADR-0054 amendment): the E2E files
+ *    hold exactly `TEST_ID_LOCATORS` uses of `getByTestId(` and `[data-testid` — a new one fails,
+ *    and a spec moved to roles lowers the number in the same change, so the ratchet stays tight.
+ *    Playwright: "prefer user-facing attributes"; a test ID stays where a control has no role or
+ *    name (a grid cell, a region).
  */
 
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
@@ -592,5 +597,31 @@ describe('guard: CI runs Playwright in its own image, of the installed version (
       /playwright install/.test(readFileSync(join(ROOT, f), 'utf8')),
     );
     expect(installing, 'run the job in the Playwright image instead').toEqual([]);
+  });
+});
+
+describe('guard: test-ID locators only go down (owner decision 2026-11-19)', () => {
+  const E2E = join(V3, 'tests', 'e2e');
+  // The count on 2026-11-19: 644 getByTestId( and 123 [data-testid in 76 specs and their helpers.
+  // Lower it with every spec moved to roles (ADR-0054 amendment 2026-11-19).
+  const TEST_ID_LOCATORS = 767;
+  const files = repoFiles(E2E)
+    .filter((f) => f.endsWith('.ts'))
+    .map((f) => join(E2E, f));
+  const count = (src: string) =>
+    (src.match(/getByTestId\(/g) ?? []).length + (src.match(/\[data-testid/g) ?? []).length;
+  const total = files.reduce((n, f) => n + count(readFileSync(f, 'utf8')), 0);
+
+  it('finds the E2E files and counts both forms (sanity)', () => {
+    expect(files.length).toBeGreaterThan(70);
+    expect(count("page.getByTestId('a'); page.locator('[data-testid^=\"b\"]')")).toBe(2);
+  });
+
+  it('no new test-ID locator; a lower count lowers TEST_ID_LOCATORS', () => {
+    expect(
+      total,
+      'locate by role and name — page.getByRole(…, { name, exact: true }) — or getByLabel / getByText',
+    ).toBeLessThanOrEqual(TEST_ID_LOCATORS);
+    expect(total, `the count went down: set TEST_ID_LOCATORS to ${total}`).toBe(TEST_ID_LOCATORS);
   });
 });
