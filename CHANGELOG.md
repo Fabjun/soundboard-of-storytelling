@@ -7,6 +7,12 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.336 — 2026-11-19
+
+### Internal
+
+- test: settings locates by role and name (ADR-0054 amendment 2026-11-19, batch 7) — BACK, VIEW LOG AND STATS, CLEAR, the board list buttons and SAVE in the Backup export region by name; the developer view’s LOG, STATS and CACHE and the ABOUT section as regions named by their heading; the main menu by its navigation; the backup line by its text, as backup.spec. No test ID left in the spec. TEST_ID_LOCATORS 551 → 534. Counter-checked: CLEAR that clears nothing, ABOUT without the version, the backup line reworded — each its own test red; the menu navigation renamed — the main-menu test red; restored — green
+
 ## 3.0.335 — 2026-11-19
 
 ### Changed
