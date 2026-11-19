@@ -21,6 +21,11 @@ import { APP_VERSION } from '../../src/lib/changelog';
 const APP = '/soundboard-of-storytelling/';
 const DAY_MS = 24 * 60 * 60 * 1000;
 
+/** BACK in the Settings top bar — one screen shows at a time, so the name is unique. */
+const back = (page: Page) => page.getByRole('button', { name: 'BACK', exact: true });
+/** The board list's Settings button (an icon button named by its aria-label). */
+const settingsButton = (page: Page) => page.getByRole('button', { name: 'Settings', exact: true });
+
 /** The right edge of a visible element, in px; fails the test when it has no box. */
 async function rightEdge(locator: Locator): Promise<number> {
   const box = await locator.boundingBox();
@@ -65,7 +70,7 @@ test('the Animations switch stops the flame, and it stays still after a reload',
   await expect(animations).toHaveAttribute('aria-checked', 'true');
   await animations.click();
   await expect(animations).toHaveAttribute('aria-checked', 'false');
-  await page.getByTestId('settings-screen-back-button').click();
+  await back(page).click();
   expect(await flameMoves(page)).toBe(false);
 
   await waitForSaves(page);
@@ -102,18 +107,23 @@ test('the debug log keeps messages while on; the developer view shows, clears an
   await expect(debugLog).toHaveAttribute('aria-checked', 'true');
   await page.evaluate(() => console.warn('a message for the log'));
 
-  const open = page.getByTestId('settings-screen-developer-button');
+  const open = page.getByRole('button', { name: 'VIEW LOG AND STATS', exact: true });
   await open.click();
   const dialog = page.getByRole('dialog', { name: 'DEVELOPER', exact: true });
-  const log = dialog.getByTestId('developer-dialog-log-text');
+  // Each part of the view is a section named by its heading
+  const section = (name: string) => dialog.getByRole('region', { name, exact: true });
+  const log = section('LOG');
   await expect(log).toContainText('WARN a message for the log');
   await expect(log).not.toContainText('before the switch');
-  await expect(dialog.getByTestId('developer-dialog-stats-region')).toContainText(APP_VERSION);
-  await expect(dialog.getByTestId('developer-dialog-cache-text')).toContainText('No audio decoded');
-  await expect(dialog.getByTestId('developer-dialog-close-button')).toBeFocused();
+  await expect(section('STATS')).toContainText(APP_VERSION);
+  await expect(section('CACHE')).toContainText('No audio decoded');
+  await expect(
+    dialog.getByRole('button', { name: 'Close the developer view', exact: true }),
+  ).toBeFocused();
 
-  await dialog.getByTestId('developer-dialog-clear-button').click();
-  await expect(log).toHaveText('No messages.');
+  await log.getByRole('button', { name: 'CLEAR', exact: true }).click();
+  await expect(log.getByText('No messages.', { exact: true })).toBeVisible();
+  await expect(log).not.toContainText('WARN');
   await page.keyboard.press('Escape');
   await expect(dialog).toBeHidden();
   await expect(open).toBeFocused();
@@ -124,14 +134,14 @@ test('Settings opens from the main menu and goes back there', async ({ page }) =
   await openMainMenu(page);
   await page.getByRole('button', { name: 'SETTINGS', exact: true }).click();
   await expect(page.getByRole('heading', { name: 'DATA', exact: true })).toBeVisible();
-  await expect(page.getByTestId('settings-screen-version-text')).toContainText(
+  await expect(page.getByRole('region', { name: 'ABOUT', exact: true })).toContainText(
     `Version ${APP_VERSION}`,
   );
   await expect(
     page.getByRole('link', { name: 'Third-party licenses', exact: true }),
   ).toHaveAttribute('href', 'third-party-licenses.txt');
-  await page.getByTestId('settings-screen-back-button').click();
-  await expect(page.getByTestId('main-menu-screen')).toBeVisible();
+  await back(page).click();
+  await expect(page.getByRole('navigation', { name: 'Main menu', exact: true })).toBeVisible();
 });
 
 test('the theme applies at once, to the whole app, and from the first screen after a reload', async ({
@@ -186,9 +196,7 @@ test('the content width limits the screens on a large window, centered, also aft
   await waitForSaves(page);
   await page.goto(APP);
   await goToBoardList(page);
-  expect(
-    await rightEdge(page.getByTestId('board-list-screen-settings-button')),
-  ).toBeLessThanOrEqual((1600 + 900) / 2);
+  expect(await rightEdge(settingsButton(page))).toBeLessThanOrEqual((1600 + 900) / 2);
 });
 
 test('the backup reminder follows the days chosen in Settings, also after a reload', async ({
@@ -200,13 +208,17 @@ test('the backup reminder follows the days chosen in Settings, also after a relo
   await page.clock.install({ time: start });
   await page.goto(APP);
   await goToBoardList(page);
-  await page.getByTestId('board-list-screen-new-button').click();
+  await page.getByRole('button', { name: 'NEW BOARD', exact: true }).click();
   await waitForSaves(page);
-  await page.getByTestId('board-list-screen-export-button').click();
+  await page.getByRole('button', { name: 'EXPORT', exact: true }).click();
   const downloading = page.waitForEvent('download');
-  await page.getByTestId('backup-export-panel-save-button').click();
+  await page
+    .getByRole('region', { name: 'Backup export', exact: true })
+    .getByRole('button', { name: 'SAVE', exact: true })
+    .click();
   await downloading;
-  const backupText = page.getByTestId('board-list-screen-backup-text');
+  // The board list's line about the last backup (a caption without a role)
+  const backupText = page.getByText(/^(No backup yet|Last backup:)/);
   await expect(backupText).toHaveText('Last backup: today');
 
   // Ten days later (and an hour, as the backup was saved a few seconds after `start`) the default
@@ -220,12 +232,12 @@ test('the backup reminder follows the days chosen in Settings, also after a relo
   );
 
   // 14 days in Settings, opened from the board list: no reminder, and BACK returns there
-  await page.getByTestId('board-list-screen-settings-button').click();
+  await settingsButton(page).click();
   const days14 = page.getByRole('radio', { name: '14 days', exact: true });
   await expect(page.getByRole('radio', { name: '7 days', exact: true })).toBeChecked();
   await page.getByText('14 days', { exact: true }).click();
   await expect(days14).toBeChecked();
-  await page.getByTestId('settings-screen-back-button').click();
+  await back(page).click();
   await expect(backupText).toHaveText('Last backup: 10 days ago');
 
   // The choice is kept
