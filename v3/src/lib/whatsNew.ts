@@ -103,6 +103,12 @@ export function withEarlyVersions(
 /** The release notes the main menu shows, newest first (checked by whatsNew.test.ts). */
 export const WHATS_NEW: WhatsNewNotes[] = [
   {
+    version: '3.0.333',
+    behindTheScenes: [
+      'Two entries of the design reference said a style was unused that the app uses.',
+    ],
+  },
+  {
     version: '3.0.332',
     improved: ['A screen reader reads how far a backup import or export is and how it ended.'],
   },

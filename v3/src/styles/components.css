@@ -96,7 +96,7 @@
 }
 
 .sb-caption {
-  /* @inventory: Smallest text style — xs mono in text-mute; for filenames and metadata. Currently no TSX usage. [unused-css] */
+  /* @inventory: Smallest text style — xs mono in text-mute; for filenames, metadata, hints and short messages. */
   font-family: var(--font-mono);
   font-size: var(--fs-xs);
   color: var(--text-mute);
@@ -196,7 +196,7 @@
   /* @inventory: Shared CSS base for card/btn/pad/pill/menu-row pixel-frame styling; never applied directly as a className. [unused-css] */
 }
 .sb-card {
-  /* @inventory: Pixel-frame container card with padding and drop-shadow elevation. Currently no TSX usage; V3 list items use sb-menu-row instead. [unused-css] */
+  /* @inventory: Pixel-frame container card with padding and drop-shadow elevation — the backup import and export panels of the board list; list items use sb-menu-row. */
   --pix-step: 6px;
   padding: var(--space-5);
   filter: var(--shadow-card);

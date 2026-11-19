@@ -17,10 +17,17 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.332';
+export const APP_VERSION = '3.0.333';
 
 /** The developer log, newest first; CHANGELOG.md is generated from it (sync-changelog). */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.333',
+    date: '2026-11-19',
+    items: [
+      'docs(design-system): the inventory entries of sb-caption (46 uses) and sb-card (the backup panels) said "Currently no TSX usage. [unused-css]" — they name their uses now. A check that derives the mark from the code is put to the owner',
+    ],
+  },
   {
     version: '3.0.332',
     date: '2026-11-19',
