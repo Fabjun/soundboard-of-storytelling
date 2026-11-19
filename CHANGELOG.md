@@ -7,6 +7,16 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.331 — 2026-11-19
+
+### Changed
+
+- a11y(keys): every key field is a group named by its label — HOTKEY, QUICK ACCESS KEY, STOP ALL key, PAUSE key (role group, aria-labelledby; WCAG technique ARIA17). The field button carries its own name ("Key N1, tap to change"), which replaced the label, so a screen reader did not say which key a field sets
+
+### Internal
+
+- test: pad-keys locates by role and name (ADR-0054 amendment 2026-11-19, batch 4) — key fields by their group, the key button by its name, Remove the key, MOVE KEY HERE, the refusal status, Settings, BACK, Back to the board list and RESET KEYS TO DEFAULT; new helpers keyGroup, keyButton. A test ID stays for the grid cell. TEST_ID_LOCATORS 659 → 624. Counter-checked: the key field without its group role — all nine pad-keys tests red; restored — green
+
 ## 3.0.330 — 2026-11-19
 
 ### Changed

@@ -271,6 +271,16 @@ export const deckBox = (page: Page, deck: string) =>
     .getByRole('group', { name: 'DECKS', exact: true })
     .getByRole('checkbox', { name: deck, exact: true });
 
+/** A key field (KeyField), the group named by its label: HOTKEY, QUICK ACCESS KEY, STOP ALL key … */
+export const keyGroup = (page: Page, label: string) =>
+  page.getByRole('group', { name: label, exact: true });
+
+/** The button of a key field — its name says the key, or that none is set, or that it waits. */
+export const keyButton = (group: Locator) =>
+  group.getByRole('button', {
+    name: /^(Key .+, tap to change|Not assigned, tap and press a key|Press a key for .+)$/,
+  });
+
 /** The deck rail's NEW DECK — an empty board shows a second one, which adds a deck too. */
 export const newDeckButton = (page: Page) =>
   page.getByRole('button', { name: 'NEW DECK', exact: true }).first();

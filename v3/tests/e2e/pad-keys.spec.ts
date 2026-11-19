@@ -10,7 +10,7 @@
  * a window listener (it runs after the app's document listener) sees whether the app took the key.
  */
 
-import { test, expect, type Page } from '@playwright/test';
+import { test, expect, type Locator, type Page } from '@playwright/test';
 import {
   addNamedPad,
   closePadEditor,
@@ -19,14 +19,22 @@ import {
   enterGameMode,
   enterSetupMode,
   goToBoardList,
+  keyButton,
+  keyGroup,
+  modeToggle,
   reopenFirstBoard,
   waitForSaves,
 } from './helpers';
 
 /** The deck key field of the open PAD editor, and the quick-access key field (Slice 13d). */
-const deckKey = (page: Page) => page.getByTestId('pad-editor-panel-deck-key-region');
-const quickKey = (page: Page) => page.getByTestId('pad-editor-panel-quick-key-region');
-const keyField = (page: Page) => deckKey(page).getByTestId('key-field-button');
+const deckKey = (page: Page) => keyGroup(page, 'HOTKEY');
+const quickKey = (page: Page) => keyGroup(page, 'QUICK ACCESS KEY');
+const keyField = (page: Page) => keyButton(deckKey(page));
+/** The refusal a key field says (a status); a key held elsewhere says so with MOVE KEY HERE. */
+const keyNote = (group: Locator) => group.getByRole('status');
+const conflict = (group: Locator) => group.getByText(/^Key \S+ is on /);
+const moveKeyHere = (group: Locator) =>
+  group.getByRole('button', { name: 'MOVE KEY HERE', exact: true });
 /** The key label shown on a pad, found by its text inside the pad's cell. */
 const padKey = (page: Page, padId: string, label: string) =>
   page.getByTestId(`pad-grid-cell-${padId}`).getByText(label, { exact: true });
@@ -76,11 +84,9 @@ test('a key another pad holds moves over on MOVE KEY HERE; Escape cancels and ke
   await expect(keyField(page)).toHaveText('— not assigned —');
 
   await assignKey(page, 'Numpad1');
-  await expect(deckKey(page).getByTestId('key-field-conflict-text')).toHaveText(
-    'Key N1 is on Thunder',
-  );
+  await expect(conflict(deckKey(page))).toHaveText('Key N1 is on Thunder');
   await expect(keyField(page)).toHaveText('— not assigned —');
-  await deckKey(page).getByTestId('key-field-move-button').click();
+  await moveKeyHere(deckKey(page)).click();
   await expect(keyField(page)).toHaveText('N1');
   await closePadEditor(page);
   await expect(padKey(page, rain, 'N1')).toBeVisible();
@@ -90,14 +96,12 @@ test('a key another pad holds moves over on MOVE KEY HERE; Escape cancels and ke
 test('a reserved key is refused with its reason; × removes the key', async ({ page }) => {
   await addNamedPad(page, 'Thunder');
   await assignKey(page, 'Enter');
-  await expect(deckKey(page).getByTestId('key-field-note-text')).toHaveText(
-    'Enter stops a sound — pick another key',
-  );
+  await expect(keyNote(deckKey(page))).toHaveText('Enter stops a sound — pick another key');
   await expect(keyField(page)).toHaveText('— not assigned —');
 
   await assignKey(page, 'Numpad2');
   await expect(keyField(page)).toHaveText('N2');
-  await deckKey(page).getByTestId('key-field-clear-button').click();
+  await deckKey(page).getByRole('button', { name: 'Remove the key', exact: true }).click();
   await expect(keyField(page)).toHaveText('— not assigned —');
 });
 
@@ -127,7 +131,7 @@ test('in GAME the app takes the pad key; in SETUP and for a free key it does not
 
 /** Presses `code` in the open PAD editor's quick-access key field. */
 async function assignQuickKey(page: Page, code: string) {
-  const field = quickKey(page).getByTestId('key-field-button');
+  const field = keyButton(quickKey(page));
   await field.click();
   await expect(field).toHaveText('PRESS A KEY…');
   await page.keyboard.press(code);
@@ -140,7 +144,7 @@ test('a quick-access key is shown on the bar and plays its pad in another deck t
   await expect(quickKey(page)).toHaveCount(0); // only for a pad in the bar
   await page.getByRole('button', { name: 'In quick access', exact: true }).click();
   await assignQuickKey(page, 'KeyQ');
-  await expect(quickKey(page).getByTestId('key-field-button')).toHaveText('Q');
+  await expect(keyButton(quickKey(page))).toHaveText('Q');
   await closePadEditor(page);
   await expect(page.getByRole('group', { name: 'Quick access', exact: true })).toContainText('Q');
 
@@ -164,14 +168,12 @@ test('a key is never both a deck key and a quick-access key (K2) — refused wit
   await addNamedPad(page, 'Rooster');
   await page.getByRole('button', { name: 'In quick access', exact: true }).click();
   await assignQuickKey(page, 'Numpad1');
-  await expect(quickKey(page).getByTestId('key-field-note-text')).toHaveText(
-    'N1 plays Owl in Deck 1 — pick another key',
-  );
-  await expect(quickKey(page).getByTestId('key-field-button')).toHaveText('— not assigned —');
+  await expect(keyNote(quickKey(page))).toHaveText('N1 plays Owl in Deck 1 — pick another key');
+  await expect(keyButton(quickKey(page))).toHaveText('— not assigned —');
 
   await assignQuickKey(page, 'KeyQ');
   await assignKey(page, 'KeyQ'); // Rooster's own deck key: the bar has it
-  await expect(deckKey(page).getByTestId('key-field-note-text')).toHaveText(
+  await expect(keyNote(deckKey(page))).toHaveText(
     'Q is the quick-access key of Rooster — pick another key',
   );
   await expect(keyField(page)).toHaveText('— not assigned —');
@@ -184,9 +186,9 @@ test('a quick-access key another bar pad holds moves over on MOVE KEY HERE', asy
   await addNamedPad(page, 'Night');
   await page.getByRole('button', { name: 'In quick access', exact: true }).click();
   await assignQuickKey(page, 'KeyQ');
-  await expect(quickKey(page).getByTestId('key-field-conflict-text')).toHaveText('Key Q is on Day');
-  await quickKey(page).getByTestId('key-field-move-button').click();
-  await expect(quickKey(page).getByTestId('key-field-button')).toHaveText('Q');
+  await expect(conflict(quickKey(page))).toHaveText('Key Q is on Day');
+  await moveKeyHere(quickKey(page)).click();
+  await expect(keyButton(quickKey(page))).toHaveText('Q');
   await closePadEditor(page);
   const bar = page.getByRole('group', { name: 'Quick access', exact: true });
   await expect(bar.getByRole('button', { name: /Night/ })).toContainText('Q');
@@ -196,24 +198,27 @@ test('a quick-access key another bar pad holds moves over on MOVE KEY HERE', asy
 // ── Live-control keys moved in Settings (K12, settings.md S2), Slice 14d ──────────
 
 /** The STOP ALL key field in Settings → CONTROLS. */
-const stopAllKey = (page: Page) => page.getByTestId('settings-screen-stop-all-key-region');
+const stopAllKey = (page: Page) => keyGroup(page, 'STOP ALL key');
+const settingsButton = (page: Page) => page.getByRole('button', { name: 'Settings', exact: true });
+const resetKeys = (page: Page) =>
+  page.getByRole('button', { name: 'RESET KEYS TO DEFAULT', exact: true });
 
 /** Opens Settings from the board, through the board list. */
 async function openSettings(page: Page) {
-  await page.getByTestId('board-top-bar-back-button').click();
-  await page.getByTestId('board-list-screen-settings-button').click();
+  await page.getByRole('button', { name: 'Back to the board list', exact: true }).click();
+  await settingsButton(page).click();
 }
 
 /** Goes back from Settings to the board. */
 async function backToBoard(page: Page) {
-  await page.getByTestId('settings-screen-back-button').click();
+  await page.getByRole('button', { name: 'BACK', exact: true }).click();
   await page.getByText('Board 1', { exact: true }).click();
-  await page.getByTestId('mode-toggle').waitFor();
+  await modeToggle(page).waitFor();
 }
 
 /** Presses `code` in the armed STOP ALL key field of Settings. */
 async function assignStopAllKey(page: Page, code: string) {
-  const field = stopAllKey(page).getByTestId('key-field-button');
+  const field = keyButton(stopAllKey(page));
   await field.click();
   await expect(field).toHaveText('PRESS A KEY…');
   await page.keyboard.press(code);
@@ -227,51 +232,49 @@ test('STOP ALL gets another key in Settings; a pad key is refused there, the mov
   await closePadEditor(page);
 
   await openSettings(page);
-  const field = stopAllKey(page).getByTestId('key-field-button');
+  const field = keyButton(stopAllKey(page));
   await expect(field).toHaveText('N.');
-  await expect(page.getByTestId('settings-screen-reset-keys-button')).toBeDisabled();
+  await expect(resetKeys(page)).toBeDisabled();
   await assignStopAllKey(page, 'Numpad2');
-  await expect(stopAllKey(page).getByTestId('key-field-note-text')).toHaveText(
+  await expect(keyNote(stopAllKey(page))).toHaveText(
     'N2 plays Thunder on Board 1 — pick another key',
   );
   await expect(field).toHaveText('N.');
   await assignStopAllKey(page, 'Space'); // PAUSE has it
-  await expect(stopAllKey(page).getByTestId('key-field-note-text')).toHaveText(
-    'Space pauses all sounds — pick another key',
-  );
+  await expect(keyNote(stopAllKey(page))).toHaveText('Space pauses all sounds — pick another key');
   await assignStopAllKey(page, 'KeyS');
   await expect(field).toHaveText('S');
-  await expect(stopAllKey(page).getByTestId('key-field-clear-button')).toHaveCount(0);
+  await expect(
+    stopAllKey(page).getByRole('button', { name: 'Remove the key', exact: true }),
+  ).toHaveCount(0);
 
   await backToBoard(page);
   await addNamedPad(page, 'Rain');
   await assignKey(page, 'KeyS');
-  await expect(deckKey(page).getByTestId('key-field-note-text')).toHaveText(
-    'S stops all sounds — pick another key',
-  );
+  await expect(keyNote(deckKey(page))).toHaveText('S stops all sounds — pick another key');
   await assignKey(page, 'NumpadDecimal'); // free again
   await expect(keyField(page)).toHaveText('N.');
   await closePadEditor(page);
 
   // The default key is a pad's now: RESET says which, and changes nothing
   await openSettings(page);
-  await page.getByTestId('settings-screen-reset-keys-button').click();
-  await expect(page.getByTestId('settings-screen-reset-keys-text')).toHaveText(
-    'N. plays Rain on Board 1 — give that pad another key first',
-  );
+  await resetKeys(page).click();
+  await expect(
+    page.getByRole('status').filter({ hasText: /give that pad another key first$/ }),
+  ).toHaveText('N. plays Rain on Board 1 — give that pad another key first');
   await expect(field).toHaveText('S');
 });
 
 test('RESET KEYS TO DEFAULT gives STOP ALL its key back, also after a reload', async ({ page }) => {
   await openSettings(page);
   await assignStopAllKey(page, 'KeyS');
-  await expect(stopAllKey(page).getByTestId('key-field-button')).toHaveText('S');
+  await expect(keyButton(stopAllKey(page))).toHaveText('S');
   await waitForSaves(page);
   await page.goto('/soundboard-of-storytelling/');
   await goToBoardList(page);
-  await page.getByTestId('board-list-screen-settings-button').click();
-  await expect(stopAllKey(page).getByTestId('key-field-button')).toHaveText('S');
-  await page.getByTestId('settings-screen-reset-keys-button').click();
-  await expect(stopAllKey(page).getByTestId('key-field-button')).toHaveText('N.');
-  await expect(page.getByTestId('settings-screen-reset-keys-button')).toBeDisabled();
+  await settingsButton(page).click();
+  await expect(keyButton(stopAllKey(page))).toHaveText('S');
+  await resetKeys(page).click();
+  await expect(keyButton(stopAllKey(page))).toHaveText('N.');
+  await expect(resetKeys(page)).toBeDisabled();
 });
