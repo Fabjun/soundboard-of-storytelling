@@ -17,10 +17,18 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.330';
+export const APP_VERSION = '3.0.331';
 
 /** The developer log, newest first; CHANGELOG.md is generated from it (sync-changelog). */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.331',
+    date: '2026-11-19',
+    items: [
+      'a11y(keys): every key field is a group named by its label — HOTKEY, QUICK ACCESS KEY, STOP ALL key, PAUSE key (role group, aria-labelledby; WCAG technique ARIA17). The field button carries its own name ("Key N1, tap to change"), which replaced the label, so a screen reader did not say which key a field sets',
+      'test: pad-keys locates by role and name (ADR-0054 amendment 2026-11-19, batch 4) — key fields by their group, the key button by its name, Remove the key, MOVE KEY HERE, the refusal status, Settings, BACK, Back to the board list and RESET KEYS TO DEFAULT; new helpers keyGroup, keyButton. A test ID stays for the grid cell. TEST_ID_LOCATORS 659 → 624. Counter-checked: the key field without its group role — all nine pad-keys tests red; restored — green',
+    ],
+  },
   {
     version: '3.0.330',
     date: '2026-11-19',

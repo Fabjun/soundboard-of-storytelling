@@ -103,6 +103,12 @@ export function withEarlyVersions(
 /** The release notes the main menu shows, newest first (checked by whatsNew.test.ts). */
 export const WHATS_NEW: WhatsNewNotes[] = [
   {
+    version: '3.0.331',
+    improved: [
+      'A screen reader says which key a key field sets — HOTKEY, STOP ALL key and the others.',
+    ],
+  },
+  {
     version: '3.0.330',
     improved: [
       'A screen reader names the DECKS list of the PAD editor along with each deck’s box.',

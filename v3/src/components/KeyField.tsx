@@ -87,8 +87,15 @@ export function KeyField({
   }
 
   return (
-    <div class="sb-inspector-section" data-testid="key-field">
-      <label class="sb-field-label" for={id}>
+    // A group named by its label (WCAG technique ARIA17): the field button's own name tells its
+    // key, so the group says which key it is — HOTKEY, STOP ALL key …
+    <div
+      class="sb-inspector-section"
+      role="group"
+      aria-labelledby={`${id}-label`}
+      data-testid="key-field"
+    >
+      <label class="sb-field-label" id={`${id}-label`} for={id}>
         {label}
       </label>
       <div class="sb-row">
