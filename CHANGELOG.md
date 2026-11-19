@@ -7,6 +7,16 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.328 — 2026-11-19
+
+### Changed
+
+- a11y(pad-editor): the NAME label names its field (label for, useId) — it was only a caption above an unnamed text field, which a screen reader announced by its placeholder at best (WCAG 2.2 SC 1.3.1, 4.1.2); found while moving the test helpers to roles
+
+### Internal
+
+- test: the E2E helpers locate by role and name (ADR-0054 amendment 2026-11-19, batch 1) — NEW BOARD, a board's open button (named by the board and its counts), the mode toggle group, the deck list and deck tabs toggles, DECKS, NEW DECK, the Welcome dialog, SAVE, COMBO, the NAME field and the popover's ADD PAD (inside the popover: the toolbar has one too); test IDs stay for the menu screen (inert behind the welcome), the hidden file input, grid cells and the popover region. TEST_ID_LOCATORS 767 → 749; help.spec found the field by its placeholder, Pad name…, and now by its name. Counter-checked: the label without its for — every spec that names a pad red; restored — green
+
 ## 3.0.327 — 2026-11-19
 
 ### Internal

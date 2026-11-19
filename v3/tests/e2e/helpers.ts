@@ -30,8 +30,9 @@ export async function openMainMenu(page: Page): Promise<void> {
   await start.or(menu).first().waitFor();
   if (await start.isVisible()) await start.click();
   await menu.waitFor();
-  // The tap opens the menu and the welcome in one render, so the welcome is there already
-  const welcome = page.getByTestId('welcome-dialog');
+  // The tap opens the menu and the welcome in one render, so the welcome is there already; the menu
+  // is a screen without a role, found by its test ID (the menu behind the welcome is inert)
+  const welcome = page.getByRole('dialog', { name: 'Welcome', exact: true });
   if (await welcome.isVisible()) {
     await welcome.getByRole('button', { name: 'SKIP', exact: true }).click();
     await welcome.waitFor({ state: 'detached' });
@@ -49,7 +50,7 @@ export async function goToLibrary(page: Page): Promise<void> {
 export async function goToBoardList(page: Page): Promise<void> {
   await openMainMenu(page);
   await page.getByRole('button', { name: 'BOARD', exact: true }).click();
-  await page.getByTestId('board-list-screen-new-button').waitFor();
+  await page.getByRole('button', { name: 'NEW BOARD', exact: true }).waitFor();
 }
 
 // ── Library helpers ───────────────────────────────────────────────────────────
@@ -179,17 +180,25 @@ export async function ensureTestAudio(page: Page): Promise<void> {
  * Caller must already be on the BoardListScreen.
  */
 export async function createBoardAndNavigate(page: Page): Promise<void> {
-  await page.getByTestId('board-list-screen-new-button').click();
-  // Board row appears in the list
-  const boardRow = page.locator('[data-testid^="board-list-screen-row-"]').first();
-  await boardRow.waitFor();
-  // Click the row title to open the board (action buttons stop propagation)
-  await boardRow.locator('[data-testid^="board-list-screen-name-text-"]').click();
-  // ModeToggle is always present in BoardScreen
-  await page.getByTestId('mode-toggle').waitFor();
+  await page.getByRole('button', { name: 'NEW BOARD', exact: true }).click();
+  // The board opens with its row's button, named by the board and its counts
+  await boardOpenButtons(page).first().click();
+  // The mode toggle is always present in BoardScreen
+  await modeToggle(page).waitFor();
   // The deck list starts folded; specs that are not about folding work with it open
   await openDeckRail(page);
 }
+
+/**
+ * The buttons of the board list that open a board — each named by its board and its counts
+ * ("Board 1 0 decks · 0 pads").
+ */
+export const boardOpenButtons = (page: Page) =>
+  page.getByRole('button', { name: /\d+ decks? · \d+ pads?$/ });
+
+/** The SETUP / GAME toggle of the board screen. */
+export const modeToggle = (page: Page) =>
+  page.getByRole('group', { name: 'Mode toggle', exact: true });
 
 // ── Deck helpers ─────────────────────────────────────────────────────────────
 
@@ -199,8 +208,8 @@ export async function createBoardAndNavigate(page: Page): Promise<void> {
  * here too.
  */
 export async function openDeckRail(page: Page): Promise<void> {
-  const toggle = page.getByTestId('deck-rail-toggle-button');
-  const tabs = page.getByTestId('board-screen-decks-toggle-button');
+  const toggle = page.getByRole('button', { name: /^(Show|Hide) the deck list$/ });
+  const tabs = page.getByRole('button', { name: /^(Show|Hide) the deck tabs/ });
   await toggle.or(tabs).first().waitFor();
   const folding = (await toggle.count()) > 0 ? toggle : tabs;
   if ((await folding.getAttribute('aria-expanded')) === 'false') await folding.click();
@@ -214,8 +223,9 @@ export async function openDeckRail(page: Page): Promise<void> {
  */
 export async function createDeck(page: Page): Promise<string> {
   await openDeckRail(page);
-  const manage = page.getByTestId('deck-rail-manage-button');
-  const narrow = (await page.getByTestId('deck-rail-toggle-button').count()) === 0;
+  const manage = page.getByRole('button', { name: 'DECKS', exact: true });
+  const narrow =
+    (await page.getByRole('button', { name: /^(Show|Hide) the deck list$/ }).count()) === 0;
   const wasGame =
     narrow &&
     (await page.getByRole('button', { name: 'GAME', exact: true }).getAttribute('aria-pressed')) ===
@@ -224,7 +234,8 @@ export async function createDeck(page: Page): Promise<string> {
     await enterSetupMode(page);
     if ((await manage.getAttribute('aria-expanded')) === 'false') await manage.click();
   }
-  await page.getByTestId('deck-rail-new-button').click();
+  // The deck list's NEW DECK — an empty board shows a second one, which adds a deck too
+  await page.getByRole('button', { name: 'NEW DECK', exact: true }).first().click();
   if (narrow) {
     await page.locator('[data-testid^="deck-rail-tab-button-"]').first().waitFor();
     const testid = await page
@@ -302,8 +313,8 @@ export async function createPadAtCell00(page: Page): Promise<string> {
   const sourceItem = page.locator('[data-testid^="pad-creation-popover-source-item-"]').first();
   await sourceItem.waitFor({ timeout: 5_000 });
   await sourceItem.click();
-  // Add the pad
-  await page.getByTestId('pad-creation-popover-add-button').click();
+  // Add the pad — the popover's own ADD PAD (the board's toolbar has one too)
+  await popover.getByRole('button', { name: 'ADD PAD', exact: true }).click();
   // Wait for the occupied cell (no longer pad-cell-empty-0-0)
   await page.locator(PAD_CELL).first().waitFor();
   // Return the pad ID from the testid
@@ -400,8 +411,8 @@ export async function reopenFirstBoard(page: Page): Promise<void> {
   await waitForSaves(page);
   await page.goto('/soundboard-of-storytelling/');
   await goToBoardList(page);
-  await page.locator('[data-testid^="board-list-screen-name-text-"]').first().click();
-  await page.getByTestId('mode-toggle').waitFor();
+  await boardOpenButtons(page).first().click();
+  await modeToggle(page).waitFor();
   await openDeckRail(page);
 }
 
@@ -428,7 +439,11 @@ export async function addLoopPad(page: Page, col: number): Promise<void> {
   await page.getByTestId(`pad-grid-cell-empty-slot-${col}-0`).click();
   await page.locator('[data-testid^="pad-creation-popover-source-item-"]').first().click();
   await page.getByRole('button', { name: 'LOOP', exact: true }).click();
-  await page.getByTestId('pad-creation-popover-add-button').click();
+  // The popover's own ADD PAD (the board's toolbar has one too)
+  await page
+    .getByTestId('pad-creation-popover')
+    .getByRole('button', { name: 'ADD PAD', exact: true })
+    .click();
   await expect(padCells(page)).toHaveCount(before + 1);
 }
 
@@ -441,7 +456,7 @@ export async function closePadEditor(page: Page): Promise<void> {
   const close = page.getByRole('button', { name: 'Close the pad editor', exact: true });
   if (await close.isVisible()) {
     // The editor keeps a draft until SAVE (ADR-0084): a test that edits means to keep the edit
-    const save = page.getByTestId('pad-editor-panel-save-button');
+    const save = page.getByRole('button', { name: 'SAVE', exact: true });
     if (await save.isEnabled()) await save.click();
     await close.click();
   }
@@ -464,9 +479,9 @@ export async function addNamedPad(
   await page.getByText('ADD PAD', { exact: true }).click();
   await expect(padCells(page)).toHaveCount(before + 1);
   const testId = (await padCells(page).nth(before).getAttribute('data-testid'))!;
-  if (opts.combo) await page.getByTestId('pad-editor-panel-type-button-combo').click();
-  await page.getByTestId('pad-editor-panel-name-input').fill(name);
-  await page.getByTestId('pad-editor-panel-save-button').click(); // a draft until SAVE (ADR-0084)
+  if (opts.combo) await page.getByRole('button', { name: 'COMBO', exact: true }).click();
+  await page.getByRole('textbox', { name: 'NAME', exact: true }).fill(name);
+  await page.getByRole('button', { name: 'SAVE', exact: true }).click(); // a draft until SAVE (ADR-0084)
   await expect(page.getByTestId(testId)).toContainText(name);
   return testId.replace('pad-grid-cell-', '');
 }
