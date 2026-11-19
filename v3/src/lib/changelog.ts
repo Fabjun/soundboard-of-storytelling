@@ -17,10 +17,19 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.333';
+export const APP_VERSION = '3.0.334';
 
 /** The developer log, newest first; CHANGELOG.md is generated from it (sync-changelog). */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.334',
+    date: '2026-11-19',
+    items: [
+      'a11y(pad-editor): the icon slots are a group named ICONS (role group, aria-labelledby — ARIA17, as DECKS); the caption was a label element that labeled no field',
+      'a11y(icons): the icon search says its number of matches as a status (WCAG 2.2 SC 4.1.3 — the search-results count is the first example of the Understanding document)',
+      'test: pad-icons locates by role and name (ADR-0054 amendment 2026-11-19, batch 6) — the editor and the icon list by their dialogs, + / the slots / Remove … inside the ICONS group, the search box, the categories by name and count, the match count by its status. Test IDs stay for the icons on the pad (aria-hidden decoration) and for an icon of the list picked by its key (shown only in the tooltip, which codeGuards keeps out of locators; a name like "dragon" occurs in more than one collection). TEST_ID_LOCATORS 593 → 563. Counter-checked: ICONS without its group role — all six tests red; the count without its status role — the search test red; restored — green',
+    ],
+  },
   {
     version: '3.0.333',
     date: '2026-11-19',
