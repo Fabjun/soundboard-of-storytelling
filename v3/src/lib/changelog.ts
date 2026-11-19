@@ -17,10 +17,18 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.329';
+export const APP_VERSION = '3.0.330';
 
 /** The developer log, newest first; CHANGELOG.md is generated from it (sync-changelog). */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.330',
+    date: '2026-11-19',
+    items: [
+      "a11y(pad-editor): the deck checkboxes are a group named DECKS (role group, aria-labelledby — WCAG technique ARIA17); the caption was a label element that labeled no field, so a screen reader heard only a deck's name, not which list its box belongs to",
+      'test: pad-pool locates by role and name (ADR-0054 amendment 2026-11-19, batch 3) — the deck boxes by the DECKS group and the deck name, All pads, REMOVE FROM DECK, DELETE PAD, Undo / Redo, the sort box and Reverse the order; new helpers allPadsButton, deckBox. Test IDs stay for grid cells, empty slots, library rows and the top bar. TEST_ID_LOCATORS 696 → 659. Counter-checked: the deck section without its group role — the four deck-box tests red; restored — green',
+    ],
+  },
   {
     version: '3.0.329',
     date: '2026-11-19',

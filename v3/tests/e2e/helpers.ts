@@ -261,6 +261,16 @@ export const deckRows = (page: Page) =>
  */
 export const deckSelect = (deckRow: Locator) => deckRow.getByRole('button', { name: /^\d+ / });
 
+/** The deck rail's All pads entry — named "All pads" and the pool's pad count. */
+export const allPadsButton = (page: Page) => page.getByRole('button', { name: /^All pads \d+$/ });
+
+/** The PAD editor's box that places the pad in the deck named `deck` (its DECKS group). */
+export const deckBox = (page: Page, deck: string) =>
+  page
+    .getByRole('dialog', { name: 'Pad editor', exact: true })
+    .getByRole('group', { name: 'DECKS', exact: true })
+    .getByRole('checkbox', { name: deck, exact: true });
+
 /** The deck rail's NEW DECK — an empty board shows a second one, which adds a deck too. */
 export const newDeckButton = (page: Page) =>
   page.getByRole('button', { name: 'NEW DECK', exact: true }).first();

@@ -181,6 +181,7 @@ export function PadEditorPanel({
   const [playhead, setPlayhead] = useState<number | null>(null);
   const [pendingType, setPendingType] = useState<PadType | null>(null);
   const nameFieldId = useId();
+  const decksLabelId = useId();
   const [libSearch, setLibSearch] = useState('');
   const [libPickerOpen, setLibPickerOpen] = useState(false);
   /** The pad's icons, up to 4 keys in the order the pad shows them (ADR-0070). */
@@ -1234,9 +1235,12 @@ export function PadEditorPanel({
           </div>
         )}
 
-        {/* Decks — place the pad in other decks or take it out (ADR-0048) */}
-        <div class="sb-inspector-section">
-          <label class="sb-field-label">DECKS</label>
+        {/* Decks — place the pad in other decks or take it out (ADR-0048). A group named by its
+            caption (WCAG technique ARIA17), so a screen reader says which list a deck's box is in */}
+        <div class="sb-inspector-section" role="group" aria-labelledby={decksLabelId}>
+          <span class="sb-field-label" id={decksLabelId}>
+            DECKS
+          </span>
           {decksByOrder.length === 0 && (
             <div class="sb-hint-text">No decks yet — NEW DECK on the board adds one.</div>
           )}
