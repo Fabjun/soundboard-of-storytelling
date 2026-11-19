@@ -52,7 +52,7 @@ test('in the PAD editor the help opens on top; Escape closes only the help', asy
   await page.getByRole('button', { name: 'NEW DECK', exact: true }).first().click();
   await page.getByText('ADD PAD', { exact: true }).click();
   const editor = page.getByRole('dialog', { name: 'Pad editor', exact: true });
-  await editor.getByRole('textbox', { name: 'Pad name…', exact: true }).fill('Owl');
+  await editor.getByRole('textbox', { name: 'NAME', exact: true }).fill('Owl');
   await editor.getByRole('button', { name: 'Help', exact: true }).click();
   const dialog = page.getByRole('dialog', { name: 'Help', exact: true });
   await expect(dialog.getByRole('button', { name: 'PAD editor', exact: true })).toHaveAttribute(
@@ -62,7 +62,7 @@ test('in the PAD editor the help opens on top; Escape closes only the help', asy
   await page.keyboard.press('Escape');
   await expect(dialog).toHaveCount(0);
   await expect(editor).toBeVisible();
-  await expect(editor.getByRole('textbox', { name: 'Pad name…', exact: true })).toHaveValue('Owl');
+  await expect(editor.getByRole('textbox', { name: 'NAME', exact: true })).toHaveValue('Owl');
 });
 
 test('HELP opens the topic of the main menu; topics open and close; BACK returns', async ({

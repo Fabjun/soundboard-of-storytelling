@@ -602,9 +602,9 @@ describe('guard: CI runs Playwright in its own image, of the installed version (
 
 describe('guard: test-ID locators only go down (owner decision 2026-11-19)', () => {
   const E2E = join(V3, 'tests', 'e2e');
-  // The count on 2026-11-19: 644 getByTestId( and 123 [data-testid in 76 specs and their helpers.
-  // Lower it with every spec moved to roles (ADR-0054 amendment 2026-11-19).
-  const TEST_ID_LOCATORS = 767;
+  // 767 on 2026-11-19 (644 getByTestId( and 123 [data-testid in 76 specs and their helpers);
+  // 749 after the helpers moved to roles. Lower it with every spec moved (ADR-0054 amendment).
+  const TEST_ID_LOCATORS = 749;
   const files = repoFiles(E2E)
     .filter((f) => f.endsWith('.ts'))
     .map((f) => join(E2E, f));

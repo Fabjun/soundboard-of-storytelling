@@ -42,7 +42,7 @@
  *   Removals take one tap: each can be undone, so none asks first (ADR-0086).
  */
 
-import { useState, useEffect, useLayoutEffect, useRef } from 'preact/hooks';
+import { useState, useEffect, useId, useLayoutEffect, useRef } from 'preact/hooks';
 import type { JSX } from 'preact';
 import type {
   Board,
@@ -180,6 +180,7 @@ export function PadEditorPanel({
   const [previewOn, setPreviewOn] = useState(false);
   const [playhead, setPlayhead] = useState<number | null>(null);
   const [pendingType, setPendingType] = useState<PadType | null>(null);
+  const nameFieldId = useId();
   const [libSearch, setLibSearch] = useState('');
   const [libPickerOpen, setLibPickerOpen] = useState(false);
   /** The pad's icons, up to 4 keys in the order the pad shows them (ADR-0070). */
@@ -857,8 +858,12 @@ export function PadEditorPanel({
       <div class="sb-pad-editor">
         {/* Name */}
         <div class="sb-inspector-section">
-          <label class="sb-field-label">NAME</label>
+          {/* The label names the field (WCAG 2.2 SC 1.3.1, 4.1.2) — it was only a caption above it */}
+          <label class="sb-field-label" for={nameFieldId}>
+            NAME
+          </label>
           <input
+            id={nameFieldId}
             class="sb-text-input"
             type="text"
             data-testid="pad-editor-panel-name-input"
