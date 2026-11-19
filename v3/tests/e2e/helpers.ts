@@ -234,8 +234,7 @@ export async function createDeck(page: Page): Promise<string> {
     await enterSetupMode(page);
     if ((await manage.getAttribute('aria-expanded')) === 'false') await manage.click();
   }
-  // The deck list's NEW DECK — an empty board shows a second one, which adds a deck too
-  await page.getByRole('button', { name: 'NEW DECK', exact: true }).first().click();
+  await newDeckButton(page).click();
   if (narrow) {
     await page.locator('[data-testid^="deck-rail-tab-button-"]').first().waitFor();
     const testid = await page
@@ -252,17 +251,39 @@ export async function createDeck(page: Page): Promise<string> {
   return testid!.replace('deck-rail-deck-tab-', '');
 }
 
+/** The deck rows of the deck rail, in rail order — the list named "Decks". */
+export const deckRows = (page: Page) =>
+  page.getByRole('list', { name: 'Decks', exact: true }).getByRole('listitem');
+
+/**
+ * The button that chooses the deck of a row — its name starts with the row's badge
+ * ("1 Deck 1 0": position, name, pad count); the row's other buttons name an action.
+ */
+export const deckSelect = (deckRow: Locator) => deckRow.getByRole('button', { name: /^\d+ / });
+
+/** The deck rail's NEW DECK — an empty board shows a second one, which adds a deck too. */
+export const newDeckButton = (page: Page) =>
+  page.getByRole('button', { name: 'NEW DECK', exact: true }).first();
+
+/**
+ * The undo toast — the screen's status region (UndoNoticeRegion) while it holds a toast with
+ * UNDO; the region itself stays in the page. It has no box of its own (the toast is fixed), so
+ * a visibility check asks for its UNDO button.
+ */
+export const undoToast = (page: Page) =>
+  page.getByRole('status').filter({ has: page.getByRole('button', { name: 'UNDO', exact: true }) });
+
 /**
  * Opens the "⋯" actions menu of a deck row in the rail (rename, duplicate, delete — MenuButton);
  * the deck is chosen first, as only the active deck shows its "⋯" (no hover, owner decision
  * 2026-10-14). Stays open when it already is.
  */
-export async function openDeckActions(deckTab: Locator): Promise<void> {
-  const select = deckTab.locator('[data-testid^="deck-rail-select-button-"]');
+export async function openDeckActions(deckRow: Locator): Promise<void> {
+  const select = deckSelect(deckRow);
   if ((await select.getAttribute('aria-current')) !== 'true') await select.click();
-  const button = deckTab.locator('[data-testid^="deck-rail-actions-button-"]');
+  const button = deckRow.getByRole('button', { name: /^Actions for deck / });
   if ((await button.getAttribute('aria-expanded')) !== 'true') await button.click();
-  await expect(deckTab.getByRole('menu')).toBeVisible();
+  await expect(deckRow.getByRole('menu')).toBeVisible();
 }
 
 // ── Mode helpers ──────────────────────────────────────────────────────────────

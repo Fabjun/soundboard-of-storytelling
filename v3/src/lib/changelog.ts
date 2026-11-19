@@ -17,10 +17,18 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.328';
+export const APP_VERSION = '3.0.329';
 
 /** The developer log, newest first; CHANGELOG.md is generated from it (sync-changelog). */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.329',
+    date: '2026-11-19',
+    items: [
+      'a11y(deck-rail): the decks are a list named Decks, each row a list item (WAI-ARIA list / listitem) — a screen reader names the list and counts the decks; before, the rows were plain boxes',
+      'test: deck-crud locates by role and name (ADR-0054 amendment 2026-11-19, batch 2) — deck rows by the Decks list, the deck button by its badge, the menu items Duplicate / Delete, the Deck name field, NAME, SAVE and UNDO in the status region of the undo toast; new helpers deckRows, deckSelect, newDeckButton, undoToast. Test IDs stay for the drag handle (hidden from screen readers), grid cells and the top bar. TEST_ID_LOCATORS 749 → 696. Counter-checked: the list without its role — eleven deck tests red; restored — green',
+    ],
+  },
   {
     version: '3.0.328',
     date: '2026-11-19',
