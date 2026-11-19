@@ -604,9 +604,9 @@ describe('guard: test-ID locators only go down (owner decision 2026-11-19)', () 
   const E2E = join(V3, 'tests', 'e2e');
   // 767 on 2026-11-19 (644 getByTestId( and 123 [data-testid in 76 specs and their helpers);
   // 749 after the helpers moved to roles, 696 after deck-crud, 659 after pad-pool, 624 after
-  // pad-keys, 593 after backup, 563 after pad-icons. Lower it with every spec moved (ADR-0054
-  // amendment).
-  const TEST_ID_LOCATORS = 563;
+  // pad-keys, 593 after backup, 563 after pad-icons, 551 after the TYPE and REPEAT groups. Lower it
+  // with every spec moved (ADR-0054 amendment).
+  const TEST_ID_LOCATORS = 551;
   const files = repoFiles(E2E)
     .filter((f) => f.endsWith('.ts'))
     .map((f) => join(E2E, f));

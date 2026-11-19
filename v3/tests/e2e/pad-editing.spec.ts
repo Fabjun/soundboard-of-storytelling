@@ -24,6 +24,10 @@ import {
   PAD_CELL,
 } from './helpers';
 
+/** A button of the PAD editor's TYPE group, by its visible name (SGL, LOOP, COMBO). */
+const typeButton = (page: Page, name: string) =>
+  page.getByRole('group', { name: 'TYPE', exact: true }).getByRole('button', { name, exact: true });
+
 test.beforeEach(async ({ page }) => {
   await ensureTestAudio(page);
   await page.goto('/soundboard-of-storytelling/');
@@ -80,7 +84,7 @@ test('18 — trivial type change (single→loop) → no confirmation dialog', as
   await page.getByTestId('pad-editor-panel').waitFor();
 
   // Click LOOP type button (trivial from single)
-  await page.getByTestId('pad-editor-panel-type-button-loop').click();
+  await typeButton(page, 'LOOP').click();
 
   // No dialog should appear
   await expect(
@@ -89,10 +93,7 @@ test('18 — trivial type change (single→loop) → no confirmation dialog', as
     timeout: 1000,
   });
   // Type button should be the selected one (loop)
-  await expect(page.getByTestId('pad-editor-panel-type-button-loop')).toHaveAttribute(
-    'aria-pressed',
-    'true',
-  );
+  await expect(typeButton(page, 'LOOP')).toHaveAttribute('aria-pressed', 'true');
 });
 
 // ── Test 19: Lossy type change → PadTypeConfirmDialog appears ────────────────
@@ -105,7 +106,7 @@ test('19 — lossy type change → PadTypeConfirmDialog appears', async ({ page 
   // single→combo drops the audio files (padMigrationMatrix 'reset', ADR-0048): the dialog appears
   const dialog = page.getByRole('alertdialog', { name: 'Change pad type?', exact: true });
   const cancel = dialog.getByRole('button', { name: 'CANCEL', exact: true });
-  await page.getByTestId('pad-editor-panel-type-button-combo').click();
+  await typeButton(page, 'COMBO').click();
   await expect(dialog).toBeVisible();
 
   // A modal alert dialog (ADR-0074): the focus starts on the safe answer, the editor is inert
@@ -113,14 +114,14 @@ test('19 — lossy type change → PadTypeConfirmDialog appears', async ({ page 
     page.getByRole('alertdialog', { name: 'Change pad type?', exact: true }),
   ).toBeVisible();
   await expect(cancel).toBeFocused();
-  const typeRow = page.getByTestId('pad-editor-panel-type-button-single');
+  const typeRow = typeButton(page, 'SGL');
   expect(await typeRow.evaluate((el) => el.closest('[inert]') !== null)).toBe(true);
 
   // Escape cancels, and the focus goes back to the type that asked (opened from the keyboard)
   await page.keyboard.press('Escape');
   await expect(dialog).not.toBeVisible({ timeout: 2000 });
   expect(await typeRow.evaluate((el) => el.closest('[inert]') !== null)).toBe(false);
-  const combo = page.getByTestId('pad-editor-panel-type-button-combo');
+  const combo = typeButton(page, 'COMBO');
   await combo.focus();
   await page.keyboard.press('Enter');
   await expect(dialog).toBeVisible();
@@ -129,22 +130,16 @@ test('19 — lossy type change → PadTypeConfirmDialog appears', async ({ page 
   await expect(page.getByTestId('pad-editor-panel')).toBeVisible(); // only the question closed
 
   // Cancel: the type stays SINGLE
-  await page.getByTestId('pad-editor-panel-type-button-combo').click();
+  await typeButton(page, 'COMBO').click();
   await cancel.click();
   await expect(dialog).not.toBeVisible({ timeout: 2000 });
-  await expect(page.getByTestId('pad-editor-panel-type-button-single')).toHaveAttribute(
-    'aria-pressed',
-    'true',
-  );
+  await expect(typeButton(page, 'SGL')).toHaveAttribute('aria-pressed', 'true');
 
   // Confirm: the pad becomes a COMBO
-  await page.getByTestId('pad-editor-panel-type-button-combo').click();
+  await typeButton(page, 'COMBO').click();
   await page.getByRole('button', { name: 'SWITCH', exact: true }).click();
   await expect(dialog).not.toBeVisible({ timeout: 2000 });
-  await expect(page.getByTestId('pad-editor-panel-type-button-combo')).toHaveAttribute(
-    'aria-pressed',
-    'true',
-  );
+  await expect(typeButton(page, 'COMBO')).toHaveAttribute('aria-pressed', 'true');
 });
 
 // ── Later tests: a pending auto-save is written, never dropped ───────────────

@@ -2088,7 +2088,7 @@
 /* ── Inspector / PadEditor ─────────────────────────────────── */
 
 .sb-field-label {
-  /* @inventory: Mono 11px field label for inspector sections — block display, bottom margin, uppercase. Used for NAME/TYPE/AUDIO SOURCE/HOTKEY/FADE labels. */
+  /* @inventory: Mono 11px caption for inspector sections — block display, bottom margin, uppercase. On a <label> for one field (NAME, KEY), on a <span id> naming a role="group" (TYPE, REPEAT, ICONS, DECKS), on a plain <span> for a section heading (AUDIO FILES, STEPS) and the slider captions. */
   display: block;
   font-family: var(--font-mono);
   font-size: 0.6875rem;

@@ -46,7 +46,7 @@ export function ComboStepsEditor({
   return (
     <div class="sb-inspector-section" data-testid="combo-steps-editor">
       <div class="sb-section-header-row">
-        <label class="sb-field-label">STEPS</label>
+        <span class="sb-field-label">STEPS</span>
         <button
           class="sb-btn sb-btn-xs sb-btn-ghost"
           data-testid="combo-steps-editor-add-button"
@@ -64,7 +64,7 @@ export function ComboStepsEditor({
         return (
           <div key={i} class="sb-combo-step" data-testid={`combo-steps-editor-step-item-${i}`}>
             <div class="sb-section-header-row">
-              <label class="sb-field-label">STEP {i + 1}</label>
+              <span class="sb-field-label">STEP {i + 1}</span>
               <button
                 class="sb-btn sb-btn-xs sb-btn-ghost"
                 data-testid={`combo-steps-editor-remove-button-${i}`}

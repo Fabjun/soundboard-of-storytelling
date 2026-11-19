@@ -17,10 +17,20 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.334';
+export const APP_VERSION = '3.0.335';
 
 /** The developer log, newest first; CHANGELOG.md is generated from it (sync-changelog). */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.335',
+    date: '2026-11-19',
+    items: [
+      'a11y(pad-editor): TYPE and REPEAT are groups named by their caption (role group, aria-labelledby — WCAG technique ARIA17, as DECKS and ICONS), so a screen reader says which choice a button belongs to; AUDIO FILES, STEPS, STEP N and the slider captions are spans — each was a label element that labeled no field (owner decision 2026-11-19, option A)',
+      'test(guards): codeGuards fails a <label> that labels no control — its for= names one, or it wraps an input, select, textarea or NumberField (HTML "The label element"); a sanity check keeps NumberField counted only while it renders an input. Counter-checked: the six former captions put back — exactly those six reported; restored — green',
+      'test: pad-editing and pad-files find the type and repeat controls inside their groups by role and name. TEST_ID_LOCATORS 563 → 551. Counter-checked: TYPE and REPEAT without their group role — the three tests that use them red; REPEAT alone — the repeat test red; restored — green',
+      'docs: CLAUDE.md UI rules and the sb-field-label inventory entry say when the caption is a label and when a span',
+    ],
+  },
   {
     version: '3.0.334',
     date: '2026-11-19',

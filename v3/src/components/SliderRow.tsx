@@ -34,7 +34,7 @@ export function SliderRow({
   return (
     <div>
       <div class="sb-section-header-row">
-        <label class="sb-field-label">{label}</label>
+        <span class="sb-field-label">{label}</span>
         <span class="sb-value-text">{format(value)}</span>
       </div>
       <input

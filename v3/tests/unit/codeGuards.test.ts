@@ -46,7 +46,8 @@
  *    .vale/styles/SoS/AmericanSpelling.yml, which checks the Markdown files; the exceptions below
  *    name their reason (verbatim third-party material, deliberate search words).
  * 15. Controls work with Tab and have a name (owner rule 2026-10-02, ADR-0080): a click handler
- *    sits on a control Tab reaches; a button that shows only an icon has an aria-label.
+ *    sits on a control Tab reaches; a button that shows only an icon has an aria-label; a <label>
+ *    labels a control — its `for=` names one, or it wraps one (owner decision 2026-11-19).
  * 16. Type and spacing are rem (ADR-0081): no px in a font-size, padding, margin or gap of the
  *    stylesheets but the named exceptions.
  * 17. One look for a disabled control: the token --disabled-opacity and cursor: not-allowed.
@@ -948,6 +949,39 @@ describe('guard: controls work with Tab and have a name (owner rule 2026-10-02)'
       .filter((e) => !e.attrs.has('aria-label') && !e.attrs.has('aria-labelledby'))
       .map((e) => e.at);
     expect(bad, 'add aria-label (a title alone is not reliably read)').toEqual([]);
+  });
+
+  // HTML "The label element": a label captions its labeled control, named by `for` or put inside
+  // it. A caption over several controls names a group instead (WCAG technique ARIA17: role="group"
+  // + aria-labelledby on a span); a heading over a section is a span. Twice a section caption was
+  // a <label> with no control (DECKS, ICONS — owner decision 2026-11-19, the cause plus this check).
+  /** Elements and components that put a labelable control into the page. */
+  const CONTROLS = new Set(['input', 'select', 'textarea', 'NumberField']);
+  /** Whether a control is inside the element. */
+  const wrapsControl = (n: ts.Node): boolean =>
+    (ts.isJsxSelfClosingElement(n) && CONTROLS.has(n.tagName.getText())) ||
+    (ts.isJsxElement(n) && CONTROLS.has(n.openingElement.tagName.getText())) ||
+    (ts.isJsxElement(n) && n.children.some(wrapsControl)) ||
+    (ts.isJsxExpression(n) && n.expression !== undefined && hasJsx(n.expression));
+  /** Whether a control sits in an expression child — a map or a condition inside the label. */
+  const hasJsx = (n: ts.Node): boolean =>
+    wrapsControl(n) || (ts.forEachChild(n, (c) => (hasJsx(c) ? true : undefined)) ?? false);
+
+  it('a component counted as a control renders one (sanity)', () => {
+    const inNumberField = elements.filter((e) => e.at.startsWith('components/NumberField.tsx'));
+    expect(inNumberField.map((e) => e.tag)).toContain('input');
+    expect(elements.filter((e) => e.tag === 'label').length).toBeGreaterThan(10);
+  });
+
+  it('a <label> labels a control: its for= names one, or it wraps one', () => {
+    const bad = elements
+      .filter((e) => e.tag === 'label' && !e.attrs.has('for'))
+      .filter((e) => !wrapsControl(e.node))
+      .map((e) => e.at);
+    expect(
+      bad,
+      'a caption over several controls: <span id> naming a role="group" (ARIA17); a heading: <span>',
+    ).toEqual([]);
   });
 });
 
