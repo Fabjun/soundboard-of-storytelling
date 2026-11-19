@@ -7,6 +7,12 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.333 — 2026-11-19
+
+### Internal
+
+- docs(design-system): the inventory entries of sb-caption (46 uses) and sb-card (the backup panels) said "Currently no TSX usage. [unused-css]" — they name their uses now. A check that derives the mark from the code is put to the owner
+
 ## 3.0.332 — 2026-11-19
 
 ### Changed
