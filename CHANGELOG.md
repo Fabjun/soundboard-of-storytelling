@@ -7,6 +7,16 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.338 — 2026-11-20
+
+### Changed
+
+- a11y(decks): the panel the DECKS tab opens on a phone is a group named by the tab (role group, aria-labelledby — WCAG technique ARIA17), so NEW DECK, PAD SIZE and the deck list are heard as part of DECKS. Provisional, for review (Workflow 7b): the panel had no role and no name
+
+### Internal
+
+- test: deck-switcher locates by role and name (ADR-0054 amendment 2026-11-19, batch 9) — the deck tabs by position and name, All pads, DECKS and the rail toggle by name, NEW DECK and PAD SIZE inside the DECKS group (a board without decks shows a second NEW DECK in its empty grid), the open deck by its line in the top bar. No test ID left in the spec. TEST_ID_LOCATORS 518 → 505. Counter-checked: the panel without its group role — all five tests red; the top bar without the deck name — the tab test red; restored — green in full and full-webkit
+
 ## 3.0.337 — 2026-11-20
 
 ### Internal
