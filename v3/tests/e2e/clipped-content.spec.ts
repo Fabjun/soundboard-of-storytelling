@@ -28,6 +28,23 @@ import {
   seedTestAudio,
 } from './helpers';
 
+const button = (page: Page, name: string) => page.getByRole('button', { name, exact: true });
+const editor = (page: Page) => page.getByRole('dialog', { name: 'Pad editor', exact: true });
+const picker = (page: Page) => page.getByRole('dialog', { name: 'Choose an icon', exact: true });
+/** The PAD editor's + in its ICONS group. */
+const addIcon = (page: Page) =>
+  editor(page)
+    .getByRole('group', { name: 'ICONS', exact: true })
+    .getByRole('button', { name: 'Add an icon', exact: true });
+const iconSearch = (page: Page) =>
+  picker(page).getByRole('searchbox', { name: 'Search icons by name or word', exact: true });
+/**
+ * An icon of the picker, by its key. A test ID: the key is shown nowhere (only in the tooltip, no
+ * locator — codeGuards), and an icon's name ("dragon") can occur in more than one collection.
+ */
+const pickerIcon = (page: Page, key: string) =>
+  picker(page).getByTestId(`icon-picker-icon-button-${key}`);
+
 /**
  * What may be larger than its box on purpose (ADR-0053: each with its reason) — taken out of the
  * page while it is measured, so the boxes around it are measured without it.
@@ -122,7 +139,7 @@ function strayHidden(page: Page): Promise<string[]> {
 /** Opens the deck list and its BOARD LIGHT — on a phone the list is the DECKS sheet above the grid. */
 async function openBoardLight(page: Page): Promise<void> {
   await openDeckRail(page);
-  const sheet = page.getByTestId('deck-rail-manage-button');
+  const sheet = button(page, 'DECKS');
   if (await sheet.isVisible()) await sheet.click();
   await page.getByRole('button', { name: /^BOARD LIGHT/ }).click();
 }
@@ -148,17 +165,17 @@ for (const size of SIZES) {
     await page.getByRole('button', { name: 'TAP TO START', exact: true }).waitFor();
     await look('start');
     await page.getByRole('button', { name: 'TAP TO START', exact: true }).click();
-    await page.getByTestId('welcome-dialog').waitFor();
+    await page.getByRole('dialog', { name: 'Welcome', exact: true }).waitFor();
     await look('welcome');
     await page.getByRole('button', { name: 'SKIP', exact: true }).click();
     await look('main menu');
     await page.getByRole('button', { name: 'SETTINGS', exact: true }).click();
-    await page.getByTestId('settings-screen-back-button').waitFor();
+    await button(page, 'BACK').waitFor();
     await look('settings');
     await page.goto('/soundboard-of-storytelling/');
     await openMainMenu(page);
     await page.getByRole('button', { name: 'HELP', exact: true }).click();
-    await page.getByTestId('help-screen').waitFor();
+    await page.getByLabel('Search the help', { exact: true }).waitFor();
     await look('help');
 
     await seedTestAudio(page);
@@ -178,17 +195,20 @@ for (const size of SIZES) {
     await enterSetupMode(page);
     await addNamedPad(page, 'Dragon');
     await look('PAD editor, sound');
-    await page.getByTestId('pad-editor-panel-add-icon-button').click();
-    await page.getByTestId('icon-picker-category-button-people').click();
+    await addIcon(page).click();
+    // A category by its name and count
+    await picker(page)
+      .getByRole('button', { name: /^PEOPLE \d+$/ })
+      .click();
     await look('icon picker, a category open');
     // Two icons: the pad's picture takes its full height, so a row that gives way shows it (the
     // type row was squeezed to 4 px with two icons, to 9 of 10 px with the placeholder)
-    await page.getByTestId('icon-picker-search-input').fill('dragon');
-    await page.getByTestId('icon-picker-icon-button-nikoichu:dragon').click();
-    await page.getByTestId('pad-editor-panel-add-icon-button').click();
-    await page.getByTestId('icon-picker-search-input').fill('fire');
-    await page.getByTestId('icon-picker-icon-button-pixelarticons:fire').click();
-    await page.getByTestId('pad-editor-panel-save-button').click();
+    await iconSearch(page).fill('dragon');
+    await pickerIcon(page, 'nikoichu:dragon').click();
+    await addIcon(page).click();
+    await iconSearch(page).fill('fire');
+    await pickerIcon(page, 'pixelarticons:fire').click();
+    await button(page, 'SAVE').click();
     await page.getByRole('tab', { name: 'LIGHT', exact: true }).click();
     for (const kind of ['Preset', 'Effect', 'Course', 'Off']) {
       await page
@@ -198,10 +218,13 @@ for (const size of SIZES) {
       await look(`PAD editor, light ${kind.toLowerCase()}`);
     }
     await addNamedPad(page, 'Wind');
-    await page.getByTestId('pad-editor-panel-type-button-loop').click();
-    await page.getByTestId('pad-editor-panel-save-button').click();
+    await editor(page)
+      .getByRole('group', { name: 'TYPE', exact: true })
+      .getByRole('button', { name: 'LOOP', exact: true })
+      .click();
+    await button(page, 'SAVE').click();
     await addNamedPad(page, 'Nightfall', { combo: true });
-    await page.getByTestId('combo-steps-editor-add-button').click();
+    await button(page, '+ STEP').click();
     await look('PAD editor, combo');
     await closePadEditor(page);
     await look('board, setup');

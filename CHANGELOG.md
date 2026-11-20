@@ -7,6 +7,12 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.341 — 2026-11-20
+
+### Internal
+
+- test: clipped-content locates by role and name (ADR-0054 amendment 2026-11-19, batch 12) — DECKS, the welcome, BACK, the help by its search field, + in the ICONS group, the icon search, the PEOPLE category by name and count, SAVE, LOOP in the TYPE group and + STEP by name. The icons picked by their key keep a test ID in one helper, as in pad-icons (the key is shown nowhere). TEST_ID_LOCATORS 471 → 457. Counter-checked: the category name and + STEP changed — the walk stops at exactly that step; restored — green in full and full-webkit
+
 ## 3.0.340 — 2026-11-20
 
 ### Internal
