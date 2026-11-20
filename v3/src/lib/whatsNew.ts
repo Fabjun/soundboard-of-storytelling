@@ -103,6 +103,12 @@ export function withEarlyVersions(
 /** The release notes the main menu shows, newest first (checked by whatsNew.test.ts). */
 export const WHATS_NEW: WhatsNewNotes[] = [
   {
+    version: '3.0.344',
+    behindTheScenes: [
+      'The phone tests of the board list and the deck tabs find controls by the names a screen reader says.',
+    ],
+  },
+  {
     version: '3.0.343',
     fixed: [
       'TEST in Settings → LIGHT says when an address is the lamp’s own setup Wi-Fi or no home address, instead of asking to allow the local network.',

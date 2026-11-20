@@ -7,6 +7,12 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.344 — 2026-11-20
+
+### Internal
+
+- test: mobile/board-flow locates by role and name (ADR-0054 amendment 2026-11-19, batch 13) — NEW BOARD, the board by its open button (the row title sits in it), the mode switch as the group "Mode toggle", All pads, SETUP, DECKS and its group, NEW DECK and the back button by name. No test ID left in the spec. TEST_ID_LOCATORS 457 → 440. Counter-checked: a back button that does nothing and the DECKS panel without its group — exactly those two tests red; restored — green in mobile
+
 ## 3.0.343 — 2026-11-20
 
 ### Fixed
