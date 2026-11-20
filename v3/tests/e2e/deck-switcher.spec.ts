@@ -16,15 +16,26 @@ import {
   reopenFirstBoard,
 } from './helpers';
 
-const deckTabs = (page: Page) => page.locator('[data-testid^="deck-rail-tab-button-"]');
-const allPadsTab = (page: Page) => page.getByTestId('deck-rail-all-pads-tab-button');
-const decksButton = (page: Page) => page.getByTestId('deck-rail-manage-button');
+/**
+ * The deck tabs, named by position and deck ("1 Deck 1"). The decks here keep their default names;
+ * the DECKS list and the wide rail add the pad count ("1 Deck 1 0"), which this name excludes.
+ */
+const deckTabs = (page: Page) => page.getByRole('button', { name: /^\d+ Deck \d+$/ });
+/** The All pads tab — the wide rail's entry adds the pad count ("All pads 0"). */
+const allPadsTab = (page: Page) => page.getByRole('button', { name: 'All pads', exact: true });
+const decksButton = (page: Page) => page.getByRole('button', { name: 'DECKS', exact: true });
+/** The panel DECKS opens: a group named by the button. */
+const decksPanel = (page: Page) => page.getByRole('group', { name: 'DECKS', exact: true });
+/** The wide frame's button that folds the deck list. */
+const railToggle = (page: Page) =>
+  page.getByRole('button', { name: /^(Show|Hide) the deck list$/ });
 
 /** Adds `n` decks through the DECKS panel (narrow frame, SETUP) and closes it again. */
 async function addDecks(page: Page, n: number) {
   await enterSetupMode(page);
   await decksButton(page).click();
-  for (let i = 0; i < n; i++) await page.getByTestId('deck-rail-new-button').click();
+  const newDeck = decksPanel(page).getByRole('button', { name: 'NEW DECK', exact: true });
+  for (let i = 0; i < n; i++) await newDeck.click();
   await expect(deckTabs(page)).toHaveCount(n);
   await decksButton(page).click();
 }
@@ -39,13 +50,14 @@ test.beforeEach(async ({ page }) => {
 test('below 600 px the decks are tabs above the grid: All pads first, one tap switches', async ({
   page,
 }) => {
-  await expect(page.getByTestId('deck-rail-toggle-button')).toHaveCount(0);
+  await expect(railToggle(page)).toHaveCount(0);
   await addDecks(page, 2);
   await enterGameMode(page);
   await expect(deckTabs(page)).toHaveText(['1 Deck 1', '2 Deck 2']);
   await deckTabs(page).nth(1).click();
   await expect(deckTabs(page).nth(1)).toHaveAttribute('aria-current', 'true');
-  await expect(page.getByTestId('board-top-bar')).toContainText('Deck 2');
+  // The top bar names the open deck after the board name
+  await expect(page.getByText('· Deck 2', { exact: true })).toBeVisible();
   await allPadsTab(page).click();
   await expect(allPadsTab(page)).toHaveAttribute('aria-current', 'true');
   await expect(deckTabs(page).nth(1)).not.toHaveAttribute('aria-current');
@@ -57,13 +69,15 @@ test('the deck actions sit behind DECKS, in SETUP only', async ({ page }) => {
   await enterSetupMode(page);
   await expect(decksButton(page)).toHaveAttribute('aria-expanded', 'false');
   await decksButton(page).click();
-  const panel = page.getByTestId('deck-rail-sheet-region');
-  await expect(panel.getByTestId('deck-rail-new-button')).toBeVisible();
-  await expect(panel.getByTestId('deck-rail-pad-size-slider')).toHaveCount(0); // no deck open yet
-  await panel.getByTestId('deck-rail-new-button').click();
+  const panel = decksPanel(page);
+  const newDeck = panel.getByRole('button', { name: 'NEW DECK', exact: true });
+  const padSize = panel.getByRole('slider', { name: 'PAD SIZE', exact: true });
+  await expect(newDeck).toBeVisible();
+  await expect(padSize).toHaveCount(0); // no deck open yet
+  await newDeck.click();
   await expect(deckTabs(page)).toHaveCount(1);
   await expect(deckTabs(page).first()).toHaveAttribute('aria-current', 'true');
-  await expect(panel.getByTestId('deck-rail-pad-size-slider')).toBeVisible();
+  await expect(padSize).toBeVisible();
   await decksButton(page).click();
   await expect(panel).toHaveCount(0);
 });
@@ -92,7 +106,7 @@ test('with many decks the row scrolls sideways and keeps the current deck in vie
 test('from 600 px the rail is back and the tabs are gone', async ({ page }) => {
   await addDecks(page, 1);
   await page.setViewportSize({ width: 1024, height: 768 });
-  await expect(page.getByTestId('deck-rail-toggle-button')).toBeVisible();
+  await expect(railToggle(page)).toBeVisible();
   await expect(deckTabs(page)).toHaveCount(0);
 });
 
@@ -101,7 +115,7 @@ test('on a phone a deck moves in the DECKS list, and the tab row follows (Slice 
 }) => {
   await addDecks(page, 3);
   await decksButton(page).click();
-  const panel = page.getByTestId('deck-rail-sheet-region');
+  const panel = decksPanel(page);
   // The newest deck is active; its ▲ is a whole touch target inside the panel
   const up = panel.getByRole('button', { name: 'Move deck Deck 3 up', exact: true });
   await expect(up).toBeInViewport({ ratio: 1 });

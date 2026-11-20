@@ -25,7 +25,7 @@
  * the deck actions, NEW DECK — as a panel over the grid.
  */
 
-import { useEffect, useState, useRef } from 'preact/hooks';
+import { useEffect, useId, useState, useRef } from 'preact/hooks';
 import type { ComponentChildren, JSX } from 'preact';
 import type { Deck, Board, PadLight } from '../types';
 import { UiIcon } from './UiIcon';
@@ -99,6 +99,8 @@ export function DeckRail({
   // Starts folded, so the pads get the width (owner decision 2026-10-05); for the tabs: the
   // DECKS panel starts closed
   const [open, setOpen] = useState(false);
+  // The DECKS panel names itself by its button, so its controls are heard as part of DECKS
+  const decksButtonId = useId();
   const [lightOpen, setLightOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editValue, setEditValue] = useState('');
@@ -549,6 +551,7 @@ export function DeckRail({
           <button
             type="button"
             class={'sb-tab' + (open ? ' is-active' : '')}
+            id={decksButtonId}
             aria-expanded={open}
             data-testid="deck-rail-manage-button"
             onClick={() => setOpen(!open)}
@@ -557,8 +560,15 @@ export function DeckRail({
           </button>
         )}
         {tail}
+        {/* A group named by DECKS (WCAG technique ARIA17): NEW DECK, PAD SIZE and the deck list
+            are heard as the deck actions the button opened */}
         {manage && open && (
-          <div class="sb-deck-rail sb-deck-rail-sheet" data-testid="deck-rail-sheet-region">
+          <div
+            class="sb-deck-rail sb-deck-rail-sheet"
+            role="group"
+            aria-labelledby={decksButtonId}
+            data-testid="deck-rail-sheet-region"
+          >
             {content}
           </div>
         )}
