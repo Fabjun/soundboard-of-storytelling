@@ -103,6 +103,12 @@ export function withEarlyVersions(
 /** The release notes the main menu shows, newest first (checked by whatsNew.test.ts). */
 export const WHATS_NEW: WhatsNewNotes[] = [
   {
+    version: '3.0.342',
+    behindTheScenes: [
+      'The light concept records that the MacBook runs the lamp, at home and at game nights.',
+    ],
+  },
+  {
     version: '3.0.341',
     behindTheScenes: [
       'The test that walks every screen for cut-off content finds controls by the names a screen reader says.',

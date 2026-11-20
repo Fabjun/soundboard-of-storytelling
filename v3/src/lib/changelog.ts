@@ -17,10 +17,17 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.341';
+export const APP_VERSION = '3.0.342';
 
 /** The developer log, newest first; CHANGELOG.md is generated from it (sync-changelog). */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.342',
+    date: '2026-11-20',
+    items: [
+      'docs(light): C5 decided by the owner — the MacBook runs the light at home and away, the lamp and the MacBook in the home Wi-Fi or the iPhone hotspot; the lamp’s own access point (4.3.2.1, no private address) is blocked even in Chrome, measured with the owner’s lamp. A way for the iPhone / iPad alone is Parked with its researched options (bridge box, native iOS shell, Shortcuts rejected) and a review trigger',
+    ],
+  },
   {
     version: '3.0.341',
     date: '2026-11-20',
