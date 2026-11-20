@@ -6,7 +6,7 @@
  */
 
 import { test, expect } from '@playwright/test';
-import { goToBoardList } from './helpers';
+import { allPadsButton, goToBoardList } from './helpers';
 
 test('on a wide window the deck list starts folded and the toggle opens and folds it', async ({
   page,
@@ -15,11 +15,11 @@ test('on a wide window the deck list starts folded and the toggle opens and fold
   await page.goto('/soundboard-of-storytelling/');
   await goToBoardList(page);
   // By hand, not createBoardAndNavigate: that helper unfolds the deck list
-  await page.getByTestId('board-list-screen-new-button').click();
-  await page.locator('[data-testid^="board-list-screen-name-text-"]').first().click();
-  await page.getByTestId('mode-toggle').waitFor();
-  const toggle = page.getByTestId('deck-rail-toggle-button');
-  const allPads = page.getByTestId('deck-rail-all-pads-tab');
+  await page.getByRole('button', { name: 'NEW BOARD', exact: true }).click();
+  await page.getByRole('button', { name: 'Board 1 0 decks · 0 pads', exact: true }).click();
+  await page.getByRole('group', { name: 'Mode toggle', exact: true }).waitFor();
+  const toggle = page.getByRole('button', { name: /^(Show|Hide) the deck list$/ });
+  const allPads = allPadsButton(page);
   await expect(toggle).toHaveAttribute('aria-expanded', 'false');
   await expect(allPads).toBeHidden();
   const foldedWidth = (await page.getByTestId('deck-rail').boundingBox())?.width ?? 0;

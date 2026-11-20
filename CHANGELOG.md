@@ -7,6 +7,12 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.339 — 2026-11-20
+
+### Internal
+
+- test: welcome, deck-rail-fold, mode-toggle and pad-editor-fullscreen locate by role and name (ADR-0054 amendment 2026-11-19, batch 10) — the welcome step by its text, a closed welcome as no dialog open, the help by its search field, a new board by its open button, the mode switch as the group "Mode toggle", the PAD editor name field by its label; pad-editor-fullscreen reads the mode switch position before the editor makes the board inert. Two test IDs stay with their reason: the main menu (a screen without a role, inert behind the welcome) and the deck rail box whose width is measured. TEST_ID_LOCATORS 505 → 487. Counter-checked: the step text, the help search name, a rail toggle that does nothing and the NAME label changed — the tests that use them red; the mode switch group renamed — the tests that use it red in full and smoke; restored — green in smoke, smoke-webkit, full, full-webkit and mobile
+
 ## 3.0.338 — 2026-11-20
 
 ### Changed
