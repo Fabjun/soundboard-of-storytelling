@@ -14,11 +14,15 @@ import { reloadApp } from './helpers';
 const APP = '/soundboard-of-storytelling/';
 const card = (page: Page, title: string) => page.getByRole('dialog', { name: title, exact: true });
 const button = (page: Page, name: string) => page.getByRole('button', { name, exact: true });
-const step = (page: Page) => page.getByTestId('welcome-dialog-step-text');
+/** The card's place in the welcome ("1 of 3"). */
+const step = (page: Page) => page.getByText(/^\d+ of \d+$/);
+/** Any card: closed means no dialog at all is open. */
+const anyCard = (page: Page) => page.getByRole('dialog');
 
 /** TAP TO START, without the helper that skips the welcome. */
 async function tapToStart(page: Page): Promise<void> {
   await button(page, 'TAP TO START').click();
+  // The menu is a screen without a role, inert behind the welcome — found by its test ID
   await expect(page.getByTestId('main-menu-screen')).toBeVisible();
 }
 
@@ -46,14 +50,14 @@ test('the first start shows the welcome card by card; DONE closes it for good', 
   await expect(step(page)).toHaveText('3 of 3');
   await expect(button(page, 'SKIP')).toHaveCount(0);
   await button(page, 'DONE').click();
-  await expect(page.getByTestId('welcome-dialog')).toHaveCount(0);
+  await expect(anyCard(page)).toHaveCount(0);
   // The menu behind takes taps again
   await button(page, 'BOARD').click();
-  await expect(page.getByTestId('board-list-screen-new-button')).toBeVisible();
+  await expect(button(page, 'NEW BOARD')).toBeVisible();
 
   await reloadApp(page);
   await tapToStart(page);
-  await expect(page.getByTestId('welcome-dialog')).toHaveCount(0);
+  await expect(anyCard(page)).toHaveCount(0);
 });
 
 test('SKIP and Escape close it; WELCOME in the help shows it again', async ({ page }) => {
@@ -61,7 +65,7 @@ test('SKIP and Escape close it; WELCOME in the help shows it again', async ({ pa
   await tapToStart(page);
   await expect(card(page, 'Welcome')).toBeVisible();
   await page.keyboard.press('Escape');
-  await expect(page.getByTestId('welcome-dialog')).toHaveCount(0);
+  await expect(anyCard(page)).toHaveCount(0);
 
   await button(page, 'HELP').click();
   const welcome = button(page, 'WELCOME');
@@ -69,7 +73,7 @@ test('SKIP and Escape close it; WELCOME in the help shows it again', async ({ pa
   await page.keyboard.press('Enter');
   await expect(card(page, 'Welcome')).toBeVisible();
   await button(page, 'SKIP').click();
-  await expect(page.getByTestId('welcome-dialog')).toHaveCount(0);
-  await expect(page.getByTestId('help-screen')).toBeVisible();
+  await expect(anyCard(page)).toHaveCount(0);
+  await expect(page.getByLabel('Search the help', { exact: true })).toBeVisible();
   await expect(welcome).toBeFocused();
 });

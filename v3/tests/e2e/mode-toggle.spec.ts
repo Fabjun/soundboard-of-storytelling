@@ -5,8 +5,12 @@
  * After clicking SETUP half: currentMode = 'edit' → .sb-mode-toggle has .is-setup
  */
 
-import { test, expect } from '@playwright/test';
+import { test, expect, type Page } from '@playwright/test';
 import { openMainMenu } from './helpers';
+
+/** Opens the board NEW BOARD just made — its button names it and its counts. */
+const openNewBoard = (page: Page) =>
+  page.getByRole('button', { name: 'Board 1 0 decks · 0 pads', exact: true }).click();
 
 test('ModeToggle switches from GAME to SETUP and back', async ({ page }) => {
   await page.goto('/soundboard-of-storytelling/');
@@ -15,12 +19,12 @@ test('ModeToggle switches from GAME to SETUP and back', async ({ page }) => {
   await openMainMenu(page);
   await page.getByRole('button', { name: 'BOARD', exact: true }).click();
   await page.getByRole('button', { name: /NEW BOARD/ }).click();
-  await page.locator('[data-testid^="board-list-screen-row-"]').first().click();
+  await openNewBoard(page);
 
   // Initial state: GAME is the pressed half (aria-pressed — user-facing state)
   const setup = page.getByRole('button', { name: 'SETUP', exact: true });
   const game = page.getByRole('button', { name: 'GAME', exact: true });
-  await expect(page.getByTestId('mode-toggle')).toBeVisible();
+  await expect(page.getByRole('group', { name: 'Mode toggle', exact: true })).toBeVisible();
   await expect(game).toHaveAttribute('aria-pressed', 'true');
 
   // Click the SETUP half → SETUP pressed, GAME released
@@ -41,7 +45,7 @@ test('a switch throws sparks that hang on the page, fixed in the viewport', asyn
   await openMainMenu(page);
   await page.getByRole('button', { name: 'BOARD', exact: true }).click();
   await page.getByRole('button', { name: /NEW BOARD/ }).click();
-  await page.locator('[data-testid^="board-list-screen-row-"]').first().click();
+  await openNewBoard(page);
 
   await page.getByRole('button', { name: 'SETUP', exact: true }).click();
   // One read of a spark that exists — it is removed after its flight

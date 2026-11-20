@@ -103,6 +103,12 @@ export function withEarlyVersions(
 /** The release notes the main menu shows, newest first (checked by whatsNew.test.ts). */
 export const WHATS_NEW: WhatsNewNotes[] = [
   {
+    version: '3.0.339',
+    behindTheScenes: [
+      'The tests of the welcome, the mode switch, the deck list and the full-screen PAD editor find controls by the names a screen reader says.',
+    ],
+  },
+  {
     version: '3.0.338',
     improved: [
       'On a phone, a screen reader says that NEW DECK, PAD SIZE and the deck list belong to DECKS.',

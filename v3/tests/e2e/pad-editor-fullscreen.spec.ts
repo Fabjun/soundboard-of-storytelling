@@ -40,12 +40,15 @@ for (const viewport of [
   }) => {
     await page.setViewportSize(viewport);
     const owl = await boardWithTwoPads(page);
+    // Read before the editor opens: behind it the board is inert and out of the accessibility tree
+    const toggle = await page
+      .getByRole('group', { name: 'Mode toggle', exact: true })
+      .boundingBox();
     await owl.click();
     await expect(editor(page)).toBeVisible();
     const box = await editor(page).boundingBox();
     expect(box).toEqual({ x: 0, y: 0, width: viewport.width, height: viewport.height });
     // What is on top at the mode switch is the editor, not the board's top bar
-    const toggle = await page.getByTestId('mode-toggle').boundingBox();
     const onTop = await page.evaluate(
       ([x, y]) => !!document.elementFromPoint(x, y)?.closest('[role="dialog"]'),
       [toggle!.x + toggle!.width / 2, toggle!.y + toggle!.height / 2],
@@ -59,11 +62,11 @@ test('the board behind the editor cannot be used, by pointer or by Tab', async (
   const owl = await boardWithTwoPads(page);
   const rain = await page.getByRole('button', { name: 'Rain', exact: true }).boundingBox();
   await owl.click();
-  await expect(page.getByTestId('pad-editor-panel-name-input')).toHaveValue('Owl');
+  await expect(editor(page).getByRole('textbox', { name: 'NAME', exact: true })).toHaveValue('Owl');
 
   // A tap where the other pad was lands in the editor: it still edits Owl
   await page.mouse.click(rain!.x + rain!.width / 2, rain!.y + rain!.height / 2);
-  await expect(page.getByTestId('pad-editor-panel-name-input')).toHaveValue('Owl');
+  await expect(editor(page).getByRole('textbox', { name: 'NAME', exact: true })).toHaveValue('Owl');
 
   // Tab never leaves the editor
   for (let i = 0; i < 40; i++) {
