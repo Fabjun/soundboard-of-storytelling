@@ -112,7 +112,58 @@ export type LightResult =
   | { kind: 'ok'; name?: string }
   | { kind: 'no-answer' }
   | { kind: 'blocked' }
-  | { kind: 'bad-address' };
+  | { kind: 'bad-address' }
+  | { kind: 'not-local'; setupNetwork: boolean };
+
+/**
+ * IPv4 ranges a call over plain HTTP may reach from the HTTPS app, as [network, prefix length]:
+ * Chrome's local and loopback spaces (10/8, 172.16/12, 192.168/16, 169.254/16, 127/8 — Chrome,
+ * "Local Network Access"), and 100.64/10 and 198.18/15, whose class is not settled — tried rather
+ * than refused, so no working address is turned away.
+ */
+const TRIED_RANGES: [string, number][] = [
+  ['10.0.0.0', 8],
+  ['100.64.0.0', 10],
+  ['127.0.0.0', 8],
+  ['169.254.0.0', 16],
+  ['172.16.0.0', 12],
+  ['192.168.0.0', 16],
+  ['198.18.0.0', 15],
+];
+
+/** The 32-bit value of a dotted IPv4 address, or null when `host` is none. */
+function ipv4(host: string): number | null {
+  const parts = /^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/.exec(host)?.slice(1).map(Number);
+  if (!parts || parts.some((p) => p > 255)) return null;
+  return parts.reduce((v, p) => v * 256 + p, 0);
+}
+
+/**
+ * Whether the lamp at `base` (from `lampUrl`) is out of reach before any call: an IPv4 address in
+ * none of `TRIED_RANGES`, over plain HTTP, is mixed content the browser blocks even with "local
+ * network" allowed. `4.3.2.x` is WLED's own setup network (WLED-AP, the lamp at 4.3.2.1 — WLED,
+ * "Getting started"). Names and HTTPS addresses (a bridge may have a public one) are tried.
+ */
+function outOfReach(base: string): Extract<LightResult, { kind: 'not-local' }> | null {
+  const url = new URL(base);
+  const ip = ipv4(url.hostname);
+  if (url.protocol !== 'http:' || ip === null) return null;
+  const tried = TRIED_RANGES.some(([net, bits]) => {
+    const size = 2 ** (32 - bits);
+    return Math.floor(ip / size) === Math.floor((ipv4(net) ?? 0) / size);
+  });
+  if (tried) return null;
+  return { kind: 'not-local', setupNetwork: Math.floor(ip / 256) === (ipv4('4.3.2.0') ?? 0) / 256 };
+}
+
+/** The base URL to call for `typed`, or why no call is made: a bad address, or one out of reach. */
+function target(
+  typed: string,
+): string | Extract<LightResult, { kind: 'bad-address' } | { kind: 'not-local' }> {
+  const base = lampUrl(typed);
+  if (!base) return { kind: 'bad-address' };
+  return outOfReach(base) ?? base;
+}
 
 /**
  * The lamp's base URL from what the user typed — `192.168.1.50`, `wled-kitchen.local`,
@@ -202,8 +253,8 @@ export async function sendLight(
   fetchImpl: Fetch = fetch,
   timeoutMs = LIGHT_TIMEOUT_MS,
 ): Promise<LightResult> {
-  const base = lampUrl(typed);
-  if (!base) return { kind: 'bad-address' };
+  const base = target(typed);
+  if (typeof base !== 'string') return base;
   const r = await call(
     `${base}/json/state`,
     {
@@ -224,8 +275,8 @@ export async function testLamp(
   fetchImpl: Fetch = fetch,
   timeoutMs = LIGHT_TIMEOUT_MS * 3,
 ): Promise<LightResult> {
-  const base = lampUrl(typed);
-  if (!base) return { kind: 'bad-address' };
+  const base = target(typed);
+  if (typeof base !== 'string') return base;
   const r = await call(`${base}/json/info`, { method: 'GET' }, fetchImpl, timeoutMs);
   if (!(r instanceof Response)) return r;
   if (!r.ok) return { kind: 'no-answer' };
@@ -252,8 +303,8 @@ export async function listEffects(
   fetchImpl: Fetch = fetch,
   timeoutMs = LIGHT_TIMEOUT_MS * 3,
 ): Promise<{ kind: 'effects'; effects: LampEffect[] } | Exclude<LightResult, { kind: 'ok' }>> {
-  const base = lampUrl(typed);
-  if (!base) return { kind: 'bad-address' };
+  const base = target(typed);
+  if (typeof base !== 'string') return base;
   const r = await call(`${base}/json/eff`, { method: 'GET' }, fetchImpl, timeoutMs);
   if (!(r instanceof Response)) {
     return r.kind === 'ok' ? { kind: 'no-answer' } : r;
@@ -282,5 +333,9 @@ export function describeResult(result: LightResult): string {
       return 'No lamp answered at this address — check that it is on and in the same network.';
     case 'blocked':
       return 'This browser does not let the app reach the lamp. In Chrome or Brave on a computer, allow "local network" for this site; on an iPhone or iPad no browser allows it yet.';
+    case 'not-local':
+      return result.setupNetwork
+        ? "This is the lamp's own setup Wi-Fi (WLED-AP), which the app cannot reach. In the lamp's WiFi settings, join it to the Wi-Fi this device is in, then type the address it gets there."
+        : 'This address is not in a home network, so the browser does not let the app reach it. Type the address the lamp has in this network, e.g. 192.168.1.50, or its name ending in .local.';
   }
 }

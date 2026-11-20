@@ -7,6 +7,16 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.343 — 2026-11-20
+
+### Fixed
+
+- fix(light): TEST, TRY and a pad no longer call an IPv4 address over plain HTTP outside the local ranges (10/8, 172.16/12, 192.168/16, 169.254/16, 127/8 — Chrome Local Network Access; 100.64/10 and 198.18/15 still tried): the browser blocks it as mixed content whatever is allowed, and TEST said "allow local network". It now names WLED's own setup network 4.3.2.x ("join the lamp to the Wi-Fi this device is in") or says the address is in no home network. Names and HTTPS addresses (a bridge) are tried as before. Provisional, for review (Workflow 7b). Found with the owner's lamp, still in setup mode and typed in as 4.3.2.2
+
+### Internal
+
+- test: unit wled — 4.3.2.x named as the setup network, public addresses refused for send, test and the effect list with no call, each range edge tried and just outside refused, names and HTTPS tried; E2E light-settings — TEST at 4.3.2.1 and 8.8.8.8 says why, no call goes out (the routes would answer "Connected"). Counter-checked: the check skipped — three unit tests and the E2E red; 172.16/12 widened to /11 — the range test red; the setup network never named — its test red; restored — green
+
 ## 3.0.342 — 2026-11-20
 
 ### Internal

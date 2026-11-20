@@ -113,7 +113,11 @@ year; whether its native HTTP honors the permission is unconfirmed — a spike f
 A light command is sent with a short time limit (1 s) and never awaited by the sound path. A lamp
 that does not answer marks itself as unreachable in the status bar ("LIGHT ✕"), and the next pad
 tries again. The connection test in Settings says in plain words what is wrong (no permission, the
-browser blocks it, no answer at the address) and what to do (Nielsen heuristic 9).
+browser blocks it, no answer at the address) and what to do (Nielsen heuristic 9). An IPv4 address
+over plain HTTP outside Chrome's local ranges is named before any call goes out — WLED's own setup
+network (`4.3.2.x`) as such, any other as no home address — because no permission can make it
+reachable (2026-11-20, after a lamp still in setup mode was typed in as `4.3.2.2`;
+`outOfReach` in `v3/src/light/wled.ts`).
 
 ## Building blocks (first step, testable without a lamp)
 
