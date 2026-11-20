@@ -17,10 +17,17 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.339';
+export const APP_VERSION = '3.0.340';
 
 /** The developer log, newest first; CHANGELOG.md is generated from it (sync-changelog). */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.340',
+    date: '2026-11-20',
+    items: [
+      'test: pwa locates by role and name (ADR-0054 amendment 2026-11-19, batch 11) — the update prompt as the status that says "A new version is ready." with BACKUP, SAVE, RELOAD and LATER inside it by name, "Backup saved." by its text, the board list line by its text, the stored board by its open button. No test ID left in the spec. TEST_ID_LOCATORS 487 → 471. Counter-checked against a new build each: the prompt text changed — the three tests that need the prompt red; "Backup saved." changed and LATER doing nothing — the backup test and the LATER test red; restored — green',
+    ],
+  },
   {
     version: '3.0.339',
     date: '2026-11-20',
