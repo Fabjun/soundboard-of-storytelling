@@ -3,7 +3,7 @@
  * ADR-0091)
  *
  * A lamp is added with a name and an address, kept over a reload, tested and removed after the
- * question. No lamp is needed: Playwright answers at the lamp's address as WLED does (JSON with
+ * question; an address outside a home network is named as such without a call. No lamp is needed: Playwright answers at the lamp's address as WLED does (JSON with
  * `Access-Control-Allow-Origin: *`), or refuses it as a browser does that blocks the call. Runs in
  * WebKit too.
  */
@@ -66,6 +66,28 @@ test('a call the browser refuses says what to do; a wrong address is refused at 
   await expect(page.getByRole('alert')).toContainText('This is no lamp address');
   await add(page, 'Twice', 'http://192.168.1.60/');
   await expect(page.getByRole('alert')).toContainText('already in the list');
+});
+
+test("TEST names WLED's setup network and calls no address outside a home network", async ({
+  page,
+}) => {
+  // Answered as a lamp would: a call that went out would say "Connected"
+  let calls = 0;
+  await page.route(/^http:\/\/(4\.3\.2\.1|8\.8\.8\.8)\//, (route) => {
+    calls++;
+    return route.fulfill({
+      status: 200,
+      headers: { 'Access-Control-Allow-Origin': '*', 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name: 'Somewhere' }),
+    });
+  });
+  await add(page, 'Setup', '4.3.2.1');
+  await page.getByRole('button', { name: 'Test Setup', exact: true }).click();
+  await expect(page.getByText(/own setup Wi-Fi \(WLED-AP\)/)).toBeVisible();
+  await add(page, 'Public', '8.8.8.8');
+  await page.getByRole('button', { name: 'Test Public', exact: true }).click();
+  await expect(page.getByText(/not in a home network/)).toBeVisible();
+  expect(calls).toBe(0);
 });
 
 test('REMOVE asks first: CANCEL keeps the lamp, REMOVE takes it out', async ({ page }) => {

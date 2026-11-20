@@ -2,7 +2,8 @@
  * @fileoverview wled — the WLED JSON client (light.md C1, C5, C6; ADR-0091)
  *
  * fetch is a stand-in: what the client sends (URL, method, body, the local-network hint), and each
- * way a call ends — answered, refused by the browser, timed out, a bad address, not a WLED lamp.
+ * way a call ends — answered, refused by the browser, timed out, a bad address, not a WLED lamp,
+ * an address out of reach (WLED's setup network, any other public IPv4 address over HTTP).
  * An effect's body and ranges; a course point's body and a course's ranges; the effect list read
  * from the lamp.
  */
@@ -235,8 +236,67 @@ describe('testLamp', () => {
   });
 });
 
+describe('an address out of reach', () => {
+  const answered = () => fakeFetch(() => Promise.resolve(new Response('{"name":"Lamp"}')));
+
+  it("WLED's setup network 4.3.2.x is named as such, and no call goes out", async () => {
+    for (const address of ['4.3.2.1', '4.3.2.2']) {
+      const { fetch, calls } = answered();
+      expect(await testLamp(address, fetch)).toEqual({ kind: 'not-local', setupNetwork: true });
+      expect(calls).toEqual([]);
+    }
+  });
+
+  it('any other public IPv4 address over HTTP is no home address, for every call', async () => {
+    const { fetch, calls } = answered();
+    const away = { kind: 'not-local', setupNetwork: false };
+    expect(await sendLight('8.8.8.8', { preset: 1 }, fetch)).toEqual(away);
+    expect(await testLamp('4.3.3.1', fetch)).toEqual(away);
+    expect(await listEffects('http://93.184.216.34', fetch)).toEqual(away);
+    expect(calls).toEqual([]);
+  });
+
+  /** Each address with the kind its test ends in and the number of calls that went out. */
+  const outcomes = async (addresses: string[]) =>
+    Object.fromEntries(
+      await Promise.all(
+        addresses.map(async (address) => {
+          const { fetch, calls } = answered();
+          const { kind } = await testLamp(address, fetch);
+          return [address, `${kind}, ${calls.length} call(s)`] as const;
+        }),
+      ),
+    );
+  const each = (addresses: string[], outcome: string) =>
+    Object.fromEntries(addresses.map((a) => [a, outcome]));
+
+  it('the ranges end where they end: just outside is refused, the edges are tried', async () => {
+    const outside = ['9.255.255.255', '11.0.0.1', '172.15.255.255', '172.32.0.1', '192.169.0.1'];
+    const alsoOutside = ['100.128.0.1', '198.20.0.1'];
+    const edges = ['10.0.0.1', '172.16.0.1', '172.31.255.254', '192.168.2.50', '169.254.1.1'];
+    const loopbackAndUnsettled = ['127.0.0.1', '100.64.0.1', '100.127.255.254', '198.19.9.9'];
+    expect(await outcomes([...outside, ...alsoOutside])).toEqual(
+      each([...outside, ...alsoOutside], 'not-local, 0 call(s)'),
+    );
+    expect(await outcomes([...edges, ...loopbackAndUnsettled])).toEqual(
+      each([...edges, ...loopbackAndUnsettled], 'ok, 1 call(s)'),
+    );
+  });
+
+  it('a name and an HTTPS address (a bridge) are tried, whatever they point to', async () => {
+    const tried = ['lampe.local', 'https://4.3.2.1', 'https://8.8.8.8'];
+    expect(await outcomes(tried)).toEqual(each(tried, 'ok, 1 call(s)'));
+  });
+});
+
 describe('describeResult', () => {
   it('says what happened and what to do, for every result', () => {
+    expect(describeResult({ kind: 'not-local', setupNetwork: true })).toMatch(
+      /own setup Wi-Fi \(WLED-AP\).*join it to the Wi-Fi this device is in/,
+    );
+    expect(describeResult({ kind: 'not-local', setupNetwork: false })).toMatch(
+      /not in a home network.*192\.168\.1\.50/,
+    );
     expect(describeResult({ kind: 'ok', name: 'Floor lamp' })).toBe('Connected to Floor lamp.');
     expect(describeResult({ kind: 'ok' })).toBe('Connected.');
     expect(describeResult({ kind: 'bad-address' })).toMatch(/192\.168\.1\.50/);
