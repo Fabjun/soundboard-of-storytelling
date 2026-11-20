@@ -7,6 +7,12 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.342 — 2026-11-20
+
+### Internal
+
+- docs(light): C5 decided by the owner — the MacBook runs the light at home and away, the lamp and the MacBook in the home Wi-Fi or the iPhone hotspot; the lamp’s own access point (4.3.2.1, no private address) is blocked even in Chrome, measured with the owner’s lamp. A way for the iPhone / iPad alone is Parked with its researched options (bridge box, native iOS shell, Shortcuts rejected) and a review trigger
+
 ## 3.0.341 — 2026-11-20
 
 ### Internal

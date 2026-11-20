@@ -88,9 +88,25 @@ response and answers the preflight (`OPTIONS`) — read in WLED's source, `wled0
 
 **Decided for now: A, straight to the lamp where the browser allows it; the app says plainly
 where it does not.** The building blocks talk to "a light" through one small interface, so a
-bridge can be added without touching the pads. **Open (owner decision):** whether game nights run
-the light from the laptop, or whether an iPhone / iPad bridge is set up (Home Assistant, a
-Raspberry Pi) — this costs hardware and setup time and is the owner's call.
+bridge can be added without touching the pads.
+
+**Decided (owner decision 2026-11-20): the MacBook runs the light, at home and at game nights
+away.** The iPhone and the iPad (both WebKit) play sound only. The lamp and the MacBook share one
+network: the home Wi-Fi, or the iPhone's Personal Hotspot away from home (a private range, so
+Chrome's exemption applies; that two hotspot clients reach each other is likely but "not
+guaranteed" by Apple — Apple Developer Forums, DTS reply, thread 699414). WLED keeps up to five
+saved networks and opens its own access point when none connects (WLED Discourse, developer post
+"Multiple SSID support" — secondary). Its own access point does not serve: `4.3.2.1` is no
+private address, so Chrome blocks the call from the HTTPS app as mixed content even with "local
+network" allowed (measured 2026-11-20 with the owner's lamp, still in that mode).
+
+**Parked — a way for the iPhone / iPad alone** (review trigger: the owner wants the light without
+the MacBook). Options researched 2026-11-20: a bridge box with its own Wi-Fi and an HTTPS proxy
+(a Raspberry Pi with Caddy `tls internal`, its certificate trusted once on iOS — WLED's own advice
+for HTTPS is a reverse proxy); a native iOS shell around the app (Capacitor, local network
+permission and ATS `NSAllowsLocalNetworking`; signing every 7 days with a free Apple ID or 99 $ a
+year; whether its native HTTP honors the permission is unconfirmed — a spike first); iOS Shortcuts
+(rejected: each light change leaves the app, and local HTTP in Shortcuts is reported unreliable).
 
 ### C6 Failure
 
@@ -225,3 +241,11 @@ trusts) works without a change in the app (`lampUrl` in `v3/src/light/wled.ts`).
 - WLED nightlight color fade (forum, a developer's description; secondary): https://wled.discourse.group/t/sunrise-effect/47
 - ETC Eos, Submaster Properties (restore mode background): https://www.etcconnect.com/webdocs/Controls/IonOnlineHelp/en-us/Content/21_Submasters/Submaster_Properties.htm
 - Chrome, timer throttling in Chrome 88: https://developer.chrome.com/blog/timer-throttling-in-chrome-88
+- Chrome Local Network Access, the local address ranges: https://developer.chrome.com/docs/modern-web-guidance/guides/security/local-network-access
+- WLED getting started (WLED-AP, `4.3.2.1`): https://kno.wled.ge/basics/getting-started/
+- WLED saved networks (forum, a developer's description; secondary): https://wled.discourse.group/t/multiple-ssid-support/10755
+- WLED behind a reverse proxy: https://kno.wled.ge/advanced/access-over-internet/
+- Personal Hotspot clients (Apple Developer Forums, DTS reply): https://developer.apple.com/forums/thread/699414
+- iOS local network in apps ("Local network prohibited", Apple Developer Forums): https://developer.apple.com/forums/thread/788044
+- iOS certificate trust for a manually installed root: https://support.apple.com/en-us/102390
+- Shortcuts x-callback-url: https://support.apple.com/guide/shortcuts/apdcd7f20a6f/
