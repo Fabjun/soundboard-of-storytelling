@@ -7,6 +7,12 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.340 — 2026-11-20
+
+### Internal
+
+- test: pwa locates by role and name (ADR-0054 amendment 2026-11-19, batch 11) — the update prompt as the status that says "A new version is ready." with BACKUP, SAVE, RELOAD and LATER inside it by name, "Backup saved." by its text, the board list line by its text, the stored board by its open button. No test ID left in the spec. TEST_ID_LOCATORS 487 → 471. Counter-checked against a new build each: the prompt text changed — the three tests that need the prompt red; "Backup saved." changed and LATER doing nothing — the backup test and the LATER test red; restored — green
+
 ## 3.0.339 — 2026-11-20
 
 ### Internal

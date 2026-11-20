@@ -21,6 +21,13 @@ import {
 
 const APP = '/soundboard-of-storytelling/';
 
+/** The update prompt: a status (it has no name; a screen reader reads its text). */
+const updatePrompt = (page: Page) =>
+  page.getByRole('status').filter({ hasText: 'A new version is ready.' });
+/** A button of the update prompt, by its name. */
+const promptButton = (page: Page, name: string) =>
+  updatePrompt(page).getByRole('button', { name, exact: true });
+
 /** Load the app and wait until the service worker is active AND controls the page. */
 async function loadControlled(page: Page): Promise<void> {
   await page.goto(APP);
@@ -141,16 +148,16 @@ test('a new version waits until RELOAD, then takes over (ADR-0066)', async ({ pa
     });
 
     // The new version waits; the page is not reloaded on its own
-    await expect(page.getByTestId('update-prompt')).toBeVisible();
+    await expect(updatePrompt(page)).toBeVisible();
     // A mark on this document: it is gone once the page has reloaded
     await page.evaluate(() => document.documentElement.setAttribute('data-old-page', ''));
     const waiting = () =>
       page.evaluate(async () => !!(await navigator.serviceWorker.getRegistration())?.waiting);
     expect(await waiting()).toBe(true);
 
-    await page.getByTestId('update-prompt-reload-button').click();
+    await promptButton(page, 'RELOAD').click();
     await expect(page.locator('html')).not.toHaveAttribute('data-old-page'); // reloaded
-    await expect(page.getByTestId('update-prompt')).toBeHidden();
+    await expect(updatePrompt(page)).toBeHidden();
     await expect.poll(waiting).toBe(false); // the new version took over
   });
 });
@@ -166,23 +173,21 @@ test('the update prompt saves a backup first, then RELOAD still takes over (sett
     await page.evaluate(async () => {
       await (await navigator.serviceWorker.getRegistration())?.update();
     });
-    const prompt = page.getByTestId('update-prompt');
+    const prompt = updatePrompt(page);
     await expect(prompt).toBeVisible();
 
-    await prompt.getByTestId('update-prompt-backup-button').click();
+    await prompt.getByRole('button', { name: 'BACKUP', exact: true }).click();
     const downloading = page.waitForEvent('download');
-    await prompt.getByTestId('backup-export-panel-save-button').click();
+    await prompt.getByRole('button', { name: 'SAVE', exact: true }).click();
     expect((await downloading).suggestedFilename()).toMatch(/^soundboard-backup-.*\.zip$/);
-    await expect(prompt.getByTestId('backup-export-panel-saved-text')).toBeVisible();
+    await expect(prompt.getByText('Backup saved.', { exact: true })).toBeVisible();
 
     await page.evaluate(() => document.documentElement.setAttribute('data-old-page', ''));
-    await prompt.getByTestId('update-prompt-reload-button').click();
+    await prompt.getByRole('button', { name: 'RELOAD', exact: true }).click();
     await expect(page.locator('html')).not.toHaveAttribute('data-old-page'); // reloaded
     // The backup counts: the board list knows it was saved today
     await goToBoardList(page);
-    await expect(page.getByTestId('board-list-screen-backup-text')).toHaveText(
-      'Last backup: today',
-    );
+    await expect(page.getByText(/^(No backup yet|Last backup:)/)).toHaveText('Last backup: today');
   });
 });
 
@@ -191,7 +196,7 @@ test('the UPDATE button says when this is the newest version', async ({ page }) 
   await openMainMenu(page);
   await page.getByRole('button', { name: 'UPDATE', exact: true }).click();
   await expect(page.getByRole('status').filter({ hasText: 'newest version' })).toBeVisible();
-  await expect(page.getByTestId('update-prompt')).toBeHidden();
+  await expect(updatePrompt(page)).toBeHidden();
 });
 
 test('the UPDATE button finds a new version and brings back a prompt put off with LATER', async ({
@@ -204,14 +209,14 @@ test('the UPDATE button finds a new version and brings back a prompt put off wit
     await expect(
       page.getByRole('status').filter({ hasText: 'new version was found' }),
     ).toBeVisible();
-    await expect(page.getByTestId('update-prompt')).toBeVisible();
+    await expect(updatePrompt(page)).toBeVisible();
 
     // Put off with LATER, then the button again: the waiting version is offered once more
-    await page.getByTestId('update-prompt-later-button').click();
-    await expect(page.getByTestId('update-prompt')).toBeHidden();
+    await promptButton(page, 'LATER').click();
+    await expect(updatePrompt(page)).toBeHidden();
     await openMainMenu(page);
     await page.getByRole('button', { name: 'UPDATE', exact: true }).click();
-    await expect(page.getByTestId('update-prompt')).toBeVisible();
+    await expect(updatePrompt(page)).toBeVisible();
   });
 });
 
@@ -253,8 +258,8 @@ test('stored boards are still there offline', async ({ page, context }) => {
   await context.setOffline(true);
   await page.goto(APP);
   await goToBoardList(page);
-  // Count titles: '[data-testid^="board-list-screen-row-"]' would also match board-row-title-*.
-  const titles = page.locator('[data-testid^="board-list-screen-name-text-"]');
-  await expect(titles).toHaveCount(1);
-  await expect(titles.first()).toHaveText('Board 1');
+  // One button opens each board, named by the board and its counts
+  const boards = page.getByRole('button', { name: /\d+ decks? · \d+ pads?$/ });
+  await expect(boards).toHaveCount(1);
+  await expect(boards.first()).toHaveAccessibleName(/^Board 1 \d+ decks? · \d+ pads?$/);
 });
