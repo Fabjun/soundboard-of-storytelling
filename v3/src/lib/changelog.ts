@@ -17,10 +17,17 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.343';
+export const APP_VERSION = '3.0.344';
 
 /** The developer log, newest first; CHANGELOG.md is generated from it (sync-changelog). */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.344',
+    date: '2026-11-20',
+    items: [
+      'test: mobile/board-flow locates by role and name (ADR-0054 amendment 2026-11-19, batch 13) — NEW BOARD, the board by its open button (the row title sits in it), the mode switch as the group "Mode toggle", All pads, SETUP, DECKS and its group, NEW DECK and the back button by name. No test ID left in the spec. TEST_ID_LOCATORS 457 → 440. Counter-checked: a back button that does nothing and the DECKS panel without its group — exactly those two tests red; restored — green in mobile',
+    ],
+  },
   {
     version: '3.0.343',
     date: '2026-11-20',
