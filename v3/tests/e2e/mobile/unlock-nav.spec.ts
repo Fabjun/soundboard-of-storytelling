@@ -32,6 +32,7 @@ test('A — TAP TO START button tap opens the main menu', async ({ page }) => {
 
   await page.getByRole('button', { name: 'TAP TO START', exact: true }).tap();
 
+  // The menu is a screen without a role, inert behind the welcome — found by its test ID
   await expect(page.getByTestId('main-menu-screen')).toBeVisible();
   await expect(page.getByRole('dialog', { name: 'Welcome', exact: true })).toBeVisible();
 });
@@ -52,5 +53,5 @@ test('C — BOARD button tap opens BoardListScreen', async ({ page }) => {
 
   await page.getByRole('button', { name: 'BOARD', exact: true }).tap();
 
-  await expect(page.getByTestId('board-list-screen-new-button')).toBeVisible();
+  await expect(page.getByRole('button', { name: 'NEW BOARD', exact: true })).toBeVisible();
 });

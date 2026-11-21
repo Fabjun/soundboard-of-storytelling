@@ -11,6 +11,7 @@ import { test, expect, type Page } from '@playwright/test';
 import { createBoardAndNavigate, createDeck, enterSetupMode, goToBoardList } from './helpers';
 
 const stopAll = (page: Page) => page.getByRole('button', { name: 'STOP ALL', exact: true });
+// The two bars are containers without a role; which bar holds STOP ALL is the point here
 const topBar = (page: Page) => page.getByTestId('board-top-bar');
 const bottomBar = (page: Page) => page.getByTestId('status-bar');
 
@@ -61,5 +62,5 @@ test('in SETUP the dock shows the save status and no STOP ALL', async ({ page })
   await page.setViewportSize({ width: 390, height: 844 });
   await enterSetupMode(page);
   await expect(stopAll(page)).toHaveCount(0);
-  await expect(page.getByTestId('status-bar-save-text')).toBeVisible();
+  await expect(bottomBar(page).getByText(/^(SAVING…|SAVED|NOT SAVED)$/)).toBeVisible();
 });

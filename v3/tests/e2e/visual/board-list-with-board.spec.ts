@@ -12,8 +12,11 @@ import { goToBoardList } from '../helpers';
 test('BoardListScreen — with one board', async ({ page }) => {
   await page.goto('/soundboard-of-storytelling/');
   await goToBoardList(page);
-  await page.getByTestId('board-list-screen-new-button').click();
-  await page.locator('[data-testid^="board-list-screen-row-"]').first().waitFor();
+  await page.getByRole('button', { name: 'NEW BOARD', exact: true }).click();
+  await page
+    .getByRole('button', { name: /\d+ decks? · \d+ pads?$/ })
+    .first()
+    .waitFor();
   await stableScreenshot(page);
   await expect(page).toHaveScreenshot('board-list-with-board.png', {
     fullPage: false,

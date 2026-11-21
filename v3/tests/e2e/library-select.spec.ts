@@ -25,7 +25,9 @@ const clearSearch = (page: Page) =>
 const fileRow = (page: Page, file: string) =>
   page.getByRole('button', { name: `Rename ${file}`, exact: true });
 const select = (page: Page) => page.getByRole('button', { name: 'SELECT', exact: true });
-const toast = (page: Page) => page.getByTestId('undo-toast');
+/** The undo toast: the status region that offers UNDO. */
+const toast = (page: Page) =>
+  page.getByRole('status').filter({ has: page.getByRole('button', { name: 'UNDO', exact: true }) });
 
 test.beforeEach(async ({ page }) => {
   for (const file of files) await seedTestAudio(page, file);

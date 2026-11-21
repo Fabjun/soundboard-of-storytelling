@@ -15,7 +15,7 @@ test('ModeToggle — GAME state (default)', async ({ page }) => {
   await createBoardAndNavigate(page);
   await enterGameMode(page);
   await stableScreenshot(page);
-  const toggle = page.getByTestId('mode-toggle');
+  const toggle = page.getByRole('group', { name: 'Mode toggle', exact: true });
   await expect(toggle).toHaveScreenshot('mode-toggle-game.png');
 });
 
@@ -25,6 +25,6 @@ test('ModeToggle — SETUP state', async ({ page }) => {
   await createBoardAndNavigate(page);
   await enterSetupMode(page);
   await stableScreenshot(page);
-  const toggle = page.getByTestId('mode-toggle');
+  const toggle = page.getByRole('group', { name: 'Mode toggle', exact: true });
   await expect(toggle).toHaveScreenshot('mode-toggle-setup.png');
 });

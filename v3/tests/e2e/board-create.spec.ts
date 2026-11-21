@@ -13,13 +13,13 @@ test('create board → appears in list → BoardScreen loads with pad grid', asy
   // Create new board
   await page.getByRole('button', { name: /NEW BOARD/ }).click();
 
-  // Board row appears in list
-  const rows = page.locator('[data-testid^="board-list-screen-row-"]');
+  // Board row appears in list — one button opens each board, named by the board and its counts
+  const rows = page.getByRole('button', { name: /\d+ decks? · \d+ pads?$/ });
   await expect(rows).toHaveCount(1);
 
-  // Navigate into the board (click the row title area, not the action buttons)
-  await rows.first().locator('[data-testid^="board-list-screen-name-text-"]').click();
+  // Navigate into the board (the row title sits in that button, not in the action buttons)
+  await rows.first().click();
 
   // BoardScreen: ModeToggle is always visible regardless of whether a deck exists
-  await expect(page.getByTestId('mode-toggle')).toBeVisible();
+  await expect(page.getByRole('group', { name: 'Mode toggle', exact: true })).toBeVisible();
 });

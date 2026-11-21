@@ -20,7 +20,7 @@ test("the version link opens What's new, grouped per version, and closes again",
   await openMainMenu(page);
   await page.getByRole('button', { name: /^v [\d.]+, open What's new$/ }).click();
 
-  const notes = page.getByTestId('main-menu-screen-whats-new-region');
+  const notes = page.getByRole('dialog', { name: "WHAT'S NEW", exact: true });
   await expect(notes).toBeVisible();
   const newest = WHATS_NEW[0];
   const firstSection = notes.getByRole('region', {

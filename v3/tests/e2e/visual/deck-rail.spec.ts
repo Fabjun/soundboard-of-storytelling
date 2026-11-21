@@ -15,12 +15,17 @@ test('DeckRail — two decks, first active', async ({ page }) => {
   await createBoardAndNavigate(page);
   await createDeck(page);
   // Create a second deck
-  await page.getByTestId('deck-rail-new-button').click();
-  await page.locator('[data-testid^="deck-rail-deck-tab-"]').nth(1).waitFor();
+  await page.getByRole('button', { name: 'NEW DECK', exact: true }).click();
+  // The rail's decks, each named by position, name and pad count ("1 Deck 1 0")
+  const decks = page.getByRole('list', { name: 'Decks', exact: true }).getByRole('button', {
+    name: /^\d+ Deck \d+ \d+$/,
+  });
+  await decks.nth(1).waitFor();
   await enterSetupMode(page);
   // Click the first deck tab to make it active
-  await page.locator('[data-testid^="deck-rail-deck-tab-"]').first().click();
+  await decks.first().click();
   await stableScreenshot(page);
+  // The rail's box, a container without a role: what the screenshot shows
   const rail = page.getByTestId('deck-rail');
   await expect(rail).toHaveScreenshot('deck-rail-two-decks.png');
 });

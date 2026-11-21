@@ -21,7 +21,8 @@ test('SAVED after the board is stored; SAVING… while an edit waits, then SAVED
 }) => {
   await page.goto('/soundboard-of-storytelling/');
   await goToBoardList(page);
-  const status = page.getByTestId('status-bar-save-text');
+  // The save status, by its words (it has no role while it says SAVING… or SAVED)
+  const status = page.getByText(/^(SAVING…|SAVED|NOT SAVED)$/);
   await expect(status).toHaveText('SAVED');
   await createBoardAndNavigate(page);
   await createDeck(page);
@@ -30,7 +31,10 @@ test('SAVED after the board is stored; SAVING… while an edit waits, then SAVED
 
   await addNamedPad(page, 'Thunder');
   // The name waits half a second before it is written — the status says so meanwhile
-  await page.getByTestId('pad-editor-panel-name-input').pressSequentially('X');
+  await page
+    .getByRole('dialog', { name: 'Pad editor', exact: true })
+    .getByRole('textbox', { name: 'NAME', exact: true })
+    .pressSequentially('X');
   await expect(status).toHaveText('SAVING…');
   await expect(status).toHaveText('SAVED');
 });

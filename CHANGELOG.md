@@ -7,6 +7,12 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.345 — 2026-11-21
+
+### Internal
+
+- test: thirteen small specs locate by role and name (ADR-0054 amendment 2026-11-19, batch 14) — board-create, mode-lock, save-status, board-frames, mobile/unlock-nav, wake-lock, library-folders, library-select, whats-new and the visual specs deck-rail, board-list-with-board, board-list-empty, mode-toggle-states: a board by its open button, the mode switch as the group "Mode toggle", the rail decks inside the list "Decks", the save status and SCREEN ON by their words, the undo toast as the status that offers UNDO, What's new as its dialog, the back button and NEW BOARD / NEW DECK by name. Test IDs stay, each with its reason, where a container without a role is the point: the two bars of board-frames, the deck rail of the visual screenshot, the main menu inert behind the welcome. TEST_ID_LOCATORS 440 → 418. Counter-checked: the undo region without its status role, SAVED and SCREEN ON reworded, the What's new title and the deck list name changed — every spec that uses them red; restored — green in smoke, smoke-webkit, full, full-webkit, mobile, mobile-chromium and visual
+
 ## 3.0.344 — 2026-11-20
 
 ### Internal
