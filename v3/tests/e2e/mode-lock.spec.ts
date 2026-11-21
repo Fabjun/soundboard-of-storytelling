@@ -17,7 +17,7 @@ import {
 } from './helpers';
 
 const lock = (page: Page) => page.getByRole('button', { name: /lock the mode switch/i });
-const setupHalf = (page: Page) => page.getByTestId('mode-toggle-setup-button');
+const setupHalf = (page: Page) => page.getByRole('button', { name: 'SETUP', exact: true });
 const gameOn = (page: Page) =>
   page.getByRole('button', { name: 'GAME', exact: true, pressed: true });
 
@@ -57,6 +57,9 @@ test('a reload turns the Lock off', async ({ page }) => {
   await expect(lock(page)).toHaveAttribute('aria-pressed', 'true');
   await reloadApp(page);
   await goToBoardList(page);
-  await page.locator('[data-testid^="board-list-screen-name-text-"]').first().click();
+  await page
+    .getByRole('button', { name: /\d+ decks? · \d+ pads?$/ })
+    .first()
+    .click();
   await expect(lock(page)).toHaveAttribute('aria-pressed', 'false');
 });

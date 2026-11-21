@@ -17,10 +17,17 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.344';
+export const APP_VERSION = '3.0.345';
 
 /** The developer log, newest first; CHANGELOG.md is generated from it (sync-changelog). */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.345',
+    date: '2026-11-21',
+    items: [
+      'test: thirteen small specs locate by role and name (ADR-0054 amendment 2026-11-19, batch 14) — board-create, mode-lock, save-status, board-frames, mobile/unlock-nav, wake-lock, library-folders, library-select, whats-new and the visual specs deck-rail, board-list-with-board, board-list-empty, mode-toggle-states: a board by its open button, the mode switch as the group "Mode toggle", the rail decks inside the list "Decks", the save status and SCREEN ON by their words, the undo toast as the status that offers UNDO, What\'s new as its dialog, the back button and NEW BOARD / NEW DECK by name. Test IDs stay, each with its reason, where a container without a role is the point: the two bars of board-frames, the deck rail of the visual screenshot, the main menu inert behind the welcome. TEST_ID_LOCATORS 440 → 418. Counter-checked: the undo region without its status role, SAVED and SCREEN ON reworded, the What\'s new title and the deck list name changed — every spec that uses them red; restored — green in smoke, smoke-webkit, full, full-webkit, mobile, mobile-chromium and visual',
+    ],
+  },
   {
     version: '3.0.344',
     date: '2026-11-20',

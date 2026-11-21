@@ -24,7 +24,9 @@ const allButton = (page: Page) => page.getByRole('button', { name: /^All \d+$/ }
 const box = (page: Page, file: string) =>
   page.getByRole('checkbox', { name: new RegExp(`^${file.replace('.', '\\.')}`) });
 const toolbar = (page: Page, name: string) => page.getByRole('toolbar', { name, exact: true });
-const toast = (page: Page) => page.getByTestId('undo-toast');
+/** The undo toast: the status region that offers UNDO. */
+const toast = (page: Page) =>
+  page.getByRole('status').filter({ has: page.getByRole('button', { name: 'UNDO', exact: true }) });
 const undo = (page: Page) => toast(page).getByRole('button', { name: 'UNDO', exact: true });
 
 async function moveToNewFolder(page: Page, chosen: string[], folder: string): Promise<void> {

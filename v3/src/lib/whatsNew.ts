@@ -103,6 +103,10 @@ export function withEarlyVersions(
 /** The release notes the main menu shows, newest first (checked by whatsNew.test.ts). */
 export const WHATS_NEW: WhatsNewNotes[] = [
   {
+    version: '3.0.345',
+    behindTheScenes: ['Thirteen more tests find controls by the names a screen reader says.'],
+  },
+  {
     version: '3.0.344',
     behindTheScenes: [
       'The phone tests of the board list and the deck tabs find controls by the names a screen reader says.',

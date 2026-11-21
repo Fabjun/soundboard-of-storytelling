@@ -41,7 +41,7 @@ test.beforeEach(async ({ page }) => {
 test('GAME on a board keeps the screen on; SETUP and leaving the board release it', async ({
   page,
 }) => {
-  const screenOn = page.getByTestId('status-bar-screen-on-text');
+  const screenOn = page.getByText('SCREEN ON', { exact: true });
   expect(await log(page)).toEqual([]); // the board list never asks
 
   await createBoardAndNavigate(page);
@@ -55,6 +55,6 @@ test('GAME on a board keeps the screen on; SETUP and leaving the board release i
 
   await enterGameMode(page);
   await expect(screenOn).toBeVisible();
-  await page.getByTestId('board-top-bar-back-button').click();
+  await page.getByRole('button', { name: 'Back to the board list', exact: true }).click();
   await expect.poll(() => log(page)).toEqual(['request', 'release', 'request', 'release']);
 });
