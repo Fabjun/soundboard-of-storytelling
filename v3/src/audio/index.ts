@@ -118,9 +118,9 @@ function pickSingleFile(pad: SinglePad): PadFile | undefined {
 /**
  * Maps an app pad (ADR-0048: Single / Loop with `files` + `order`) to the shape V1's engine
  * plays: Single → one file per trigger; Loop with one file → seamless loop; Loop with several
- * files → the engine's playlist (repeats the list alone; plays it once inside a combo). Each file
+ * files → the engine's playlist (repeats the list until stopped, or `repeat` passes). Each file
  * plays within its own trim (ADR-0068); a Loop's `repeat` count goes along in both shapes
- * (ADR-0069).
+ * (ADR-0069) and, in a combo, makes its step wait for the passes.
  */
 export function toEnginePad(pad: Pad): EnginePad {
   switch (pad.type) {

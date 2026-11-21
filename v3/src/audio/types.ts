@@ -25,13 +25,16 @@ export type EngineLoopPad = PadBase & {
   trimEnd?: number;
   /** Second of the file the first pass starts at, inside the trimmed region (PAD editor preview). */
   startAt?: number;
-  /** Passes of the region before it stops by itself; none = until stopped (ADR-0069). */
+  /**
+   * Passes of the region before it stops by itself; none = until stopped (ADR-0069). In a combo
+   * the step waits for the passes (owner decision 2026-11-21).
+   */
   repeat?: number;
 };
 
 /**
- * Several files one after another (alone: repeats the list; in a combo: plays it once), each
- * within its own trim (ADR-0068 — engine change approved by the owner 2026-10-03).
+ * Several files one after another, each within its own trim (ADR-0068 — engine change approved
+ * by the owner 2026-10-03).
  */
 export type EnginePlaylistPad = PadBase & {
   type: 'playlist';
@@ -39,10 +42,14 @@ export type EnginePlaylistPad = PadBase & {
   shuffle?: boolean;
   /**
    * The list repeats until stopped — a Loop with several files (ADR-0048). In a combo such a
-   * child runs in the background like a one-file loop (owner decision 2026-10-02, PR #36).
+   * child without `repeat` runs in the background like a one-file loop (owner decision
+   * 2026-10-02, PR #36).
    */
   loop?: boolean;
-  /** With `loop`: passes through the list before it stops by itself; none = until stopped. */
+  /**
+   * With `loop`: passes through the list before it stops by itself; none = until stopped. In a
+   * combo the step waits for the passes (owner decision 2026-11-21, ADR-0069).
+   */
   repeat?: number;
 };
 

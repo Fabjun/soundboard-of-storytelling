@@ -117,7 +117,8 @@ export const HELP_TOPICS: readonly HelpTopic[] = [
     title: 'Combos',
     text: [
       'A combo plays other pads of the board, step by step. In the PAD editor choose COMBO, then + STEP for each step.',
-      'In a step, “+ pad…” adds the pads it plays together. “Wait (s)” is how long the step lasts before the next one starts. “Stop everything first” stops every sound before the step plays.',
+      'In a step, “+ pad…” adds the pads it plays together. “Stop everything first” stops every sound before the step plays.',
+      'The next step starts when the step’s Singles and its Loops with a REPEAT count have played. A Loop set to ∞ plays on in the background until the combo ends; a step with nothing else lasts its “Wait (s)”.',
     ],
     words: ['combo', 'step', 'sequence', 'wait', 'chain'],
   },

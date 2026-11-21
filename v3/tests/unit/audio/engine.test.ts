@@ -564,8 +564,8 @@ describe('repeat', () => {
     expect(audio.isPlaying('p')).toBe(false);
   });
 
-  // In a combo a Loop child runs in the background — the next step starts at once (PR #36);
-  // with a count it stops by itself instead of running until the combo is stopped.
+  // In a combo a Loop child with a count plays in the foreground: its step waits for its passes
+  // (ADR-0069 amendment 2026-11-21). Only a Loop set to ∞ runs in the background (PR #36).
   test('in a combo, a Loop child with a count plays N passes in one source', async () => {
     pads.set('bg', loop('bg', 'h3', { repeat: 2 }));
     void audio.play('c', combo('c', [{ padIds: ['bg'], duration: 9 }]));
@@ -582,6 +582,33 @@ describe('repeat', () => {
     ctx.sources[1].end(); // one pass through the list is done
     await flush();
     expect(tags()).toEqual(['a', 'b']); // without the count it would start 'a' again
+  });
+
+  test('in a combo, a Loop child with a count holds its step until its passes are played', async () => {
+    pads.set('bg', loop('bg', 'h3', { repeat: 2 }));
+    pads.set('s2', single('s2', 'h2'));
+    void audio.play('c', combo('c', [{ padIds: ['bg'] }, { padIds: ['s2'] }]));
+    await flush();
+    expect(tags()).toEqual(['h3']); // the next step waits
+    ctx.sources[0].end(); // both passes played
+    await flush();
+    expect(tags()).toEqual(['h3', 'h2']);
+  });
+
+  // The owner's case of 2026-11-21: a list in a combo's last step was cut off when the combo ended
+  test("in a combo, a list child with a count plays through before the combo's end stops it", async () => {
+    pads.set('pl', { ...playlist('pl', ['a', 'b']), repeat: 1 });
+    void audio.play('c', combo('c', [{ padIds: ['pl'] }]));
+    await flush();
+    expect(stopped).toEqual([]);
+    ctx.sources[0].end();
+    await flush();
+    expect(tags()).toEqual(['a', 'b']);
+    expect(ctx.sources[1].stopped).toBeNull(); // the second file still plays
+    expect(stopped).toEqual([]);
+    ctx.sources[1].end();
+    await flush();
+    expect(stopped).toEqual(['c']); // the combo ends with the list
   });
 });
 
@@ -1136,8 +1163,8 @@ describe('combo children', () => {
     expect(tags()).toEqual(['h2']);
   });
 
-  // A Loop with several files runs in the background of a combo, like a one-file loop, and its
-  // list repeats until the combo stops (owner decision 2026-10-02, PR #36).
+  // A Loop with several files set to ∞ runs in the background of a combo, like a one-file loop,
+  // and its list repeats until the combo stops (owner decision 2026-10-02, PR #36).
   test('a Loop with several files runs in the background: the next step starts at once, the list repeats', async () => {
     pads.set('pl', playlist('pl', ['a', 'b']));
     pads.set('s2', single('s2', 'h2'));
