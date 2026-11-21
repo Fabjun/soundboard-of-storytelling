@@ -17,10 +17,18 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.345';
+export const APP_VERSION = '3.0.346';
 
 /** The developer log, newest first; CHANGELOG.md is generated from it (sync-changelog). */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.346',
+    date: '2026-11-21',
+    items: [
+      'fix(audio): in a combo a Loop with a REPEAT count holds its step until its passes have played, with one file or several; only a Loop set to ∞ runs in the background (PR #36). A V1 board\'s night combo stopped its list: as a background child the list did not hold its step, so the combo ran on to its end and stopped it with its background sounds. V1 counted only a loop without a count as background. Engine change approved by the owner (option B, ADR-0069 amendment 2026-11-21); the "Combos" help says what a step waits for',
+      'test: unit engine — a Loop with a count holds its step; a list with a count in the last step plays through before the combo ends. Counter-checked: red before the fix (the next step started at once, the combo ended at once), green with it',
+    ],
+  },
   {
     version: '3.0.345',
     date: '2026-11-21',

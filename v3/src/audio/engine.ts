@@ -634,8 +634,14 @@ function fadeOutPads(padIds: string[], duration: number): void {
 
 // ── COMBO ENGINE (V1 lines 3970–4238) ────────────────────────────────────────
 
+/**
+ * A combo child that does not hold up its step: a Loop that plays until stopped (∞), with one
+ * file or several (PR #36). A Loop with a repeat count plays its passes in the foreground and the
+ * step waits for them, as V1 did for a loop with a count (owner decision 2026-11-21, ADR-0069).
+ */
 function isInfiniteBg(pad: SinglePad | LoopPad | PlaylistPad): boolean {
-  return pad.type === 'loop' || (pad.type === 'playlist' && pad.loop === true);
+  const loops = pad.type === 'loop' || (pad.type === 'playlist' && pad.loop === true);
+  return loops && pad.repeat === undefined;
 }
 
 /**
