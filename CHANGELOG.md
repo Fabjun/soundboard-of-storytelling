@@ -7,6 +7,12 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.351 — 2026-11-22
+
+### Internal
+
+- test: layout-reach and a11y locate by role and name (ADR-0054 amendment 2026-11-19, batch 18) — the PAD editor, DELETE PAD, the undo toast by its UNDO button, Add an icon and the icon picker's categories, VIEW LOG AND STATS, Back to the board list, NEW BOARD, DECKS, the board buttons, the deck buttons and the upload error text, which is visible only once its disclosure opened. The grid, the empty cell, the creation popover (its ADD PAD shares its name with the bar's) and the hidden file input keep their test IDs. TEST_ID_LOCATORS 315 → 292. Counter-checked: DELETE PAD, VIEW LOG AND STATS and the icon picker's name renamed, and the Enter that opens the error details left out — four tests red, each at the renamed name or the hidden text; restored from a copy — green in full and full-webkit
+
 ## 3.0.350 — 2026-11-22
 
 ### Fixed
