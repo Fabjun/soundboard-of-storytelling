@@ -23,8 +23,22 @@ import {
   goToLibrary,
   openDeckRail,
   openMainMenu,
+  boardOpenButtons,
+  deckRows,
+  deckSelect,
+  modeToggle,
   padCells,
 } from './helpers';
+
+/** The board top bar's way back to the board list. */
+const backToBoards = (page: Page) =>
+  page.getByRole('button', { name: 'Back to the board list', exact: true });
+
+/** The board list's NEW BOARD — its presence says the board list is shown. */
+const newBoardButton = (page: Page) => page.getByRole('button', { name: 'NEW BOARD', exact: true });
+
+/** The phone frame's DECKS button, which opens and closes the deck panel. */
+const decksButton = (page: Page) => page.getByRole('button', { name: 'DECKS', exact: true });
 
 /** WCAG 2.2 A and AA rules — the level the project's UI rules aim at. */
 const TAGS = ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'];
@@ -101,7 +115,7 @@ test('main menu and Settings', async ({ page }) => {
   await page.getByRole('button', { name: 'SETTINGS', exact: true }).click();
   await page.getByRole('heading', { name: 'DATA', exact: true }).waitFor();
   found.push(...(await violations(page)).map((v) => `Settings — ${v}`));
-  await page.getByTestId('settings-screen-developer-button').click();
+  await page.getByRole('button', { name: 'VIEW LOG AND STATS', exact: true }).click();
   await page.getByRole('dialog', { name: 'DEVELOPER', exact: true }).waitFor();
   found.push(...(await violations(page)).map((v) => `developer view — ${v}`));
   expect(found).toEqual([]);
@@ -117,8 +131,8 @@ test('board list with a board', async ({ page }) => {
   await page.goto('/soundboard-of-storytelling/');
   await goToBoardList(page);
   await createBoardAndNavigate(page);
-  await page.getByTestId('board-top-bar-back-button').click();
-  await page.getByTestId('board-list-screen-new-button').waitFor();
+  await backToBoards(page).click();
+  await newBoardButton(page).waitFor();
   expect(await violations(page)).toEqual([]);
 });
 
@@ -165,9 +179,9 @@ test('board on a phone: deck tabs, the DECKS panel, the quick-access bar and the
   await page.getByRole('button', { name: 'In quick access', exact: true }).click();
   await closePadEditor(page);
   await expect(page.getByRole('group', { name: 'Quick access', exact: true })).toBeVisible();
-  await page.getByTestId('deck-rail-manage-button').click();
+  await decksButton(page).click();
   const found = (await violations(page)).map((v) => `SETUP, DECKS open — ${v}`);
-  await page.getByTestId('deck-rail-manage-button').click();
+  await decksButton(page).click();
   await enterGameMode(page);
   found.push(...(await violations(page)).map((v) => `GAME — ${v}`));
   expect(found).toEqual([]);
@@ -199,8 +213,8 @@ for (const theme of THEMES) {
     await scan('SETUP');
     await enterGameMode(page);
     await scan('GAME');
-    await page.getByTestId('board-top-bar-back-button').click();
-    await page.getByTestId('board-list-screen-new-button').waitFor();
+    await backToBoards(page).click();
+    await newBoardButton(page).waitFor();
     await scan('board list');
     expect(found).toEqual([]);
   });
@@ -230,18 +244,18 @@ test('with the keyboard alone: open a board, choose a deck, make a pad from a li
   await createBoardAndNavigate(page);
   await createDeck(page);
   await createDeck(page);
-  await page.getByTestId('board-top-bar-back-button').click();
-  await page.getByTestId('board-list-screen-new-button').waitFor();
+  await backToBoards(page).click();
+  await newBoardButton(page).waitFor();
 
   // The board list: Tab to the board, Enter opens it
-  await tabTo(page, page.locator('[data-testid^="board-list-screen-open-button-"]').first());
+  await tabTo(page, boardOpenButtons(page).first());
   await page.keyboard.press('Enter');
-  await expect(page.getByTestId('mode-toggle')).toBeVisible();
+  await expect(modeToggle(page)).toBeVisible();
 
   // The deck rail: Tab to the second deck, Enter shows it
   await enterSetupMode(page);
   await openDeckRail(page);
-  const second = page.locator('[data-testid^="deck-rail-select-button-"]').nth(1);
+  const second = deckSelect(deckRows(page).nth(1));
   await tabTo(page, second);
   await page.keyboard.press('Enter');
   await expect(second).toHaveAttribute('aria-current', 'true');
@@ -274,15 +288,18 @@ test('a file that cannot be imported says why in plain words, opened with the ke
   const why = page.getByText('Why it failed', { exact: true });
   await tabTo(page, why);
   await page.keyboard.press('Enter');
-  await expect(page.getByTestId('library-screen-upload-errors-region')).toContainText(
-    'notes.txt: not an audio file this browser can play — use MP3, M4A or WAV',
-  );
+  // Visible only once the disclosure is open
+  await expect(
+    page.getByText('notes.txt: not an audio file this browser can play — use MP3, M4A or WAV', {
+      exact: true,
+    }),
+  ).toBeVisible();
 });
 
 test("type and spacing follow the browser's text size (WCAG 1.4.4, ADR-0081)", async ({ page }) => {
   await page.goto('/soundboard-of-storytelling/');
   await goToBoardList(page);
-  const newBoard = page.getByTestId('board-list-screen-new-button');
+  const newBoard = newBoardButton(page);
   const size = () =>
     newBoard.evaluate((el) => {
       const s = getComputedStyle(el);
