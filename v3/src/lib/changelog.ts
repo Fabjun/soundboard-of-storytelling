@@ -17,10 +17,17 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.347';
+export const APP_VERSION = '3.0.348';
 
 /** The developer log, newest first; CHANGELOG.md is generated from it (sync-changelog). */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.348',
+    date: '2026-11-22',
+    items: [
+      'test: pad-editing and pad-editor-preview locate by role and name (ADR-0054 amendment 2026-11-19, batch 16) — the dialog "Pad editor", its NAME field, SAVE, the restored-draft status, Close the pad editor, the trim fields, the waveform\'s sliders Trim start, Trim end, Fade-in end and Playback position, the preview buttons by name, LOOP in the TYPE group; the board list through boardOpenButtons and modeToggle. The waveform surface a tap seeks on keeps its test ID: it has no role. TEST_ID_LOCATORS 372 → 335. Counter-checked: NAME, Play a preview, Trim start and the restored-draft text renamed — six tests red at the renamed name; the restored-draft text alone — the draft test red at the status; restored from a copy — green in full and full-webkit',
+    ],
+  },
   {
     version: '3.0.347',
     date: '2026-11-22',

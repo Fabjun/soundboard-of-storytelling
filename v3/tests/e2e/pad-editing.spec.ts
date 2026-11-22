@@ -21,8 +21,19 @@ import {
   reopenFirstBoard,
   closePadEditor,
   openMainMenu,
+  boardOpenButtons,
+  modeToggle,
   PAD_CELL,
 } from './helpers';
+
+/** The PAD editor, a full-screen dialog (ADR-0074). */
+const editor = (page: Page) => page.getByRole('dialog', { name: 'Pad editor', exact: true });
+
+/** The editor's NAME field. */
+const nameField = (page: Page) => editor(page).getByRole('textbox', { name: 'NAME', exact: true });
+
+/** The editor's SAVE button — a draft becomes the pad only through it (ADR-0084). */
+const saveButton = (page: Page) => editor(page).getByRole('button', { name: 'SAVE', exact: true });
 
 /** A button of the PAD editor's TYPE group, by its visible name (SGL, LOOP, COMBO). */
 const typeButton = (page: Page, name: string) =>
@@ -43,7 +54,7 @@ test.beforeEach(async ({ page }) => {
 test('16 — tap pad in SETUP mode → PadEditorPanel opens', async ({ page }) => {
   const padCell = page.locator(PAD_CELL).first();
   await padCell.click();
-  await expect(page.getByTestId('pad-editor-panel')).toBeVisible();
+  await expect(editor(page)).toBeVisible();
 });
 
 // ── Test 17: Change pad name → auto-saved ────────────────────────────────────
@@ -52,22 +63,20 @@ test('17 — change pad name in editor → persists after page reload', async ({
   // Open editor
   const padCell = page.locator(PAD_CELL).first();
   await padCell.click();
-  await page.getByTestId('pad-editor-panel').waitFor();
+  await editor(page).waitFor();
 
   // Change the name
-  const nameInput = page.getByTestId('pad-editor-panel-name-input');
+  const nameInput = nameField(page);
   await nameInput.fill('Renamed Pad');
-  await page.getByTestId('pad-editor-panel-save-button').click();
+  await saveButton(page).click();
 
   // Reload page and navigate back to the board — reloadApp waits for the saves
   await reloadApp(page);
   await openMainMenu(page);
   await page.getByRole('button', { name: 'BOARD', exact: true }).click();
   // Board should still exist
-  const boardRow = page.locator('[data-testid^="board-list-screen-row-"]').first();
-  await boardRow.waitFor();
-  await boardRow.locator('[data-testid^="board-list-screen-name-text-"]').click();
-  await page.getByTestId('mode-toggle').waitFor();
+  await boardOpenButtons(page).first().click();
+  await modeToggle(page).waitFor();
   // Re-enter setup mode
   await enterSetupMode(page);
 
@@ -81,7 +90,7 @@ test('18 — trivial type change (single→loop) → no confirmation dialog', as
   // Open editor
   const padCell = page.locator(PAD_CELL).first();
   await padCell.click();
-  await page.getByTestId('pad-editor-panel').waitFor();
+  await editor(page).waitFor();
 
   // Click LOOP type button (trivial from single)
   await typeButton(page, 'LOOP').click();
@@ -101,7 +110,7 @@ test('18 — trivial type change (single→loop) → no confirmation dialog', as
 test('19 — lossy type change → PadTypeConfirmDialog appears', async ({ page }) => {
   const padCell = page.locator(PAD_CELL).first();
   await padCell.click();
-  await page.getByTestId('pad-editor-panel').waitFor();
+  await editor(page).waitFor();
 
   // single→combo drops the audio files (padMigrationMatrix 'reset', ADR-0048): the dialog appears
   const dialog = page.getByRole('alertdialog', { name: 'Change pad type?', exact: true });
@@ -127,7 +136,7 @@ test('19 — lossy type change → PadTypeConfirmDialog appears', async ({ page 
   await expect(dialog).toBeVisible();
   await page.keyboard.press('Escape');
   await expect(combo).toBeFocused();
-  await expect(page.getByTestId('pad-editor-panel')).toBeVisible(); // only the question closed
+  await expect(editor(page)).toBeVisible(); // only the question closed
 
   // Cancel: the type stays SINGLE
   await typeButton(page, 'COMBO').click();
@@ -162,7 +171,7 @@ test('a name typed just before the editor is closed is kept', async ({ page }) =
   const first = page.locator(PAD_CELL).first();
   await pauseClock(page);
   await first.click();
-  await page.getByTestId('pad-editor-panel-name-input').fill('Owl');
+  await nameField(page).fill('Owl');
   await closePadEditor(page);
   await expect(first).toContainText('Owl');
 
@@ -179,7 +188,7 @@ test('a draft left when the page is hidden comes back in the editor; SAVE keeps 
   const first = page.locator(PAD_CELL).first();
   await pauseClock(page); // only the hidden page writes the draft, not the pause after typing
   await first.click();
-  await page.getByTestId('pad-editor-panel-name-input').fill('Rain');
+  await nameField(page).fill('Rain');
   // What the browser does on an app switch or tab close
   await page.evaluate(() => {
     Object.defineProperty(document, 'visibilityState', { configurable: true, get: () => 'hidden' });
@@ -189,13 +198,15 @@ test('a draft left when the page is hidden comes back in the editor; SAVE keeps 
   await reloadApp(page);
   await openMainMenu(page);
   await page.getByRole('button', { name: 'BOARD', exact: true }).click();
-  await page.locator('[data-testid^="board-list-screen-name-text-"]').first().click();
-  await page.getByTestId('mode-toggle').waitFor();
+  await boardOpenButtons(page).first().click();
+  await modeToggle(page).waitFor();
   await enterSetupMode(page);
   await expect(first).not.toContainText('Rain'); // not saved
   await first.click();
-  await expect(page.getByTestId('pad-editor-panel-name-input')).toHaveValue('Rain');
-  await expect(page.getByTestId('pad-editor-panel-restored-text')).toBeVisible();
-  await page.getByTestId('pad-editor-panel-save-button').click();
+  await expect(nameField(page)).toHaveValue('Rain');
+  await expect(
+    editor(page).getByRole('status').filter({ hasText: 'Unsaved changes restored' }),
+  ).toBeVisible();
+  await saveButton(page).click();
   await expect(first).toContainText('Rain');
 });
