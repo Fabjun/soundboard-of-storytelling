@@ -5,6 +5,7 @@
  *   a reload
  * - A combo is never offered a pad that would make it start itself (no cycles)
  * - A tap removes a pad from a step or a step; the editor's undo brings each back
+ * - A Loop set to ∞ is marked BG in a step, with the sentence that says what that means
  *
  * No audio needed: pads come from ADD PAD (Chromium and WebKit).
  */
@@ -110,4 +111,44 @@ test('a tap takes a pad out of a step or removes a step; the editor undo brings 
   await undo.click();
   await expect(step).toBeVisible();
   await expect(owl).toBeVisible(); // with its pad
+});
+
+// Owner decision 2026-11-22: a Loop set to ∞ plays in the background of a combo and stops when the
+// combo ends (PR #36) — the step marks it, as V1 did, and says so in a sentence
+test('a Loop set to ∞ is marked BG in a step; a REPEAT count takes the mark away', async ({
+  page,
+}) => {
+  await addNamedPad(page, 'Night');
+  await editor(page)
+    .getByRole('group', { name: 'TYPE', exact: true })
+    .getByRole('button', { name: 'LOOP', exact: true })
+    .click();
+  await editor(page).getByRole('button', { name: 'SAVE', exact: true }).click();
+  await addNamedPad(page, 'Owl');
+  await addNamedPad(page, 'Dusk', { combo: true });
+  await addStep(page);
+  await choose(page, 1, 'Night');
+  await choose(page, 1, 'Owl');
+
+  const hint =
+    'BG — a Loop set to ∞ plays in the background and stops when the combo ends; a REPEAT count plays it through.';
+  await expect(chip(page, 'Night', 1)).toHaveText(/^Night\s*BG/);
+  await expect(chip(page, 'Night', 1)).toHaveAccessibleDescription(hint);
+  await expect(chip(page, 'Owl', 1)).not.toContainText('BG');
+  await expect(stepGroup(page, 1).getByText(hint, { exact: true })).toBeVisible();
+  await editor(page).getByRole('button', { name: 'SAVE', exact: true }).click();
+
+  // Night plays once: it holds the step, so the mark and the sentence go
+  await closePadEditor(page);
+  await page.getByRole('button', { name: 'Night', exact: true }).click(); // the pad in the grid
+  const count = editor(page)
+    .getByRole('group', { name: 'REPEAT', exact: true })
+    .getByRole('spinbutton', { name: 'Repeat count', exact: true });
+  await count.fill('1');
+  await count.press('Enter');
+  await editor(page).getByRole('button', { name: 'SAVE', exact: true }).click();
+  await closePadEditor(page);
+  await page.getByRole('button', { name: 'Dusk', exact: true }).click();
+  await expect(chip(page, 'Night', 1)).not.toContainText('BG');
+  await expect(stepGroup(page, 1).getByText(hint, { exact: true })).toHaveCount(0);
 });

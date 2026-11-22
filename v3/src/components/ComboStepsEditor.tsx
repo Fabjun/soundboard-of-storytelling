@@ -6,6 +6,8 @@
  * Controlled: the PAD editor owns the steps and saves them with the rest of the pad (one writer).
  * Only pads that do not lead back to this combo are offered (no cycles, comboModel). A step or a
  * pad of a step is removed with one tap — the editor's undo takes it back (CLAUDE.md UI rules).
+ * A Loop set to ∞ is marked BG: it plays in the background and stops when the combo ends (V1 showed
+ * the same mark; owner decision 2026-11-22).
  */
 
 import type { JSX } from 'preact';
@@ -15,6 +17,7 @@ import {
   addPadToStep,
   addStep,
   canStartInCombo,
+  playsInBackground,
   removePadFromStep,
   removeStep,
   setStepDuration,
@@ -42,6 +45,7 @@ export function ComboStepsEditor({
   onChange: (steps: ComboStep[]) => void;
 }): JSX.Element {
   const names = new Map(board.pads.map((p) => [p.id, p.name || '—']));
+  const background = new Set(board.pads.filter(playsInBackground).map((p) => p.id));
   const pool = poolByName(board);
   // Each step is a group named by its STEP N caption (WCAG ARIA17): its wait and its "stop
   // everything first" are told apart from those of the other steps
@@ -65,6 +69,8 @@ export function ComboStepsEditor({
         const offered = pool.filter(
           (p) => !step.padIds.includes(p.id) && canStartInCombo(board, comboId, p.id),
         );
+        const bgHintId = `${stepLabelId}-${i}-bg`;
+        const hasBackground = step.padIds.some((id) => background.has(id));
         return (
           <div
             key={i}
@@ -94,13 +100,25 @@ export function ComboStepsEditor({
                   class="sb-btn sb-btn-sm sb-btn-ghost"
                   data-testid={`combo-steps-editor-pad-button-${i}-${id}`}
                   aria-label={`Remove ${names.get(id) ?? id} from step ${i + 1}`}
+                  aria-describedby={background.has(id) ? bgHintId : undefined}
                   onClick={() => onChange(removePadFromStep(steps, i, id))}
                 >
                   {names.get(id) ?? '(missing pad)'}
+                  {background.has(id) && (
+                    <span class="sb-chip-note" aria-hidden="true">
+                      BG
+                    </span>
+                  )}
                   <UiIcon name="delete" />
                 </button>
               ))}
             </div>
+            {hasBackground && (
+              <div class="sb-hint-text is-wrap" id={bgHintId}>
+                BG — a Loop set to ∞ plays in the background and stops when the combo ends; a REPEAT
+                count plays it through.
+              </div>
+            )}
             <select
               class="sb-text-input"
               data-testid={`combo-steps-editor-pad-input-${i}`}

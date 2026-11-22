@@ -7,7 +7,7 @@
  * it again and again (unbounded recursion).
  */
 
-import type { Board, ComboStep } from '../types';
+import type { Board, ComboStep, Pad } from '../types';
 
 /** Every pad id a combo starts, directly or through nested combos (not including itself). */
 export function comboReach(board: Board, comboId: string): Set<string> {
@@ -68,6 +68,16 @@ export function setStepDuration(steps: ComboStep[], index: number, seconds: numb
     const { duration: _old, ...rest } = s;
     return Number.isFinite(seconds) && seconds > 0 ? { ...rest, duration: seconds } : rest;
   });
+}
+
+/**
+ * Tells whether a combo plays `pad` in the background: a Loop set to ∞ does not hold up its step
+ * and stops when the combo ends; a Loop with a REPEAT count holds its step (ADR-0069, PR #36).
+ * The engine decides the same on its own shapes (`isInfiniteBg` in src/audio/engine.ts); the
+ * combo editor marks such a pad BG.
+ */
+export function playsInBackground(pad: Pad): boolean {
+  return pad.type === 'loop' && pad.repeat === undefined;
 }
 
 /** "Stop everything first" for a step. */

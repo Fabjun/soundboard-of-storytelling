@@ -103,6 +103,12 @@ export function withEarlyVersions(
 /** The release notes the main menu shows, newest first (checked by whatsNew.test.ts). */
 export const WHATS_NEW: WhatsNewNotes[] = [
   {
+    version: '3.0.352',
+    improved: [
+      'In the combo editor, a Loop set to ∞ is marked BG: it plays in the background and stops when the combo ends. A REPEAT count lets it play through.',
+    ],
+  },
+  {
     version: '3.0.351',
     behindTheScenes: [
       'The tests of the accessibility scan and of reaching every control on a short window find controls by the names a screen reader says.',

@@ -17,10 +17,18 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.351';
+export const APP_VERSION = '3.0.352';
 
 /** The developer log, newest first; CHANGELOG.md is generated from it (sync-changelog). */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.352',
+    date: '2026-11-22',
+    items: [
+      'feat(combo): in the combo editor a Loop set to ∞ is marked BG in its step, and a sentence under the step says that it plays in the background, stops when the combo ends and that a REPEAT count plays it through (V1 marked the same; owner decision 2026-11-22, which keeps PR #36: no engine change). The pad\'s remove button carries the sentence as its description for screen readers; the "Combos" help names the mark. New: playsInBackground (src/lib/comboModel.ts), sb-chip-note, the sb-hint-text variant is-wrap',
+      'test: combo-editor — a Loop set to ∞ shows BG and the sentence, a Single not, a REPEAT count takes both away; unit comboModel — playsInBackground. Counter-checked: the count ignored — the unit and the E2E test red; the description left out — the E2E test red at it; restored from a copy — green in full and full-webkit',
+    ],
+  },
   {
     version: '3.0.351',
     date: '2026-11-22',
