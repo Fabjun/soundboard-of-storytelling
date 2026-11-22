@@ -17,10 +17,17 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.350';
+export const APP_VERSION = '3.0.351';
 
 /** The developer log, newest first; CHANGELOG.md is generated from it (sync-changelog). */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.351',
+    date: '2026-11-22',
+    items: [
+      "test: layout-reach and a11y locate by role and name (ADR-0054 amendment 2026-11-19, batch 18) — the PAD editor, DELETE PAD, the undo toast by its UNDO button, Add an icon and the icon picker's categories, VIEW LOG AND STATS, Back to the board list, NEW BOARD, DECKS, the board buttons, the deck buttons and the upload error text, which is visible only once its disclosure opened. The grid, the empty cell, the creation popover (its ADD PAD shares its name with the bar's) and the hidden file input keep their test IDs. TEST_ID_LOCATORS 315 → 292. Counter-checked: DELETE PAD, VIEW LOG AND STATS and the icon picker's name renamed, and the Enter that opens the error details left out — four tests red, each at the renamed name or the hidden text; restored from a copy — green in full and full-webkit",
+    ],
+  },
   {
     version: '3.0.350',
     date: '2026-11-22',

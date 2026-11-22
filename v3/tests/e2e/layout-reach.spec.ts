@@ -12,7 +12,7 @@
  * scrollIntoView also scrolls an `overflow: hidden` box that no person can scroll.
  */
 
-import { test, expect } from '@playwright/test';
+import { test, expect, type Page } from '@playwright/test';
 import {
   addNamedPad,
   closePadEditor,
@@ -20,8 +20,18 @@ import {
   createBoardAndNavigate,
   createDeck,
   enterSetupMode,
+  undoToast,
   PAD_CELL,
 } from './helpers';
+
+/** The PAD editor, a full-screen dialog (ADR-0074). */
+const padEditor = (page: Page) => page.getByRole('dialog', { name: 'Pad editor', exact: true });
+
+/** A category header of the icon picker, e.g. CREATURES 24 — its name ends with the count. */
+const category = (page: Page, cat: string) =>
+  page
+    .getByRole('dialog', { name: 'Choose an icon', exact: true })
+    .getByRole('button', { name: new RegExp(`^${cat.toUpperCase()} \\d+$`) });
 
 // Four rows of pads do not fit: the pads shrink to the 44 px touch target (src/lib/padFit.ts), and
 // four rows of those (with gaps and padding) are still taller than the grid area at this height,
@@ -52,8 +62,8 @@ test('the last grid cell can be reached and tapped on a short window', async ({ 
   await page.mouse.wheel(0, 2000);
   await expect(pads.last()).toBeInViewport({ ratio: 1 });
   await pads.last().click();
-  await expect(page.getByTestId('pad-editor-panel')).toBeVisible();
-  await page.getByTestId('pad-editor-panel-close-button').click();
+  await expect(padEditor(page)).toBeVisible();
+  await padEditor(page).getByRole('button', { name: 'Close the pad editor', exact: true }).click();
 
   const lastCell = page.locator('[data-testid^="pad-grid-cell-empty-slot-"]').last();
   await grid.hover();
@@ -64,14 +74,14 @@ test('the last grid cell can be reached and tapped on a short window', async ({ 
 });
 
 test("the pad editor's delete button can be reached on a short window", async ({ page }) => {
-  // Located by text: the button has no accessible name in Chromium yet (BACKLOG "Role-based E2E locators").
   await page.getByText('ADD PAD', { exact: true }).click();
-  const remove = page.getByTestId('pad-editor-panel-delete-button');
-  await page.getByTestId('pad-editor-panel').hover();
+  const remove = padEditor(page).getByRole('button', { name: 'DELETE PAD', exact: true });
+  await padEditor(page).hover();
   await page.mouse.wheel(0, 2000);
   await expect(remove).toBeInViewport({ ratio: 1 });
   await remove.click(); // one tap deletes: the pad is gone and the undo toast offers it back
-  await expect(page.getByTestId('undo-toast')).toBeVisible();
+  // The toast region has no box of its own (fixed toast): its UNDO button shows it (helpers)
+  await expect(undoToast(page).getByRole('button', { name: 'UNDO', exact: true })).toBeVisible();
 });
 
 // Found 2026-10-23 — the second time after the icon picker below: the PAD editor's tab panels
@@ -81,7 +91,7 @@ test('every control of both PAD editor tabs can be reached on a short window', a
   // A short phone: the narrow frame builds the editor as one scrolling column (ADR-0082)
   await page.setViewportSize({ width: 390, height: 500 });
   await page.getByText('ADD PAD', { exact: true }).click();
-  const editor = page.getByTestId('pad-editor-panel');
+  const editor = padEditor(page);
   /**
    * How much of the element is in view, its parents' clipping included (IntersectionObserver) —
    * 0 when something else lies over its center, as a squeezed section overlaps the next one.
@@ -163,13 +173,16 @@ test('in the icon picker, each category can be reached and opened while others a
   page,
 }) => {
   await page.getByText('ADD PAD', { exact: true }).click();
-  await page.getByTestId('pad-editor-panel-add-icon-button').click();
-  const people = page.getByTestId('icon-picker-category-button-people');
+  await padEditor(page)
+    .getByRole('group', { name: 'ICONS', exact: true })
+    .getByRole('button', { name: 'Add an icon', exact: true })
+    .click();
+  const people = category(page, 'people');
   await people.click();
   await people.hover(); // the wheel scrolls the area under the pointer
   // Each header sits right below the category opened before it
   for (const cat of ['creatures', 'animals']) {
-    const header = page.getByTestId(`icon-picker-category-button-${cat}`);
+    const header = category(page, cat);
     // Steps shorter than a header (44 px), so the wheel cannot pass it between two checks
     await expect(async () => {
       await page.mouse.wheel(0, 40);

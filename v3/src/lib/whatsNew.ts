@@ -103,6 +103,12 @@ export function withEarlyVersions(
 /** The release notes the main menu shows, newest first (checked by whatsNew.test.ts). */
 export const WHATS_NEW: WhatsNewNotes[] = [
   {
+    version: '3.0.351',
+    behindTheScenes: [
+      'The tests of the accessibility scan and of reaching every control on a short window find controls by the names a screen reader says.',
+    ],
+  },
+  {
     version: '3.0.350',
     fixed: [
       'Installed on an iPhone, the top of every screen is no longer hidden under the notch, and turned sideways no control lies beside it.',
