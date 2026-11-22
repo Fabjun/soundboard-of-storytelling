@@ -103,6 +103,12 @@ export function withEarlyVersions(
 /** The release notes the main menu shows, newest first (checked by whatsNew.test.ts). */
 export const WHATS_NEW: WhatsNewNotes[] = [
   {
+    version: '3.0.348',
+    behindTheScenes: [
+      'The tests of the PAD editor’s name, draft, trim and preview find controls by the names a screen reader says.',
+    ],
+  },
+  {
     version: '3.0.347',
     improved: [
       'With a screen reader, the PAD editor says how many audio files a pad has, and each combo step names its wait and “Stop everything first” with the step.',

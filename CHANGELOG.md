@@ -7,6 +7,12 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.348 — 2026-11-22
+
+### Internal
+
+- test: pad-editing and pad-editor-preview locate by role and name (ADR-0054 amendment 2026-11-19, batch 16) — the dialog "Pad editor", its NAME field, SAVE, the restored-draft status, Close the pad editor, the trim fields, the waveform's sliders Trim start, Trim end, Fade-in end and Playback position, the preview buttons by name, LOOP in the TYPE group; the board list through boardOpenButtons and modeToggle. The waveform surface a tap seeks on keeps its test ID: it has no role. TEST_ID_LOCATORS 372 → 335. Counter-checked: NAME, Play a preview, Trim start and the restored-draft text renamed — six tests red at the renamed name; the restored-draft text alone — the draft test red at the status; restored from a copy — green in full and full-webkit
+
 ## 3.0.347 — 2026-11-22
 
 ### Changed
