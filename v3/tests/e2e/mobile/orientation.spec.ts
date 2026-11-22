@@ -5,7 +5,9 @@
  * every core screen is turned from portrait (390 × 844) to landscape (844 × 390) and back, and
  * neither the page nor any visible control may stick out at the side — the app reflows. The
  * narrow / wide frame switch at 600 px (ADR-0082) happens on the way.
- * Not simulated: the device's rotation event and safe areas (checklist, "Why manual").
+ * Not simulated: the device's rotation event and the safe areas' sizes (checklist, "Why
+ * manual"); WebKit is checked to keep the safe-area rules, which `v3/tests/e2e/safe-area.spec.ts`
+ * measures in Chromium.
  */
 
 import { test, expect, type Page } from '@playwright/test';
@@ -82,4 +84,37 @@ test('a board in GAME and in SETUP reflows in both orientations', async ({ page 
   await assertFitsBothWays(page, 'board in GAME');
   await enterSetupMode(page);
   await assertFitsBothWays(page, 'board in SETUP');
+});
+
+// Found 2026-11-22 on an iPhone: the top of every screen lay under the notch. Headless WebKit
+// cannot emulate safe areas, so the check is that it keeps the rules: a declaration its parser
+// rejects would be dropped from the style sheet
+test('WebKit keeps the safe-area paddings of the screens and the full-screen dialogs', async ({
+  page,
+}) => {
+  await page.goto('/soundboard-of-storytelling/');
+  const kept = await page.evaluate(() => {
+    const rules = [...document.styleSheets].flatMap((sheet) => [...sheet.cssRules]);
+    return ['.sb-screen', '.sb-start-screen', '.sb-overlay'].map((selector) => {
+      const rule = rules.find(
+        (r): r is CSSStyleRule => r instanceof CSSStyleRule && r.selectorText === selector,
+      );
+      return [
+        selector,
+        ...['padding-top', 'padding-left', 'padding-right'].map(
+          (property) => rule?.style.getPropertyValue(property) ?? '',
+        ),
+      ].join(' | ');
+    });
+  });
+  expect(kept).toEqual(
+    ['.sb-screen', '.sb-start-screen', '.sb-overlay'].map((selector) =>
+      [
+        selector,
+        'env(safe-area-inset-top, 0rem)',
+        'env(safe-area-inset-left, 0rem)',
+        'env(safe-area-inset-right, 0rem)',
+      ].join(' | '),
+    ),
+  );
 });

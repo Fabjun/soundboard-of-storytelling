@@ -7,6 +7,17 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.350 — 2026-11-22
+
+### Fixed
+
+- fix(layout): installed on an iPhone, every screen and full-screen dialog starts below the notch and the status bar and, turned, keeps clear of the notch at the side. The page uses viewport-fit=cover with a translucent status bar, but only the dock kept its distance to the home indicator: .sb-screen, .sb-start-screen and .sb-overlay now pad by the safe-area insets at the top and the sides (WebKit, "Designing Websites for iPhone X"; 0 where there is no notch, Android included)
+- fix(layout): at 390 px the PAD editor's close button lay 6 px past the right edge — its six header buttons did not fit beside the title. An overlay title now gives way and ends in … when the room is short. Provisional, for review (Workflow 7b)
+
+### Internal
+
+- test: safe-area (full) emulates an iPhone's safe areas in Chromium (Emulation.setSafeAreaInsetsOverride) and requires every visible control of the start screen, main menu, board list, board and PAD editor outside them, upright and turned; mobile/orientation checks that WebKit keeps the three rules. Counter-checked: the top paddings removed — upright red (board list, board, PAD editor); the side paddings removed — turned red; the title rule removed — upright red at Close the pad editor; a misspelled inset — the WebKit test red. WebKit does not validate the inset name, so its test shows the rule is there, not that it applies: the device checklist has "Nothing under the notch"
+
 ## 3.0.349 — 2026-11-22
 
 ### Internal

@@ -906,6 +906,10 @@
   justify-content: center;
   height: 100%;
   min-height: 100dvh;
+  /* Below the notch and status bar, and beside the notch in landscape (as .sb-screen) */
+  padding-top: env(safe-area-inset-top, 0rem);
+  padding-left: env(safe-area-inset-left, 0rem);
+  padding-right: env(safe-area-inset-right, 0rem);
   background:
     radial-gradient(60% 50% at 50% 65%, var(--flame-soft) 0%, transparent 70%),
     radial-gradient(120% 70% at 50% -10%, var(--glow-radial) 0%, transparent 65%), var(--night);
@@ -2115,6 +2119,10 @@
   display: flex;
   flex-direction: column;
   overscroll-behavior: none;
+  /* Below the notch and status bar, and beside the notch in landscape (as .sb-screen) */
+  padding-top: env(safe-area-inset-top, 0rem);
+  padding-left: env(safe-area-inset-left, 0rem);
+  padding-right: env(safe-area-inset-right, 0rem);
 }
 .sb-overlay-header {
   /* @inventory: Header strip for full-screen overlays — space-between flex row with a small gap, border separator, no-shrink. Wraps sb-overlay-title + close action. */
@@ -2127,11 +2135,17 @@
   flex-shrink: 0;
 }
 .sb-overlay-title {
-  /* @inventory: Large VT323 heading inside an overlay header — identifies what the overlay contains. */
+  /* @inventory: Large VT323 heading inside an overlay header — identifies what the overlay contains; shortened with … when the header's buttons need the room. */
   font-family: var(--font-ui);
   font-size: var(--fs-lg);
   letter-spacing: 0.08em;
   color: var(--text);
+  /* The title gives way, not the buttons: at 390px the PAD editor's six header buttons pushed
+     its close button 6px past the edge (found 2026-11-22, tests/e2e/safe-area.spec.ts) */
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .sb-overlay-body {
   /* @inventory: Scrollable flex-fill body of an overlay — grows to fill remaining height, iOS-touch scroll, padded, flex-column content layout. */
@@ -2408,6 +2422,12 @@
   position: relative;
   outline-offset: -2px;
   overflow: hidden;
+  /* The page uses viewport-fit=cover with a translucent status bar (index.html), so on an
+     iPhone it reaches under the notch: the content starts below it, and beside it in landscape
+     (WebKit: "Designing Websites for iPhone X"); 0 where there is no notch */
+  padding-top: env(safe-area-inset-top, 0rem);
+  padding-left: env(safe-area-inset-left, 0rem);
+  padding-right: env(safe-area-inset-right, 0rem);
 }
 .sb-width-compact {
   /* @inventory: Content width COMPACT on the root element — screens at most 900px wide (V1's value; settings.md S3). */

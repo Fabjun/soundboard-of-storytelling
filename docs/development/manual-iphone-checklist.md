@@ -363,6 +363,16 @@ checked to exist (docsGuards).
   - Why manual: `document.body.scrollWidth` check in automated tests is coarse. Subtle overflow in sub-elements requires manual inspection.
   - Simulated: `v3/tests/e2e/mobile/overflow.spec.ts`, `v3/tests/e2e/mobile/orientation.spec.ts` (every visible control within the width).
 
+- [ ] **Nothing under the notch** _(3.0.350)_
+  - Action: Open the app from the home screen on an iPhone with a notch or Dynamic Island. Go
+    through the start screen, the main menu, the board list, a board and the PAD editor, upright
+    and turned. Do the same on an Android phone (Chrome, installed app) with a camera cutout.
+  - Expected: Every screen's top bar starts below the notch and the clock; turned, no control
+    lies beside the notch. On a phone without a notch nothing moves.
+  - Why manual: Only the device has the notch and the status bar the installed app draws under.
+  - Simulated: `v3/tests/e2e/safe-area.spec.ts` (Chromium with an iPhone's safe areas emulated),
+    `v3/tests/e2e/mobile/orientation.spec.ts` (WebKit keeps the rules).
+
 - [ ] **Keyboard does not cover rename input**
   - Action: Long-press or tap-to-rename a pad or board. Begin typing.
   - Expected: The input field scrolls into view above the on-screen keyboard. No input is hidden.
