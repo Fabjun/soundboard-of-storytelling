@@ -9,6 +9,7 @@
  */
 
 import type { JSX } from 'preact';
+import { useId } from 'preact/hooks';
 import type { Board, ComboStep } from '../types';
 import {
   addPadToStep,
@@ -42,6 +43,9 @@ export function ComboStepsEditor({
 }): JSX.Element {
   const names = new Map(board.pads.map((p) => [p.id, p.name || '—']));
   const pool = poolByName(board);
+  // Each step is a group named by its STEP N caption (WCAG ARIA17): its wait and its "stop
+  // everything first" are told apart from those of the other steps
+  const stepLabelId = `${useId()}-step`;
 
   return (
     <div class="sb-inspector-section" data-testid="combo-steps-editor">
@@ -62,9 +66,17 @@ export function ComboStepsEditor({
           (p) => !step.padIds.includes(p.id) && canStartInCombo(board, comboId, p.id),
         );
         return (
-          <div key={i} class="sb-combo-step" data-testid={`combo-steps-editor-step-item-${i}`}>
+          <div
+            key={i}
+            class="sb-combo-step"
+            role="group"
+            aria-labelledby={`${stepLabelId}-${i}`}
+            data-testid={`combo-steps-editor-step-item-${i}`}
+          >
             <div class="sb-section-header-row">
-              <span class="sb-field-label">STEP {i + 1}</span>
+              <span class="sb-field-label" id={`${stepLabelId}-${i}`}>
+                STEP {i + 1}
+              </span>
               <button
                 class="sb-btn sb-btn-xs sb-btn-ghost"
                 data-testid={`combo-steps-editor-remove-button-${i}`}

@@ -139,9 +139,12 @@ test('no browser gestures and no small text fields: boards, the PAD editor, temp
   await page.keyboard.press('Escape'); // the picker on top closes first
 
   await page.getByRole('button', { name: 'SAVE AS TEMPLATE', exact: true }).click();
-  await page.getByTestId('pad-editor-panel-type-button-combo').click();
+  await page
+    .getByRole('group', { name: 'TYPE', exact: true })
+    .getByRole('button', { name: 'COMBO', exact: true })
+    .click();
   await page.getByRole('alertdialog').getByRole('button', { name: 'SWITCH', exact: true }).click();
-  await page.getByTestId('combo-steps-editor-add-button').click();
+  await page.getByRole('button', { name: '+ STEP', exact: true }).click();
   expect(await offenders(page), 'PAD editor, combo steps').toEqual([]);
 
   await page.goto('/soundboard-of-storytelling/');

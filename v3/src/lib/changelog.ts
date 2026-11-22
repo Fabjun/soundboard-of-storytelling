@@ -17,10 +17,18 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.346';
+export const APP_VERSION = '3.0.347';
 
 /** The developer log, newest first; CHANGELOG.md is generated from it (sync-changelog). */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.347',
+    date: '2026-11-22',
+    items: [
+      'a11y: the PAD editor\'s files are a list "Audio files" (a screen reader says how many and which one), and each combo step is a group named by its STEP N caption (WCAG ARIA17), so its wait and "stop everything first" belong to it. Provisional, for review (Workflow 7b)',
+      'test: pad-files and combo-editor locate by role and name (ADR-0054 amendment 2026-11-19, batch 15) — the dialog "Pad editor", BROWSE, the picked files as checkboxes, ADD N FILES, Move / Remove by file name, the order group, the trim fields, + STEP, each step\'s pad picker, wait, "stop everything first", REMOVE STEP and pad chips; system-gestures picks COMBO in the TYPE group and + STEP by name. The two grid cells stay (owner decision 17 open). TEST_ID_LOCATORS 418 → 372. Counter-checked: the list renamed, the step groups unnamed and + STEP reworded — seven tests red; the step groups unnamed alone — the two tests that find a step red; restored byte for byte — green in full and full-webkit',
+    ],
+  },
   {
     version: '3.0.346',
     date: '2026-11-21',

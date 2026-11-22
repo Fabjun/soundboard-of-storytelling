@@ -28,24 +28,33 @@ const FILES: SeedAudio[] = [
   { id: id(13), name: 'charlie.wav', duration: 4 },
 ];
 
-/** The names in the file list, top to bottom. */
-const listed = (page: Page) =>
-  page.locator('[data-testid^="pad-file-list-select-button-"]').allTextContents();
+const editor = (page: Page) => page.getByRole('dialog', { name: 'Pad editor', exact: true });
+const button = (page: Page, name: string) =>
+  editor(page).getByRole('button', { name, exact: true });
+const fileList = (page: Page) =>
+  editor(page).getByRole('list', { name: 'Audio files', exact: true });
+/** A file of the library picker — its row adds "(in this pad)" once the pad has it. */
+const pick = (page: Page, f: SeedAudio) =>
+  editor(page).getByRole('checkbox', { name: new RegExp(`^${f.name.replace('.', '\\.')}`) });
+const addButton = (page: Page) => editor(page).getByRole('button', { name: /^ADD \d+ FILES?$/ });
+
+/** The names in the file list, top to bottom — the select button is a row's only text. */
+const listed = (page: Page) => fileList(page).getByRole('listitem').allTextContents();
 
 /** BROWSE → tick the files → ADD. */
 async function addFiles(page: Page, files: SeedAudio[]) {
-  await page.getByTestId('pad-editor-panel-browse-button').click();
-  for (const f of files) await page.getByTestId(`pad-editor-panel-pick-input-${f.id}`).check();
-  await page.getByTestId('pad-editor-panel-add-files-button').click();
+  await button(page, 'BROWSE').click();
+  for (const f of files) await pick(page, f).check();
+  await addButton(page).click();
 }
 
 /** Closes the editor (its last change is written at once) and opens the pad again from a reopened board. */
 async function reopenPad(page: Page) {
-  await page.getByTestId('pad-editor-panel-close-button').click();
+  await button(page, 'Close the pad editor').click();
   await reopenFirstBoard(page);
   await enterSetupMode(page);
   await padCells(page).first().click();
-  await page.getByTestId('pad-editor-panel').waitFor();
+  await editor(page).waitFor();
 }
 
 test.beforeEach(async ({ page }) => {
@@ -61,16 +70,16 @@ test.beforeEach(async ({ page }) => {
 test('the picker adds several ticked files at once; files already in the pad are marked', async ({
   page,
 }) => {
-  await page.getByTestId('pad-editor-panel-browse-button').click();
-  const add = page.getByTestId('pad-editor-panel-add-files-button');
+  await button(page, 'BROWSE').click();
+  const add = addButton(page);
   await expect(add).toBeDisabled();
-  for (const f of FILES) await page.getByTestId(`pad-editor-panel-pick-input-${f.id}`).check();
+  for (const f of FILES) await pick(page, f).check();
   await expect(add).toHaveText('ADD 3 FILES');
   await add.click();
   expect(await listed(page)).toEqual(['alpha.wav', 'bravo.wav', 'charlie.wav']);
 
-  await page.getByTestId('pad-editor-panel-browse-button').click();
-  const alpha = page.getByTestId(`pad-editor-panel-pick-input-${FILES[0].id}`);
+  await button(page, 'BROWSE').click();
+  const alpha = pick(page, FILES[0]);
   await expect(alpha).toBeChecked();
   await expect(alpha).toBeDisabled();
 });
@@ -79,47 +88,49 @@ test('files move with ▲ / ▼, are removed on a tap that undo takes back, and 
   page,
 }) => {
   await addFiles(page, FILES);
-  await page.getByTestId('pad-file-list-down-button-0').click();
+  await button(page, 'Move alpha.wav down').click();
   expect(await listed(page)).toEqual(['bravo.wav', 'alpha.wav', 'charlie.wav']);
-  await page.getByTestId('pad-file-list-up-button-2').click();
+  await button(page, 'Move charlie.wav up').click();
   expect(await listed(page)).toEqual(['bravo.wav', 'charlie.wav', 'alpha.wav']);
-  await expect(page.getByTestId('pad-file-list-up-button-0')).toBeDisabled();
+  await expect(button(page, 'Move bravo.wav up')).toBeDisabled(); // the first file
 
-  const remove = page.getByTestId('pad-file-list-remove-button-1');
+  const remove = button(page, 'Remove charlie.wav');
   await remove.click();
   expect(await listed(page)).toEqual(['bravo.wav', 'alpha.wav']);
-  await page.getByTestId('pad-editor-panel-undo-button').click();
+  await button(page, 'Undo').click();
   expect(await listed(page)).toEqual(['bravo.wav', 'charlie.wav', 'alpha.wav']);
   await remove.click();
   expect(await listed(page)).toEqual(['bravo.wav', 'alpha.wav']);
 
-  await page.getByTestId('pad-file-list-order-button-shuffle').click();
+  const order = (p: Page) =>
+    editor(p)
+      .getByRole('group', { name: 'How several files play', exact: true })
+      .getByRole('button', { name: 'SHUFFLED', exact: true });
+  await order(page).click();
   await reopenPad(page);
   expect(await listed(page)).toEqual(['bravo.wav', 'alpha.wav']);
-  await expect(page.getByTestId('pad-file-list-order-button-shuffle')).toHaveAttribute(
-    'aria-pressed',
-    'true',
-  );
+  await expect(order(page)).toHaveAttribute('aria-pressed', 'true');
 });
 
 test('each file keeps its own trim', async ({ page }) => {
   await addFiles(page, FILES.slice(0, 2));
-  const start = page.getByTestId('pad-editor-panel-trim-start-input');
-  const end = page.getByTestId('pad-editor-panel-trim-end-input');
+  const start = editor(page).getByRole('spinbutton', { name: 'Start (s)', exact: true });
+  const end = editor(page).getByRole('spinbutton', { name: 'End (s)', exact: true });
+  const file = (name: string) => fileList(page).getByRole('button', { name, exact: true });
 
-  await page.getByTestId('pad-file-list-select-button-0').click();
+  await file('alpha.wav').click();
   await end.fill('1.5');
   await end.press('Enter');
-  await page.getByTestId('pad-file-list-select-button-1').click();
+  await file('bravo.wav').click();
   await expect(end).toHaveValue('3'); // bravo is 3 s long and untrimmed
   await start.fill('1');
   await start.press('Enter');
 
   await reopenPad(page);
-  await page.getByTestId('pad-file-list-select-button-0').click();
+  await file('alpha.wav').click();
   await expect(start).toHaveValue('0');
   await expect(end).toHaveValue('1.5');
-  await page.getByTestId('pad-file-list-select-button-1').click();
+  await file('bravo.wav').click();
   await expect(start).toHaveValue('1');
   await expect(end).toHaveValue('3');
 });

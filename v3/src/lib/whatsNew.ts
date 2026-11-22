@@ -103,6 +103,12 @@ export function withEarlyVersions(
 /** The release notes the main menu shows, newest first (checked by whatsNew.test.ts). */
 export const WHATS_NEW: WhatsNewNotes[] = [
   {
+    version: '3.0.347',
+    improved: [
+      'With a screen reader, the PAD editor says how many audio files a pad has, and each combo step names its wait and “Stop everything first” with the step.',
+    ],
+  },
+  {
     version: '3.0.346',
     fixed: [
       'In a combo, a Loop with a REPEAT count plays all its passes before the next step starts, so a playlist in the last step is no longer cut off. A Loop set to ∞ plays on in the background until the combo ends.',
