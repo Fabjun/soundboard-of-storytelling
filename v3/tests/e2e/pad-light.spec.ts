@@ -30,6 +30,13 @@ import {
 
 const LAMP = 'http://192.168.1.50';
 
+const editorButton = (page: Page, name: string) =>
+  page
+    .getByRole('dialog', { name: 'Pad editor', exact: true })
+    .getByRole('button', { name, exact: true });
+const typeButton = (page: Page, name: 'LOOP' | 'COMBO') =>
+  page.getByRole('group', { name: 'TYPE', exact: true }).getByRole('button', { name, exact: true });
+
 /** The bodies the lamp received at /json/state, as WLED answers (CORS for every origin). */
 async function standInLamp(page: Page): Promise<string[]> {
   const bodies: string[] = [];
@@ -95,8 +102,8 @@ test('LIGHT names a preset; TRY sends it, and the pad sends it when it plays', a
   await expect(page.getByText('Connected.', { exact: true })).toBeVisible();
   expect(bodies).toEqual(['{"ps":5}']);
 
-  await page.getByTestId('pad-editor-panel-save-button').click();
-  await page.getByTestId('pad-editor-panel-close-button').click();
+  await editorButton(page, 'SAVE').click();
+  await editorButton(page, 'Close the pad editor').click();
   await enterGameMode(page);
   await padCells(page).first().getByRole('button').click();
   await expect.poll(() => bodies).toEqual(['{"ps":5}', '{"ps":5}']);
@@ -131,10 +138,11 @@ test('a lamp that does not answer shows LIGHT ✕ until a pad reaches it again (
     .getByText('Preset', { exact: true })
     .click();
   await page.getByRole('spinbutton', { name: 'Preset number', exact: true }).fill('5');
-  await page.getByTestId('pad-editor-panel-save-button').click();
-  await page.getByTestId('pad-editor-panel-close-button').click();
+  await editorButton(page, 'SAVE').click();
+  await editorButton(page, 'Close the pad editor').click();
   await enterGameMode(page);
 
+  // A live region without a name, in the page while it is empty — found by its test ID
   const light = page.getByTestId('status-bar-light-text');
   await expect(light).toHaveText('');
   const pad = padCells(page).first().getByRole('button');
@@ -180,8 +188,8 @@ test('LIGHT sets an effect from the list of the lamp, with its color and speed; 
   const sent = '{"on":true,"bri":128,"seg":{"fx":3,"sx":40,"ix":128,"col":[[0,255,128]]}}';
   expect(bodies).toEqual([sent]);
 
-  await page.getByTestId('pad-editor-panel-save-button').click();
-  await page.getByTestId('pad-editor-panel-close-button').click();
+  await editorButton(page, 'SAVE').click();
+  await editorButton(page, 'Close the pad editor').click();
   await enterGameMode(page);
   await padCells(page).first().getByRole('button').click();
   await expect.poll(() => bodies).toEqual([sent, sent]);
@@ -266,13 +274,13 @@ test('a course goes from its start to its end light: TRY in 10 s, the pad over i
   expect(bodies.slice(1).every((b) => b.includes('"tt":10,'))).toBe(true);
   expect(bodies.at(-1)).toBe('{"on":true,"bri":90,"tt":10,"seg":{"fx":0,"col":[[255,0,0]]}}');
 
-  await page.getByTestId('pad-editor-panel-save-button').click();
-  await page.getByTestId('pad-editor-panel-close-button').click();
+  await editorButton(page, 'SAVE').click();
+  await editorButton(page, 'Close the pad editor').click();
   await enterGameMode(page);
   bodies.length = 0;
   await padCells(page).first().getByRole('button').click();
   await expect.poll(() => bodies).toEqual([start]);
-  const left = page.getByTestId('status-bar-course-text');
+  const left = page.getByText(/^LIGHT \d+ min left$/);
   await expect(left).toHaveText('LIGHT 2 min left');
   // Steps of 10 s, each with a transition of 10 s
   await steps(7, 10_000);
@@ -292,14 +300,14 @@ test('a pause holds the course: the lamp stands where it got to, the minutes sta
   await page.clock.pauseAt(Date.now() + 60_000);
   const bodies = await standInLamp(page);
   // A Loop, so a sound plays to pause (with nothing playing, Space does nothing)
-  await page.getByTestId('pad-editor-panel-type-button-loop').click();
+  await typeButton(page, 'LOOP').click();
   await page.getByRole('tab', { name: 'LIGHT', exact: true }).click();
   await page.getByText('Course', { exact: true }).click();
   const minutes = page.getByRole('spinbutton', { name: 'Minutes', exact: true });
   await minutes.fill('2');
   await minutes.press('Enter');
-  await page.getByTestId('pad-editor-panel-save-button').click();
-  await page.getByTestId('pad-editor-panel-close-button').click();
+  await editorButton(page, 'SAVE').click();
+  await editorButton(page, 'Close the pad editor').click();
   await enterGameMode(page);
   await padCells(page).first().getByRole('button').click();
   await expect.poll(() => bodies.length).toBe(1);
@@ -313,7 +321,7 @@ test('a pause holds the course: the lamp stands where it got to, the minutes sta
   expect(bodies[4]).toBe('{"on":true,"bri":214,"tt":0,"seg":{"fx":0,"col":[[240,199,175]]}}');
   await page.clock.runFor(60_000);
   expect(bodies).toHaveLength(5); // nothing while paused
-  const left = page.getByTestId('status-bar-course-text');
+  const left = page.getByText(/^LIGHT \d+ min left$/);
   await expect(left).toHaveText('LIGHT 2 min left');
   await page.keyboard.press('Space');
   await expect(page.getByRole('button', { name: 'PAUSED', exact: true })).toHaveCount(0);
@@ -328,9 +336,9 @@ test('a pad played from the quick-access bar sends its light too', async ({ page
   const preset = page.getByRole('spinbutton', { name: 'Preset number', exact: true });
   await preset.fill('7');
   await preset.press('Enter');
-  await page.getByTestId('pad-editor-panel-save-button').click();
+  await editorButton(page, 'SAVE').click();
   await page.getByRole('button', { name: 'In quick access', exact: true }).click();
-  await page.getByTestId('pad-editor-panel-close-button').click();
+  await editorButton(page, 'Close the pad editor').click();
   await enterGameMode(page);
   // Only the bar's button — not the pad in the grid
   await page.getByRole('group', { name: 'Quick access', exact: true }).getByRole('button').click();
@@ -341,7 +349,7 @@ test("the board's base light, set in the deck list, goes out when the board swit
   page,
 }) => {
   const bodies = await standInLamp(page);
-  await page.getByTestId('pad-editor-panel-close-button').click();
+  await editorButton(page, 'Close the pad editor').click();
   await openDeckRail(page);
   const disclosure = page.getByRole('button', { name: /^BOARD LIGHT/ });
   await disclosure.click();
@@ -367,8 +375,8 @@ test("a short light lasts while its pad plays; then the board's base light comes
   await number.fill('57');
   await number.press('Enter');
   await page.getByRole('checkbox', { name: /^Short/ }).check();
-  await page.getByTestId('pad-editor-panel-save-button').click();
-  await page.getByTestId('pad-editor-panel-close-button').click();
+  await editorButton(page, 'SAVE').click();
+  await editorButton(page, 'Close the pad editor').click();
   // The board: preset 9 as its base light
   await openDeckRail(page);
   await page.getByRole('button', { name: /^BOARD LIGHT/ }).click();
@@ -386,7 +394,7 @@ test("a short light lasts while its pad plays; then the board's base light comes
 });
 
 test('a combo has no light of its own', async ({ page }) => {
-  await page.getByTestId('pad-editor-panel-type-button-combo').click();
+  await typeButton(page, 'COMBO').click();
   await page.getByRole('alertdialog').getByRole('button', { name: 'SWITCH', exact: true }).click();
   await page.getByRole('tab', { name: 'LIGHT', exact: true }).click();
   await expect(page.getByText(/A combo has no light of its own/)).toBeVisible();

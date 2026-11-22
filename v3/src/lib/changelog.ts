@@ -17,10 +17,17 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.352';
+export const APP_VERSION = '3.0.353';
 
 /** The developer log, newest first; CHANGELOG.md is generated from it (sync-changelog). */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.353',
+    date: '2026-11-22',
+    items: [
+      "test: board-undo and pad-light locate by role and name (ADR-0054 amendment 2026-11-19, batch 19) — Undo and Redo of the top bar and of the PAD editor, DELETE PAD, SAVE, Close the pad editor, the TYPE buttons, the NAME and Deck name fields, the pad search, the search bar's toggle, the deck rows, Back to the board list, the board buttons, Delete board, the mode toggle, the undo toast by its UNDO button and the course's minutes by their text. The lamp's live region keeps its test ID: it has no name and is in the page while empty. TEST_ID_LOCATORS 292 → 253. Counter-checked: Delete board, Deck name, the search bar's name and the course's \"min left\" renamed — six tests red, each at the renamed name; restored from a copy — green in full and full-webkit",
+    ],
+  },
   {
     version: '3.0.352',
     date: '2026-11-22',
