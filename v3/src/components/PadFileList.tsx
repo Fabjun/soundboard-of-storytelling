@@ -51,47 +51,55 @@ export function PadFileList({
 
   return (
     <div class="sb-col" data-testid="pad-file-list">
-      {files.map((file, i) => {
-        const name = names(file.hash) ?? 'Missing file';
-        return (
-          <div key={file.hash} class="sb-row-sm" data-testid={`pad-file-list-file-row-${i}`}>
-            <button
-              class={`sb-btn sb-flex-1 ${i === selected ? 'sb-btn-primary' : 'sb-btn-ghost'}`}
-              aria-pressed={i === selected}
-              data-testid={`pad-file-list-select-button-${i}`}
-              onClick={() => onSelect(i)}
+      {/* A list, so a screen reader says how many files the pad has and which one it is on */}
+      <div class="sb-col" role="list" aria-label="Audio files">
+        {files.map((file, i) => {
+          const name = names(file.hash) ?? 'Missing file';
+          return (
+            <div
+              key={file.hash}
+              class="sb-row-sm"
+              role="listitem"
+              data-testid={`pad-file-list-file-row-${i}`}
             >
-              <span class="sb-flex-trunc">{name}</span>
-            </button>
-            <button
-              class="sb-btn sb-btn-ghost"
-              aria-label={`Move ${name} up`}
-              disabled={i === 0}
-              data-testid={`pad-file-list-up-button-${i}`}
-              onClick={() => onMove(i, -1)}
-            >
-              <UiIcon name="up" />
-            </button>
-            <button
-              class="sb-btn sb-btn-ghost"
-              aria-label={`Move ${name} down`}
-              disabled={i === files.length - 1}
-              data-testid={`pad-file-list-down-button-${i}`}
-              onClick={() => onMove(i, 1)}
-            >
-              <UiIcon name="down" />
-            </button>
-            <button
-              class="sb-btn sb-btn-danger"
-              aria-label={`Remove ${name}`}
-              data-testid={`pad-file-list-remove-button-${i}`}
-              onClick={() => onRemove(i)}
-            >
-              <UiIcon name="delete" />
-            </button>
-          </div>
-        );
-      })}
+              <button
+                class={`sb-btn sb-flex-1 ${i === selected ? 'sb-btn-primary' : 'sb-btn-ghost'}`}
+                aria-pressed={i === selected}
+                data-testid={`pad-file-list-select-button-${i}`}
+                onClick={() => onSelect(i)}
+              >
+                <span class="sb-flex-trunc">{name}</span>
+              </button>
+              <button
+                class="sb-btn sb-btn-ghost"
+                aria-label={`Move ${name} up`}
+                disabled={i === 0}
+                data-testid={`pad-file-list-up-button-${i}`}
+                onClick={() => onMove(i, -1)}
+              >
+                <UiIcon name="up" />
+              </button>
+              <button
+                class="sb-btn sb-btn-ghost"
+                aria-label={`Move ${name} down`}
+                disabled={i === files.length - 1}
+                data-testid={`pad-file-list-down-button-${i}`}
+                onClick={() => onMove(i, 1)}
+              >
+                <UiIcon name="down" />
+              </button>
+              <button
+                class="sb-btn sb-btn-danger"
+                aria-label={`Remove ${name}`}
+                data-testid={`pad-file-list-remove-button-${i}`}
+                onClick={() => onRemove(i)}
+              >
+                <UiIcon name="delete" />
+              </button>
+            </div>
+          );
+        })}
+      </div>
 
       {files.length > 1 && (
         <div class="sb-row-sm" role="group" aria-label="How several files play">
