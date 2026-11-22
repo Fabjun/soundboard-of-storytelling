@@ -2326,6 +2326,16 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+.sb-hint-text.is-wrap {
+  /* @inventory: Hint text that wraps instead of truncating — a sentence that must be read whole (the BG explanation under a combo step). */
+  white-space: normal;
+}
+.sb-chip-note {
+  /* @inventory: Small muted mark inside a chip button — BG on a combo step's Loop set to ∞, which plays in the background. */
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  color: var(--text-mute);
+}
 .sb-value-text {
   /* @inventory: Numeric value display in inspector — mono xs gold; for fade/volume values next to sliders. */
   font-family: var(--font-mono);

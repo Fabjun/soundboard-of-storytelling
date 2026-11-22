@@ -12,6 +12,7 @@ import {
   canStartInCombo,
   comboReach,
   combosInCycles,
+  playsInBackground,
   removePadFromStep,
   removeStep,
   setStepDuration,
@@ -156,5 +157,20 @@ describe('step operations', () => {
     setStepDuration(two, 0, 3);
     setStepStopAll(two, 0, true);
     expect(two).toEqual(copy);
+  });
+});
+
+describe('playsInBackground', () => {
+  test('a Loop set to ∞ plays in the background, with one file or several', () => {
+    expect(playsInBackground(newPad('r', 'loop', 'Rain', ['a']))).toBe(true);
+    expect(playsInBackground(newPad('n', 'loop', 'Night', ['a', 'b']))).toBe(true);
+  });
+
+  test('a Loop with a REPEAT count, a Single and a combo hold their step', () => {
+    const bells = newPad('b', 'loop', 'Bells', ['a']);
+    if (bells.type === 'loop') bells.repeat = 1;
+    expect(playsInBackground(bells)).toBe(false);
+    expect(playsInBackground(newPad('t', 'single', 'Thunder', ['a']))).toBe(false);
+    expect(playsInBackground(combo('c', []))).toBe(false);
   });
 });
