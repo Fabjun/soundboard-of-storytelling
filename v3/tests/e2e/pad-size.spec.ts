@@ -17,6 +17,8 @@ import {
   enterGameMode,
   enterSetupMode,
   goToBoardList,
+  modeToggle,
+  newDeckButton,
   openDeckRail,
   reopenFirstBoard,
 } from './helpers';
@@ -144,7 +146,7 @@ test('the PAD SIZE slider sets the size for every deck and All pads, from any of
   await page.keyboard.press('End'); // in Deck 1
   await expect(slider(page)).toHaveValue('160');
 
-  await page.getByTestId('deck-rail-new-button').click();
+  await newDeckButton(page).click();
   await page.getByText('Deck 2', { exact: true }).click();
   await expect(slider(page)).toHaveValue('160');
   expect((await boxOf(cells(page).first())).width).toBeGreaterThan(88);
@@ -167,7 +169,7 @@ test('the PAD SIZE slider sets the size for every deck and All pads, from any of
 
 /** Sets PAD SIZE with the slider's keys; on a phone the slider is in the DECKS panel (Slice 13b). */
 async function setPadSize(page: Page, px: number) {
-  const decks = page.getByTestId('deck-rail-manage-button');
+  const decks = page.getByRole('button', { name: 'DECKS', exact: true }); // the phone frame only
   const narrow = (await decks.count()) > 0;
   if (narrow) await decks.click();
   await slider(page).focus();
@@ -183,7 +185,9 @@ for (const viewport of [PHONE, WIDE]) {
   }) => {
     await page.setViewportSize(viewport);
     await boardWithSixPads(page);
-    await page.getByTestId('pad-editor-panel-name-input').waitFor({ state: 'detached' });
+    await page
+      .getByRole('dialog', { name: 'Pad editor', exact: true })
+      .waitFor({ state: 'detached' });
     for (const px of [44, 64, 88]) {
       await setPadSize(page, px);
       const pad = page.getByRole('button', { name: 'A1', exact: true });
@@ -209,7 +213,9 @@ test('on a phone every pad size shows the name and the icon; the type row and th
 }) => {
   await page.setViewportSize(PHONE);
   await boardWithSixPads(page);
-  await page.getByTestId('pad-editor-panel-name-input').waitFor({ state: 'detached' });
+  await page
+    .getByRole('dialog', { name: 'Pad editor', exact: true })
+    .waitFor({ state: 'detached' });
   const pad = page.getByRole('button', { name: 'A1', exact: true });
   await expect(pad).toHaveAccessibleDescription('Single');
   for (const px of [44, 68, 76, 88, 120]) {
@@ -269,16 +275,17 @@ test('Settings can make PAD SIZE one size for every board; per board again, each
   /** Opens the board named `name` from the board list, a deck shown in SETUP. */
   async function openBoardInSetup(name: string) {
     await page.getByText(name, { exact: true }).click();
-    await page.getByTestId('mode-toggle').waitFor();
+    await modeToggle(page).waitFor();
     await openDeckRail(page);
     await enterSetupMode(page);
   }
   async function chooseScope(label: string) {
-    await page.getByTestId('board-list-screen-settings-button').click();
+    await page.getByRole('button', { name: 'Settings', exact: true }).click();
     await page.getByText(label, { exact: true }).click();
-    await page.getByTestId('settings-screen-back-button').click();
+    await page.getByRole('button', { name: 'BACK', exact: true }).click();
   }
-  const back = () => page.getByTestId('board-top-bar-back-button').click();
+  const back = () =>
+    page.getByRole('button', { name: 'Back to the board list', exact: true }).click();
 
   await page.goto('/soundboard-of-storytelling/');
   await goToBoardList(page);
@@ -292,7 +299,7 @@ test('Settings can make PAD SIZE one size for every board; per board again, each
 
   // A second board shows the same size
   await back();
-  await page.getByTestId('board-list-screen-new-button').click();
+  await page.getByRole('button', { name: 'NEW BOARD', exact: true }).click();
   await openBoardInSetup('Board 2');
   await createDeck(page);
   await expect(slider(page)).toHaveValue('160');

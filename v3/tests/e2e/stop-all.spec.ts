@@ -18,6 +18,9 @@ import {
   enterGameMode,
   enterSetupMode,
   goToLibrary,
+  keyButton,
+  keyGroup,
+  modeToggle,
   padCells as pads,
   uploadTestAudio,
 } from './helpers';
@@ -25,13 +28,25 @@ import {
 const stopAll = (page: Page) => page.getByRole('button', { name: /^STOP (ALL|NOW)$/ });
 const playing = (page: Page, n: number) => pads(page).nth(n).getByRole('button', { pressed: true });
 
+/** Opens Settings from the board, through the board list. */
+async function openSettings(page: Page): Promise<void> {
+  await page.getByRole('button', { name: 'Back to the board list', exact: true }).click();
+  await page.getByRole('button', { name: 'Settings', exact: true }).click();
+}
+
+/** Goes back from Settings to the board. */
+async function backToBoard(page: Page): Promise<void> {
+  await page.getByRole('button', { name: 'BACK', exact: true }).click();
+  await page.getByText('Board 1', { exact: true }).click();
+  await modeToggle(page).waitFor();
+}
+
 test.beforeEach(async ({ page }) => {
   await page.goto('/soundboard-of-storytelling/');
   await goToLibrary(page);
   await uploadTestAudio(page);
   await page.goto('/soundboard-of-storytelling/');
   await goToBoardList(page); // through TAP TO START, which unlocks the audio
-  await page.getByTestId('board-list-screen-new-button').waitFor();
   await createBoardAndNavigate(page);
   await createDeck(page);
   await enterSetupMode(page);
@@ -99,13 +114,10 @@ test('the numpad Enter and Enter stop the sound started last; the numpad decimal
 test('with Enter set to STOP ALL in Settings, the numpad Enter stops every sound (settings.md S2)', async ({
   page,
 }) => {
-  await page.getByTestId('board-top-bar-back-button').click();
-  await page.getByTestId('board-list-screen-settings-button').click();
+  await openSettings(page);
   await page.getByText('STOP ALL', { exact: true }).click();
   await expect(page.getByRole('radio', { name: 'STOP ALL', exact: true })).toBeChecked();
-  await page.getByTestId('settings-screen-back-button').click();
-  await page.getByText('Board 1', { exact: true }).click();
-  await page.getByTestId('mode-toggle').waitFor();
+  await backToBoard(page);
 
   await enterGameMode(page);
   await pads(page).nth(0).getByRole('button').click();
@@ -122,17 +134,12 @@ test('with Enter set to STOP ALL in Settings, the numpad Enter stops every sound
 test('STOP ALL moved to another key in Settings: that key stops all, the numpad decimal no longer (K12)', async ({
   page,
 }) => {
-  await page.getByTestId('board-top-bar-back-button').click();
-  await page.getByTestId('board-list-screen-settings-button').click();
-  const field = page
-    .getByTestId('settings-screen-stop-all-key-region')
-    .getByTestId('key-field-button');
+  await openSettings(page);
+  const field = keyButton(keyGroup(page, 'STOP ALL key'));
   await field.click();
   await page.keyboard.press('KeyS');
   await expect(field).toHaveText('S');
-  await page.getByTestId('settings-screen-back-button').click();
-  await page.getByText('Board 1', { exact: true }).click();
-  await page.getByTestId('mode-toggle').waitFor();
+  await backToBoard(page);
 
   await enterGameMode(page);
   await pads(page).nth(0).getByRole('button').click();
