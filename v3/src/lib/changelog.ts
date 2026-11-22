@@ -17,10 +17,17 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.348';
+export const APP_VERSION = '3.0.349';
 
 /** The developer log, newest first; CHANGELOG.md is generated from it (sync-changelog). */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.349',
+    date: '2026-11-22',
+    items: [
+      'test: stop-all and pad-size locate by role and name (ADR-0054 amendment 2026-11-19, batch 17) — Back to the board list, Settings, BACK, NEW BOARD, NEW DECK, DECKS, the STOP ALL key group, the mode toggle and the closed PAD editor by its dialog. The grid, its cells and the hidden pad icons and drag handle keep their test IDs: they have no role. TEST_ID_LOCATORS 335 → 315. Counter-checked: Back to the board list renamed — the three Settings tests red at it; the STOP ALL key group renamed alone — the K12 test red at the group; restored from a copy — green in full',
+    ],
+  },
   {
     version: '3.0.348',
     date: '2026-11-22',

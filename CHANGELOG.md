@@ -7,6 +7,12 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.349 — 2026-11-22
+
+### Internal
+
+- test: stop-all and pad-size locate by role and name (ADR-0054 amendment 2026-11-19, batch 17) — Back to the board list, Settings, BACK, NEW BOARD, NEW DECK, DECKS, the STOP ALL key group, the mode toggle and the closed PAD editor by its dialog. The grid, its cells and the hidden pad icons and drag handle keep their test IDs: they have no role. TEST_ID_LOCATORS 335 → 315. Counter-checked: Back to the board list renamed — the three Settings tests red at it; the STOP ALL key group renamed alone — the K12 test red at the group; restored from a copy — green in full
+
 ## 3.0.348 — 2026-11-22
 
 ### Internal
