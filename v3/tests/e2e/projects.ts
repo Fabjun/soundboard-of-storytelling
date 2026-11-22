@@ -67,6 +67,7 @@ export const FULL_TESTS = [
   'pad-light',
   'help',
   'welcome',
+  'safe-area',
 ];
 
 /**

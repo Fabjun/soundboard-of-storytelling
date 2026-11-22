@@ -103,6 +103,13 @@ export function withEarlyVersions(
 /** The release notes the main menu shows, newest first (checked by whatsNew.test.ts). */
 export const WHATS_NEW: WhatsNewNotes[] = [
   {
+    version: '3.0.350',
+    fixed: [
+      'Installed on an iPhone, the top of every screen is no longer hidden under the notch, and turned sideways no control lies beside it.',
+      'On a narrow phone the PAD editor’s close button is fully on screen again.',
+    ],
+  },
+  {
     version: '3.0.349',
     behindTheScenes: [
       'The tests of STOP ALL and of the pad size find controls by the names a screen reader says.',
