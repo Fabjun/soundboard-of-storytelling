@@ -128,8 +128,11 @@ export function PadCreationPopover({ cellRect, onResult }: PadCreationPopoverPro
         {sourceTab === 'BROWSE' && (
           <>
             <div class="sb-lib-browser-search">
+              {/* A placeholder is no label and goes once typed (W3C WAI tutorial "Form
+                  Instructions"), so both fields carry a name of their own */}
               <input
                 type="text"
+                aria-label="Search files"
                 placeholder={`Search ${allAudio.length} files…`}
                 value={search}
                 onInput={(e) => setSearch((e.target as HTMLInputElement).value)}
@@ -160,6 +163,7 @@ export function PadCreationPopover({ cellRect, onResult }: PadCreationPopoverPro
         <input
           type="text"
           data-testid="pad-creation-popover-name-input"
+          aria-label="Pad name"
           value={padName}
           placeholder={selectedItem?.name ?? 'Pad name…'}
           onInput={(e) => setPadName((e.target as HTMLInputElement).value)}

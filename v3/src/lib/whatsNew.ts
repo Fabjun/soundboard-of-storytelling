@@ -104,8 +104,11 @@ export function withEarlyVersions(
 export const WHATS_NEW: WhatsNewNotes[] = [
   {
     version: '3.0.354',
+    improved: [
+      'When a pad is added to an empty cell, a screen reader names the file search and the pad name field.',
+    ],
     behindTheScenes: [
-      'More tests find controls by the names a screen reader says: the bar toggles and the now-playing line.',
+      'More tests find controls by the names a screen reader says: the bar toggles, the now-playing line and the pad creation.',
     ],
   },
   {
