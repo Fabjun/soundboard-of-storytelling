@@ -33,6 +33,9 @@ import {
   enterSetupMode,
   enterGameMode,
   PAD_CELL,
+  creationPopover,
+  popoverAddPad,
+  popoverFile,
 } from '../helpers';
 import { mobileUploadTestAudio } from './helpers';
 
@@ -46,7 +49,7 @@ test.beforeEach(async ({ page }) => {
   // Return to start and tap TAP TO START (initializes AudioContext)
   await page.goto('/soundboard-of-storytelling/');
   await goToBoardList(page); // through TAP TO START, which unlocks the audio
-  await page.getByTestId('board-list-screen-new-button').waitFor();
+  await page.getByRole('button', { name: 'NEW BOARD', exact: true }).waitFor();
 
   await createBoardAndNavigate(page);
   await createDeck(page);
@@ -56,14 +59,14 @@ test.beforeEach(async ({ page }) => {
 test('B — SINGLE pad: tap → is-hot; tap again → is-hot removed', async ({ page }) => {
   // Create a SINGLE pad at cell (0,0) via tap on empty cell
   await page.getByTestId('pad-grid-cell-empty-slot-0-0').tap();
-  const popover = page.getByTestId('pad-creation-popover');
+  const popover = creationPopover(page);
   await popover.waitFor();
 
-  const sourceItem = page.locator('[data-testid^="pad-creation-popover-source-item-"]').first();
+  const sourceItem = popoverFile(page);
   await sourceItem.waitFor({ timeout: 5_000 });
   await sourceItem.tap();
   // Default type for a 1-second clip is 'single' (< 10 s threshold)
-  await page.getByTestId('pad-creation-popover-add-button').tap();
+  await popoverAddPad(page).tap();
 
   const padCell = page.locator(PAD_CELL).first();
   await padCell.waitFor();
@@ -80,16 +83,16 @@ test('B — SINGLE pad: tap → is-hot; tap again → is-hot removed', async ({ 
 
 test('C — LOOP pad: tap → is-looping; tap again → is-looping removed', async ({ page }) => {
   await page.getByTestId('pad-grid-cell-empty-slot-0-0').tap();
-  const popover = page.getByTestId('pad-creation-popover');
+  const popover = creationPopover(page);
   await popover.waitFor();
 
-  const sourceItem = page.locator('[data-testid^="pad-creation-popover-source-item-"]').first();
+  const sourceItem = popoverFile(page);
   await sourceItem.waitFor({ timeout: 5_000 });
   await sourceItem.tap();
 
   // Select the LOOP type pill
   await page.getByRole('button', { name: 'LOOP', exact: true }).tap();
-  await page.getByTestId('pad-creation-popover-add-button').tap();
+  await popoverAddPad(page).tap();
 
   const padCell = page.locator(PAD_CELL).first();
   await padCell.waitFor();

@@ -37,7 +37,7 @@ test.beforeEach(async ({ page }) => {
   await uploadTestAudio(page);
   await page.goto('/soundboard-of-storytelling/');
   await goToBoardList(page); // through TAP TO START, which unlocks the audio
-  await page.getByTestId('board-list-screen-new-button').waitFor();
+  await page.getByRole('button', { name: 'NEW BOARD', exact: true }).waitFor();
   await createBoardAndNavigate(page);
   await createDeck(page);
   await enterSetupMode(page);
