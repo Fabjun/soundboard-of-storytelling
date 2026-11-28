@@ -18,6 +18,7 @@ import {
   goToLibrary,
   padCells,
   reopenFirstBoard,
+  undoToast,
 } from './helpers';
 
 const padsTab = (page: Page) => page.getByRole('tab', { name: /^PADS\s*\d+$/ });
@@ -34,8 +35,9 @@ async function padInEditor(page: Page, name: string): Promise<void> {
   await enterSetupMode(page);
   await createPadAtCell00(page);
   await padCells(page).first().click();
-  await page.getByTestId('pad-editor-panel-name-input').fill(name);
-  await page.getByTestId('pad-editor-panel-save-button').click();
+  const editor = page.getByRole('dialog', { name: 'Pad editor', exact: true });
+  await editor.getByRole('textbox', { name: 'NAME', exact: true }).fill(name);
+  await editor.getByRole('button', { name: 'SAVE', exact: true }).click();
 }
 
 test('SAVE AS TEMPLATE, then ADD puts a copy on the deck — kept over a reload', async ({
@@ -65,7 +67,10 @@ test('SAVE AS TEMPLATE, then ADD puts a copy on the deck — kept over a reload'
 test('a combo cannot be saved as a template', async ({ page }) => {
   await padInEditor(page, 'Storm');
   await expect(page.getByRole('button', { name: 'SAVE AS TEMPLATE', exact: true })).toBeVisible();
-  await page.getByTestId('pad-editor-panel-type-button-combo').click();
+  await page
+    .getByRole('group', { name: 'TYPE', exact: true })
+    .getByRole('button', { name: 'COMBO', exact: true })
+    .click();
   // Switching the type asks first when the pad has files
   const confirm = page.getByRole('alertdialog');
   await confirm.getByRole('button', { name: 'SWITCH', exact: true }).click();
@@ -94,6 +99,6 @@ test('a template is renamed in place, and deleted in one tap with UNDO', async (
       exact: true,
     }),
   ).toBeVisible();
-  await page.getByTestId('undo-toast').getByRole('button', { name: 'UNDO', exact: true }).click();
+  await undoToast(page).getByRole('button', { name: 'UNDO', exact: true }).click();
   await expect(templateRow(page, 'Night owl')).toBeVisible();
 });

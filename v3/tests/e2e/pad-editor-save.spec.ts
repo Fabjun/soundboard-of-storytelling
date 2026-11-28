@@ -17,11 +17,14 @@ import {
   enterSetupMode,
   goToBoardList,
   padCells,
+  undoToast,
 } from './helpers';
 
 const editor = (page: Page) => page.getByRole('dialog', { name: 'Pad editor', exact: true });
-const nameInput = (page: Page) => page.getByTestId('pad-editor-panel-name-input');
-const save = (page: Page) => page.getByTestId('pad-editor-panel-save-button');
+const nameInput = (page: Page) => editor(page).getByRole('textbox', { name: 'NAME', exact: true });
+const save = (page: Page) => editor(page).getByRole('button', { name: 'SAVE', exact: true });
+const typeButton = (page: Page, name: 'SGL' | 'LOOP') =>
+  page.getByRole('group', { name: 'TYPE', exact: true }).getByRole('button', { name, exact: true });
 // The editor's own ↶ / ↷ — the board has a pair of its own behind it (ADR-0086)
 const undo = (page: Page) => editor(page).getByRole('button', { name: 'Undo', exact: true });
 const redo = (page: Page) => editor(page).getByRole('button', { name: 'Redo', exact: true });
@@ -80,7 +83,7 @@ test('a new pad goes again when its editor closes before the first SAVE; after S
   await close(page).click();
   await question(page).getByRole('button', { name: 'DISCARD CHANGES', exact: true }).click();
   await expect(padCells(page)).toHaveCount(1);
-  await expect(page.getByTestId('undo-toast')).toHaveCount(0);
+  await expect(undoToast(page)).toHaveCount(0);
 
   // SAVE first: the pad stays when the editor closes
   await addPad();
@@ -121,14 +124,11 @@ test('undo and redo step through the changes; typed letters are one step', async
   await expect(undo(page)).toBeDisabled();
   await nameInput(page).fill('W');
   await nameInput(page).pressSequentially('ind'); // within the merge time: one step with "W"
-  await page.getByTestId('pad-editor-panel-type-button-loop').click(); // a second step
+  await typeButton(page, 'LOOP').click(); // a second step
   await expect(undo(page)).toBeEnabled();
 
   await undo(page).click();
-  await expect(page.getByTestId('pad-editor-panel-type-button-single')).toHaveAttribute(
-    'aria-pressed',
-    'true',
-  );
+  await expect(typeButton(page, 'SGL')).toHaveAttribute('aria-pressed', 'true');
   await expect(nameInput(page)).toHaveValue('Wind');
   await undo(page).click();
   await expect(nameInput(page)).toHaveValue('Rain');
@@ -142,7 +142,7 @@ test('undo and redo step through the changes; typed letters are one step', async
 
 // A change that is no text: the browser's own undo of a text field cannot pass for ours
 test('Ctrl / Cmd + Z undoes outside a text field; Shift redoes', async ({ page }) => {
-  const loop = page.getByTestId('pad-editor-panel-type-button-loop');
+  const loop = typeButton(page, 'LOOP');
   await loop.click();
   await expect(loop).toHaveAttribute('aria-pressed', 'true');
   await save(page).focus();
