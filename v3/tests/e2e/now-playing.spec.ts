@@ -22,6 +22,8 @@ import {
   goToLibrary,
   openDeckRail,
   padCells as pads,
+  popoverAddPad,
+  popoverFile,
   TEST_AUDIO_NAME,
   uploadTestAudio,
 } from './helpers';
@@ -70,10 +72,8 @@ test('a playing Single shows its time left; a Loop until stopped keeps its runni
 }) => {
   // A Single from the first library file (the popover's default type) next to the two Loops
   await page.getByTestId('pad-grid-cell-empty-slot-2-0').click();
-  // The popover has no role; its ADD PAD shares its name with the bar's, so it is found inside
-  const popover = page.getByTestId('pad-creation-popover');
-  await popover.getByRole('button', { name: new RegExp(`^${TEST_AUDIO_NAME}`) }).click();
-  await popover.getByRole('button', { name: 'ADD PAD', exact: true }).click();
+  await popoverFile(page).click();
+  await popoverAddPad(page).click();
   await expect(pads(page)).toHaveCount(3);
   await expect(pads(page).nth(2)).toContainText('0:01');
 

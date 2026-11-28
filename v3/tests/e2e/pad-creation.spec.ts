@@ -12,6 +12,7 @@
 import { test, expect, type Page } from '@playwright/test';
 import {
   addNamedPad,
+  creationPopover,
   ensureTestAudio,
   goToBoardList,
   createBoardAndNavigate,
@@ -19,19 +20,19 @@ import {
   enterSetupMode,
   padPosition,
   pointerDrag,
+  popoverAddPad,
+  popoverFile,
   reopenFirstBoard,
   seedTestAudio,
   TEST_AUDIO_NAME,
   PAD_CELL,
 } from './helpers';
 
-// The popover and the library panel's rows have no role (the rows start a pointer drag), so
-// they keep their test IDs; what is inside the popover is found there by role and name
-const popover = (page: Page) => page.getByTestId('pad-creation-popover');
-const inPopover = (page: Page, name: string | RegExp) =>
-  popover(page).getByRole('button', typeof name === 'string' ? { name, exact: true } : { name });
-/** A file of the popover's list, by the start of its name (its duration follows). */
-const fileButton = (page: Page, name: string) => inPopover(page, new RegExp(`^${name}`));
+/** A button of the creation popover, by its name. */
+const inPopover = (page: Page, name: string) =>
+  creationPopover(page).getByRole('button', { name, exact: true });
+
+// The library panel's rows have no role (they start a pointer drag), so they keep their test IDs
 
 test.beforeEach(async ({ page }) => {
   await page.goto('/soundboard-of-storytelling/');
@@ -49,10 +50,10 @@ test.beforeEach(async ({ page }) => {
 
 test('12 — tap empty cell → PadCreationPopover opens', async ({ page }) => {
   await page.getByTestId('pad-grid-cell-empty-slot-0-0').click();
-  await expect(popover(page)).toBeVisible();
+  await expect(creationPopover(page)).toBeVisible();
   // CANCEL button closes it
   await inPopover(page, 'CANCEL').click();
-  await expect(popover(page)).not.toBeVisible({
+  await expect(creationPopover(page)).not.toBeVisible({
     timeout: 2000,
   });
 });
@@ -61,20 +62,20 @@ test('12 — tap empty cell → PadCreationPopover opens', async ({ page }) => {
 
 test('13 — Path A: select from RECENT tab → ADD PAD → pad appears in cell', async ({ page }) => {
   await page.getByTestId('pad-grid-cell-empty-slot-0-0').click();
-  await popover(page).waitFor();
+  await creationPopover(page).waitFor();
 
   // RECENT tab is default; source item should be visible
-  const sourceItem = fileButton(page, TEST_AUDIO_NAME);
+  const sourceItem = popoverFile(page, TEST_AUDIO_NAME);
   await sourceItem.waitFor({ timeout: 5_000 });
   await sourceItem.click();
 
   // ADD PAD should now be enabled
-  const addPadBtn = inPopover(page, 'ADD PAD');
+  const addPadBtn = popoverAddPad(page);
   await expect(addPadBtn).not.toBeDisabled();
   await addPadBtn.click();
 
   // Popover closes, pad cell appears (not empty)
-  await expect(popover(page)).not.toBeVisible({ timeout: 3000 });
+  await expect(creationPopover(page)).not.toBeVisible({ timeout: 3000 });
   await expect(page.locator(PAD_CELL).first()).toBeVisible();
   // Cell 0,0 is no longer empty
   await expect(page.getByTestId('pad-grid-cell-empty-slot-0-0')).not.toBeVisible({
@@ -107,28 +108,28 @@ test('14 — Path B: library drag to empty cell → pad created there', async ({
 
 test('15 — Path A: BROWSE tab → search → select → ADD PAD', async ({ page }) => {
   await page.getByTestId('pad-grid-cell-empty-slot-0-0').click();
-  await popover(page).waitFor();
+  await creationPopover(page).waitFor();
 
   // Switch to BROWSE tab
   await inPopover(page, 'BROWSE').click();
 
   // The search narrows the list; the field has a name of its own, not only a placeholder
-  const search = popover(page).getByRole('textbox', { name: 'Search files', exact: true });
+  const search = creationPopover(page).getByRole('textbox', { name: 'Search files', exact: true });
   await search.fill('zzz');
-  await expect(popover(page).getByText('No matches.', { exact: true })).toBeVisible();
+  await expect(creationPopover(page).getByText('No matches.', { exact: true })).toBeVisible();
   await search.fill(TEST_AUDIO_NAME);
 
   // Source items should appear in BROWSE tab
-  const sourceItem = fileButton(page, TEST_AUDIO_NAME);
+  const sourceItem = popoverFile(page, TEST_AUDIO_NAME);
   await sourceItem.waitFor({ timeout: 5_000 });
   await sourceItem.click();
 
   // Pad name input should be populated or at least focusable
-  const nameInput = popover(page).getByRole('textbox', { name: 'Pad name', exact: true });
+  const nameInput = creationPopover(page).getByRole('textbox', { name: 'Pad name', exact: true });
   await expect(nameInput).toBeVisible();
 
   // ADD PAD
-  const addPadBtn = inPopover(page, 'ADD PAD');
+  const addPadBtn = popoverAddPad(page);
   await expect(addPadBtn).not.toBeDisabled();
   await addPadBtn.click();
 
@@ -149,7 +150,7 @@ test('a new pad is SGL unless the user picks a type — also for a long file', a
   await seedTestAudio(page, LONG_AUDIO);
   await reopenFirstBoard(page);
   await enterSetupMode(page);
-  const longItem = fileButton(page, 'long-12s');
+  const longItem = popoverFile(page, 'long-12s');
   const padAt = (pos: string) =>
     page.locator(
       `[data-pos="${pos}"][data-testid^="pad-grid-cell-"]:not([data-testid^="pad-grid-cell-empty-slot-"])`,
@@ -158,14 +159,14 @@ test('a new pad is SGL unless the user picks a type — also for a long file', a
   // Popover, no type picked → SGL
   await page.getByTestId('pad-grid-cell-empty-slot-0-0').click();
   await longItem.click();
-  await inPopover(page, 'ADD PAD').click();
+  await popoverAddPad(page).click();
   await expect(padAt('0,0')).toContainText('SGL');
 
   // Popover, LOOP picked before the file → LOOP is kept
   await page.getByTestId('pad-grid-cell-empty-slot-1-0').click();
   await inPopover(page, 'LOOP').click();
   await longItem.click();
-  await inPopover(page, 'ADD PAD').click();
+  await popoverAddPad(page).click();
   await expect(padAt('1,0')).toContainText('LOOP');
 
   // Library drag (no type to pick) → SGL
@@ -179,21 +180,21 @@ test('the suggested name follows the chosen file; a typed name is kept', async (
   await seedTestAudio(page, LONG_AUDIO);
   await reopenFirstBoard(page);
   await enterSetupMode(page);
-  const item = (name: string) => fileButton(page, name);
+  const item = (name: string) => popoverFile(page, name);
   const pads = page.locator(PAD_CELL);
 
   // One file, then another: the pad takes the name of the second
   await page.getByTestId('pad-grid-cell-empty-slot-0-0').click();
   await item(TEST_AUDIO_NAME).click();
   await item('long-12s').click();
-  await inPopover(page, 'ADD PAD').click();
+  await popoverAddPad(page).click();
   await expect(pads.first()).toContainText('long-12s');
 
   // A typed name survives choosing a file
   await page.getByTestId('pad-grid-cell-empty-slot-1-0').click();
-  await popover(page).getByRole('textbox', { name: 'Pad name', exact: true }).fill('Rain');
+  await creationPopover(page).getByRole('textbox', { name: 'Pad name', exact: true }).fill('Rain');
   await item('long-12s').click();
-  await inPopover(page, 'ADD PAD').click();
+  await popoverAddPad(page).click();
   await expect(pads.filter({ hasText: 'Rain' })).toHaveCount(1);
 });
 

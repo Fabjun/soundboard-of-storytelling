@@ -612,8 +612,9 @@ describe('guard: test-ID locators only go down (owner decision 2026-11-19)', () 
   // layout-reach and a11y, 253 after board-undo and pad-light, 239 after bar-toggles and
   // now-playing, 220 after pad-creation, 210 after pad-editor-save and library-templates, 195
   // after mobile/typing and mobile/touch-targets, 183 after system-gestures and
-  // library-own-icons. Lower it with every spec moved (ADR-0054 amendment).
-  const TEST_ID_LOCATORS = 183;
+  // library-own-icons, 163 after the shared creation-popover helpers. Lower it with every spec
+  // moved (ADR-0054 amendment).
+  const TEST_ID_LOCATORS = 163;
   const files = repoFiles(E2E)
     .filter((f) => f.endsWith('.ts'))
     .map((f) => join(E2E, f));

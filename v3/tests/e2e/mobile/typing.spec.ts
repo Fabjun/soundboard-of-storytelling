@@ -16,14 +16,13 @@ import {
   goToBoardList,
   goToLibrary,
   padCells as pads,
+  popoverAddPad,
+  popoverFile,
   seedTestAudio,
-  TEST_AUDIO_NAME,
   TEST_AUDIO_SEED,
 } from '../helpers';
 
 const editor = (page: Page) => page.getByRole('dialog', { name: 'Pad editor', exact: true });
-// The popover has no role, so it keeps its test ID; its ADD PAD shares its name with the bar's
-const popover = (page: Page) => page.getByTestId('pad-creation-popover');
 
 test.beforeEach(async ({ page }) => {
   await seedTestAudio(page, { ...TEST_AUDIO_SEED, duration: 2 });
@@ -47,10 +46,8 @@ test('a pad name and a trim value take typed keys', async ({ page }) => {
   await createDeck(page);
   await enterSetupMode(page);
   await page.getByTestId('pad-grid-cell-empty-slot-0-0').tap();
-  await popover(page)
-    .getByRole('button', { name: new RegExp(`^${TEST_AUDIO_NAME}`) })
-    .tap();
-  await popover(page).getByRole('button', { name: 'ADD PAD', exact: true }).tap();
+  await popoverFile(page).tap();
+  await popoverAddPad(page).tap();
   await expect(pads(page)).toHaveCount(1);
   await pads(page).nth(0).getByRole('button').first().tap();
 

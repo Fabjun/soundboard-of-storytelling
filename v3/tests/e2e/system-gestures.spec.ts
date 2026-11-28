@@ -14,6 +14,7 @@ import { test, expect, type Locator, type Page } from '@playwright/test';
 import {
   createBoardAndNavigate,
   createDeck,
+  creationPopover,
   deckRows,
   deckSelect,
   enterSetupMode,
@@ -22,6 +23,8 @@ import {
   goToLibrary,
   openMainMenu,
   padCells,
+  popoverAddPad,
+  popoverFile,
   TEST_AUDIO_NAME,
 } from './helpers';
 
@@ -129,14 +132,12 @@ test('no browser gestures and no small text fields: boards, the PAD editor, temp
   await page.keyboard.press('Enter');
 
   await page.getByTestId('pad-grid-cell-empty-slot-0-0').click();
-  // The popover has no role, so it keeps its test ID; its ADD PAD shares its name with the bar's
-  const popover = page.getByTestId('pad-creation-popover');
-  await popover.waitFor();
+  await creationPopover(page).waitFor();
   expect(await offenders(page), 'pad creation popover').toEqual([]);
 
   // Add the pad from the open popover (the way createPadAtCell00 does), then open its editor
-  await popover.getByRole('button', { name: new RegExp(`^${TEST_AUDIO_NAME}`) }).click();
-  await popover.getByRole('button', { name: 'ADD PAD', exact: true }).click();
+  await popoverFile(page).click();
+  await popoverAddPad(page).click();
   await padCells(page).first().click();
   await page.getByRole('button', { name: 'BROWSE', exact: true }).click();
   // The fields of the LIGHT tab are in the page too, in its hidden panel
