@@ -13,25 +13,38 @@
 import { test, expect, type Page } from '@playwright/test';
 import {
   addNamedPad,
+  boardOpenButtons,
   closePadEditor,
   createBoardAndNavigate,
   createDeck,
+  deckRows,
+  deckSelect,
   enterGameMode,
   enterSetupMode,
   goToBoardList,
+  modeToggle,
   padCells,
   reopenFirstBoard,
+  undoToast,
 } from './helpers';
 
-const undoButton = (page: Page) => page.getByTestId('board-top-bar-undo-button');
-const redoButton = (page: Page) => page.getByTestId('board-top-bar-redo-button');
-const deckTabs = (page: Page) => page.locator('[data-testid^="deck-rail-deck-tab-"]');
-const toast = (page: Page) => page.getByTestId('undo-toast');
+const undoButton = (page: Page) => page.getByRole('button', { name: 'Undo', exact: true });
+const redoButton = (page: Page) => page.getByRole('button', { name: 'Redo', exact: true });
+/** The toast has no box of its own, so its UNDO button stands for it being shown. */
+const toastUndo = (page: Page) =>
+  undoToast(page).getByRole('button', { name: 'UNDO', exact: true });
+const searchToggle = (page: Page) =>
+  page.getByRole('button', { name: /^(Show|Hide) the search bar/ });
+const backToBoards = (page: Page) =>
+  page.getByRole('button', { name: 'Back to the board list', exact: true });
 
 /** Opens the first pad's editor and deletes the pad (one tap). */
 async function deleteFirstPad(page: Page) {
   await padCells(page).first().click();
-  await page.getByTestId('pad-editor-panel-delete-button').click();
+  await page
+    .getByRole('dialog', { name: 'Pad editor', exact: true })
+    .getByRole('button', { name: 'DELETE PAD', exact: true })
+    .click();
   await expect(padCells(page)).toHaveCount(0);
 }
 
@@ -82,11 +95,8 @@ test('Cmd / Ctrl + Z undoes and Shift redoes — not in a text field', async ({ 
   await expect(pad.first()).toContainText('Rain');
 
   // The search bar is open until folded (a bar toggle's default)
-  await expect(page.getByTestId('board-screen-search-toggle-button')).toHaveAttribute(
-    'aria-expanded',
-    'true',
-  );
-  await page.getByTestId('board-screen-search-input').focus();
+  await expect(searchToggle(page)).toHaveAttribute('aria-expanded', 'true');
+  await page.getByRole('searchbox', { name: 'Search pads by name', exact: true }).focus();
   await page.keyboard.press('ControlOrMeta+z');
   await expect(pad.first()).toContainText('Rain'); // the field's own undo, not the board's
 });
@@ -95,9 +105,10 @@ test('with the PAD editor open, Cmd / Ctrl + Z undoes its draft, not the board',
   page,
 }) => {
   await padCells(page).first().click();
-  const name = page.getByTestId('pad-editor-panel-name-input');
+  const editor = page.getByRole('dialog', { name: 'Pad editor', exact: true });
+  const name = editor.getByRole('textbox', { name: 'NAME', exact: true });
   await name.fill('Storm');
-  await page.getByTestId('pad-editor-panel-undo-button').focus(); // out of the text field
+  await editor.getByRole('button', { name: 'Undo', exact: true }).focus(); // out of the text field
   await page.keyboard.press('ControlOrMeta+z');
   await expect(name).toHaveValue('Rain');
   await page.getByRole('button', { name: 'Close the pad editor', exact: true }).click();
@@ -114,9 +125,9 @@ test('GAME has no undo', async ({ page }) => {
 
 test('undoing NEW DECK of the deck shown shows the first deck', async ({ page }) => {
   await createDeck(page); // shown now
-  await expect(deckTabs(page)).toHaveCount(2);
+  await expect(deckRows(page)).toHaveCount(2);
   await undoButton(page).click();
-  await expect(deckTabs(page)).toHaveCount(1);
+  await expect(deckRows(page)).toHaveCount(1);
   await expect(page.getByText('Select a deck', { exact: true })).toHaveCount(0);
   await expect(padCells(page).first()).toContainText('Rain'); // the first deck, with its pad
 });
@@ -125,25 +136,26 @@ test("a deleted pad comes back with the toast's UNDO; a change made since stays"
   page,
 }) => {
   await deleteFirstPad(page);
-  await expect(toast(page)).toContainText("Deleted 'Rain' · from 1 deck");
-  await deckTabs(page).first().dblclick(); // rename the deck meanwhile
-  await page.getByTestId('deck-rail-name-input').fill('Storm');
-  await page.getByTestId('deck-rail-name-input').press('Enter');
-  await expect(deckTabs(page).first()).toContainText('Storm');
+  await expect(undoToast(page)).toContainText("Deleted 'Rain' · from 1 deck");
+  await deckSelect(deckRows(page).first()).dblclick(); // rename the deck meanwhile
+  const deckName = page.getByRole('textbox', { name: 'Deck name', exact: true });
+  await deckName.fill('Storm');
+  await deckName.press('Enter');
+  await expect(deckRows(page).first()).toContainText('Storm');
 
-  await page.getByTestId('undo-toast-undo-button').click();
+  await toastUndo(page).click();
   await expect(padCells(page).first()).toContainText('Rain');
-  await expect(deckTabs(page).first()).toContainText('Storm');
-  await expect(toast(page)).toHaveCount(0);
+  await expect(deckRows(page).first()).toContainText('Storm');
+  await expect(undoToast(page)).toHaveCount(0);
 });
 
 test('the toast goes when the board is left', async ({ page }) => {
   await deleteFirstPad(page);
-  await expect(toast(page)).toBeVisible();
-  await page.getByTestId('board-top-bar-back-button').click();
-  await page.locator('[data-testid^="board-list-screen-name-text-"]').first().click();
-  await expect(page.getByTestId('mode-toggle')).toBeVisible();
-  await expect(toast(page)).toHaveCount(0);
+  await expect(toastUndo(page)).toBeVisible();
+  await backToBoards(page).click();
+  await boardOpenButtons(page).first().click();
+  await expect(modeToggle(page)).toBeVisible();
+  await expect(undoToast(page)).toHaveCount(0);
 });
 
 test('the toast goes 6 s after it appeared, also when the screen draws again meanwhile', async ({
@@ -154,28 +166,27 @@ test('the toast goes 6 s after it appeared, also when the screen draws again mea
   // time would still have left
   await page.clock.install();
   await deleteFirstPad(page);
-  await expect(toast(page)).toBeVisible();
+  await expect(toastUndo(page)).toBeVisible();
   await page.clock.runFor(5_000);
   // A preference changes, the board screen draws again: the toast's time must not start over
-  await page.getByTestId('board-screen-search-toggle-button').click();
+  await searchToggle(page).click();
   await page.clock.runFor(2_000);
-  await expect(toast(page)).toHaveCount(0, { timeout: 1_000 });
+  await expect(undoToast(page)).toHaveCount(0, { timeout: 1_000 });
 });
 
 test("a deleted board comes back with the toast's UNDO, with its decks and pads, also after a reload", async ({
   page,
 }) => {
-  await page.getByTestId('board-top-bar-back-button').click();
-  const rows = page.locator('[data-testid^="board-list-screen-row-"]');
+  await backToBoards(page).click();
+  const rows = boardOpenButtons(page);
   await expect(rows).toHaveCount(1);
-  const del = rows.first().locator('[data-testid^="board-list-screen-delete-button-"]');
-  await del.click();
+  await page.getByRole('button', { name: /^Delete board / }).click();
   await expect(rows).toHaveCount(0);
-  await expect(toast(page)).toContainText("Deleted board '");
+  await expect(undoToast(page)).toContainText("Deleted board '");
 
-  await page.getByTestId('undo-toast-undo-button').click();
+  await toastUndo(page).click();
   await expect(rows).toHaveCount(1);
   await reopenFirstBoard(page);
-  await expect(deckTabs(page)).toHaveCount(1);
+  await expect(deckRows(page)).toHaveCount(1);
   await expect(padCells(page).first()).toContainText('Rain');
 });
