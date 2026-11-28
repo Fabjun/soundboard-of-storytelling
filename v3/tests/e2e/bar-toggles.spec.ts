@@ -11,6 +11,7 @@
 import { test, expect, type Page } from '@playwright/test';
 import {
   addNamedPad,
+  boardOpenButtons,
   closePadEditor,
   createBoardAndNavigate,
   createDeck,
@@ -21,9 +22,14 @@ import {
 } from './helpers';
 
 const PHONE = { width: 390, height: 844 };
-const toggle = (page: Page, name: 'search' | 'quick-access' | 'decks') =>
-  page.getByTestId(`board-screen-${name}-toggle-button`);
-const searchInput = (page: Page) => page.getByTestId('board-screen-search-input');
+// On a phone the All pads tab shows no count (the wide frame's deck list does)
+const allPadsTab = (page: Page) => page.getByRole('button', { name: 'All pads', exact: true });
+/** The bar each toggle shows or hides, as its name says it ("Show the search bar"). */
+const BAR = { search: 'search bar', 'quick-access': 'quick-access bar', decks: 'deck tabs' };
+const toggle = (page: Page, name: keyof typeof BAR) =>
+  page.getByRole('button', { name: new RegExp(`^(Show|Hide) the ${BAR[name]}`) });
+const searchInput = (page: Page) =>
+  page.getByRole('searchbox', { name: 'Search pads by name', exact: true });
 const quickAccess = (page: Page) => page.getByRole('group', { name: 'Quick access', exact: true });
 
 async function boardWithTwoPads(page: Page) {
@@ -42,7 +48,7 @@ test('on a phone the deck tabs fold behind the cards; the toggles stay; folded a
 }) => {
   await page.setViewportSize(PHONE);
   await boardWithTwoPads(page);
-  const allPads = page.getByTestId('deck-rail-all-pads-tab-button');
+  const allPads = allPadsTab(page);
   await expect(toggle(page, 'decks')).toHaveAttribute('aria-expanded', 'true');
   await expect(allPads).toBeVisible();
 
@@ -54,11 +60,11 @@ test('on a phone the deck tabs fold behind the cards; the toggles stay; folded a
   // Reopened by hand: reopenFirstBoard would unfold the tabs (openDeckRail)
   await reloadApp(page);
   await goToBoardList(page);
-  await page.locator('[data-testid^="board-list-screen-name-text-"]').first().click();
+  await boardOpenButtons(page).first().click();
   await expect(toggle(page, 'decks')).toHaveAttribute('aria-expanded', 'false');
-  await expect(page.getByTestId('deck-rail-all-pads-tab-button')).toHaveCount(0);
+  await expect(allPadsTab(page)).toHaveCount(0);
   await toggle(page, 'decks').click();
-  await expect(page.getByTestId('deck-rail-all-pads-tab-button')).toBeVisible();
+  await expect(allPadsTab(page)).toBeVisible();
 });
 
 test('a search stays in effect while its bar is folded, and the magnifying glass says so', async ({
@@ -101,7 +107,9 @@ test('on a wide window the search and the star sit in the top bar; there is no c
 }) => {
   await boardWithTwoPads(page);
   const topBar = page.getByTestId('board-top-bar');
-  await expect(topBar.getByTestId('board-screen-search-toggle-button')).toBeVisible();
-  await expect(topBar.getByTestId('board-screen-quick-access-toggle-button')).toBeVisible();
+  await expect(topBar.getByRole('button', { name: /^(Show|Hide) the search bar/ })).toBeVisible();
+  await expect(
+    topBar.getByRole('button', { name: /^(Show|Hide) the quick-access bar/ }),
+  ).toBeVisible();
   await expect(toggle(page, 'decks')).toHaveCount(0);
 });

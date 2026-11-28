@@ -17,10 +17,17 @@ export type ChangelogEntry = {
 };
 
 /** The version this build shows; equals the newest entry (checked by sync-changelog). */
-export const APP_VERSION = '3.0.353';
+export const APP_VERSION = '3.0.354';
 
 /** The developer log, newest first; CHANGELOG.md is generated from it (sync-changelog). */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.0.354',
+    date: '2026-11-28',
+    items: [
+      "test: bar-toggles and now-playing locate by role and name (ADR-0054 amendment 2026-11-19, batch 20) — the bar toggles by their names (Show / Hide the search bar, the quick-access bar, the deck tabs), the pad search, the All pads tab (on a phone without its count), the board buttons, NEW BOARD, the deck buttons, the PAD editor's NAME, the creation popover's file and its ADD PAD found inside the popover, and the now-playing line as the status that says No sound or N playing. The top bar, the status bar and the popover keep their test IDs: regions without a role. TEST_ID_LOCATORS 253 → 239. Counter-checked: the pad search, the quick-access bar's and the deck tabs' names, No sound and the popover's ADD PAD renamed — six tests red, each at the renamed name; restored from a copy — green in full and full-webkit, but for the Single's time left, which needs the audio clock (red before the change too while macOS played no audio)",
+    ],
+  },
   {
     version: '3.0.353',
     date: '2026-11-22',

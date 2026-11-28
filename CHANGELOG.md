@@ -7,6 +7,12 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); "Internal" is 
 documentation, tests and tooling. Versions count pushes (3.0.N), not Semantic Versioning. The
 release notes the app shows are written separately for its users (`v3/src/lib/whatsNew.ts`).
 
+## 3.0.354 — 2026-11-28
+
+### Internal
+
+- test: bar-toggles and now-playing locate by role and name (ADR-0054 amendment 2026-11-19, batch 20) — the bar toggles by their names (Show / Hide the search bar, the quick-access bar, the deck tabs), the pad search, the All pads tab (on a phone without its count), the board buttons, NEW BOARD, the deck buttons, the PAD editor's NAME, the creation popover's file and its ADD PAD found inside the popover, and the now-playing line as the status that says No sound or N playing. The top bar, the status bar and the popover keep their test IDs: regions without a role. TEST_ID_LOCATORS 253 → 239. Counter-checked: the pad search, the quick-access bar's and the deck tabs' names, No sound and the popover's ADD PAD renamed — six tests red, each at the renamed name; restored from a copy — green in full and full-webkit, but for the Single's time left, which needs the audio clock (red before the change too while macOS played no audio)
+
 ## 3.0.353 — 2026-11-22
 
 ### Internal
