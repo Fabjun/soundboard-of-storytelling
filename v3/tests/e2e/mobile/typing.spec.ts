@@ -8,7 +8,7 @@
  * Not simulated: the phone's on-screen keyboard itself (checklist, "Why manual").
  */
 
-import { test, expect } from '@playwright/test';
+import { test, expect, type Page } from '@playwright/test';
 import {
   createBoardAndNavigate,
   createDeck,
@@ -17,8 +17,13 @@ import {
   goToLibrary,
   padCells as pads,
   seedTestAudio,
+  TEST_AUDIO_NAME,
   TEST_AUDIO_SEED,
 } from '../helpers';
+
+const editor = (page: Page) => page.getByRole('dialog', { name: 'Pad editor', exact: true });
+// The popover has no role, so it keeps its test ID; its ADD PAD shares its name with the bar's
+const popover = (page: Page) => page.getByTestId('pad-creation-popover');
 
 test.beforeEach(async ({ page }) => {
   await seedTestAudio(page, { ...TEST_AUDIO_SEED, duration: 2 });
@@ -42,27 +47,28 @@ test('a pad name and a trim value take typed keys', async ({ page }) => {
   await createDeck(page);
   await enterSetupMode(page);
   await page.getByTestId('pad-grid-cell-empty-slot-0-0').tap();
-  await page.locator('[data-testid^="pad-creation-popover-source-item-"]').first().tap();
-  await page.getByTestId('pad-creation-popover-add-button').tap();
+  await popover(page)
+    .getByRole('button', { name: new RegExp(`^${TEST_AUDIO_NAME}`) })
+    .tap();
+  await popover(page).getByRole('button', { name: 'ADD PAD', exact: true }).tap();
   await expect(pads(page)).toHaveCount(1);
   await pads(page).nth(0).getByRole('button').first().tap();
 
-  const name = page.getByTestId('pad-editor-panel-name-input');
+  const name = editor(page).getByRole('textbox', { name: 'NAME', exact: true });
   await name.tap();
   await name.press('ControlOrMeta+a');
   await name.press('Backspace');
   await name.pressSequentially('Owl');
   await expect(name).toHaveValue('Owl');
-  await page.getByTestId('pad-editor-panel-save-button').tap(); // a draft until SAVE (ADR-0084)
+  await editor(page).getByRole('button', { name: 'SAVE', exact: true }).tap(); // a draft until SAVE (ADR-0084)
   await expect(pads(page).nth(0)).toContainText('Owl'); // the app took the keys
 
-  const start = page.getByTestId('pad-editor-panel-trim-start-input');
+  const start = editor(page).getByRole('spinbutton', { name: 'Start (s)', exact: true });
   await start.tap();
   await start.press('ControlOrMeta+a');
   await start.pressSequentially('0.5');
   await start.press('Enter');
-  await expect(page.getByTestId('waveform-editor-trim-start-slider')).toHaveAttribute(
-    'aria-valuenow',
-    '0.5',
-  );
+  await expect(
+    editor(page).getByRole('slider', { name: 'Trim start', exact: true }),
+  ).toHaveAttribute('aria-valuenow', '0.5');
 });

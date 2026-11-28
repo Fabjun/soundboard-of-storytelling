@@ -22,6 +22,7 @@ import { test, expect, type Locator, type Page } from '@playwright/test';
 import {
   TEST_AUDIO_NAME,
   addLoopPad,
+  boardOpenButtons,
   createBoardAndNavigate,
   createDeck,
   ensureTestAudio,
@@ -64,7 +65,10 @@ test.describe('touch targets on a 390px phone', () => {
   test('BoardListScreen: NEW BOARD button is >= 44×44px', async ({ page }) => {
     await page.goto('/soundboard-of-storytelling/');
     await goToBoardList(page);
-    await assertTarget(page.getByTestId('board-list-screen-new-button'), 'NEW BOARD button');
+    await assertTarget(
+      page.getByRole('button', { name: 'NEW BOARD', exact: true }),
+      'NEW BOARD button',
+    );
   });
 
   // ── BoardScreen ──────────────────────────────────────────────────────────────
@@ -75,12 +79,16 @@ test.describe('touch targets on a 390px phone', () => {
     await createBoardAndNavigate(page);
     await createDeck(page);
 
-    await assertTarget(page.getByTestId('board-top-bar-back-button'), 'board-top-bar-back-button');
+    await assertTarget(
+      page.getByRole('button', { name: 'Back to the board list', exact: true }),
+      'board-top-bar-back-button',
+    );
 
     // Mode-toggle halves — width may be < 44px on very narrow viewports but
     // height must always be >= 44px (they fill the topbar height).
-    const setupHalf = page.getByTestId('mode-toggle-setup-button');
-    const gameHalf = page.getByTestId('mode-toggle-game-button');
+    const modeToggle = page.getByRole('group', { name: 'Mode toggle', exact: true });
+    const setupHalf = modeToggle.getByRole('button', { name: 'SETUP', exact: true });
+    const gameHalf = modeToggle.getByRole('button', { name: 'GAME', exact: true });
 
     const setupBox = await setupHalf.boundingBox();
     expect(setupBox, 'mode-toggle-setup: boundingBox() null').not.toBeNull();
@@ -143,9 +151,12 @@ test('BoardScreen: every visible control in SETUP is >= 44×44px', async ({ page
   await createBoardAndNavigate(page);
   await createDeck(page);
   await enterSetupMode(page);
-  await page.getByTestId('deck-rail-manage-button').click();
-  const sheet = page.getByTestId('deck-rail-sheet-region');
-  await sheet.locator('[data-testid^="deck-rail-actions-button-"]').first().click();
+  await page.getByRole('button', { name: 'DECKS', exact: true }).click();
+  const sheet = page.getByRole('group', { name: 'DECKS', exact: true });
+  await sheet
+    .getByRole('button', { name: /^Actions for deck / })
+    .first()
+    .click();
   await expect(sheet.getByRole('menu')).toBeVisible();
 
   expect(await smallControls(page), 'controls below 44 × 44 px').toEqual([]);
@@ -154,8 +165,8 @@ test('BoardScreen: every visible control in SETUP is >= 44×44px', async ({ page
 test('BoardListScreen: every visible control is >= 44×44px', async ({ page }) => {
   await page.goto('/soundboard-of-storytelling/');
   await goToBoardList(page);
-  await page.getByTestId('board-list-screen-new-button').click();
-  await page.locator('[data-testid^="board-list-screen-row-"]').first().waitFor();
+  await page.getByRole('button', { name: 'NEW BOARD', exact: true }).click();
+  await boardOpenButtons(page).first().waitFor();
   expect(await smallControls(page), 'controls below 44 × 44 px').toEqual([]);
 });
 
@@ -182,6 +193,10 @@ test('PAD editor: every visible control is >= 44×44px', async ({ page }) => {
   await enterSetupMode(page);
   await addLoopPad(page, 0);
   await padCells(page).first().getByRole('button').click();
-  await expect(page.getByTestId('pad-editor-panel-name-input')).toBeVisible();
+  await expect(
+    page
+      .getByRole('dialog', { name: 'Pad editor', exact: true })
+      .getByRole('textbox', { name: 'NAME', exact: true }),
+  ).toBeVisible();
   expect(await smallControls(page), 'controls below 44 × 44 px').toEqual([]);
 });

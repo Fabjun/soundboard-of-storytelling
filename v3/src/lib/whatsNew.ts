@@ -108,7 +108,7 @@ export const WHATS_NEW: WhatsNewNotes[] = [
       'When a pad is added to an empty cell, a screen reader names the file search and the pad name field.',
     ],
     behindTheScenes: [
-      'More tests find controls by the names a screen reader says: the bar toggles, the now-playing line, the pad creation, saving in the PAD editor and the pad templates.',
+      'More tests find controls by the names a screen reader says: the bar toggles, the now-playing line, the pad creation, saving in the PAD editor, the pad templates, typing on a phone and the touch targets.',
     ],
   },
   {
