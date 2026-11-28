@@ -21,6 +21,7 @@ import {
   padCells,
   reloadApp,
   reopenFirstBoard,
+  undoToast,
   waitForSaves,
 } from './helpers';
 
@@ -75,11 +76,16 @@ test('the picker offers an own icon first; the pad draws it as an image, and its
   await enterSetupMode(page);
   await createPadAtCell00(page);
   await padCells(page).first().click();
-  await page.getByTestId('pad-editor-panel-add-icon-button').click();
-  await page.getByTestId('icon-picker-category-button-own').click();
+  const editor = page.getByRole('dialog', { name: 'Pad editor', exact: true });
+  await editor.getByRole('button', { name: 'Add an icon', exact: true }).click();
+  // A category header's name ends with its count: OWN 1
+  await page
+    .getByRole('dialog', { name: 'Choose an icon', exact: true })
+    .getByRole('button', { name: /^OWN \d+$/ })
+    .click();
   await page.getByRole('button', { name: 'Wolf', exact: true }).click();
-  await page.getByTestId('pad-editor-panel-save-button').click();
-  await page.getByTestId('pad-editor-panel-close-button').click();
+  await editor.getByRole('button', { name: 'SAVE', exact: true }).click();
+  await editor.getByRole('button', { name: 'Close the pad editor', exact: true }).click();
 
   const picture = padCells(page).first().getByTestId('pad-icons').locator('img');
   await expect(picture).toHaveAttribute('src', /^blob:/);
@@ -108,7 +114,7 @@ test('delete is one tap with UNDO in the toast', async ({ page }) => {
   await page.getByRole('button', { name: 'Delete icon Owl', exact: true }).click();
   await expect(page.getByText('Owl', { exact: true })).toHaveCount(0);
   await expect(iconsTab(page)).toHaveText(/ICONS\s*0/);
-  await page.getByTestId('undo-toast').getByRole('button', { name: 'UNDO', exact: true }).click();
+  await undoToast(page).getByRole('button', { name: 'UNDO', exact: true }).click();
   await expect(page.getByText('Owl', { exact: true })).toBeVisible();
   await expect(iconsTab(page)).toHaveText(/ICONS\s*1/);
 });

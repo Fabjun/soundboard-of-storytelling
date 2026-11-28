@@ -14,6 +14,8 @@ import { test, expect, type Locator, type Page } from '@playwright/test';
 import {
   createBoardAndNavigate,
   createDeck,
+  deckRows,
+  deckSelect,
   enterSetupMode,
   ensureTestAudio,
   goToBoardList,
@@ -110,31 +112,36 @@ test('no browser gestures and no small text fields: boards, the PAD editor, temp
   await page.goto('/soundboard-of-storytelling/');
   await goToBoardList(page);
   expect(await offenders(page), 'board list').toEqual([]);
-  await page.getByTestId('board-list-screen-new-button').click();
-  await page.locator('[data-testid^="board-list-screen-edit-button-"]').first().click();
+  await page.getByRole('button', { name: 'NEW BOARD', exact: true }).click();
+  await page
+    .getByRole('button', { name: /^Rename board / })
+    .first()
+    .click();
   expect(await offenders(page), 'board list, a board renamed').toEqual([]);
   await page.keyboard.press('Enter');
 
   await createBoardAndNavigate(page);
   await createDeck(page);
   await enterSetupMode(page);
-  await page.locator('[data-testid^="deck-rail-deck-tab-"]').first().dblclick();
-  await page.getByTestId('deck-rail-name-input').waitFor();
+  await deckSelect(deckRows(page).first()).dblclick();
+  await page.getByRole('textbox', { name: 'Deck name', exact: true }).waitFor();
   expect(await offenders(page), 'board, a deck renamed').toEqual([]);
   await page.keyboard.press('Enter');
 
   await page.getByTestId('pad-grid-cell-empty-slot-0-0').click();
-  await page.getByTestId('pad-creation-popover').waitFor();
+  // The popover has no role, so it keeps its test ID; its ADD PAD shares its name with the bar's
+  const popover = page.getByTestId('pad-creation-popover');
+  await popover.waitFor();
   expect(await offenders(page), 'pad creation popover').toEqual([]);
 
   // Add the pad from the open popover (the way createPadAtCell00 does), then open its editor
-  await page.locator('[data-testid^="pad-creation-popover-source-item-"]').first().click();
-  await page.getByTestId('pad-creation-popover-add-button').click();
+  await popover.getByRole('button', { name: new RegExp(`^${TEST_AUDIO_NAME}`) }).click();
+  await popover.getByRole('button', { name: 'ADD PAD', exact: true }).click();
   await padCells(page).first().click();
   await page.getByRole('button', { name: 'BROWSE', exact: true }).click();
   // The fields of the LIGHT tab are in the page too, in its hidden panel
   expect(await offenders(page), 'PAD editor with library picker').toEqual([]);
-  await page.getByTestId('pad-editor-panel-add-icon-button').click();
+  await page.getByRole('button', { name: 'Add an icon', exact: true }).click();
   expect(await offenders(page), 'PAD editor, icon picker').toEqual([]);
   await page.keyboard.press('Escape'); // the picker on top closes first
 
