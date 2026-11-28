@@ -61,16 +61,16 @@ test.beforeEach(async ({ page }) => {
   await page.goto('/soundboard-of-storytelling/');
   // Unlocks the audio — without it no pad plays, and the GAME test below would prove nothing
   await goToBoardList(page); // through TAP TO START, which unlocks the audio
-  await page.getByTestId('board-list-screen-new-button').waitFor();
+  await page.getByRole('button', { name: 'NEW BOARD', exact: true }).waitFor();
   await createBoardAndNavigate(page);
   await createDeck(page);
   await enterSetupMode(page);
   await addLoopPad(page, 0);
   // The largest pads: the deck's empty cells reach far below the window, so the grid scrolls
-  await page.getByTestId('deck-rail-manage-button').click();
+  await page.getByRole('button', { name: 'DECKS', exact: true }).click();
   await page.getByRole('slider', { name: 'PAD SIZE', exact: true }).focus();
   await page.keyboard.press('End');
-  await page.getByTestId('deck-rail-manage-button').click();
+  await page.getByRole('button', { name: 'DECKS', exact: true }).click();
   cdp = await page.context().newCDPSession(page);
 });
 

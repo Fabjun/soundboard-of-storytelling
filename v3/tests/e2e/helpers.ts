@@ -342,6 +342,20 @@ export async function setupBoardAndDeck(page: Page): Promise<void> {
 }
 
 /**
+ * The pad creation popover. It has no role, so it is found by its test ID; what is inside it is
+ * found there by role and name — its ADD PAD shares its name with the board toolbar's.
+ */
+export const creationPopover = (page: Page) => page.getByTestId('pad-creation-popover');
+
+/** A file of the creation popover's list, by the start of its name (its duration follows). */
+export const popoverFile = (page: Page, name: string = TEST_AUDIO_NAME) =>
+  creationPopover(page).getByRole('button', { name: new RegExp(`^${name}`) });
+
+/** The creation popover's ADD PAD. */
+export const popoverAddPad = (page: Page) =>
+  creationPopover(page).getByRole('button', { name: 'ADD PAD', exact: true });
+
+/**
  * Create one pad at grid position (col=0, row=0) via Path A (tap-empty-cell).
  * Requires: BoardScreen in SETUP mode, deck exists, audio in library.
  * After this call, a pad occupying cell 0,0 exists.

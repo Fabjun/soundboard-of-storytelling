@@ -22,6 +22,9 @@ import {
   enterSetupMode,
   enterGameMode,
   PAD_CELL,
+  creationPopover,
+  popoverAddPad,
+  popoverFile,
 } from './helpers';
 
 // ── Test A: TAP TO START ─────────────────────────────────────────────────────
@@ -58,14 +61,14 @@ test.beforeEach(async ({ page }, testInfo) => {
 test('B — SINGLE pad: tap → is-hot; tap again → is-hot removed', async ({ page }) => {
   // Create a SINGLE pad at cell (0,0) via Path A
   await page.getByTestId('pad-grid-cell-empty-slot-0-0').click();
-  const popover = page.getByTestId('pad-creation-popover');
+  const popover = creationPopover(page);
   await popover.waitFor();
   // Select the first source item (audio was uploaded in beforeEach)
-  const sourceItem = page.locator('[data-testid^="pad-creation-popover-source-item-"]').first();
+  const sourceItem = popoverFile(page);
   await sourceItem.waitFor({ timeout: 5_000 });
   await sourceItem.click();
   // Default type for a 1-second clip is 'single' (< 10 s threshold)
-  await page.getByTestId('pad-creation-popover-add-button').click();
+  await popoverAddPad(page).click();
 
   // Wait for pad cell to appear (occupied, not empty)
   const padCell = page.locator(PAD_CELL).first();
@@ -88,14 +91,14 @@ test('B — SINGLE pad: tap → is-hot; tap again → is-hot removed', async ({ 
 test('C — LOOP pad: tap → is-looping; tap again → is-looping removed', async ({ page }) => {
   // Create a LOOP pad at cell (0,0): same flow as SINGLE but switch type pill
   await page.getByTestId('pad-grid-cell-empty-slot-0-0').click();
-  const popover = page.getByTestId('pad-creation-popover');
+  const popover = creationPopover(page);
   await popover.waitFor();
-  const sourceItem = page.locator('[data-testid^="pad-creation-popover-source-item-"]').first();
+  const sourceItem = popoverFile(page);
   await sourceItem.waitFor({ timeout: 5_000 });
   await sourceItem.click();
   // Select the LOOP type pill (label "LOOP")
   await page.getByRole('button', { name: 'LOOP', exact: true }).click();
-  await page.getByTestId('pad-creation-popover-add-button').click();
+  await popoverAddPad(page).click();
 
   const padCell = page.locator(PAD_CELL).first();
   await padCell.waitFor();

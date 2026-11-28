@@ -9,8 +9,10 @@ import {
   goToBoardList,
   createBoardAndNavigate,
   createDeck,
+  creationPopover,
   enterSetupMode,
   enterGameMode,
+  newDeckButton,
 } from './helpers';
 
 test('22 — GAME mode: CRUD controls hidden, ModeToggle shows is-game', async ({ page }) => {
@@ -23,7 +25,7 @@ test('22 — GAME mode: CRUD controls hidden, ModeToggle shows is-game', async (
   await enterSetupMode(page);
   // DeckRail action buttons visible on hover in SETUP
   // NEW DECK button always visible
-  await expect(page.getByTestId('deck-rail-new-button')).toBeVisible();
+  await expect(newDeckButton(page)).toBeVisible();
 
   // Switch to GAME mode
   await enterGameMode(page);
@@ -35,7 +37,7 @@ test('22 — GAME mode: CRUD controls hidden, ModeToggle shows is-game', async (
   );
 
   // GAME mode: pad editor should not be open
-  await expect(page.getByTestId('pad-editor-panel')).not.toBeVisible();
+  await expect(page.getByRole('dialog', { name: 'Pad editor', exact: true })).not.toBeVisible();
 
   // GAME mode: NEW DECK button is still visible (it's part of the DeckRail
   // which is always rendered). The key GAME restriction is on pad CRUD:
@@ -45,7 +47,7 @@ test('22 — GAME mode: CRUD controls hidden, ModeToggle shows is-game', async (
   await expect(emptyCell).toBeVisible();
   await emptyCell.click();
   // Popover should NOT appear in GAME mode
-  await expect(page.getByTestId('pad-creation-popover')).not.toBeVisible({
+  await expect(creationPopover(page)).not.toBeVisible({
     timeout: 1000,
   });
 

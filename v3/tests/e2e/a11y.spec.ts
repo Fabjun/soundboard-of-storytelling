@@ -28,6 +28,8 @@ import {
   deckSelect,
   modeToggle,
   padCells,
+  popoverAddPad,
+  popoverFile,
 } from './helpers';
 
 /** The board top bar's way back to the board list. */
@@ -264,11 +266,11 @@ test('with the keyboard alone: open a board, choose a deck, make a pad from a li
   // it; Tab to ADD PAD, Enter adds the pad
   await tabTo(page, page.getByTestId('pad-grid-cell-empty-slot-0-0'));
   await page.keyboard.press('Enter');
-  const file = page.locator('[data-testid^="pad-creation-popover-source-button-"]').first();
+  const file = popoverFile(page);
   await tabTo(page, file);
   await page.keyboard.press('Enter');
   await expect(file).toHaveAttribute('aria-pressed', 'true');
-  await tabTo(page, page.getByTestId('pad-creation-popover-add-button'));
+  await tabTo(page, popoverAddPad(page));
   await page.keyboard.press('Enter');
   await expect(padCells(page)).toHaveCount(1);
 });

@@ -103,6 +103,15 @@ export function withEarlyVersions(
 /** The release notes the main menu shows, newest first (checked by whatsNew.test.ts). */
 export const WHATS_NEW: WhatsNewNotes[] = [
   {
+    version: '3.0.354',
+    improved: [
+      'When a pad is added to an empty cell, a screen reader names the file search and the pad name field.',
+    ],
+    behindTheScenes: [
+      'More tests find controls by the names a screen reader says: the bar toggles, the now-playing line, the pad creation, saving in the PAD editor, the pad templates, own icons, the trash, typing and scrolling on a phone, the touch targets and the browser gestures.',
+    ],
+  },
+  {
     version: '3.0.353',
     behindTheScenes: [
       'The tests of undo and redo and of a pad’s light find controls by the names a screen reader says.',

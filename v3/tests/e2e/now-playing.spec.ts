@@ -15,16 +15,22 @@ import {
   closePadEditor,
   createBoardAndNavigate,
   createDeck,
+  deckRows,
+  deckSelect,
   enterGameMode,
   enterSetupMode,
   goToLibrary,
   openDeckRail,
   padCells as pads,
+  popoverAddPad,
+  popoverFile,
   TEST_AUDIO_NAME,
   uploadTestAudio,
 } from './helpers';
 
-const line = (page: Page) => page.getByTestId('status-bar-playing-text');
+// A live region without a name, found by the words it says
+const line = (page: Page) =>
+  page.getByRole('status').filter({ hasText: /^(No sound|\d+ playing: )/ });
 // A new pad takes the file's name, extension included
 const NAME = `${TEST_AUDIO_NAME}.wav`;
 const tap = (page: Page, n: number) => pads(page).nth(n).getByRole('button').click();
@@ -35,7 +41,7 @@ test.beforeEach(async ({ page }) => {
   await uploadTestAudio(page);
   await page.goto('/soundboard-of-storytelling/');
   await goToBoardList(page); // through TAP TO START, which unlocks the audio
-  await page.getByTestId('board-list-screen-new-button').waitFor();
+  await page.getByRole('button', { name: 'NEW BOARD', exact: true }).waitFor();
   await createBoardAndNavigate(page);
   await createDeck(page);
   await enterSetupMode(page);
@@ -66,8 +72,8 @@ test('a playing Single shows its time left; a Loop until stopped keeps its runni
 }) => {
   // A Single from the first library file (the popover's default type) next to the two Loops
   await page.getByTestId('pad-grid-cell-empty-slot-2-0').click();
-  await page.locator('[data-testid^="pad-creation-popover-source-item-"]').first().click();
-  await page.getByTestId('pad-creation-popover-add-button').click();
+  await popoverFile(page).click();
+  await popoverAddPad(page).click();
   await expect(pads(page)).toHaveCount(3);
   await expect(pads(page).nth(2)).toContainText('0:01');
 
@@ -84,8 +90,7 @@ test('a playing Single shows its time left; a Loop until stopped keeps its runni
 test('a pad in another deck still counts', async ({ page }) => {
   // A mode switch stops every sound (Slice 12c): both decks exist before GAME starts
   await createDeck(page);
-  const deckButton = (n: number) =>
-    page.locator('[data-testid^="deck-rail-select-button-"]').nth(n);
+  const deckButton = (n: number) => deckSelect(deckRows(page).nth(n));
   await deckButton(0).click();
   await expect(pads(page)).toHaveCount(2);
 
@@ -105,7 +110,10 @@ test('on a phone the line is in the dock, next to STOP ALL, and stays inside the
   // Names long enough that the line cannot fit next to STOP ALL on a phone
   for (const n of [0, 1]) {
     await tap(page, n);
-    await page.getByTestId('pad-editor-panel-name-input').fill(`Thunder over the village ${n}`);
+    await page
+      .getByRole('dialog', { name: 'Pad editor', exact: true })
+      .getByRole('textbox', { name: 'NAME', exact: true })
+      .fill(`Thunder over the village ${n}`);
     await closePadEditor(page);
   }
   await page.setViewportSize({ width: 390, height: 844 });
@@ -114,7 +122,8 @@ test('on a phone the line is in the dock, next to STOP ALL, and stays inside the
   await tap(page, 1);
 
   const dock = page.getByTestId('status-bar');
-  await expect(dock.getByTestId('status-bar-playing-text')).toHaveText(/^2 playing: /);
+  // The status bar is a region without a role; the line is found inside it
+  await expect(dock.locator(line(page))).toHaveText(/^2 playing: /);
   await expect(dock.getByRole('button', { name: 'STOP ALL', exact: true })).toBeVisible();
   // A long line gives way and ends in …; it never pushes the dock wider than the window
   await expect(dock.getByRole('button', { name: 'STOP ALL', exact: true })).toBeInViewport({

@@ -18,6 +18,7 @@ import {
   goToLibrary,
   reloadApp,
   TEST_AUDIO_NAME,
+  undoToast,
 } from './helpers';
 
 const name = `${TEST_AUDIO_NAME}.wav`; // the library shows the file name
@@ -25,7 +26,6 @@ const fileRow = (page: Page) => page.getByRole('button', { name: `Rename ${name}
 // The category buttons carry their count ("Recently deleted 1") — a pattern for the changing part
 const trashCategory = (page: Page) => page.getByRole('button', { name: /^Recently deleted/ });
 const allCategory = (page: Page) => page.getByRole('button', { name: /^All/ });
-const toast = (page: Page) => page.getByTestId('undo-toast');
 
 async function deleteFile(page: Page): Promise<void> {
   await page.getByRole('button', { name: `Delete ${name}`, exact: true }).click();
@@ -42,8 +42,8 @@ test.beforeEach(async ({ page }) => {
 
 test('a delete is one tap; UNDO in the toast puts the file back', async ({ page }) => {
   await deleteFile(page);
-  await expect(toast(page)).toContainText(`Deleted '${name}'`);
-  await toast(page).getByRole('button', { name: 'UNDO', exact: true }).click();
+  await expect(undoToast(page)).toContainText(`Deleted '${name}'`);
+  await undoToast(page).getByRole('button', { name: 'UNDO', exact: true }).click();
   await expect(fileRow(page)).toBeVisible();
   await trashCategory(page).click();
   await expect(page.getByText('Nothing deleted recently.', { exact: true })).toBeVisible();
@@ -110,7 +110,7 @@ test('a file says in how many pads it plays; deleting it says they lose their so
   await goToLibrary(page);
   await expect(fileRow(page)).toContainText('in 1 pad ·');
   await deleteFile(page);
-  await expect(toast(page)).toContainText(`Deleted '${name}' · 1 pad loses its sound`);
+  await expect(undoToast(page)).toContainText(`Deleted '${name}' · 1 pad loses its sound`);
 });
 
 test('a selected file names the pads that play it, with their board (L5)', async ({ page }) => {

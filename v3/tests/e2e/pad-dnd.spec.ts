@@ -23,20 +23,23 @@ import {
   createDeck,
   enterSetupMode,
   createPadAtCell00,
+  creationPopover,
   padPosition,
   pointerDrag,
+  popoverAddPad,
+  popoverFile,
   reopenFirstBoard,
 } from './helpers';
 
 /** Create a pad in the empty cell (col, row) via the creation popover; returns its id. */
 async function createPadAt(page: Page, col: number, row: number): Promise<string> {
   await page.getByTestId(`pad-grid-cell-empty-slot-${col}-${row}`).click();
-  const popover = page.getByTestId('pad-creation-popover');
+  const popover = creationPopover(page);
   await popover.waitFor();
-  const sourceItem = page.locator('[data-testid^="pad-creation-popover-source-item-"]').first();
+  const sourceItem = popoverFile(page);
   await sourceItem.waitFor({ timeout: 5_000 });
   await sourceItem.click();
-  await page.getByTestId('pad-creation-popover-add-button').click();
+  await popoverAddPad(page).click();
   await popover.waitFor({ state: 'hidden' });
   // Wait for the OCCUPIED cell at this position — right after the click the empty
   // cell (pad-cell-empty-c-r, same data-pos) can still be in the DOM.

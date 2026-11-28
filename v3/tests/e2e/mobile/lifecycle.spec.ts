@@ -21,6 +21,8 @@ import {
   enterSetupMode,
   goToBoardList,
   goToLibrary,
+  popoverAddPad,
+  popoverFile,
   padCells as pads,
 } from '../helpers';
 import { mobileUploadTestAudio } from './helpers';
@@ -54,7 +56,7 @@ function wav(seconds: number, rate = 8000): Buffer {
 async function newBoardInSetup(page: Page): Promise<void> {
   await page.goto('/soundboard-of-storytelling/');
   await goToBoardList(page); // through TAP TO START, which unlocks the audio
-  await page.getByTestId('board-list-screen-new-button').waitFor();
+  await page.getByRole('button', { name: 'NEW BOARD', exact: true }).waitFor();
   await createBoardAndNavigate(page);
   await createDeck(page);
   await enterSetupMode(page);
@@ -142,8 +144,8 @@ test('a 0.2 s Single tapped six times quickly ends unlit, without an error', asy
 
   await newBoardInSetup(page);
   await page.getByTestId('pad-grid-cell-empty-slot-0-0').tap();
-  await page.locator('[data-testid^="pad-creation-popover-source-item-"]').first().tap();
-  await page.getByTestId('pad-creation-popover-add-button').tap();
+  await popoverFile(page, 'blip').tap();
+  await popoverAddPad(page).tap();
   await expect(pads(page)).toHaveCount(1);
   await enterGameMode(page);
 

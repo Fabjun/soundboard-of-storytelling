@@ -20,6 +20,8 @@ import {
   goToLibrary,
   openMainMenu,
   padCells,
+  popoverAddPad,
+  popoverFile,
   reopenFirstBoard,
   uploadTestAudio,
   waitForSaves,
@@ -38,8 +40,8 @@ const aura = (cell: Locator) =>
 /** A Single in the empty cell (col, 0) from the first library file — the default type. */
 async function addSinglePad(page: Page, col: number): Promise<void> {
   await page.getByTestId(`pad-grid-cell-empty-slot-${col}-0`).click();
-  await page.locator('[data-testid^="pad-creation-popover-source-item-"]').first().click();
-  await page.getByTestId('pad-creation-popover-add-button').click();
+  await popoverFile(page).click();
+  await popoverAddPad(page).click();
   await expect(padCells(page)).toHaveCount(col + 1);
 }
 

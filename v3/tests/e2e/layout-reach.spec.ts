@@ -16,6 +16,7 @@ import { test, expect, type Page } from '@playwright/test';
 import {
   addNamedPad,
   closePadEditor,
+  creationPopover,
   goToBoardList,
   createBoardAndNavigate,
   createDeck,
@@ -70,7 +71,7 @@ test('the last grid cell can be reached and tapped on a short window', async ({ 
   await page.mouse.wheel(0, 2000);
   await expect(lastCell).toBeInViewport({ ratio: 1 });
   await lastCell.click();
-  await expect(page.getByTestId('pad-creation-popover')).toBeVisible();
+  await expect(creationPopover(page)).toBeVisible();
 });
 
 test("the pad editor's delete button can be reached on a short window", async ({ page }) => {
